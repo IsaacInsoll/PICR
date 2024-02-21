@@ -64,10 +64,10 @@ File.belongsTo(Folder);
 
 Folder.belongsTo(Folder, {
     foreignKey: "parentId",
-    as: 'Parent'
+    as: 'parent'
 });
 Folder.hasMany(Folder, {
     foreignKey: "parentId",
-    as: 'Children'
+    as: 'children'
 });
 

@@ -3,6 +3,7 @@ import {fileWatcher} from './filesystem/fileWatcher'
 import pkg from '../package.json';
 import {Folder, sequelize} from "./database";
 import {config} from 'dotenv'
+import {gqlserver} from "./gql";
 
 const app = async () => {
     config(); // read .ENV
@@ -14,6 +15,8 @@ const app = async () => {
 
     await sequelize.sync({}); // build DB
     fileWatcher();
+
+    server.all("/graphql", gqlserver);
 
     server.get('/', (req, res) => {
         console.log('request received!');
