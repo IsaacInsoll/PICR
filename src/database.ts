@@ -1,73 +1,59 @@
-import {DataTypes, Model, Sequelize, Transaction} from "sequelize";
-import {config} from "dotenv";
-import TYPES = Transaction.TYPES;
+import { config } from 'dotenv';
+import { DataType, Sequelize } from 'sequelize-typescript';
+import { Transaction } from 'sequelize';
+import { Folder } from './models/folder';
+import { File } from './models/file';
 
 config(); // read .ENV
 
 // DB FIELDS
 const id = {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true
+  type: DataType.INTEGER,
+  autoIncrement: true,
+  primaryKey: true,
 };
-
-const name = {
-    type: DataTypes.STRING,
-    allowNull: false
-};
-const hash = {
-    type: DataTypes.STRING,
-};
-
-const fullPath = {
-    type: DataTypes.STRING,
-};
-
 
 export const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: process.cwd() + '/data/db.sqlite',
-    logging: process.env.DEBUG_SQL == 'true',
-    retry: {
-        match: [
-            /SQLITE_BUSY/
-        ],
-        name: 'query',
-        max: 5
-    },
-    transactionType: TYPES.IMMEDIATE
+  dialect: 'sqlite',
+  storage: process.cwd() + '/data/db.sqlite',
+  logging: process.env.DEBUG_SQL == 'true',
+  retry: { match: [/SQLITE_BUSY/], name: 'query', max: 5 },
+  transactionType: Transaction.TYPES.IMMEDIATE,
+  models: [Folder, File],
+  // models: [__dirname + '/models']
 });
 
+Folder.init(
+  {
+    id,
+    createdAt: DataType.DATE,
+    updatedAt: DataType.DATE,
+    name: DataType.STRING,
+    fullPath: DataType.STRING,
+    folderHash: DataType.STRING,
+  },
+  { sequelize, modelName: 'Folder' },
+);
 
-export class Folder extends Model {
-    declare name: string;
-    declare folderHash: string;
-    declare fullPath: string;
-    declare parentId: number | null;
-    declare id: number;
-}
-
-Folder.init({id, name, fullPath, folderHash: hash}, {sequelize, modelName: 'Folder'});
-
-export class File extends Model {
-    declare name: string;
-    declare fullPath: string;
-    declare folderId: number | null;
-    declare id: number;
-}
-
-File.init({id, name, fullPath}, {sequelize, modelName: 'File'});
+File.init(
+  {
+    id,
+    createdAt: DataType.DATE,
+    updatedAt: DataType.DATE,
+    name: DataType.STRING,
+    fullPath: DataType.STRING,
+  },
+  { sequelize, modelName: 'File' },
+);
 
 Folder.hasMany(File);
 File.belongsTo(Folder);
 
-
 Folder.belongsTo(Folder, {
-    foreignKey: "parentId",
-    as: 'parent'
+  foreignKey: 'parentId',
+  as: 'parent',
 });
 Folder.hasMany(Folder, {
-    foreignKey: "parentId",
-    as: 'children'
+  foreignKey: 'parentId',
+  as: 'children',
 });
-
