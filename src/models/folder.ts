@@ -1,20 +1,13 @@
 import {
   Column,
-  CreatedAt,
+  ForeignKey,
+  HasMany,
   Model,
   Table,
-  UpdatedAt,
 } from 'sequelize-typescript';
 
 @Table
 export class Folder extends Model {
-  declare id: number;
-  @CreatedAt
-  creationDate: Date;
-
-  @UpdatedAt
-  updatedOn: Date;
-
   @Column
   declare name: string;
   @Column
@@ -22,9 +15,10 @@ export class Folder extends Model {
   @Column
   declare fullPath: string;
 
+  @ForeignKey(() => Folder)
   @Column
-  declare parentId: number | null;
+  parentId: number;
 
-  // @HasMany(() => Folder)
+  @HasMany(() => Folder)
   children: Folder[];
 }
