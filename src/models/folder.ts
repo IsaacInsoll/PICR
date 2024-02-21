@@ -6,6 +6,8 @@ import {
   Table,
 } from 'sequelize-typescript';
 
+import { File } from './file';
+
 @Table
 export class Folder extends Model {
   @Column
@@ -13,7 +15,7 @@ export class Folder extends Model {
   @Column
   declare folderHash: string;
   @Column
-  declare fullPath: string;
+  declare relativePath: string;
 
   @ForeignKey(() => Folder)
   @Column
@@ -21,4 +23,7 @@ export class Folder extends Model {
 
   @HasMany(() => Folder)
   children: Folder[];
+
+  @HasMany(() => File)
+  files: Folder[];
 }

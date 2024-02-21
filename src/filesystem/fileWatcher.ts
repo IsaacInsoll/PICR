@@ -1,7 +1,7 @@
 import chokidar from 'chokidar';
 import { directoryPath, relativePath } from './fileManager';
-import { createFolder } from './events/createFolder';
-import { deleteFolder } from './events/deleteFolder';
+import { addFolder } from './events/addFolder';
+import { removeFolder } from './events/removeFolder';
 
 export const fileWatcher = () => {
   console.log('👀 Now watching: ' + directoryPath);
@@ -13,23 +13,27 @@ export const fileWatcher = () => {
   });
 
   const log = (message: string) => {
-    if (initComplete) {
-      console.log(message);
-    }
+    // if (initComplete) {
+    console.log(message);
+    // }
   };
 
   watcher
-    // .on('add', path => log('➕ ' + path))
+    .on('add', (path) => {
+      log('➕ ' + path);
+      //TODO: the following line times out the DB :(
+      // addFile(path);
+    })
     // .on('change', path => log('✖️ ' + path))
     // .on('unlink', path => log('➖ ' + path))
     .on('error', (error) => console.log('⚠️ Error happened: ' + error))
     .on('addDir', (path) => {
       log(`📁➕ ${relativePath(path)}`);
-      createFolder(path);
+      addFolder(path);
     })
     .on('unlinkDir', (path) => {
       log(`📁➖ ${relativePath(path)}`);
-      deleteFolder(path);
+      removeFolder(path);
     })
     .on('ready', () => {
       initComplete = true;

@@ -8,3 +8,5 @@ export const relativePath = (path: string) =>
 export const fullPath = (relativePath: string) =>
   directoryPath + '/' + relativePath;
 export const pathSplit = (path: string) => relativePath(path).split('/');
+
+export const folderList = {}; //relativePath to ID mapping
