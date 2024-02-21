@@ -12,12 +12,17 @@ const app = async () => {
     const port = 6900;
     const appName = pkg.name;
 
-    await sequelize.sync({force: true}); // build DB
+    await sequelize.sync({}); // build DB
     fileWatcher();
 
     server.get('/', (req, res) => {
         console.log('request received!');
-        Folder.findAll().then(folders => res.send(JSON.stringify(folders)))
+        Folder.findAll().then(folders => res.send(JSON.stringify(folders.map(({id, name, folderHash, createdAt}) => ({
+            id,
+            name,
+            folderHash,
+            createdAt
+        })))))
         // res.send('Hello, World! 🌍');
     });
 

@@ -15,13 +15,15 @@ const name = {
     type: DataTypes.STRING,
     allowNull: false
 };
+const hash = {
+    type: DataTypes.STRING,
+};
 
 const fullPath = {
     type: DataTypes.STRING,
 };
 
 
-console.log(process.env.DEBUG_SQL);
 export const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: process.cwd() + '/data/db.sqlite',
@@ -39,12 +41,13 @@ export const sequelize = new Sequelize({
 
 export class Folder extends Model {
     declare name: string;
+    declare folderHash: string;
     declare fullPath: string;
     declare parentId: number | null;
     declare id: number;
 }
 
-Folder.init({id, name, fullPath}, {sequelize, modelName: 'Folder'});
+Folder.init({id, name, fullPath, folderHash: hash}, {sequelize, modelName: 'Folder'});
 
 export class File extends Model {
     declare name: string;
