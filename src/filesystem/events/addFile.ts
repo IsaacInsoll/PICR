@@ -3,6 +3,11 @@ import { folderList, relativePath } from '../fileManager';
 import { addFolder } from './addFolder';
 import { File } from '../../models/file';
 import { logger } from '../../logger';
+import { fileHash } from '../fileHash';
+import {
+  deleteAllThumbs,
+  generateAllThumbs,
+} from '../../helpers/thumbnailGenerator';
 
 export const addFile = async (filePath: string) => {
   const type = validExtension(filePath);
@@ -14,14 +19,27 @@ export const addFile = async (filePath: string) => {
   const folderId = await findFolderId(dirname(filePath));
   if (!folderId) console.log(`Matching folder is ${folderId}`);
 
+  const hash = fileHash(filePath);
+  // console.log(hash);
+
   const props = {
     name: basename(filePath),
     folderId: folderId,
     relativePath: relativePath(dirname(filePath)),
   };
   // console.log(props);
-  const [file] = await File.findOrCreate({ where: props });
+  const [file, created] = await File.findOrCreate({
+    where: props,
+    defaults: { fileHash: hash },
+  });
+  if (file.fileHash !== hash || created) {
+    console.log((created ? 'New File: ' : 'Hash Mismatch for: ') + filePath);
+    deleteAllThumbs(filePath);
+    file.fileHash = hash;
+    file.save();
+  }
   // console.log(file);
+  generateAllThumbs(filePath); // will skip if thumbs exist
   logger('➕ ' + filePath);
 };
 
