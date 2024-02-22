@@ -3,6 +3,7 @@ import { Folder } from '../../models/folder';
 import { folderList, relativePath } from '../fileManager';
 import { Op } from 'sequelize';
 import { sequelize } from '../../database';
+import { logger } from '../../logger';
 
 export const removeFolder = async (path: string) => {
   // wait 1 sec, then see if a 'matching' folder was added in last 5 seconds, due to fileWatcher not detecting renames
@@ -29,7 +30,7 @@ export const removeFolder = async (path: string) => {
           }
           folderList[relativePath(path)] = undefined;
           console.log(folderList);
-          folder.destroy().then(() => {});
+          folder.destroy().then(() => logger(`📁➖ ${relativePath(path)}`));
         });
       }
     },

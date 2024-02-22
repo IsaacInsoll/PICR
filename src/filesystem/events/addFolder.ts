@@ -1,6 +1,7 @@
 import { folderList, pathSplit, relativePath } from '../fileManager';
 import { Folder } from '../../models/folder';
 import { updateFolderHash } from './updateFolderHash';
+import { logger } from '../../logger';
 
 export const addFolder = async (path: string) => {
   const relative = relativePath(path);
@@ -27,6 +28,7 @@ export const addFolder = async (path: string) => {
     updateFolderHash(newFolder);
     // }
     f = newFolder;
+    logger(`📁➕ ${relativePath(path)}`);
   }
   return f;
 };

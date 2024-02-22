@@ -2,6 +2,7 @@ import { basename, dirname, extname } from 'path';
 import { folderList, relativePath } from '../fileManager';
 import { addFolder } from './addFolder';
 import { File } from '../../models/file';
+import { logger } from '../../logger';
 
 export const addFile = async (filePath: string) => {
   const type = validExtension(filePath);
@@ -10,16 +11,18 @@ export const addFile = async (filePath: string) => {
     return;
   }
   // console.log(`${basename(filePath)} of type ${type} in ${dirname(filePath)}`);
-  const folder = await findFolderId(dirname(filePath));
-  // console.log(`Matching folder is ${folder?.id}`);
+  const folderId = await findFolderId(dirname(filePath));
+  if (!folderId) console.log(`Matching folder is ${folderId}`);
+
   const props = {
     name: basename(filePath),
-    folderId: folder.id,
+    folderId: folderId,
     relativePath: relativePath(dirname(filePath)),
   };
-  console.log(props);
+  // console.log(props);
   const [file] = await File.findOrCreate({ where: props });
-  console.log(file);
+  // console.log(file);
+  logger('➕ ' + filePath);
 };
 
 const findFolderId = async (fullPath: string) => {
