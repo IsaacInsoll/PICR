@@ -22,11 +22,8 @@ const root = {
   },
   folders: async (params) => {
     const parentId = params.parentId ?? 1;
-    console.log(parentId);
     const folders = await Folder.findAll({ where: { parentId } });
-    const data = folders.map((f) => f.toJSON());
-    console.log(data);
-    return data;
+    return folders.map((f) => f.toJSON());
   },
 };
 

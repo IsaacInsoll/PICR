@@ -23,7 +23,7 @@ export const addFolder = async (path: string) => {
       },
     });
     folderList[p] = newFolder.id; // for caching
-    console.log(folderList);
+    // console.log(folderList);
     // if (created) {
     updateFolderHash(newFolder);
     // }

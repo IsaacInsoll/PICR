@@ -4,6 +4,7 @@ import pkg from '../package.json';
 import { fileWatcher } from './filesystem/fileWatcher';
 import { config } from 'dotenv';
 import { gqlserver } from './gql';
+import { logger } from './logger';
 
 const app = async () => {
   config(); // read .ENV
@@ -13,17 +14,14 @@ const app = async () => {
   const port = 6900;
   const appName = pkg.name;
 
-  fileWatcher();
-
   server.all('/graphql', gqlserver);
 
   server.get('/', (req, res) => {
-    console.log('request received!');
     res.send('Hello, World! 🌍');
   });
 
   server.listen(port, () => {
-    console.log(`🌐 App listening at http://localhost:${port}`);
+    logger(`🌐 App listening at http://localhost:${port}`);
   });
 
   //Close all the stuff
@@ -38,6 +36,8 @@ const app = async () => {
     console.log(`❌ Shutting down ${appName}`);
     process.exit(0);
   });
+
+  fileWatcher();
 };
 
 app();

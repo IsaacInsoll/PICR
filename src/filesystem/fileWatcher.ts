@@ -1,21 +1,16 @@
 import chokidar from 'chokidar';
 import { directoryPath } from './fileManager';
 import { addToQueue } from './fileQueue';
+import { logger } from '../logger';
 
 export const fileWatcher = () => {
-  console.log('👀 Now watching: ' + directoryPath);
+  logger('👀 Now watching: ' + directoryPath);
   let initComplete = false;
   const watcher = chokidar.watch(directoryPath, {
     ignored: /^\./,
     persistent: true,
     awaitWriteFinish: true,
   });
-
-  const log = (message: string) => {
-    // if (initComplete) {
-    console.log(message);
-    // }
-  };
 
   watcher
     .on('add', (path) => {
@@ -36,6 +31,6 @@ export const fileWatcher = () => {
     })
     .on('ready', () => {
       initComplete = true;
-      console.log('✅ Initial scan complete. Ready for changes');
+      logger('✅ Initial scan complete. Ready for changes');
     });
 };

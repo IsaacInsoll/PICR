@@ -3,12 +3,13 @@ import { Folder } from '../../models/folder';
 import { readdirSync } from 'node:fs';
 import { fullPath } from '../fileManager';
 import crypto from 'crypto';
+import { logger } from '../../logger';
 
 export const updateFolderHash = (folder: Folder) => {
   const fileNames = readdirSync(fullPath(folder.relativePath)).join('#');
   const hash = crypto.createHash('md5').update(fileNames).digest('hex');
   if (folder.folderHash != hash) {
-    console.log(
+    logger(
       `#️⃣ Updating Folder hash: ${folder.relativePath} from ${folder.folderHash} to ${hash}`,
     );
     folder.folderHash = hash;

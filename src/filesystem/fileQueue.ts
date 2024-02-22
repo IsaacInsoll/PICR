@@ -1,18 +1,22 @@
 import { addFile } from './events/addFile';
 import { addFolder } from './events/addFolder';
 import { removeFolder } from './events/removeFolder';
+import { SingleBar, Presets } from 'cli-progress';
 
 type QueueAction = 'addDir' | 'unlinkDir' | 'add';
 
+const queueProgressBar = new SingleBar({}, Presets.shades_classic);
+
 let queue = null;
-let queueCount = 0;
+let queueDone = 0;
+let queueTotal = 0;
 
 export const addToQueue = (
   action: QueueAction,
   filePath: string,
   priority?: boolean,
 ) => {
-  queueCount++;
+  queueTotal++;
   if (queue) {
     if (priority) {
       queue = processQueue(action, filePath).then(queue);
@@ -20,23 +24,28 @@ export const addToQueue = (
       queue = queue.then(() => processQueue(action, filePath));
     }
   } else {
-    queue = addFile(filePath);
+    queueTotal = 1;
+    queueDone = 0;
+    queue = processQueue(action, filePath);
   }
-  console.log(
-    `${queueCount} : ${priority ? 'Fast' : ''}Queued ${action} on ${filePath}`,
-  );
+  queueProgressBar.start(queueTotal, queueDone);
+
+  // console.log(
+  //   `${queueCount} : ${priority ? 'Fast' : ''}Queued ${action} on ${filePath}`,
+  // );
 };
 
-const processQueue = (action: QueueAction, filePath: string) => {
-  queueCount--;
-  console.log('QC: ' + queueCount);
+const processQueue = async (action: QueueAction, filePath: string) => {
   if (action == 'addDir') {
-    return addFolder(filePath);
+    await addFolder(filePath);
   }
   if (action == 'unlinkDir') {
-    return removeFolder(filePath);
+    await removeFolder(filePath);
   }
   if (action == 'add') {
-    return addFile(filePath);
+    await addFile(filePath);
   }
+  queueDone++;
+  queueProgressBar.update(queueDone);
+  if (queueDone == queueTotal) queueProgressBar.stop();
 };

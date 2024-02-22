@@ -24,12 +24,12 @@ export const removeFolder = async (path: string) => {
         }).then((newFolder) => {
           if (newFolder) {
             //TODO: Handle folder rename (move data across?)
-            console.log(
+            logger(
               `🔀 Appears to be folder Rename from ${folder.relativePath} to ${newFolder.relativePath}`,
             );
           }
           folderList[relativePath(path)] = undefined;
-          console.log(folderList);
+          // console.log(folderList);
           folder.destroy().then(() => logger(`📁➖ ${relativePath(path)}`));
         });
       }

@@ -7,7 +7,7 @@ import { logger } from '../../logger';
 export const addFile = async (filePath: string) => {
   const type = validExtension(filePath);
   if (!type) {
-    console.log(`🤷‍♂️ Ignoring ${filePath} as it's not a supported file format`);
+    logger(`🤷‍♂️ Ignoring ${filePath} as it's not a supported file format`);
     return;
   }
   // console.log(`${basename(filePath)} of type ${type} in ${dirname(filePath)}`);
@@ -26,12 +26,12 @@ export const addFile = async (filePath: string) => {
 };
 
 const findFolderId = async (fullPath: string) => {
-  const id = folderList[relativePath(fullPath)];
+  let id = folderList[relativePath(fullPath)];
   if (!id) {
-    console.warn(`Found image in previously unknown folder: ${fullPath}`);
-    return await addFolder(fullPath);
+    const f = await addFolder(fullPath);
+    id = f.id;
   }
-  return folderList[relativePath(fullPath)];
+  return id;
 };
 
 const validExtension = (filePath: string): string | null => {
