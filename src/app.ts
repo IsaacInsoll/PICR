@@ -26,9 +26,9 @@ TOKEN_SECRET=${secret}`);
 
   server.all('/graphql', gqlserver);
 
-  server.get('/', (req, res) => {
-    res.send('Hello, World! 🌍');
-  });
+  // server.get('/', (req, res) => {
+  //   res.send('Hello, World! 🌍');
+  // });
 
   server.post('/auth', (req, res) => {
     const user = 'root'; // TODO: separate users
@@ -37,6 +37,8 @@ TOKEN_SECRET=${secret}`);
     const token = generateAccessToken({ username: user });
     res.json(token);
   });
+
+  server.use(express.static('public'));
 
   server.listen(port, () => {
     logger(`🌐 App listening at http://localhost:${port}`);
