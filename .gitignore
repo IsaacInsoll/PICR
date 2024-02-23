@@ -133,4 +133,5 @@ dist
 media/*
 
 .idea/
-data/
+/data/
+/public/
