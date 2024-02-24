@@ -2,11 +2,17 @@ import { buildSchema } from 'graphql';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { Folder } from './models/folder';
 import { File } from './models/file';
+import { generateAccessToken } from './auth/auth';
 
 const schema = buildSchema(/*GraphQL */ `
     type Query {
         folders(parentId: ID): [Folder!]!
         folder(id: ID!): Folder!
+        auth(user: String!, password: String!) : String!
+    }
+
+    type Mutation {
+        auth(user: String!, password: String!) : String!
     }
     type Folder {
         id: ID!
@@ -33,6 +39,11 @@ const root = {
   },
   folders: async (params) => {
     return subFolders(params.parentId ?? 1);
+  },
+  auth: async (params) => {
+    // TODO: actual auth users
+    if (params.password != 'password') return '';
+    return generateAccessToken({ username: params.username });
   },
 };
 

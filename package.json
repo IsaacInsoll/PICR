@@ -2,7 +2,7 @@
   "name": "picr",
   "version": "1.0.0",
   "description": "",
-  "main": "src/app.ts",
+  "main": "src/server.ts",
   "scripts": {
     "start:ts": "tsc -w",
     "start:js": "nodemon dist/src/app.js",

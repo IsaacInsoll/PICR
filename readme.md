@@ -28,6 +28,7 @@ When we have a docker image this is the two folders you want to mount
 `npm start`* to run both typescript watcher and nodemon server (for live changes to node causing reload)
 `cd frontend && npm run build` build front end
 `cd frontend && npm start` run react dev server (currently untested :/)
+`cd frontend && npm run gql` build gql
 * known issue is that the `cli-progressbar` doesn't work with `concurrently` so progress bars are invisible :/
 
 | Folder   | Description                                            |

@@ -8,7 +8,7 @@ import { logger } from './logger';
 import { randomBytes } from 'node:crypto';
 import { generateAccessToken } from './auth/auth';
 
-const app = async () => {
+const server = async () => {
   config(); // read .ENV
   const secret = randomBytes(64).toString('hex');
   if (!process.env.TOKEN_SECRET) {
@@ -20,17 +20,13 @@ TOKEN_SECRET=${secret}`);
 
   await sequelize.sync({}); // build DB
 
-  const server = express();
+  const e = express();
   const port = 6900;
   const appName = pkg.name;
 
-  server.all('/graphql', gqlserver);
+  e.all('/graphql', gqlserver);
 
-  // server.get('/', (req, res) => {
-  //   res.send('Hello, World! 🌍');
-  // });
-
-  server.post('/auth', (req, res) => {
+  e.post('/auth', (req, res) => {
     const user = 'root'; // TODO: separate users
     const password = req.body.password;
     if (password != 'password') res.sendStatus(401);
@@ -38,9 +34,9 @@ TOKEN_SECRET=${secret}`);
     res.json(token);
   });
 
-  server.use(express.static('public'));
+  e.use(express.static('public'));
 
-  server.listen(port, () => {
+  e.listen(port, () => {
     logger(`🌐 App listening at http://localhost:${port}`);
   });
 
@@ -60,4 +56,4 @@ TOKEN_SECRET=${secret}`);
   fileWatcher();
 };
 
-app();
+server();

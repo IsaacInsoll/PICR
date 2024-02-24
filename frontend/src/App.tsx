@@ -1,16 +1,16 @@
 import './App.css';
 import { LoginForm } from './LoginForm';
 
-import { grommet, Box, Heading, Grommet, Paragraph } from 'grommet';
+import { grommet, Grommet } from 'grommet';
+import { client } from './urqlClient';
+import { Provider } from 'urql';
 
 const App = () => (
-  <Grommet theme={grommet}>
-    <Box pad="small">
-      <Heading>Hello World</Heading>
-      <Paragraph>Hello from a Grommet page!</Paragraph>
-    </Box>
-    <LoginForm />
-  </Grommet>
+  <Provider value={client}>
+    <Grommet theme={grommet}>
+      <LoginForm />
+    </Grommet>
+  </Provider>
 );
 
 export default App;

@@ -1,25 +1,44 @@
-import { Box, FormField, Heading, TextInput } from 'grommet';
+import { Box, FormField, Heading, TextInput, Button } from 'grommet';
+import { useState } from 'react';
+import { gql } from './gql';
+import { useMutation } from 'urql';
 
 export const LoginForm = () => {
+  const [user, setUser] = useState('');
+  const [pass, setPass] = useState('');
+  const [, mutate] = useMutation(loginMutation);
+
+  const doLogin = () => {
+    mutate({ username: user, password: pass }).then((x) => console.log);
+  };
+
   return (
     <Box align="center">
       <Box width="medium" margin="large">
-        <Heading>grommet + formik</Heading>
-        <FormField label="Name">
+        <Heading>PICR Login</Heading>
+        <FormField label="Username">
           <TextInput
-            name="name"
-            // value={values.name || ''}
-            // onChange={handleChange}
+            name="username"
+            value={user}
+            onChange={(e) => setUser(e.target.value)}
           />
         </FormField>
-        <FormField label="Email">
+        <FormField label="Password">
           <TextInput
-            name="email"
-            // value={values.email || ''}
-            // onChange={handleChange}
+            name="password"
+            type="password"
+            value={pass}
+            onChange={(e) => setPass(e.target.value)}
           />
         </FormField>
+        <Button label="Login" onClick={doLogin} />
       </Box>
     </Box>
   );
 };
+
+const loginMutation = gql(/* GraphQL */ `
+  mutation login($username: String!, $password: String!) {
+    auth(user: $username, password: $password)
+  }
+`);
