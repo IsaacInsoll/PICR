@@ -7,6 +7,7 @@ import { gqlserver } from './gql';
 import { logger } from './logger';
 import { randomBytes } from 'node:crypto';
 import { generateAccessToken } from './auth/auth';
+import path from 'path';
 
 const server = async () => {
   config(); // read .ENV
@@ -24,17 +25,14 @@ TOKEN_SECRET=${secret}`);
   const port = 6900;
   const appName = pkg.name;
 
+  console.log('doing it');
+
   e.all('/graphql', gqlserver);
-
-  e.post('/auth', (req, res) => {
-    const user = 'root'; // TODO: separate users
-    const password = req.body.password;
-    if (password != 'password') res.sendStatus(401);
-    const token = generateAccessToken({ username: user });
-    res.json(token);
-  });
-
   e.use(express.static('public'));
+
+  e.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../public/index.html'));
+  });
 
   e.listen(port, () => {
     logger(`🌐 App listening at http://localhost:${port}`);

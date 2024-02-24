@@ -1,7 +1,6 @@
 import { Client, cacheExchange, fetchExchange } from 'urql';
-import { isDev } from './isDev';
 
-export const authToken = '';
+var authToken = '';
 
 export const client = new Client({
   url: '/graphql',
@@ -12,3 +11,8 @@ export const client = new Client({
     };
   },
 });
+
+export const setAuthToken = (token: string | undefined) => {
+  authToken = token ?? '';
+  console.log('Auth Token now: ', authToken);
+};

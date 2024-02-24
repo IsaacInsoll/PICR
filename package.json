@@ -5,9 +5,9 @@
   "main": "src/server.ts",
   "scripts": {
     "start:ts": "tsc -w",
-    "start:js": "nodemon dist/src/app.js",
+    "start:js": "nodemon dist/src/server.js",
     "start": "concurrently npm:start:*",
-    "build": "tsc && node dist/src/app.js"
+    "build": "tsc && node dist/src/server.js"
   },
   "author": "Isaac Insoll",
   "license": "ISC",
