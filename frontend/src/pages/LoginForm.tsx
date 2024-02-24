@@ -2,19 +2,28 @@ import { Box, FormField, Heading, TextInput, Button, Keyboard } from 'grommet';
 import { useState } from 'react';
 import { gql } from '../helpers/gql';
 import { useMutation } from 'urql';
-import { setAuthToken } from '../urqlClient';
+import { useNavigate } from 'react-router-dom';
+import { useSetAtom } from 'jotai/index';
+import { authKeyAtom, useIsLoggedIn } from '../atoms/authAtom';
 
 export const LoginForm = () => {
+  const loggedIn = useIsLoggedIn();
+  const navigate = useNavigate();
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
   const [fail, setFail] = useState(false);
   const [, mutate] = useMutation(loginMutation);
+  const set = useSetAtom(authKeyAtom);
+
+  if (loggedIn) {
+    navigate('/admin');
+  }
 
   const doLogin = () => {
     mutate({ username: user, password: pass }).then((result) => {
-      const token = result?.data?.auth;
-      setFail(!token || token === '');
-      setAuthToken(token);
+      const token = result?.data?.auth ?? '';
+      set(token);
+      setFail(token === '');
     });
   };
   return (
