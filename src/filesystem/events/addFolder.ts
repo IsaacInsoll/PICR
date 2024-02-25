@@ -6,7 +6,8 @@ import { logger } from '../../logger';
 export const addFolder = async (path: string) => {
   const relative = relativePath(path);
   const [root] = await Folder.findOrCreate({
-    where: { name: '', parentId: null },
+    where: { id: 1, parentId: null },
+    defaults: { name: 'Home' },
   });
   if (relative === '') {
     return root;

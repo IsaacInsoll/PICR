@@ -13,6 +13,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            files {\n                id\n                name\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n": types.ViewFolderDocument,
+    "\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n        }\n    }\n": types.ViewMinimumFolderDocument,
     "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
 };
 
@@ -30,6 +32,14 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            files {\n                id\n                name\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n"): (typeof documents)["\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            files {\n                id\n                name\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n        }\n    }\n"): (typeof documents)["\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

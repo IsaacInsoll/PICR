@@ -45,9 +45,8 @@ TOKEN_SECRET=${secret}`);
 const server = async () => {
   config(); // read .ENV
   await envSecret();
-  await envPassword();
-
   await sequelize.sync({}); // build DB
+  await envPassword();
 
   const e = express();
   const port = 6900;

@@ -11,15 +11,17 @@ export function generateAccessToken(obj) {
   return response;
 }
 
-export function authenticateToken(token: string) {
+export function authenticateToken(context) {
+  const token = context.auth.split(' ')[1];
   if (token == null || token === '') doAuthError('No Token');
   const secret = process.env.TOKEN_SECRET as string;
 
   try {
     const decoded = jwt.verify(token, secret);
+    console.log('Identified as User ' + decoded.userId);
     return decoded.userId;
   } catch (error) {
-    doAuthError('Invalid Token');
+    doAuthError('Invalid Token: ' + token);
   }
 }
 

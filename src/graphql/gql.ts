@@ -18,7 +18,7 @@ export const gqlserver = createHandler({
   },
   rootValue: {
     folder: async (params, context) => {
-      authenticateToken(context.auth);
+      authenticateToken(context);
       const data = await getFolder(params.id);
       data.subFolders = await subFolders(params.id);
       data.files = await subFiles(params.id);
