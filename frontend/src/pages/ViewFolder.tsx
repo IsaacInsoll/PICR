@@ -7,7 +7,7 @@ import { folderSubtitle } from '../helpers/folderSubtitle';
 import { useNavigate, useParams } from 'react-router-dom';
 import { viewFolderQuery } from '../helpers/viewFolderQuery';
 import { FolderListView } from '../components/FolderListView';
-import { FileListView } from '../components/FileListView';
+import { FileListView } from '../components/FileListView/FileListView';
 
 // You can't navigate above rootFolderId (IE: if viewing a shared link you can't get to parents of that)
 export const ViewFolder = ({ rootFolderId }: { rootFolderId: string }) => {

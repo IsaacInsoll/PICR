@@ -1,6 +1,7 @@
 import { Page, PageContent, PageHeader } from 'grommet';
 import { MinimalFolder } from '../../types';
 import { FolderLink } from './FolderLink';
+import { Helmet } from 'react-helmet';
 
 export const FolderHeader = ({
   folder,
@@ -12,6 +13,9 @@ export const FolderHeader = ({
   return (
     <Page>
       <PageContent>
+        <Helmet>
+          <title>{folder.name ?? 'PICR'}</title>
+        </Helmet>
         <PageHeader
           title={folder.name ?? '(Unnamed Folder)'}
           subtitle={subtitle}

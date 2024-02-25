@@ -19,6 +19,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-grid-gallery": "^1.0.1-alpha.0",
+    "react-helmet": "^6.1.0",
     "react-router-dom": "^6.22.1",
     "react-scripts": "5.0.1",
     "styled-components": "^5.3.11",
@@ -58,6 +59,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/client-preset": "4.2.4",
-    "@graphql-codegen/introspection": "^4.0.3"
+    "@graphql-codegen/introspection": "^4.0.3",
+    "@types/react-helmet": "^6.1.11"
   }
 }
