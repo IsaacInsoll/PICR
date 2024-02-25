@@ -10,6 +10,7 @@ export const viewFolderQuery = gql(/*GraphQL*/ `
                 id
                 name
                 imageRatio
+                fileHash
             }
             subFolders {
                 id

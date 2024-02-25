@@ -1,14 +1,15 @@
 import sharp, { ResizeOptions } from 'sharp';
-import { relativePath } from '../filesystem/fileManager';
+import { fullPath, relativePath } from '../filesystem/fileManager';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'path';
 import {
+  AllSize,
   thumbnailDimensions,
   ThumbnailSize,
   thumbnailSizes,
 } from './thumbnailSizes';
 import fs from 'fs';
-import { metadata } from 'reflect-metadata/no-conflict';
+import { File } from '../models/file';
 
 const thumbnailPath = (filePath: string, size: ThumbnailSize) => {
   return process.cwd() + `/data/thumbs/${size}/${relativePath(filePath)}`;
@@ -61,3 +62,12 @@ const sharpOpts: ResizeOptions = {
 };
 
 const jpegOptions = { quality: 60 };
+
+export const fullPathFor = (file: File, size: AllSize): string => {
+  const path = fullPath(file.relativePath) + '/' + file.name;
+  if (size == 'raw') {
+    return path;
+  } else {
+    return thumbnailPath(path, size);
+  }
+};

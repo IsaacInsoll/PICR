@@ -1,4 +1,4 @@
-import { Anchor, Button, Page, PageContent, PageHeader } from 'grommet';
+import { Page, PageContent, PageHeader } from 'grommet';
 import { MinimalFolder } from '../../types';
 import { FolderLink } from './FolderLink';
 

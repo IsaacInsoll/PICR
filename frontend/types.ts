@@ -7,4 +7,6 @@ export interface MinimalFolder {
 export interface MinimalFile {
   id: string;
   name?: string;
+  fileHash?: string;
+  imageRatio?: number | null;
 }

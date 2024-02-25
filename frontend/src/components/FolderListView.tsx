@@ -1,5 +1,5 @@
 import { MinimalFolder } from '../../types';
-import { Page, PageContent, Box, List, Menu } from 'grommet';
+import { List, Menu, Page, PageContent } from 'grommet';
 import { Folder as FolderIcon } from 'grommet-icons';
 
 interface FolderListViewProps {

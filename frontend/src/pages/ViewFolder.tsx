@@ -33,7 +33,7 @@ const ViewFolderBody = ({
   folderId: string;
   setFolder: (folder: MinimalFolder) => void;
 }) => {
-  const [data, requery] = useQuery({
+  const [data] = useQuery({
     query: viewFolderQuery,
     variables: { folderId },
   });
