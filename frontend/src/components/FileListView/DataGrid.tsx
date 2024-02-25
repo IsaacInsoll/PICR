@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Box, ColumnConfig, DataTable, SortType, Text } from 'grommet';
 import { MinimalFile } from '../../../types';
-import { FileListViewProps } from './FileListView';
+import { FileListViewStyleComponentProps } from './FileListView';
 
-export const DataGrid = ({ files }: FileListViewProps) => {
+export const DataGrid = ({ files }: FileListViewStyleComponentProps) => {
   const [sort, setSort] = useState<SortType>({
     property: 'name',
     direction: 'asc',

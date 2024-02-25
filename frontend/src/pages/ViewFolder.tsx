@@ -45,7 +45,7 @@ const ViewFolderBody = ({
       {folder?.subFolders?.length > 0 ? (
         <FolderListView folders={folder?.subFolders} onClick={setFolder} />
       ) : null}
-      {folder.files.length > 0 ? <FileListView files={folder.files} /> : null}
+      {folder.files?.length > 0 ? <FileListView files={folder.files} /> : null}
     </>
   );
 };

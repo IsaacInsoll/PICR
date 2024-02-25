@@ -1,7 +1,9 @@
 import { List, Page, PageContent } from 'grommet';
-import { FileListViewProps } from './FileListView';
+import { FileListViewStyleComponentProps } from './FileListView';
 
-export const BoringFileListView = ({ files }: FileListViewProps) => {
+export const BoringFileListView = ({
+  files,
+}: FileListViewStyleComponentProps) => {
   return (
     <Page>
       <PageContent>

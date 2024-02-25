@@ -2,14 +2,14 @@ import sharp, { ResizeOptions } from 'sharp';
 import { fullPath, relativePath } from '../filesystem/fileManager';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'path';
-import {
-  AllSize,
-  thumbnailDimensions,
-  ThumbnailSize,
-  thumbnailSizes,
-} from './thumbnailSizes';
 import fs from 'fs';
 import { File } from '../models/file';
+import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions';
+import {
+  AllSize,
+  ThumbnailSize,
+  thumbnailSizes,
+} from '../../frontend/src/helpers/thumbnailSize';
 
 const thumbnailPath = (filePath: string, size: ThumbnailSize) => {
   return process.cwd() + `/data/thumbs/${size}/${relativePath(filePath)}`;

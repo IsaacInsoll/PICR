@@ -37,3 +37,8 @@ When we have a docker image this is the two folders you want to mount
 | dist     | *Compiled* Node Server Source                          |
 | frontend | React frontend source                                  |
 | public   | *Compiled* React front end and any other static assets |
+
+
+### Issues
+> TODO: log these as proper issues or just fix them (once we have a repo)
+- if you delete images while server down, it won't pick that up when restarted (it just adds new images)
