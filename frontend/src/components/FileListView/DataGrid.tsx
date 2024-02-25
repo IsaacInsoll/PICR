@@ -23,5 +23,4 @@ export const DataGrid = ({ files }: FileListViewProps) => {
 };
 const dataTableColumnConfig: ColumnConfig<MinimalFile>[] = [
   { property: 'name', header: <Text>Name</Text> },
-  { property: 'imageRatio', header: <Text>Ratio</Text> },
 ];
