@@ -21,6 +21,7 @@ export const schema = buildSchema(/*GraphQL */ `
         id: ID!
         name: String!
         folderId: ID!
+        imageRatio: Float
     }
 
 `);

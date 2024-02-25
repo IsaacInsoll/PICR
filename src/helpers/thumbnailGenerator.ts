@@ -8,6 +8,7 @@ import {
   thumbnailSizes,
 } from './thumbnailSizes';
 import fs from 'fs';
+import { metadata } from 'reflect-metadata/no-conflict';
 
 const thumbnailPath = (filePath: string, size: ThumbnailSize) => {
   return process.cwd() + `/data/thumbs/${size}/${relativePath(filePath)}`;
@@ -46,6 +47,12 @@ export const generateThumbnail = (filePath: string, size: ThumbnailSize) => {
       console.log('sharp error');
       console.log(err);
     });
+};
+
+export const getImageRatio = async (filePath: string) => {
+  const image = sharp(filePath);
+  const { width, height } = await image.metadata();
+  return height > 0 ? width / height : 0;
 };
 
 const sharpOpts: ResizeOptions = {

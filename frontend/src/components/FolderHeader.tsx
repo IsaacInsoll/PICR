@@ -1,4 +1,4 @@
-import { Anchor, Button, Page, PageHeader } from 'grommet';
+import { Anchor, Button, Page, PageContent, PageHeader } from 'grommet';
 import { MinimalFolder } from '../../types';
 import { FolderLink } from './FolderLink';
 
@@ -11,16 +11,18 @@ export const FolderHeader = ({
 }) => {
   return (
     <Page>
-      <PageHeader
-        title={folder.name ?? '(Unnamed Folder)'}
-        subtitle={subtitle}
-        parent={
-          folder.parentId ? (
-            <FolderLink folderId={folder.parentId} />
-          ) : undefined
-        }
-        // actions={<Button label="Edit" primary />}
-      />
+      <PageContent>
+        <PageHeader
+          title={folder.name ?? '(Unnamed Folder)'}
+          subtitle={subtitle}
+          parent={
+            folder.parentId ? (
+              <FolderLink folderId={folder.parentId} />
+            ) : undefined
+          }
+          // actions={<Button label="Edit" primary />}
+        />
+      </PageContent>
     </Page>
   );
 };

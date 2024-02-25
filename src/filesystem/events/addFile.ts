@@ -7,6 +7,7 @@ import { fileHash } from '../fileHash';
 import {
   deleteAllThumbs,
   generateAllThumbs,
+  getImageRatio,
 } from '../../helpers/thumbnailGenerator';
 
 export const addFile = async (filePath: string) => {
@@ -36,6 +37,7 @@ export const addFile = async (filePath: string) => {
     console.log((created ? 'New File: ' : 'Hash Mismatch for: ') + filePath);
     deleteAllThumbs(filePath);
     file.fileHash = hash;
+    file.imageRatio = await getImageRatio(filePath);
     file.save();
   }
   // console.log(file);

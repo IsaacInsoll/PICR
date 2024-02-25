@@ -2,7 +2,7 @@ import { createHandler } from 'graphql-http/lib/use/express';
 import { Folder } from '../models/folder';
 import { File } from '../models/file';
 import { authenticateToken } from '../auth/auth';
-import { schema } from '../schema';
+import { schema } from './schema';
 import { authMutation } from './authMutation';
 
 export const gqlserver = createHandler({

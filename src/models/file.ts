@@ -10,6 +10,9 @@ export class File extends Model {
   @Column
   declare relativePath: string;
 
+  @Column
+  declare imageRatio: number; // width / height
+
   @ForeignKey(() => Folder)
   @Column
   folderId: number;
