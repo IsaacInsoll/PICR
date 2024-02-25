@@ -3,6 +3,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Folder } from './models/folder';
 import { File } from './models/file';
 import { Transaction } from 'sequelize';
+import { User } from './models/user';
 
 config(); // read .ENV
 
@@ -18,6 +19,6 @@ export const sequelize = new Sequelize({
     idle: 20000,
   },
   transactionType: Transaction.TYPES.IMMEDIATE,
-  models: [Folder, File],
+  models: [Folder, File, User],
   // models: [__dirname + '/models']
 });

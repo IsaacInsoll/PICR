@@ -1,6 +1,7 @@
-import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
 
-export const authKeyAtom = atom('');
+export const authKeyAtom = atomWithStorage('authKey', '');
 
 export const useIsLoggedIn = () => {
   const token = useAtomValue(authKeyAtom);
