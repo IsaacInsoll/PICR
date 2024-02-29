@@ -1,7 +1,10 @@
 import { useQuery } from 'urql';
 import { Suspense } from 'react';
-import { LoadingIndicator } from '../components/LoadingIndicator';
-import { FolderHeader } from '../components/FolderHeader';
+import {
+  FolderHeader,
+  PlaceholderFolderHeader,
+  placeholderFolderName,
+} from '../components/FolderHeader';
 import { MinimalFolder } from '../../types';
 import { folderSubtitle } from '../helpers/folderSubtitle';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -9,21 +12,30 @@ import { viewFolderQuery } from '../helpers/viewFolderQuery';
 import { FolderListView } from '../components/FolderListView';
 import { FileListView } from '../components/FileListView/FileListView';
 import QueryFeedback from '../components/QueryFeedback';
+import { useSetAtom } from 'jotai/index';
 
 // You can't navigate above rootFolderId (IE: if viewing a shared link you can't get to parents of that)
 export const ViewFolder = ({ rootFolderId }: { rootFolderId: string }) => {
   const navigate = useNavigate();
   let { folderId } = useParams();
+  const setPlaceholderFolder = useSetAtom(placeholderFolderName);
   // const [folderId, setFolderId] = useState(rootFolderId);
+  console.log('ViewFolder with ', folderId);
+  const handleSetFolder = (f: MinimalFolder) => {
+    setPlaceholderFolder(f?.name);
+    navigate('./../' + f.id);
+  };
 
   return (
-    <Suspense fallback={<LoadingIndicator />}>
-      <ViewFolderBody
-        key={folderId ?? '1'}
-        folderId={folderId ?? '1'}
-        setFolder={(f) => navigate('./../' + f.id)}
-      />
-    </Suspense>
+    <>
+      <Suspense fallback={<PlaceholderFolderHeader />}>
+        <ViewFolderBody
+          key={folderId ?? '1'}
+          folderId={folderId ?? '1'}
+          setFolder={handleSetFolder}
+        />
+      </Suspense>
+    </>
   );
 };
 
@@ -45,15 +57,10 @@ const ViewFolderBody = ({
       {!folder ? (
         <h1>Folder Not Found</h1>
       ) : (
-        //     not sure why we can see this when loading, whole component should be suspended?
         <>
           <FolderHeader folder={folder} subtitle={folderSubtitle(folder)} />
-          {folder?.subFolders?.length > 0 ? (
-            <FolderListView folders={folder?.subFolders} onClick={setFolder} />
-          ) : null}
-          {folder.files?.length > 0 ? (
-            <FileListView files={folder.files} />
-          ) : null}
+          <FolderListView folders={folder?.subFolders} onClick={setFolder} />
+          <FileListView files={folder.files} />
         </>
       )}
     </>

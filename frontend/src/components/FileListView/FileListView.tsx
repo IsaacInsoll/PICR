@@ -19,6 +19,7 @@ export const FileListView = ({ files }: FileListViewProps) => {
   const view = useSelectedView();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const props = { files, selectedIds, setSelectedIds };
+  if (!files || files.length === 0) return undefined;
   return (
     <>
       <ViewSelector />

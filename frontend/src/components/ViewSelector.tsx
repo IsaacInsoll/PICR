@@ -1,4 +1,4 @@
-import { Box, Button } from 'grommet';
+import { Box, Button, Page, PageContent } from 'grommet';
 import { Gallery as GalleryIcon, List as ListIcon } from 'grommet-icons';
 import { AppsRounded } from 'grommet-icons/icons';
 import { atomWithStorage } from 'jotai/utils';
@@ -14,16 +14,20 @@ const selectedViewAtom = atomWithStorage<SelectedView>(
 export const ViewSelector = () => {
   const [view, setView] = useAtom(selectedViewAtom);
   return (
-    <Box direction="row">
-      {viewOptions.map(({ name, icon, label }) => (
-        <Button
-          icon={icon}
-          // label={label}
-          {...{ primary: name === view }}
-          onClick={() => setView(name)}
-        />
-      ))}
-    </Box>
+    <Page>
+      <PageContent>
+        <Box direction="row">
+          {viewOptions.map(({ name, icon, label }) => (
+            <Button
+              icon={icon}
+              // label={label}
+              {...{ primary: name === view }}
+              onClick={() => setView(name)}
+            />
+          ))}
+        </Box>
+      </PageContent>
+    </Page>
   );
 };
 

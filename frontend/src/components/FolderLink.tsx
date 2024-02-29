@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 
 export const FolderLink = ({ folderId }: { folderId?: string }) => {
   const navigate = useNavigate();
-  console.log('<FolderLink> for ', folderId);
   const [data] = useQuery({
     query: viewMinimumFolderQuery,
     variables: { folderId: folderId ?? '0' },

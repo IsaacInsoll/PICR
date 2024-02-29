@@ -7,6 +7,7 @@ interface FolderListViewProps {
 }
 
 export const FolderListView = ({ folders, onClick }: FolderListViewProps) => {
+  if (!folders || folders.length === 0) return undefined;
   return (
     <Page>
       <PageContent>

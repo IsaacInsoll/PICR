@@ -1,9 +1,10 @@
-import { Client, cacheExchange, fetchExchange } from 'urql';
+import { Client, fetchExchange } from 'urql';
+import { cacheExchange } from '@urql/exchange-graphcache';
 
 export const createClient = (authToken: string) =>
   new Client({
     url: '/graphql',
-    exchanges: [cacheExchange, fetchExchange],
+    exchanges: [cacheExchange({}), fetchExchange],
     fetchOptions: () => {
       return {
         headers: {
