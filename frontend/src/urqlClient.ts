@@ -4,6 +4,7 @@ import { cacheExchange } from '@urql/exchange-graphcache';
 export const createClient = (authToken: string) =>
   new Client({
     url: '/graphql',
+    suspense: true,
     exchanges: [cacheExchange({}), fetchExchange],
     fetchOptions: () => {
       return {
