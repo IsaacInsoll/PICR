@@ -28,3 +28,5 @@ export const FileListView = ({ files }: FileListViewProps) => {
     </>
   );
 };
+
+//perhaps option 3 should be full width single images sorta like an instagram feed

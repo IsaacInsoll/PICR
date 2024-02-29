@@ -1,6 +1,7 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { config } from 'dotenv';
 import { GraphQLError } from 'graphql/error';
+import { type } from 'node:os';
 
 config(); // get config vars
 export function generateAccessToken(obj) {
@@ -17,7 +18,7 @@ export function authenticateToken(context) {
   const secret = process.env.TOKEN_SECRET as string;
 
   try {
-    const decoded = jwt.verify(token, secret);
+    const decoded = jwt.verify(token, secret) as CustomJwtPayload;
     console.log('Identified as User ' + decoded.userId);
     return decoded.userId;
   } catch (error) {
@@ -28,3 +29,5 @@ export function authenticateToken(context) {
 export const doAuthError = (str: string | undefined) => {
   throw new GraphQLError('AUTH' + (str ? `: ${str}` : ''));
 };
+
+type CustomJwtPayload = JwtPayload & { userId?: string };

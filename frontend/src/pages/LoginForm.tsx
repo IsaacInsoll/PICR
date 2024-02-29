@@ -67,3 +67,8 @@ const loginMutation = gql(/* GraphQL */ `
     auth(user: $username, password: $password)
   }
 `);
+
+export const LogoutButton = () => {
+  const set = useSetAtom(authKeyAtom);
+  return <Button onClick={() => set('')}>Log out</Button>;
+};

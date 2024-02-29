@@ -42,3 +42,16 @@ When we have a docker image this is the two folders you want to mount
 ### Issues
 > TODO: log these as proper issues or just fix them (once we have a repo)
 - if you delete images while server down, it won't pick that up when restarted (it just adds new images)
+- test with large image collection: may crash due to 'promise stack'?
+
+### TODO
+- public facing URLs that don't require login (separate db table) with management tools for that
+- logging of 'views' of each image/folder for stats
+- star ratings + thumbs up/down + leave comments, with ability to filter/sort/export that data
+- download whole folder, individual image, or selected images
+- add support for managing users and maybe reporting on file sizes / usage
+- branding: upload logo, ability to have multiple 'brands' with certain folders overruling (EG: family portraits and fitness brands)
+- email notifications (EG: client opened folder, left feedback etc)
+- dockerize and test on synology
+- automate build process as much as possible
+- publish on github

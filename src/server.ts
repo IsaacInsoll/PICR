@@ -1,4 +1,4 @@
-import express, { request } from 'express';
+import express, { Request } from 'express';
 import { sequelize } from './database';
 import pkg from '../package.json';
 import { fileWatcher } from './filesystem/fileWatcher';
@@ -6,15 +6,12 @@ import { config } from 'dotenv';
 import { gqlserver } from './graphql/gql';
 import { logger } from './logger';
 import { randomBytes } from 'node:crypto';
-import { generateAccessToken } from './auth/auth';
 import path from 'path';
 import { User } from './models/user';
-import { Folder } from './models/folder';
 import { File } from './models/file';
 import { hashPassword } from './helpers/hashPassword';
-import { fullPath } from './filesystem/fileManager';
-import { allSizes } from './helpers/thumbnailSizes';
 import { fullPathFor } from './helpers/thumbnailGenerator';
+import { AllSize, allSizes } from '../frontend/src/helpers/thumbnailSize';
 
 const envPassword = async () => {
   const password = process.env.ADMIN_PASSWORD;
@@ -59,13 +56,16 @@ const server = async () => {
   e.all('/graphql', gqlserver);
   e.use(express.static('public'));
 
-  e.get('/image/:id/:size/:hash', async (req, res) => {
-    const { id, size, hash } = req.params;
-    const file = await File.findOne({ where: { id, fileHash: hash } });
-    if (!file) res.sendStatus(404);
-    if (!allSizes.includes(size)) res.sendStatus(400);
-    res.sendFile(fullPathFor(file, size));
-  });
+  e.get(
+    '/image/:id/:size/:hash',
+    async (req: Request<{ id: string; size: AllSize; hash: string }>, res) => {
+      const { id, size, hash } = req.params;
+      const file = await File.findOne({ where: { id, fileHash: hash } });
+      if (!file) res.sendStatus(404);
+      if (!allSizes.includes(size)) res.sendStatus(400);
+      res.sendFile(fullPathFor(file, size));
+    },
+  );
 
   e.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../public/index.html'));
