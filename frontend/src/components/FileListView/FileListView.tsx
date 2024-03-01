@@ -1,9 +1,9 @@
 import { MinimalFile } from '../../../types';
 import { useSelectedView, ViewSelector } from '../ViewSelector';
 import { GridGallery } from './GridGallery';
-import { BoringFileListView } from './BoringFileListView';
 import { DataGrid } from './DataGrid';
 import { useState } from 'react';
+import { ImageFeed } from './ImageFeed';
 
 export interface FileListViewProps {
   files: MinimalFile[];
@@ -25,7 +25,7 @@ export const FileListView = ({ files }: FileListViewProps) => {
       <ViewSelector />
       {view === 'list' ? <DataGrid {...props} /> : null}
       {view === 'gallery' ? <GridGallery {...props} /> : null}
-      {view === 'slideshow' ? <BoringFileListView {...props} /> : null}
+      {view === 'slideshow' ? <ImageFeed {...props} /> : null}
     </>
   );
 };

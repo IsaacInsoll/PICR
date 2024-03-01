@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { ViewFolderBody } from './ViewFolder';
-import { PlaceholderFolderHeader } from '../components/FolderHeader';
+import { PlaceholderFolderHeader } from '../components/FolderHeader/FolderHeader';
 import { Suspense } from 'react';
 
 export const ViewPublicFolder = () => {

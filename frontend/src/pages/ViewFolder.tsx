@@ -1,10 +1,9 @@
 import { useQuery } from 'urql';
-import { Suspense, useMemo } from 'react';
+import { Suspense } from 'react';
 import {
   FolderHeader,
   PlaceholderFolderHeader,
-  placeholderFolderName,
-} from '../components/FolderHeader';
+} from '../components/FolderHeader/FolderHeader';
 import { MinimalFolder } from '../../types';
 import { folderSubtitle } from '../helpers/folderSubtitle';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -13,6 +12,8 @@ import { FolderListView } from '../components/FolderListView';
 import { FileListView } from '../components/FileListView/FileListView';
 import QueryFeedback from '../components/QueryFeedback';
 import { useSetAtom } from 'jotai/index';
+import { placeholderFolderName } from '../components/FolderHeader/PlaceholderFolderName';
+import { Button } from 'grommet';
 
 // You can't navigate above rootFolderId (IE: if viewing a shared link you can't get to parents of that)
 export const ViewFolder = ({ rootFolderId }: { rootFolderId: string }) => {
@@ -58,6 +59,10 @@ export const ViewFolderBody = ({
     // context: headers,
   });
   const folder = data.data?.folder;
+  const actions =
+    folder?.permissions === 'Admin' ? (
+      <Button primary label="Manage" />
+    ) : undefined;
   return (
     <>
       <QueryFeedback result={data} reQuery={reQuery} />
@@ -65,7 +70,11 @@ export const ViewFolderBody = ({
         <h1>Folder Not Found</h1>
       ) : (
         <>
-          <FolderHeader folder={folder} subtitle={folderSubtitle(folder)} />
+          <FolderHeader
+            folder={folder}
+            subtitle={folderSubtitle(folder)}
+            actions={actions}
+          />
           <FolderListView folders={folder?.subFolders} onClick={setFolder} />
           <FileListView files={folder.files} />
         </>

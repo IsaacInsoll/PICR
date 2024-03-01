@@ -22,7 +22,7 @@ export default function QueryFeedback({ result, reQuery }: QueryFeedbackProps) {
       {error && (
         <Notification
           status="critical"
-          message={error.toString()}
+          message={error.toString().replace('[GraphQL] ', '')}
           // onClose={() => setShowGlobalNotification(false)}
           actions={[
             { onClick: reQuery, label: 'Retry' },
