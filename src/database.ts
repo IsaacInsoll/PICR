@@ -4,7 +4,6 @@ import { Transaction } from 'sequelize';
 
 config(); // read .ENV
 
-console.log(__dirname + '/models');
 export const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: process.cwd() + '/data/db.sqlite',

@@ -1,5 +1,5 @@
 import { useQuery } from 'urql';
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import {
   FolderHeader,
   PlaceholderFolderHeader,
@@ -39,16 +39,23 @@ export const ViewFolder = ({ rootFolderId }: { rootFolderId: string }) => {
   );
 };
 
-const ViewFolderBody = ({
+export const ViewFolderBody = ({
   folderId,
   setFolder,
+  uuid,
 }: {
   folderId: string;
   setFolder: (folder: MinimalFolder) => void;
+  uuid?: string;
 }) => {
+  // const headers = useMemo(() => {
+  //   return uuid ? { fetchOptions: { headers: { uuid } } } : undefined;
+  // }, [uuid]);
+
   const [data, reQuery] = useQuery({
     query: viewFolderQuery,
     variables: { folderId },
+    // context: headers,
   });
   const folder = data.data?.folder;
   return (
