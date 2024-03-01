@@ -1,4 +1,4 @@
-import { grommet, Grommet } from 'grommet';
+import { grommet, Grommet, ThemeType } from 'grommet';
 import { createClient } from './urqlClient';
 import { Provider } from 'urql';
 import { BrowserRouter } from 'react-router-dom';
@@ -15,7 +15,7 @@ const App = () => {
   return (
     <Provider value={client}>
       <BrowserRouter>
-        <Grommet theme={grommet}>
+        <Grommet theme={theme}>
           <Router loggedIn={loggedIn} />
         </Grommet>
       </BrowserRouter>
@@ -24,3 +24,8 @@ const App = () => {
 };
 
 export default App;
+
+const theme: ThemeType = {
+  ...grommet,
+  pageHeader: { pad: { top: 'small' } },
+};
