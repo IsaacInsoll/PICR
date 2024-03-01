@@ -16,11 +16,11 @@ export const gqlserver = createHandler({
   rootValue: {
     folder: async (params, context) => {
       const perms = await contextPermissionsForFolder(context, params.id);
-      console.log(perms);
       RejectIfNoPermissions(perms);
       const data = await getFolder(params.id);
       data.subFolders = await subFolders(params.id);
       data.files = await subFiles(params.id);
+      data.permissions = perms;
       return data;
     },
     auth: authMutation,

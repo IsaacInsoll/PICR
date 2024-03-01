@@ -1,4 +1,4 @@
-import { gql } from './gql';
+import { gql } from '../helpers/gql';
 
 export const viewFolderQuery = gql(/*GraphQL*/ `
     query ViewFolder($folderId: ID!) {
@@ -6,6 +6,7 @@ export const viewFolderQuery = gql(/*GraphQL*/ `
             id
             name
             parentId
+            permissions
             files {
                 id
                 name

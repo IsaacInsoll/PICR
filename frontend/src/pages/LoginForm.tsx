@@ -1,10 +1,10 @@
-import { Box, FormField, Heading, TextInput, Button, Keyboard } from 'grommet';
+import { Box, Button, FormField, Heading, Keyboard, TextInput } from 'grommet';
 import { useState } from 'react';
-import { gql } from '../helpers/gql';
 import { useMutation } from 'urql';
 import { useNavigate } from 'react-router-dom';
 import { useSetAtom } from 'jotai/index';
 import { authKeyAtom, useIsLoggedIn } from '../atoms/authAtom';
+import { loginMutation } from '../queries/LoginMutation';
 
 export const LoginForm = () => {
   const loggedIn = useIsLoggedIn();
@@ -61,12 +61,6 @@ export const LoginForm = () => {
     </Box>
   );
 };
-
-const loginMutation = gql(/* GraphQL */ `
-  mutation login($username: String!, $password: String!) {
-    auth(user: $username, password: $password)
-  }
-`);
 
 export const LogoutButton = () => {
   const set = useSetAtom(authKeyAtom);

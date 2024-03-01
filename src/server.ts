@@ -14,7 +14,7 @@ import { fullPathFor } from './helpers/thumbnailGenerator';
 import { AllSize, allSizes } from '../frontend/src/helpers/thumbnailSize';
 
 const envPassword = async () => {
-  const password = process.env.ADMIN_PASSWORD;
+  // const password = process.env.ADMIN_PASSWORD;
   const totalUsers = await User.count();
   // if (totalUsers == 0 && !password) {
   //   console.log(

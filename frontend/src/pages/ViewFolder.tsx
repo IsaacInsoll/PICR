@@ -8,7 +8,7 @@ import {
 import { MinimalFolder } from '../../types';
 import { folderSubtitle } from '../helpers/folderSubtitle';
 import { useNavigate, useParams } from 'react-router-dom';
-import { viewFolderQuery } from '../helpers/viewFolderQuery';
+import { viewFolderQuery } from '../queries/viewFolderQuery';
 import { FolderListView } from '../components/FolderListView';
 import { FileListView } from '../components/FileListView/FileListView';
 import QueryFeedback from '../components/QueryFeedback';

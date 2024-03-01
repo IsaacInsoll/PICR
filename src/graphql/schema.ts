@@ -15,6 +15,7 @@ export const schema = buildSchema(/*GraphQL */ `
         parentId: ID
         subFolders: [Folder!]!
         files: [File!]!
+        permissions: FolderPermissions
     }
 
     type File {
@@ -23,6 +24,12 @@ export const schema = buildSchema(/*GraphQL */ `
         folderId: ID!
         imageRatio: Float
         fileHash: String!
+    }
+    
+    enum FolderPermissions {
+        View
+        Admin
+        None
     }
 
 `);
