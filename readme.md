@@ -16,10 +16,11 @@ Self-hosted online image sharing tool for photographers to share photos with cli
 For development, just make these folders.
 When we have a docker image this is the two folders you want to mount
 
-| Folder | Description                                                                             |
-|--------|-----------------------------------------------------------------------------------------|
-| data   | mount point for all PICR storage (IE: database, thumbnails), can be empty when starting |
-| media  | mount point containing folders of images, this is why we are here!!                     |
+| Folder | Description                                                                |
+|--------|----------------------------------------------------------------------------|
+| data   | database (you should back this up!)                                        |
+| media  | mount point containing folders of images, only need read access            |
+| cache  | thumbnails, zip files built from your media (will be recreated if deleted) |
 
 
 ## Development

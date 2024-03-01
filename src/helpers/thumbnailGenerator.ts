@@ -12,7 +12,7 @@ import {
 } from '../../frontend/src/helpers/thumbnailSize';
 
 const thumbnailPath = (filePath: string, size: ThumbnailSize) => {
-  return process.cwd() + `/data/thumbs/${size}/${relativePath(filePath)}`;
+  return process.cwd() + `/cache/thumbs/${size}/${relativePath(filePath)}`;
 };
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file

@@ -135,3 +135,4 @@ media/*
 .idea/
 /data/
 /public/
+/cache/
