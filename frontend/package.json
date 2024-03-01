@@ -64,5 +64,6 @@
     "@graphql-codegen/client-preset": "4.2.4",
     "@graphql-codegen/introspection": "^4.0.3",
     "@types/react-helmet": "^6.1.11"
-  }
+  },
+  "proxy": "http://localhost:6900/"
 }
