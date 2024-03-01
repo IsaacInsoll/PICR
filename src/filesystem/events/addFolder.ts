@@ -1,5 +1,5 @@
 import { folderList, pathSplit, relativePath } from '../fileManager';
-import { Folder } from '../../models/folder';
+import Folder from '../../models/Folder';
 import { updateFolderHash } from './updateFolderHash';
 import { logger } from '../../logger';
 

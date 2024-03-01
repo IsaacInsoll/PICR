@@ -1,8 +1,8 @@
 import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
-import { Folder } from './folder';
+import Folder from './Folder';
 
 @Table
-export class File extends Model {
+export default class File extends Model {
   @Column
   declare name: string;
   @Column

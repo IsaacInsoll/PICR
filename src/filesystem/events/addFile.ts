@@ -1,7 +1,7 @@
 import { basename, dirname, extname } from 'path';
 import { folderList, relativePath } from '../fileManager';
 import { addFolder } from './addFolder';
-import { File } from '../../models/file';
+import File from '../../models/File';
 import { logger } from '../../logger';
 import { fileHash } from '../fileHash';
 import {

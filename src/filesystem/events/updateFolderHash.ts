@@ -1,5 +1,5 @@
 // We can't detect folder renames, so lets compare hash of folder contents to work out if it's a rename?
-import { Folder } from '../../models/folder';
+import Folder from '../../models/Folder';
 import { readdirSync } from 'node:fs';
 import { fullPath } from '../fileManager';
 import crypto from 'crypto';

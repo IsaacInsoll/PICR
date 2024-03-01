@@ -3,7 +3,7 @@ import { fullPath, relativePath } from '../filesystem/fileManager';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'path';
 import fs from 'fs';
-import { File } from '../models/file';
+import File from '../models/File';
 import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions';
 import {
   AllSize,

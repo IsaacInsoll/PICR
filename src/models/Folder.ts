@@ -6,10 +6,10 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import { File } from './file';
+import File from './File';
 
 @Table
-export class Folder extends Model {
+export default class Folder extends Model {
   @Column
   declare name: string;
   @Column

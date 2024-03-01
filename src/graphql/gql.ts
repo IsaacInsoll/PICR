@@ -1,6 +1,6 @@
 import { createHandler } from 'graphql-http/lib/use/express';
-import { Folder } from '../models/folder';
-import { File } from '../models/file';
+import Folder from '../models/Folder';
+import File from '../models/File';
 import { authenticateToken } from '../auth/auth';
 import { schema } from './schema';
 import { authMutation } from './authMutation';

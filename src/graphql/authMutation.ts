@@ -1,4 +1,4 @@
-import { User } from '../models/user';
+import User from '../models/User';
 import { hashPassword } from '../helpers/hashPassword';
 import { generateAccessToken } from '../auth/auth';
 

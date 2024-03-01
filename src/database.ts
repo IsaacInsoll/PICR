@@ -1,12 +1,10 @@
 import { config } from 'dotenv';
 import { Sequelize } from 'sequelize-typescript';
-import { Folder } from './models/folder';
-import { File } from './models/file';
 import { Transaction } from 'sequelize';
-import { User } from './models/user';
 
 config(); // read .ENV
 
+console.log(__dirname + '/models');
 export const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: process.cwd() + '/data/db.sqlite',
@@ -19,6 +17,6 @@ export const sequelize = new Sequelize({
     idle: 20000,
   },
   transactionType: Transaction.TYPES.IMMEDIATE,
-  models: [Folder, File, User],
-  // models: [__dirname + '/models']
+  // models: [Folder, File, User],
+  models: [__dirname + '/models'],
 });
