@@ -3,7 +3,7 @@ import { sequelize } from './database';
 import pkg from '../package.json';
 import { fileWatcher } from './filesystem/fileWatcher';
 import { config } from 'dotenv';
-import { gqlserver } from './graphql/gql';
+import { gqlserver } from './graphql/resolvers';
 import { logger } from './logger';
 import { randomBytes } from 'node:crypto';
 import path from 'path';
@@ -25,7 +25,7 @@ const envPassword = async () => {
   if (totalUsers == 0) {
     const admin = User.create({
       username: 'admin',
-      hashedPassword: hashPassword('password'),
+      hashedPassword: hashPassword('picr1234'),
     });
     console.log(
       '🔐 No users found so "admin" user created with password "password"',

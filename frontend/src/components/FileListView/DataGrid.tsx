@@ -3,7 +3,10 @@ import { Box, ColumnConfig, DataTable, SortType, Text } from 'grommet';
 import { MinimalFile } from '../../../types';
 import { FileListViewStyleComponentProps } from './FileListView';
 
-export const DataGrid = ({ files }: FileListViewStyleComponentProps) => {
+export const DataGrid = ({
+  files,
+  setSelectedFileId,
+}: FileListViewStyleComponentProps) => {
   const [sort, setSort] = useState<SortType>({
     property: 'name',
     direction: 'asc',
@@ -17,6 +20,7 @@ export const DataGrid = ({ files }: FileListViewStyleComponentProps) => {
         sort={sort}
         onSort={setSort}
         resizeable
+        onClickRow={({ datum }) => setSelectedFileId(datum.id)}
       />
     </Box>
   );

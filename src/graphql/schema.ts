@@ -2,8 +2,8 @@ import { buildSchema } from 'graphql/index';
 
 export const schema = buildSchema(/*GraphQL */ `
     type Query {
-        folders(parentId: ID): [Folder!]!
         folder(id: ID!): Folder!
+        file(id: ID!): File!
     }
 
     type Mutation {

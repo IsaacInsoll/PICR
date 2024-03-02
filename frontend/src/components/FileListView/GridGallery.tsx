@@ -4,20 +4,16 @@ import { imageURL } from '../../helpers/imageURL';
 import { Gallery } from 'react-grid-gallery';
 import { FileListViewStyleComponentProps } from './FileListView';
 import React from 'react';
-import Lightbox from 'yet-another-react-lightbox';
 import { MinimalFile } from '../../../types';
 import 'yet-another-react-lightbox/styles.css';
 
 export const GridGallery = ({
   files,
-  selectedIds,
-  setSelectedIds,
+  setSelectedFileId,
 }: FileListViewStyleComponentProps) => {
-  const selectedImage = selectedIds?.[0];
-  const selectedImageIndex = files.findIndex(({ id }) => id === selectedImage);
-  console.log(selectedImageIndex);
-
-  const handleClick = (index: number) => setSelectedIds([files[index].id]);
+  const handleClick = (index: number) => {
+    setSelectedFileId(files[index].id);
+  };
 
   return (
     <>
@@ -25,12 +21,6 @@ export const GridGallery = ({
         images={filesForGallery(files)}
         onClick={handleClick}
         enableImageSelection={false}
-      />
-      <Lightbox
-        slides={filesForLightbox(files)}
-        open={!!selectedImage}
-        index={selectedImageIndex}
-        close={() => setSelectedIds([])}
       />
     </>
   );
@@ -44,8 +34,4 @@ const filesForGallery = (files: MinimalFile[]) => {
     height: size / (file.imageRatio ?? 1),
     //alt,tags,isSelected,caption,
   }));
-};
-
-const filesForLightbox = (files: MinimalFile[]) => {
-  return files.map((file) => ({ src: imageURL(file, 'lg') }));
 };

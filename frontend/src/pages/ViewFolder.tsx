@@ -15,10 +15,9 @@ import { useSetAtom } from 'jotai/index';
 import { placeholderFolderName } from '../components/FolderHeader/PlaceholderFolderName';
 import { Button } from 'grommet';
 
-// You can't navigate above rootFolderId (IE: if viewing a shared link you can't get to parents of that)
-export const ViewFolder = ({ rootFolderId }: { rootFolderId: string }) => {
+export const ViewFolder = () => {
   const navigate = useNavigate();
-  let { folderId } = useParams();
+  let { folderId, fileId } = useParams();
   const setPlaceholderFolder = useSetAtom(placeholderFolderName);
   // const [folderId, setFolderId] = useState(rootFolderId);
   console.log('ViewFolder with ', folderId);
@@ -33,6 +32,7 @@ export const ViewFolder = ({ rootFolderId }: { rootFolderId: string }) => {
         <ViewFolderBody
           key={folderId ?? '1'}
           folderId={folderId ?? '1'}
+          fileId={fileId}
           setFolder={handleSetFolder}
         />
       </Suspense>
@@ -42,12 +42,12 @@ export const ViewFolder = ({ rootFolderId }: { rootFolderId: string }) => {
 
 export const ViewFolderBody = ({
   folderId,
+  fileId,
   setFolder,
-  uuid,
 }: {
   folderId: string;
   setFolder: (folder: MinimalFolder) => void;
-  uuid?: string;
+  fileId?: string;
 }) => {
   // const headers = useMemo(() => {
   //   return uuid ? { fetchOptions: { headers: { uuid } } } : undefined;

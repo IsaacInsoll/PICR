@@ -12,6 +12,9 @@ export const viewFolderQuery = gql(/*GraphQL*/ `
                 name
                 imageRatio
                 fileHash
+                metadata {
+                    ...MetadataFragment
+                }
             }
             subFolders {
                 id
@@ -27,6 +30,38 @@ export const viewMinimumFolderQuery = gql(/*GraphQL*/ `
             id
             name
             parentId
+        }
+    }
+`);
+
+export const metadataFragment = gql(/* GraphQL */ `
+  fragment MetadataFragment on MetadataSummary {
+    Camera
+    Lens
+    Artist
+    DateTimeOriginal
+    DateTimeEdit
+    Aperture
+    ExposureTime
+    ISO
+  }
+`);
+export const fileFragment = gql(/* GraphQL */ `
+  fragment FileFragment on File {
+    id
+    name
+    imageRatio
+    fileHash
+  }
+`);
+
+export const viewFileQuery = gql(/*GraphQL*/ `
+    query ViewFile($fileId: ID!) {
+        file(id:$fileId) {
+                ...FileFragment
+                metadata {
+                    ...MetadataFragment
+                }
         }
     }
 `);

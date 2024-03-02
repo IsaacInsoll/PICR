@@ -15,21 +15,30 @@ export const gqlserver = createHandler({
   },
   rootValue: {
     folder: async (params, context) => {
-      const perms = await contextPermissionsForFolder(context, params.id);
-      RejectIfNoPermissions(perms);
+      const permissions = await contextPermissionsForFolder(context, params.id);
+      RejectIfNoPermissions(permissions);
       const data = await getFolder(params.id);
-      data.subFolders = await subFolders(params.id);
-      data.files = await subFiles(params.id);
-      data.permissions = perms;
-      return data;
+      return { ...data, permissions };
+    },
+    file: async (params, context) => {
+      const file = await File.findByPk(params.id);
+      const permissions = await contextPermissionsForFolder(
+        context,
+        file.folderId,
+      );
+      RejectIfNoPermissions(permissions);
+      return fileToJSON(file);
     },
     auth: authMutation,
   },
 });
 
 const getFolder = async (id: string) => {
-  const folder = await Folder.findOne({ where: { id: id } });
-  return folder.toJSON();
+  const folder = await Folder.findByPk(id);
+  const data = folder.toJSON();
+  data.subFolders = await subFolders(id);
+  data.files = await subFiles(id);
+  return data;
 };
 
 const subFolders = async (parentId: string) => {
@@ -41,6 +50,10 @@ const subFiles = async (folderId: string) => {
   const files = await File.findAll({ where: { folderId } });
   return files.map((f) => {
     // this was just f.toJSON but all metadata is a single field in the DB currently coz it's 'modular' not 'dodgy'
-    return { ...f.toJSON(), metadata: JSON.parse(f.metadata) };
+    return fileToJSON(f);
   });
+};
+
+const fileToJSON = (f: File) => {
+  return { ...f.toJSON(), metadata: JSON.parse(f.metadata) };
 };

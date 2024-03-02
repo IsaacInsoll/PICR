@@ -1,22 +1,21 @@
-import { Box, Grid, Heading, Image, ResponsiveContext, Spinner } from 'grommet';
+import { Box, Grid, Heading, Image, Spinner } from 'grommet';
 import { FileListViewStyleComponentProps } from './FileListView';
 import { MinimalFile } from '../../../types';
 import { imageURL } from '../../helpers/imageURL';
-import { useContext, useMemo, useState } from 'react';
-import { useWindowSize } from '@uidotdev/usehooks';
-import { LoadingIndicator } from '../LoadingIndicator';
+import { useMemo, useState } from 'react';
 import useMeasure from 'react-use-measure';
+import { Link } from 'react-router-dom';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
-export const ImageFeed = ({ files }: FileListViewStyleComponentProps) => {
-  const size = useContext(ResponsiveContext);
-  const windowSize = useWindowSize();
-
+export const ImageFeed = ({
+  files,
+  setSelectedFileId,
+}: FileListViewStyleComponentProps) => {
   return (
     <>
       <Grid>
         {files.map((file) => (
-          <FeedItem file={file} key={file.id} />
+          <FeedItem file={file} key={file.id} onClick={setSelectedFileId} />
         ))}
       </Grid>
     </>
@@ -24,7 +23,13 @@ export const ImageFeed = ({ files }: FileListViewStyleComponentProps) => {
 };
 
 //I've done a bunch of 'detect if image loaded' because it feels shit without it
-const FeedItem = ({ file }: { file: MinimalFile }) => {
+const FeedItem = ({
+  file,
+  onClick,
+}: {
+  file: MinimalFile;
+  onClick: (str: string) => void;
+}) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [ref, bounds] = useMeasure();
 
@@ -46,13 +51,16 @@ const FeedItem = ({ file }: { file: MinimalFile }) => {
             <Spinner size="large" />
           </Box>
         ) : null}
+        {/*<Link to={`./${file.id}`}>*/}
         <Image
           src={imageURL(file, 'lg')}
           fit="contain"
           fill="horizontal"
           alt={file.name}
           onLoad={() => setImageLoaded(true)}
+          onClick={() => onClick(file.id)}
         />
+        {/*</Link>*/}
       </Box>
       <Heading level="5" margin="none">
         {file.name}

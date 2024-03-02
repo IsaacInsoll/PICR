@@ -1,4 +1,4 @@
-import { Box, Button, Page, PageContent } from 'grommet';
+import { Button, Page, PageContent, Toolbar } from 'grommet';
 import { Gallery as GalleryIcon, List as ListIcon } from 'grommet-icons';
 import { AppsRounded } from 'grommet-icons/icons';
 import { atomWithStorage } from 'jotai/utils';
@@ -16,7 +16,7 @@ export const ViewSelector = () => {
   return (
     <Page>
       <PageContent>
-        <Box direction="row">
+        <Toolbar direction="row">
           {viewOptions.map(({ name, icon, label }) => (
             <Button
               icon={icon}
@@ -25,7 +25,7 @@ export const ViewSelector = () => {
               onClick={() => setView(name)}
             />
           ))}
-        </Box>
+        </Toolbar>
       </PageContent>
     </Page>
   );
