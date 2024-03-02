@@ -129,6 +129,8 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+docker-compose.yml
+
 #picr specific
 media/*
 

@@ -11,10 +11,34 @@ Self-hosted online image sharing tool for photographers to share photos with cli
 - Single node based container that can deploy to any device, specifically targeting good performance on Synology NAS
 - Easy to set up and use by my photographer friends who aren't familiar with docker/compose/etc
 
-## Mounts
+# How to use:
+Picr is built to be run as a docker container on your NAS / Server. 
+> If you have never used docker before then just google "installer docker on <type-of-server> (EG: windows/linux/synology)
 
-For development, just make these folders.
-When we have a docker image this is the two folders you want to mount
+Use the following `docker-compose` file to get started
+```yaml
+version: "3.7"
+services:
+  picr:
+    image: 'isaacinsoll/picr'
+    build: .
+    volumes:
+      - ./media:/home/node/app/media
+      - ./data:/home/node/app/data
+      - ./cache:/home/node/app/cache
+    ports:
+      # presumably this will be behind a Reverse Proxy for HTTPS
+      - 6900:6900
+  # leave this out and on first build it will give you a very secret random string to put in here
+#    environment:
+#      - TOKEN_SECRET=<secret> 
+```
+1. Make sure you have docker installed and set up
+2. Copy the `docker-compose.yml` example above and modify the volume mount for media (IE: change `./media` to the full path on your host where the photos are stored)
+3. Set up the compose file in docker and start PICR. The first run will generate a TOKEN_SECRET for you to add to the compose file. Add that and restart the container
+4. Go to http://<ip-address>:6900/admin and login with default login of `admin` / `password`, change the account details, and start sharing your images!
+
+### Mounts
 
 | Folder | Description                                                                |
 |--------|----------------------------------------------------------------------------|
@@ -22,37 +46,5 @@ When we have a docker image this is the two folders you want to mount
 | media  | mount point containing folders of images, only need read access            |
 | cache  | thumbnails, zip files built from your media (will be recreated if deleted) |
 
-
-## Development
-
-`npm run build` to compile typescript and run the server (more like in production)
-`npm start`* to run both typescript watcher and nodemon server (for live changes to node causing reload)
-`cd frontend && npm run build` build front end
-`cd frontend && npm start` run react dev server (currently untested :/)
-`cd frontend && npm run gql` build gql
-* known issue is that the `cli-progressbar` doesn't work with `concurrently` so progress bars are invisible :/
-
-| Folder   | Description                                            |
-|----------|--------------------------------------------------------|
-| src      | Node server source                                     |
-| dist     | *Compiled* Node Server Source                          |
-| frontend | React frontend source                                  |
-| public   | *Compiled* React front end and any other static assets |
-
-
-### Issues
-> TODO: log these as proper issues or just fix them (once we have a repo)
-- if you delete images while server down, it won't pick that up when restarted (it just adds new images)
-- test with large image collection: may crash due to 'promise stack'?
-
-### TODO
-- public facing URLs that don't require login (separate db table) with management tools for that
-- logging of 'views' of each image/folder for stats
-- star ratings + thumbs up/down + leave comments, with ability to filter/sort/export that data
-- download whole folder, individual image, or selected images
-- add support for managing users and maybe reporting on file sizes / usage
-- branding: upload logo, ability to have multiple 'brands' with certain folders overruling (EG: family portraits and fitness brands)
-- email notifications (EG: client opened folder, left feedback etc)
-- dockerize and test on synology
-- automate build process as much as possible
-- publish on github
+# Development
+See [docs/development.md](docs/development.md)

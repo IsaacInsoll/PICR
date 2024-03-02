@@ -5,7 +5,11 @@ import { SingleBar, Presets } from 'cli-progress';
 
 type QueueAction = 'addDir' | 'unlinkDir' | 'add';
 
-const queueProgressBar = new SingleBar({}, Presets.shades_classic);
+const progressBarOptions = {}; //{ noTTYOutput: true, notTTYSchedule: 500 };
+const queueProgressBar = new SingleBar(
+  progressBarOptions,
+  Presets.shades_classic,
+);
 
 let queue = null;
 let queueDone = 0;

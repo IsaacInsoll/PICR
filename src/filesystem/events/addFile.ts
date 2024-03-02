@@ -18,7 +18,6 @@ export const addFile = async (filePath: string) => {
   }
   // console.log(`${basename(filePath)} of type ${type} in ${dirname(filePath)}`);
   const folderId = await findFolderId(dirname(filePath));
-  if (!folderId) console.log(`Matching folder is ${folderId}`);
 
   const hash = fileHash(filePath);
   // console.log(hash);
