@@ -7,6 +7,7 @@ import { fileHash } from '../fileHash';
 import {
   deleteAllThumbs,
   generateAllThumbs,
+  getImageMetadata,
   getImageRatio,
 } from '../../helpers/thumbnailGenerator';
 
@@ -37,6 +38,8 @@ export const addFile = async (filePath: string) => {
     deleteAllThumbs(filePath);
     file.fileHash = hash;
     file.imageRatio = await getImageRatio(filePath);
+    const meta = await getImageMetadata(filePath);
+    file.metadata = JSON.stringify(meta);
     file.save();
   }
   // console.log(file);

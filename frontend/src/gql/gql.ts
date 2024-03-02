@@ -14,8 +14,9 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
-    "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            permissions\n            files {\n                id\n                name\n                imageRatio\n                fileHash\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n": types.ViewFolderDocument,
+    "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            permissions\n            files {\n                id\n                name\n                imageRatio\n                fileHash\n                metadata {\n                    ...MetadataFragment\n                }\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n": types.ViewFolderDocument,
     "\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n        }\n    }\n": types.ViewMinimumFolderDocument,
+    "\n  fragment MetadataFragment on MetadataSummary {\n    Camera\n    Lens\n    Artist\n    DateTimeOriginal\n    DateTimeEdit\n    Aperture\n    ExposureTime\n    ISO\n  }\n": types.MetadataFragmentFragmentDoc,
 };
 
 /**
@@ -39,11 +40,15 @@ export function graphql(source: "\n  mutation login($username: String!, $passwor
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            permissions\n            files {\n                id\n                name\n                imageRatio\n                fileHash\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n"): (typeof documents)["\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            permissions\n            files {\n                id\n                name\n                imageRatio\n                fileHash\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n"];
+export function graphql(source: "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            permissions\n            files {\n                id\n                name\n                imageRatio\n                fileHash\n                metadata {\n                    ...MetadataFragment\n                }\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n"): (typeof documents)["\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            permissions\n            files {\n                id\n                name\n                imageRatio\n                fileHash\n                metadata {\n                    ...MetadataFragment\n                }\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n        }\n    }\n"): (typeof documents)["\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment MetadataFragment on MetadataSummary {\n    Camera\n    Lens\n    Artist\n    DateTimeOriginal\n    DateTimeEdit\n    Aperture\n    ExposureTime\n    ISO\n  }\n"): (typeof documents)["\n  fragment MetadataFragment on MetadataSummary {\n    Camera\n    Lens\n    Artist\n    DateTimeOriginal\n    DateTimeEdit\n    Aperture\n    ExposureTime\n    ISO\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

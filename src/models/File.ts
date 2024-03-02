@@ -11,7 +11,10 @@ export default class File extends Model {
   declare relativePath: string;
 
   @Column
-  declare imageRatio: number; // width / height
+  declare metadata: string; //dodgy JSON string of type `MetadataSummary.ts`
+
+  @Column
+  declare imageRatio: number; // width / height (used for sizing on screen elements before image is loaded
 
   @ForeignKey(() => Folder)
   @Column

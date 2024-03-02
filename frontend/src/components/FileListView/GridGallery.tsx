@@ -1,4 +1,5 @@
 //https://benhowell.github.io/react-grid-gallery/examples/custom-overlay
+// TODO: Could use Grommet Skeleton as placeholders before content loads?
 import { imageURL } from '../../helpers/imageURL';
 import { Gallery } from 'react-grid-gallery';
 import { FileListViewStyleComponentProps } from './FileListView';

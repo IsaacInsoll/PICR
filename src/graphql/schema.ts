@@ -24,6 +24,7 @@ export const schema = buildSchema(/*GraphQL */ `
         folderId: ID!
         imageRatio: Float
         fileHash: String!
+        metadata: MetadataSummary
     }
     
     enum FolderPermissions {
@@ -31,5 +32,27 @@ export const schema = buildSchema(/*GraphQL */ `
         Admin
         None
     }
+    
+    type MetadataSummary {
+        Camera: String
+        Lens: String
+        Artist: String
+        DateTimeEdit: String
+        DateTimeOriginal: String
+        Aperture: Float
+#        ShutterSpeed: Float
+        ExposureTime: Float
+        ISO: Float
+    }
 
 `);
+
+//  Camera?: string;
+//   Lens?: string;
+//   Artist?: string;
+//   DateTimeEdit?: Date;
+//   DateTimeOriginal?: Date;
+//   Aperture?: number;
+//   // ShutterSpeed?: string;
+//   ISO?: number;
+//   ExposureTime: number; // n

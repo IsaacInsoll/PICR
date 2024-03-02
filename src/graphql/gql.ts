@@ -39,5 +39,8 @@ const subFolders = async (parentId: string) => {
 
 const subFiles = async (folderId: string) => {
   const files = await File.findAll({ where: { folderId } });
-  return files.map((f) => f.toJSON());
+  return files.map((f) => {
+    // this was just f.toJSON but all metadata is a single field in the DB currently coz it's 'modular' not 'dodgy'
+    return { ...f.toJSON(), metadata: JSON.parse(f.metadata) };
+  });
 };
