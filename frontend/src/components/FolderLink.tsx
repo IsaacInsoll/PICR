@@ -1,7 +1,7 @@
 import { Anchor } from 'grommet';
 import { useQuery } from 'urql';
-import { viewMinimumFolderQuery } from '../queries/viewFolderQuery';
 import { useNavigate } from 'react-router-dom';
+import { viewMinimumFolderQuery } from '../queries/viewMinimumFolderQuery';
 
 export const FolderLink = ({ folderId }: { folderId?: string }) => {
   const navigate = useNavigate();
