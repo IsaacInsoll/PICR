@@ -14,13 +14,13 @@ import QueryFeedback from '../components/QueryFeedback';
 import { useSetAtom } from 'jotai/index';
 import { placeholderFolderName } from '../components/FolderHeader/PlaceholderFolderName';
 import { Button } from 'grommet';
+import { ManageFolder } from './ManageFolder';
 
 export const ViewFolder = () => {
   const navigate = useNavigate();
   let { folderId, fileId } = useParams();
   const setPlaceholderFolder = useSetAtom(placeholderFolderName);
-  // const [folderId, setFolderId] = useState(rootFolderId);
-  console.log('ViewFolder with ', folderId);
+  const managing = fileId === 'manage';
   const handleSetFolder = (f: MinimalFolder) => {
     setPlaceholderFolder(f?.name);
     navigate('./../' + f.id);
@@ -30,9 +30,10 @@ export const ViewFolder = () => {
     <>
       <Suspense fallback={<PlaceholderFolderHeader />}>
         <ViewFolderBody
+          managing={managing}
+          toggleManaging={() => navigate(managing ? './../' : './manage')}
           key={folderId ?? '1'}
           folderId={folderId ?? '1'}
-          fileId={fileId}
           setFolder={handleSetFolder}
         />
       </Suspense>
@@ -42,12 +43,14 @@ export const ViewFolder = () => {
 
 export const ViewFolderBody = ({
   folderId,
-  fileId,
   setFolder,
+  toggleManaging,
+  managing,
 }: {
   folderId: string;
+  managing: boolean;
   setFolder: (folder: MinimalFolder) => void;
-  fileId?: string;
+  toggleManaging: () => void;
 }) => {
   // const headers = useMemo(() => {
   //   return uuid ? { fetchOptions: { headers: { uuid } } } : undefined;
@@ -59,10 +62,17 @@ export const ViewFolderBody = ({
     // context: headers,
   });
   const folder = data.data?.folder;
-  const actions =
-    folder?.permissions === 'Admin' ? (
-      <Button primary label="Manage" />
-    ) : undefined;
+  const actions = [];
+  if (folder?.permissions === 'Admin') {
+    actions.push(
+      <Button
+        primary
+        label={managing ? 'View Folder' : 'Manage'}
+        onClick={toggleManaging}
+      />,
+    );
+  }
+
   return (
     <>
       <QueryFeedback result={data} reQuery={reQuery} />
@@ -73,10 +83,19 @@ export const ViewFolderBody = ({
           <FolderHeader
             folder={folder}
             subtitle={folderSubtitle(folder)}
-            actions={actions}
+            actions={<>{actions}</>}
           />
-          <FolderListView folders={folder?.subFolders} onClick={setFolder} />
-          <FileListView files={folder.files} />
+          {managing ? (
+            <ManageFolder folderId={folderId} />
+          ) : (
+            <>
+              <FolderListView
+                folders={folder?.subFolders}
+                onClick={setFolder}
+              />
+              <FileListView files={folder.files} />
+            </>
+          )}
         </>
       )}
     </>
