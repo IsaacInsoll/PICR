@@ -8,10 +8,7 @@ export const viewFolderQuery = gql(/*GraphQL*/ `
             parentId
             permissions
             files {
-                id
-                name
-                imageRatio
-                fileHash
+                ...FileFragment
                 metadata {
                     ...MetadataFragment
                 }
