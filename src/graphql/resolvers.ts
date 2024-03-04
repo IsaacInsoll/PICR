@@ -15,7 +15,11 @@ export const gqlserver = createHandler({
   },
   rootValue: {
     folder: async (params, context) => {
-      const permissions = await contextPermissionsForFolder(context, params.id);
+      const permissions = await contextPermissionsForFolder(
+        context,
+        params.id,
+        true,
+      );
       RejectIfNoPermissions(permissions);
       const data = await getFolder(params.id);
       return { ...data, permissions };

@@ -1,5 +1,5 @@
 import { UseQueryState } from 'urql';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Notification, Spinner } from 'grommet';
 import { useSetAtom } from 'jotai/index';
 import { authKeyAtom } from '../atoms/authAtom';
@@ -15,7 +15,13 @@ export default function QueryFeedback({ result, reQuery }: QueryFeedbackProps) {
     setAuthKey('');
   };
 
-  console.log(result);
+  useEffect(() => {
+    if (error?.message === '[GraphQL] AUTH: Session Expired') {
+      setAuthKey('');
+    }
+  }, [error?.message, setAuthKey]);
+
+  // console.log(result);
   return (
     <>
       {fetching && <Spinner size="large" />}
