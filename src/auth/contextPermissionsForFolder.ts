@@ -14,6 +14,7 @@ export const contextPermissionsForFolder = async (
 ): Promise<FolderPermissions> => {
   const user = await getUserFromToken(context);
   const hasUUID = !!context.uuid && context.uuid !== '';
+  const folder = await Folder.findByPk(folderId);
 
   if (user) {
     //todo: more granular permissions rather than, 'all users are full admins of everything'
@@ -23,7 +24,6 @@ export const contextPermissionsForFolder = async (
   if (hasUUID) {
     const link = await PublicLink.findOne({ where: { uuid: context.uuid } });
     //todo: check expiry dates, enabled status on link
-    const folder = await Folder.findByPk(folderId);
     if (link) {
       const linkedFolder = await Folder.findByPk(link.folderId);
       const tree = await FolderIsUnderFolder(folder, linkedFolder);

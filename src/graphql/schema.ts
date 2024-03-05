@@ -4,6 +4,7 @@ export const schema = buildSchema(/*GraphQL */ `
     type Query {
         folder(id: ID!): Folder!
         file(id: ID!): File!
+        publicLinks(folderId: ID!, includeParents: Boolean) : [PublicLink!]!
     }
 
     type Mutation {
@@ -44,15 +45,16 @@ export const schema = buildSchema(/*GraphQL */ `
         ExposureTime: Float
         ISO: Float
     }
+    
+    type PublicLink {
+        id: ID!
+        name: String!
+        uuid: String!
+        availableFrom: String!
+        availableTo: String!
+        enabled: Boolean!
+        folderId: ID!
+        folder: Folder!
+    }
 
 `);
-
-//  Camera?: string;
-//   Lens?: string;
-//   Artist?: string;
-//   DateTimeEdit?: Date;
-//   DateTimeOriginal?: Date;
-//   Aperture?: number;
-//   // ShutterSpeed?: string;
-//   ISO?: number;
-//   ExposureTime: number; // n

@@ -1,6 +1,6 @@
 import Folder from '../models/Folder';
 
-export const FolderAndAllParentIds = async (
+export const folderAndAllParentIds = async (
   folder: Folder,
 ): Promise<string[]> => {
   let f = folder;
