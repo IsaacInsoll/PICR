@@ -1,6 +1,6 @@
 //from https://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript
 export function randomString() {
-  const length = 40;
+  const length = 50;
   const chars =
     '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let result = '';

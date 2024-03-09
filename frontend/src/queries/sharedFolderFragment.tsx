@@ -8,5 +8,10 @@ export const publicLinkFragment = gql(/* GraphQL */ `
     availableTo
     enabled
     uuid
+    folderId
+    folder {
+      id
+      name
+    }
   }
 `);

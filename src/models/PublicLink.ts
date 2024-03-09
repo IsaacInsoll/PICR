@@ -11,8 +11,8 @@ export default class PublicLink extends Model {
   declare availableFrom?: Date;
   @Column
   declare availableTo?: Date;
-  // @Column
-  // declare enabled: boolean;
+  @Column
+  declare enabled: boolean;
 
   @ForeignKey(() => Folder)
   @Column
