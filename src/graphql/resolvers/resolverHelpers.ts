@@ -1,6 +1,5 @@
 import Folder from '../../models/Folder';
 import File from '../../models/File';
-import PublicLink from '../../models/PublicLink';
 
 export const getFolder = async (id: string | number) => {
   const folder = await Folder.findByPk(id);
@@ -14,10 +13,6 @@ export const getFolder = async (id: string | number) => {
 export const subFolders = async (parentId: string | number) => {
   const folders = await Folder.findAll({ where: { parentId } });
   return folders.map((f) => f.toJSON());
-};
-export const publicLinks = async (folderId: string | number) => {
-  const links = await PublicLink.findAll({ where: { folderId } });
-  return links.map((f) => f.toJSON());
 };
 
 export const subFiles = async (folderId: string | number) => {

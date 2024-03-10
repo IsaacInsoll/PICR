@@ -63,13 +63,13 @@ export const schema = buildSchema(/*GraphQL */ `
     type Query {
         folder(id: ID!): Folder!
         file(id: ID!): File!
-        publicLinks(folderId: ID!, includeParents: Boolean) : [PublicLink!]!
-        publicLink(id: ID!): PublicLink!
+        users(folderId: ID!, includeParents: Boolean) : [User!]!
+        user(id: ID!): User!
     }
 
     type Mutation {
         auth(user: String!, password: String!) : String!
-        editPublicLink(id: ID, folderId: ID, name: String, uuid: String, enabled: Boolean): PublicLink!
+        editUser(id: ID, folderId: ID, name: String, uuid: String, enabled: Boolean): User!
     }
     
     type Folder {
@@ -109,12 +109,10 @@ export const schema = buildSchema(/*GraphQL */ `
         ISO: Float
     }
 
-    type PublicLink {
+    type User {
         id: ID!
         name: String!
         uuid: String!
-        availableFrom: String
-        availableTo: String
         enabled: Boolean!
         folderId: ID!
         folder: Folder

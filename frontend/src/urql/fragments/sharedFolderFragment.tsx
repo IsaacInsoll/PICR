@@ -1,11 +1,9 @@
 import { gql } from '../../helpers/gql';
 
-export const publicLinkFragment = gql(/* GraphQL */ `
-  fragment PublicLinkFragment on PublicLink {
+export const userFragment = gql(/* GraphQL */ `
+  fragment UserFragment on User {
     id
     name
-    availableFrom
-    availableTo
     enabled
     uuid
     folderId

@@ -6,7 +6,6 @@ import Folder from '../../models/Folder';
 export const folderResolver = async (params, context) => {
   const [permissions, u] = await perms(context, params.id, true);
   const f = await getFolder(params.id);
-  createAccessLog(u.id, f.id);
   const data = { ...f, permissions };
 
   const [parentPerms] = await perms(context, f.parentId);
@@ -16,5 +15,6 @@ export const folderResolver = async (params, context) => {
       data.parent = p.toJSON();
     }
   }
+  createAccessLog(u.id, f.id);
   return data;
 };

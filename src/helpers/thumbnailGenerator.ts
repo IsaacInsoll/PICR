@@ -10,7 +10,6 @@ import {
   ThumbnailSize,
   thumbnailSizes,
 } from '../../frontend/src/helpers/thumbnailSize';
-import { metadata } from 'reflect-metadata/no-conflict';
 import { default as ex } from 'exif-reader';
 import { MetadataSummary } from '../types/MetadataSummary';
 

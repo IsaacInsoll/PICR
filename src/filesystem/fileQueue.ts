@@ -1,7 +1,7 @@
 import { addFile } from './events/addFile';
 import { addFolder } from './events/addFolder';
 import { removeFolder } from './events/removeFolder';
-import { SingleBar, Presets } from 'cli-progress';
+import { Presets, SingleBar } from 'cli-progress';
 
 type QueueAction = 'addDir' | 'unlinkDir' | 'add';
 

@@ -1,5 +1,4 @@
 import { CustomJwtPayload } from '../types/CustomJwtPayload';
-import PublicLink from '../models/PublicLink';
 import { getUserFromToken } from './jwt-auth';
 import { FolderPermissions } from '../types/FolderPermissions';
 import Folder from '../models/Folder';
@@ -13,6 +12,11 @@ export const contextPermissionsForFolder = async (
   folderId?: number,
   throwErrorIfNoPermission: boolean = false,
 ): Promise<[FolderPermissions, User]> => {
+  if (!folderId) {
+    if (throwErrorIfNoPermission) throw new GraphQLError('Not Found');
+    return ['None', null];
+  }
+
   const user = await getUserFromToken(context);
   const hasUUID = !!context.uuid && context.uuid !== '';
   const folder = await Folder.findByPk(folderId);
@@ -23,7 +27,7 @@ export const contextPermissionsForFolder = async (
   }
 
   if (hasUUID) {
-    const link = await PublicLink.findOne({ where: { uuid: context.uuid } });
+    const link = await User.findOne({ where: { uuid: context.uuid } });
     //todo: check expiry dates, enabled status on link
     if (link) {
       if (!link.enabled) {
@@ -32,7 +36,7 @@ export const contextPermissionsForFolder = async (
       const linkedFolder = await Folder.findByPk(link.folderId);
       const tree = await FolderIsUnderFolder(folder, linkedFolder);
       if (tree) {
-        return ['View', await User.findByPk(link.userId)];
+        return ['View', await User.findByPk(link.id)];
       }
     }
   }

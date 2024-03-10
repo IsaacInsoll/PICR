@@ -2,23 +2,23 @@ import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFol
 import { GraphQLError } from 'graphql/error';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
 import Folder from '../../models/Folder';
-import PublicLink from '../../models/PublicLink';
 import { getFolder } from './resolverHelpers';
 import { Op } from 'sequelize';
+import User from '../../models/User';
 
-export const publicLinkResolver = async (params, context) => {
-  const link = await PublicLink.findByPk(params.id);
-  if (!link) throw new GraphQLError('Could not find link ' + params.id);
+export const userResolver = async (params, context) => {
+  const user = await User.findByPk(params.id);
+  if (!user) throw new GraphQLError('Could not find user ' + params.id);
   const [p, u] = await contextPermissionsForFolder(
     context,
-    link.folderId,
+    user.folderId,
     true,
   );
   if (p !== 'Admin') throw new GraphQLError('You must be an Admin to see this');
-  return { ...link.toJSON(), folder: getFolder(link.folderId) };
+  return { ...user.toJSON(), folder: getFolder(user.folderId) };
 };
 
-export const publicLinksResolver = async (params, context) => {
+export const usersResolver = async (params, context) => {
   const [p, u] = await contextPermissionsForFolder(
     context,
     params.folderId,
@@ -31,7 +31,7 @@ export const publicLinksResolver = async (params, context) => {
   const ids = params.includeParents
     ? [await folderAndAllParentIds(folder)]
     : folder.id;
-  const data = await PublicLink.findAll({
+  const data = await User.findAll({
     where: { folderId: { [Op.or]: ids } },
   });
   return data.map((pl) => {

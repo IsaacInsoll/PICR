@@ -49,9 +49,9 @@ const ManageFolderBody = ({ folderId }: { folderId: string }) => {
           folder={data?.folder}
         />
       ) : null}
-      {data?.publicLinks && data.publicLinks.length > 0 ? (
+      {data?.users && data.users.length > 0 ? (
         <SharedFolderDataGrid
-          sharedFolders={data?.publicLinks}
+          sharedFolders={data?.users}
           setSharedFolderId={setLinkId}
         />
       ) : null}

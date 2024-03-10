@@ -1,6 +1,6 @@
 import { gql } from '../../helpers/gql';
 
-export const editPublicLinkMutation = gql(/* GraphQL */ `
+export const editUserMutation = gql(/* GraphQL */ `
   mutation EditPublicLinkMutation(
     $id: ID
     $name: String
@@ -8,14 +8,14 @@ export const editPublicLinkMutation = gql(/* GraphQL */ `
     $enabled: Boolean
     $folderId: ID
   ) {
-    editPublicLink(
+    editUser(
       id: $id
       name: $name
       uuid: $uuid
       enabled: $enabled
       folderId: $folderId
     ) {
-      ...PublicLinkFragment
+      ...UserFragment
     }
   }
 `);

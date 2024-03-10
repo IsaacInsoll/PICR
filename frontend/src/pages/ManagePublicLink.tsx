@@ -4,10 +4,9 @@ import { Clipboard, Close, CloudUpload, Group, Link } from 'grommet-icons';
 import { randomString } from '../helpers/randomString';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'urql';
-import { editPublicLinkMutation } from '../urql/mutations/editPublicLinkMutation';
-import type { MutationEditPublicLinkArgs } from '../gql/graphql';
-import { link } from 'node:fs';
-import { viewPublicLinkQuery } from '../urql/queries/viewPublicLinkQuery';
+import { editUserMutation } from '../urql/mutations/editUserMutation';
+import type { MutationEditUserArgs } from '../gql/graphql';
+import { viewUserQuery } from '../urql/queries/viewUserQuery';
 
 export const ManagePublicLink = ({
   id,
@@ -19,14 +18,14 @@ export const ManagePublicLink = ({
   onClose: () => void;
 }) => {
   const [response] = useQuery({
-    query: viewPublicLinkQuery,
+    query: viewUserQuery,
     variables: { id: id ?? '0' },
     pause: !id,
   });
 
-  const data = response.data?.publicLink;
+  const data = response.data?.user;
 
-  const [, mutate] = useMutation(editPublicLinkMutation);
+  const [, mutate] = useMutation(editUserMutation);
 
   const [name, setName] = useState(data?.name ?? '');
   const [link, setLink] = useState(data?.uuid ?? randomString());
@@ -38,7 +37,7 @@ export const ManagePublicLink = ({
   const exists = id && id !== '';
 
   const onSave = () => {
-    const data: MutationEditPublicLinkArgs = {
+    const data: MutationEditUserArgs = {
       id: id ?? '',
       name,
       uuid: link,

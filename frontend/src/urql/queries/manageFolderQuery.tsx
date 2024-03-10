@@ -5,8 +5,8 @@ export const manageFolderQuery = gql(/*GraphQL*/ `
         folder(id: $folderId) {
             ...FolderFragment
         }
-        publicLinks(folderId:$folderId, includeParents: true) {
-           ...PublicLinkFragment
+        users(folderId:$folderId, includeParents: true) {
+           ...UserFragment
            folderId
             folder {
                 ...MinimumFolderFragment

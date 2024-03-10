@@ -1,14 +1,27 @@
 import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
-import PublicLink from './PublicLink';
+import Folder from './Folder';
+
+// Either a 'real user' with a hashedPassword or a 'public link' user with a UUID
 
 @Table
 export default class User extends Model {
   @Column
-  declare username: string;
+  declare name: string;
+
+  @Column
+  declare enabled: boolean;
+
+  // IF REAL USER
   @Column
   declare hashedPassword: string;
+  @Column
+  declare username: string;
 
-  // @BelongsTo(() => PublicLink)
-  @ForeignKey(() => PublicLink)
-  publicLink: PublicLink;
+  // IF PUBLIC LINK
+  @Column
+  declare uuid: string; //public hash
+
+  @ForeignKey(() => Folder)
+  @Column
+  folderId: number;
 }

@@ -4,7 +4,6 @@ import { MinimalFile } from '../../../types';
 import { imageURL } from '../../helpers/imageURL';
 import { useMemo, useState } from 'react';
 import useMeasure from 'react-use-measure';
-import { Link } from 'react-router-dom';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 export const ImageFeed = ({
