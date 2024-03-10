@@ -3,16 +3,29 @@ import { Box, Button, CheckBox, FormField, Layer, TextInput } from 'grommet';
 import { Clipboard, Close, CloudUpload, Group, Link } from 'grommet-icons';
 import { randomString } from '../helpers/randomString';
 import { useState } from 'react';
+import { useMutation, useQuery } from 'urql';
+import { editPublicLinkMutation } from '../urql/mutations/editPublicLinkMutation';
+import type { MutationEditPublicLinkArgs } from '../gql/graphql';
+import { link } from 'node:fs';
+import { viewPublicLinkQuery } from '../urql/queries/viewPublicLinkQuery';
 
 export const ManagePublicLink = ({
   id,
   folder,
   onClose,
 }: {
-  id?: number;
+  id?: string;
   folder?: MinimalFolder; //if creating a new public link
   onClose: () => void;
 }) => {
+  const [data] = useQuery({
+    query: viewPublicLinkQuery,
+    variables: { id: id ?? '0' },
+    pause: !id,
+  });
+
+  const [, mutate] = useMutation(editPublicLinkMutation);
+
   const [name, setName] = useState('');
   const [link, setLink] = useState(randomString());
   const [enabled, setEnabled] = useState(true);
@@ -20,7 +33,25 @@ export const ManagePublicLink = ({
   //   randomString();
   // };
 
-  const exists = id && id > 0;
+  const exists = id && id !== '';
+
+  const onSave = () => {
+    const data: MutationEditPublicLinkArgs = {
+      id: id ?? '',
+      name,
+      uuid: link,
+      enabled,
+      folderId: folder?.id,
+    };
+    mutate(data).then(({ data, error }) => {
+      if (error) {
+        console.log(error);
+        alert(error);
+      } else {
+        onClose();
+      }
+    });
+  };
 
   return (
     <Layer onEsc={onClose} onClickOutside={onClose}>
@@ -55,7 +86,7 @@ export const ManagePublicLink = ({
             label={exists ? 'Save' : 'Create Link'}
             icon={<CloudUpload />}
             primary
-            onClick={onClose}
+            onClick={onSave}
           />
         </Box>
       </Box>

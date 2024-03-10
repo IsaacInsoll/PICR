@@ -1,12 +1,9 @@
-import { gql } from '../helpers/gql';
+import { gql } from '../../helpers/gql';
 
 export const viewFolderQuery = gql(/*GraphQL*/ `
     query ViewFolder($folderId: ID!) {
         folder(id:$folderId) {
-            id
-            name
-            parentId
-            permissions
+            ...FolderFragment
             files {
                 ...FileFragment
                 metadata {
@@ -14,8 +11,7 @@ export const viewFolderQuery = gql(/*GraphQL*/ `
                 }
             }
             subFolders {
-                id
-                name
+                ...MinimumFolderFragment
             }
         }
     }

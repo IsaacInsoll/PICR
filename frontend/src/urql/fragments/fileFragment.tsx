@@ -1,4 +1,4 @@
-import { gql } from '../helpers/gql';
+import { gql } from '../../helpers/gql';
 
 export const fileFragment = gql(/* GraphQL */ `
   fragment FileFragment on File {

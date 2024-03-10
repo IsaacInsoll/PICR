@@ -1,10 +1,21 @@
 import { Suspense, useState } from 'react';
-import { Box, Button, Page, PageContent } from 'grommet';
+import {
+  Box,
+  Button,
+  ColumnConfig,
+  DataTable,
+  Page,
+  PageContent,
+  SortType,
+  Text,
+} from 'grommet';
 import { useQuery } from 'urql';
-import { manageFolderQuery } from '../queries/manageFolderQuery';
+import { manageFolderQuery } from '../urql/queries/manageFolderQuery';
 import QueryFeedback from '../components/QueryFeedback';
 import { Add } from 'grommet-icons';
 import { ManagePublicLink } from './ManagePublicLink';
+import { FileListViewStyleComponentProps } from '../components/FileListView/FileListView';
+import { MinimalFile, MinimalSharedFolder } from '../../types';
 
 export const ManageFolder = ({ folderId }: { folderId: string }) => {
   return (
@@ -24,7 +35,7 @@ const ManageFolderBody = ({ folderId }: { folderId: string }) => {
     variables: { folderId },
     // context: headers,
   });
-  const [linkId, setLinkId] = useState<number | null>(null);
+  const [linkId, setLinkId] = useState<string | null>(null);
   const { data } = result;
   console.log(data);
   return (
@@ -33,15 +44,60 @@ const ManageFolderBody = ({ folderId }: { folderId: string }) => {
         <ManagePublicLink
           onClose={() => {
             setLinkId(null);
-            reQuery();
+            reQuery({ requestPolicy: 'network-only' });
           }}
           id={linkId}
           folder={data?.folder}
         />
       ) : null}
-      {data?.publicLinks && data.publicLinks.length > 0 ? null : null}
-      <Button label="Create Link" icon={<Add />} onClick={() => setLinkId(0)} />
+      {data?.publicLinks && data.publicLinks.length > 0 ? (
+        <SharedFolderDataGrid
+          sharedFolders={data?.publicLinks}
+          setSharedFolderId={setLinkId}
+        />
+      ) : null}
+      <Button
+        label="Create Link"
+        icon={<Add />}
+        onClick={() => setLinkId('')}
+      />
       <QueryFeedback result={result} reQuery={reQuery} />
     </Box>
   );
 };
+
+const SharedFolderDataGrid = ({
+  sharedFolders,
+  setSharedFolderId,
+}: {
+  sharedFolders: MinimalSharedFolder[];
+  setSharedFolderId: (id: string) => void;
+}) => {
+  const [sort, setSort] = useState<SortType>({
+    property: 'name',
+    direction: 'asc',
+  });
+  return (
+    <Box align="center" pad="large">
+      <DataTable
+        fill={true}
+        columns={dataTableColumnConfig}
+        data={sharedFolders}
+        sort={sort}
+        onSort={setSort}
+        resizeable
+        onClickRow={({ datum }) => setSharedFolderId(datum.id)}
+      />
+    </Box>
+  );
+};
+const dataTableColumnConfig: ColumnConfig<MinimalSharedFolder>[] = [
+  { property: 'name', header: <Text>Name</Text> },
+  {
+    property: 'folder',
+    header: <Text>Shared Folder</Text>,
+    render: ({ folder }) => {
+      return folder?.name ?? '';
+    },
+  },
+];

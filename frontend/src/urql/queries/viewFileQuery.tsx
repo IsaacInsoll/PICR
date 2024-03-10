@@ -1,4 +1,4 @@
-import { gql } from '../helpers/gql';
+import { gql } from '../../helpers/gql';
 
 export const viewFileQuery = gql(/*GraphQL*/ `
     query ViewFile($fileId: ID!) {

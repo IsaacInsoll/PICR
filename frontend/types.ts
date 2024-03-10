@@ -10,3 +10,10 @@ export interface MinimalFile {
   fileHash?: string;
   imageRatio?: number | null;
 }
+export interface MinimalSharedFolder {
+  id: string;
+  name?: string;
+  uuid?: string;
+  enabled?: boolean;
+  folder?: MinimalFolder | null;
+}

@@ -4,7 +4,11 @@ import { authMutation } from './authMutation';
 import { IncomingCustomHeaders } from '../types/incomingCustomHeaders';
 import { folderResolver } from './resolvers/folderResolver';
 import { fileResolver } from './resolvers/fileResolver';
-import { publicLinkResolver } from './resolvers/publicLinkResolver';
+import {
+  publicLinkResolver,
+  publicLinksResolver,
+} from './resolvers/publicLinkResolver';
+import { editPublicLink } from './editPublicLink';
 
 export const gqlserver = createHandler({
   schema: schema,
@@ -15,7 +19,9 @@ export const gqlserver = createHandler({
   rootValue: {
     folder: folderResolver,
     file: fileResolver,
+    publicLinks: publicLinksResolver,
+    publicLink: publicLinkResolver,
     auth: authMutation,
-    publicLinks: publicLinkResolver,
+    editPublicLink: editPublicLink,
   },
 });

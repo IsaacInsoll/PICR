@@ -4,7 +4,7 @@ import { useMutation } from 'urql';
 import { useNavigate } from 'react-router-dom';
 import { useSetAtom } from 'jotai/index';
 import { authKeyAtom, useIsLoggedIn } from '../atoms/authAtom';
-import { loginMutation } from '../queries/LoginMutation';
+import { loginMutation } from '../urql/mutations/LoginMutation';
 
 export const LoginForm = () => {
   const loggedIn = useIsLoggedIn();

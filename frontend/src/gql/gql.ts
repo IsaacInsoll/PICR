@@ -13,14 +13,18 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
     "\n  fragment FileFragment on File {\n    id\n    name\n    imageRatio\n    fileHash\n  }\n": types.FileFragmentFragmentDoc,
-    "\n    query ManageFolderQuery($folderId: ID!) {\n        folder(id: $folderId) {\n            id\n            name\n        }\n        publicLinks(folderId:$folderId, includeParents: true) {\n           ...PublicLinkFragment\n           folderId\n            folder {\n                id\n                name\n            }\n        }\n    }\n": types.ManageFolderQueryDocument,
+    "\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n  }\n": types.FolderFragmentFragmentDoc,
     "\n  fragment MetadataFragment on MetadataSummary {\n    Camera\n    Lens\n    Artist\n    DateTimeOriginal\n    DateTimeEdit\n    Aperture\n    ExposureTime\n    ISO\n  }\n": types.MetadataFragmentFragmentDoc,
+    "\n  fragment MinimumFolderFragment on Folder {\n    id\n    name\n    parentId\n  }\n": types.MinimumFolderFragmentFragmentDoc,
     "\n  fragment PublicLinkFragment on PublicLink {\n    id\n    name\n    availableFrom\n    availableTo\n    enabled\n    uuid\n    folderId\n    folder {\n      id\n      name\n    }\n  }\n": types.PublicLinkFragmentFragmentDoc,
+    "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
+    "\n  mutation EditPublicLinkMutation(\n    $id: ID\n    $name: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n  ) {\n    editPublicLink(\n      id: $id\n      name: $name\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n    ) {\n      ...PublicLinkFragment\n    }\n  }\n": types.EditPublicLinkMutationDocument,
+    "\n    query ManageFolderQuery($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n        }\n        publicLinks(folderId:$folderId, includeParents: true) {\n           ...PublicLinkFragment\n           folderId\n            folder {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n": types.ManageFolderQueryDocument,
     "\n    query ViewFile($fileId: ID!) {\n        file(id:$fileId) {\n            ...FileFragment\n            metadata {\n                ...MetadataFragment\n            }\n        }\n    }\n": types.ViewFileDocument,
-    "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            permissions\n            files {\n                ...FileFragment\n                metadata {\n                    ...MetadataFragment\n                }\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n": types.ViewFolderDocument,
-    "\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n        }\n    }\n": types.ViewMinimumFolderDocument,
+    "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n                metadata {\n                    ...MetadataFragment\n                }\n            }\n            subFolders {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n": types.ViewFolderDocument,
+    "\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...MinimumFolderFragment\n        }\n    }\n": types.ViewMinimumFolderDocument,
+    "\n    query ViewPublicLink($id: ID!) {\n        publicLink(id:$id) {\n            ...PublicLinkFragment\n            \n        }\n    }\n": types.ViewPublicLinkDocument,
 };
 
 /**
@@ -40,15 +44,11 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"): (typeof documents)["\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
 export function graphql(source: "\n  fragment FileFragment on File {\n    id\n    name\n    imageRatio\n    fileHash\n  }\n"): (typeof documents)["\n  fragment FileFragment on File {\n    id\n    name\n    imageRatio\n    fileHash\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query ManageFolderQuery($folderId: ID!) {\n        folder(id: $folderId) {\n            id\n            name\n        }\n        publicLinks(folderId:$folderId, includeParents: true) {\n           ...PublicLinkFragment\n           folderId\n            folder {\n                id\n                name\n            }\n        }\n    }\n"): (typeof documents)["\n    query ManageFolderQuery($folderId: ID!) {\n        folder(id: $folderId) {\n            id\n            name\n        }\n        publicLinks(folderId:$folderId, includeParents: true) {\n           ...PublicLinkFragment\n           folderId\n            folder {\n                id\n                name\n            }\n        }\n    }\n"];
+export function graphql(source: "\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n  }\n"): (typeof documents)["\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -56,7 +56,23 @@ export function graphql(source: "\n  fragment MetadataFragment on MetadataSummar
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  fragment MinimumFolderFragment on Folder {\n    id\n    name\n    parentId\n  }\n"): (typeof documents)["\n  fragment MinimumFolderFragment on Folder {\n    id\n    name\n    parentId\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  fragment PublicLinkFragment on PublicLink {\n    id\n    name\n    availableFrom\n    availableTo\n    enabled\n    uuid\n    folderId\n    folder {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  fragment PublicLinkFragment on PublicLink {\n    id\n    name\n    availableFrom\n    availableTo\n    enabled\n    uuid\n    folderId\n    folder {\n      id\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"): (typeof documents)["\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation EditPublicLinkMutation(\n    $id: ID\n    $name: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n  ) {\n    editPublicLink(\n      id: $id\n      name: $name\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n    ) {\n      ...PublicLinkFragment\n    }\n  }\n"): (typeof documents)["\n  mutation EditPublicLinkMutation(\n    $id: ID\n    $name: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n  ) {\n    editPublicLink(\n      id: $id\n      name: $name\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n    ) {\n      ...PublicLinkFragment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query ManageFolderQuery($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n        }\n        publicLinks(folderId:$folderId, includeParents: true) {\n           ...PublicLinkFragment\n           folderId\n            folder {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n"): (typeof documents)["\n    query ManageFolderQuery($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n        }\n        publicLinks(folderId:$folderId, includeParents: true) {\n           ...PublicLinkFragment\n           folderId\n            folder {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -64,11 +80,15 @@ export function graphql(source: "\n    query ViewFile($fileId: ID!) {\n        f
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            permissions\n            files {\n                ...FileFragment\n                metadata {\n                    ...MetadataFragment\n                }\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n"): (typeof documents)["\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n            permissions\n            files {\n                ...FileFragment\n                metadata {\n                    ...MetadataFragment\n                }\n            }\n            subFolders {\n                id\n                name\n            }\n        }\n    }\n"];
+export function graphql(source: "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n                metadata {\n                    ...MetadataFragment\n                }\n            }\n            subFolders {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n"): (typeof documents)["\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n                metadata {\n                    ...MetadataFragment\n                }\n            }\n            subFolders {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n        }\n    }\n"): (typeof documents)["\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            id\n            name\n            parentId\n        }\n    }\n"];
+export function graphql(source: "\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...MinimumFolderFragment\n        }\n    }\n"): (typeof documents)["\n    query ViewMinimumFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...MinimumFolderFragment\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query ViewPublicLink($id: ID!) {\n        publicLink(id:$id) {\n            ...PublicLinkFragment\n            \n        }\n    }\n"): (typeof documents)["\n    query ViewPublicLink($id: ID!) {\n        publicLink(id:$id) {\n            ...PublicLinkFragment\n            \n        }\n    }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
