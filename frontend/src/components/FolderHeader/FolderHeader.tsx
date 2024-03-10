@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { ReactNode, Suspense } from 'react';
 import { useAtomValue } from 'jotai';
 import { placeholderFolderName } from './PlaceholderFolderName';
+import { useBaseViewFolderURL } from '../../pages/ViewFolder';
 
 export const FolderHeader = ({
   folder,

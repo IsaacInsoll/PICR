@@ -1,9 +1,11 @@
 import { Anchor } from 'grommet';
 import { useQuery } from 'urql';
-import { useNavigate } from 'react-router-dom';
+import { useHref, useNavigate, useNavigation } from 'react-router-dom';
 import { viewMinimumFolderQuery } from '../urql/queries/viewMinimumFolderQuery';
+import { useBaseViewFolderURL } from '../pages/ViewFolder';
 
 export const FolderLink = ({ folderId }: { folderId?: string }) => {
+  const baseUrl = useBaseViewFolderURL();
   const navigate = useNavigate();
   const [data] = useQuery({
     query: viewMinimumFolderQuery,
@@ -15,7 +17,7 @@ export const FolderLink = ({ folderId }: { folderId?: string }) => {
   return (
     <Anchor
       label={folder?.name}
-      onClick={() => navigate('./../' + folder?.id)}
+      onClick={() => navigate(baseUrl + folder?.id)}
     />
   );
 };

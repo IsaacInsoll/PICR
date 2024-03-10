@@ -15,15 +15,22 @@ import { useSetAtom } from 'jotai/index';
 import { placeholderFolderName } from '../components/FolderHeader/PlaceholderFolderName';
 import { Button } from 'grommet';
 import { ManageFolder } from './ManageFolder';
+import { getUUID } from '../Router';
+
+// This component is used in the 'public URL' and 'private URL' routes, so this is how we determine where each link should point
+export const useBaseViewFolderURL = () => {
+  return getUUID() ? '/s/' + getUUID() + '/' : '/admin/f/';
+};
 
 export const ViewFolder = () => {
   const navigate = useNavigate();
   let { folderId, fileId } = useParams();
+  const baseUrl = useBaseViewFolderURL();
   const setPlaceholderFolder = useSetAtom(placeholderFolderName);
   const managing = fileId === 'manage';
   const handleSetFolder = (f: MinimalFolder) => {
     setPlaceholderFolder(f?.name);
-    navigate('./../' + f.id);
+    navigate(baseUrl + f.id);
   };
 
   return (
@@ -31,7 +38,9 @@ export const ViewFolder = () => {
       <Suspense fallback={<PlaceholderFolderHeader />}>
         <ViewFolderBody
           managing={managing}
-          toggleManaging={() => navigate(managing ? './../' : './manage')}
+          toggleManaging={() =>
+            navigate(baseUrl + folderId + (managing ? '' : '/manage'))
+          }
           key={folderId ?? '1'}
           folderId={folderId ?? '1'}
           setFolder={handleSetFolder}
