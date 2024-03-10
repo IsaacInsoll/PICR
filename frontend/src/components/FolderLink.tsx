@@ -1,19 +1,12 @@
 import { Anchor } from 'grommet';
-import { useQuery } from 'urql';
-import { useHref, useNavigate, useNavigation } from 'react-router-dom';
-import { viewMinimumFolderQuery } from '../urql/queries/viewMinimumFolderQuery';
+import { useNavigate } from 'react-router-dom';
 import { useBaseViewFolderURL } from '../pages/ViewFolder';
+import { MinimalFolder } from '../../types';
 
-export const FolderLink = ({ folderId }: { folderId?: string }) => {
+export const FolderLink = ({ folder }: { folder: MinimalFolder }) => {
   const baseUrl = useBaseViewFolderURL();
   const navigate = useNavigate();
-  const [data] = useQuery({
-    query: viewMinimumFolderQuery,
-    variables: { folderId: folderId ?? '0' },
-    pause: !folderId,
-  });
-  if (!folderId) return undefined;
-  const folder = data.data?.folder;
+  if (!folder) return undefined;
   return (
     <Anchor
       label={folder?.name}

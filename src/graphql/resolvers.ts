@@ -17,10 +17,12 @@ export const gqlserver = createHandler({
     return { auth: headers.authorization ?? '', uuid: headers.uuid };
   },
   rootValue: {
+    //Queries
     folder: folderResolver,
     file: fileResolver,
     publicLinks: publicLinksResolver,
     publicLink: publicLinkResolver,
+    // Mutations
     auth: authMutation,
     editPublicLink: editPublicLink,
   },

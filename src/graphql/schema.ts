@@ -76,6 +76,7 @@ export const schema = buildSchema(/*GraphQL */ `
         id: ID!
         name: String!
         parentId: ID
+        parent: Folder
         subFolders: [Folder!]!
         files: [File!]!
         permissions: FolderPermissions

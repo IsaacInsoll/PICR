@@ -23,12 +23,13 @@ const envPassword = async () => {
   //   process.exit();
   // }
   if (totalUsers == 0) {
-    const admin = User.create({
+    User.create({
       username: 'admin',
       hashedPassword: hashPassword('picr1234'),
-    });
-    console.log(
-      '🔐 No users found so "admin" user created with password "password"',
+    }).then(() =>
+      console.log(
+        '🔐 No users found so "admin" user created with password "picr1234"',
+      ),
     );
   }
 };

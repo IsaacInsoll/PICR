@@ -5,7 +5,6 @@ import { Helmet } from 'react-helmet';
 import { ReactNode, Suspense } from 'react';
 import { useAtomValue } from 'jotai';
 import { placeholderFolderName } from './PlaceholderFolderName';
-import { useBaseViewFolderURL } from '../../pages/ViewFolder';
 
 export const FolderHeader = ({
   folder,
@@ -24,9 +23,9 @@ export const FolderHeader = ({
         subtitle={subtitle}
         actions={actions}
         parent={
-          folder.parentId ? (
+          folder.parent ? (
             <Suspense>
-              <FolderLink folderId={folder.parentId} />
+              <FolderLink folder={folder.parent} />
             </Suspense>
           ) : (
             <EmptyParentFolder />

@@ -9,13 +9,21 @@ import { Op } from 'sequelize';
 export const publicLinkResolver = async (params, context) => {
   const link = await PublicLink.findByPk(params.id);
   if (!link) throw new GraphQLError('Could not find link ' + params.id);
-  const p = await contextPermissionsForFolder(context, link.folderId, true);
+  const [p, u] = await contextPermissionsForFolder(
+    context,
+    link.folderId,
+    true,
+  );
   if (p !== 'Admin') throw new GraphQLError('You must be an Admin to see this');
   return { ...link.toJSON(), folder: getFolder(link.folderId) };
 };
 
 export const publicLinksResolver = async (params, context) => {
-  const p = await contextPermissionsForFolder(context, params.folderId, true);
+  const [p, u] = await contextPermissionsForFolder(
+    context,
+    params.folderId,
+    true,
+  );
   if (p !== 'Admin') throw new GraphQLError('You must be an Admin to see this');
 
   const folder = await Folder.findByPk(params.folderId);

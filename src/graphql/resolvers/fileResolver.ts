@@ -4,7 +4,7 @@ import { fileToJSON } from './resolverHelpers';
 
 export const fileResolver = async (params, context) => {
   const file = await File.findByPk(params.id);
-  const permissions = await contextPermissionsForFolder(
+  const [p, u] = await contextPermissionsForFolder(
     context,
     file.folderId,
     true,

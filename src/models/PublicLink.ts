@@ -1,5 +1,6 @@
 import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
 import Folder from './Folder';
+import User from './User';
 
 @Table
 export default class PublicLink extends Model {
@@ -17,4 +18,8 @@ export default class PublicLink extends Model {
   @ForeignKey(() => Folder)
   @Column
   folderId: number;
+
+  @ForeignKey(() => User)
+  @Column
+  declare userId: number;
 }

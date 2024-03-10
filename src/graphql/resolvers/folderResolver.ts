@@ -1,8 +1,20 @@
 import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
 import { getFolder } from './resolverHelpers';
+import { createAccessLog } from '../../models/AccessLog';
+import Folder from '../../models/Folder';
 
 export const folderResolver = async (params, context) => {
-  const permissions = await perms(context, params.id, true);
-  const data = await getFolder(params.id);
-  return { ...data, permissions };
+  const [permissions, u] = await perms(context, params.id, true);
+  const f = await getFolder(params.id);
+  createAccessLog(u.id, f.id);
+  const data = { ...f, permissions };
+
+  const [parentPerms] = await perms(context, f.parentId);
+  if (parentPerms !== 'None') {
+    const p = await Folder.findByPk(f.parentId);
+    if (p) {
+      data.parent = p.toJSON();
+    }
+  }
+  return data;
 };

@@ -14,7 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  fragment FileFragment on File {\n    id\n    name\n    imageRatio\n    fileHash\n  }\n": types.FileFragmentFragmentDoc,
-    "\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n  }\n": types.FolderFragmentFragmentDoc,
+    "\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n    parent {\n      id\n      name\n    }\n  }\n": types.FolderFragmentFragmentDoc,
     "\n  fragment MetadataFragment on MetadataSummary {\n    Camera\n    Lens\n    Artist\n    DateTimeOriginal\n    DateTimeEdit\n    Aperture\n    ExposureTime\n    ISO\n  }\n": types.MetadataFragmentFragmentDoc,
     "\n  fragment MinimumFolderFragment on Folder {\n    id\n    name\n    parentId\n  }\n": types.MinimumFolderFragmentFragmentDoc,
     "\n  fragment PublicLinkFragment on PublicLink {\n    id\n    name\n    availableFrom\n    availableTo\n    enabled\n    uuid\n    folderId\n    folder {\n      id\n      name\n    }\n  }\n": types.PublicLinkFragmentFragmentDoc,
@@ -48,7 +48,7 @@ export function graphql(source: "\n  fragment FileFragment on File {\n    id\n  
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n  }\n"): (typeof documents)["\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n  }\n"];
+export function graphql(source: "\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n    parent {\n      id\n      name\n    }\n  }\n"): (typeof documents)["\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n    parent {\n      id\n      name\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
