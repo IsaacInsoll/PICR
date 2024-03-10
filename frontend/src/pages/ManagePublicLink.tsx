@@ -18,17 +18,19 @@ export const ManagePublicLink = ({
   folder?: MinimalFolder; //if creating a new public link
   onClose: () => void;
 }) => {
-  const [data] = useQuery({
+  const [response] = useQuery({
     query: viewPublicLinkQuery,
     variables: { id: id ?? '0' },
     pause: !id,
   });
 
+  const data = response.data?.publicLink;
+
   const [, mutate] = useMutation(editPublicLinkMutation);
 
-  const [name, setName] = useState('');
-  const [link, setLink] = useState(randomString());
-  const [enabled, setEnabled] = useState(true);
+  const [name, setName] = useState(data?.name ?? '');
+  const [link, setLink] = useState(data?.uuid ?? randomString());
+  const [enabled, setEnabled] = useState(data?.enabled ?? true);
   // const random = () => {
   //   randomString();
   // };

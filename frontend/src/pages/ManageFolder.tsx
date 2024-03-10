@@ -14,8 +14,7 @@ import { manageFolderQuery } from '../urql/queries/manageFolderQuery';
 import QueryFeedback from '../components/QueryFeedback';
 import { Add } from 'grommet-icons';
 import { ManagePublicLink } from './ManagePublicLink';
-import { FileListViewStyleComponentProps } from '../components/FileListView/FileListView';
-import { MinimalFile, MinimalSharedFolder } from '../../types';
+import { MinimalSharedFolder } from '../../types';
 
 export const ManageFolder = ({ folderId }: { folderId: string }) => {
   return (
@@ -86,6 +85,7 @@ const SharedFolderDataGrid = ({
         sort={sort}
         onSort={setSort}
         resizeable
+        primaryKey="id"
         onClickRow={({ datum }) => setSharedFolderId(datum.id)}
       />
     </Box>
