@@ -4,7 +4,7 @@ import User from '../models/User';
 import { getFolder } from './resolvers/resolverHelpers';
 import { GraphQLError } from 'graphql/error';
 
-export const editUser = async (params, context) => {
+export const editUser = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
   if (p !== 'Admin') doAuthError("You don't have permissions for this folder");
   let user: User | null = null;

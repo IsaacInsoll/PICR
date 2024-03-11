@@ -3,7 +3,7 @@ import { sequelize } from './database';
 import pkg from '../package.json';
 import { fileWatcher } from './filesystem/fileWatcher';
 import { config } from 'dotenv';
-import { gqlserver } from './graphql/resolvers';
+import { gqlserver } from './graphql/gqlserver';
 import { logger } from './logger';
 import { randomBytes } from 'node:crypto';
 import path from 'path';

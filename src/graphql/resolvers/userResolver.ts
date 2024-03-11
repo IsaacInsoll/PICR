@@ -6,7 +6,7 @@ import { getFolder } from './resolverHelpers';
 import { Op } from 'sequelize';
 import User from '../../models/User';
 
-export const userResolver = async (params, context) => {
+export const userResolver = async (_, params, context) => {
   const user = await User.findByPk(params.id);
   if (!user) throw new GraphQLError('Could not find user ' + params.id);
   const [p, u] = await contextPermissionsForFolder(
@@ -18,7 +18,7 @@ export const userResolver = async (params, context) => {
   return { ...user.toJSON(), folder: getFolder(user.folderId) };
 };
 
-export const usersResolver = async (params, context) => {
+export const usersResolver = async (_, params, context) => {
   const [p, u] = await contextPermissionsForFolder(
     context,
     params.folderId,
