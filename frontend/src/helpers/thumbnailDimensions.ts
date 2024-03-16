@@ -1,6 +1,6 @@
 //TODO: configurable via .env?
 export const thumbnailDimensions = {
   sm: 250, // baby thumbs
-  md: 1000, //full width thumbs?
-  lg: 2500, // full screen on ipad
+  md: 500, // "250px" eg masonry view
+  lg: 2500, // full screen
 } as const;

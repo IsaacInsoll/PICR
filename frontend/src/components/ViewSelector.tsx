@@ -1,8 +1,13 @@
-import { Button, Page, PageContent, Toolbar } from 'grommet';
-import { Gallery as GalleryIcon, List as ListIcon } from 'grommet-icons';
-import { AppsRounded } from 'grommet-icons/icons';
+import { Box, Button, Page, PageContent, Toolbar } from 'grommet';
+import {
+  AppsRounded,
+  Filter,
+  Gallery as GalleryIcon,
+  List as ListIcon,
+} from 'grommet-icons';
 import { atomWithStorage } from 'jotai/utils';
 import { useAtom, useAtomValue } from 'jotai';
+import { filterAtom } from '../atoms/filterAtom';
 
 export type SelectedView = 'list' | 'gallery' | 'slideshow';
 
@@ -13,10 +18,11 @@ const selectedViewAtom = atomWithStorage<SelectedView>(
 
 export const ViewSelector = () => {
   const [view, setView] = useAtom(selectedViewAtom);
+  const [filtering, setFiltering] = useAtom(filterAtom);
   return (
     <Page>
       <PageContent>
-        <Toolbar direction="row">
+        <Toolbar direction="row" margin={{ bottom: 'small' }}>
           {viewOptions.map(({ name, icon, label }) => (
             <Button
               icon={icon}
@@ -25,6 +31,12 @@ export const ViewSelector = () => {
               onClick={() => setView(name)}
             />
           ))}
+          <Box flex />
+          <Button
+            icon={<Filter />}
+            primary={filtering}
+            onClick={() => setFiltering((f) => !f)}
+          />
         </Toolbar>
       </PageContent>
     </Page>

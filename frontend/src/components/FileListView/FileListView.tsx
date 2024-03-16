@@ -5,6 +5,10 @@ import { DataGrid } from './DataGrid';
 import { useState } from 'react';
 import { ImageFeed } from './ImageFeed';
 import { SelectedFileView } from './SelectedFileView';
+import { filterAtom, filterOptions } from '../../atoms/filterAtom';
+import { useAtomValue } from 'jotai';
+import { FilteringOptions } from './FilteringOptions';
+import { filterFiles } from '../../helpers/filterFiles';
 
 export interface FileListViewProps {
   files: MinimalFile[];
@@ -18,17 +22,21 @@ export interface FileListViewStyleComponentProps {
 
 export const FileListView = ({ files }: FileListViewProps) => {
   const view = useSelectedView();
+  const filtering = useAtomValue(filterAtom);
+  const filters = useAtomValue(filterOptions);
   const [selectedFileId, setSelectedFileId] = useState<string | undefined>(
     undefined,
   );
-  const props = { files, selectedFileId, setSelectedFileId };
   if (!files || files.length === 0) return undefined;
+  const filteredFiles = filtering ? filterFiles(files, filters) : files;
+  const props = { files: filteredFiles, selectedFileId, setSelectedFileId };
   return (
     <>
       <ViewSelector />
+      {filtering ? <FilteringOptions files={files} /> : null}
       {selectedFileId ? (
         <SelectedFileView
-          files={files}
+          files={filteredFiles}
           setSelectedFileId={setSelectedFileId}
           selectedFileId={selectedFileId}
         />
