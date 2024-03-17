@@ -78,6 +78,7 @@ export const ViewFolderBody = ({
         primary
         label={managing ? 'View Folder' : 'Manage'}
         onClick={toggleManaging}
+        key={1}
       />,
     );
   }

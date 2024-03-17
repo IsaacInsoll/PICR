@@ -1,11 +1,11 @@
 export interface MetadataSummary {
-  Camera?: string;
-  Lens?: string;
-  Artist?: string;
-  DateTimeEdit?: Date;
-  DateTimeOriginal?: Date;
-  Aperture?: number;
+  Camera?: string | null;
+  Lens?: string | null;
+  Artist?: string | null;
+  DateTimeEdit?: Date | null;
+  DateTimeOriginal?: Date | null;
+  Aperture?: number | null;
   // ShutterSpeed?: string;
-  ISO?: number;
-  ExposureTime: number; // note this is in seconds so render as 1/${1/ExposureTime} if it's less than 1
+  ISO?: number | null;
+  ExposureTime: number | null; // note this is in seconds so render as 1/${1/ExposureTime} if it's less than 1
 }

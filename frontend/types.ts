@@ -1,3 +1,5 @@
+import { MetadataSummary } from './src/gql/graphql';
+
 export interface MinimalFolder {
   id: string;
   name?: string;
@@ -10,6 +12,7 @@ export interface MinimalFile {
   name?: string;
   fileHash?: string;
   imageRatio?: number | null;
+  metadata?: MetadataSummary | null;
 }
 export interface MinimalSharedFolder {
   id: string;

@@ -29,6 +29,7 @@ export const ViewSelector = () => {
               // label={label}
               {...{ primary: name === view }}
               onClick={() => setView(name)}
+              key={name}
             />
           ))}
           <Box flex />

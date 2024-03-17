@@ -3,14 +3,23 @@ import {
   AspectFilterOptions,
   FilterOptionsInterface,
 } from '../atoms/filterAtom';
+import { MetadataOptionsForFiltering } from './metadataForFiltering';
+import { metadata } from 'reflect-metadata/no-conflict';
+import { Metadata } from 'sharp';
+import { MetadataSummary } from '../../../src/types/MetadataSummary';
+import { entries } from 'lodash';
 
 export const filterFiles = (
   files: MinimalFile[],
   filters: FilterOptionsInterface,
 ) => {
-  const { ratio, searchText } = filters;
+  const { ratio, searchText, metadata } = filters;
   return files.filter((file: MinimalFile) => {
-    return ratioFilter(file, ratio) && textFilter(file, searchText);
+    return (
+      ratioFilter(file, ratio) &&
+      textFilter(file, searchText) &&
+      metadataFilter(file, metadata)
+    );
   });
 };
 
@@ -31,4 +40,19 @@ const ratioFilter = (
     (ratio === 'Landscape' && ar > 0.9) ||
     (ratio === 'Portrait' && ar < 1.1)
   );
+};
+
+const metadataFilter = (
+  file: MinimalFile,
+  metadata: MetadataOptionsForFiltering,
+): boolean => {
+  let allowed = true;
+  Object.entries(metadata).forEach(([title, options]) => {
+    if (options.length > 0) {
+      console.log('options selected for ' + title);
+      const val = file.metadata?.[title as keyof MetadataSummary];
+      if (!val || !options.includes(val)) allowed = false;
+    }
+  });
+  return allowed;
 };

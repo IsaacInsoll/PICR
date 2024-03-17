@@ -7,7 +7,7 @@ import { ImageFeed } from './ImageFeed';
 import { SelectedFileView } from './SelectedFileView';
 import { filterAtom, filterOptions } from '../../atoms/filterAtom';
 import { useAtomValue } from 'jotai';
-import { FilteringOptions } from './FilteringOptions';
+import { FilteringOptions } from './Filtering/FilteringOptions';
 import { filterFiles } from '../../helpers/filterFiles';
 
 export interface FileListViewProps {
