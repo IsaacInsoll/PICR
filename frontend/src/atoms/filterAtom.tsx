@@ -22,3 +22,7 @@ export const DefaultFilterOptions: FilterOptionsInterface = {
 };
 
 export const filterOptions = atom<FilterOptionsInterface>(DefaultFilterOptions);
+
+export const resetFilterOptions = atom(null, (get, set, update) => {
+  set(filterOptions, DefaultFilterOptions);
+});

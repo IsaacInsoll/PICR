@@ -103,7 +103,7 @@ export const ViewFolderBody = ({
                 folders={folder?.subFolders}
                 onClick={setFolder}
               />
-              <FileListView files={folder.files} />
+              <FileListView folderId={folderId} files={folder.files} />
             </>
           )}
         </>
