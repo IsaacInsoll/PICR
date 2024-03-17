@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 
 config(); // read .ENV
 
-const enabled = process.env.DEBUG_SQL == 'true';
-export const logger = (message: string) => {
-  if (enabled) console.log(message);
+const enabled = process.env.VERBOSE == 'true';
+export const logger = (message: string, important?: boolean) => {
+  if (enabled || important) console.log(message);
 };

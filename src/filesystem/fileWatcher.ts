@@ -2,14 +2,23 @@ import chokidar from 'chokidar';
 import { directoryPath } from './fileManager';
 import { addToQueue } from './fileQueue';
 import { logger } from '../logger';
+import { config } from 'dotenv';
+
+config();
 
 export const fileWatcher = () => {
-  logger('👀 Now watching: ' + directoryPath);
+  logger('👀 Now watching: ' + directoryPath, true);
   let initComplete = false;
+  const usePolling = process.env.USE_POLLING == 'true';
+  if (usePolling) {
+    logger('Watching files with POLLING', true);
+  }
+
   const watcher = chokidar.watch(directoryPath, {
     ignored: /^\./,
     persistent: true,
     awaitWriteFinish: true,
+    usePolling,
   });
 
   watcher
@@ -31,6 +40,6 @@ export const fileWatcher = () => {
     })
     .on('ready', () => {
       initComplete = true;
-      logger('✅ Initial scan complete. Ready for changes');
+      logger('✅ Initial scan complete. Ready for changes', true);
     });
 };

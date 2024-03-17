@@ -73,7 +73,7 @@ const server = async () => {
   });
 
   e.listen(port, () => {
-    logger(`🌐 App listening at http://localhost:${port}`);
+    logger(`🌐 App listening at http://localhost:${port}`, true);
   });
 
   //Close all the stuff
