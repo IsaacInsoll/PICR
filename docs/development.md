@@ -23,11 +23,17 @@ You can work around docker with `docker compose run picr` which gives you a tty/
 | public   | *Compiled* React front end and any other static assets |
 
 ## Building
+
 `cd frontend && npm run gql && npm run build` to ensure front end is built
+
 `cd .. && npm run build` to build backend
+
 `docker build . -t isaacinsoll/picr:latest` to create docker image (optionally add a second tag (another ` -t` if you want a build number tag as well))
 
 ### Releasing to github
+Simply `deploy` command, or if you aren't running funky:
+
+Do the 'Building' section above then:
 ```shell
 docker build . -t ghcr.io/isaacinsoll/picr:latest
 docker push ghcr.io/isaacinsoll/picr:latest

@@ -49,7 +49,6 @@ const metadataFilter = (
   let allowed = true;
   Object.entries(metadata).forEach(([title, options]) => {
     if (options.length > 0) {
-      console.log('options selected for ' + title);
       const val = file.metadata?.[title as keyof MetadataSummary];
       if (!val || !options.includes(val)) allowed = false;
     }

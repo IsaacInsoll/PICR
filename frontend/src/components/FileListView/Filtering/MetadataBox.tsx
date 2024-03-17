@@ -40,6 +40,7 @@ export const MetadataBox = ({
           {Object.entries(metadata).map(([title, options]) => {
             return (
               <MetadataSelect
+                key={title}
                 title={title as keyof MetadataSummary}
                 options={options}
               />
