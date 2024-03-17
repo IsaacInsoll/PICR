@@ -61,25 +61,31 @@ export const getImageRatio = async (filePath: string) => {
 
 export const getImageMetadata = async (filePath: string) => {
   const { exif } = await sharp(filePath).metadata();
-  const x = ex(exif);
-  // const et = x?.Photo?.ExposureTime;
-  const result: MetadataSummary = {
-    Camera: `${x?.Image?.Make} ${x?.Image?.Model}`,
-    Lens: `${x?.Photo?.LensMake} ${x?.Photo?.LensModel}`,
-    Artist: x?.Image.Artist,
-    DateTimeEdit: x?.Image.DateTime,
-    DateTimeOriginal: x?.Photo.DateTimeOriginal,
-    Aperture: x?.Photo.FNumber,
-    ExposureTime: x?.Photo.ExposureTime,
-    // ShutterSpeed:
-    //   et > 0
-    //     ? et < 1
-    //       ? '1/' + (1 / x?.Photo.ExposureTime).toString() + ' sec'
-    //       : et.toFixed(2) + 'sec'
-    //     : '',
-    ISO: x?.Photo.ISOSpeedRatings,
-  };
-  return result;
+  try {
+    const x = ex(exif);
+    // const et = x?.Photo?.ExposureTime;
+    const result: MetadataSummary = {
+      Camera: `${x?.Image?.Make} ${x?.Image?.Model}`,
+      Lens: `${x?.Photo?.LensMake} ${x?.Photo?.LensModel}`,
+      Artist: x?.Image.Artist,
+      DateTimeEdit: x?.Image.DateTime,
+      DateTimeOriginal: x?.Photo.DateTimeOriginal,
+      Aperture: x?.Photo.FNumber,
+      ExposureTime: x?.Photo.ExposureTime,
+      // ShutterSpeed:
+      //   et > 0
+      //     ? et < 1
+      //       ? '1/' + (1 / x?.Photo.ExposureTime).toString() + ' sec'
+      //       : et.toFixed(2) + 'sec'
+      //     : '',
+      ISO: x?.Photo.ISOSpeedRatings,
+    };
+    return result;
+  } catch (e) {
+    console.log('Error getting metadata for file: ' + filePath);
+    console.log(e);
+    return {};
+  }
   /* {
 [js]   Image: {
 [js]     Make: 'FUJIFILM',
