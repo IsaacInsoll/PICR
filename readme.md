@@ -20,8 +20,9 @@ Use the following `docker-compose` file to get started
 version: "3.7"
 services:
   picr:
-    image: 'isaacinsoll/picr'
-    build: .
+    image: 'ghcr.io/isaacinsoll/picr'
+    container_name: 'picr'
+    # build: .
     volumes:
       - ./media:/home/node/app/media
       - ./data:/home/node/app/data
