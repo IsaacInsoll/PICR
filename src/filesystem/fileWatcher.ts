@@ -1,8 +1,9 @@
 import chokidar from 'chokidar';
-import { directoryPath } from './fileManager';
+import { directoryPath, relativePath } from './fileManager';
 import { addToQueue } from './fileQueue';
 import { logger } from '../logger';
 import { config } from 'dotenv';
+import { log } from 'node:util';
 
 config();
 
@@ -15,7 +16,7 @@ export const fileWatcher = () => {
   }
 
   const watcher = chokidar.watch(directoryPath, {
-    ignored: /^\./,
+    ignored: ignored,
     persistent: true,
     awaitWriteFinish: true,
     usePolling,
@@ -23,7 +24,7 @@ export const fileWatcher = () => {
 
   watcher
     .on('add', (path) => {
-      // log('➕ ' + path);
+      logger('➕ ' + path);
       //TODO: the following line times out the DB :(
       addToQueue('add', path);
     })
@@ -31,11 +32,11 @@ export const fileWatcher = () => {
     // .on('unlink', path => log('➖ ' + path))
     .on('error', (error) => console.log('⚠️ Error happened: ' + error))
     .on('addDir', (path) => {
-      // log(`📁➕ ${relativePath(path)}`);
+      logger(`📁➕ ${relativePath(path)}`);
       addToQueue('addDir', path, true);
     })
     .on('unlinkDir', (path) => {
-      // log(`📁➖ ${relativePath(path)}`);
+      logger(`📁➖ ${relativePath(path)}`);
       addToQueue('unlinkDir', path, true);
     })
     .on('ready', () => {
@@ -43,3 +44,8 @@ export const fileWatcher = () => {
       logger('✅ Initial scan complete. Ready for changes', true);
     });
 };
+
+const ignored = /(^\.|\/@eaDir\/|\/\.)/;
+// anything in root starting with .
+// anything in a folder @eaDir which is a sneaky synology "metadata" folder
+// any file/folder starting with a .

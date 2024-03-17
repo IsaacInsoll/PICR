@@ -20,19 +20,28 @@ Use the following `docker-compose` file to get started
 version: "3.7"
 services:
   picr:
-    image: 'ghcr.io/isaacinsoll/picr'
     container_name: 'picr'
-    # build: .
+    image: 'ghcr.io/isaacinsoll/picr'
     volumes:
-      - ./media:/home/node/app/media
-      - ./data:/home/node/app/data
-      - ./cache:/home/node/app/cache
+      - <path-to-your-shared-images>:/home/node/app/media:ro # read only access to your 'files i give to clients' folder
+      - ./cache:/home/node/app/cache #where PICR will store thumbnails it generates, no need to back it up
+    depends_on:
+      - db
     ports:
-      # presumably this will be behind a Reverse Proxy for HTTPS
-      - 6900:6900
-  # leave this out and on first build it will give you a very secret random string to put in here
-#    environment:
-#      - TOKEN_SECRET=<secret> 
+      - "6900:6900" # presumably reverse proxy will handle HTTPS
+    environment:
+      - TOKEN_SECRET= # leave this out and on first build it will give you a very secret random string to put in here
+      - DATABASE_URL=postgres://user:pass@db/picr
+      - USE_POLLING=true
+  db:
+    image: postgres
+    container_name: picr-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: picr
+    volumes:
+      - ./data:/var/lib/postgresql/data #database storage, you should back this up
 ```
 1. Make sure you have docker installed and set up
 2. Copy the `docker-compose.yml` example above and modify the volume mount for media (IE: change `./media` to the full path on your host where the photos are stored)

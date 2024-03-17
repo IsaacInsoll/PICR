@@ -1,4 +1,10 @@
-import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import Folder from './Folder';
 
 @Table
@@ -13,7 +19,7 @@ export default class File extends Model {
   @Column
   declare metadata: string; //dodgy JSON string of type `MetadataSummary.ts`
 
-  @Column
+  @Column({ type: DataType.FLOAT })
   declare imageRatio: number; // width / height (used for sizing on screen elements before image is loaded
 
   @ForeignKey(() => Folder)

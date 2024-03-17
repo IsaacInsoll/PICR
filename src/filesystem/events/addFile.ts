@@ -34,7 +34,7 @@ export const addFile = async (filePath: string) => {
     defaults: { fileHash: hash },
   });
   if (file.fileHash !== hash || created) {
-    console.log((created ? 'New File: ' : 'Hash Mismatch for: ') + filePath);
+    logger((created ? 'New File: ' : 'Hash Mismatch for: ') + filePath, false);
     deleteAllThumbs(filePath);
     file.fileHash = hash;
     file.imageRatio = await getImageRatio(filePath);

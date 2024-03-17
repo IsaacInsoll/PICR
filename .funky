@@ -1,1 +1,1 @@
-{"deploy": "cd frontend && npm run gql && npm run build && cd .. && npm run build && docker build . -t ghcr.io/isaacinsoll/picr:latest && docker push ghcr.io/isaacinsoll/picr:latest \"$@\""}
+{"dockerbuild": "cd frontend && npm run build && cd .. && npm run build && docker build . -t ghcr.io/isaacinsoll/picr:latest \"$@\"", "dockerdeploy": "cd frontend && npm run build && cd .. && npm run build && docker build . -t ghcr.io/isaacinsoll/picr:latest && docker push ghcr.io/isaacinsoll/picr:latest \"$@\""}
