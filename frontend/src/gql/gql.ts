@@ -13,6 +13,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n  query TaskQuery {\n    tasks {\n      id\n      name\n      step\n      totalSteps\n    }\n  }\n": types.TaskQueryDocument,
     "\n  fragment FileFragment on File {\n    id\n    name\n    imageRatio\n    fileHash\n  }\n": types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n    parent {\n      id\n      name\n    }\n  }\n": types.FolderFragmentFragmentDoc,
     "\n  fragment MetadataFragment on MetadataSummary {\n    Camera\n    Lens\n    Artist\n    DateTimeOriginal\n    DateTimeEdit\n    Aperture\n    ExposureTime\n    ISO\n  }\n": types.MetadataFragmentFragmentDoc,
@@ -41,6 +42,10 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query TaskQuery {\n    tasks {\n      id\n      name\n      step\n      totalSteps\n    }\n  }\n"): (typeof documents)["\n  query TaskQuery {\n    tasks {\n      id\n      name\n      step\n      totalSteps\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

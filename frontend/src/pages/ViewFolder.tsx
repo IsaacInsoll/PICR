@@ -16,6 +16,7 @@ import { placeholderFolderName } from '../components/FolderHeader/PlaceholderFol
 import { Button } from 'grommet';
 import { ManageFolder } from './ManageFolder';
 import { getUUID } from '../Router';
+import { TaskSummary } from '../components/TaskSummary';
 
 // This component is used in the 'public URL' and 'private URL' routes, so this is how we determine where each link should point
 export const useBaseViewFolderURL = () => {
@@ -95,6 +96,7 @@ export const ViewFolderBody = ({
             subtitle={folderSubtitle(folder)}
             actions={<>{actions}</>}
           />
+          <TaskSummary folderId={folder.id} />
           {managing ? (
             <ManageFolder folderId={folderId} />
           ) : (
