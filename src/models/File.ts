@@ -16,7 +16,7 @@ export default class File extends Model {
   @Column
   declare relativePath: string;
 
-  @Column
+  @Column({ type: DataType.TEXT })
   declare metadata: string; //dodgy JSON string of type `MetadataSummary.ts`
 
   @Column({ type: DataType.FLOAT })

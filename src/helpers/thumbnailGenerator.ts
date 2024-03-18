@@ -84,7 +84,7 @@ export const getImageMetadata = async (filePath: string) => {
   } catch (e) {
     console.log('Error getting metadata for file: ' + filePath);
     console.log(e);
-    return {};
+    return null;
   }
   /* {
 [js]   Image: {
