@@ -53,3 +53,12 @@ const processQueue = async (action: QueueAction, filePath: string) => {
   queueProgressBar.update(queueDone);
   if (queueDone == queueTotal) queueProgressBar.stop();
 };
+
+export const queueTaskStatus = () => {
+  if (queueDone == queueTotal) return null;
+  return {
+    name: 'Import Images and Generate Thumbnails',
+    step: queueDone,
+    totalSteps: queueTotal,
+  };
+};

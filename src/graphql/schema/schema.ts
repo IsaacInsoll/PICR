@@ -6,6 +6,7 @@ import { userType } from './userType';
 import { folderType } from './folderType';
 import { queryType } from './queryType';
 import { mutationType } from './mutationType';
+import { taskType } from './taskType';
 
 export const schema = new GraphQLSchema({
   query: queryType,
@@ -16,5 +17,6 @@ export const schema = new GraphQLSchema({
     folderPermissionsType,
     metadataSummaryType,
     userType,
+    taskType,
   ],
 });

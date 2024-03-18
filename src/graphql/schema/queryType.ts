@@ -11,6 +11,8 @@ import { fileType } from './fileType';
 import { fileResolver } from '../resolvers/fileResolver';
 import { userType } from './userType';
 import { userResolver, usersResolver } from '../resolvers/userResolver';
+import { taskType } from './taskType';
+import { taskResolver } from '../resolvers/taskResolver';
 
 export const queryType = new GraphQLObjectType({
   name: 'Query',
@@ -38,6 +40,13 @@ export const queryType = new GraphQLObjectType({
       resolve: userResolver,
       args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
+      },
+    },
+    tasks: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(taskType))),
+      resolve: taskResolver,
+      args: {
+        folderId: { type: GraphQLID },
       },
     },
   }),
