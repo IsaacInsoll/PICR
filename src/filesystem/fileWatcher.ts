@@ -11,8 +11,13 @@ export const fileWatcher = () => {
   logger('👀 Now watching: ' + directoryPath, true);
   let initComplete = false;
   const usePolling = process.env.USE_POLLING == 'true';
+  const intervalMultiplier = parseInt(process.env.POLLING_INTERVAL) ?? 20; // multiply default interval values by this
+
   if (usePolling) {
-    logger('Watching files with POLLING', true);
+    logger(
+      'Watching files with POLLING interval of ' + intervalMultiplier,
+      true,
+    );
   }
 
   const watcher = chokidar.watch(directoryPath, {
@@ -20,6 +25,8 @@ export const fileWatcher = () => {
     persistent: true,
     awaitWriteFinish: true,
     usePolling,
+    interval: 100 * intervalMultiplier,
+    binaryInterval: 300 * intervalMultiplier,
   });
 
   watcher
