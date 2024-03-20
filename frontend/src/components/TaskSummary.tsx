@@ -3,11 +3,11 @@ import { useQuery } from 'urql';
 import { Box } from 'grommet';
 
 export const TaskSummary = ({ folderId }: { folderId?: string }) => {
-  const [result, requery] = useQuery(taskQuery);
+  const [result, requery] = useQuery({ query: taskQuery });
 
   return (
     <Box>
-      {result.data.tasks.map(({ id, name, step, totalSteps }) => (
+      {result.data?.tasks.map(({ id, name, step, totalSteps }) => (
         <Box>
           {name} {step}/{totalSteps}
         </Box>

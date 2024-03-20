@@ -1,0 +1,66 @@
+type File {
+  fileHash: String!
+  folderId: ID!
+  id: ID!
+  imageRatio: Float
+  metadata: MetadataSummary
+  name: String!
+}
+
+type Folder {
+  files: [File!]!
+  id: ID!
+  name: String!
+  parent: Folder
+  parentId: ID
+  permissions: FolderPermissions
+  subFolders: [Folder!]!
+}
+
+enum FolderPermissions {
+  Admin
+  None
+  View
+}
+
+type MetadataSummary {
+  Aperture: Float
+  Artist: String
+  Camera: String
+  DateTimeEdit: String
+  DateTimeOriginal: String
+  ExposureTime: Float
+  ISO: Float
+  Lens: String
+}
+
+type Mutation {
+  auth(password: String!, user: String!): String!
+  editUser(enabled: Boolean, folderId: ID, id: ID, name: String, uuid: String): User!
+}
+
+type Query {
+  file(id: ID!): File!
+  folder(id: ID!): Folder!
+  tasks(folderId: ID): [Task!]!
+  user(id: ID!): User!
+  users(folderId: ID!, includeParents: Boolean): [User!]!
+}
+
+type Task {
+  folder: Folder
+  id: ID
+  name: String!
+  startTime: String
+  step: Int!
+  totalSteps: Int!
+}
+
+type User {
+  enabled: Boolean!
+  folder: Folder
+  folderId: ID!
+  id: ID!
+  name: String!
+  uuid: String!
+}
