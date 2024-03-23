@@ -13,10 +13,13 @@ import { FileListView } from '../components/FileListView/FileListView';
 import QueryFeedback from '../components/QueryFeedback';
 import { useSetAtom } from 'jotai/index';
 import { placeholderFolderName } from '../components/FolderHeader/PlaceholderFolderName';
-import { Button } from 'grommet';
+import { Box, Button } from 'grommet';
 import { ManageFolder } from './ManageFolder';
 import { getUUID } from '../Router';
 import { TaskSummary } from '../components/TaskSummary';
+import { ViewSelector } from '../components/ViewSelector';
+import { Configure } from 'grommet-icons';
+import { FilterToggle } from '../components/FilterToggle';
 
 // This component is used in the 'public URL' and 'private URL' routes, so this is how we determine where each link should point
 export const useBaseViewFolderURL = () => {
@@ -76,13 +79,15 @@ export const ViewFolderBody = ({
   if (folder?.permissions === 'Admin') {
     actions.push(
       <Button
-        primary
-        label={managing ? 'View Folder' : 'Manage'}
+        primary={managing}
+        icon={<Configure />}
+        // label={managing ? 'View Folder' : 'Manage'}
         onClick={toggleManaging}
-        key={1}
       />,
     );
   }
+  actions.push(<ViewSelector />);
+  actions.push(<FilterToggle />);
 
   return (
     <>
@@ -94,7 +99,11 @@ export const ViewFolderBody = ({
           <FolderHeader
             folder={folder}
             subtitle={folderSubtitle(folder)}
-            actions={<>{actions}</>}
+            actions={
+              <Box direction="row" gap="small" justify="between" width="100%">
+                {actions}
+              </Box>
+            }
           />
           <TaskSummary folderId={folder.id} />
           {managing ? (

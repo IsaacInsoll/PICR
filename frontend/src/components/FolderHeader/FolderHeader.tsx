@@ -2,10 +2,9 @@ import { Anchor, Box, Page, PageContent, PageHeader, Spinner } from 'grommet';
 import { MinimalFolder } from '../../../types';
 import { FolderLink } from '../FolderLink';
 import { Helmet } from 'react-helmet';
-import { ReactNode, Suspense } from 'react';
+import { ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { placeholderFolderName } from './PlaceholderFolderName';
-import { map } from 'lodash';
 import { FormNext } from 'grommet-icons';
 
 export const FolderHeader = ({
@@ -24,6 +23,8 @@ export const FolderHeader = ({
         title={folder.name ?? '(Unnamed Folder)'}
         subtitle={subtitle}
         actions={actions}
+        responsive={true} // moves actions below title on mobile
+        level="2"
         parent={
           folder.parents ? (
             <Box direction="row" align="center">

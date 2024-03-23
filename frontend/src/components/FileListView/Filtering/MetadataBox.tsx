@@ -62,14 +62,25 @@ const MetadataSelect = ({
   const value = options.length === 1 ? options : fo.metadata[title] ?? [];
   return (
     <SelectMultiple
-      placeholder={title}
+      placeholder={title === 'ExposureTime' ? 'Shutter Speed' : title}
       disabled={options.length <= 1}
       icon={iconList[title]}
-      options={options}
+      options={formatValues(title, options)}
+      labelKey="label"
+      valueKey={{ key: 'value' }}
       value={value}
-      onChange={({ value }) =>
-        setFo((e) => ({ ...e, metadata: { ...e.metadata, [title]: value } }))
-      }
+      onChange={({ value }) => {
+        console.log(value);
+        setFo((e) => ({
+          ...e,
+          metadata: {
+            ...e.metadata,
+            [title]: value.map(
+              ({ value }: { value: string | number }) => value,
+            ),
+          },
+        }));
+      }}
     />
   );
 };
@@ -85,3 +96,21 @@ const iconList: Record<keyof MetadataSummary, ReactNode> = {
   DateTimeEdit: null,
   DateTimeOriginal: null,
 } as const;
+
+const formatValues = (
+  title: keyof MetadataSummary,
+  options: (string | number)[],
+) => {
+  if (title === 'Aperture')
+    return options.map((o) => ({ value: o, label: 'ƒ' + o }));
+  if (title === 'ExposureTime')
+    return options.map((o: any) => {
+      return {
+        value: o,
+        label: o > 1 ? o.toFixed(1) + ' sec' : '¹/' + (1 / o).toString(),
+      };
+    });
+
+  // console.log(title, options);
+  return options;
+};

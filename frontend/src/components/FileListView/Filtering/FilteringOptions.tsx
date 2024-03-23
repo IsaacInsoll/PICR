@@ -20,7 +20,7 @@ export const FilteringOptions = ({ files }: { files: MinimalFile[] }) => {
           // background="placeholder"
           border={{ side: 'top', color: 'brand' }}
           // margin={{ top: 'small' }}
-          pad="small"
+          pad={{ top: 'small', bottom: 'small' }}
         >
           <SearchBox />
           <AspectSelector />

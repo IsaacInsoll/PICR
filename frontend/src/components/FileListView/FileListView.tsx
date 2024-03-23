@@ -40,7 +40,7 @@ export const FileListView = ({ files, folderId }: FileListViewProps) => {
   const props = { files: filteredFiles, selectedFileId, setSelectedFileId };
   return (
     <>
-      <ViewSelector />
+      {/*<ViewSelector />*/}
       {filtering ? <FilteringOptions files={files} /> : null}
       {selectedFileId ? (
         <SelectedFileView

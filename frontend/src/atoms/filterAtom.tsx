@@ -26,3 +26,14 @@ export const filterOptions = atom<FilterOptionsInterface>(DefaultFilterOptions);
 export const resetFilterOptions = atom(null, (get, set, update) => {
   set(filterOptions, DefaultFilterOptions);
 });
+
+export const totalFilterOptionsSelected = atom((get) => {
+  const { ratio, searchText, metadata } = get(filterOptions);
+  let total = 0;
+  if (ratio !== 'Any Ratio') total++;
+  if (searchText && searchText !== '') total++;
+  Object.entries(metadata).forEach(([title, options]) => {
+    if (options.length) total++;
+  });
+  return total;
+});

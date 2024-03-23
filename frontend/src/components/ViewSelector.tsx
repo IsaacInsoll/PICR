@@ -1,7 +1,6 @@
-import { Box, Button, Page, PageContent, Toolbar } from 'grommet';
+import { Box, Button } from 'grommet';
 import {
   AppsRounded,
-  Filter,
   Gallery as GalleryIcon,
   List as ListIcon,
 } from 'grommet-icons';
@@ -20,27 +19,17 @@ export const ViewSelector = () => {
   const [view, setView] = useAtom(selectedViewAtom);
   const [filtering, setFiltering] = useAtom(filterAtom);
   return (
-    <Page>
-      <PageContent>
-        <Toolbar direction="row" margin={{ bottom: 'small' }}>
-          {viewOptions.map(({ name, icon, label }) => (
-            <Button
-              icon={icon}
-              // label={label}
-              {...{ primary: name === view }}
-              onClick={() => setView(name)}
-              key={name}
-            />
-          ))}
-          <Box flex />
-          <Button
-            icon={<Filter />}
-            primary={filtering}
-            onClick={() => setFiltering((f) => !f)}
-          />
-        </Toolbar>
-      </PageContent>
-    </Page>
+    <Box direction="row">
+      {viewOptions.map(({ name, icon, label }) => (
+        <Button
+          icon={icon}
+          // label={label}
+          {...{ primary: name === view }}
+          onClick={() => setView(name)}
+          key={name}
+        />
+      ))}
+    </Box>
   );
 };
 

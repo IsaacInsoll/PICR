@@ -11,12 +11,18 @@ export const getFolder = async (id: string | number) => {
 };
 
 export const subFolders = async (parentId: string | number) => {
-  const folders = await Folder.findAll({ where: { parentId } });
+  const folders = await Folder.findAll({
+    where: { parentId },
+    order: [['name', 'ASC']],
+  });
   return folders.map((f) => f.toJSON());
 };
 
 export const subFiles = async (folderId: string | number) => {
-  const files = await File.findAll({ where: { folderId } });
+  const files = await File.findAll({
+    where: { folderId },
+    order: [['name', 'ASC']],
+  });
   return files.map((f) => {
     // this was just f.toJSON but all metadata is a single field in the DB currently coz it's 'modular' not 'dodgy'
     return fileToJSON(f);
