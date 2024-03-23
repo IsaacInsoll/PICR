@@ -2,6 +2,7 @@ import { addFile } from './events/addFile';
 import { addFolder } from './events/addFolder';
 import { removeFolder } from './events/removeFolder';
 import { Presets, SingleBar } from 'cli-progress';
+import { Task } from '../../graphql-types';
 
 type QueueAction = 'addDir' | 'unlinkDir' | 'add';
 
@@ -54,7 +55,7 @@ const processQueue = async (action: QueueAction, filePath: string) => {
   if (queueDone == queueTotal) queueProgressBar.stop();
 };
 
-export const queueTaskStatus = () => {
+export const queueTaskStatus = (): null | Task => {
   if (queueDone == queueTotal) return null;
   return {
     name: 'Import Images and Generate Thumbnails',

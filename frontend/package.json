@@ -42,7 +42,7 @@
     "build": "BUILD_PATH='../public' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "gql": "graphql-codegen --config graphql.ts"
+    "gql": "graphql-codegen --config codegen.ts"
   },
   "eslintConfig": {
     "extends": [
