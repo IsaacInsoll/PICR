@@ -6,7 +6,7 @@ export const folderFragment = gql(/* GraphQL */ `
     name
     parentId
     permissions
-    parent {
+    parents {
       id
       name
     }

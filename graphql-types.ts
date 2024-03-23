@@ -29,8 +29,8 @@ export type Folder = {
   files: Array<File>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  parent?: Maybe<Folder>;
   parentId?: Maybe<Scalars['ID']['output']>;
+  parents: Array<Folder>;
   permissions?: Maybe<FolderPermissions>;
   subFolders: Array<Folder>;
 };

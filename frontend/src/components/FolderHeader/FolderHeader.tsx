@@ -5,6 +5,8 @@ import { Helmet } from 'react-helmet';
 import { ReactNode, Suspense } from 'react';
 import { useAtomValue } from 'jotai';
 import { placeholderFolderName } from './PlaceholderFolderName';
+import { map } from 'lodash';
+import { FormNext } from 'grommet-icons';
 
 export const FolderHeader = ({
   folder,
@@ -23,10 +25,21 @@ export const FolderHeader = ({
         subtitle={subtitle}
         actions={actions}
         parent={
-          folder.parent ? (
-            <Suspense>
-              <FolderLink folder={folder.parent} />
-            </Suspense>
+          folder.parents ? (
+            <Box direction="row" align="center">
+              {folder.parents
+                .slice(-3)
+                .reverse()
+                .map((p, i) => {
+                  const last = i + 1 === folder.parents?.length;
+                  return (
+                    <>
+                      <FolderLink folder={p} />
+                      {!last ? <FormNext style={{ opacity: 0.33 }} /> : null}
+                    </>
+                  );
+                })}
+            </Box>
           ) : (
             <EmptyParentFolder />
           )

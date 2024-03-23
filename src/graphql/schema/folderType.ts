@@ -18,7 +18,9 @@ export const folderType = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
       // resolve: resolver(User.Tasks)
     },
-    parent: { type: folderType },
+    parents: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
+    },
     files: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(fileType))),
     },

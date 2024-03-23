@@ -11,8 +11,8 @@ type Folder {
   files: [File!]!
   id: ID!
   name: String!
-  parent: Folder
   parentId: ID
+  parents: [Folder!]!
   permissions: FolderPermissions
   subFolders: [Folder!]!
 }

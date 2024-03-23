@@ -36,7 +36,6 @@ const ManageFolderBody = ({ folderId }: { folderId: string }) => {
   });
   const [linkId, setLinkId] = useState<string | null>(null);
   const { data } = result;
-  console.log(data);
   return (
     <Box>
       {linkId !== null ? (
