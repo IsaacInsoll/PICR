@@ -28,7 +28,7 @@ const App = () => {
 
 export default App;
 
-const theme: ThemeType = {
+export const theme: ThemeType = {
   ...grommet,
   pageHeader: { pad: { top: 'small' } },
 };

@@ -15,7 +15,7 @@ export const TaskSummary = ({ folderId }: { folderId?: string }) => {
   });
 
   const tasks = result.data?.tasks;
-  if (!tasks) return null;
+  if (!tasks || !tasks.length) return null;
   return (
     <Page>
       <PageContent>
