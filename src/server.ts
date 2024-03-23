@@ -58,7 +58,7 @@ const server = async () => {
   e.use(express.static('public'));
 
   e.get(
-    '/image/:id/:size/:hash',
+    '/image/:id/:size/:hash/:filename', //filename is ignored but nice for users to see a 'nice' name
     async (req: Request<{ id: string; size: AllSize; hash: string }>, res) => {
       const { id, size, hash } = req.params;
       const file = await File.findOne({ where: { id, fileHash: hash } });

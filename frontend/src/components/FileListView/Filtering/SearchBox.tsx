@@ -1,15 +1,18 @@
 import { useAtom } from 'jotai/index';
 import { filterOptions } from '../../../atoms/filterAtom';
-import { Box, TextInput } from 'grommet';
+import { Box, ResponsiveContext, TextInput } from 'grommet';
 import { Search } from 'grommet-icons';
+import { useContext } from 'react';
 
 export const SearchBox = () => {
   const [options, setOptions] = useAtom(filterOptions);
+  const size = useContext(ResponsiveContext);
+  console.log(size);
   return (
     <Box>
       <TextInput
         icon={<Search />}
-        width={'small'}
+        width={size === 'small' ? 'xsmall' : 'small'}
         // placeholder="Search"
         value={options.searchText}
         onChange={(e) =>

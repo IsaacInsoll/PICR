@@ -3,8 +3,8 @@ import { AllSize, ThumbnailSize } from './thumbnailSize';
 import { thumbnailDimensions } from './thumbnailDimensions';
 
 export const imageURL = (file: MinimalFile, size: AllSize) => {
-  const { id, fileHash } = file;
-  return `/image/${id}/${size}/${fileHash}`;
+  const { id, fileHash, name } = file;
+  return `/image/${id}/${size}/${fileHash}/${name}`;
 };
 
 export const imageDimensions = (file: MinimalFile, size: ThumbnailSize) => {
