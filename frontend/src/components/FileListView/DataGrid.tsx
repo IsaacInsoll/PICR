@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Box, ColumnConfig, DataTable, SortType, Text } from 'grommet';
 import { MinimalFile } from '../../../types';
 import { FileListViewStyleComponentProps } from './FileListView';
+import prettyBytes from 'pretty-bytes';
 
 export const DataGrid = ({
   files,
@@ -27,4 +28,9 @@ export const DataGrid = ({
 };
 const dataTableColumnConfig: ColumnConfig<MinimalFile>[] = [
   { property: 'name', header: <Text>Name</Text> },
+  {
+    property: 'fileSize',
+    header: <Text>File Size</Text>,
+    render: ({ fileSize }) => (fileSize ? prettyBytes(fileSize) : null),
+  },
 ];

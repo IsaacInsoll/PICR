@@ -1,6 +1,6 @@
 FROM node:20-alpine
 MAINTAINER Isaac Insoll '<isaac@snibi.com>'
-LABEL org.opencontainers.image.source https://github.com/isaacinsoll/picr
+LABEL org.opencontainers.image.source=https://github.com/isaacinsoll/picr
 
 USER node
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app

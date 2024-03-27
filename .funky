@@ -1,1 +1,0 @@
-{"dockerbuild": "cd frontend && npm run build && cd .. && npm run build && docker build . -t ghcr.io/isaacinsoll/picr:latest \"$@\"", "dockerdeploy": "cd frontend && npm run build && cd .. && npm run build && docker build . -t ghcr.io/isaacinsoll/picr:latest && docker push ghcr.io/isaacinsoll/picr:latest \"$@\""}
