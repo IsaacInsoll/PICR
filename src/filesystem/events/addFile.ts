@@ -10,6 +10,8 @@ import {
   getImageMetadata,
   getImageRatio,
 } from '../../helpers/thumbnailGenerator';
+import fs from 'fs';
+import { FileType } from '../../../graphql-types';
 
 export const addFile = async (filePath: string) => {
   const type = validExtension(filePath);
@@ -19,6 +21,8 @@ export const addFile = async (filePath: string) => {
   }
   // console.log(`${basename(filePath)} of type ${type} in ${dirname(filePath)}`);
   const folderId = await findFolderId(dirname(filePath));
+
+  const size = fs.statSync(filePath).size;
 
   const hash = fileHash(filePath);
   // console.log(hash);
@@ -31,19 +35,21 @@ export const addFile = async (filePath: string) => {
   // console.log(props);
   const [file, created] = await File.findOrCreate({
     where: props,
-    defaults: { fileHash: hash },
+    defaults: { fileHash: hash, type: type, fileSize: size },
   });
   if (file.fileHash !== hash || created) {
     logger((created ? 'New File: ' : 'Hash Mismatch for: ') + filePath, false);
-    deleteAllThumbs(filePath);
-    file.fileHash = hash;
-    file.imageRatio = await getImageRatio(filePath);
-    const meta = await getImageMetadata(filePath);
-    file.metadata = JSON.stringify(meta);
-    file.save();
+    if (type == 'Image') {
+      deleteAllThumbs(filePath);
+      file.fileHash = hash;
+      file.imageRatio = await getImageRatio(filePath);
+      const meta = await getImageMetadata(filePath);
+      file.metadata = JSON.stringify(meta);
+      file.save();
+      generateAllThumbs(filePath); // will skip if thumbs exist
+    }
   }
   // console.log(file);
-  generateAllThumbs(filePath); // will skip if thumbs exist
   logger('➕ ' + filePath);
 };
 
@@ -56,13 +62,15 @@ const findFolderId = async (fullPath: string) => {
   return id;
 };
 
-const validExtension = (filePath: string): string | null => {
+const validExtension = (filePath: string): FileType | null => {
   const ext = extname(filePath);
   if (ext === '') return null;
-  if (imageExtensions.includes(ext)) return 'image';
+  if (imageExtensions.includes(ext)) return FileType.Image;
   //TODO: video files?
+  //TODO: null for ignored files (EG: dot files?)
   //TODO: documents (eg notes in word format?)
-  return null;
+
+  return FileType.File;
 };
 
 const imageExtensions = ['.png', '.jpeg', '.jpg', '.gif'];

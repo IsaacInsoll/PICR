@@ -19,12 +19,20 @@ export type Scalars = {
 export type File = {
   __typename?: 'File';
   fileHash: Scalars['String']['output'];
+  fileSize: Scalars['Int']['output'];
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;
   metadata?: Maybe<MetadataSummary>;
   name: Scalars['String']['output'];
+  type: FileType;
 };
+
+export enum FileType {
+  File = 'File',
+  Image = 'Image',
+  Video = 'Video'
+}
 
 export type Folder = {
   __typename?: 'Folder';

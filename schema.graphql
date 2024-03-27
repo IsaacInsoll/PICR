@@ -1,10 +1,18 @@
 type File {
   fileHash: String!
+  fileSize: Int!
   folderId: ID!
   id: ID!
   imageRatio: Float
   metadata: MetadataSummary
   name: String!
+  type: FileType!
+}
+
+enum FileType {
+  File
+  Image
+  Video
 }
 
 type Folder {
