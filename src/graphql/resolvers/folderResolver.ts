@@ -2,8 +2,9 @@ import { contextPermissionsForFolder as perms } from '../../auth/contextPermissi
 import { getFolder } from './resolverHelpers';
 import { createAccessLog } from '../../models/AccessLog';
 import { ParentFolders } from '../../auth/folderUtils';
+import { Folder } from '../../../graphql-types';
 
-export const folderResolver = async (_, params, context) => {
+export const folderResolver = async (_, params, context): Promise<Folder> => {
   const [permissions, u] = await perms(context, params.id, true);
   const f = await getFolder(params.id);
   const data = { ...f, permissions };

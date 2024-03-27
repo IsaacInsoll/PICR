@@ -29,11 +29,10 @@ export const ParentFolders = async (
   return parents;
 };
 
-// CURRENTLY UNTESTED :P
 export const AllChildFolderIds = async (
   folder: Folder,
   // context,
-): Promise<Folder[]> => {
+): Promise<string[]> => {
   //NOTE: no permissions done here, if you can see parent you can see the children
   let currentIds = [folder.id];
   const all = [folder.id];
@@ -41,8 +40,8 @@ export const AllChildFolderIds = async (
     const newlyFound = await Folder.findAll({
       where: { parentId: currentIds },
     });
-    if (newlyFound.length) {
-      currentIds = newlyFound.map((item) => item.id);
+    currentIds = newlyFound.map((item) => item.id);
+    if (currentIds.length) {
       all.push(...currentIds);
     }
   }
