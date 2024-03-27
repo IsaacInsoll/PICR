@@ -1,7 +1,7 @@
 import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
 import { getFolder } from './resolverHelpers';
 import { createAccessLog } from '../../models/AccessLog';
-import { ParentFolders } from '../../auth/folderIsUnderFolder';
+import { ParentFolders } from '../../auth/folderUtils';
 
 export const folderResolver = async (_, params, context) => {
   const [permissions, u] = await perms(context, params.id, true);
