@@ -2,29 +2,23 @@ import chokidar from 'chokidar';
 import { directoryPath, relativePath } from './fileManager';
 import { addToQueue } from './fileQueue';
 import { logger } from '../logger';
-import { config } from 'dotenv';
-import { log } from 'node:util';
-
-config();
+import { picrConfig } from '../server';
 
 export const fileWatcher = () => {
-  logger('👀 Now watching: ' + directoryPath, true);
+  logger(
+    '👀 Now watching: ' +
+      directoryPath +
+      (picrConfig.usePolling ? ' with POLLING' : ''),
+    true,
+  );
   let initComplete = false;
-  const usePolling = process.env.USE_POLLING == 'true';
-  const intervalMultiplier = parseInt(process.env.POLLING_INTERVAL) ?? 20; // multiply default interval values by this
-
-  if (usePolling) {
-    logger(
-      'Watching files with POLLING interval of ' + intervalMultiplier,
-      true,
-    );
-  }
+  const intervalMultiplier = picrConfig.pollingInterval; // multiply default interval values by this
 
   const watcher = chokidar.watch(directoryPath, {
     ignored: ignored,
     persistent: true,
     awaitWriteFinish: true,
-    usePolling,
+    usePolling: picrConfig.usePolling,
     interval: 100 * intervalMultiplier,
     binaryInterval: 300 * intervalMultiplier,
   });

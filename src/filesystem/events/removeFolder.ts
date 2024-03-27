@@ -1,8 +1,7 @@
 import { delay } from '../../helpers/delay';
 import Folder from '../../models/Folder';
 import { folderList, relativePath } from '../fileManager';
-import { Op } from 'sequelize';
-import { sequelize } from '../../database';
+import { Op, literal } from 'sequelize';
 import { logger } from '../../logger';
 
 export const removeFolder = async (path: string) => {
@@ -16,9 +15,7 @@ export const removeFolder = async (path: string) => {
           where: {
             folderHash: folder.folderHash,
             createdAt: {
-              [Op.gte]: sequelize.literal(
-                "DATETIME(CURRENT_TIMESTAMP,'-5 second')",
-              ),
+              [Op.gte]: literal("DATETIME(CURRENT_TIMESTAMP,'-5 second')"),
             },
           },
         }).then((newFolder) => {

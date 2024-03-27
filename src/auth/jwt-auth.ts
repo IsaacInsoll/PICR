@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken';
 import { config } from 'dotenv';
 import { CustomJwtPayload } from '../types/CustomJwtPayload';
 import User from '../models/User';
+import { picrConfig } from '../server';
 
-config(); // get config vars
 export function generateAccessToken(obj) {
-  const response = jwt.sign(obj, process.env.TOKEN_SECRET, {
+  const response = jwt.sign(obj, picrConfig.tokenSecret, {
     expiresIn: '86400s',
   }); // 24 hours
   console.log('JWT TOKEN', obj, response);
@@ -15,7 +15,7 @@ export function generateAccessToken(obj) {
 export async function getUserFromToken(context) {
   const token = context.auth.split(' ')[1];
   if (token == null || token === '') return undefined;
-  const secret = process.env.TOKEN_SECRET as string;
+  const secret = picrConfig.tokenSecret as string;
 
   try {
     const decoded = jwt.verify(token, secret) as CustomJwtPayload;

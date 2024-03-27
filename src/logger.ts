@@ -1,9 +1,5 @@
-import { config } from 'dotenv';
+import { picrConfig } from './server';
 
-config(); // read .ENV
-
-const enabled = process.env.VERBOSE == 'true';
-console.log('🔊 Verbose Logging ' + (enabled ? 'Enabled' : 'Disabled'));
 export const logger = (message: string, important?: boolean) => {
-  if (enabled || important) console.log(message);
+  if (picrConfig?.verbose || important) console.log(message);
 };

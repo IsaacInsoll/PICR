@@ -1,5 +1,4 @@
 import express, { Request } from 'express';
-import { sequelize } from './database';
 import pkg from '../package.json';
 import { fileWatcher } from './filesystem/fileWatcher';
 import { config } from 'dotenv';
@@ -12,16 +11,26 @@ import File from './models/File';
 import { hashPassword } from './helpers/hashPassword';
 import { fullPathFor } from './helpers/thumbnailGenerator';
 import { AllSize, allSizes } from '../frontend/src/helpers/thumbnailSize';
+import { Sequelize } from 'sequelize-typescript';
+import pg from 'pg';
+
+config(); // read .ENV
+export const picrConfig = {
+  tokenSecret: process.env.TOKEN_SECRET,
+  databaseUrl: process.env.DATABASE_URL,
+  debugSql: process.env.DEBUG_SQL == 'true',
+  verbose: process.env.VERBOSE == 'true',
+  usePolling: process.env.USE_POLLING == 'true',
+  pollingInterval: parseInt(process.env.POLLING_INTERVAL) ?? 20,
+  dev: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
+};
+if (picrConfig.dev) {
+  console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
+  console.log(picrConfig);
+}
 
 const envPassword = async () => {
-  // const password = process.env.ADMIN_PASSWORD;
   const totalUsers = await User.count();
-  // if (totalUsers == 0 && !password) {
-  //   console.log(
-  //     `ERROR: You haven't specified an ADMIN_PASSWORD in .ENV and you don't have any user accounts in the database`,
-  //   );
-  //   process.exit();
-  // }
   if (totalUsers == 0) {
     User.create({
       username: 'admin',
@@ -35,7 +44,7 @@ const envPassword = async () => {
 };
 
 const envSecret = async () => {
-  if (!process.env.TOKEN_SECRET) {
+  if (!picrConfig.tokenSecret) {
     const secret = randomBytes(64).toString('hex');
     console.log(`ERROR: You haven't specified a TOKEN_SECRET in .ENV
 Heres one we just created for you:
@@ -45,7 +54,13 @@ TOKEN_SECRET=${secret}`);
 };
 
 const server = async () => {
-  config(); // read .ENV
+  const sequelize = new Sequelize(picrConfig.databaseUrl, {
+    dialect: 'postgres',
+    dialectModule: pg,
+    logging: picrConfig.debugSql,
+    models: [__dirname + '/models'],
+  });
+
   await envSecret();
   await sequelize.sync({}); // build DB
   await envPassword();
