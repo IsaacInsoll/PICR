@@ -28,6 +28,7 @@ export const DataGrid = ({
 };
 const dataTableColumnConfig: ColumnConfig<MinimalFile>[] = [
   { property: 'name', header: <Text>Name</Text> },
+  { property: 'type', header: <Text>Type</Text> },
   {
     property: 'fileSize',
     header: <Text>File Size</Text>,
