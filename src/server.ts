@@ -62,7 +62,16 @@ const server = async () => {
   });
 
   await envSecret();
-  await sequelize.sync({}); // build DB
+  try {
+    await sequelize.sync({}); // build DB
+  } catch (e) {
+    console.error(
+      '⚠️ Unable to connect to database. \n   Please ensure configuration is correct and database server is running',
+    );
+    // console.error(e);
+    process.exit();
+  }
+
   await envPassword();
 
   const e = express();
