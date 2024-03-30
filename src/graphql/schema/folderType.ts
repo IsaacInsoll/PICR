@@ -1,5 +1,6 @@
 import {
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -7,6 +8,8 @@ import {
 } from 'graphql';
 import { fileType } from './fileType';
 import { folderPermissionsType } from './folderPermissionsType';
+import { ParentFolders } from '../../auth/folderUtils';
+import Folder from '../../models/Folder';
 
 export const folderType = new GraphQLObjectType({
   name: 'Folder',
@@ -20,10 +23,19 @@ export const folderType = new GraphQLObjectType({
     },
     parents: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
+      resolve: (f: Folder, params, context) => {
+        return ParentFolders(f, context);
+      },
     },
     files: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(fileType))),
     },
     permissions: { type: folderPermissionsType },
+    fullSize: {
+      type: new GraphQLNonNull(GraphQLInt),
+      resolve: (f: Folder, params, context) => {
+        return 420;
+      },
+    },
   }),
 });
