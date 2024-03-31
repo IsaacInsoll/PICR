@@ -7,6 +7,8 @@ import {
 } from 'sequelize-typescript';
 import Folder from './Folder';
 import { FileType } from '../../graphql-types';
+import { fullPath } from '../filesystem/fileManager';
+import { sep } from 'path';
 
 @Table
 export default class File extends Model {
@@ -29,7 +31,14 @@ export default class File extends Model {
   @Column({ type: DataType.INTEGER })
   declare fileSize: number; // width / height (used for sizing on screen elements before image is loaded
 
+  @Column
+  declare fileLastModified: Date;
+
   @ForeignKey(() => Folder)
   @Column
   folderId: number;
+
+  fullPath() {
+    return fullPath(this.relativePath) + sep + this.name;
+  }
 }

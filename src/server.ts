@@ -9,10 +9,12 @@ import path from 'path';
 import User from './models/User';
 import File from './models/File';
 import { hashPassword } from './helpers/hashPassword';
-import { fullPathFor } from './helpers/thumbnailGenerator';
+import { fullPathFor, generateThumbnail } from './helpers/thumbnailGenerator';
 import { AllSize, allSizes } from '../frontend/src/helpers/thumbnailSize';
 import { Sequelize } from 'sequelize-typescript';
 import pg from 'pg';
+import { setupRootFolder } from './filesystem/events/addFolder';
+import { existsSync, readFileSync } from 'node:fs';
 
 config(); // read .ENV
 export const picrConfig = {
@@ -23,6 +25,7 @@ export const picrConfig = {
   usePolling: process.env.USE_POLLING == 'true',
   pollingInterval: parseInt(process.env.POLLING_INTERVAL) ?? 20,
   dev: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
+  version: 'dev', //overwritten elsewhere
 };
 if (picrConfig.dev) {
   console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
@@ -54,6 +57,7 @@ TOKEN_SECRET=${secret}`);
 };
 
 const server = async () => {
+  getVersion();
   const sequelize = new Sequelize(picrConfig.databaseUrl, {
     dialect: 'postgres',
     dialectModule: pg,
@@ -74,6 +78,8 @@ const server = async () => {
 
   await envPassword();
 
+  await setupRootFolder();
+
   const e = express();
   const port = 6900;
   const appName = pkg.name;
@@ -88,6 +94,10 @@ const server = async () => {
       const file = await File.findOne({ where: { id, fileHash: hash } });
       if (!file) res.sendStatus(404);
       if (!allSizes.includes(size)) res.sendStatus(400);
+      const fp = fullPathFor(file, size);
+      if (size != 'raw' && !existsSync(fp)) {
+        await generateThumbnail(file, size);
+      }
       res.sendFile(fullPathFor(file, size));
     },
   );
@@ -114,6 +124,16 @@ const server = async () => {
   });
 
   fileWatcher();
+};
+
+const getVersion = () => {
+  if (picrConfig.dev) return;
+  try {
+    picrConfig.version = readFileSync('dist/version.txt', 'utf8');
+    logger('#️⃣ Running version: ' + picrConfig.version, true);
+  } catch (e) {
+    // console.log(e);
+  }
 };
 
 server();

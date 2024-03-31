@@ -1,8 +1,7 @@
 import sharp, { ResizeOptions } from 'sharp';
 import { fullPath, relativePath } from '../filesystem/fileManager';
 import { existsSync, mkdirSync } from 'node:fs';
-import { dirname } from 'path';
-import fs from 'fs';
+import { basename, dirname, extname } from 'path';
 import File from '../models/File';
 import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions';
 import {
@@ -12,34 +11,46 @@ import {
 } from '../../frontend/src/helpers/thumbnailSize';
 import { default as ex } from 'exif-reader';
 import { MetadataSummary } from '../types/MetadataSummary';
+import { logger } from '../logger';
 
-const thumbnailPath = (filePath: string, size: ThumbnailSize) => {
-  return process.cwd() + `/cache/thumbs/${size}/${relativePath(filePath)}`;
+const thumbnailPath = (file: File, size: ThumbnailSize): string => {
+  const fp = file.fullPath();
+  const ext = extname(fp); // .txt
+  const fileName = basename(fp, ext); // notes.txt
+  const p = dirname(fp);
+
+  return (
+    process.cwd() +
+    `/cache/thumbs/${relativePath(p)}/${fileName}-${size}-${file.fileHash}${ext}`
+  );
 };
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
-export const generateAllThumbs = (filePath: string) => {
+export const generateAllThumbs = (file: File) => {
   thumbnailSizes.forEach((size: ThumbnailSize) => {
-    const path = thumbnailPath(filePath, size as ThumbnailSize);
+    const path = thumbnailPath(file, size as ThumbnailSize);
     if (!existsSync(path)) {
-      generateThumbnail(filePath, size as ThumbnailSize);
+      generateThumbnail(file, size as ThumbnailSize);
     }
   });
 };
 
-export const deleteAllThumbs = (filePath: string) => {
-  thumbnailSizes.forEach((size: ThumbnailSize) => {
-    const path = thumbnailPath(filePath, size as ThumbnailSize);
-    // console.log('Deleting Thumbnail: ' + path);
-    fs.rmSync(path, { force: true });
-  });
-};
+//TODO: reimplement this using old hashes to find the thumbs to delete
 
-export const generateThumbnail = (filePath: string, size: ThumbnailSize) => {
-  const outFile = thumbnailPath(filePath, size);
+// export const deleteAllThumbs = (filePath: string) => {
+//   thumbnailSizes.forEach((size: ThumbnailSize) => {
+//     const path = thumbnailPath(filePath, size as ThumbnailSize);
+//     // console.log('Deleting Thumbnail: ' + path);
+//     fs.rmSync(path, { force: true });
+//   });
+// };
+
+export const generateThumbnail = (file: File, size: ThumbnailSize) => {
+  logger(`🖼️ Generating ${size} thumbnail for ${file.name}`, true);
+  const outFile = thumbnailPath(file, size);
   mkdirSync(dirname(outFile), { recursive: true });
   const px = thumbnailDimensions[size];
-  sharp(filePath)
+  return sharp(file.fullPath())
     .withMetadata()
     .resize(px, px, sharpOpts)
     .jpeg(jpegOptions)
@@ -60,8 +71,8 @@ export const getImageRatio = async (filePath: string) => {
 };
 
 export const getImageMetadata = async (filePath: string) => {
-  const { exif } = await sharp(filePath).metadata();
   try {
+    const { exif } = await sharp(filePath).metadata();
     const x = ex(exif);
     // const et = x?.Photo?.ExposureTime;
     const result: MetadataSummary = {
@@ -118,10 +129,13 @@ const sharpOpts: ResizeOptions = {
 const jpegOptions = { quality: 60 };
 
 export const fullPathFor = (file: File, size: AllSize): string => {
+  if (!file.relativePath) {
+    console.log(file);
+  }
   const path = fullPath(file.relativePath) + '/' + file.name;
   if (size == 'raw') {
     return path;
   } else {
-    return thumbnailPath(path, size);
+    return thumbnailPath(file, size);
   }
 };

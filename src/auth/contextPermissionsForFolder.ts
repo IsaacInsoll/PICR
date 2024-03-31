@@ -2,10 +2,10 @@ import { CustomJwtPayload } from '../types/CustomJwtPayload';
 import { getUserFromToken } from './jwt-auth';
 import { FolderPermissions } from '../types/FolderPermissions';
 import Folder from '../models/Folder';
-import { FolderIsUnderFolder } from './folderIsUnderFolder';
 import { doAuthError } from './doAuthError';
 import { GraphQLError } from 'graphql/error';
 import User from '../models/User';
+import { FolderIsUnderFolder } from './folderUtils';
 
 export const contextPermissionsForFolder = async (
   context: CustomJwtPayload,
