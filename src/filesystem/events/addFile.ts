@@ -47,7 +47,6 @@ export const addFile = async (filePath: string) => {
         : modified
           ? 'Modified: '
           : 'Hash Mismatch for: ') + filePath,
-      true,
     );
     const hash = await fileHash2(filePath);
     file.fileHash = hash;

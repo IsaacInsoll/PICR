@@ -28,7 +28,7 @@ export default class File extends Model {
   @Column({ type: DataType.FLOAT })
   declare imageRatio: number; // width / height (used for sizing on screen elements before image is loaded
 
-  @Column({ type: DataType.INTEGER })
+  @Column({ type: DataType.BIGINT })
   declare fileSize: number; // width / height (used for sizing on screen elements before image is loaded
 
   @Column

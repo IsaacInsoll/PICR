@@ -31,7 +31,7 @@ export const addFolder = async (path: string) => {
       f = folderList[p];
     } else {
       while (folderList[p] === '0') {
-        console.log('💤 Sleeping on ', p, ' for ', path);
+        logger('💤 Sleeping on ' + p + ' for ' + path);
         await new Promise((r) => setTimeout(r, 1000));
       }
       folderList[p] = '0';

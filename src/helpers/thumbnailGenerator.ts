@@ -46,7 +46,7 @@ export const generateAllThumbs = (file: File) => {
 // };
 
 export const generateThumbnail = (file: File, size: ThumbnailSize) => {
-  logger(`🖼️ Generating ${size} thumbnail for ${file.name}`, true);
+  logger(`🖼️ Generating ${size} thumbnail for ${file.name}`);
   const outFile = thumbnailPath(file, size);
   mkdirSync(dirname(outFile), { recursive: true });
   const px = thumbnailDimensions[size];
