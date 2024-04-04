@@ -1,5 +1,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
+import File from '../models/File';
+import { sep } from 'path';
 
 export const fileHash = (filePath: string): string => {
   const fileBuffer = fs.readFileSync(filePath);
@@ -16,4 +18,17 @@ export const fileHash2 = (filePath: string): Promise<string> => {
     stream.on('data', (chunk) => hash.update(chunk));
     stream.on('end', () => resolve(hash.digest('hex')));
   });
+};
+
+// hashing file contents takes too long, especially on larger files, and isn't really needed so lets do a fast alternative
+export const fastHash = (file: File, stats: fs.Stats): string => {
+  const hashSum = crypto.createHash('sha256');
+  hashSum.update(
+    file.relativePath +
+      sep +
+      file.name +
+      stats.mtime.toString() +
+      stats.ctime.toString(),
+  );
+  return hashSum.digest('hex');
 };

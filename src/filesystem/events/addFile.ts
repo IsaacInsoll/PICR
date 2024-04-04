@@ -2,7 +2,7 @@ import { basename, dirname, extname } from 'path';
 import { folderList, relativePath } from '../fileManager';
 import File from '../../models/File';
 import { logger } from '../../logger';
-import { fileHash2 } from '../fileHash';
+import { fastHash } from '../fileHash';
 import {
   getImageMetadata,
   getImageRatio,
@@ -48,8 +48,8 @@ export const addFile = async (filePath: string) => {
           ? 'Modified: '
           : 'Hash Mismatch for: ') + filePath,
     );
-    const hash = await fileHash2(filePath);
-    file.fileHash = hash;
+    // const hash = await fileHash2(filePath);
+    file.fileHash = fastHash(file, stats);
 
     if (type == 'Image') {
       // deleteAllThumbs(filePath);
