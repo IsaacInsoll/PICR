@@ -15,7 +15,13 @@ const selectedViewAtom = atomWithStorage<SelectedView>(
   'gallery',
 );
 
-export const ViewSelector = () => {
+export const ViewSelector = ({
+  managing,
+  toggleManaging,
+}: {
+  managing?: boolean;
+  toggleManaging: () => void;
+}) => {
   const [view, setView] = useAtom(selectedViewAtom);
   const [filtering, setFiltering] = useAtom(filterAtom);
   return (
@@ -24,8 +30,13 @@ export const ViewSelector = () => {
         <Button
           icon={icon}
           // label={label}
-          {...{ primary: name === view }}
-          onClick={() => setView(name)}
+          {...{ primary: name === view && !managing }}
+          onClick={() => {
+            if (managing && toggleManaging) {
+              toggleManaging();
+            }
+            setView(name);
+          }}
           key={name}
         />
       ))}

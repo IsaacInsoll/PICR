@@ -86,8 +86,10 @@ export const ViewFolderBody = ({
       />,
     );
   }
-  actions.push(<ViewSelector />);
-  actions.push(<FilterToggle />);
+  actions.push(
+    <ViewSelector managing={managing} toggleManaging={toggleManaging} />,
+  );
+  actions.push(<FilterToggle disabled={managing} />);
 
   return (
     <>
