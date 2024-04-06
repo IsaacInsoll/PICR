@@ -17,6 +17,7 @@ import { ManagePublicLink } from './ManagePublicLink';
 import { MinimalSharedFolder } from '../../types';
 import { VscDebugDisconnect } from 'react-icons/vsc';
 import { gql } from '../helpers/gql';
+import { ModalLoadingIndicator } from '../components/ModalLoadingIndicator';
 
 export const ManageFolder = ({
   folderId,
@@ -57,14 +58,16 @@ const ManageFolderBody = ({
   return (
     <Box>
       {linkId !== null ? (
-        <ManagePublicLink
-          onClose={() => {
-            setLinkId(null);
-            reQuery({ requestPolicy: 'network-only' });
-          }}
-          id={linkId}
-          folder={data?.folder}
-        />
+        <Suspense fallback={<ModalLoadingIndicator />}>
+          <ManagePublicLink
+            onClose={() => {
+              setLinkId(null);
+              reQuery({ requestPolicy: 'network-only' });
+            }}
+            id={linkId}
+            folder={data?.folder}
+          />
+        </Suspense>
       ) : null}
       {data?.users ? (
         <SharedFolderDataGrid
