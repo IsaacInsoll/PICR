@@ -44,6 +44,7 @@ export const contextPermissionsForFolder = async (
     if (hasUUID) {
       throw new GraphQLError('Invalid Link (UUID)');
     } else {
+      if (!user) doAuthError('Not Logged In');
       doAuthError('Access Denied');
     }
   }

@@ -16,7 +16,7 @@ export default function QueryFeedback({ result, reQuery }: QueryFeedbackProps) {
   };
 
   useEffect(() => {
-    if (error?.message === '[GraphQL] AUTH: Session Expired') {
+    if (error?.message === '[GraphQL] AUTH: Not Logged In') {
       setAuthKey('');
     }
   }, [error?.message, setAuthKey]);
