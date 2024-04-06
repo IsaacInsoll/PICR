@@ -17,7 +17,7 @@ export const createClient = (authToken: string) =>
       const uuid = getUUID();
       return {
         headers: {
-          authorization: authToken !== '' ? `Bearer ${authToken}` : '',
+          authorization: authToken !== '' && !uuid ? `Bearer ${authToken}` : '',
           uuid: uuid ?? '',
         },
       };

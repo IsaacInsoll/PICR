@@ -25,9 +25,12 @@ export const ParentFolders = async (
   while (current.parentId) {
     current = await Folder.findByPk(current.parentId);
     if (!current) break; // in case parent folder no longer exists?
-    const [permissions] = await perms(context, folder.id);
-    if (!permissions || permissions === 'None') break;
-    parents.push(current);
+    const [permissions] = await perms(context, current.id);
+    if (!permissions || permissions === 'None') {
+      break;
+    } else {
+      parents.push(current);
+    }
   }
   return parents;
 };

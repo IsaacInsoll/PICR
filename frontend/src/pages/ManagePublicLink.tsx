@@ -7,6 +7,7 @@ import { useMutation, useQuery } from 'urql';
 import { editUserMutation } from '../urql/mutations/editUserMutation';
 import type { MutationEditUserArgs } from '../gql/graphql';
 import { viewUserQuery } from '../urql/queries/viewUserQuery';
+import { copyToClipboard, publicURLFor } from '../helpers/copyToClipboard';
 
 export const ManagePublicLink = ({
   id,
@@ -35,6 +36,7 @@ export const ManagePublicLink = ({
   // };
 
   const exists = id && id !== '';
+  const invalidLink = link === '' || name === '';
 
   const onSave = () => {
     const data: MutationEditUserArgs = {
@@ -82,9 +84,19 @@ export const ManagePublicLink = ({
         </FormField>
         <Box direction="row">
           <Button label="Cancel" icon={<Close />} onClick={onClose} />
-          <Button label="Copy Link" icon={<Clipboard />} onClick={onClose} />
+          <Button
+            label="Copy Link"
+            icon={<Clipboard />}
+            disabled={invalidLink}
+            onClick={() => {
+              const url = publicURLFor(link, folder!.id);
+              console.log(url);
+              copyToClipboard(url);
+            }}
+          />
           <Button
             label={exists ? 'Save' : 'Create Link'}
+            disabled={invalidLink}
             icon={<CloudUpload />}
             primary
             onClick={onSave}
