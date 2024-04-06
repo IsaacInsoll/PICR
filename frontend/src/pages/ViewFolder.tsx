@@ -109,7 +109,7 @@ export const ViewFolderBody = ({
           />
           <TaskSummary folderId={folder.id} />
           {managing ? (
-            <ManageFolder folderId={folderId} />
+            <ManageFolder folderId={folderId} onClose={toggleManaging} />
           ) : (
             <>
               <FolderListView

@@ -36,7 +36,10 @@ export const folderType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString), // because GraphQLInt is 32bit which is TINY
       resolve: async (f: Folder, params, context) => {
         const folderIds = await AllChildFolderIds(f);
-        return await File.sum('fileSize', { where: { folderId: folderIds } });
+        const totes = await File.sum('fileSize', {
+          where: { folderId: folderIds },
+        });
+        return totes ?? '0';
       },
     },
     totalFiles: {

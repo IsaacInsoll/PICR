@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { ReactNode, Suspense, useState } from 'react';
 import {
   Box,
   Button,
@@ -12,23 +12,36 @@ import {
 import { useQuery } from 'urql';
 import { manageFolderQuery } from '../urql/queries/manageFolderQuery';
 import QueryFeedback from '../components/QueryFeedback';
-import { Add } from 'grommet-icons';
+import { Add, DocumentImage } from 'grommet-icons';
 import { ManagePublicLink } from './ManagePublicLink';
 import { MinimalSharedFolder } from '../../types';
+import { VscDebugDisconnect } from 'react-icons/vsc';
 
-export const ManageFolder = ({ folderId }: { folderId: string }) => {
+export const ManageFolder = ({
+  folderId,
+  onClose,
+}: {
+  folderId: string;
+  onClose: () => void;
+}) => {
   return (
     <Page>
       <PageContent>
         <Suspense>
-          <ManageFolderBody folderId={folderId} />
+          <ManageFolderBody folderId={folderId} onClose={onClose} />
         </Suspense>
       </PageContent>
     </Page>
   );
 };
 
-const ManageFolderBody = ({ folderId }: { folderId: string }) => {
+const ManageFolderBody = ({
+  folderId,
+  onClose,
+}: {
+  folderId: string;
+  onClose: () => void;
+}) => {
   const [result, reQuery] = useQuery({
     query: manageFolderQuery,
     variables: { folderId },
@@ -36,6 +49,7 @@ const ManageFolderBody = ({ folderId }: { folderId: string }) => {
   });
   const [linkId, setLinkId] = useState<string | null>(null);
   const { data } = result;
+  const totalImages = data?.folder.totalImages;
   return (
     <Box>
       {linkId !== null ? (
@@ -48,17 +62,26 @@ const ManageFolderBody = ({ folderId }: { folderId: string }) => {
           folder={data?.folder}
         />
       ) : null}
-      {data?.users && data.users.length > 0 ? (
+      {data?.users ? (
         <SharedFolderDataGrid
           sharedFolders={data?.users}
           setSharedFolderId={setLinkId}
         />
       ) : null}
-      <Button
-        label="Create Link"
-        icon={<Add />}
-        onClick={() => setLinkId('')}
-      />
+      <Box direction="row" gap="small">
+        <Button
+          label="Create Link"
+          icon={<Add />}
+          onClick={() => setLinkId('')}
+        />
+        <Button
+          label={`Generate ${totalImages} Thumbnails`}
+          icon={<DocumentImage />}
+          disabled={!totalImages || totalImages === 0}
+        />
+        <Box flex="grow"></Box>
+        <Button label={`Close Settings`} primary onClick={onClose} />
+      </Box>
       <QueryFeedback result={result} reQuery={reQuery} />
     </Box>
   );
@@ -87,6 +110,13 @@ const SharedFolderDataGrid = ({
         primaryKey="id"
         onClickRow={({ datum }) => setSharedFolderId(datum.id)}
       />
+      {sharedFolders.length === 0 ? (
+        <EmptyPlaceholder
+          text="You haven't created any links for this folder (or parent folders)
+            yet!"
+          icon={<VscDebugDisconnect />}
+        />
+      ) : null}
     </Box>
   );
 };
@@ -100,3 +130,20 @@ const dataTableColumnConfig: ColumnConfig<MinimalSharedFolder>[] = [
     },
   },
 ];
+
+const EmptyPlaceholder = ({
+  text,
+  icon,
+}: {
+  text: string;
+  icon: ReactNode;
+}) => {
+  return (
+    <Box style={{ opacity: 0.33 }} align="center" pad="medium">
+      <Box style={{ fontSize: 72, opacity: 0.5 }} pad="medium">
+        {icon}
+      </Box>
+      <Text textAlign="center">{text}</Text>
+    </Box>
+  );
+};
