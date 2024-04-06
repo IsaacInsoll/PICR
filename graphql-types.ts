@@ -41,6 +41,10 @@ export type Folder = {
   parents: Array<Folder>;
   permissions?: Maybe<FolderPermissions>;
   subFolders: Array<Folder>;
+  totalFiles: Scalars['Int']['output'];
+  totalFolders: Scalars['Int']['output'];
+  totalImages: Scalars['Int']['output'];
+  totalSize: Scalars['String']['output'];
 };
 
 export enum FolderPermissions {

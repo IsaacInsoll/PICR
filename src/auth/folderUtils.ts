@@ -1,5 +1,8 @@
 import Folder from '../models/Folder';
+import File from '../models/File';
 import { contextPermissionsForFolder as perms } from './contextPermissionsForFolder';
+import { FileType } from '../../graphql-types';
+import { FindOptions, where } from 'sequelize';
 
 export const FolderIsUnderFolder = async (
   child: Folder,
@@ -46,4 +49,13 @@ export const AllChildFolderIds = async (
     }
   }
   return all;
+};
+
+export const AllChildFiles = async (
+  folder: Folder,
+  type?: FileType,
+): Promise<File[]> => {
+  const folderIds = await AllChildFolderIds(folder);
+  const where = { folderId: folderIds };
+  return File.findAll({ where });
 };

@@ -23,6 +23,10 @@ type Folder {
   parents: [Folder!]!
   permissions: FolderPermissions
   subFolders: [Folder!]!
+  totalFiles: Int!
+  totalFolders: Int!
+  totalImages: Int!
+  totalSize: String!
 }
 
 enum FolderPermissions {
