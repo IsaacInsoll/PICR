@@ -69,6 +69,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   auth: Scalars['String']['output'];
   editUser: User;
+  generateThumbnails: Scalars['Boolean']['output'];
 };
 
 
@@ -84,6 +85,11 @@ export type MutationEditUserArgs = {
   id?: InputMaybe<Scalars['ID']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   uuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationGenerateThumbnailsArgs = {
+  folderId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type Query = {

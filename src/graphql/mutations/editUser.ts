@@ -1,7 +1,7 @@
-import { contextPermissionsForFolder as perms } from '../auth/contextPermissionsForFolder';
-import { doAuthError } from '../auth/doAuthError';
-import User from '../models/User';
-import { getFolder } from './resolvers/resolverHelpers';
+import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
+import { doAuthError } from '../../auth/doAuthError';
+import User from '../../models/User';
+import { getFolder } from '../resolvers/resolverHelpers';
 import { GraphQLError } from 'graphql/error';
 
 export const editUser = async (_, params, context) => {

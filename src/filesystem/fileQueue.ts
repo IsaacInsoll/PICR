@@ -3,8 +3,10 @@ import { addFolder } from './events/addFolder';
 import { removeFolder } from './events/removeFolder';
 import { Presets, SingleBar } from 'cli-progress';
 import { Task } from '../../graphql-types';
+import { generateAllThumbs } from '../helpers/thumbnailGenerator';
+import File from '../models/File';
 
-type QueueAction = 'addDir' | 'unlinkDir' | 'add';
+type QueueAction = 'addDir' | 'unlinkDir' | 'add' | 'generateThumbnails';
 
 const progressBarOptions = {}; //{ noTTYOutput: true, notTTYSchedule: 500 };
 const queueProgressBar = new SingleBar(
@@ -50,15 +52,24 @@ const processQueue = async (action: QueueAction, filePath: string) => {
   if (action == 'add') {
     await addFile(filePath);
   }
+  if (action == 'generateThumbnails') {
+    // lol, we pass an ID to this function, not a path, but it's fine, trust me!
+    const file = await File.findByPk(filePath);
+    await generateAllThumbs(file);
+  }
   queueDone++;
   queueProgressBar.update(queueDone);
-  if (queueDone == queueTotal) queueProgressBar.stop();
+  if (queueDone == queueTotal) {
+    queueDone = 0;
+    queueTotal = 0;
+    queueProgressBar.stop();
+  }
 };
 
 export const queueTaskStatus = (): null | Task => {
   if (queueDone == queueTotal) return null;
   return {
-    name: 'Import Images and Generate Thumbnails',
+    name: 'Import Files and Generate Thumbnails',
     step: queueDone,
     totalSteps: queueTotal,
   };

@@ -49,6 +49,7 @@ type MetadataSummary {
 type Mutation {
   auth(password: String!, user: String!): String!
   editUser(enabled: Boolean, folderId: ID, id: ID, name: String, uuid: String): User!
+  generateThumbnails(folderId: ID): Boolean!
 }
 
 type Query {

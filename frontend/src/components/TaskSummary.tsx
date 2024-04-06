@@ -35,7 +35,7 @@ export const TaskSummary = ({ folderId }: { folderId?: string }) => {
                     size="full"
                   />
                 </Box>
-                <Box>yo dawg</Box>
+                {/*<Box>yo dawg</Box>*/}
               </Box>
             );
           })}

@@ -9,13 +9,14 @@ import {
   SortType,
   Text,
 } from 'grommet';
-import { useQuery } from 'urql';
+import { useMutation, useQuery } from 'urql';
 import { manageFolderQuery } from '../urql/queries/manageFolderQuery';
 import QueryFeedback from '../components/QueryFeedback';
 import { Add, DocumentImage } from 'grommet-icons';
 import { ManagePublicLink } from './ManagePublicLink';
 import { MinimalSharedFolder } from '../../types';
 import { VscDebugDisconnect } from 'react-icons/vsc';
+import { gql } from '../helpers/gql';
 
 export const ManageFolder = ({
   folderId,
@@ -47,6 +48,9 @@ const ManageFolderBody = ({
     variables: { folderId },
     // context: headers,
   });
+
+  const [, thumbsMutation] = useMutation(generateThumbnailsQuery);
+
   const [linkId, setLinkId] = useState<string | null>(null);
   const { data } = result;
   const totalImages = data?.folder.totalImages;
@@ -78,6 +82,7 @@ const ManageFolderBody = ({
           label={`Generate ${totalImages} Thumbnails`}
           icon={<DocumentImage />}
           disabled={!totalImages || totalImages === 0}
+          onClick={() => thumbsMutation({ folderId })}
         />
         <Box flex="grow"></Box>
         <Button label={`Close Settings`} primary onClick={onClose} />
@@ -147,3 +152,8 @@ const EmptyPlaceholder = ({
     </Box>
   );
 };
+
+const generateThumbnailsQuery = gql(/*GraphQL*/ `
+mutation generateThumbnailsQuery($folderId: ID!) {
+  generateThumbnails(folderId: $folderId)
+}`);

@@ -12,6 +12,7 @@ import {
 import { default as ex } from 'exif-reader';
 import { MetadataSummary } from '../types/MetadataSummary';
 import { logger } from '../logger';
+import { generateThumbnails } from '../graphql/mutations/generateThumbnails';
 
 const thumbnailPath = (file: File, size: ThumbnailSize): string => {
   const fp = file.fullPath();
@@ -26,13 +27,23 @@ const thumbnailPath = (file: File, size: ThumbnailSize): string => {
 };
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
-export const generateAllThumbs = (file: File) => {
-  thumbnailSizes.forEach((size: ThumbnailSize) => {
-    const path = thumbnailPath(file, size as ThumbnailSize);
-    if (!existsSync(path)) {
-      generateThumbnail(file, size as ThumbnailSize);
-    }
-  });
+export const generateAllThumbs = async (file: File) => {
+  // can only await at top level of functions, not in a loop, so hardcoded this
+  if (!existsSync(fullPathFor(file, 'sm'))) {
+    await generateThumbnail(file, 'sm');
+  }
+  if (!existsSync(fullPathFor(file, 'md'))) {
+    await generateThumbnail(file, 'md');
+  }
+  if (!existsSync(fullPathFor(file, 'lg'))) {
+    await generateThumbnail(file, 'lg');
+  }
+  // thumbnailSizes.forEach((size: ThumbnailSize) => {
+  //   const path = thumbnailPath(file, size as ThumbnailSize);
+  //   if (!existsSync(path)) {
+  //     generateThumbnail(file, size as ThumbnailSize);
+  //   }
+  // });
 };
 
 //TODO: reimplement this using old hashes to find the thumbs to delete
@@ -45,23 +56,23 @@ export const generateAllThumbs = (file: File) => {
 //   });
 // };
 
-export const generateThumbnail = (file: File, size: ThumbnailSize) => {
+export const generateThumbnail = async (file: File, size: ThumbnailSize) => {
   logger(`🖼️ Generating ${size} thumbnail for ${file.name}`);
   const outFile = thumbnailPath(file, size);
   mkdirSync(dirname(outFile), { recursive: true });
   const px = thumbnailDimensions[size];
-  return sharp(file.fullPath())
+  return await sharp(file.fullPath())
     .withMetadata()
     .resize(px, px, sharpOpts)
     .jpeg(jpegOptions)
-    .toFile(outFile)
-    .then((output) => {
-      // console.log(output);
-    })
-    .catch((err) => {
-      console.log('sharp error');
-      console.log(err);
-    });
+    .toFile(outFile);
+  // .then((output) => {
+  //   // console.log(output);
+  // })
+  // .catch((err) => {
+  //   console.log('sharp error');
+  //   console.log(err);
+  // });
 };
 
 export const getImageRatio = async (filePath: string) => {

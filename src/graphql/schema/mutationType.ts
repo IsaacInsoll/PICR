@@ -5,9 +5,10 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { authMutation } from '../authMutation';
+import { authMutation } from '../mutations/authMutation';
 import { userType } from './userType';
-import { editUser } from '../editUser';
+import { editUser } from '../mutations/editUser';
+import { generateThumbnails } from '../mutations/generateThumbnails';
 
 export const mutationType = new GraphQLObjectType({
   name: 'Mutation',
@@ -29,6 +30,13 @@ export const mutationType = new GraphQLObjectType({
         name: { type: GraphQLString },
         uuid: { type: GraphQLString },
         enabled: { type: GraphQLBoolean },
+      },
+    },
+    generateThumbnails: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      resolve: generateThumbnails,
+      args: {
+        folderId: { type: GraphQLID },
       },
     },
   }),
