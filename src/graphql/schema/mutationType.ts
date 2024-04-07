@@ -9,6 +9,7 @@ import { authMutation } from '../mutations/authMutation';
 import { userType } from './userType';
 import { editUser } from '../mutations/editUser';
 import { generateThumbnails } from '../mutations/generateThumbnails';
+import { generateZipResolver } from '../mutations/generateZipResolver';
 
 export const mutationType = new GraphQLObjectType({
   name: 'Mutation',
@@ -35,6 +36,13 @@ export const mutationType = new GraphQLObjectType({
     generateThumbnails: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: generateThumbnails,
+      args: {
+        folderId: { type: GraphQLID },
+      },
+    },
+    generateZip: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: generateZipResolver,
       args: {
         folderId: { type: GraphQLID },
       },

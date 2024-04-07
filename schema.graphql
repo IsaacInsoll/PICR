@@ -50,6 +50,7 @@ type Mutation {
   auth(password: String!, user: String!): String!
   editUser(enabled: Boolean, folderId: ID, id: ID, name: String, uuid: String): User!
   generateThumbnails(folderId: ID): Boolean!
+  generateZip(folderId: ID): String!
 }
 
 type Query {

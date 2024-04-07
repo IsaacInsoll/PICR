@@ -70,6 +70,7 @@ export type Mutation = {
   auth: Scalars['String']['output'];
   editUser: User;
   generateThumbnails: Scalars['Boolean']['output'];
+  generateZip: Scalars['String']['output'];
 };
 
 
@@ -89,6 +90,11 @@ export type MutationEditUserArgs = {
 
 
 export type MutationGenerateThumbnailsArgs = {
+  folderId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationGenerateZipArgs = {
   folderId?: InputMaybe<Scalars['ID']['input']>;
 };
 

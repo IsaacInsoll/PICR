@@ -3,8 +3,11 @@ import { useQuery } from 'urql';
 import { Box, Card, Meter, Page, PageContent } from 'grommet';
 import { useEffect } from 'react';
 
-export const TaskSummary = ({ folderId }: { folderId?: string }) => {
-  const [result, requery] = useQuery({ query: taskQuery });
+export const TaskSummary = ({ folderId }: { folderId: string }) => {
+  const [result, requery] = useQuery({
+    query: taskQuery,
+    variables: { folderId },
+  });
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -46,8 +49,8 @@ export const TaskSummary = ({ folderId }: { folderId?: string }) => {
 };
 
 const taskQuery = gql(/* GraphQL */ `
-  query TaskQuery {
-    tasks {
+  query TaskQuery($folderId: ID!) {
+    tasks(folderId: $folderId) {
       id
       name
       step

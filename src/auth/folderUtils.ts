@@ -2,7 +2,6 @@ import Folder from '../models/Folder';
 import File from '../models/File';
 import { contextPermissionsForFolder as perms } from './contextPermissionsForFolder';
 import { FileType } from '../../graphql-types';
-import { FindOptions, where } from 'sequelize';
 
 export const FolderIsUnderFolder = async (
   child: Folder,

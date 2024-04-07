@@ -46,7 +46,7 @@ export const addFolder = async (path: string) => {
         console.log('created newFolder: ', p, ' based on ', path);
       }
       folderList[p] = newFolder.id; // for caching
-      // updateFolderHash(newFolder);
+      updateFolderHash(newFolder);
       f = newFolder.id;
     }
     logger(`📁➕ ${relativePath(path)}`);
