@@ -75,6 +75,7 @@ export const ViewFolderBody = ({
     // context: headers,
   });
   const folder = data.data?.folder;
+  const hasFiles = folder && folder.files.length > 0;
   const actions = [];
   if (folder?.permissions === 'Admin') {
     actions.push(
@@ -86,10 +87,13 @@ export const ViewFolderBody = ({
       />,
     );
   }
-  actions.push(
-    <ViewSelector managing={managing} toggleManaging={toggleManaging} />,
-  );
-  actions.push(<FilterToggle disabled={managing} />);
+  if (hasFiles) {
+    //it's crap UX if you can change the 'view' but there is nothing in there
+    actions.push(
+      <ViewSelector managing={managing} toggleManaging={toggleManaging} />,
+    );
+    actions.push(<FilterToggle disabled={managing} />);
+  }
 
   return (
     <>
