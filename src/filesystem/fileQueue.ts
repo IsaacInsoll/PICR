@@ -31,19 +31,20 @@ export const addToQueue = (
 };
 
 const processQueue = async (action: QueueAction, filePath: string) => {
-  if (action == 'addDir') {
-    await addFolder(filePath);
-  }
-  if (action == 'unlinkDir') {
-    await removeFolder(filePath);
-  }
-  if (action == 'add') {
-    await addFile(filePath);
-  }
-  if (action == 'generateThumbnails') {
-    // lol, we pass an ID to this function, not a path, but it's fine, trust me!
-    const file = await File.findByPk(filePath);
-    await generateAllThumbs(file);
+  switch (action) {
+    case 'addDir':
+      await addFolder(filePath);
+      break;
+    case 'unlinkDir':
+      await removeFolder(filePath);
+      break;
+    case 'add':
+      await addFile(filePath);
+      break;
+    case 'generateThumbnails':
+      // lol, we pass an ID to this function, not a path, but it's fine, trust me!
+      await generateAllThumbs(await File.findByPk(filePath));
+      break;
   }
   queueDone++;
   if (queueDone == queueTotal) {

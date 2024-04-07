@@ -18,7 +18,6 @@ export const FolderListView = ({ folders, onClick }: FolderListViewProps) => {
           primaryKey="name"
           onClickItem={(e: any) => {
             const selected: MinimalFolder = e.item;
-            console.log(selected);
             onClick(selected);
           }}
           action={(item, index) => (
