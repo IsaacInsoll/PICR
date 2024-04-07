@@ -1,14 +1,9 @@
 import { Box, DropButton, SelectMultiple } from 'grommet';
-import { Camera } from 'grommet-icons';
 import { MinimalFile } from '../../../../types';
 import { MetadataOptionsForFiltering } from '../../../helpers/metadataForFiltering';
 import {
   MdCameraRoll,
   MdOutlineCameraRoll,
-  MdOutlineCropFree,
-  MdOutlineCropLandscape,
-  MdOutlineCropPortrait,
-  MdOutlineCropSquare,
   MdOutlineShutterSpeed,
 } from 'react-icons/md';
 import { MetadataSummary } from '../../../gql/graphql';
@@ -16,9 +11,7 @@ import { useAtom } from 'jotai/index';
 import { filterOptions } from '../../../atoms/filterAtom';
 import { ReactNode } from 'react';
 import { BsCamera, BsCamera2 } from 'react-icons/bs';
-import { LiaFilmSolid } from 'react-icons/lia';
 import { IoApertureOutline } from 'react-icons/io5';
-import { CiCamera } from 'react-icons/ci';
 
 export const MetadataBox = ({
   files,
@@ -70,14 +63,11 @@ const MetadataSelect = ({
       valueKey={{ key: 'value' }}
       value={value}
       onChange={({ value }) => {
-        console.log(value);
         setFo((e) => ({
           ...e,
           metadata: {
             ...e.metadata,
-            [title]: value.map(
-              ({ value }: { value: string | number }) => value,
-            ),
+            [title]: value.map((value: string | number) => value),
           },
         }));
       }}

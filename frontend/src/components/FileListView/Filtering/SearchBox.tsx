@@ -7,7 +7,6 @@ import { useContext } from 'react';
 export const SearchBox = () => {
   const [options, setOptions] = useAtom(filterOptions);
   const size = useContext(ResponsiveContext);
-  console.log(size);
   return (
     <Box>
       <TextInput
