@@ -74,7 +74,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
     attributes: ['id', 'fileHash', 'relativePath', 'name'],
   });
   files.forEach((f) => {
-    const name = f.name; // f.relativePath + sep + f.name,
+    const name = f.fullPathMinus(folder.relativePath); // f.relativePath + sep + f.name,
     archive.file(f.fullPath(), { name });
   });
 

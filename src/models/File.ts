@@ -41,4 +41,9 @@ export default class File extends Model {
   fullPath() {
     return fullPath(this.relativePath) + sep + this.name;
   }
+
+  //Gives path relative to another path, useful to remove 'ZIP root folder' when zipping
+  fullPathMinus(path: string) {
+    return this.relativePath.replace(path, '') + sep + this.name;
+  }
 }
