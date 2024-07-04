@@ -29,6 +29,7 @@ export const GridGallery = ({
 const filesForGallery = (files: MinimalFile[]) => {
   const size = 250;
   return files.map((file) => ({
+    key: file.id,
     src: imageURL(file, 'md'),
     width: size,
     height: size / (file.imageRatio ?? 1),

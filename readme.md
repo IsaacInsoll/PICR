@@ -46,7 +46,7 @@ services:
 1. Make sure you have docker installed and set up
 2. Copy the `docker-compose.yml` example above and modify the volume mount for media (IE: change `./media` to the full path on your host where the photos are stored)
 3. Set up the compose file in docker and start PICR. The first run will generate a TOKEN_SECRET for you to add to the compose file. Add that and restart the container
-4. Go to http://<ip-address>:6900/admin and login with default login of `admin` / `password`, change the account details, and start sharing your images!
+4. Go to http://<ip-address>:6900/admin and login with default login of `admin` / `picr1234`, change the account details, and start sharing your images!
 
 ### Mounts
 
