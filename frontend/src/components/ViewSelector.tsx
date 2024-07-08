@@ -29,7 +29,7 @@ export const ViewSelector = ({
       {viewOptions.map(({ name, icon, label }) => (
         <Button
           icon={icon}
-          // label={label}
+          title={label + ' View'}
           {...{ primary: name === view && !managing }}
           onClick={() => {
             if (managing && toggleManaging) {

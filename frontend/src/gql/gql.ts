@@ -22,6 +22,7 @@ const documents = {
     "\n  fragment UserFragment on User {\n    id\n    name\n    enabled\n    uuid\n    folderId\n    folder {\n      id\n      name\n    }\n  }\n": types.UserFragmentFragmentDoc,
     "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
     "\n  mutation EditPublicLinkMutation(\n    $id: ID\n    $name: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n    ) {\n      ...UserFragment\n    }\n  }\n": types.EditPublicLinkMutationDocument,
+    "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n": types.GenerateZipDocument,
     "\n    query ManageFolderQuery($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n            totalFiles\n            totalFolders\n            totalImages\n            totalSize\n        }\n        users(folderId:$folderId, includeParents: true) {\n           ...UserFragment\n           folderId\n            folder {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n": types.ManageFolderQueryDocument,
     "\n    query ViewFile($fileId: ID!) {\n        file(id:$fileId) {\n            ...FileFragment\n            metadata {\n                ...MetadataFragment\n            }\n        }\n    }\n": types.ViewFileDocument,
     "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n                metadata {\n                    ...MetadataFragment\n                }\n            }\n            subFolders {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n": types.ViewFolderDocument,
@@ -79,6 +80,10 @@ export function graphql(source: "\n  mutation login($username: String!, $passwor
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation EditPublicLinkMutation(\n    $id: ID\n    $name: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n    ) {\n      ...UserFragment\n    }\n  }\n"): (typeof documents)["\n  mutation EditPublicLinkMutation(\n    $id: ID\n    $name: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n    ) {\n      ...UserFragment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n"): (typeof documents)["\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

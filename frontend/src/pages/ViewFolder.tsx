@@ -20,6 +20,7 @@ import { TaskSummary } from '../components/TaskSummary';
 import { ViewSelector } from '../components/ViewSelector';
 import { Configure } from 'grommet-icons';
 import { FilterToggle } from '../components/FilterToggle';
+import { DownloadZipButton } from '../components/DownloadZipButton';
 
 // This component is used in the 'public URL' and 'private URL' routes, so this is how we determine where each link should point
 export const useBaseViewFolderURL = () => {
@@ -93,6 +94,7 @@ export const ViewFolderBody = ({
       <ViewSelector managing={managing} toggleManaging={toggleManaging} />,
     );
     actions.push(<FilterToggle disabled={managing} />);
+    actions.push(<DownloadZipButton folderId={folderId} />); // TODO: option to not show this perhaps?
   }
 
   return (

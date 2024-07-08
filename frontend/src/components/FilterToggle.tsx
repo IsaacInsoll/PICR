@@ -9,6 +9,7 @@ export const FilterToggle = ({ disabled }: { disabled?: boolean }) => {
   return (
     <Button
       icon={<Filter />}
+      title="Filtering Options"
       primary={filtering && !disabled}
       disabled={disabled}
       onClick={() => setFiltering((f) => !f)}
