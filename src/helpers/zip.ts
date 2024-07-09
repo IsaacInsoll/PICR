@@ -83,7 +83,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
   updateZipQueue(folderHash, { status: 'Complete' });
 };
 
-export const zipPath = (folderHash: FolderHash) => {
+export const zipPath = (folderHash: Pick<FolderHash, 'folder' | 'hash'>) => {
   const path = process.cwd() + '/cache/zip/' + folderHash.folder.name;
   mkdirSync(path, { recursive: true });
   return `${path}/${folderHash.hash}.zip`;

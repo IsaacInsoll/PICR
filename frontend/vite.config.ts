@@ -13,6 +13,7 @@ export default defineConfig({
     proxy: {
       '/graphql': 'http://localhost:6900',
       '/image': 'http://localhost:6900',
+      '/zip': 'http://localhost:6900',
     },
   },
 });

@@ -15,6 +15,8 @@ import { Sequelize } from 'sequelize-typescript';
 import pg from 'pg';
 import { setupRootFolder } from './filesystem/events/addFolder';
 import { existsSync, readFileSync } from 'node:fs';
+import Folder from './models/Folder';
+import { zipPath } from './helpers/zip';
 
 config(); // read .ENV
 export const picrConfig = {
@@ -100,6 +102,23 @@ const server = async () => {
         await generateThumbnail(file, size);
       }
       res.sendFile(fullPathFor(file, size));
+    },
+  );
+
+  e.get(
+    '/zip/:folderId/:hash/:filename', //filename is ignored but nice for users to see a 'nice' name
+    async (req: Request<{ folderId: string; hash: string }>, res) => {
+      const { folderId, hash } = req.params;
+      const folder = await Folder.findOne({
+        where: { id: folderId },
+      });
+      if (!folder) res.sendStatus(404);
+      //TODO: get path to zip
+      const zPath = zipPath({ folder, hash });
+      if (!existsSync(zPath)) {
+        res.sendStatus(404);
+      }
+      res.sendFile(zPath);
     },
   );
 
