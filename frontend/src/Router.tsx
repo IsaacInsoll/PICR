@@ -6,8 +6,8 @@ import { ViewFolder } from './pages/ViewFolder';
 export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
   return (
     <Routes>
-      <Route path="/" element={<h1>PICR Server</h1>} />
-      <Route path="/login" element={<LoginForm />} />
+      <Route path="/" element={<LoginForm />} />
+      {/*<Route path="/login" element={<LoginForm />} />*/}
       <Route
         path="/admin/f/:folderId/:fileId?"
         element={loggedIn ? <ViewFolder /> : <LoginForm />}

@@ -139,8 +139,9 @@ export type Task = {
   id?: Maybe<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
   startTime?: Maybe<Scalars['String']['output']>;
-  step: Scalars['Int']['output'];
-  totalSteps: Scalars['Int']['output'];
+  status?: Maybe<Scalars['String']['output']>;
+  step?: Maybe<Scalars['Int']['output']>;
+  totalSteps?: Maybe<Scalars['Int']['output']>;
 };
 
 export type User = {

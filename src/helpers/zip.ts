@@ -32,10 +32,12 @@ export const hashFolderContents = async (
 
 //this is copy paste from docs, hopefully you never see it in this half-assed state 😊
 export const zipFolder = async (folderHash: FolderHash) => {
-  const { folder } = folderHash;
+  const { folder, hash } = folderHash;
   const path = zipPath(folderHash);
   const output = fs.createWriteStream(path);
   const archive = archiver('zip', { zlib: { level: 9 } }); // Sets the compression level.
+
+  updateZipQueue(folderHash, { status: 'Queued', hash });
 
   const onError = (err) => {
     console.log('🗜️ ZIP ERROR: ', err);

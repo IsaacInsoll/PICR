@@ -17,6 +17,7 @@ import { setupRootFolder } from './filesystem/events/addFolder';
 import { existsSync, readFileSync } from 'node:fs';
 import Folder from './models/Folder';
 import { zipPath } from './helpers/zip';
+import { zipInProgress } from './helpers/zipQueue';
 
 config(); // read .ENV
 export const picrConfig = {
@@ -113,10 +114,12 @@ const server = async () => {
         where: { id: folderId },
       });
       if (!folder) res.sendStatus(404);
-      //TODO: get path to zip
       const zPath = zipPath({ folder, hash });
       if (!existsSync(zPath)) {
         res.sendStatus(404);
+      }
+      if (zipInProgress({ folder, hash })) {
+        res.sendStatus(400); // still zipping, can't send anything yet
       }
       res.sendFile(zPath);
     },

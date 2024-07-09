@@ -1,5 +1,4 @@
 import {
-  GraphQLBoolean,
   GraphQLID,
   GraphQLInt,
   GraphQLNonNull,
@@ -13,9 +12,10 @@ export const taskType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: new GraphQLNonNull(GraphQLString) },
-    step: { type: new GraphQLNonNull(GraphQLInt) },
-    totalSteps: { type: new GraphQLNonNull(GraphQLInt) },
+    step: { type: GraphQLInt },
+    totalSteps: { type: GraphQLInt },
     startTime: { type: GraphQLString },
     folder: { type: folderType },
+    status: { type: GraphQLString }, // TODO: make it an enum
   }),
 });

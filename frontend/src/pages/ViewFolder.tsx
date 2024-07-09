@@ -29,7 +29,7 @@ export const useBaseViewFolderURL = () => {
 
 export const ViewFolder = () => {
   const navigate = useNavigate();
-  let { folderId, fileId } = useParams();
+  const { folderId, fileId } = useParams();
   const baseUrl = useBaseViewFolderURL();
   const setPlaceholderFolder = useSetAtom(placeholderFolderName);
   const managing = fileId === 'manage';
@@ -77,6 +77,8 @@ export const ViewFolderBody = ({
   });
   const folder = data.data?.folder;
   const hasFiles = folder && folder.files.length > 0;
+  const hasFolders = folder && folder.subFolders.length > 0;
+
   const actions = [];
   if (folder?.permissions === 'Admin') {
     actions.push(
@@ -94,8 +96,9 @@ export const ViewFolderBody = ({
       <ViewSelector managing={managing} toggleManaging={toggleManaging} />,
     );
     actions.push(<FilterToggle disabled={managing} />);
-    actions.push(<DownloadZipButton folderId={folderId} />); // TODO: option to not show this perhaps?
   }
+  if (hasFiles || hasFolders)
+    actions.push(<DownloadZipButton folder={folder} />); // TODO: option to not show this perhaps?
 
   return (
     <>

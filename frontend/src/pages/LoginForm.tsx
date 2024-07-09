@@ -16,7 +16,7 @@ export const LoginForm = () => {
   const set = useSetAtom(authKeyAtom);
 
   if (loggedIn) {
-    navigate('/admin');
+    navigate('/admin/f/1');
   }
 
   const doLogin = () => {

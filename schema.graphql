@@ -66,8 +66,9 @@ type Task {
   id: ID
   name: String!
   startTime: String
-  step: Int!
-  totalSteps: Int!
+  status: String
+  step: Int
+  totalSteps: Int
 }
 
 type User {
