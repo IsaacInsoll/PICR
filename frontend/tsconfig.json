@@ -4,21 +4,22 @@
   "_version": "2.0.0",
 
   "compilerOptions": {
+    "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "target": "es2015",
-
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
+    "allowJs": false,
+    "skipLibCheck": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node", // was 'bundler'
+    "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "strict": true
-  }
+    "jsx": "react-jsx",
+    "types": ["vite/client", "vite-plugin-svgr/client"]
+  },
+  "include": ["src"]
 }
