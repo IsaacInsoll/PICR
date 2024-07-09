@@ -70,7 +70,8 @@ const server = async () => {
     await sequelize.sync({}); // build DB
   } catch (e) {
     console.error(
-      '⚠️ Unable to connect to database. \n   Please ensure configuration is correct and database server is running',
+      `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\`. 
+   Please ensure configuration is correct and database server is running`,
     );
     // console.error(e);
     process.exit();
