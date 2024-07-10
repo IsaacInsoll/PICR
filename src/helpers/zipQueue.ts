@@ -6,7 +6,7 @@ import { Task } from '../../graphql-types';
 interface ZipQueueItem {
   folder: Folder;
   status: 'Queued' | 'In Progress' | 'Complete' | 'Error';
-  hash: string;
+  hash?: string;
   //only relevant if status=inprogress
   filesDone?: number;
   filesTotal?: number;

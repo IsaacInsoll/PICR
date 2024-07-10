@@ -35,8 +35,8 @@ Simply `deploy` command, or if you aren't running funky:
 
 Do the 'Building' section above then:
 ```shell
-docker build . -t ghcr.io/isaacinsoll/picr:latest
-docker push ghcr.io/isaacinsoll/picr:latest
+docker build . -t ghcr.io/isaacinsoll/picr:latest -t <version_number>
+docker push ghcr.io/isaacinsoll/picr -a
 ```
 
 ### Issues
@@ -45,13 +45,12 @@ docker push ghcr.io/isaacinsoll/picr:latest
 - test with large image collection: may crash due to 'promise stack'?
 
 ### TODO
-- public facing URLs that don't require login (separate db table) with management tools for that
 - logging of 'views' of each image/folder for stats
 - star ratings + thumbs up/down + leave comments, with ability to filter/sort/export that data
-- download whole folder, individual image, or selected images
+- download selected files (we have individual image and all files already)
 - add support for managing users and maybe reporting on file sizes / usage
 - branding: upload logo, ability to have multiple 'brands' with certain folders overruling (EG: family portraits and fitness brands)
 - email notifications (EG: client opened folder, left feedback etc)
-- dockerize and test on synology
+- dockerise on normal 'docker hub' so you don't need to do weird ghcr.io stuff on synology
 - automate build process as much as possible
-- publish on github
+- switch to issues in github

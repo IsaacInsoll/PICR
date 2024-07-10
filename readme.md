@@ -48,6 +48,14 @@ services:
 3. Set up the compose file in docker and start PICR. The first run will generate a TOKEN_SECRET for you to add to the compose file. Add that and restart the container
 4. Go to http://<ip-address>:6900/admin and login with default login of `admin` / `picr1234`, change the account details, and start sharing your images!
 
+### How to update if using Synology
+
+As we are currently hosted with GitHub rather than official docker repo, these are the steps when using synology:
+1. Stop the project then press 'clean' (this will delete containers but not your data)
+2. Find the `picr` image in Images section and delete it. 
+3. Go back to the `picr` project and press build. This will download the latest image and rebuild everything.
+
+
 ### Mounts
 
 | Folder | Description                                                                |
