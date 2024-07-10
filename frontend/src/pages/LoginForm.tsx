@@ -1,10 +1,10 @@
-import { Box, Button, FormField, Heading, Keyboard, TextInput } from 'grommet';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import { useNavigate } from 'react-router-dom';
 import { useSetAtom } from 'jotai/index';
 import { authKeyAtom, useIsLoggedIn } from '../atoms/authAtom';
 import { loginMutation } from '../urql/mutations/LoginMutation';
+import { Button, Container, TextInput, Title } from '@mantine/core';
 
 export const LoginForm = () => {
   const loggedIn = useIsLoggedIn();
@@ -27,38 +27,31 @@ export const LoginForm = () => {
     });
   };
   return (
-    <Box align="center">
-      <Box width="medium" margin="large">
-        <Heading>PICR Login</Heading>
-        <FormField label="Username">
-          <Keyboard onEnter={doLogin}>
-            <TextInput
-              name="username"
-              value={user}
-              onChange={(e) => setUser(e.target.value)}
-            />
-          </Keyboard>
-        </FormField>
-        <FormField
+    <Container fluid style={{ align: 'center' }}>
+      <Container size="xs">
+        <Title>PICR Login</Title>
+        <TextInput
+          label="Username"
+          name="username"
+          value={user}
+          onChange={(e) => setUser(e.target.value)}
+        />
+
+        <TextInput
           label="Password"
+          name="password"
+          type="password"
           error={
             fail
               ? 'Login Failed. Please check your username and password'
               : undefined
           }
-        >
-          <Keyboard onEnter={doLogin}>
-            <TextInput
-              name="password"
-              type="password"
-              value={pass}
-              onChange={(e) => setPass(e.target.value)}
-            />
-          </Keyboard>
-        </FormField>
-        <Button label="Login" onClick={doLogin} />
-      </Box>
-    </Box>
+          value={pass}
+          onChange={(e) => setPass(e.target.value)}
+        />
+        <Button onClick={doLogin}>Login</Button>
+      </Container>
+    </Container>
   );
 };
 

@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@mantine/core": "^7.11.1",
+    "@mantine/dates": "^7.11.1",
+    "@mantine/hooks": "^7.11.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -16,6 +19,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "@urql/exchange-graphcache": "^6.4.1",
     "@vitejs/plugin-react-swc": "^3.7.0",
+    "dayjs": "^1.11.11",
     "eslint": "^8.57.0",
     "graphql": "^16.8.1",
     "grommet": "^2.35.0",
@@ -46,10 +50,8 @@
     "start": "vite",
     "build": "vite build",
     "serve": "vite preview",
-
     "gql": "graphql-codegen --config codegen.ts"
   },
-
   "browserslist": {
     "production": [
       ">0.2%",
@@ -69,7 +71,10 @@
     "@graphql-codegen/introspection": "^4.0.3",
     "@types/cli-progress": "^3.11.5",
     "@types/lodash": "^4.17.0",
-    "@types/react-helmet": "^6.1.11"
+    "@types/react-helmet": "^6.1.11",
+    "postcss": "^8.4.39",
+    "postcss-preset-mantine": "^1.15.0",
+    "postcss-simple-vars": "^7.0.1"
   },
   "proxy": "http://localhost:6900/"
 }

@@ -13,7 +13,6 @@ import { imageURL } from '../../helpers/imageURL';
 import { FileListViewStyleComponentProps } from './FileListView';
 import { thumbnailSizes } from '../../helpers/thumbnailSize';
 import { thumbnailDimensions } from '../../helpers/thumbnailDimensions';
-import { theme } from '../../App';
 
 export const SelectedFileView = ({
   files,
@@ -21,7 +20,8 @@ export const SelectedFileView = ({
   setSelectedFileId,
 }: FileListViewStyleComponentProps) => {
   const selectedImageIndex = files.findIndex(({ id }) => id === selectedFileId);
-  const lightBoxStyles = { root: { fontFamily: theme?.global?.font?.family } };
+  //TODO: migrate this font from grommet to mantine
+  const lightBoxStyles = {}; //{ root: { fontFamily: theme?.global?.font?.family } };
 
   return (
     <Lightbox

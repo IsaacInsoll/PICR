@@ -1,4 +1,3 @@
-import { grommet, Grommet, ThemeType } from 'grommet';
 import { createClient } from './urqlClient';
 import { Provider } from 'urql';
 import { BrowserRouter } from 'react-router-dom';
@@ -6,6 +5,9 @@ import { Router } from './Router';
 import { authKeyAtom, useIsLoggedIn } from './atoms/authAtom';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from './atoms/themeModeAtom';
+
+import '@mantine/core/styles.css';
+import { createTheme, MantineProvider } from '@mantine/core';
 
 const App = () => {
   const loggedIn = useIsLoggedIn();
@@ -18,17 +20,15 @@ const App = () => {
   return (
     <Provider value={client}>
       <BrowserRouter>
-        <Grommet full theme={theme} themeMode={themeMode}>
+        <MantineProvider theme={theme}>
           <Router loggedIn={loggedIn} />
-        </Grommet>
+        </MantineProvider>
       </BrowserRouter>
     </Provider>
   );
 };
 
+export const theme = createTheme({
+  /** Your theme override here */
+});
 export default App;
-
-export const theme: ThemeType = {
-  ...grommet,
-  pageHeader: { pad: { top: 'small' } },
-};
