@@ -4,15 +4,12 @@ import {
   FolderHeader,
   PlaceholderFolderHeader,
 } from '../components/FolderHeader/FolderHeader';
-import { MinimalFolder } from '../../types';
 import { folderSubtitle } from '../helpers/folderSubtitle';
 import { useNavigate, useParams } from 'react-router-dom';
 import { viewFolderQuery } from '../urql/queries/viewFolderQuery';
-import { FolderListView } from '../components/FolderListView';
+import { SubfolderListView } from '../components/SubfolderListView';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
-import { useSetAtom } from 'jotai/index';
-import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder';
 import { ManageFolder } from './ManageFolder';
 import { getUUID } from '../Router';
 import { TaskSummary } from '../components/TaskSummary';
@@ -32,13 +29,7 @@ export const ViewFolder = () => {
   const navigate = useNavigate();
   const { folderId, fileId } = useParams();
   const baseUrl = useBaseViewFolderURL();
-  const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const managing = fileId === 'manage';
-  const handleSetFolder = (f: MinimalFolder) => {
-    setPlaceholderFolder({ ...f });
-    navigate(baseUrl + f.id);
-  };
-
   return (
     <>
       <Suspense fallback={<PlaceholderFolderHeader />}>
@@ -49,7 +40,6 @@ export const ViewFolder = () => {
           }
           key={folderId ?? '1'}
           folderId={folderId ?? '1'}
-          setFolder={handleSetFolder}
         />
       </Suspense>
     </>
@@ -58,13 +48,11 @@ export const ViewFolder = () => {
 
 export const ViewFolderBody = ({
   folderId,
-  setFolder,
   toggleManaging,
   managing,
 }: {
   folderId: string;
   managing: boolean;
-  setFolder: (folder: MinimalFolder) => void;
   toggleManaging: () => void;
 }) => {
   // const headers = useMemo(() => {
@@ -124,10 +112,7 @@ export const ViewFolderBody = ({
             <ManageFolder folderId={folderId} onClose={toggleManaging} />
           ) : (
             <>
-              <FolderListView
-                folders={folder?.subFolders}
-                onClick={setFolder}
-              />
+              <SubfolderListView folder={folder} />
               <FolderContentsView folderId={folderId} files={folder.files} />
             </>
           )}

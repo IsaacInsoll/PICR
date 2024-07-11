@@ -1,4 +1,4 @@
-import { MinimalFolder, MinimalSharedFolder } from '../../types';
+import { MinimalSharedFolder } from '../../types';
 import {
   MantineReactTable,
   MRT_ColumnDef,
@@ -7,16 +7,21 @@ import {
 import { useMemo } from 'react';
 import { picrGridProps } from './PicrDataGrid';
 import { Page } from './Page';
+import { Folder } from '../../../graphql-types';
+import { useSetFolder } from '../useSetFolder';
 
-interface FolderListViewProps {
-  folders: MinimalFolder[];
-  onClick: (folder: MinimalFolder) => void;
-}
+export const SubfolderListView = ({ folder }: { folder: Folder }) => {
+  const setFolder = useSetFolder();
 
-export const FolderListView = ({ folders, onClick }: FolderListViewProps) => {
-  if (!folders || folders.length === 0) return undefined;
+  if (!folder || folder.subFolders.length === 0) return undefined;
+
+  const parents = [folder, ...folder.parents];
+
   const tableOptions = useMemo(
-    () => picrGridProps(columns, folders, (row) => onClick(row)),
+    () =>
+      picrGridProps(columns, folder.subFolders, (row) =>
+        setFolder({ ...row, parents }),
+      ),
     [],
   );
   const table = useMantineReactTable(tableOptions);
