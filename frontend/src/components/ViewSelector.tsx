@@ -1,12 +1,7 @@
-import { Box, Button } from 'grommet';
-import {
-  AppsRounded,
-  Gallery as GalleryIcon,
-  List as ListIcon,
-} from 'grommet-icons';
 import { atomWithStorage } from 'jotai/utils';
 import { useAtom, useAtomValue } from 'jotai';
-import { filterAtom } from '../atoms/filterAtom';
+import { ActionIcon } from '@mantine/core';
+import { TbLayoutGrid, TbList, TbPhoto } from 'react-icons/tb';
 
 export type SelectedView = 'list' | 'gallery' | 'slideshow';
 
@@ -23,14 +18,12 @@ export const ViewSelector = ({
   toggleManaging: () => void;
 }) => {
   const [view, setView] = useAtom(selectedViewAtom);
-  const [filtering, setFiltering] = useAtom(filterAtom);
   return (
-    <Box direction="row">
+    <ActionIcon.Group>
       {viewOptions.map(({ name, icon, label }) => (
-        <Button
-          icon={icon}
+        <ActionIcon
           title={label + ' View'}
-          {...{ primary: name === view && !managing }}
+          variant={name === view && !managing ? 'filled' : 'default'}
           onClick={() => {
             if (managing && toggleManaging) {
               toggleManaging();
@@ -38,17 +31,19 @@ export const ViewSelector = ({
             setView(name);
           }}
           key={name}
-        />
+        >
+          {icon}
+        </ActionIcon>
       ))}
-    </Box>
+    </ActionIcon.Group>
   );
 };
 
 const viewOptions: { name: SelectedView; icon: JSX.Element; label: string }[] =
   [
-    { name: 'list', icon: <ListIcon />, label: 'List' },
-    { name: 'gallery', icon: <AppsRounded />, label: 'Gallery' },
-    { name: 'slideshow', icon: <GalleryIcon />, label: 'Slideshow' },
+    { name: 'list', icon: <TbList />, label: 'List' },
+    { name: 'gallery', icon: <TbLayoutGrid />, label: 'Gallery' },
+    { name: 'slideshow', icon: <TbPhoto />, label: 'Slideshow' },
   ] as const;
 
 export const useSelectedView = () => {

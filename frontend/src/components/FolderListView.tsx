@@ -1,6 +1,5 @@
 import { MinimalFolder } from '../../types';
-import { List, Menu, Page, PageContent } from 'grommet';
-import { Folder as FolderIcon } from 'grommet-icons';
+import { DataTable, DataTableColumn } from 'mantine-datatable';
 
 interface FolderListViewProps {
   folders: MinimalFolder[];
@@ -9,27 +8,14 @@ interface FolderListViewProps {
 
 export const FolderListView = ({ folders, onClick }: FolderListViewProps) => {
   if (!folders || folders.length === 0) return undefined;
+  const cols: DataTableColumn[] = [{ accessor: 'name' }];
   return (
-    <Page>
-      <PageContent>
-        <List
-          data={folders}
-          pad={{ left: 'small', right: 'none' }}
-          primaryKey="name"
-          onClickItem={(e: any) => {
-            const selected: MinimalFolder = e.item;
-            onClick(selected);
-          }}
-          action={(item, index) => (
-            <Menu
-              key={item.id}
-              icon={<FolderIcon />}
-              hoverIndicator
-              items={[{ label: item.name }]}
-            />
-          )}
-        />
-      </PageContent>
-    </Page>
+    <DataTable
+      columns={cols}
+      records={folders}
+      onRowClick={({ record, index, event }) => {
+        onClick(record);
+      }}
+    />
   );
 };

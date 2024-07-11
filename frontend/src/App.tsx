@@ -7,7 +7,11 @@ import { useAtomValue } from 'jotai';
 import { themeModeAtom } from './atoms/themeModeAtom';
 
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
+
 import { createTheme, MantineProvider } from '@mantine/core';
+import { HelmetProvider } from 'react-helmet-async';
+import { Notifications } from '@mantine/notifications';
 
 const App = () => {
   const loggedIn = useIsLoggedIn();
@@ -18,13 +22,16 @@ const App = () => {
   console.log('LoggedIn: ' + (loggedIn ? 'yes' : 'no'));
 
   return (
-    <Provider value={client}>
-      <BrowserRouter>
-        <MantineProvider theme={theme}>
-          <Router loggedIn={loggedIn} />
-        </MantineProvider>
-      </BrowserRouter>
-    </Provider>
+    <HelmetProvider>
+      <Provider value={client}>
+        <BrowserRouter>
+          <MantineProvider theme={theme} defaultColorScheme={themeMode}>
+            <Router loggedIn={loggedIn} />
+            <Notifications />
+          </MantineProvider>
+        </BrowserRouter>
+      </Provider>
+    </HelmetProvider>
   );
 };
 

@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Box, ColumnConfig, DataTable, SortType, Text } from 'grommet';
+import { ColumnConfig, DataTable, SortType } from 'grommet';
 import { MinimalFile } from '../../../types';
 import { FileListViewStyleComponentProps } from './FileListView';
 import prettyBytes from 'pretty-bytes';
+import { Box, Text } from '@mantine/core';
 
 export const DataGrid = ({
   files,
@@ -13,7 +14,7 @@ export const DataGrid = ({
     direction: 'asc',
   });
   return (
-    <Box align="center" pad="large">
+    <Box p="lg" ta="center">
       <DataTable
         fill={true}
         columns={dataTableColumnConfig}

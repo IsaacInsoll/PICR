@@ -1,8 +1,10 @@
 import { UseQueryState } from 'urql';
 import React, { useEffect } from 'react';
-import { Notification, Spinner } from 'grommet';
 import { useSetAtom } from 'jotai/index';
 import { authKeyAtom } from '../atoms/authAtom';
+import { LoadingIndicator } from './LoadingIndicator';
+import { Alert, Button } from '@mantine/core';
+import { TbExclamationCircle } from 'react-icons/tb';
 
 interface QueryFeedbackProps {
   result: UseQueryState;
@@ -24,24 +26,18 @@ export default function QueryFeedback({ result, reQuery }: QueryFeedbackProps) {
   // console.log(result);
   return (
     <>
-      {fetching && <Spinner size="large" />}
+      {fetching && <LoadingIndicator size="large" />}
       {error && (
-        <Notification
-          status="critical"
-          message={error.toString().replace('[GraphQL] ', '')}
-          // onClose={() => setShowGlobalNotification(false)}
-          actions={[
-            { onClick: reQuery, label: 'Retry' },
-            { onClick: logOut, label: 'Log Out' },
-          ]}
-          global
-        />
-        //
-        // {reQuery && (
-        //   <Card.Actions>
-        //     <Button onPress={reQuery}>Retry</Button>
-        //   </Card.Actions>
-        // )}
+        <Alert
+          variant="light"
+          color="red"
+          title="Alert title"
+          icon={<TbExclamationCircle />}
+        >
+          {error.toString().replace('[GraphQL] ', '')}
+          <Button onClick={reQuery}>Retry</Button>
+          <Button onClick={logOut}>Log Out</Button>
+        </Alert>
       )}
     </>
   );

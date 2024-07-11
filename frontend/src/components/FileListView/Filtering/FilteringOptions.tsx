@@ -1,10 +1,11 @@
 import { MinimalFile } from '../../../../types';
-import { Page, PageContent, Toolbar } from 'grommet';
 import { useMemo } from 'react';
 import { metadataForFiltering } from '../../../helpers/metadataForFiltering';
 import { AspectSelector } from './AspectSelector';
 import { SearchBox } from './SearchBox';
 import { MetadataBox } from './MetadataBox';
+import { Group } from '@mantine/core';
+import { Page } from '../../Page';
 
 export const FilteringOptions = ({ files }: { files: MinimalFile[] }) => {
   const meta = useMemo(() => metadataForFiltering(files), [files]);
@@ -15,18 +16,11 @@ export const FilteringOptions = ({ files }: { files: MinimalFile[] }) => {
   //iso
   return (
     <Page>
-      <PageContent>
-        <Toolbar
-          // background="placeholder"
-          border={{ side: 'top', color: 'brand' }}
-          // margin={{ top: 'small' }}
-          pad={{ top: 'small', bottom: 'small' }}
-        >
-          <SearchBox />
-          <AspectSelector />
-          <MetadataBox files={files} metadata={meta} />
-        </Toolbar>
-      </PageContent>
+      <Group>
+        <SearchBox />
+        <AspectSelector />
+        <MetadataBox files={files} metadata={meta} />
+      </Group>
     </Page>
   );
 };

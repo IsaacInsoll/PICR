@@ -1,23 +1,16 @@
 import { ReactNode, Suspense, useState } from 'react';
-import {
-  Box,
-  Button,
-  ColumnConfig,
-  DataTable,
-  Page,
-  PageContent,
-  SortType,
-  Text,
-} from 'grommet';
+import { ColumnConfig, DataTable, SortType } from 'grommet';
 import { useMutation, useQuery } from 'urql';
 import { manageFolderQuery } from '../urql/queries/manageFolderQuery';
 import QueryFeedback from '../components/QueryFeedback';
-import { Add, DocumentImage } from 'grommet-icons';
 import { ManagePublicLink } from './ManagePublicLink';
 import { MinimalSharedFolder } from '../../types';
 import { VscDebugDisconnect } from 'react-icons/vsc';
 import { gql } from '../helpers/gql';
 import { ModalLoadingIndicator } from '../components/ModalLoadingIndicator';
+import { TbLink, TbPhotoCheck } from 'react-icons/tb';
+import { Box, Button, Container, Group, Text } from '@mantine/core';
+import { Page } from '../components/Page';
 
 export const ManageFolder = ({
   folderId,
@@ -28,11 +21,9 @@ export const ManageFolder = ({
 }) => {
   return (
     <Page>
-      <PageContent>
-        <Suspense>
-          <ManageFolderBody folderId={folderId} onClose={onClose} />
-        </Suspense>
-      </PageContent>
+      <Suspense fallback={<ModalLoadingIndicator />}>
+        <ManageFolderBody folderId={folderId} onClose={onClose} />
+      </Suspense>
     </Page>
   );
 };
@@ -56,7 +47,7 @@ const ManageFolderBody = ({
   const { data } = result;
   const totalImages = data?.folder.totalImages;
   return (
-    <Box>
+    <Container>
       {linkId !== null ? (
         <Suspense fallback={<ModalLoadingIndicator />}>
           <ManagePublicLink
@@ -75,23 +66,23 @@ const ManageFolderBody = ({
           setSharedFolderId={setLinkId}
         />
       ) : null}
-      <Box direction="row" gap="small">
+      <Group gap="small">
+        <Button variant="default" onClick={() => setLinkId('')}>
+          <TbLink />
+          Create Link
+        </Button>
         <Button
-          label="Create Link"
-          icon={<Add />}
-          onClick={() => setLinkId('')}
-        />
-        <Button
-          label={`Generate ${totalImages} Thumbnails`}
-          icon={<DocumentImage />}
+          variant="default"
           disabled={!totalImages || totalImages === 0}
           onClick={() => thumbsMutation({ folderId })}
-        />
-        <Box flex="grow"></Box>
-        <Button label={`Close Settings`} primary onClick={onClose} />
-      </Box>
+        >
+          <TbPhotoCheck />
+          {`Generate ${totalImages} Thumbnails`}
+        </Button>
+        <Button onClick={onClose}>Close Settings </Button>
+      </Group>
       <QueryFeedback result={result} reQuery={reQuery} />
-    </Box>
+    </Container>
   );
 };
 
@@ -107,7 +98,7 @@ const SharedFolderDataGrid = ({
     direction: 'asc',
   });
   return (
-    <Box align="center" pad="large">
+    <Box>
       <DataTable
         fill={true}
         columns={dataTableColumnConfig}

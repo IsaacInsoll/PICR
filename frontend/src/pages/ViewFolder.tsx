@@ -13,14 +13,14 @@ import { FileListView } from '../components/FileListView/FileListView';
 import QueryFeedback from '../components/QueryFeedback';
 import { useSetAtom } from 'jotai/index';
 import { placeholderFolderName } from '../components/FolderHeader/PlaceholderFolderName';
-import { Box, Button } from 'grommet';
 import { ManageFolder } from './ManageFolder';
 import { getUUID } from '../Router';
 import { TaskSummary } from '../components/TaskSummary';
 import { ViewSelector } from '../components/ViewSelector';
-import { Configure } from 'grommet-icons';
 import { FilterToggle } from '../components/FilterToggle';
 import { DownloadZipButton } from '../components/DownloadZipButton';
+import { ActionIcon, Group } from '@mantine/core';
+import { TbSettings } from 'react-icons/tb';
 
 // This component is used in the 'public URL' and 'private URL' routes, so this is how we determine where each link should point
 export const useBaseViewFolderURL = () => {
@@ -82,23 +82,29 @@ export const ViewFolderBody = ({
   const actions = [];
   if (folder?.permissions === 'Admin') {
     actions.push(
-      <Button
-        primary={managing}
-        icon={<Configure />}
-        // label={managing ? 'View Folder' : 'Manage'}
+      <ActionIcon
+        key="manage"
+        variant={managing ? 'filled' : 'default'}
+        title={managing ? 'View Folder' : 'Manage'}
         onClick={toggleManaging}
-      />,
+      >
+        <TbSettings />
+      </ActionIcon>,
     );
   }
   if (hasFiles) {
     //it's crap UX if you can change the 'view' but there is nothing in there
     actions.push(
-      <ViewSelector managing={managing} toggleManaging={toggleManaging} />,
+      <ViewSelector
+        managing={managing}
+        toggleManaging={toggleManaging}
+        key="viewselector"
+      />,
     );
-    actions.push(<FilterToggle disabled={managing} />);
+    actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
   }
   if (hasFiles || hasFolders)
-    actions.push(<DownloadZipButton folder={folder} />); // TODO: option to not show this perhaps?
+    actions.push(<DownloadZipButton folder={folder} key="downloadbutton" />); // TODO: option to not show this perhaps?
 
   return (
     <>
@@ -110,11 +116,7 @@ export const ViewFolderBody = ({
           <FolderHeader
             folder={folder}
             subtitle={folderSubtitle(folder)}
-            actions={
-              <Box direction="row" gap="small" justify="between" width="100%">
-                {actions}
-              </Box>
-            }
+            actions={<Group>{actions}</Group>}
           />
           <TaskSummary folderId={folder.id} />
           {managing ? (

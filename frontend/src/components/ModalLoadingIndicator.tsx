@@ -1,18 +1,11 @@
-import { Box, Layer, Spinner } from 'grommet';
+import { LoadingOverlay } from '@mantine/core';
 
 export const ModalLoadingIndicator = () => {
   return (
-    <Layer>
-      <Box
-        align="center"
-        justify="center"
-        gap="small"
-        direction="row"
-        alignSelf="center"
-        pad="large"
-      >
-        <Spinner />
-      </Box>
-    </Layer>
+    <LoadingOverlay
+      visible={true}
+      zIndex={1000}
+      overlayProps={{ radius: 'sm', blur: 2 }}
+    />
   );
 };

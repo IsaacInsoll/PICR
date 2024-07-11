@@ -1,9 +1,18 @@
 import { gql } from '../helpers/gql';
 import { useQuery } from 'urql';
-import { Box, Card, Meter, Page, PageContent } from 'grommet';
 import { useEffect } from 'react';
 import { linksToDownloadAtom } from './DownloadZipButton';
 import { useAtom } from 'jotai/index';
+import {
+  Box,
+  Group,
+  Loader,
+  Paper,
+  Progress,
+  Stack,
+  Text,
+} from '@mantine/core';
+import { Page } from './Page';
 
 export const TaskSummary = ({ folderId }: { folderId: string }) => {
   const [result, requery] = useQuery({
@@ -36,33 +45,47 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
       }
     });
   }, [zips, complete]);
-  const remaining = tasks?.filter((t) => t.status != 'Complete');
+  let remaining = tasks?.filter((t) => t.status != 'Complete');
+
+  //TODO: remove this testing line
+  remaining = [
+    { id: '123', step: 3, totalSteps: 8, name: 'Testing task styling' },
+    { id: '1234', name: 'Unstepped task' },
+  ];
+
   if (!remaining || !remaining.length) return null;
   return (
     <Page>
-      <PageContent>
-        <Card pad="small" margin={{ bottom: 'small' }}>
+      <Paper shadow="xs" withBorder p="xs" mb="md" mt="lg">
+        <Stack gap="sm">
           {remaining.map(({ id, name, step, totalSteps }) => {
+            const hasSteps = step && totalSteps && totalSteps > 0;
             return (
-              <Box direction="row" gap="small" key={id}>
-                <Box>
-                  {name} {step}/{totalSteps}
+              <Group gap="small" key={id}>
+                <Text>{name}</Text>
+                <Box pt={4} style={{ flexGrow: 1 }}>
+                  {hasSteps ? (
+                    <Progress
+                      style={{ flex: 1 }}
+                      value={(step / totalSteps) * 100.0}
+                      animated
+                    />
+                  ) : null}
                 </Box>
-                <Box flex="grow" pad={{ top: 'xsmall' }}>
-                  <Meter
-                    type="bar"
-                    value={step}
-                    max={totalSteps}
-                    thickness="small"
-                    size="full"
-                  />
-                </Box>
-                {/*<Box>yo dawg</Box>*/}
-              </Box>
+                {hasSteps ? (
+                  <Box>
+                    {step}/{totalSteps}
+                  </Box>
+                ) : (
+                  <Box>
+                    <Loader color="blue" size="xs" />
+                  </Box>
+                )}
+              </Group>
             );
           })}
-        </Card>
-      </PageContent>
+        </Stack>
+      </Paper>
     </Page>
   );
 };

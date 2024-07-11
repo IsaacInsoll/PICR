@@ -1,15 +1,4 @@
 import { MinimalFolder } from '../../types';
-import {
-  Box,
-  Button,
-  CheckBox,
-  FormField,
-  Layer,
-  TextInput,
-  Text,
-  Notification,
-} from 'grommet';
-import { Clipboard, Close, CloudUpload, Group, Link } from 'grommet-icons';
 import { randomString } from '../helpers/randomString';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'urql';
@@ -17,6 +6,23 @@ import { editUserMutation } from '../urql/mutations/editUserMutation';
 import type { MutationEditUserArgs } from '../gql/graphql';
 import { viewUserQuery } from '../urql/queries/viewUserQuery';
 import { copyToClipboard, publicURLFor } from '../helpers/copyToClipboard';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Group,
+  Modal,
+  Stack,
+  TextInput,
+} from '@mantine/core';
+import {
+  TbClipboard,
+  TbCloudUpload,
+  TbDoorExit,
+  TbLink,
+  TbUsersGroup,
+} from 'react-icons/tb';
+import { notifications } from '@mantine/notifications';
 
 export const ManagePublicLink = ({
   id,
@@ -67,103 +73,63 @@ export const ManagePublicLink = ({
   };
 
   return (
-    <>
-      <Layer onEsc={onClose} onClickOutside={onClose}>
-        <Box width="large" gap="small" pad="medium" align="center">
-          <FormField
-            label={
-              <FormLabel
-                text="Who is using this link?"
-                description="only you will see this name"
-              />
-            }
-            style={{ width: '100%' }}
-          >
-            <TextInput
-              icon={<Group />}
-              placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </FormField>
-          <FormField
-            label={
-              <FormLabel
-                text="Public Link"
-                description="this should be impossible to guess"
-              />
-            }
-            style={{ width: '100%' }}
-          >
-            <TextInput
-              icon={<Link />}
-              placeholder="Link ID (required)"
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-            />
-          </FormField>
-          <FormField
-            label={
-              <FormLabel
-                text="Enabled"
-                description="link will only work if this is 'on'"
-              />
-            }
-            style={{ width: '100%' }}
-          >
-            <CheckBox
-              checked={enabled}
-              label="Link Enabled"
-              onChange={(event) => setEnabled(event.target.checked)}
-            />
-          </FormField>
-          <Box direction="row">
-            <Button label="Cancel" icon={<Close />} onClick={onClose} />
-            <Button
-              label="Copy Link"
-              icon={<Clipboard />}
-              disabled={invalidLink}
-              onClick={() => {
-                const url = publicURLFor(link, folder!.id);
-                setNotificationUrl(url);
-                copyToClipboard(url);
-              }}
-            />
-            <Button
-              label={exists ? 'Save' : 'Create Link'}
-              disabled={invalidLink}
-              icon={<CloudUpload />}
-              primary
-              onClick={onSave}
-            />
-          </Box>
-        </Box>
-      </Layer>
-      {notificationUrl != '' ? (
-        <Notification
-          toast
-          title="Link copied to clipboard"
-          message={notificationUrl}
-          onClose={() => setNotificationUrl('')}
-          time={3000}
-          icon={<Link />}
+    <Modal
+      onClose={onClose}
+      title={`Manage Public Link for: ${folder.name}`}
+      centered
+      opened={true}
+    >
+      <Stack gap="lg">
+        <TextInput
+          leftSection={<TbUsersGroup />}
+          placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
+          value={name}
+          label="Who is using this link?"
+          description="only you will see this name"
+          onChange={(e) => setName(e.target.value)}
         />
-      ) : null}
-    </>
-  );
-};
 
-const FormLabel = ({
-  text,
-  description,
-}: {
-  text: string;
-  description?: string;
-}) => {
-  return (
-    <Box direction="row" style={{ justifyContent: 'space-between' }}>
-      <Text>{text}</Text>
-      <Text style={{ opacity: 0.3, fontStyle: 'italic' }}>{description}</Text>
-    </Box>
+        <TextInput
+          leftSection={<TbLink />}
+          placeholder="Link ID (required)"
+          value={link}
+          label="Public Link"
+          description="this should be impossible to guess"
+          onChange={(e) => setLink(e.target.value)}
+        />
+
+        <Checkbox
+          checked={enabled}
+          label="Enabled"
+          description="link will only work if this is 'on'"
+          onChange={(event) => setEnabled(event.currentTarget.checked)}
+        />
+        <Group>
+          <Button onClick={onClose}>
+            <TbDoorExit />
+            Cancel
+          </Button>
+          <Button
+            disabled={invalidLink}
+            onClick={() => {
+              const url = publicURLFor(link, folder!.id);
+              copyToClipboard(url);
+              notifications.show({
+                title: 'Link copied to clipboard',
+                message: url,
+                icon: <TbClipboard />,
+              });
+            }}
+          >
+            <TbClipboard />
+            Copy Link
+          </Button>
+          <Button disabled={invalidLink} onClick={onSave}>
+            <TbCloudUpload />
+            {exists ? 'Save' : 'Create Link'}
+          </Button>
+        </Group>
+      </Stack>
+    </Modal>
   );
 };

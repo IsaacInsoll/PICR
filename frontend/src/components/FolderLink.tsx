@@ -1,4 +1,4 @@
-import { Anchor } from 'grommet';
+import { Anchor } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { useBaseViewFolderURL } from '../pages/ViewFolder';
 import { MinimalFolder } from '../../types';
@@ -8,9 +8,8 @@ export const FolderLink = ({ folder }: { folder: MinimalFolder }) => {
   const navigate = useNavigate();
   if (!folder) return undefined;
   return (
-    <Anchor
-      label={folder?.name}
-      onClick={() => navigate(baseUrl + folder?.id)}
-    />
+    <Anchor onClick={() => navigate(baseUrl + folder?.id)}>
+      {folder?.name}
+    </Anchor>
   );
 };

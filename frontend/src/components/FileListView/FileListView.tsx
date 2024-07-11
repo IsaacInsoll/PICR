@@ -1,5 +1,5 @@
 import { MinimalFile } from '../../../types';
-import { useSelectedView, ViewSelector } from '../ViewSelector';
+import { useSelectedView } from '../ViewSelector';
 import { GridGallery } from './GridGallery';
 import { DataGrid } from './DataGrid';
 import { useEffect, useState } from 'react';

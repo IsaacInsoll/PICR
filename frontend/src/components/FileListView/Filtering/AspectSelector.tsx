@@ -1,46 +1,55 @@
 import { useAtom } from 'jotai/index';
 import { AspectFilterOptions, filterOptions } from '../../../atoms/filterAtom';
-import { Menu } from 'grommet';
 import {
   MdOutlineCropFree,
   MdOutlineCropLandscape,
   MdOutlineCropPortrait,
   MdOutlineCropSquare,
 } from 'react-icons/md';
+import { Group, Select } from '@mantine/core';
 
 export const AspectSelector = () => {
   const [options, setOptions] = useAtom(filterOptions);
   const onChange = (a: AspectFilterOptions) =>
     setOptions((o) => ({ ...o, ratio: a }));
   return (
-    <Menu
-      label={options.ratio}
-      icon={aspectRatioIcon[options.ratio]}
-      items={[
+    <Select
+      // label={options.ratio}
+      value={options.ratio}
+      onChange={(v) => v && onChange(v)}
+      leftSection={aspectRatioIcon[options.ratio]}
+      data={[
         {
           label: 'Any Ratio',
-          icon: <MdOutlineCropFree />,
-          onClick: () => onChange('Any Ratio'),
+          value: 'Any Ratio',
         },
         {
           label: 'Landscape',
-          icon: <MdOutlineCropLandscape />,
-          onClick: () => onChange('Landscape'),
+          value: 'Landscape',
         },
         {
           label: 'Square',
-          icon: <MdOutlineCropSquare />,
-          onClick: () => onChange('Square'),
+          value: 'Square',
         },
         {
           label: 'Portrait',
-          icon: <MdOutlineCropPortrait />,
-          onClick: () => onChange('Portrait'),
+          value: 'Portrait',
         },
       ]}
+      renderOption={renderOption}
     />
   );
 };
+
+const renderOption = ({ option, checked }) => {
+  return (
+    <Group flex={1} gap="sm">
+      <div>{aspectRatioIcon[option.label]}</div>
+      <div>{option.label}</div>
+    </Group>
+  );
+};
+
 const aspectRatioIcon = {
   'Any Ratio': <MdOutlineCropFree />,
   Square: <MdOutlineCropSquare />,
