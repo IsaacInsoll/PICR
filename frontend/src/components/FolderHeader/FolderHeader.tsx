@@ -3,11 +3,20 @@ import { FolderLink } from '../FolderLink';
 import { Helmet } from 'react-helmet-async';
 import { ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
-import { placeholderFolderName } from './PlaceholderFolderName';
+import { placeholderFolder } from './PlaceholderFolder';
 import { TbChevronRight } from 'react-icons/tb';
 import { LoadingIndicator } from '../LoadingIndicator';
 import { Page } from '../Page';
-import { Container, Group } from '@mantine/core';
+import {
+  Anchor,
+  Box,
+  Breadcrumbs,
+  Container,
+  Group,
+  Text,
+  Title,
+} from '@mantine/core';
+import { i } from 'vite/dist/node/types.d-aGj9QkWt';
 
 export const FolderHeader = ({
   folder,
@@ -18,31 +27,12 @@ export const FolderHeader = ({
   subtitle?: string;
   actions?: JSX.Element;
 }) => {
-  const parents = folder.parents ? (
-    <Group align="center">
-      {folder.parents
-        .slice(-3)
-        .reverse()
-        .map((p, i) => {
-          const last = i + 1 === folder.parents?.length;
-          return (
-            <span key={i}>
-              <FolderLink folder={p} />
-              {!last ? <TbChevronRight style={{ opacity: 0.33 }} /> : null}
-            </span>
-          );
-        })}
-    </Group>
-  ) : (
-    ' '
-  );
-
   return (
     <HeaderWrapper
       title={folder.name ?? '(Unnamed Folder)'}
       subtitle={subtitle}
       actions={actions}
-      parent={parents}
+      parent={folder.parents}
     />
   );
 };
@@ -50,13 +40,15 @@ export const FolderHeader = ({
 export const PlaceholderFolderHeader = () => {
   //todo ditch atom
   // i really want to do a graphicache lookup of folder(with certain id) and get it's .name as we probably have it in the cache
-  const folderName = useAtomValue(placeholderFolderName);
+  const folder = useAtomValue(placeholderFolder);
   return (
     <>
-      <HeaderWrapper title={folderName ?? 'Loading'} subtitle=" " />
-      <Container style={{ textAlign: 'center' }}>
-        <LoadingIndicator size="large" />
-      </Container>
+      <HeaderWrapper
+        title={folder?.name ?? 'Loading'}
+        subtitle=" "
+        parent={folder?.parents}
+      />
+      <LoadingIndicator size="large" />
     </>
   );
 };
@@ -72,18 +64,28 @@ const HeaderWrapper = ({
   subtitle?: string;
   children?: ReactNode;
   actions?: ReactNode;
-  parent?: ReactNode;
+  parent?: MinimalFolder[];
 }) => {
-  // TODO Beautify and mobile friendly
+  const crumbs =
+    parent && parent.length
+      ? parent
+          .slice(-3)
+          .reverse()
+          .map((p, i) => <FolderLink folder={p} key={i} />)
+      : null;
   return (
     <Page>
       <Helmet>
         <title>{title ?? 'PICR'}</title>
       </Helmet>
       <Container>
-        {parent}
-        <h1>{title}</h1>
-        <h2>{subtitle}</h2>
+        <Box style={{ minHeight: 25 }}>
+          <Breadcrumbs separator="→" separatorMargin="md" mt="xs">
+            {crumbs}
+          </Breadcrumbs>
+        </Box>
+        <Title order={1}>{title}</Title>
+        <Text>{subtitle}</Text>
         {actions}
       </Container>
       {children}

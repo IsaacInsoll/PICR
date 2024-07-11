@@ -6,6 +6,7 @@ import { atom, useAtom } from 'jotai/index';
 import { Folder } from '../../../graphql-types';
 import { FolderHash } from '../../../src/helpers/zip';
 import { TbDownload } from 'react-icons/tb';
+import { actionIconSize } from '../theme';
 
 // list of URLs we have requested to download that are currently generating.
 // delete from list once you have triggered it's download
@@ -34,7 +35,7 @@ export const DownloadZipButton = ({ folder }: { folder: Folder }) => {
       variant="default"
       disabled={disabled}
     >
-      <TbDownload />
+      <TbDownload size={actionIconSize} />
     </ActionIcon>
   );
 };

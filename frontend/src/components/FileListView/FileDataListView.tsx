@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 import { MinimalFile } from '../../../types';
 import { FileListViewStyleComponentProps } from './FolderContentsView';
 import prettyBytes from 'pretty-bytes';
-import { Box } from '@mantine/core';
 import { picrGridProps } from '../PicrDataGrid';
 import {
   MantineReactTable,
   MRT_ColumnDef,
   useMantineReactTable,
 } from 'mantine-react-table';
+import { Page } from '../Page';
 
 export const FileDataListView = ({
   files,
@@ -16,25 +16,17 @@ export const FileDataListView = ({
 }: FileListViewStyleComponentProps) => {
   const tableOptions = useMemo(
     () => picrGridProps(columns, files, (row) => setSelectedFileId(row.id)),
-    [],
+    [files], //files changes whenever you change a filtering option
   );
   const table = useMantineReactTable(tableOptions);
 
   return (
-    <Box p="lg" ta="center">
+    <Page>
       <MantineReactTable table={table} />
-    </Box>
+    </Page>
   );
 };
-// const dataTableColumnConfig: ColumnConfig<MinimalFile>[] = [
-//   { property: 'name', header: <Text>Name</Text> },
-//   { property: 'type', header: <Text>Type</Text> },
-//   {
-//     property: 'fileSize',
-//     header: <Text>File Size</Text>,
-//     render: ({ fileSize }) => (fileSize ? prettyBytes(fileSize) : null),
-//   },
-// ];
+
 const columns: MRT_ColumnDef<MinimalFile>[] = [
   { accessorKey: 'name', header: 'Name' },
   { accessorKey: 'type', header: 'Type' },

@@ -10,9 +10,10 @@ import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import 'mantine-react-table/styles.css';
 
-import { createTheme, MantineProvider } from '@mantine/core';
+import { MantineProvider } from '@mantine/core';
 import { HelmetProvider } from 'react-helmet-async';
 import { Notifications } from '@mantine/notifications';
+import { theme } from './theme';
 
 const App = () => {
   const loggedIn = useIsLoggedIn();
@@ -36,7 +37,4 @@ const App = () => {
   );
 };
 
-export const theme = createTheme({
-  /** Your theme override here */
-});
 export default App;

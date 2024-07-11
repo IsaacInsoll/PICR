@@ -12,15 +12,16 @@ import { FolderListView } from '../components/FolderListView';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
 import { useSetAtom } from 'jotai/index';
-import { placeholderFolderName } from '../components/FolderHeader/PlaceholderFolderName';
+import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder';
 import { ManageFolder } from './ManageFolder';
 import { getUUID } from '../Router';
 import { TaskSummary } from '../components/TaskSummary';
 import { ViewSelector } from '../components/ViewSelector';
 import { FilterToggle } from '../components/FilterToggle';
 import { DownloadZipButton } from '../components/DownloadZipButton';
-import { ActionIcon, Group } from '@mantine/core';
+import { ActionIcon, Group, Title } from '@mantine/core';
 import { TbSettings } from 'react-icons/tb';
+import { actionIconSize } from '../theme';
 
 // This component is used in the 'public URL' and 'private URL' routes, so this is how we determine where each link should point
 export const useBaseViewFolderURL = () => {
@@ -31,10 +32,10 @@ export const ViewFolder = () => {
   const navigate = useNavigate();
   const { folderId, fileId } = useParams();
   const baseUrl = useBaseViewFolderURL();
-  const setPlaceholderFolder = useSetAtom(placeholderFolderName);
+  const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const managing = fileId === 'manage';
   const handleSetFolder = (f: MinimalFolder) => {
-    setPlaceholderFolder(f?.name);
+    setPlaceholderFolder({ ...f });
     navigate(baseUrl + f.id);
   };
 
@@ -88,7 +89,7 @@ export const ViewFolderBody = ({
         title={managing ? 'View Folder' : 'Manage'}
         onClick={toggleManaging}
       >
-        <TbSettings />
+        <TbSettings size={actionIconSize} />
       </ActionIcon>,
     );
   }
@@ -110,7 +111,7 @@ export const ViewFolderBody = ({
     <>
       <QueryFeedback result={data} reQuery={reQuery} />
       {!folder ? (
-        <h1>Folder Not Found</h1>
+        <Title order={1}>Folder Not Found</Title>
       ) : (
         <>
           <FolderHeader

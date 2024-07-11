@@ -19,6 +19,7 @@ export function picrGridProps<TData extends MRT_RowData>(
     enablePagination: false,
     enableTopToolbar: false,
     enableBottomToolbar: false,
+    initialState: { density: 'xs' },
     mantineTableBodyRowProps: ({ row }) => ({
       onClick: () => {
         onClick(row.original);
