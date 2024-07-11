@@ -1,7 +1,7 @@
 import { MinimalFile } from '../../../types';
 import { useSelectedView } from '../ViewSelector';
 import { GridGallery } from './GridGallery';
-import { DataGrid } from './DataGrid';
+import { FileDataListView } from './FileDataListView';
 import { useEffect, useState } from 'react';
 import { ImageFeed } from './ImageFeed';
 import { SelectedFileView } from './SelectedFileView';
@@ -26,7 +26,7 @@ export interface FileListViewStyleComponentProps {
   setSelectedFileId: (id: string | undefined) => void;
 }
 
-export const FileListView = ({ files, folderId }: FileListViewProps) => {
+export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
   const view = useSelectedView();
   const filtering = useAtomValue(filterAtom);
   const filters = useAtomValue(filterOptions);
@@ -49,7 +49,7 @@ export const FileListView = ({ files, folderId }: FileListViewProps) => {
           selectedFileId={selectedFileId}
         />
       ) : null}
-      {view === 'list' ? <DataGrid {...props} /> : null}
+      {view === 'list' ? <FileDataListView {...props} /> : null}
       {view === 'gallery' ? <GridGallery {...props} /> : null}
       {view === 'slideshow' ? <ImageFeed {...props} /> : null}
     </>

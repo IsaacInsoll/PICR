@@ -10,7 +10,7 @@ import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/counter.css';
 import { MinimalFile } from '../../../types';
 import { imageURL } from '../../helpers/imageURL';
-import { FileListViewStyleComponentProps } from './FileListView';
+import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { thumbnailSizes } from '../../helpers/thumbnailSize';
 import { thumbnailDimensions } from '../../helpers/thumbnailDimensions';
 

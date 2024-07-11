@@ -1,4 +1,4 @@
-import { FileListViewStyleComponentProps } from './FileListView';
+import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { MinimalFile } from '../../../types';
 import { imageURL } from '../../helpers/imageURL';
 import { useMemo, useState } from 'react';

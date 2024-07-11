@@ -9,7 +9,7 @@ import { folderSubtitle } from '../helpers/folderSubtitle';
 import { useNavigate, useParams } from 'react-router-dom';
 import { viewFolderQuery } from '../urql/queries/viewFolderQuery';
 import { FolderListView } from '../components/FolderListView';
-import { FileListView } from '../components/FileListView/FileListView';
+import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
 import { useSetAtom } from 'jotai/index';
 import { placeholderFolderName } from '../components/FolderHeader/PlaceholderFolderName';
@@ -127,7 +127,7 @@ export const ViewFolderBody = ({
                 folders={folder?.subFolders}
                 onClick={setFolder}
               />
-              <FileListView folderId={folderId} files={folder.files} />
+              <FolderContentsView folderId={folderId} files={folder.files} />
             </>
           )}
         </>

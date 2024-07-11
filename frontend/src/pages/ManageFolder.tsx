@@ -1,5 +1,4 @@
-import { ReactNode, Suspense, useState } from 'react';
-import { ColumnConfig, DataTable, SortType } from 'grommet';
+import { Suspense, useMemo, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import { manageFolderQuery } from '../urql/queries/manageFolderQuery';
 import QueryFeedback from '../components/QueryFeedback';
@@ -9,8 +8,15 @@ import { VscDebugDisconnect } from 'react-icons/vsc';
 import { gql } from '../helpers/gql';
 import { ModalLoadingIndicator } from '../components/ModalLoadingIndicator';
 import { TbLink, TbPhotoCheck } from 'react-icons/tb';
-import { Box, Button, Container, Group, Text } from '@mantine/core';
+import { Box, Button, Group } from '@mantine/core';
 import { Page } from '../components/Page';
+import {
+  MantineReactTable,
+  MRT_ColumnDef,
+  useMantineReactTable,
+} from 'mantine-react-table';
+import { picrGridProps } from '../components/PicrDataGrid';
+import { EmptyPlaceholder } from './EmptyPlaceholder';
 
 export const ManageFolder = ({
   folderId,
@@ -47,7 +53,7 @@ const ManageFolderBody = ({
   const { data } = result;
   const totalImages = data?.folder.totalImages;
   return (
-    <Container>
+    <Box>
       {linkId !== null ? (
         <Suspense fallback={<ModalLoadingIndicator />}>
           <ManagePublicLink
@@ -66,7 +72,7 @@ const ManageFolderBody = ({
           setSharedFolderId={setLinkId}
         />
       ) : null}
-      <Group gap="small">
+      <Group gap="md" pt="md">
         <Button variant="default" onClick={() => setLinkId('')}>
           <TbLink />
           Create Link
@@ -79,10 +85,10 @@ const ManageFolderBody = ({
           <TbPhotoCheck />
           {`Generate ${totalImages} Thumbnails`}
         </Button>
-        <Button onClick={onClose}>Close Settings </Button>
+        <Button onClick={onClose}>Close Settings</Button>
       </Group>
       <QueryFeedback result={result} reQuery={reQuery} />
-    </Container>
+    </Box>
   );
 };
 
@@ -93,59 +99,33 @@ const SharedFolderDataGrid = ({
   sharedFolders: MinimalSharedFolder[];
   setSharedFolderId: (id: string) => void;
 }) => {
-  const [sort, setSort] = useState<SortType>({
-    property: 'name',
-    direction: 'asc',
-  });
+  //         onClickRow={({ datum }) => setSharedFolderId(datum.id)}
+  //       />
+
+  const tableOptions = useMemo(
+    () =>
+      picrGridProps(columns, sharedFolders, (row) => setSharedFolderId(row.id)),
+    [],
+  );
+  const table = useMantineReactTable(tableOptions);
   return (
-    <Box>
-      <DataTable
-        fill={true}
-        columns={dataTableColumnConfig}
-        data={sharedFolders}
-        sort={sort}
-        onSort={setSort}
-        resizeable
-        primaryKey="id"
-        onClickRow={({ datum }) => setSharedFolderId(datum.id)}
-      />
+    <>
       {sharedFolders.length === 0 ? (
         <EmptyPlaceholder
-          text="You haven't created any links for this folder (or parent folders)
-            yet!"
+          text="You haven't created any links for this folder (or parent folders) yet!"
           icon={<VscDebugDisconnect />}
         />
-      ) : null}
-    </Box>
+      ) : (
+        <MantineReactTable table={table} />
+      )}
+    </>
   );
 };
-const dataTableColumnConfig: ColumnConfig<MinimalSharedFolder>[] = [
-  { property: 'name', header: <Text>Name</Text> },
-  {
-    property: 'folder',
-    header: <Text>Shared Folder</Text>,
-    render: ({ folder }) => {
-      return folder?.name ?? '';
-    },
-  },
-];
 
-const EmptyPlaceholder = ({
-  text,
-  icon,
-}: {
-  text: string;
-  icon: ReactNode;
-}) => {
-  return (
-    <Box style={{ opacity: 0.33 }} align="center" pad="medium">
-      <Box style={{ fontSize: 72, opacity: 0.5 }} pad="medium">
-        {icon}
-      </Box>
-      <Text textAlign="center">{text}</Text>
-    </Box>
-  );
-};
+const columns: MRT_ColumnDef<MinimalSharedFolder>[] = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'folder.name', header: 'Shared Folder' },
+];
 
 const generateThumbnailsQuery = gql(/*GraphQL*/ `
 mutation generateThumbnailsQuery($folderId: ID!) {

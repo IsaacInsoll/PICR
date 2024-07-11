@@ -8,6 +8,7 @@ import { themeModeAtom } from './atoms/themeModeAtom';
 
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import 'mantine-react-table/styles.css';
 
 import { createTheme, MantineProvider } from '@mantine/core';
 import { HelmetProvider } from 'react-helmet-async';

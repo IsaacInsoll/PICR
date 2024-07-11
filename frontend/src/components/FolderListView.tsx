@@ -1,5 +1,12 @@
-import { MinimalFolder } from '../../types';
-import { DataTable, DataTableColumn } from 'mantine-datatable';
+import { MinimalFolder, MinimalSharedFolder } from '../../types';
+import {
+  MantineReactTable,
+  MRT_ColumnDef,
+  useMantineReactTable,
+} from 'mantine-react-table';
+import { useMemo } from 'react';
+import { picrGridProps } from './PicrDataGrid';
+import { Page } from './Page';
 
 interface FolderListViewProps {
   folders: MinimalFolder[];
@@ -8,14 +15,18 @@ interface FolderListViewProps {
 
 export const FolderListView = ({ folders, onClick }: FolderListViewProps) => {
   if (!folders || folders.length === 0) return undefined;
-  const cols: DataTableColumn[] = [{ accessor: 'name' }];
+  const tableOptions = useMemo(
+    () => picrGridProps(columns, folders, (row) => onClick(row)),
+    [],
+  );
+  const table = useMantineReactTable(tableOptions);
   return (
-    <DataTable
-      columns={cols}
-      records={folders}
-      onRowClick={({ record, index, event }) => {
-        onClick(record);
-      }}
-    />
+    <Page>
+      <MantineReactTable table={table} />
+    </Page>
   );
 };
+
+const columns: MRT_ColumnDef<MinimalSharedFolder>[] = [
+  { accessorKey: 'name', header: 'Folder Name' },
+];

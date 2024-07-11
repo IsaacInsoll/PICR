@@ -45,13 +45,13 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
       }
     });
   }, [zips, complete]);
-  let remaining = tasks?.filter((t) => t.status != 'Complete');
+  const remaining = tasks?.filter((t) => t.status != 'Complete');
 
-  //TODO: remove this testing line
-  remaining = [
-    { id: '123', step: 3, totalSteps: 8, name: 'Testing task styling' },
-    { id: '1234', name: 'Unstepped task' },
-  ];
+  // //TODO: remove this testing line
+  // remaining = [
+  //   { id: '123', step: 3, totalSteps: 8, name: 'Testing task styling' },
+  //   { id: '1234', name: 'Unstepped task' },
+  // ];
 
   if (!remaining || !remaining.length) return null;
   return (

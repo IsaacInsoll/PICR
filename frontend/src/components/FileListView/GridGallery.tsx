@@ -2,7 +2,7 @@
 // TODO: Could use Skeleton as placeholders before content loads?
 import { imageURL } from '../../helpers/imageURL';
 import { Gallery } from 'react-grid-gallery';
-import { FileListViewStyleComponentProps } from './FileListView';
+import { FileListViewStyleComponentProps } from './FolderContentsView';
 import React from 'react';
 import { MinimalFile } from '../../../types';
 import 'yet-another-react-lightbox/styles.css';
