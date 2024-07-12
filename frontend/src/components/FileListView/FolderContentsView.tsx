@@ -1,5 +1,9 @@
 import { MinimalFile } from '../../../types';
-import { useSelectedView } from '../ViewSelector';
+import {
+  selectedViewAtom,
+  useSelectedView,
+  viewOptions,
+} from '../ViewSelector';
 import { GridGallery } from './GridGallery';
 import { FileDataListView } from './FileDataListView';
 import { useEffect, useState } from 'react';
@@ -13,7 +17,9 @@ import {
 import { useAtomValue } from 'jotai';
 import { FilteringOptions } from './Filtering/FilteringOptions';
 import { filterFiles } from '../../helpers/filterFiles';
-import { useSetAtom } from 'jotai/index';
+import { useAtom, useSetAtom } from 'jotai/index';
+import { Tabs } from '@mantine/core';
+import { Page } from '../Page';
 
 export interface FileListViewProps {
   files: MinimalFile[];
@@ -27,7 +33,7 @@ export interface FileListViewStyleComponentProps {
 }
 
 export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
-  const view = useSelectedView();
+  const [view, setView] = useAtom(selectedViewAtom);
   const filtering = useAtomValue(filterAtom);
   const filters = useAtomValue(filterOptions);
   const resetFilters = useSetAtom(resetFilterOptions);
@@ -40,7 +46,6 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
   const props = { files: filteredFiles, selectedFileId, setSelectedFileId };
   return (
     <>
-      {/*<ViewSelector />*/}
       {filtering ? <FilteringOptions files={files} /> : null}
       {selectedFileId ? (
         <SelectedFileView
@@ -49,9 +54,27 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
           selectedFileId={selectedFileId}
         />
       ) : null}
-      {view === 'list' ? <FileDataListView {...props} /> : null}
-      {view === 'gallery' ? <GridGallery {...props} /> : null}
-      {view === 'slideshow' ? <ImageFeed {...props} /> : null}
+      <Tabs value={view} onChange={setView}>
+        <Page>
+          <Tabs.List grow>
+            {viewOptions.map((v) => (
+              <Tabs.Tab value={v.name} leftSection={v.icon}>
+                {v.label}
+              </Tabs.Tab>
+            ))}
+          </Tabs.List>
+        </Page>
+
+        <Tabs.Panel value="list">
+          <FileDataListView {...props} />
+        </Tabs.Panel>
+        <Tabs.Panel value="gallery">
+          <GridGallery {...props} />
+        </Tabs.Panel>
+        <Tabs.Panel value="slideshow">
+          <ImageFeed {...props} />
+        </Tabs.Panel>
+      </Tabs>
     </>
   );
 };

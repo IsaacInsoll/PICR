@@ -10,6 +10,10 @@ import {
   Box,
   Breadcrumbs,
   Container,
+  Divider,
+  Flex,
+  Grid,
+  Group,
   Loader,
   Skeleton,
   Text,
@@ -66,7 +70,7 @@ const HeaderWrapper = ({
   actions?: ReactNode;
   parent?: MinimalFolder[];
 }) => {
-  //lets populate each parent folder with a list of its parents so when we click one the placeholder has its parent hierachy for good UI
+  //let's populate each parent folder with a list of its parents so when we click one the placeholder has its parent hierachy for good UI
   const filledParents: MinimalFolder[] | undefined = parent?.map((f, i) => {
     return { ...f, parents: parent.slice(i + 1) };
   });
@@ -82,16 +86,26 @@ const HeaderWrapper = ({
       <Helmet>
         <title>{title ?? 'PICR'}</title>
       </Helmet>
-      <Container>
-        <Box style={{ minHeight: 25 }}>
-          <Breadcrumbs separator="→" separatorMargin="md" mt="xs">
-            {crumbs}
-          </Breadcrumbs>
-        </Box>
-        <Title order={1}>{title}</Title>
-        <Text>{subtitle}</Text>
-        {actions}
-      </Container>
+      <Box style={{ minHeight: 25 }}>
+        <Breadcrumbs separator="→" separatorMargin="md" mt="xs">
+          {crumbs}
+        </Breadcrumbs>
+      </Box>
+      <Grid>
+        <Grid.Col span={{ sm: 12, md: 6 }}>
+          <Title order={1}>{title}</Title>
+          <Text>{subtitle}</Text>
+        </Grid.Col>
+        <Grid.Col span={{ sm: 12, md: 6 }}>
+          <Flex hiddenFrom="md" justify="space-evenly">
+            {actions}
+          </Flex>
+          <Flex visibleFrom="md" justify="flex-end">
+            MD{actions}
+          </Flex>
+        </Grid.Col>
+      </Grid>
+
       {children}
     </Page>
   );

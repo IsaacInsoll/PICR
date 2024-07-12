@@ -22,7 +22,7 @@ export const SubfolderListView = ({ folder }: { folder: Folder }) => {
       picrGridProps(columns, folder.subFolders, (row) =>
         setFolder({ ...row, parents }),
       ),
-    [],
+    [folder.subFolders],
   );
   const table = useMantineReactTable(tableOptions);
   return (

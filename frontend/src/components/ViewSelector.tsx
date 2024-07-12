@@ -6,7 +6,7 @@ import { actionIconSize } from '../theme';
 
 export type SelectedView = 'list' | 'gallery' | 'slideshow';
 
-const selectedViewAtom = atomWithStorage<SelectedView>(
+export const selectedViewAtom = atomWithStorage<SelectedView>(
   'SelectedView',
   'gallery',
 );
@@ -40,20 +40,23 @@ export const ViewSelector = ({
   );
 };
 
-const viewOptions: { name: SelectedView; icon: JSX.Element; label: string }[] =
-  [
-    { name: 'list', icon: <TbList size={actionIconSize} />, label: 'List' },
-    {
-      name: 'gallery',
-      icon: <TbLayoutGrid size={actionIconSize} />,
-      label: 'Gallery',
-    },
-    {
-      name: 'slideshow',
-      icon: <TbPhoto size={actionIconSize} />,
-      label: 'Slideshow',
-    },
-  ] as const;
+export const viewOptions: {
+  name: SelectedView;
+  icon: JSX.Element;
+  label: string;
+}[] = [
+  { name: 'list', icon: <TbList size={actionIconSize} />, label: 'List' },
+  {
+    name: 'gallery',
+    icon: <TbLayoutGrid size={actionIconSize} />,
+    label: 'Gallery',
+  },
+  {
+    name: 'slideshow',
+    icon: <TbPhoto size={actionIconSize} />,
+    label: 'Slideshow',
+  },
+] as const;
 
 export const useSelectedView = () => {
   return useAtomValue(selectedViewAtom);

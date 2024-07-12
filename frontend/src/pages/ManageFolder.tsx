@@ -105,7 +105,7 @@ const SharedFolderDataGrid = ({
   const tableOptions = useMemo(
     () =>
       picrGridProps(columns, sharedFolders, (row) => setSharedFolderId(row.id)),
-    [],
+    [sharedFolders],
   );
   const table = useMantineReactTable(tableOptions);
   return (

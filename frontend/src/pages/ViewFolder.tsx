@@ -81,17 +81,17 @@ export const ViewFolderBody = ({
       </ActionIcon>,
     );
   }
-  if (hasFiles) {
-    //it's crap UX if you can change the 'view' but there is nothing in there
-    actions.push(
-      <ViewSelector
-        managing={managing}
-        toggleManaging={toggleManaging}
-        key="viewselector"
-      />,
-    );
-    actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
-  }
+  // if (hasFiles) {
+  //   //it's crap UX if you can change the 'view' but there is nothing in there
+  //   actions.push(
+  //     <ViewSelector
+  //       managing={managing}
+  //       toggleManaging={toggleManaging}
+  //       key="viewselector"
+  //     />,
+  //   );
+  //   actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
+  // }
   if (hasFiles || hasFolders)
     actions.push(<DownloadZipButton folder={folder} key="downloadbutton" />); // TODO: option to not show this perhaps?
 
