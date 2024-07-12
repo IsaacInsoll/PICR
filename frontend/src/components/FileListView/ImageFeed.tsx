@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import useMeasure from 'react-use-measure';
 import { LoadingIndicator } from '../LoadingIndicator';
 import { Box, Image, Title } from '@mantine/core';
+import { Page } from '../Page';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 export const ImageFeed = ({
@@ -40,7 +41,7 @@ const FeedItem = ({
   }, [bounds.width, file.imageRatio]);
 
   return (
-    <Box
+    <Page
     // round="small"
     // elevation="small"
     // overflow="hidden"
@@ -63,7 +64,7 @@ const FeedItem = ({
         {/*</Link>*/}
       </Box>
       <Title order={5}>{file.name}</Title>
-    </Box>
+    </Page>
   );
 };
 

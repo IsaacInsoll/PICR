@@ -29,13 +29,14 @@ export const DownloadZipButton = ({ folder }: { folder: Folder }) => {
   };
 
   return (
-    <ActionIcon
+    <Button
       title="Download All Files"
       onClick={clickHandler}
       variant="default"
       disabled={disabled}
+      leftSection={<TbDownload />}
     >
-      <TbDownload size={actionIconSize} />
-    </ActionIcon>
+      Download .ZIP
+    </Button>
   );
 };

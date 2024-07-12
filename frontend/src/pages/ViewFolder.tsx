@@ -16,7 +16,7 @@ import { TaskSummary } from '../components/TaskSummary';
 import { ViewSelector } from '../components/ViewSelector';
 import { FilterToggle } from '../components/FilterToggle';
 import { DownloadZipButton } from '../components/DownloadZipButton';
-import { ActionIcon, Group, Title } from '@mantine/core';
+import { ActionIcon, Button, Group, Title } from '@mantine/core';
 import { TbSettings } from 'react-icons/tb';
 import { actionIconSize } from '../theme';
 
@@ -71,27 +71,28 @@ export const ViewFolderBody = ({
   const actions = [];
   if (folder?.permissions === 'Admin') {
     actions.push(
-      <ActionIcon
+      <Button
         key="manage"
         variant={managing ? 'filled' : 'default'}
         title={managing ? 'View Folder' : 'Manage'}
         onClick={toggleManaging}
+        leftSection={<TbSettings />}
       >
-        <TbSettings size={actionIconSize} />
-      </ActionIcon>,
+        Manage Folder
+      </Button>,
     );
   }
-  // if (hasFiles) {
-  //   //it's crap UX if you can change the 'view' but there is nothing in there
-  //   actions.push(
-  //     <ViewSelector
-  //       managing={managing}
-  //       toggleManaging={toggleManaging}
-  //       key="viewselector"
-  //     />,
-  //   );
-  //   actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
-  // }
+  if (hasFiles) {
+    //   //it's crap UX if you can change the 'view' but there is nothing in there
+    //   actions.push(
+    //     <ViewSelector
+    //       managing={managing}
+    //       toggleManaging={toggleManaging}
+    //       key="viewselector"
+    //     />,
+    //   );
+    actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
+  }
   if (hasFiles || hasFolders)
     actions.push(<DownloadZipButton folder={folder} key="downloadbutton" />); // TODO: option to not show this perhaps?
 

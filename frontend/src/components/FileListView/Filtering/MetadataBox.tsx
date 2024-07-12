@@ -6,8 +6,11 @@ import {
   MdOutlineShutterSpeed,
 } from 'react-icons/md';
 import { MetadataSummary } from '../../../gql/graphql';
-import { useAtom } from 'jotai/index';
-import { filterOptions } from '../../../atoms/filterAtom';
+import { useAtom, useAtomValue } from 'jotai/index';
+import {
+  filterOptions,
+  totalFilterOptionsSelected,
+} from '../../../atoms/filterAtom';
 import { ReactNode } from 'react';
 import { BsCamera, BsCamera2 } from 'react-icons/bs';
 import { IoApertureOutline } from 'react-icons/io5';
@@ -23,6 +26,7 @@ export const MetadataBox = ({
   metadata: MetadataOptionsForFiltering;
 }) => {
   const [opened, { open, close }] = useDisclosure(false);
+  const total = useAtomValue(totalFilterOptionsSelected);
 
   return (
     <>
@@ -42,35 +46,14 @@ export const MetadataBox = ({
           );
         })}
       </Modal>
-      <ActionIcon onClick={open} variant={opened ? 'filled' : 'default'}>
-        <MdOutlineCameraRoll />
-      </ActionIcon>
+      <Button
+        onClick={open}
+        variant={opened ? 'filled' : 'default'}
+        leftSection={<MdOutlineCameraRoll />}
+      >
+        Metadata {total ? `(${total})` : null}
+      </Button>
     </>
-    //
-    // <Popover
-    //     withArrow
-    //     width={300}
-    //     position="bottom"
-    //     transitionProps={{ transition: 'pop' }}
-    //     withinPortal
-    //   >
-    //     <Popover.Target>
-    //       <ActionIcon variant="default">
-    //         <MdOutlineCameraRoll />
-    //       </ActionIcon>
-    //     </Popover.Target>
-    //     <Popover.Dropdown>
-    //       {Object.entries(metadata).map(([title, options]) => {
-    //         return (
-    //           <MetadataSelect
-    //             key={title}
-    //             title={title as keyof MetadataSummary}
-    //             options={options}
-    //           />
-    //         );
-    //       })}
-    //     </Popover.Dropdown>
-    //   </Popover>
   );
 };
 const MetadataSelect = ({

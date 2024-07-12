@@ -97,11 +97,11 @@ const HeaderWrapper = ({
           <Text>{subtitle}</Text>
         </Grid.Col>
         <Grid.Col span={{ sm: 12, md: 6 }}>
-          <Flex hiddenFrom="md" justify="space-evenly">
+          <Flex hiddenFrom="md" justify="space-evenly" mb="lg">
             {actions}
           </Flex>
           <Flex visibleFrom="md" justify="flex-end">
-            MD{actions}
+            {actions}
           </Flex>
         </Grid.Col>
       </Grid>
