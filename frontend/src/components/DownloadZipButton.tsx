@@ -12,18 +12,18 @@ import { actionIconSize } from '../theme';
 // delete from list once you have triggered it's download
 export const linksToDownloadAtom = atom<FolderHash[]>([]);
 
-export const DownloadZipButton = ({ folder }: { folder: Folder }) => {
+export const DownloadZipButton = ({ folder,disabled }: { folder: Folder,disabled?: boolean }) => {
   const [links, setLinks] = useAtom(linksToDownloadAtom);
   const [, mutate] = useMutation(generateZipMutation);
-  const [disabled, setDisabled] = useState(false);
+  const [tempDisabled, setTempDisabled] = useState(false);
 
   const clickHandler = () => {
-    setDisabled(true);
+    setTempDisabled(true);
     mutate({ folderId: folder.id }).then((res) => {
       if (res?.data) {
         const fh: FolderHash = { folder, hash: res.data.generateZip };
         setLinks((l) => [...l, fh]);
-        setDisabled(false);
+        setTempDisabled(false);
       }
     });
   };
@@ -33,7 +33,7 @@ export const DownloadZipButton = ({ folder }: { folder: Folder }) => {
       title="Download All Files"
       onClick={clickHandler}
       variant="default"
-      disabled={disabled}
+      disabled={disabled || tempDisabled}
       leftSection={<TbDownload />}
     >
       Download .ZIP

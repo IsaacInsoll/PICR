@@ -4,10 +4,10 @@ import { metadataForFiltering } from '../../../helpers/metadataForFiltering';
 import { AspectSelector } from './AspectSelector';
 import { SearchBox } from './SearchBox';
 import { MetadataBox } from './MetadataBox';
-import { Box, Group, Paper } from '@mantine/core';
+import {Box, Group, MantineStyleProp, Paper} from '@mantine/core';
 import { Page } from '../../Page';
 
-export const FilteringOptions = ({ files }: { files: MinimalFile[] }) => {
+export const FilteringOptions = ({ files,style }: { files: MinimalFile[],style:MantineStyleProp }) => {
   const meta = useMemo(() => metadataForFiltering(files), [files]);
   //aperture
   //camera
@@ -15,7 +15,7 @@ export const FilteringOptions = ({ files }: { files: MinimalFile[] }) => {
   //shutter
   //iso
   return (
-    <Page>
+    <Page style={style}>
       <Paper shadow="xs" withBorder p="md" mt="md" mb="md">
         <Group justify="space-between">
           <SearchBox />

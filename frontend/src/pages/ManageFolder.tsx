@@ -72,7 +72,7 @@ const ManageFolderBody = ({
           setSharedFolderId={setLinkId}
         />
       ) : null}
-      <Group gap="md" pt="md">
+      <Group gap="md" pt="md" justify="space-evenly">
         <Button variant="default" onClick={() => setLinkId('')}>
           <TbLink />
           Create Link

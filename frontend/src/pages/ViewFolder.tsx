@@ -94,7 +94,7 @@ export const ViewFolderBody = ({
     actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
   }
   if (hasFiles || hasFolders)
-    actions.push(<DownloadZipButton folder={folder} key="downloadbutton" />); // TODO: option to not show this perhaps?
+    actions.push(<DownloadZipButton folder={folder} key="downloadbutton" disabled={managing}/>); // TODO: option to not show this perhaps?
 
   return (
     <>

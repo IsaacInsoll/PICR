@@ -18,7 +18,7 @@ import { useAtomValue } from 'jotai';
 import { FilteringOptions } from './Filtering/FilteringOptions';
 import { filterFiles } from '../../helpers/filterFiles';
 import { useAtom, useSetAtom } from 'jotai/index';
-import { Tabs } from '@mantine/core';
+import {Tabs, Transition} from '@mantine/core';
 import { Page } from '../Page';
 
 export interface FileListViewProps {
@@ -46,7 +46,14 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
   const props = { files: filteredFiles, selectedFileId, setSelectedFileId };
   return (
     <>
-      {filtering ? <FilteringOptions files={files} /> : null}
+      <Transition
+          mounted={filtering}
+          transition="scale-y"
+          duration={400}
+          timingFunction="ease"
+      >
+        {(style) => <FilteringOptions files={files}  style={style}/>}
+      </Transition>
       {selectedFileId ? (
         <SelectedFileView
           files={filteredFiles}
