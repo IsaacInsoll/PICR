@@ -21,7 +21,7 @@ version: "3.7"
 services:
   picr:
     container_name: 'picr'
-    image: 'ghcr.io/isaacinsoll/picr'
+    image: 'isaacinsoll/picr'
     volumes:
       - <path-to-your-shared-images>:/home/node/app/media:ro # read only access to your 'files i give to clients' folder
       - ./cache:/home/node/app/cache #where PICR will store thumbnails it generates, no need to back it up

@@ -1,18 +1,17 @@
 
 # Development
 
-`npm run build` to compile typescript and run the server (more like in production)
+| Command                        | Description                                  | When to use                                                                                                   |
+|--------------------------------|----------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `npm run build`                | Build Server (including client)              | Before making docker image                                                                                    |
+| `npm start`                    | Run "PICR Server" in Dev Mode                | - When doing any back end dev and wanting live updates<br/>- Needing an operational backend for front end dev |
+| `cd frontend && npm run build` | Build frontend                               | Update front end build (before doing backend build)                                                           |
+| `cd frontend && npm start`     | Run Front End dev server                     | When doing front end development <br/>(requires operational backend)                                          |
+| `cd frontend && npm run gql`   | Build GQL files                              | Run after updating any GQL on server to "see" new stuff, <br/>or after updating a query on client side        |
+| `./build.sh`                   | Build everything, make and push docker image | Run when we have something 'release worthy'                                                                   |
 
-`npm start`* to run both typescript watcher and nodemon server (for live changes to node causing reload)
 
-`cd frontend && npm run build` build front end
-
-`cd frontend && npm start` run react dev server (currently untested :/)
-
-`cd frontend && npm run gql` build gql
-
-known issue is that the `cli-progressbar` doesn't work with non-tty like
-`concurrently` and `docker compose up` so progress bars are invisible :/
+known issue is that the `cli-progressbar` doesn't work with non-tty like  `concurrently` and `docker compose up` so progress bars are invisible :/
 You can work around docker with `docker compose run picr` which gives you a tty/interactive console
 
 | Folder   | Description                                            |
@@ -22,22 +21,12 @@ You can work around docker with `docker compose run picr` which gives you a tty/
 | frontend | React frontend source                                  |
 | public   | *Compiled* React front end and any other static assets |
 
-## Building
+## Building Release Version to Docker Hub
 
-`cd frontend && npm run gql && npm run build` to ensure front end is built
+Run `./build.sh` to build frontend/backend then build a docker image and push it to docker hub. 
 
-`cd .. && npm run build` to build backend
+> If you haven't ever run `docker login` then you won't be able to push
 
-`docker build . -t isaacinsoll/picr:latest` to create docker image (optionally add a second tag (another ` -t` if you want a build number tag as well))
-
-### Releasing to github
-Simply `deploy` command, or if you aren't running funky:
-
-Do the 'Building' section above then:
-```shell
-docker build . -t ghcr.io/isaacinsoll/picr:latest -t <version_number>
-docker push ghcr.io/isaacinsoll/picr -a
-```
 
 ### Issues
 > TODO: log these as proper issues or just fix them (once we have a repo)
@@ -51,6 +40,5 @@ docker push ghcr.io/isaacinsoll/picr -a
 - add support for managing users and maybe reporting on file sizes / usage
 - branding: upload logo, ability to have multiple 'brands' with certain folders overruling (EG: family portraits and fitness brands)
 - email notifications (EG: client opened folder, left feedback etc)
-- dockerise on normal 'docker hub' so you don't need to do weird ghcr.io stuff on synology
 - automate build process as much as possible
 - switch to issues in github
