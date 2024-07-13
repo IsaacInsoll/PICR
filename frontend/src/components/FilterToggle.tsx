@@ -9,7 +9,7 @@ export const FilterToggle = ({ disabled }: { disabled?: boolean }) => {
   const total = useAtomValue(totalFilterOptionsSelected);
   return (
     <Button
-      variant={filtering && !disabled ? 'filled' : 'default'}
+      variant={filtering && !disabled ? 'light' : 'default'}
       disabled={disabled}
       onClick={() => setFiltering((f) => !f)}
       // badge={filtering ? total : undefined}

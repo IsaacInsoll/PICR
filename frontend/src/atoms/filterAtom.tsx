@@ -29,10 +29,17 @@ export const resetFilterOptions = atom(null, (get, set, update) => {
 
 export const totalFilterOptionsSelected = atom((get) => {
   const { ratio, searchText, metadata } = get(filterOptions);
-  let total = 0;
+  const totalMeta = get(totalMetadataFilterOptionsSelected);
+  let total = totalMeta;
   if (ratio !== 'Any Ratio') total++;
   if (searchText && searchText !== '') total++;
-  Object.entries(metadata).forEach(([title, options]) => {
+  return total;
+});
+
+export const totalMetadataFilterOptionsSelected = atom((get) => {
+  const { metadata } = get(filterOptions);
+  let total = 0;
+  Object.entries(metadata).forEach(([options]) => {
     if (options.length) total++;
   });
   return total;

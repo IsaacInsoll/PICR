@@ -51,7 +51,7 @@ export const PlaceholderFolderHeader = () => {
         parent={folder?.parents}
       />
       <Page>
-        <Skeleton width="100%" height="150" />
+        <Skeleton width="100%" height="300" />
       </Page>
     </>
   );
@@ -97,7 +97,7 @@ const HeaderWrapper = ({
           <Text>{subtitle}</Text>
         </Grid.Col>
         <Grid.Col span={{ sm: 12, md: 6 }}>
-          <Flex hiddenFrom="md" justify="space-evenly" mb="lg">
+          <Flex hiddenFrom="md" justify="space-evenly" pb="md">
             {actions}
           </Flex>
           <Flex visibleFrom="md" justify="flex-end">
@@ -107,6 +107,7 @@ const HeaderWrapper = ({
       </Grid>
 
       {children}
+    {/*<Divider mt="md" mb="md" />*/}
     </Page>
   );
 };

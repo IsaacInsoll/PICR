@@ -7,6 +7,7 @@ export const SearchBox = () => {
   const [options, setOptions] = useAtom(filterOptions);
   return (
     <TextInput
+      flex={1}
       leftSection={<TbSearch />}
       placeholder="Search"
       value={options.searchText}

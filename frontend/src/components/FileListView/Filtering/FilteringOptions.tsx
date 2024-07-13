@@ -4,7 +4,7 @@ import { metadataForFiltering } from '../../../helpers/metadataForFiltering';
 import { AspectSelector } from './AspectSelector';
 import { SearchBox } from './SearchBox';
 import { MetadataBox } from './MetadataBox';
-import { Group, Paper } from '@mantine/core';
+import { Box, Group, Paper } from '@mantine/core';
 import { Page } from '../../Page';
 
 export const FilteringOptions = ({ files }: { files: MinimalFile[] }) => {
@@ -16,11 +16,13 @@ export const FilteringOptions = ({ files }: { files: MinimalFile[] }) => {
   //iso
   return (
     <Page>
-      <Paper shadow="xs" withBorder p="md">
-        <Group>
+      <Paper shadow="xs" withBorder p="md" mt="md" mb="md">
+        <Group justify="space-between">
           <SearchBox />
           <AspectSelector />
-          <MetadataBox files={files} metadata={meta} />
+          <Box>
+            <MetadataBox files={files} metadata={meta} />
+          </Box>
         </Group>
       </Paper>
     </Page>
