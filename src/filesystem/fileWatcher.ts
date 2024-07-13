@@ -46,7 +46,7 @@ export const fileWatcher = () => {
     });
 };
 
-const ignored = /(^\.|\/@eaDir\/|\/\.)/;
+const ignored = /(^\.|\/\.|@eaDir)/;
 // anything in root starting with .
-// anything in a folder @eaDir which is a sneaky synology "metadata" folder
 // any file/folder starting with a .
+// anything in a folder @eaDir which is a sneaky synology "metadata" folder
