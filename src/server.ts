@@ -150,10 +150,12 @@ const server = async () => {
 };
 
 const getVersion = () => {
-  if (picrConfig.dev) return;
+  // if (picrConfig.dev) {
+  //   logger('#️⃣ [DEV] Running version: ' + picrConfig.version, true);
+  // }
   try {
     picrConfig.version = readFileSync('dist/version.txt', 'utf8');
-    logger('#️⃣ Running version: ' + picrConfig.version, true);
+    logger('#️⃣ Running version: ' + (picrConfig.dev ? '[DEV]' :picrConfig.version), true);
   } catch (e) {
     // console.log(e);
   }

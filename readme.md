@@ -2,6 +2,9 @@
 
 Self-hosted online image sharing tool for photographers to share photos with clients.
 
+- [GitHub](https://github.com/isaacinsoll/picr)
+- [Docker Hub](https://hub.docker.com/repository/docker/isaacinsoll/picr/general)
+
 #### I built this because:
 - Google Drive charges too much for storage
 - I want the ability to log visits (IE: see when clients accessed photos)
@@ -32,7 +35,7 @@ services:
     environment:
       - TOKEN_SECRET= # leave this out and on first build it will give you a very secret random string to put in here
       - DATABASE_URL=postgres://user:pass@db/picr
-      - USE_POLLING=true
+      - USE_POLLING=true # recommended if you have > 10,000 files
   db:
     image: postgres
     container_name: picr-db
@@ -44,25 +47,19 @@ services:
       - ./data:/var/lib/postgresql/data #database storage, you should back this up
 ```
 1. Make sure you have docker installed and set up
-2. Copy the `docker-compose.yml` example above and modify the volume mount for media (IE: change `./media` to the full path on your host where the photos are stored)
-3. Set up the compose file in docker and start PICR. The first run will generate a TOKEN_SECRET for you to add to the compose file. Add that and restart the container
-4. Go to http://<ip-address>:6900/admin and login with default login of `admin` / `picr1234`, change the account details, and start sharing your images!
-
-### How to update if using Synology
-
-As we are currently hosted with GitHub rather than official docker repo, these are the steps when using synology:
-1. Stop the project then press 'clean' (this will delete containers but not your data)
-2. Find the `picr` image in Images section and delete it. 
-3. Go back to the `picr` project and press build. This will download the latest image and rebuild everything.
+2. Copy the `docker-compose.yml` example above
+3. Modify the volume mount for media (IE: change `./media` to the full path on your host where the photos are stored)
+4. Set up the compose file in Docker and start PICR. The first run will generate a TOKEN_SECRET (then exit) for you to add to the compose file. Add that info to your `docker-compose` file and restart the container
+5. Go to http://<ip-address>:6900/admin and login with default login of `admin` / `picr1234`, change the account details, and start sharing your images!
 
 
 ### Mounts
 
-| Folder | Description                                                                |
-|--------|----------------------------------------------------------------------------|
-| data   | database (you should back this up!)                                        |
-| media  | mount point containing folders of images, only need read access            |
-| cache  | thumbnails, zip files built from your media (will be recreated if deleted) |
+| Folder | Description                                                                                                                   |
+|--------|-------------------------------------------------------------------------------------------------------------------------------|
+| `data`   | database (you should back this up!)                                                                                           |
+| `media`  | mount point containing folders of images, only need read access                                                               |
+| `cache`  | thumbnails, zip files built from your media <br />_It's safe to delete contents of this folder, will be recreated if deleted_ |
 
 # Development
 See [docs/development.md](docs/development.md)

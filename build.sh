@@ -3,7 +3,7 @@
 # embed version in build
 commit=$(git rev-parse --short HEAD)
 dt=$(date -I)
-echo "$commit $dt" > ./dist/version.txt
+echo "$commit $dt" > ./public/version.txt
 
 # build frontend
 cd frontend && npm run gql && npm run build \
