@@ -10,6 +10,16 @@
     "types": [
       {
         "kind": "SCALAR",
+        "name": "BigInt",
+        "description": "The `BigInt` scalar type represents non-fractional signed whole numeric values.",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "SCALAR",
         "name": "Boolean",
         "description": "The `Boolean` scalar type represents `true` or `false`.",
         "fields": null,
@@ -48,7 +58,7 @@
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "Int",
+                "name": "BigInt",
                 "ofType": null
               }
             },

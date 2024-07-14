@@ -1,6 +1,11 @@
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
+
 type File {
   fileHash: String!
-  fileSize: Int!
+  fileSize: BigInt!
   folderId: ID!
   id: ID!
   imageRatio: Float

@@ -14,12 +14,14 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** The `BigInt` scalar type represents non-fractional signed whole numeric values. */
+  BigInt: { input: any; output: any; }
 };
 
 export type File = {
   __typename?: 'File';
   fileHash: Scalars['String']['output'];
-  fileSize: Scalars['Int']['output'];
+  fileSize: Scalars['BigInt']['output'];
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;
@@ -170,7 +172,7 @@ export type GenerateThumbnailsQueryMutationVariables = Exact<{
 
 export type GenerateThumbnailsQueryMutation = { __typename?: 'Mutation', generateThumbnails: boolean };
 
-export type FileFragmentFragment = { __typename?: 'File', id: string, name: string, type: FileType, imageRatio?: number | null, fileHash: string, fileSize: number };
+export type FileFragmentFragment = { __typename?: 'File', id: string, name: string, type: FileType, imageRatio?: number | null, fileHash: string, fileSize: any };
 
 export type FolderFragmentFragment = { __typename?: 'Folder', id: string, name: string, parentId?: string | null, permissions?: FolderPermissions | null, parents: Array<{ __typename?: 'Folder', id: string, name: string }> };
 
@@ -218,14 +220,14 @@ export type ViewFileQueryVariables = Exact<{
 }>;
 
 
-export type ViewFileQuery = { __typename?: 'Query', file: { __typename?: 'File', id: string, name: string, type: FileType, imageRatio?: number | null, fileHash: string, fileSize: number, metadata?: { __typename?: 'MetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null } | null } };
+export type ViewFileQuery = { __typename?: 'Query', file: { __typename?: 'File', id: string, name: string, type: FileType, imageRatio?: number | null, fileHash: string, fileSize: any, metadata?: { __typename?: 'MetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null } | null } };
 
 export type ViewFolderQueryVariables = Exact<{
   folderId: Scalars['ID']['input'];
 }>;
 
 
-export type ViewFolderQuery = { __typename?: 'Query', folder: { __typename?: 'Folder', id: string, name: string, parentId?: string | null, permissions?: FolderPermissions | null, files: Array<{ __typename?: 'File', id: string, name: string, type: FileType, imageRatio?: number | null, fileHash: string, fileSize: number, metadata?: { __typename?: 'MetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null } | null }>, subFolders: Array<{ __typename?: 'Folder', id: string, name: string, parentId?: string | null }>, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } };
+export type ViewFolderQuery = { __typename?: 'Query', folder: { __typename?: 'Folder', id: string, name: string, parentId?: string | null, permissions?: FolderPermissions | null, files: Array<{ __typename?: 'File', id: string, name: string, type: FileType, imageRatio?: number | null, fileHash: string, fileSize: any, metadata?: { __typename?: 'MetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null } | null }>, subFolders: Array<{ __typename?: 'Folder', id: string, name: string, parentId?: string | null }>, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } };
 
 export type ViewUserQueryQueryVariables = Exact<{
   id: Scalars['ID']['input'];

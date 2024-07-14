@@ -12,12 +12,13 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  BigInt: { input: any; output: any; }
 };
 
 export type File = {
   __typename?: 'File';
   fileHash: Scalars['String']['output'];
-  fileSize: Scalars['Int']['output'];
+  fileSize: Scalars['BigInt']['output'];
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;

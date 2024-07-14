@@ -29,7 +29,7 @@ export default class File extends Model {
   declare imageRatio: number; // width / height (used for sizing on screen elements before image is loaded
 
   @Column({ type: DataType.BIGINT })
-  declare fileSize: number; // width / height (used for sizing on screen elements before image is loaded
+  declare fileSize: number;
 
   @Column
   declare fileLastModified: Date;
