@@ -61,11 +61,17 @@ export const generateThumbnail = async (file: File, size: ThumbnailSize) => {
   const outFile = thumbnailPath(file, size);
   mkdirSync(dirname(outFile), { recursive: true });
   const px = thumbnailDimensions[size];
-  return await sharp(file.fullPath())
-    .withMetadata()
-    .resize(px, px, sharpOpts)
-    .jpeg(jpegOptions)
-    .toFile(outFile);
+  try {
+    return await sharp(file.fullPath())
+        .withMetadata()
+        .resize(px, px, sharpOpts)
+        .jpeg(jpegOptions)
+        .toFile(outFile);
+  } catch(e) {
+    console.log('Error generating thumbnail for: ' + file.fullPath());
+    console.log(e);
+  }
+  return null;
   // .then((output) => {
   //   // console.log(output);
   // })
