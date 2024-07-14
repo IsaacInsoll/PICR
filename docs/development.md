@@ -1,6 +1,7 @@
 
 # Development
 
+## CLI Commands
 | Command                        | Description                                  | When to use                                                                                                   |
 |--------------------------------|----------------------------------------------|---------------------------------------------------------------------------------------------------------------|
 | `npm run build`                | Build Server (including client)              | Before making docker image                                                                                    |
@@ -27,6 +28,16 @@ Run `./build.sh` to build frontend/backend then build a docker image and push it
 
 > If you haven't ever run `docker login` then you won't be able to push
 
+## Sample `.ENV`
+```
+VERBOSE=false
+DEBUG_SQL=false
+USE_POLLING=true
+TOKEN_SECRET=<some-long-string>
+DATABASE_URL=postgres://user:pass@localhost/picr
+POLLING_INTERVAL=20
+NODE_ENV=development
+```
 
 ### Issues
 > TODO: log these as proper issues or just fix them (once we have a repo)

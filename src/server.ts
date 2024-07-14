@@ -20,6 +20,8 @@ import { zipPath } from './helpers/zip';
 import { zipInProgress } from './helpers/zipQueue';
 
 config(); // read .ENV
+
+console.log(process.env.NODE_ENV);
 export const picrConfig = {
   tokenSecret: process.env.TOKEN_SECRET,
   databaseUrl: process.env.DATABASE_URL,
@@ -27,7 +29,7 @@ export const picrConfig = {
   verbose: process.env.VERBOSE == 'true',
   usePolling: process.env.USE_POLLING == 'true',
   pollingInterval: parseInt(process.env.POLLING_INTERVAL) ?? 20,
-  dev: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
+  dev: process.env.NODE_ENV === 'development',
   version: 'dev', //overwritten elsewhere
 };
 if (picrConfig.dev) {
