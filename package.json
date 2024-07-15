@@ -55,7 +55,8 @@
       "publish": false
     },
     "hooks": {
-      "after:bump": "./build.sh"
+      "before:init": ["cd frontend && npm run build", "npm run build"],
+      "after:git:release": ["docker build . -t isaacinsoll/picr:latest -t isaacinsoll.picr:${version}","docker push isaacinsoll/picr --all-tags"]
     },
     "git": {
       "commitMessage": "🚀 Release ${version}"
