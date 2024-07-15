@@ -9,7 +9,7 @@
     "start": "concurrently npm:start:*",
     "build": "tsc",
     "run": " node dist/src/server.js",
-    "release": "dotenv release-it --only-version"
+    "release": "dotenv -- release-it --only-version"
   },
   "author": "Isaac Insoll",
   "license": "ISC",
