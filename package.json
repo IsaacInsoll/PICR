@@ -1,6 +1,6 @@
 {
   "name": "picr",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "src/server.ts",
   "scripts": {
@@ -8,7 +8,8 @@
     "start:js": "nodemon dist/src/server.js",
     "start": "concurrently npm:start:*",
     "build": "tsc",
-    "run": " node dist/src/server.js"
+    "run": " node dist/src/server.js",
+    "release": "release-it"
   },
   "author": "Isaac Insoll",
   "license": "ISC",
@@ -45,6 +46,13 @@
     "@typescript-eslint/parser": "^7.0.1",
     "eslint": "^8.56.0",
     "prettier": "3.2.5",
+    "release-it": "^17.6.0",
     "typescript": "^5.3.3"
+  },
+  "release-it": {
+    "npm": {
+      "publish": false
+    },
+    "hooks" : {}
   }
 }
