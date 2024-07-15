@@ -54,7 +54,12 @@
     "npm": {
       "publish": false
     },
-    "hooks": {},
-    "git": {}
+    "hooks": {
+      "after:bump": "./build.sh"
+    },
+    "git": {
+      "commitMessage": "🚀 Release ${version}"
+    },
+    "github": {"release": true}
   }
 }

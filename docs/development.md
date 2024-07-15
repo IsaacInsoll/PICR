@@ -40,6 +40,9 @@ NODE_ENV=development
 GITHUB_TOKEN="f941e0..." #only needed if wanting to do releases
 ```
 
+### WSL2 GitHub Credentials (HTTPS)
+See (this link)[https://dev.to/equiman/sharing-git-credentials-between-windows-and-wsl-5a2a]
+
 ### Issues
 > TODO: log these as proper issues or just fix them (once we have a repo)
 - if you delete images while server down, it won't pick that up when restarted (it just adds new images)
