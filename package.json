@@ -1,6 +1,6 @@
 {
   "name": "picr",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "src/server.ts",
   "scripts": {
@@ -60,6 +60,8 @@
     "git": {
       "commitMessage": "🚀 Release ${version}"
     },
-    "github": {"release": true}
+    "github": {
+      "release": true
+    }
   }
 }
