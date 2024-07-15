@@ -56,9 +56,7 @@
     },
     "hooks": {},
     "git": {
-    },
-    "github": {
-      "release": true
+
     }
   }
 }
