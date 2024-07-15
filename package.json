@@ -1,6 +1,6 @@
 {
   "name": "picr",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "src/server.ts",
   "scripts": {
@@ -55,8 +55,14 @@
       "publish": false
     },
     "hooks": {
-      "before:init": ["cd frontend && npm run build", "npm run build"],
-      "after:git:release": ["docker build . -t isaacinsoll/picr:latest -t isaacinsoll.picr:${version}","docker push isaacinsoll/picr --all-tags"]
+      "before:init": [
+        "cd frontend && npm run build",
+        "npm run build"
+      ],
+      "after:git:release": [
+        "docker build . -t isaacinsoll/picr:latest -t isaacinsoll.picr:${version}",
+        "docker push isaacinsoll/picr --all-tags"
+      ]
     },
     "git": {
       "commitMessage": "🚀 Release ${version}"
