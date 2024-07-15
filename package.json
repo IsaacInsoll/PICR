@@ -36,6 +36,7 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@release-it/bumper": "^6.0.1",
     "@types/archiver": "^6.0.2",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.5",
@@ -60,15 +61,28 @@
         "npm run build"
       ],
       "after:git:release": [
-        "docker build . -t isaacinsoll/picr:latest -t isaacinsoll.picr:${version}",
-        "docker push isaacinsoll/picr --all-tags"
+        "docker build . -t isaacinsoll/picr:latest -t isaacinsoll/picr:${version} -t ghcr.io/isaacinsoll/picr:latest -t ghcr.io/isaacinsoll/picr:${version}",
+        "docker push isaacinsoll/picr --all-tags",
+        "docker push ghcr.io/isaacinsoll/picr --all-tags"
       ]
     },
     "git": {
-      "commitMessage": "🚀 Release ${version}"
+      "commitMessage": "🚀 Release ${version}",
+      "commit": true,
+      "tag": true,
+      "push": true
     },
     "github": {
       "release": true
+    },
+    "plugins": {
+      "@release-it/bumper": {
+        "out": {
+          "file": "VERSION",
+          "type": "text/plain",
+          "consumeWholeFile": true
+        }
+      }
     }
   }
 }
