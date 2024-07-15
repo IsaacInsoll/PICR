@@ -1,6 +1,6 @@
 {
   "name": "picr",
-  "version": "1.0.0",
+  "version": "0.0.5",
   "description": "",
   "main": "src/server.ts",
   "scripts": {
@@ -8,7 +8,8 @@
     "start:js": "nodemon dist/src/server.js",
     "start": "concurrently npm:start:*",
     "build": "tsc",
-    "run": " node dist/src/server.js"
+    "run": " node dist/src/server.js",
+    "release": "dotenv release-it --only-version"
   },
   "author": "Isaac Insoll",
   "license": "ISC",
@@ -35,6 +36,7 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@release-it/bumper": "^6.0.1",
     "@types/archiver": "^6.0.2",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.5",
@@ -43,8 +45,45 @@
     "@types/validator": "^13.11.9",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
+    "dotenv-cli": "^7.4.2",
     "eslint": "^8.56.0",
     "prettier": "3.2.5",
+    "release-it": "^17.6.0",
     "typescript": "^5.3.3"
+  },
+  "release-it": {
+    "npm": {
+      "publish": false
+    },
+    "hooks": {
+      "before:init": [
+        "cd frontend && npm run build",
+        "npm run build"
+      ],
+      "after:git:release": [
+        "docker build . -t isaacinsoll/picr:latest -t isaacinsoll/picr:${version} -t ghcr.io/isaacinsoll/picr:latest -t ghcr.io/isaacinsoll/picr:${version}",
+        "docker push isaacinsoll/picr --all-tags",
+        "docker push ghcr.io/isaacinsoll/picr --all-tags"
+      ]
+    },
+    "git": {
+      "requireBranch": "master",
+      "commitMessage": "🚀 Release ${version}",
+      "commit": true,
+      "tag": true,
+      "push": true
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/bumper": {
+        "out": {
+          "file": "dist/version.txt",
+          "type": "text/plain",
+          "consumeWholeFile": true
+        }
+      }
+    }
   }
 }
