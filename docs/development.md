@@ -24,9 +24,12 @@ You can work around docker with `docker compose run picr` which gives you a tty/
 
 ## Building Release Version to Docker Hub
 
-Run `./build.sh` to build frontend/backend then build a docker image and push it to docker hub. 
+Run `npm run release` to use _release-it_ to increment version, tag release, build, push to docker hub and make a release on GitHub.
 
-> If you haven't ever run `docker login` then you won't be able to push
+Troubleshooting:
+- If you haven't ever run `docker login` then you won't be able to push.
+- Check for GITHUB_TOKEN in .ENV
+- See [this link](https://dev.to/equiman/sharing-git-credentials-between-windows-and-wsl-5a2a) if `git push` doesn't work inside WSL
 
 ## Sample `.ENV`
 ```
@@ -39,9 +42,6 @@ POLLING_INTERVAL=20
 NODE_ENV=development
 GITHUB_TOKEN="f941e0..." #only needed if wanting to do releases
 ```
-
-### WSL2 GitHub Credentials (HTTPS)
-See (this link)[https://dev.to/equiman/sharing-git-credentials-between-windows-and-wsl-5a2a]
 
 ### Issues
 > TODO: log these as proper issues or just fix them (once we have a repo)
