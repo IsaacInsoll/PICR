@@ -9,7 +9,7 @@
     "start": "concurrently npm:start:*",
     "build": "tsc",
     "run": " node dist/src/server.js",
-    "release": "release-it"
+    "release": "dotenv release-it --"
   },
   "author": "Isaac Insoll",
   "license": "ISC",
@@ -44,6 +44,7 @@
     "@types/validator": "^13.11.9",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
+    "dotenv-cli": "^7.4.2",
     "eslint": "^8.56.0",
     "prettier": "3.2.5",
     "release-it": "^17.6.0",
@@ -53,6 +54,11 @@
     "npm": {
       "publish": false
     },
-    "hooks" : {}
+    "hooks": {},
+    "git": {
+    },
+    "github": {
+      "release": true
+    }
   }
 }

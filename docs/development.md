@@ -37,6 +37,7 @@ TOKEN_SECRET=<some-long-string>
 DATABASE_URL=postgres://user:pass@localhost/picr
 POLLING_INTERVAL=20
 NODE_ENV=development
+GITHUB_TOKEN="f941e0..." #only needed if wanting to do releases
 ```
 
 ### Issues
