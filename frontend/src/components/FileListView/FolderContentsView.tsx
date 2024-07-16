@@ -42,7 +42,6 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
   const filters = useAtomValue(filterOptions);
   const resetFilters = useSetAtom(resetFilterOptions);
 
-  const selectedFileId = fileId;
   const setSelectedFileId = (fileId: string | undefined) => {
     const file = fileId ? { id: fileId } : undefined;
     setFolder({ id: folderId }, file);
@@ -51,7 +50,11 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
   useEffect(() => resetFilters(null), [resetFilters, folderId]);
   if (!files || files.length === 0) return undefined;
   const filteredFiles = filtering ? filterFiles(files, filters) : files;
-  const props = { files: filteredFiles, selectedFileId, setSelectedFileId };
+  const props = {
+    files: filteredFiles,
+    selectedFileId: fileId,
+    setSelectedFileId,
+  };
   return (
     <>
       <Transition
@@ -62,11 +65,11 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
       >
         {(style) => <FilteringOptions files={files} style={style} />}
       </Transition>
-      {selectedFileId ? (
+      {fileId ? (
         <SelectedFileView
           files={filteredFiles}
           setSelectedFileId={setSelectedFileId}
-          selectedFileId={selectedFileId}
+          selectedFileId={fileId}
         />
       ) : null}
       <Tabs value={view} onChange={setView}>

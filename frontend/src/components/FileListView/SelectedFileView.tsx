@@ -1,13 +1,18 @@
 // The "Lightbox" appears when an individual image is selected
 import { Lightbox } from 'yet-another-react-lightbox';
-import Captions from 'yet-another-react-lightbox/plugins/captions';
-import Counter from 'yet-another-react-lightbox/plugins/counter';
-import Download from 'yet-another-react-lightbox/plugins/download';
-import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen';
+import {
+  Captions,
+  Counter,
+  Download,
+  Fullscreen,
+  FullScreen,
+  Video,
+} from 'yet-another-react-lightbox/plugins';
 
 import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/counter.css';
+
 import { MinimalFile } from '../../../types';
 import { imageURL } from '../../helpers/imageURL';
 import { FileListViewStyleComponentProps } from './FolderContentsView';
@@ -23,9 +28,10 @@ export const SelectedFileView = ({
   const selectedImageIndex = files.findIndex(({ id }) => id === selectedFileId);
   const lightBoxStyles = { root: { fontFamily: theme.fontFamily } };
 
+  console.log(filesForLightbox(files));
   return (
     <Lightbox
-      plugins={[Captions, Counter, Download, Fullscreen]}
+      plugins={[Captions, Counter, Download, Fullscreen, Video]}
       // captions={{ showToggle: true }} // no point as other UI is still on screen
       counter={{ container: { style: { top: 'unset', bottom: 0 } } }}
       slides={filesForLightbox(files)}
@@ -33,6 +39,7 @@ export const SelectedFileView = ({
       index={selectedImageIndex}
       close={() => setSelectedFileId(undefined)}
       styles={lightBoxStyles}
+      video={{ autoPlay: true, muted: false }}
     />
   );
 };
@@ -40,18 +47,27 @@ export const SelectedFileView = ({
 const filesForLightbox = (files: MinimalFile[]) => {
   return files.map((file) => {
     const title = file.name;
-    const srcSet = thumbnailSizes.map((size) => {
-      const width = thumbnailDimensions[size];
-      const height = width / (file.imageRatio ?? 1);
-      return { src: imageURL(file, size), width, height };
-    });
+    const props =
+      file.type == 'Image'
+        ? {
+            srcSet: thumbnailSizes.map((size) => {
+              const width = thumbnailDimensions[size];
+              const height = width / (file.imageRatio ?? 1);
+              return { src: imageURL(file, size), width, height };
+            }),
+            src: imageURL(file, 'raw'),
+          }
+        : {
+            type: 'video',
+            poster: undefined, //todo: poster
+            sources: [{ src: imageURL(file, 'raw'), type: 'video/mp4' }], //TODO: generate multiple bitrates of video for different sizes
+          }; //TODO: Fix this, don't assume type.File == video
 
     return {
-      src: imageURL(file, 'raw'),
       download: imageURL(file, 'raw'),
       alt: title,
       title, //requires caption plugin
-      srcSet,
+      ...props,
     };
   });
 };
