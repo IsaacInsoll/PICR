@@ -13,12 +13,10 @@ import QueryFeedback from '../components/QueryFeedback';
 import { ManageFolder } from './ManageFolder';
 import { getUUID } from '../Router';
 import { TaskSummary } from '../components/TaskSummary';
-import { ViewSelector } from '../components/ViewSelector';
 import { FilterToggle } from '../components/FilterToggle';
 import { DownloadZipButton } from '../components/DownloadZipButton';
-import { ActionIcon, Button, Group, Title } from '@mantine/core';
+import { Button, Group, Title } from '@mantine/core';
 import { TbSettings } from 'react-icons/tb';
-import { actionIconSize } from '../theme';
 
 // This component is used in the 'public URL' and 'private URL' routes, so this is how we determine where each link should point
 export const useBaseViewFolderURL = () => {
@@ -34,7 +32,6 @@ export const ViewFolder = () => {
     <>
       <Suspense fallback={<PlaceholderFolderHeader />}>
         <ViewFolderBody
-          managing={managing}
           toggleManaging={() =>
             navigate(baseUrl + folderId + (managing ? '' : '/manage'))
           }
@@ -49,15 +46,16 @@ export const ViewFolder = () => {
 export const ViewFolderBody = ({
   folderId,
   toggleManaging,
-  managing,
 }: {
   folderId: string;
-  managing: boolean;
   toggleManaging: () => void;
 }) => {
+  const { fileId } = useParams();
+
   // const headers = useMemo(() => {
   //   return uuid ? { fetchOptions: { headers: { uuid } } } : undefined;
   // }, [uuid]);
+  const managing = fileId === 'manage';
 
   const [data, reQuery] = useQuery({
     query: viewFolderQuery,
@@ -83,7 +81,7 @@ export const ViewFolderBody = ({
     );
   }
   if (hasFiles) {
-    //   //it's crap UX if you can change the 'view' but there is nothing in there
+    //   //it's crap UX if you can change the 'view' but there is nothing to see
     //   actions.push(
     //     <ViewSelector
     //       managing={managing}
@@ -94,7 +92,13 @@ export const ViewFolderBody = ({
     actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
   }
   if (hasFiles || hasFolders)
-    actions.push(<DownloadZipButton folder={folder} key="downloadbutton" disabled={managing}/>); // TODO: option to not show this perhaps?
+    actions.push(
+      <DownloadZipButton
+        folder={folder}
+        key="downloadbutton"
+        disabled={managing}
+      />,
+    ); // TODO: option to not show this perhaps?
 
   return (
     <>

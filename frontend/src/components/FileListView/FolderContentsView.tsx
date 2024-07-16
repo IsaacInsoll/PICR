@@ -18,8 +18,10 @@ import { useAtomValue } from 'jotai';
 import { FilteringOptions } from './Filtering/FilteringOptions';
 import { filterFiles } from '../../helpers/filterFiles';
 import { useAtom, useSetAtom } from 'jotai/index';
-import {Tabs, Transition} from '@mantine/core';
+import { Tabs, Transition } from '@mantine/core';
 import { Page } from '../Page';
+import { useParams } from 'react-router-dom';
+import { useSetFolder } from '../../useSetFolder';
 
 export interface FileListViewProps {
   files: MinimalFile[];
@@ -33,13 +35,19 @@ export interface FileListViewStyleComponentProps {
 }
 
 export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
+  const { fileId } = useParams();
+  const setFolder = useSetFolder();
   const [view, setView] = useAtom(selectedViewAtom);
   const filtering = useAtomValue(filterAtom);
   const filters = useAtomValue(filterOptions);
   const resetFilters = useSetAtom(resetFilterOptions);
-  const [selectedFileId, setSelectedFileId] = useState<string | undefined>(
-    undefined,
-  );
+
+  const selectedFileId = fileId;
+  const setSelectedFileId = (fileId: string | undefined) => {
+    const file = fileId ? { id: fileId } : undefined;
+    setFolder({ id: folderId }, file);
+  };
+
   useEffect(() => resetFilters(null), [resetFilters, folderId]);
   if (!files || files.length === 0) return undefined;
   const filteredFiles = filtering ? filterFiles(files, filters) : files;
@@ -47,12 +55,12 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
   return (
     <>
       <Transition
-          mounted={filtering}
-          transition="scale-y"
-          duration={400}
-          timingFunction="ease"
+        mounted={filtering}
+        transition="scale-y"
+        duration={400}
+        timingFunction="ease"
       >
-        {(style) => <FilteringOptions files={files}  style={style}/>}
+        {(style) => <FilteringOptions files={files} style={style} />}
       </Transition>
       {selectedFileId ? (
         <SelectedFileView
