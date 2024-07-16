@@ -60,6 +60,7 @@ const FeedItem = ({
           alt={file.name}
           onLoad={() => setImageLoaded(true)}
           onClick={() => onClick(file.id)}
+          style={{ cursor: 'pointer' }}
         />
         {/*</Link>*/}
       </Box>

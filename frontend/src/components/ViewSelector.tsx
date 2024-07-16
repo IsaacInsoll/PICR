@@ -54,7 +54,7 @@ export const viewOptions: {
   {
     name: 'slideshow',
     icon: <TbPhoto size={actionIconSize} />,
-    label: 'Slideshow',
+    label: 'Feed',
   },
 ] as const;
 
