@@ -33,6 +33,7 @@ Troubleshooting:
 
 ## Sample `.ENV`
 ```
+# NOTE: You will need to restart node server after editing these as `nodemon` doesn't monitor this file
 VERBOSE=false
 DEBUG_SQL=false
 USE_POLLING=true
@@ -42,18 +43,3 @@ POLLING_INTERVAL=20
 NODE_ENV=development
 GITHUB_TOKEN="f941e0..." #only needed if wanting to do releases
 ```
-
-### Issues
-> TODO: log these as proper issues or just fix them (once we have a repo)
-- if you delete images while server down, it won't pick that up when restarted (it just adds new images)
-- test with large image collection: may crash due to 'promise stack'?
-
-### TODO
-- logging of 'views' of each image/folder for stats
-- star ratings + thumbs up/down + leave comments, with ability to filter/sort/export that data
-- download selected files (we have individual image and all files already)
-- add support for managing users and maybe reporting on file sizes / usage
-- branding: upload logo, ability to have multiple 'brands' with certain folders overruling (EG: family portraits and fitness brands)
-- email notifications (EG: client opened folder, left feedback etc)
-- automate build process as much as possible
-- switch to issues in github
