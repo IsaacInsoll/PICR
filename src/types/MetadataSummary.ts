@@ -7,5 +7,5 @@ export interface MetadataSummary {
   Aperture?: number | null;
   // ShutterSpeed?: string;
   ISO?: number | null;
-  ExposureTime: number | null; // note this is in seconds so render as 1/${1/ExposureTime} if it's less than 1
+  ExposureTime?: number | null; // note this is in seconds so render as 1/${1/ExposureTime} if it's less than 1
 }

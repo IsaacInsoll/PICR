@@ -101,6 +101,7 @@ const server = async () => {
       if (!allSizes.includes(size)) res.sendStatus(400);
       const fp = fullPathFor(file, size);
       if (size != 'raw' && !existsSync(fp)) {
+        //TODO: handle video and other formats, not just images
         await generateThumbnail(file, size);
       }
       res.sendFile(fullPathFor(file, size));

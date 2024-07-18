@@ -6,6 +6,7 @@ import { fastHash } from '../fileHash';
 import {
   getImageMetadata,
   getImageRatio,
+  getVideoMetadata,
 } from '../../helpers/thumbnailGenerator';
 import fs from 'fs';
 import { FileType } from '../../../graphql-types';
@@ -54,9 +55,12 @@ export const addFile = async (filePath: string) => {
     if (type == 'Image') {
       // deleteAllThumbs(filePath);
       file.imageRatio = await getImageRatio(filePath);
-      const meta = await getImageMetadata(filePath);
+      const meta = await getImageMetadata(file);
       file.metadata = JSON.stringify(meta);
       // generateAllThumbs(file); // will skip if thumbs exist
+    }
+    if (type == 'Video') {
+      file.metadata = JSON.stringify(await getVideoMetadata(file));
     }
     file.save();
   }

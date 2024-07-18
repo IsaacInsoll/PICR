@@ -13,6 +13,7 @@ import { default as ex } from 'exif-reader';
 import { MetadataSummary } from '../types/MetadataSummary';
 import { logger } from '../logger';
 import { generateThumbnails } from '../graphql/mutations/generateThumbnails';
+import ffmpeg, { FfmpegCommand, ffprobe, setFfprobePath } from 'fluent-ffmpeg';
 
 const thumbnailPath = (file: File, size: ThumbnailSize): string => {
   const fp = file.fullPath();
@@ -28,15 +29,20 @@ const thumbnailPath = (file: File, size: ThumbnailSize): string => {
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
 export const generateAllThumbs = async (file: File) => {
-  // can only await at top level of functions, not in a loop, so hardcoded this
-  if (!existsSync(fullPathFor(file, 'sm'))) {
-    await generateThumbnail(file, 'sm');
+  if (file.type == 'Image') {
+    if (!existsSync(fullPathFor(file, 'sm'))) {
+      await generateThumbnail(file, 'sm');
+    }
+    if (!existsSync(fullPathFor(file, 'md'))) {
+      await generateThumbnail(file, 'md');
+    }
+    if (!existsSync(fullPathFor(file, 'lg'))) {
+      await generateThumbnail(file, 'lg');
+    }
   }
-  if (!existsSync(fullPathFor(file, 'md'))) {
-    await generateThumbnail(file, 'md');
-  }
-  if (!existsSync(fullPathFor(file, 'lg'))) {
-    await generateThumbnail(file, 'lg');
+
+  if (file.type == 'Video') {
+    await generateVideoThumbnail(file, 'lg');
   }
   // thumbnailSizes.forEach((size: ThumbnailSize) => {
   //   const path = thumbnailPath(file, size as ThumbnailSize);
@@ -56,6 +62,27 @@ export const generateAllThumbs = async (file: File) => {
 //   });
 // };
 
+export const generateVideoThumbnail = async (
+  file: File,
+  size: ThumbnailSize,
+) => {
+  const outFile = thumbnailPath(file, size);
+
+  //thumbnail: working but doesn't do different sizes and hardcoded to 3 secs
+  ffmpegForFile(file).takeScreenshots({
+    filename: basename(outFile) + '.jpg',
+    timemarks: [3],
+    folder: dirname(outFile),
+  });
+  console.log(outFile);
+};
+
+const ffmpegForFile = (file: File): FfmpegCommand => {
+  return ffmpeg({
+    source: file.fullPath(),
+  }).setFfmpegPath('node_modules/ffmpeg-static/ffmpeg');
+};
+
 export const generateThumbnail = async (file: File, size: ThumbnailSize) => {
   logger(`🖼️ Generating ${size} thumbnail for ${file.name}`);
   const outFile = thumbnailPath(file, size);
@@ -63,11 +90,11 @@ export const generateThumbnail = async (file: File, size: ThumbnailSize) => {
   const px = thumbnailDimensions[size];
   try {
     return await sharp(file.fullPath())
-        .withMetadata()
-        .resize(px, px, sharpOpts)
-        .jpeg(jpegOptions)
-        .toFile(outFile);
-  } catch(e) {
+      .withMetadata()
+      .resize(px, px, sharpOpts)
+      .jpeg(jpegOptions)
+      .toFile(outFile);
+  } catch (e) {
     console.log('Error generating thumbnail for: ' + file.fullPath());
     console.log(e);
   }
@@ -87,9 +114,18 @@ export const getImageRatio = async (filePath: string) => {
   return height > 0 ? width / height : 0;
 };
 
-export const getImageMetadata = async (filePath: string) => {
+export const getVideoMetadata = async (file: File) => {
+  setFfprobePath('node_modules/ffprobe-static/bin/linux/x64/ffprobe');
+  ffprobe(file.fullPath(), function (err, metadata) {
+    console.log(metadata);
+  });
+  const result: MetadataSummary = {};
+  return result;
+};
+
+export const getImageMetadata = async (file: File) => {
   try {
-    const { exif } = await sharp(filePath).metadata();
+    const { exif } = await sharp(file.fullPath()).metadata();
     const x = ex(exif);
     // const et = x?.Photo?.ExposureTime;
     const result: MetadataSummary = {
@@ -110,7 +146,7 @@ export const getImageMetadata = async (filePath: string) => {
     };
     return result;
   } catch (e) {
-    console.log('Error getting metadata for file: ' + filePath);
+    console.log('Error getting metadata for file: ' + file.fullPath());
     console.log(e);
     return null;
   }

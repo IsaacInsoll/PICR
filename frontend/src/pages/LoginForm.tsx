@@ -43,10 +43,7 @@ export const LoginForm = () => {
     <Center style={{ height: '100vh' }}>
       <Container size="md">
         <Paper radius="md" p="xl" withBorder>
-          <Image
-            src="/public/logo192.png"
-            style={{ width: 32, float: 'right' }}
-          />
+          <Image src="/logo192.png" style={{ width: 32, float: 'right' }} />
           <Text size="lg" fw={500} pb="lg">
             Login to PICR
           </Text>
