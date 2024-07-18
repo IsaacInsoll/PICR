@@ -68,16 +68,16 @@ const findFolderId = async (fullPath: string) => {
   while (true) {
     const id = folderList[relativePath(fullPath)];
     if (id && id !== '0') return id;
-    console.log('💤 Sleeping waiting for a FolderID for a file in ', fullPath);
+    logger('💤 Sleeping waiting for a FolderID for a file in ', fullPath);
     await new Promise((r) => setTimeout(r, 500));
   }
 };
 
 const validExtension = (filePath: string): FileType | null => {
-  const ext = extname(filePath);
+  const ext = extname(filePath).toLowerCase();
   if (ext === '') return null;
   if (imageExtensions.includes(ext)) return FileType.Image;
-  //TODO: video files?
+  if (videoExtensions.includes(ext)) return FileType.Video;
   //TODO: null for ignored files (EG: dot files?)
   //TODO: documents (eg notes in word format?)
 
@@ -85,3 +85,14 @@ const validExtension = (filePath: string): FileType | null => {
 };
 
 const imageExtensions = ['.png', '.jpeg', '.jpg', '.gif'];
+const videoExtensions = [
+  '.mp4',
+  '.mov',
+  '.avi',
+  '.wmv',
+  '.webm',
+  '.flv',
+  '.mkv',
+  '.qt',
+  '.m4v',
+];

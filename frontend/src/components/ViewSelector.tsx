@@ -3,6 +3,7 @@ import { useAtom, useAtomValue } from 'jotai';
 import { ActionIcon } from '@mantine/core';
 import { TbLayoutGrid, TbList, TbPhoto } from 'react-icons/tb';
 import { actionIconSize } from '../theme';
+import { ReactNode } from 'react';
 
 export type SelectedView = 'list' | 'gallery' | 'slideshow';
 
@@ -42,7 +43,7 @@ export const ViewSelector = ({
 
 export const viewOptions: {
   name: SelectedView;
-  icon: JSX.Element;
+  icon: ReactNode;
   label: string;
 }[] = [
   { name: 'list', icon: <TbList size={actionIconSize} />, label: 'List' },

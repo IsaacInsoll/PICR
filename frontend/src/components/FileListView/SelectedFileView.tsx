@@ -57,11 +57,15 @@ const filesForLightbox = (files: MinimalFile[]) => {
             }),
             src: imageURL(file, 'raw'),
           }
-        : {
-            type: 'video',
-            poster: undefined, //todo: poster
-            sources: [{ src: imageURL(file, 'raw'), type: 'video/mp4' }], //TODO: generate multiple bitrates of video for different sizes
-          }; //TODO: Fix this, don't assume type.File == video
+        : file.type == 'Video'
+          ? {
+              type: 'video',
+              poster: undefined, //todo: poster
+              sources: [{ src: imageURL(file, 'raw'), type: 'video/mp4' }], //TODO: generate multiple bitrates of video for different sizes
+            }
+          : {
+              //TODO: normal file
+            };
 
     return {
       download: imageURL(file, 'raw'),
