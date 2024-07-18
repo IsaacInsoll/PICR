@@ -4,8 +4,9 @@
   "description": "",
   "main": "src/server.ts",
   "scripts": {
-    "start:ts": "tsc -w",
-    "start:js": "nodemon dist/src/server.js",
+    "start:server-ts": "tsc -w",
+    "start:server": "nodemon dist/src/server.js",
+    "start:client": "cd frontend && npm start",
     "start": "concurrently npm:start:*",
     "build": "tsc",
     "run": " node dist/src/server.js",

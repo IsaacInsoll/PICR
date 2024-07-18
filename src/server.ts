@@ -21,7 +21,6 @@ import { zipInProgress } from './helpers/zipQueue';
 
 config(); // read .ENV
 
-console.log(process.env.NODE_ENV);
 export const picrConfig = {
   tokenSecret: process.env.TOKEN_SECRET,
   databaseUrl: process.env.DATABASE_URL,
@@ -157,7 +156,10 @@ const getVersion = () => {
   // }
   try {
     picrConfig.version = readFileSync('dist/version.txt', 'utf8');
-    logger('#️⃣ Running version: ' + (picrConfig.dev ? '[DEV]' :picrConfig.version), true);
+    logger(
+      '#️⃣ Running version: ' + (picrConfig.dev ? '[DEV]' : picrConfig.version),
+      true,
+    );
   } catch (e) {
     // console.log(e);
   }

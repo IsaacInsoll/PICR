@@ -2,14 +2,13 @@
 # Development
 
 ## CLI Commands
-| Command                        | Description                                  | When to use                                                                                                   |
-|--------------------------------|----------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| `npm run build`                | Build Server (including client)              | Before making docker image                                                                                    |
-| `npm start`                    | Run "PICR Server" in Dev Mode                | - When doing any back end dev and wanting live updates<br/>- Needing an operational backend for front end dev |
-| `cd frontend && npm run build` | Build frontend                               | Update front end build (before doing backend build)                                                           |
-| `cd frontend && npm start`     | Run Front End dev server                     | When doing front end development <br/>(requires operational backend)                                          |
-| `cd frontend && npm run gql`   | Build GQL files                              | Run after updating any GQL on server to "see" new stuff, <br/>or after updating a query on client side        |
-| `./build.sh`                   | Build everything, make and push docker image | Run when we have something 'release worthy'                                                                   |
+| Command                        | Description                               | When to use                                                                                            |
+|--------------------------------|-------------------------------------------|--------------------------------------------------------------------------------------------------------|
+| `npm start`                    | Run Server + Frontend in Dev Mode         | When doing any dev and wanting instant reloads on changes of server or client files                    |
+| `npm run build`                | Build Server (including client)           | Before making docker image                                                                             |
+| `cd frontend && npm run build` | Build frontend                            | Update front end build (before doing backend build)                                                    |
+| `cd frontend && npm run gql`   | Build GQL files                           | Run after updating any GQL on server to "see" new stuff, <br/>or after updating a query on client side |
+| `npm run release`              | Tag new version, build+push docker images | Run when we have something 'release worthy'                                                            |
 
 
 known issue is that the `cli-progressbar` doesn't work with non-tty like  `concurrently` and `docker compose up` so progress bars are invisible :/
