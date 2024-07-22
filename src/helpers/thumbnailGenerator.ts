@@ -1,7 +1,7 @@
 import sharp, { ResizeOptions } from 'sharp';
 import { fullPath, relativePath } from '../filesystem/fileManager';
 import { existsSync, mkdirSync } from 'node:fs';
-import { basename, dirname, extname } from 'path';
+import path, { basename, dirname, extname } from 'path';
 import File from '../models/File';
 import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions';
 import {
@@ -10,10 +10,17 @@ import {
   thumbnailSizes,
 } from '../../frontend/src/helpers/thumbnailSize';
 import { default as ex } from 'exif-reader';
-import { MetadataSummary } from '../types/MetadataSummary';
+import { MetadataSummary, VideoMetadata } from '../types/MetadataSummary';
 import { logger } from '../logger';
 import { generateThumbnails } from '../graphql/mutations/generateThumbnails';
-import ffmpeg, { FfmpegCommand, ffprobe, setFfprobePath } from 'fluent-ffmpeg';
+import ffmpeg, {
+  FfmpegCommand,
+  ffprobe,
+  FfprobeData,
+  setFfprobePath,
+} from 'fluent-ffmpeg';
+import { metadata } from 'reflect-metadata/no-conflict';
+import * as util from 'node:util';
 
 const thumbnailPath = (file: File, size: ThumbnailSize): string => {
   const fp = file.fullPath();
@@ -116,11 +123,43 @@ export const getImageRatio = async (filePath: string) => {
 
 export const getVideoMetadata = async (file: File) => {
   setFfprobePath('node_modules/ffprobe-static/bin/linux/x64/ffprobe');
-  ffprobe(file.fullPath(), function (err, metadata) {
-    console.log(metadata);
-  });
-  const result: MetadataSummary = {};
-  return result;
+
+  //ffprobe is 'traditional callback' style so lets promise-ify it
+  const ffprobePromise = util.promisify(ffprobe);
+
+  try {
+    const metadata: FfprobeData = await ffprobePromise(file.fullPath());
+
+    const m: VideoMetadata = {};
+
+    // if (err) {
+    //   console.log('Error reading metadata for: ' + file.fullPath());
+    //   console.log(err);
+    // }
+    const { format, streams } = metadata;
+    m.Bitrate = format.bit_rate;
+    m.Duration = format.duration;
+    m.Format = format.format_long_name;
+
+    const video = streams.find(({ codec_type }) => codec_type == 'video');
+    if (video) {
+      m.VideoCodec = video.codec_name;
+      m.VideoCodecDescription = video.codec_long_name;
+      m.Width = video.width;
+      m.Height = video.height;
+      m.Framerate = eval(video.avg_frame_rate) ?? 0; // TODO: convert "25/1" to
+    }
+
+    const audio = streams.find(({ codec_type }) => codec_type == 'audio');
+    if (audio) {
+      m.AudioCodec = audio.codec_name;
+      m.AudioCodecDescription = audio.codec_long_name;
+    }
+    return m;
+  } catch (e) {
+    console.log(e);
+    return {};
+  }
 };
 
 export const getImageMetadata = async (file: File) => {

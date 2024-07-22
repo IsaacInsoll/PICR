@@ -1,18 +1,31 @@
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T,
+> = { [_ in K]?: never };
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
+    };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  BigInt: { input: any; output: any; }
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
+  BigInt: { input: any; output: any };
 };
 
 export type File = {
@@ -30,7 +43,8 @@ export type File = {
 export enum FileType {
   File = 'File',
   Image = 'Image',
-  Video = 'Video'
+  Video = 'Video',
+  //TODO: Audio (can probably still use ffprobe for metadata)
 }
 
 export type Folder = {
@@ -51,7 +65,7 @@ export type Folder = {
 export enum FolderPermissions {
   Admin = 'Admin',
   None = 'None',
-  View = 'View'
+  View = 'View',
 }
 
 export type MetadataSummary = {
@@ -74,12 +88,10 @@ export type Mutation = {
   generateZip: Scalars['String']['output'];
 };
 
-
 export type MutationAuthArgs = {
   password: Scalars['String']['input'];
   user: Scalars['String']['input'];
 };
-
 
 export type MutationEditUserArgs = {
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -89,11 +101,9 @@ export type MutationEditUserArgs = {
   uuid?: InputMaybe<Scalars['String']['input']>;
 };
 
-
 export type MutationGenerateThumbnailsArgs = {
   folderId?: InputMaybe<Scalars['ID']['input']>;
 };
-
 
 export type MutationGenerateZipArgs = {
   folderId?: InputMaybe<Scalars['ID']['input']>;
@@ -108,26 +118,21 @@ export type Query = {
   users: Array<User>;
 };
 
-
 export type QueryFileArgs = {
   id: Scalars['ID']['input'];
 };
-
 
 export type QueryFolderArgs = {
   id: Scalars['ID']['input'];
 };
 
-
 export type QueryTasksArgs = {
   folderId?: InputMaybe<Scalars['ID']['input']>;
 };
 
-
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
-
 
 export type QueryUsersArgs = {
   folderId: Scalars['ID']['input'];

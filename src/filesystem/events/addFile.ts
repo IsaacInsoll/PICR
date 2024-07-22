@@ -72,7 +72,7 @@ const findFolderId = async (fullPath: string) => {
   while (true) {
     const id = folderList[relativePath(fullPath)];
     if (id && id !== '0') return id;
-    logger('💤 Sleeping waiting for a FolderID for a file in ', fullPath);
+    logger('💤 Sleeping waiting for a FolderID for a file in ' + fullPath);
     await new Promise((r) => setTimeout(r, 500));
   }
 };
