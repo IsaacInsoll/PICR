@@ -128,7 +128,7 @@ export const getVideoMetadata = async (file: File) => {
   const ffprobePromise = util.promisify(ffprobe);
 
   try {
-    const metadata: FfprobeData = await ffprobePromise(file.fullPath());
+    const metadata = (await ffprobePromise(file.fullPath())) as FfprobeData;
 
     const m: VideoMetadata = {};
 
