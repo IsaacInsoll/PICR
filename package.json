@@ -67,8 +67,10 @@
       ],
       "after:git:release": [
         "docker build . -t isaacinsoll/picr:latest -t isaacinsoll/picr:${version} -t ghcr.io/isaacinsoll/picr:latest -t ghcr.io/isaacinsoll/picr:${version}",
-        "docker push isaacinsoll/picr --all-tags",
-        "docker push ghcr.io/isaacinsoll/picr --all-tags"
+        "docker push isaacinsoll/picr:latest",
+        "docker push isaacinsoll/picr:${version}",
+        "docker push ghcr.io/isaacinsoll/picr:latest",
+        "docker pushghcr.io/isaacinsoll/picr:${version}"
       ]
     },
     "git": {
