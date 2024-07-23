@@ -4,6 +4,7 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 scalar BigInt
 
 type File {
+  duration: Float
   fileHash: String!
   fileSize: BigInt!
   folderId: ID!

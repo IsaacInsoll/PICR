@@ -60,8 +60,8 @@ export const addFile = async (filePath: string) => {
     if (type == 'Video') {
       const meta = await getVideoMetadata(file);
       file.metadata = JSON.stringify(meta);
+      file.duration = meta.Duration;
       file.imageRatio = meta.Height > 0 ? meta.Width / meta.Height : 0;
-      console.log('ratio', meta.Height, meta.Width, file.imageRatio);
     }
     file.save();
   }

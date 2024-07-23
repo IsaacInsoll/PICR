@@ -13,6 +13,7 @@ export interface MinimalFile {
   name?: string;
   fileHash?: string;
   imageRatio?: number | null;
+  duration?: number | null;
   metadata?: MetadataSummary | null;
   fileSize?: number | null;
   type: FileType;

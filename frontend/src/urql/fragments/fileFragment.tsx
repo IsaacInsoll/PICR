@@ -6,6 +6,7 @@ export const fileFragment = gql(/* GraphQL */ `
     name
     type
     imageRatio
+    duration
     fileHash
     fileSize
   }
