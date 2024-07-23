@@ -27,6 +27,8 @@ export const generateAllThumbs = async (file: File) => {
   }
 
   if (file.type == 'Video') {
+    await generateVideoThumbnail(file, 'sm');
+    await generateVideoThumbnail(file, 'md');
     await generateVideoThumbnail(file, 'lg');
   }
   // thumbnailSizes.forEach((size: ThumbnailSize) => {

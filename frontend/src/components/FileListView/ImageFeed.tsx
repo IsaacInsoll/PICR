@@ -7,6 +7,8 @@ import { LoadingIndicator } from '../LoadingIndicator';
 import { Box, Image, Title } from '@mantine/core';
 import { Page } from '../Page';
 
+import { VideoBadge } from './VideoBadge';
+
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 export const ImageFeed = ({
   files,
@@ -47,7 +49,7 @@ const FeedItem = ({
     // overflow="hidden"
     // margin={{ bottom: 'small' }}
     >
-      <Box ref={ref}>
+      <Box ref={ref} style={{ position: 'relative' }}>
         {!imageLoaded ? (
           <Box style={{ height: tempHeight, ...tempBoxStyle }}>
             <LoadingIndicator size="large" />
@@ -63,6 +65,7 @@ const FeedItem = ({
           style={{ cursor: 'pointer' }}
         />
         {/*</Link>*/}
+        {file.type == 'Video' ? <VideoBadge file={file} size="xl" /> : null}
       </Box>
       <Title order={5}>{file.name}</Title>
     </Page>

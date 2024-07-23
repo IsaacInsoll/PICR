@@ -22,6 +22,7 @@
     "@vitejs/plugin-react-swc": "^3.7.0",
     "dayjs": "^1.11.11",
     "eslint": "^8.57.0",
+    "format-duration": "^3.0.2",
     "graphql": "^16.8.1",
     "jotai": "^2.6.5",
     "lodash": "^4.17.21",

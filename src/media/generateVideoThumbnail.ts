@@ -2,19 +2,41 @@ import File from '../models/File';
 import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize';
 import { thumbnailPath } from './thumbnailPath';
 import { ffmpegForFile } from './ffmpegForFile';
-import { basename, dirname } from 'path';
+import { VideoMetadata } from '../types/MetadataSummary';
+import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions';
+import { existsSync } from 'node:fs';
+import { logger } from '../logger';
 
 export const generateVideoThumbnail = async (
   file: File,
   size: ThumbnailSize,
 ) => {
-  const outFile = thumbnailPath(file, size);
+  const { Duration } = JSON.parse(file.metadata) as VideoMetadata;
+  if (Duration <= 0 || !file.imageRatio || file.imageRatio == 0) {
+    console.log('Error generating video thumbnails for: ' + file.fullPath());
+    return;
+  }
 
-  //thumbnail: working but doesn't do different sizes and hardcoded to 3 secs
+  const outFile = thumbnailPath(file, size);
+  if (existsSync(outFile)) {
+    //lets presume thumbnails already generated if this folder exists
+    logger('Skipping ' + file.name + ' because video cache folder exists');
+    return;
+  }
+
+  const px = thumbnailDimensions[size];
+  logger('generating video thumbnails for ' + px + ' ' + file.name);
+
+  const timemarks = Array(numberOfVideoSnapshots)
+    .fill(0)
+    .map((_, index) => (index / numberOfVideoSnapshots) * Duration);
+
   ffmpegForFile(file).takeScreenshots({
-    filename: basename(outFile) + '.jpg',
-    timemarks: [3],
-    folder: dirname(outFile),
+    filename: size + '.jpg',
+    timemarks,
+    folder: outFile,
+    size: px + 'x' + Math.round(px / file.imageRatio), //size eg: '150x100',
   });
-  console.log(outFile);
 };
+
+const numberOfVideoSnapshots = 10;

@@ -18,6 +18,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import Folder from './models/Folder';
 import { zipPath } from './helpers/zip';
 import { zipInProgress } from './helpers/zipQueue';
+import { generateVideoThumbnail } from './media/generateVideoThumbnail';
+import { delay } from './helpers/delay';
 
 config(); // read .ENV
 
@@ -94,17 +96,36 @@ const server = async () => {
 
   e.get(
     '/image/:id/:size/:hash/:filename', //filename is ignored but nice for users to see a 'nice' name
-    async (req: Request<{ id: string; size: AllSize; hash: string }>, res) => {
-      const { id, size, hash } = req.params;
+    async (
+      req: Request<{
+        id: string;
+        size: AllSize;
+        hash: string;
+        filename?: string;
+      }>,
+      res,
+    ) => {
+      const { id, size, hash, filename } = req.params;
       const file = await File.findOne({ where: { id, fileHash: hash } });
       if (!file) res.sendStatus(404);
       if (!allSizes.includes(size)) res.sendStatus(400);
       const fp = fullPathFor(file, size);
       if (size != 'raw' && !existsSync(fp)) {
         //TODO: handle video and other formats, not just images
-        await generateThumbnail(file, size);
+        if (file.type == 'Image') await generateThumbnail(file, size);
+        if (file.type == 'Video') {
+          await generateVideoThumbnail(file, size);
+          await delay(2000); // wait for thumbs to generate
+        }
       }
-      res.sendFile(fullPathFor(file, size));
+      if (file.type == 'Video' && size != 'raw') {
+        const p = fullPathFor(file, size) + '/' + filename;
+        console.log(fullPathFor(file, size) + '/' + filename);
+        //this seems to truncate the file?
+        res.sendFile(p);
+      } else {
+        res.sendFile(fullPathFor(file, size));
+      }
     },
   );
 

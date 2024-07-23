@@ -9,8 +9,10 @@ export const thumbnailPath = (file: File, size: ThumbnailSize): string => {
   const fileName = basename(fp, ext); // notes.txt
   const p = dirname(fp);
 
-  return (
-    process.cwd() +
-    `/cache/thumbs/${relativePath(p)}/${fileName}-${size}-${file.fileHash}${ext}`
-  );
+  const base = process.cwd() + `/cache/thumbs/${relativePath(p)}/`;
+  // video is all in one folder, regardless of size
+  // if (file.type == 'Video') {
+  //   return `${base}${fileName}-${file.fileHash}${ext}`;
+  // }
+  return `${base}${fileName}-${size}-${file.fileHash}${ext}`;
 };
