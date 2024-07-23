@@ -3,13 +3,11 @@ import { folderList, relativePath } from '../fileManager';
 import File from '../../models/File';
 import { logger } from '../../logger';
 import { fastHash } from '../fileHash';
-import {
-  getImageMetadata,
-  getImageRatio,
-  getVideoMetadata,
-} from '../../helpers/thumbnailGenerator';
 import fs from 'fs';
 import { FileType } from '../../../graphql-types';
+import { getImageRatio } from '../../media/getImageRatio';
+import { getImageMetadata } from '../../media/getImageMetadata';
+import { getVideoMetadata } from '../../media/getVideoMetadata';
 
 export const addFile = async (filePath: string) => {
   const type = validExtension(filePath);
@@ -60,7 +58,10 @@ export const addFile = async (filePath: string) => {
       // generateAllThumbs(file); // will skip if thumbs exist
     }
     if (type == 'Video') {
-      file.metadata = JSON.stringify(await getVideoMetadata(file));
+      const meta = await getVideoMetadata(file);
+      file.metadata = JSON.stringify(meta);
+      file.imageRatio = meta.Height > 0 ? meta.Width / meta.Height : 0;
+      console.log('ratio', meta.Height, meta.Width, file.imageRatio);
     }
     file.save();
   }

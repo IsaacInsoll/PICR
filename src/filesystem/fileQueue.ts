@@ -2,7 +2,7 @@ import { addFile } from './events/addFile';
 import { addFolder } from './events/addFolder';
 import { removeFolder } from './events/removeFolder';
 import { Task } from '../../graphql-types';
-import { generateAllThumbs } from '../helpers/thumbnailGenerator';
+import { generateAllThumbs } from '../media/generateImageThumbnail';
 import File from '../models/File';
 
 type QueueAction = 'addDir' | 'unlinkDir' | 'add' | 'generateThumbnails';

@@ -9,7 +9,7 @@ import path from 'path';
 import User from './models/User';
 import File from './models/File';
 import { hashPassword } from './helpers/hashPassword';
-import { fullPathFor, generateThumbnail } from './helpers/thumbnailGenerator';
+import { fullPathFor, generateThumbnail } from './media/generateImageThumbnail';
 import { AllSize, allSizes } from '../frontend/src/helpers/thumbnailSize';
 import { Sequelize } from 'sequelize-typescript';
 import pg from 'pg';
