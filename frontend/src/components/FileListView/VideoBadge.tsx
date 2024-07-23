@@ -3,16 +3,17 @@ import { Badge, MantineSize, MantineStyleProp } from '@mantine/core';
 import { TbVideo } from 'react-icons/tb';
 import formatDuration from 'format-duration';
 
-export const VideoBadge = ({
-  file,
-  size,
-}: {
+interface VideoBadgeProps {
   file: MinimalFile;
   size?: MantineSize;
-}) => {
-  const duration = file.duration
-    ? formatDuration(file.duration * 1000)
-    : 'VIDEO';
+  percent?: number;
+}
+
+export const VideoBadge = ({ file, size, percent }: VideoBadgeProps) => {
+  const duration =
+    percent && file.duration
+      ? (percent / 100.0) * file.duration
+      : file.duration;
   const style: MantineStyleProp = {
     position: 'absolute',
     bottom: 12,
@@ -29,7 +30,7 @@ export const VideoBadge = ({
       color="gray"
       size={size}
     >
-      {duration}
+      {duration ? formatDuration(duration * 1000) : 'VIDEO'}
     </Badge>
   );
 };

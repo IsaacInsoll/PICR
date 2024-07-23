@@ -6,7 +6,7 @@ import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { MinimalFile } from '../../../types';
 import 'yet-another-react-lightbox/styles.css';
 import { useMouse } from '@mantine/hooks';
-import { Box } from '@mantine/core';
+import { Box, Image, Progress } from '@mantine/core';
 import { useEffect } from 'react';
 import { videoThumbnailPreloader } from '../../helpers/videoThumbnailPreloader';
 import { VideoBadge } from './VideoBadge';
@@ -50,7 +50,7 @@ const GalleryImage = (props) => {
   if (file.type == 'Video') {
     return <GalleryVideo {...props} />;
   }
-  return <img {...props.imageProps} />;
+  return <Image {...props.imageProps} />;
 };
 
 const GalleryVideo = (props) => {
@@ -61,14 +61,24 @@ const GalleryVideo = (props) => {
   useEffect(() => {
     videoThumbnailPreloader(file, 'md');
   }, [file.id]);
+  let frame = 0; // not mouseover
   if (w && x) {
-    const frame = Math.max(1, Math.round((x / w) * 10));
+    frame = Math.max(1, Math.round((x / w) * 10)); // 1-10
     imageProps.src = imageURL(file, 'md', frame);
   }
   return (
     <Box style={{ position: 'relative' }}>
-      <img {...imageProps} ref={ref} />
-      <VideoBadge file={file} />
+      <Image {...imageProps} ref={ref} />
+      <VideoBadge file={file} percent={frame * 10} />
+      {frame > 0 ? (
+        <Progress
+          color="blue"
+          radius="xl"
+          size="xs"
+          value={frame * 10}
+          style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}
+        />
+      ) : null}
     </Box>
   );
 };
