@@ -26,7 +26,6 @@ export const fileWatcher = () => {
   watcher
     .on('add', (path) => {
       logger('➕ ' + path);
-      //TODO: the following line times out the DB :(
       addToQueue('add', path);
     })
     // .on('change', path => log('✖️ ' + path))
