@@ -20,7 +20,6 @@ Picr is built to be run as a docker container on your NAS / Server.
 
 Use the following `docker-compose` file to get started
 ```yaml
-version: "3.7"
 services:
   picr:
     container_name: 'picr'

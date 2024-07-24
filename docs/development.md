@@ -30,8 +30,29 @@ Troubleshooting:
 - Check for GITHUB_TOKEN in .ENV
 - See [this link](https://dev.to/equiman/sharing-git-credentials-between-windows-and-wsl-5a2a) if `git push` doesn't work inside WSL
 
-## Sample `.ENV`
+
+# Initial Setup
+### Database Server
+You will need a DB server running, something like this works great:
+```yaml
+# Dev composer file: only a database as PICR server running locally
+services:
+  db:
+    image: postgres
+    container_name: picr-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: picr
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
 ```
+
+### Sample `.ENV`
+Copy this, make changes as necessary
+```dotenv
 # NOTE: You will need to restart node server after editing these as `nodemon` doesn't monitor this file
 VERBOSE=false
 DEBUG_SQL=false
@@ -42,3 +63,6 @@ POLLING_INTERVAL=20
 NODE_ENV=development
 GITHUB_TOKEN="f941e0..." #only needed if wanting to do releases
 ```
+
+### Install dependencies
+Run `npm install && cd frontend && npm install && cd ..` so that all dependencies are installed
