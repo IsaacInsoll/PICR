@@ -16,14 +16,10 @@ export type Scalars = {
 };
 
 export type File = {
-  __typename?: 'File';
-  duration?: Maybe<Scalars['Float']['output']>;
   fileHash: Scalars['String']['output'];
   fileSize: Scalars['BigInt']['output'];
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
-  imageRatio?: Maybe<Scalars['Float']['output']>;
-  metadata?: Maybe<MetadataSummary>;
   name: Scalars['String']['output'];
   type: FileType;
 };
@@ -54,6 +50,18 @@ export enum FolderPermissions {
   None = 'None',
   View = 'View'
 }
+
+export type Image = File & {
+  __typename?: 'Image';
+  fileHash: Scalars['String']['output'];
+  fileSize: Scalars['BigInt']['output'];
+  folderId: Scalars['ID']['output'];
+  id: Scalars['ID']['output'];
+  imageRatio?: Maybe<Scalars['Float']['output']>;
+  metadata?: Maybe<MetadataSummary>;
+  name: Scalars['String']['output'];
+  type: FileType;
+};
 
 export type MetadataSummary = {
   __typename?: 'MetadataSummary';
@@ -154,4 +162,17 @@ export type User = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   uuid: Scalars['String']['output'];
+};
+
+export type Video = File & {
+  __typename?: 'Video';
+  duration?: Maybe<Scalars['Float']['output']>;
+  fileHash: Scalars['String']['output'];
+  fileSize: Scalars['BigInt']['output'];
+  folderId: Scalars['ID']['output'];
+  id: Scalars['ID']['output'];
+  imageRatio?: Maybe<Scalars['Float']['output']>;
+  metadata?: Maybe<MetadataSummary>;
+  name: Scalars['String']['output'];
+  type: FileType;
 };

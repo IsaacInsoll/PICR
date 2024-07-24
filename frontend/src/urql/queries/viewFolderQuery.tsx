@@ -6,9 +6,6 @@ export const viewFolderQuery = gql(/*GraphQL*/ `
             ...FolderFragment
             files {
                 ...FileFragment
-                metadata {
-                    ...MetadataFragment
-                }
             }
             subFolders {
                 ...MinimumFolderFragment
