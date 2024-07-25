@@ -39,7 +39,7 @@ export const totalFilterOptionsSelected = atom((get) => {
 export const totalMetadataFilterOptionsSelected = atom((get) => {
   const { metadata } = get(filterOptions);
   let total = 0;
-  Object.entries(metadata).forEach(([options]) => {
+  Object.entries(metadata).forEach(([, options]) => {
     if (options.length) total++;
   });
   return total;

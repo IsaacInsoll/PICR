@@ -15,7 +15,7 @@ export const metadataForFiltering = (
     return uniq(m).filter((x): x is string | number => !!x);
   };
 
-  console.log('metadataForFiltering() for  ' + files.length + ' files');
+  // console.log('metadataForFiltering() for  ' + files.length + ' files');
   return {
     Camera: unique('Camera'),
     Lens: unique('Lens'),
