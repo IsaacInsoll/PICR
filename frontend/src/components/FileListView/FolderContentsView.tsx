@@ -76,7 +76,7 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
         <Page>
           <Tabs.List grow mb="xs">
             {viewOptions.map((v) => (
-              <Tabs.Tab value={v.name} leftSection={v.icon}>
+              <Tabs.Tab value={v.name} leftSection={v.icon} key={v.name}>
                 {v.label}
               </Tabs.Tab>
             ))}
