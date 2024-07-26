@@ -7,6 +7,7 @@
     "start:server-ts": "tsc -w",
     "start:server": "nodemon dist/backend/server.js",
     "start:client": "cd frontend && npm start",
+    "start:db": "docker compose up -d",
     "start": "concurrently npm:start:*",
     "build": "tsc",
     "run": " node dist/backend/server.js",
@@ -69,7 +70,7 @@
         "docker build . -t isaacinsoll/picr:latest -t isaacinsoll/picr:${version} -t ghcr.io/isaacinsoll/picr:latest -t ghcr.io/isaacinsoll/picr:${version}",
         "docker push isaacinsoll/picr:${version}",
         "docker push isaacinsoll/picr:latest",
-        "docker pushghcr.io/isaacinsoll/picr:${version}",
+        "docker push ghcr.io/isaacinsoll/picr:${version}",
         "docker push ghcr.io/isaacinsoll/picr:latest"
       ]
     },

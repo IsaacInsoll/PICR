@@ -15,6 +15,14 @@ export const FolderIsUnderFolder = async (
   return childParent ? FolderIsUnderFolder(childParent, parent) : false;
 };
 
+export const FolderIsUnderFolderId = async (
+  child: Folder,
+  parentId: number,
+) => {
+  const parent = await Folder.findByPk(parentId);
+  return await FolderIsUnderFolder(child, parent);
+};
+
 export const ParentFolders = async (
   folder: Folder,
   context,

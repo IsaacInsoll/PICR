@@ -5,7 +5,7 @@ import Folder from '../models/Folder';
 import { doAuthError } from './doAuthError';
 import { GraphQLError } from 'graphql/error';
 import User from '../models/User';
-import { FolderIsUnderFolder } from './folderUtils';
+import { FolderIsUnderFolder, FolderIsUnderFolderId } from './folderUtils';
 
 export const contextPermissionsForFolder = async (
   context: CustomJwtPayload,
@@ -23,7 +23,9 @@ export const contextPermissionsForFolder = async (
 
   if (user) {
     //todo: more granular permissions rather than, 'all users are full admins of everything'
-    return ['Admin', user];
+    if (await FolderIsUnderFolderId(folder, user.folderId)) {
+      return ['Admin', user];
+    }
   }
 
   if (hasUUID) {
@@ -33,9 +35,7 @@ export const contextPermissionsForFolder = async (
       if (!link.enabled) {
         throw new GraphQLError('This link is currently unavailable');
       }
-      const linkedFolder = await Folder.findByPk(link.folderId);
-      const tree = await FolderIsUnderFolder(folder, linkedFolder);
-      if (tree) {
+      if (await FolderIsUnderFolderId(folder, link.folderId)) {
         return ['View', await User.findByPk(link.id)];
       }
     }

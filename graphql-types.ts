@@ -120,6 +120,7 @@ export type MutationGenerateZipArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  admins: Array<User>;
   file: FileInterface;
   folder: Folder;
   tasks: Array<Task>;
@@ -171,7 +172,7 @@ export type User = {
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  uuid: Scalars['String']['output'];
+  uuid?: Maybe<Scalars['String']['output']>;
 };
 
 export type Video = FileInterface & {

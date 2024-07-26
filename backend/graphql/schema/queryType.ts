@@ -10,7 +10,11 @@ import { folderResolver } from '../resolvers/folderResolver';
 import { fileInterface } from './fileType';
 import { fileResolver } from '../resolvers/fileResolver';
 import { userType } from './userType';
-import { userResolver, usersResolver } from '../resolvers/userResolver';
+import {
+  adminsResolver,
+  userResolver,
+  usersResolver,
+} from '../resolvers/userResolver';
 import { taskType } from './taskType';
 import { taskResolver } from '../resolvers/taskResolver';
 
@@ -34,6 +38,10 @@ export const queryType = new GraphQLObjectType({
         folderId: { type: new GraphQLNonNull(GraphQLID) },
         includeParents: { type: GraphQLBoolean },
       },
+    },
+    admins: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(userType))),
+      resolve: adminsResolver,
     },
     user: {
       type: new GraphQLNonNull(userType),
