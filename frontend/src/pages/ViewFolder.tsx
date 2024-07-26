@@ -73,13 +73,13 @@ export const ViewFolderBody = ({
   // redirect to 'no file selected' if you are in a valid folder but the file isn't found
   useEffect(() => {
     const fileIds = folder?.files.map((f) => f.id);
-    if (fileId && fileIds && fileIds.length > 0) {
+    if (fileId && fileIds && fileIds.length > 0 && !managing) {
       if (!fileIds.includes(fileId)) {
         console.log('File not found in folder, redirecting to folder');
         setFolder(folder);
       }
     }
-  }, [folderId, fileId]);
+  }, [folderId, fileId, managing]);
 
   const actions = [];
   if (folder?.permissions === 'Admin') {
