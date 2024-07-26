@@ -19,8 +19,8 @@ const fileTypeFields = {
   fileSize: { type: new GraphQLNonNull(GraphQLBigInt) }, //custom BigInt as Int only goes to 2gb (32bit)
 };
 
-export const fileType = new GraphQLInterfaceType({
-  name: 'File',
+export const fileInterface = new GraphQLInterfaceType({
+  name: 'FileInterface',
   resolveType: (file) => file.type,
   fields: () => ({
     ...fileTypeFields,
@@ -32,7 +32,7 @@ export const fileType = new GraphQLInterfaceType({
 
 export const imageFileType = new GraphQLObjectType({
   name: 'Image',
-  interfaces: [fileType],
+  interfaces: [fileInterface],
   fields: {
     ...fileTypeFields,
     imageRatio: { type: GraphQLFloat },
@@ -42,11 +42,22 @@ export const imageFileType = new GraphQLObjectType({
 
 export const videoFileType = new GraphQLObjectType({
   name: 'Video',
-  interfaces: [fileType],
+  interfaces: [fileInterface],
   fields: {
     ...fileTypeFields,
     imageRatio: { type: GraphQLFloat },
     metadata: { type: metadataSummaryType },
     duration: { type: GraphQLFloat },
+  },
+});
+
+export const fileType = new GraphQLObjectType({
+  name: 'File',
+  interfaces: [fileInterface],
+  fields: {
+    ...fileTypeFields,
+    // imageRatio: { type: GraphQLFloat },
+    // metadata: { type: metadataSummaryType },
+    // duration: { type: GraphQLFloat },
   },
 });

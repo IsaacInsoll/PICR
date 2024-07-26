@@ -1,5 +1,10 @@
 import { GraphQLSchema } from 'graphql';
-import { fileType, imageFileType, videoFileType } from './fileType';
+import {
+  fileInterface,
+  fileType,
+  imageFileType,
+  videoFileType,
+} from './fileType';
 import { metadataSummaryType } from './metadataSummaryType';
 import { folderPermissionsType } from './folderPermissionsType';
 import { userType } from './userType';
@@ -13,6 +18,7 @@ export const schema = new GraphQLSchema({
   mutation: mutationType,
   types: [
     folderType,
+    fileInterface,
     fileType,
     imageFileType,
     videoFileType,

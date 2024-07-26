@@ -3,7 +3,16 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
-interface File {
+type File implements FileInterface {
+  fileHash: String!
+  fileSize: BigInt!
+  folderId: ID!
+  id: ID!
+  name: String!
+  type: FileType!
+}
+
+interface FileInterface {
   fileHash: String!
   fileSize: BigInt!
   folderId: ID!
@@ -19,7 +28,7 @@ enum FileType {
 }
 
 type Folder {
-  files: [File!]!
+  files: [FileInterface!]!
   id: ID!
   name: String!
   parentId: ID
@@ -38,7 +47,7 @@ enum FolderPermissions {
   View
 }
 
-type Image implements File {
+type Image implements FileInterface {
   fileHash: String!
   fileSize: BigInt!
   folderId: ID!
@@ -68,7 +77,7 @@ type Mutation {
 }
 
 type Query {
-  file(id: ID!): File!
+  file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
   tasks(folderId: ID): [Task!]!
   user(id: ID!): User!
@@ -94,7 +103,7 @@ type User {
   uuid: String!
 }
 
-type Video implements File {
+type Video implements FileInterface {
   duration: Float
   fileHash: String!
   fileSize: BigInt!

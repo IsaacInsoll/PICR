@@ -15,7 +15,17 @@ export type Scalars = {
   BigInt: { input: any; output: any; }
 };
 
-export type File = {
+export type File = FileInterface & {
+  __typename?: 'File';
+  fileHash: Scalars['String']['output'];
+  fileSize: Scalars['BigInt']['output'];
+  folderId: Scalars['ID']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  type: FileType;
+};
+
+export type FileInterface = {
   fileHash: Scalars['String']['output'];
   fileSize: Scalars['BigInt']['output'];
   folderId: Scalars['ID']['output'];
@@ -32,7 +42,7 @@ export enum FileType {
 
 export type Folder = {
   __typename?: 'Folder';
-  files: Array<File>;
+  files: Array<FileInterface>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   parentId?: Maybe<Scalars['ID']['output']>;
@@ -51,7 +61,7 @@ export enum FolderPermissions {
   View = 'View'
 }
 
-export type Image = File & {
+export type Image = FileInterface & {
   __typename?: 'Image';
   fileHash: Scalars['String']['output'];
   fileSize: Scalars['BigInt']['output'];
@@ -110,7 +120,7 @@ export type MutationGenerateZipArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  file: File;
+  file: FileInterface;
   folder: Folder;
   tasks: Array<Task>;
   user: User;
@@ -164,7 +174,7 @@ export type User = {
   uuid: Scalars['String']['output'];
 };
 
-export type Video = File & {
+export type Video = FileInterface & {
   __typename?: 'Video';
   duration?: Maybe<Scalars['Float']['output']>;
   fileHash: Scalars['String']['output'];

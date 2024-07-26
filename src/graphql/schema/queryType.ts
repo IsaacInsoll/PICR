@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import { folderType } from './folderType';
 import { folderResolver } from '../resolvers/folderResolver';
-import { fileType } from './fileType';
+import { fileInterface } from './fileType';
 import { fileResolver } from '../resolvers/fileResolver';
 import { userType } from './userType';
 import { userResolver, usersResolver } from '../resolvers/userResolver';
@@ -23,7 +23,7 @@ export const queryType = new GraphQLObjectType({
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
     },
     file: {
-      type: new GraphQLNonNull(fileType),
+      type: new GraphQLNonNull(fileInterface),
       resolve: fileResolver,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
     },
