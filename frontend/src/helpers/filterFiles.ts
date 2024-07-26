@@ -6,7 +6,7 @@ import {
 import { MetadataOptionsForFiltering } from './metadataForFiltering';
 import { metadata } from 'reflect-metadata/no-conflict';
 import { Metadata } from 'sharp';
-import { MetadataSummary } from '../../../src/types/MetadataSummary';
+import { MetadataSummary } from '../../../backend/types/MetadataSummary';
 import { entries } from 'lodash';
 
 export const filterFiles = (

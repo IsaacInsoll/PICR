@@ -9,6 +9,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["backend/**/*.ts"],
   "exclude": ["node_modules"]
 }

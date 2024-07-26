@@ -2,14 +2,14 @@
   "name": "picr",
   "version": "0.0.9",
   "description": "",
-  "main": "src/server.ts",
+  "main": "backend/server.ts",
   "scripts": {
     "start:server-ts": "tsc -w",
-    "start:server": "nodemon dist/src/server.js",
+    "start:server": "nodemon dist/backend/server.js",
     "start:client": "cd frontend && npm start",
     "start": "concurrently npm:start:*",
     "build": "tsc",
-    "run": " node dist/src/server.js",
+    "run": " node dist/backend/server.js",
     "release": "dotenv -- release-it --only-version"
   },
   "author": "Isaac Insoll",
