@@ -66,3 +66,8 @@ GITHUB_TOKEN="f941e0..." #only needed if wanting to do releases
 
 ### Install dependencies
 Run `npm install && cd frontend && npm install && cd ..` so that all dependencies are installed
+
+### Set up folders
+- Create `data` and `cache` folders. These can be empty as this is where DB stores data and where PICR stores thumbnails/zips.
+- Create a `media` folder which should have a few subfolders and put a couple of images in each folder. 
+  For example, create a `people` and `pets` folder and put a few pics in each. 
