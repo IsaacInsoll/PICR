@@ -9,12 +9,12 @@ import {
   Center,
   Container,
   Image,
+  MantineStyleProp,
   Paper,
   PasswordInput,
   Stack,
   Text,
   TextInput,
-  useMantineTheme,
 } from '@mantine/core';
 
 export const LoginForm = () => {
@@ -43,7 +43,7 @@ export const LoginForm = () => {
     <Center style={{ height: '100vh' }}>
       <Container size="md">
         <Paper radius="md" p="xl" withBorder>
-          <Image src="/logo192.png" style={{ width: 32, float: 'right' }} />
+          <PicrLogo style={{ width: 32, float: 'right' }} />
           <Text size="lg" fw={500} pb="lg">
             Login to PICR
           </Text>
@@ -106,4 +106,8 @@ export const LoginForm = () => {
 export const LogoutButton = () => {
   const set = useSetAtom(authKeyAtom);
   return <Button onClick={() => set('')}>Log out</Button>;
+};
+
+export const PicrLogo = ({ style }: { style?: MantineStyleProp }) => {
+  return <Image src="/logo192.png" style={style} />;
 };

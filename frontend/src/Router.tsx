@@ -2,6 +2,7 @@ import { matchPath, Route, Routes } from 'react-router-dom';
 import { LoginForm } from './pages/LoginForm';
 import { ViewFolder } from './pages/ViewFolder';
 import { Center, Title, Text, Stack, MantineStyleProp } from '@mantine/core';
+import { ManageUsers } from './pages/ManageUsers';
 
 //note: if adding public paths not starting with `/s/:uuid/*` then edit getUUID below as urqlClient.ts depends on it
 export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
@@ -12,6 +13,10 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
       <Route
         path="/admin/f/:folderId/:fileId?"
         element={loggedIn ? <ViewFolder /> : <LoginForm />}
+      />
+      <Route
+        path="/admin/users/:userId?"
+        element={loggedIn ? <ManageUsers /> : <LoginForm />}
       />
       <Route path="/s/:uuid/:folderId/:fileId?" element={<ViewFolder />} />
       <Route path="*" element={<NoMatch />} />
