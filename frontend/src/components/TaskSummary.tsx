@@ -1,4 +1,3 @@
-import { gql } from '../helpers/gql';
 import { useQuery } from 'urql';
 import { useEffect } from 'react';
 import { linksToDownloadAtom } from './DownloadZipButton';
@@ -13,6 +12,7 @@ import {
   Text,
 } from '@mantine/core';
 import { Page } from './Page';
+import { taskQuery } from '../urql/queries/taskQuery';
 
 export const TaskSummary = ({ folderId }: { folderId: string }) => {
   const [result, requery] = useQuery({
@@ -89,18 +89,6 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
     </Page>
   );
 };
-
-const taskQuery = gql(/* GraphQL */ `
-  query TaskQuery($folderId: ID!) {
-    tasks(folderId: $folderId) {
-      id
-      name
-      step
-      totalSteps
-      status
-    }
-  }
-`);
 
 const triggerDownload = (href: string) => {
   const link = document.createElement('a');

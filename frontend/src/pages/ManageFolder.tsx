@@ -5,7 +5,6 @@ import QueryFeedback from '../components/QueryFeedback';
 import { ManagePublicLink } from './ManagePublicLink';
 import { MinimalSharedFolder } from '../../types';
 import { VscDebugDisconnect } from 'react-icons/vsc';
-import { gql } from '../helpers/gql';
 import { ModalLoadingIndicator } from '../components/ModalLoadingIndicator';
 import { TbLink, TbPhotoCheck } from 'react-icons/tb';
 import { Box, Button, Group } from '@mantine/core';
@@ -17,6 +16,7 @@ import {
 } from 'mantine-react-table';
 import { picrGridProps } from '../components/PicrDataGrid';
 import { EmptyPlaceholder } from './EmptyPlaceholder';
+import { generateThumbnailsQuery } from '../urql/mutations/generateThumbnailsQuery';
 
 export const ManageFolder = ({
   folderId,
@@ -127,7 +127,3 @@ const columns: MRT_ColumnDef<MinimalSharedFolder>[] = [
   { accessorKey: 'folder.name', header: 'Shared Folder' },
 ];
 
-const generateThumbnailsQuery = gql(/*GraphQL*/ `
-mutation generateThumbnailsQuery($folderId: ID!) {
-  generateThumbnails(folderId: $folderId)
-}`);
