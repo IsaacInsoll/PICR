@@ -44,6 +44,7 @@ const envPassword = async () => {
     User.create({
       username: 'admin',
       hashedPassword: hashPassword('picr1234'),
+      enabled: true,
     }).then(() =>
       console.log(
         '🔐 No users found so "admin" user created with password "picr1234"',

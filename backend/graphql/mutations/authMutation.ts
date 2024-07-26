@@ -9,6 +9,7 @@ export const authMutation = async (_, params, context) => {
     where: {
       username: params.user,
       hashedPassword: hashPassword(p),
+      enabled: true,
     },
   });
   if (!user) return '';
