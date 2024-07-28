@@ -98,11 +98,9 @@ const FolderTreeView = ({
   });
   const tree = useTree({
     initialSelectedState: [folder.id],
-    initialExpandedState: { [folder.id]: true },
+    initialExpandedState: expandedParents(folder),
     multiple: false,
   });
-
-  console.log(tree.expandedState);
 
   const treeData = useMemo(() => {
     const treeRaw: treeNode[] = result?.data?.allFolders.map((f) => ({
@@ -126,10 +124,7 @@ const FolderTreeView = ({
   //expand the selected parents if we have nothing expanded (IE: first open) {
   useEffect(() => {
     if (open && !values(tree.expandedState).includes(true)) {
-      const ex = { [folder.id]: true };
-      folder.parents?.forEach((p) => (ex[p.id] = true));
-      console.log('ex', ex);
-      tree.setExpandedState(ex);
+      tree.setExpandedState(expandedParents(folder));
     }
   }, [open]);
 
@@ -160,11 +155,11 @@ const FolderTreeView = ({
           return (
             <Group gap={5} {...elementProps}>
               {selected ? (
-                <TbFolderOpen />
+                <TbFolderOpen style={{ color: 'Highlight' }} />
               ) : hasChildren ? (
-                <TbFolders />
+                <TbFolders opacity={0.66} />
               ) : (
-                <TbFolder />
+                <TbFolder opacity={0.33} />
               )}
               <span>{node.label}</span>
             </Group>
@@ -173,4 +168,10 @@ const FolderTreeView = ({
       />
     </Paper>
   );
+};
+
+const expandedParents = (folder: MinimalFolder) => {
+  const ex = { [folder.id]: true };
+  folder.parents?.forEach((p) => (ex[p.id] = true));
+  return ex;
 };
