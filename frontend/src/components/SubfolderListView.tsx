@@ -2,7 +2,7 @@ import { MinimalSharedFolder } from '../../types';
 import { PicrColumns, PicrDataGrid } from './PicrDataGrid';
 import { Page } from './Page';
 import { Folder } from '../../../graphql-types';
-import { useSetFolder } from '../useSetFolder';
+import { useSetFolder } from '../hooks/useSetFolder';
 
 export const SubfolderListView = ({ folder }: { folder: Folder }) => {
   const setFolder = useSetFolder();

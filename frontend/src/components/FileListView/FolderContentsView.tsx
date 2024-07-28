@@ -21,7 +21,7 @@ import { useAtom, useSetAtom } from 'jotai/index';
 import { Tabs, Transition } from '@mantine/core';
 import { Page } from '../Page';
 import { useParams } from 'react-router-dom';
-import { useSetFolder } from '../../useSetFolder';
+import { useSetFolder } from '../../hooks/useSetFolder';
 
 export interface FileListViewProps {
   files: MinimalFile[];

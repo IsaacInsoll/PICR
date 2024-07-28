@@ -46,10 +46,6 @@ export const ManagePublicLink = ({
   const [name, setName] = useState(data?.name ?? '');
   const [link, setLink] = useState(data?.uuid ?? randomString());
   const [enabled, setEnabled] = useState(data?.enabled ?? true);
-  const [notificationUrl, setNotificationUrl] = useState('');
-  // const random = () => {
-  //   randomString();
-  // };
 
   const exists = id && id !== '';
   const invalidLink = link === '' || name === '';
@@ -75,7 +71,7 @@ export const ManagePublicLink = ({
   return (
     <Modal
       onClose={onClose}
-      title={`Manage Public Link for: ${folder.name}`}
+      title={`Manage Public Link for: ${folder?.name}`}
       centered
       opened={true}
     >
