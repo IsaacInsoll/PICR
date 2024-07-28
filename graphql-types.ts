@@ -172,6 +172,7 @@ export type User = {
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  username?: Maybe<Scalars['String']['output']>;
   uuid?: Maybe<Scalars['String']['output']>;
 };
 

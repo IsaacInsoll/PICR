@@ -101,6 +101,7 @@ type User {
   folderId: ID!
   id: ID!
   name: String!
+  username: String
   uuid: String
 }
 

@@ -5,6 +5,8 @@ import { viewAdminsQuery } from '../urql/queries/viewAdminsQuery';
 import { ModalLoadingIndicator } from '../components/ModalLoadingIndicator';
 import { Suspense } from 'react';
 import QueryFeedback from '../components/QueryFeedback';
+import { PicrColumns, PicrDataGrid } from '../components/PicrDataGrid';
+import { User } from '../../../graphql-types';
 
 export const ManageUsers = () => {
   return (
@@ -23,7 +25,17 @@ const ManageUsersBody = () => {
   return (
     <>
       <QueryFeedback result={result} reQuery={reQuery} />
-      yo
+      <PicrDataGrid
+        columns={columns}
+        data={result.data.admins}
+        onClick={(row) => console.log}
+      />
     </>
   );
 };
+
+const columns: PicrColumns<User>[] = [
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'username', header: 'Username' },
+  // { accessorKey: 'folder', header: 'Folder' },
+];
