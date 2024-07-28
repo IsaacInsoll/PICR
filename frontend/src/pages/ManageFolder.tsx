@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import { manageFolderQuery } from '../urql/queries/manageFolderQuery';
 import QueryFeedback from '../components/QueryFeedback';
@@ -9,12 +9,7 @@ import { ModalLoadingIndicator } from '../components/ModalLoadingIndicator';
 import { TbLink, TbPhotoCheck } from 'react-icons/tb';
 import { Box, Button, Group } from '@mantine/core';
 import { Page } from '../components/Page';
-import {
-  MantineReactTable,
-  MRT_ColumnDef,
-  useMantineReactTable,
-} from 'mantine-react-table';
-import { picrGridProps } from '../components/PicrDataGrid';
+import { PicrColumns, PicrDataGrid } from '../components/PicrDataGrid';
 import { EmptyPlaceholder } from './EmptyPlaceholder';
 import { generateThumbnailsQuery } from '../urql/mutations/generateThumbnailsQuery';
 
@@ -99,15 +94,6 @@ const SharedFolderDataGrid = ({
   sharedFolders: MinimalSharedFolder[];
   setSharedFolderId: (id: string) => void;
 }) => {
-  //         onClickRow={({ datum }) => setSharedFolderId(datum.id)}
-  //       />
-
-  const tableOptions = useMemo(
-    () =>
-      picrGridProps(columns, sharedFolders, (row) => setSharedFolderId(row.id)),
-    [sharedFolders],
-  );
-  const table = useMantineReactTable(tableOptions);
   return (
     <>
       {sharedFolders.length === 0 ? (
@@ -116,14 +102,17 @@ const SharedFolderDataGrid = ({
           icon={<VscDebugDisconnect />}
         />
       ) : (
-        <MantineReactTable table={table} />
+        <PicrDataGrid
+          columns={columns}
+          data={sharedFolders}
+          onClick={(row) => setSharedFolderId(row.id)}
+        />
       )}
     </>
   );
 };
 
-const columns: MRT_ColumnDef<MinimalSharedFolder>[] = [
+const columns: PicrColumns<MinimalSharedFolder>[] = [
   { accessorKey: 'name', header: 'Name' },
   { accessorKey: 'folder.name', header: 'Shared Folder' },
 ];
-

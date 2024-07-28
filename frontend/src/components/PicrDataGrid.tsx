@@ -1,12 +1,16 @@
 // I've already moved from grommet-datatable to mantine-react-table so lets try to minimise future burden...
 import {
+  MantineReactTable,
   MRT_ColumnDef,
   MRT_RowData,
   MRT_TableOptions,
+  useMantineReactTable,
 } from 'mantine-react-table';
+import { useMemo } from 'react';
 
-//declare const useMantineReactTable: <TData extends MRT_RowData>(tableOptions: MRT_TableOptions<TData>) => MRT_TableInstance<TData>;
-export function picrGridProps<TData extends MRT_RowData>(
+export type PicrColumns<TData extends MRT_RowData> = MRT_ColumnDef<TData>;
+
+function picrGridProps<TData extends MRT_RowData>(
   columns: MRT_ColumnDef<TData>[],
   data: TData[],
   onClick: (row: TData) => void,
@@ -28,3 +32,20 @@ export function picrGridProps<TData extends MRT_RowData>(
     }),
   };
 }
+
+export const PicrDataGrid = <TData extends MRT_RowData>({
+  columns,
+  data,
+  onClick,
+}: {
+  columns: MRT_ColumnDef<TData>[];
+  data: TData[];
+  onClick: (row: TData) => void;
+}) => {
+  const tableOptions = useMemo(
+    () => picrGridProps(columns, data, (row) => onClick(row)),
+    [data],
+  );
+  const table = useMantineReactTable(tableOptions);
+  return <MantineReactTable table={table} />;
+};
