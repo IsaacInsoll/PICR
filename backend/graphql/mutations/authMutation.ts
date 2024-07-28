@@ -13,5 +13,8 @@ export const authMutation = async (_, params, context) => {
     },
   });
   if (!user) return '';
-  return generateAccessToken({ userId: user.id });
+  return generateAccessToken({
+    userId: user.id,
+    hashedPassword: user.hashedPassword,
+  });
 };
