@@ -5,7 +5,7 @@ import Folder from '../models/Folder';
 import { doAuthError } from './doAuthError';
 import { GraphQLError } from 'graphql/error';
 import User from '../models/User';
-import { FolderIsUnderFolder, FolderIsUnderFolderId } from './folderUtils';
+import { FolderIsUnderFolderId } from './folderUtils';
 
 export const contextPermissionsForFolder = async (
   context: CustomJwtPayload,
@@ -22,7 +22,6 @@ export const contextPermissionsForFolder = async (
   const folder = await Folder.findByPk(folderId);
 
   if (user) {
-    //todo: more granular permissions rather than, 'all users are full admins of everything'
     if (await FolderIsUnderFolderId(folder, user.folderId)) {
       return ['Admin', user];
     }

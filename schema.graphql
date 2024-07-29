@@ -78,6 +78,7 @@ type Mutation {
 
 type Query {
   admins: [User!]!
+  allFolders(id: ID!): [Folder]!
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
   tasks(folderId: ID): [Task!]!

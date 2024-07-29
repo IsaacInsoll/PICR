@@ -3,24 +3,33 @@ import File from '../models/File';
 import { contextPermissionsForFolder as perms } from './contextPermissionsForFolder';
 import { FileType } from '../../graphql-types';
 
-export const FolderIsUnderFolder = async (
-  child: Folder,
-  parent: Folder,
-): Promise<boolean> => {
-  // console.log('FUF ', child.id, ' under ', parent.id);
-  if (!child && !parent) return false;
-  if (child.id === parent.id) return true;
-  if (!child.parentId) return false;
-  const childParent = await Folder.findByPk(child.parentId);
-  return childParent ? FolderIsUnderFolder(childParent, parent) : false;
-};
-
 export const FolderIsUnderFolderId = async (
   child: Folder,
   parentId: number,
-) => {
-  const parent = await Folder.findByPk(parentId);
-  return await FolderIsUnderFolder(child, parent);
+): Promise<boolean> => {
+  console.log('FUF ', child.id, ' under ', parentId);
+
+  if (!child || !parentId) return false;
+  if (child.id === parentId) {
+    console.log(['===id match for ', child.id]);
+    return true;
+  }
+  if (!child.parentId) return false;
+  const childParent = await Folder.findByPk(child.parentId);
+  if (childParent)
+    console.log(
+      '=== trying parent for ' +
+        child.name +
+        ' which is ' +
+        childParent.name +
+        ', superparent is ' +
+        parentId,
+    );
+  if (!childParent) {
+    console.log('no parent for ' + child.name);
+    return false;
+  }
+  return await FolderIsUnderFolderId(childParent, parentId);
 };
 
 export const ParentFolders = async (

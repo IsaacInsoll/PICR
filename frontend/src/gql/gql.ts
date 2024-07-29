@@ -23,6 +23,7 @@ const documents = {
     "\n    mutation generateThumbnailsQuery($folderId: ID!) {\n        generateThumbnails(folderId: $folderId)\n    }": types.GenerateThumbnailsQueryDocument,
     "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n": types.GenerateZipDocument,
     "\n    query ManageFolderQuery($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n            totalFiles\n            totalFolders\n            totalImages\n            totalSize\n        }\n        users(folderId:$folderId, includeParents: true) {\n           ...UserFragment\n           folderId\n            folder {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n": types.ManageFolderQueryDocument,
+    "\n  query readAllFoldersQuery($id: ID!) {\n    allFolders(id: $id) {\n      ...FolderFragment\n    }\n  }\n": types.ReadAllFoldersQueryDocument,
     "\n  query TaskQuery($folderId: ID!) {\n    tasks(folderId: $folderId) {\n      id\n      name\n      step\n      totalSteps\n      status\n    }\n  }\n": types.TaskQueryDocument,
     "\n    query ViewAdminsQuery {\n        admins {\n            ...UserFragment\n        }\n    }\n": types.ViewAdminsQueryDocument,
     "\n    query ViewFile($fileId: ID!) {\n        file(id:$fileId) {\n            ...FileFragment\n            ...ImageMetadataFragment\n        }\n    }\n": types.ViewFileDocument,
@@ -84,6 +85,10 @@ export function graphql(source: "\n  mutation GenerateZip($folderId: ID!) {\n   
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n    query ManageFolderQuery($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n            totalFiles\n            totalFolders\n            totalImages\n            totalSize\n        }\n        users(folderId:$folderId, includeParents: true) {\n           ...UserFragment\n           folderId\n            folder {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n"): (typeof documents)["\n    query ManageFolderQuery($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n            totalFiles\n            totalFolders\n            totalImages\n            totalSize\n        }\n        users(folderId:$folderId, includeParents: true) {\n           ...UserFragment\n           folderId\n            folder {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query readAllFoldersQuery($id: ID!) {\n    allFolders(id: $id) {\n      ...FolderFragment\n    }\n  }\n"): (typeof documents)["\n  query readAllFoldersQuery($id: ID!) {\n    allFolders(id: $id) {\n      ...FolderFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

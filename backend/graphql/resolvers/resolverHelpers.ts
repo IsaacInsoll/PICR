@@ -1,5 +1,8 @@
 import Folder from '../../models/Folder';
 import File from '../../models/File';
+import { FolderIsUnderFolderId } from '../../auth/folderUtils';
+import { Op } from 'sequelize';
+import { MinimalFolder } from '../../../frontend/types';
 
 export const getFolder = async (id: string | number) => {
   const folder = await Folder.findByPk(id);
@@ -31,4 +34,17 @@ export const subFiles = async (folderId: string | number) => {
 
 export const fileToJSON = (f: File) => {
   return { ...f.toJSON(), metadata: JSON.parse(f.metadata) };
+};
+
+export const allSubFoldersRecursive = async (folderId: number | string) => {
+  const f = await Folder.findByPk(folderId);
+  if (!f.relativePath) {
+    //root folder
+    return await Folder.findAll();
+  }
+  return await Folder.findAll({
+    where: {
+      relativePath: { [Op.startsWith]: f.relativePath },
+    },
+  });
 };

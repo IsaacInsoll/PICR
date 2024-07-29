@@ -39,7 +39,7 @@ export const PicrDataGrid = <TData extends MRT_RowData>({
   onClick,
 }: {
   columns: MRT_ColumnDef<TData>[];
-  data: TData[];
+  data: TData[] | undefined;
   onClick: (row: TData) => void;
 }) => {
   const tableOptions = useMemo(

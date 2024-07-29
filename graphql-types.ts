@@ -121,11 +121,17 @@ export type MutationGenerateZipArgs = {
 export type Query = {
   __typename?: 'Query';
   admins: Array<User>;
+  allFolders: Array<Maybe<Folder>>;
   file: FileInterface;
   folder: Folder;
   tasks: Array<Task>;
   user: User;
   users: Array<User>;
+};
+
+
+export type QueryAllFoldersArgs = {
+  id: Scalars['ID']['input'];
 };
 
 

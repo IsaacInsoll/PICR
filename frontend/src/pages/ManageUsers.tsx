@@ -1,12 +1,13 @@
-import { Title, Text } from '@mantine/core';
+import { Text, Title } from '@mantine/core';
 import { Page } from '../components/Page';
 import { useQuery } from 'urql';
 import { viewAdminsQuery } from '../urql/queries/viewAdminsQuery';
 import { ModalLoadingIndicator } from '../components/ModalLoadingIndicator';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import QueryFeedback from '../components/QueryFeedback';
 import { PicrColumns, PicrDataGrid } from '../components/PicrDataGrid';
 import { User } from '../../../graphql-types';
+import { ManageUser } from './ManageUser';
 
 export const ManageUsers = () => {
   return (
@@ -24,15 +25,30 @@ export const ManageUsers = () => {
 
 const ManageUsersBody = () => {
   const [result, reQuery] = useQuery({ query: viewAdminsQuery });
-  console.log(result.data);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // console.log(result.data);
   return (
     <>
       <QueryFeedback result={result} reQuery={reQuery} />
-      <PicrDataGrid
-        columns={columns}
-        data={result.data.admins}
-        onClick={(row) => console.log(row)}
-      />
+      {userId !== null ? (
+        <Suspense fallback={<ModalLoadingIndicator />}>
+          <ManageUser
+            onClose={() => {
+              setUserId(null);
+              reQuery({ requestPolicy: 'network-only' });
+            }}
+            id={userId}
+          />
+        </Suspense>
+      ) : null}
+      {result.data?.admins ? (
+        <PicrDataGrid
+          columns={columns}
+          data={result.data?.admins}
+          onClick={(row) => setUserId(row.id)}
+        />
+      ) : undefined}
     </>
   );
 };
