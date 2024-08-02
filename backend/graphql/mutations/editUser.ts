@@ -3,6 +3,9 @@ import { doAuthError } from '../../auth/doAuthError';
 import User from '../../models/User';
 import { getFolder } from '../resolvers/resolverHelpers';
 import { GraphQLError } from 'graphql/error';
+import { hashPassword } from '../../helpers/hashPassword';
+import { FolderIsUnderFolderId } from '../../auth/folderUtils';
+import Folder from '../../models/Folder';
 
 export const editUser = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
@@ -18,6 +21,42 @@ export const editUser = async (_, params, context) => {
   user.name = params.name;
   user.uuid = params.uuid;
   user.enabled = params.enabled;
+
+  await user.save();
+
+  return { ...user.toJSON(), folder: getFolder(user.folderId) };
+};
+export const editAdminUser = async (_, params, context) => {
+  const [p, u] = await perms(context, params.folderId, true);
+  if (p !== 'Admin') doAuthError("You don't have permissions for this folder");
+  let user: User | null = null;
+
+  const pass = params.password;
+  if (pass && pass.length < 8) {
+    throw new GraphQLError('Password must be at least 8 characters long');
+  }
+
+  if (params.id) {
+    user = await User.findByPk(params.id);
+    if (!user) throw new GraphQLError('No user found for ID: ' + params.id);
+    const userFolder = await Folder.findByPk(user.folderId);
+    if (!(await FolderIsUnderFolderId(userFolder, u.folderId))) {
+      throw new GraphQLError(
+        'You cant edit this user as they are above your level of access',
+      );
+    }
+  } else {
+    if (pass) {
+      user = new User();
+    } else {
+      throw new GraphQLError('Cannot create new user without password');
+    }
+  }
+  user.folderId = params.folderId;
+  user.name = params.name;
+  user.username = params.username;
+  user.enabled = params.enabled;
+  if (pass) user.hashedPassword = hashPassword(pass);
 
   await user.save();
 

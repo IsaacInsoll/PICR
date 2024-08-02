@@ -88,6 +88,7 @@ export type MetadataSummary = {
 export type Mutation = {
   __typename?: 'Mutation';
   auth: Scalars['String']['output'];
+  editAdminUser: User;
   editUser: User;
   generateThumbnails: Scalars['Boolean']['output'];
   generateZip: Scalars['String']['output'];
@@ -97,6 +98,16 @@ export type Mutation = {
 export type MutationAuthArgs = {
   password: Scalars['String']['input'];
   user: Scalars['String']['input'];
+};
+
+
+export type MutationEditAdminUserArgs = {
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  folderId?: InputMaybe<Scalars['ID']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  password?: InputMaybe<Scalars['String']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
 };
 
 
