@@ -6,6 +6,7 @@ import { GraphQLError } from 'graphql/error';
 import { hashPassword } from '../../helpers/hashPassword';
 import { FolderIsUnderFolderId } from '../../auth/folderUtils';
 import Folder from '../../models/Folder';
+import { Op } from 'sequelize';
 
 export const editUser = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
@@ -32,8 +33,20 @@ export const editAdminUser = async (_, params, context) => {
   let user: User | null = null;
 
   const pass = params.password;
+  const username = params.username;
   if (pass && pass.length < 8) {
     throw new GraphQLError('Password must be at least 8 characters long');
+  }
+
+  if (username) {
+    const existingUsername = await User.findOne({
+      where: { username: username },
+    });
+    if (existingUsername) {
+      if (existingUsername.id != params.id || !params.id) {
+        throw new GraphQLError(`Username "${username} already exists`);
+      }
+    }
   }
 
   if (params.id) {
@@ -46,14 +59,17 @@ export const editAdminUser = async (_, params, context) => {
       );
     }
   } else {
-    if (pass) {
+    if (pass && username) {
       user = new User();
     } else {
-      throw new GraphQLError('Cannot create new user without password');
+      throw new GraphQLError(
+        'Cannot create new user without username and password',
+      );
     }
   }
   user.folderId = params.folderId;
   user.name = params.name;
+
   user.username = params.username;
   user.enabled = params.enabled;
   if (pass) user.hashedPassword = hashPassword(pass);

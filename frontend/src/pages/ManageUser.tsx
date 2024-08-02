@@ -1,7 +1,7 @@
 import { MinimalFolder } from '../../types';
 import { useState } from 'react';
 import { useMutation, useQuery } from 'urql';
-import { editUserMutation } from '../urql/mutations/editUserMutation';
+import { editAdminUserMutation } from '../urql/mutations/editUserMutation';
 import type { MutationEditUserArgs } from '../gql/graphql';
 import { viewUserQuery } from '../urql/queries/viewUserQuery';
 import {
@@ -13,8 +13,9 @@ import {
   Stack,
   TextInput,
 } from '@mantine/core';
-import { TbCloudUpload, TbDoorExit, TbPassword, TbUser } from 'react-icons/tb';
+import { TbCloudUpload, TbDoorExit, TbUser } from 'react-icons/tb';
 import { FolderSelector } from '../components/FolderSelector';
+import { MutationEditAdminUserArgs } from '../../../graphql-types';
 
 export const ManageUser = ({
   id,
@@ -30,7 +31,7 @@ export const ManageUser = ({
   });
 
   const data = response.data?.user;
-  const [, mutate] = useMutation(editUserMutation);
+  const [, mutate] = useMutation(editAdminUserMutation);
 
   const [name, setName] = useState(data?.name ?? '');
   const [username, setUsername] = useState(data?.username);
@@ -45,7 +46,7 @@ export const ManageUser = ({
 
   const onSave = () => {
     //TODO: not pass password if it's null or ''
-    const data: MutationEditUserArgs = {
+    const data: MutationEditAdminUserArgs = {
       id: id ?? '',
       name,
       username: username,
