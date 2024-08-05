@@ -5,6 +5,7 @@ import { Folder } from '../../../graphql-types';
 import { GraphQLFieldResolver } from 'graphql/type';
 import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
 import { doAuthError } from '../../auth/doAuthError';
+import { Folder as GqlFolder } from '../../../graphql-types';
 
 export const folderResolver: GraphQLFieldResolver<
   Folder,
@@ -23,6 +24,6 @@ export const allFoldersResolver: GraphQLFieldResolver<
 > = async (_, params, context, info): Promise<Folder[]> => {
   const [permissions, u] = await perms(context, params.id, true);
   if (permissions !== 'Admin') doAuthError('Access Denied');
-
-  return await allSubFoldersRecursive(params.id);
+  const folders = (await allSubFoldersRecursive(params.id)) as unknown;
+  return folders as GqlFolder[];
 };

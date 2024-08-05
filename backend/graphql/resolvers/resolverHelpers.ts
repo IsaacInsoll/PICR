@@ -1,8 +1,6 @@
 import Folder from '../../models/Folder';
 import File from '../../models/File';
-import { FolderIsUnderFolderId } from '../../auth/folderUtils';
 import { Op } from 'sequelize';
-import { MinimalFolder } from '../../../frontend/types';
 
 export const getFolder = async (id: string | number) => {
   const folder = await Folder.findByPk(id);
