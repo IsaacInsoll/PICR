@@ -1,4 +1,4 @@
-import { Text, Title } from '@mantine/core';
+import { Box, Button, Text, Title } from '@mantine/core';
 import { Page } from '../components/Page';
 import { useQuery } from 'urql';
 import { viewAdminsQuery } from '../urql/queries/viewAdminsQuery';
@@ -8,6 +8,7 @@ import QueryFeedback from '../components/QueryFeedback';
 import { PicrColumns, PicrDataGrid } from '../components/PicrDataGrid';
 import { User } from '../../../graphql-types';
 import { ManageUser } from './ManageUser';
+import { TbCircleCheck, TbCircleXFilled, TbUserPlus } from 'react-icons/tb';
 
 export const ManageUsers = () => {
   return (
@@ -49,6 +50,11 @@ const ManageUsersBody = () => {
           onClick={(row) => setUserId(row.id)}
         />
       ) : undefined}
+      <Box pt="md">
+        <Button onClick={() => setUserId('')} leftSection={<TbUserPlus />}>
+          Add User
+        </Button>
+      </Box>
     </>
   );
 };
@@ -57,4 +63,14 @@ const columns: PicrColumns<User>[] = [
   { accessorKey: 'name', header: 'Name' },
   { accessorKey: 'username', header: 'Username' },
   { accessorKey: 'folder.name', header: 'Folder' }, //TODO: show parent folders if any
+  {
+    accessorKey: 'enabled',
+    header: 'Enabled',
+    accessorFn: ({ enabled }) =>
+      enabled ? (
+        <TbCircleCheck style={{ color: 'green' }} />
+      ) : (
+        <TbCircleXFilled style={{ color: 'red' }} />
+      ),
+  },
 ];
