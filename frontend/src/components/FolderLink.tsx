@@ -1,6 +1,6 @@
 import { Anchor } from '@mantine/core';
 import { MinimalFolder } from '../../types';
-import { useSetFolder } from '../useSetFolder';
+import { useSetFolder } from '../hooks/useSetFolder';
 
 export const FolderLink = ({ folder }: { folder: MinimalFolder }) => {
   const setFolder = useSetFolder();

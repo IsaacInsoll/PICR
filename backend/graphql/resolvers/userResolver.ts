@@ -31,9 +31,20 @@ export const usersResolver = async (_, params, context) => {
   const ids = params.includeParents
     ? [await folderAndAllParentIds(folder)]
     : folder.id;
+  // we don't show 'real users' just 'shared public users'
   const data = await User.findAll({
-    where: { folderId: { [Op.or]: ids } },
+    where: { folderId: { [Op.or]: ids }, uuid: { [Op.not]: null } },
   });
+  return data.map((pl) => {
+    return { ...pl.toJSON(), folder: getFolder(pl.folderId) };
+  });
+};
+
+export const adminsResolver = async (_, params, context) => {
+  // TODO: not hardcode 'full admin' to 'admin on folder 1'
+  const [p, u] = await contextPermissionsForFolder(context, 1, true);
+  if (p !== 'Admin') throw new GraphQLError('You must be an Admin to see this');
+  const data = await User.findAll({ where: { uuid: { [Op.is]: null } } });
   return data.map((pl) => {
     return { ...pl.toJSON(), folder: getFolder(pl.folderId) };
   });

@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import { authMutation } from '../mutations/authMutation';
 import { userType } from './userType';
-import { editUser } from '../mutations/editUser';
+import { editAdminUser, editUser } from '../mutations/editUser';
 import { generateThumbnails } from '../mutations/generateThumbnails';
 import { generateZipResolver } from '../mutations/generateZipResolver';
 
@@ -30,6 +30,18 @@ export const mutationType = new GraphQLObjectType({
         folderId: { type: GraphQLID },
         name: { type: GraphQLString },
         uuid: { type: GraphQLString },
+        enabled: { type: GraphQLBoolean },
+      },
+    },
+    editAdminUser: {
+      type: new GraphQLNonNull(userType),
+      resolve: editAdminUser,
+      args: {
+        id: { type: GraphQLID },
+        folderId: { type: GraphQLID },
+        name: { type: GraphQLString },
+        username: { type: GraphQLString },
+        password: { type: GraphQLString },
         enabled: { type: GraphQLBoolean },
       },
     },

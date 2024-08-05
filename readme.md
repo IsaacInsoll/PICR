@@ -2,8 +2,8 @@
 
 Self-hosted online image sharing tool for photographers to share photos with clients.
 
-- [GitHub](https://github.com/isaacinsoll/picr)
-- [Docker Hub](https://hub.docker.com/repository/docker/isaacinsoll/picr/general)
+- 👩🏻‍💻 [GitHub](https://github.com/isaacinsoll/picr)
+- 🐳 [Docker Hub](https://hub.docker.com/repository/docker/isaacinsoll/picr/general)
 
 #### I built this because:
 - Google Drive charges too much for storage

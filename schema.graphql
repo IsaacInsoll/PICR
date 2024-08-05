@@ -71,12 +71,15 @@ type MetadataSummary {
 
 type Mutation {
   auth(password: String!, user: String!): String!
+  editAdminUser(enabled: Boolean, folderId: ID, id: ID, name: String, password: String, username: String): User!
   editUser(enabled: Boolean, folderId: ID, id: ID, name: String, uuid: String): User!
   generateThumbnails(folderId: ID): Boolean!
   generateZip(folderId: ID): String!
 }
 
 type Query {
+  admins: [User!]!
+  allFolders(id: ID!): [Folder]!
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
   tasks(folderId: ID): [Task!]!
@@ -100,7 +103,8 @@ type User {
   folderId: ID!
   id: ID!
   name: String!
-  uuid: String!
+  username: String
+  uuid: String
 }
 
 type Video implements FileInterface {
