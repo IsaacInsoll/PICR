@@ -151,7 +151,8 @@ const server = async () => {
     },
   );
 
-  e.get('*', (req, res) => {
+  //catch all other URLS and return the front end template
+  e.get('(.*)', (req, res) => {
     res.sendFile(path.join(__dirname, '../../public/index.html'));
   });
 
