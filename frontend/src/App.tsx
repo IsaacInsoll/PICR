@@ -15,24 +15,25 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Notifications } from '@mantine/notifications';
 import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
+import { Suspense } from 'react';
 
 const App = () => {
-  const loggedIn = useIsLoggedIn();
   const authKey = useAtomValue(authKeyAtom);
   const client = createClient(authKey);
   const themeMode = useAtomValue(themeModeAtom);
   // console.log('themeMode', themeMode);
   // console.log('LoggedIn: ' + (loggedIn ? 'yes' : 'no'));
+  console.log('App Rerender');
 
   return (
     <HelmetProvider>
       <URQLProvider value={client}>
         <BrowserRouter>
           <MantineProvider theme={theme} defaultColorScheme={themeMode}>
-            <UserProvider>
-              <Router loggedIn={loggedIn} />
-            </UserProvider>
-            <Notifications />
+            <Suspense fallback={''}>
+              <UserProvider />
+              <Notifications />
+            </Suspense>
           </MantineProvider>
         </BrowserRouter>
       </URQLProvider>

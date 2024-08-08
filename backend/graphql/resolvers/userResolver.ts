@@ -5,6 +5,7 @@ import Folder from '../../models/Folder';
 import { getFolder } from './resolverHelpers';
 import { Op } from 'sequelize';
 import User from '../../models/User';
+import { getUserFromToken } from '../../auth/jwt-auth';
 
 export const userResolver = async (_, params, context) => {
   const user = await User.findByPk(params.id);
@@ -48,4 +49,8 @@ export const adminsResolver = async (_, params, context) => {
   return data.map((pl) => {
     return { ...pl.toJSON(), folder: getFolder(pl.folderId) };
   });
+};
+
+export const meResolver = async (_, params, context) => {
+  return await getUserFromToken(context);
 };

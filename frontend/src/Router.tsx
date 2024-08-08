@@ -13,6 +13,7 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
         <>
           <Route path="/admin/f/:folderId/:fileId?" element={<ViewFolder />} />
           <Route path="/admin/users/:userId?" element={<ManageUsers />} />
+          <Route path="/" element={<HomePage />} />
         </>
       ) : null}
       <Route path="*" element={loggedIn ? <PageNotFound /> : <LoginForm />} />
@@ -23,4 +24,9 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
 export const getUUID = () => {
   const match = matchPath({ path: '/s/:uuid/*' }, window.location.pathname);
   return match?.params.uuid;
+};
+
+const HomePage = () => {
+  //we must be logged in as an 'admin' user
+  return 'home';
 };

@@ -15,6 +15,7 @@ import { fileResolver } from '../resolvers/fileResolver';
 import { userType } from './userType';
 import {
   adminsResolver,
+  meResolver,
   userResolver,
   usersResolver,
 } from '../resolvers/userResolver';
@@ -66,6 +67,10 @@ export const queryType = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(folderType)),
       resolve: allFoldersResolver,
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
+    },
+    me: {
+      type: userType,
+      resolve: meResolver,
     },
   }),
 });

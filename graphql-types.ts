@@ -135,6 +135,7 @@ export type Query = {
   allFolders: Array<Maybe<Folder>>;
   file: FileInterface;
   folder: Folder;
+  me?: Maybe<User>;
   tasks: Array<Task>;
   user: User;
   users: Array<User>;

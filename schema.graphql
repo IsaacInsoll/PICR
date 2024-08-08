@@ -82,6 +82,7 @@ type Query {
   allFolders(id: ID!): [Folder]!
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
+  me: User
   tasks(folderId: ID): [Task!]!
   user(id: ID!): User!
   users(folderId: ID!, includeParents: Boolean): [User!]!

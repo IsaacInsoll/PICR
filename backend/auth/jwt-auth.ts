@@ -12,7 +12,9 @@ export function generateAccessToken(obj) {
   return response;
 }
 
-export async function getUserFromToken(context) {
+export async function getUserFromToken(
+  context: CustomJwtPayload,
+): Promise<User | undefined> {
   const token = context.auth.split(' ')[1];
   if (token == null || token === '') return undefined;
   const secret = picrConfig.tokenSecret as string;
