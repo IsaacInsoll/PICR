@@ -3,16 +3,25 @@ import { directoryPath, relativePath } from './fileManager';
 import { addToQueue } from './fileQueue';
 import { logger } from '../logger';
 import { picrConfig } from '../server';
+import File from '../models/File';
+import Folder from '../models/Folder';
+import { Op } from 'sequelize';
 
-export const fileWatcher = () => {
+export const fileWatcher = async () => {
   logger(
     '👀 Now watching: ' +
       directoryPath +
       (picrConfig.usePolling ? ' with POLLING' : ''),
     true,
   );
-  let initComplete = false;
   const intervalMultiplier = picrConfig.pollingInterval; // multiply default interval values by this
+
+  //update all files to 'not exist' then set as exist when we find them
+  await File.update({ exists: false }, { where: {} });
+  await Folder.update(
+    { exists: false },
+    { where: { parentId: { [Op.ne]: null } } }, //don't set Home (root) to not exist
+  );
 
   const watcher = chokidar.watch(directoryPath, {
     ignored: ignored,
@@ -40,8 +49,7 @@ export const fileWatcher = () => {
       addToQueue('unlinkDir', path, true);
     })
     .on('ready', () => {
-      initComplete = true;
-      logger('✅ Initial scan complete. Ready for changes', true);
+      addToQueue('initComplete', '');
     });
 };
 

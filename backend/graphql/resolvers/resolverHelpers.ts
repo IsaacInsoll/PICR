@@ -13,7 +13,7 @@ export const getFolder = async (id: string | number) => {
 
 export const subFolders = async (parentId: string | number) => {
   const folders = await Folder.findAll({
-    where: { parentId },
+    where: { parentId, exists: true },
     order: [['name', 'ASC']],
   });
   return folders.map((f) => f.toJSON());
@@ -21,7 +21,7 @@ export const subFolders = async (parentId: string | number) => {
 
 export const subFiles = async (folderId: string | number) => {
   const files = await File.findAll({
-    where: { folderId },
+    where: { folderId, exists: true },
     order: [['name', 'ASC']],
   });
   return files.map((f) => {
@@ -38,11 +38,12 @@ export const allSubFoldersRecursive = async (folderId: number | string) => {
   const f = await Folder.findByPk(folderId);
   if (!f.relativePath) {
     //root folder
-    return await Folder.findAll();
+    return await Folder.findAll({ where: { exists: true } });
   }
   return await Folder.findAll({
     where: {
       relativePath: { [Op.startsWith]: f.relativePath },
+      exists: true,
     },
   });
 };

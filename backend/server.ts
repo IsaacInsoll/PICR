@@ -85,7 +85,6 @@ const server = async () => {
       `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\`. 
    Please ensure configuration is correct and database server is running`,
     );
-    // console.error(e);
     process.exit();
   }
 
@@ -174,7 +173,7 @@ const server = async () => {
     process.exit(0);
   });
 
-  fileWatcher();
+  await fileWatcher();
 };
 
 const getVersion = () => {

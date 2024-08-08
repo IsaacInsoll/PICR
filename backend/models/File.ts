@@ -37,6 +37,9 @@ export default class File extends Model {
   @Column
   declare fileLastModified: Date;
 
+  @Column
+  declare exists: boolean; // bulk set as 'false' at boot, then set true when detected, to weed out files deleted while server down
+
   @ForeignKey(() => Folder)
   @Column
   folderId: number;

@@ -1,5 +1,5 @@
 import { basename, dirname, extname } from 'path';
-import {directoryPath, folderList, relativePath} from '../fileManager';
+import { directoryPath, folderList, relativePath } from '../fileManager';
 import File from '../../models/File';
 import { logger } from '../../logger';
 import { fastHash } from '../fileHash';
@@ -32,6 +32,7 @@ export const addFile = async (filePath: string) => {
       type: type,
       fileSize: stats.size,
       fileLastModified: stats.mtime,
+      exists: true,
     },
   });
   const modified =
@@ -64,14 +65,15 @@ export const addFile = async (filePath: string) => {
       file.imageRatio = meta.Height > 0 ? meta.Width / meta.Height : 0;
     }
   }
-    file.save();
+  file.exists = true;
+  file.save();
   // console.log(file);
   logger('➕ [done]' + filePath);
 };
 
 const findFolderId = async (fullPath: string) => {
   while (true) {
-    if(fullPath == directoryPath) return 1;
+    if (fullPath == directoryPath) return 1;
     const id = folderList[relativePath(fullPath)];
     if (id && id !== '0') return id;
     logger('💤 Sleeping waiting for a FolderID for a file in ' + fullPath);

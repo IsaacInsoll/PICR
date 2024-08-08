@@ -15,7 +15,8 @@ export const removeFolder = async (path: string) => {
           where: {
             folderHash: folder.folderHash,
             createdAt: {
-              [Op.gte]: literal("DATETIME(CURRENT_TIMESTAMP,'-5 second')"),
+              [Op.gte]: literal("NOW() - interval '5' second"), //postgres
+              // [Op.gte]: literal("DATETIME(CURRENT_TIMESTAMP,'-5 second')"), //mysql
             },
           },
         }).then((newFolder) => {

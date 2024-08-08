@@ -21,21 +21,22 @@ export const contextPermissionsForFolder = async (
   const hasUUID = !!context.uuid && context.uuid !== '';
   const folder = await Folder.findByPk(folderId);
 
-  if (user) {
-    if (await FolderIsUnderFolderId(folder, user.folderId)) {
-      return ['Admin', user];
-    }
-  }
-
-  if (hasUUID) {
-    const link = await User.findOne({ where: { uuid: context.uuid } });
-    //todo: check expiry dates, enabled status on link
-    if (link) {
-      if (!link.enabled) {
-        throw new GraphQLError('This link is currently unavailable');
+  if (folder.exists) {
+    if (user) {
+      if (await FolderIsUnderFolderId(folder, user.folderId)) {
+        return ['Admin', user];
       }
-      if (await FolderIsUnderFolderId(folder, link.folderId)) {
-        return ['View', await User.findByPk(link.id)];
+    }
+    if (hasUUID) {
+      const link = await User.findOne({ where: { uuid: context.uuid } });
+      //todo: check expiry dates, enabled status on link
+      if (link) {
+        if (!link.enabled) {
+          throw new GraphQLError('This link is currently unavailable');
+        }
+        if (await FolderIsUnderFolderId(folder, link.folderId)) {
+          return ['View', await User.findByPk(link.id)];
+        }
       }
     }
   }
