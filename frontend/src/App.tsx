@@ -1,5 +1,5 @@
 import { createClient } from './urqlClient';
-import { Provider } from 'urql';
+import { Provider as URQLProvider } from 'urql';
 import { BrowserRouter } from 'react-router-dom';
 import { Router } from './Router';
 import { authKeyAtom, useIsLoggedIn } from './atoms/authAtom';
@@ -14,6 +14,7 @@ import { MantineProvider } from '@mantine/core';
 import { HelmetProvider } from 'react-helmet-async';
 import { Notifications } from '@mantine/notifications';
 import { theme } from './theme';
+import { UserProvider } from './components/UserProvider';
 
 const App = () => {
   const loggedIn = useIsLoggedIn();
@@ -25,14 +26,16 @@ const App = () => {
 
   return (
     <HelmetProvider>
-      <Provider value={client}>
+      <URQLProvider value={client}>
         <BrowserRouter>
           <MantineProvider theme={theme} defaultColorScheme={themeMode}>
-            <Router loggedIn={loggedIn} />
+            <UserProvider>
+              <Router loggedIn={loggedIn} />
+            </UserProvider>
             <Notifications />
           </MantineProvider>
         </BrowserRouter>
-      </Provider>
+      </URQLProvider>
     </HelmetProvider>
   );
 };

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useMutation } from 'urql';
-import { useNavigate } from 'react-router-dom';
 import { useSetAtom } from 'jotai/index';
-import { authKeyAtom, useIsLoggedIn } from '../atoms/authAtom';
+import { authKeyAtom } from '../atoms/authAtom';
 import { loginMutation } from '../urql/mutations/LoginMutation';
 import {
   Button,
@@ -18,17 +17,11 @@ import {
 } from '@mantine/core';
 
 export const LoginForm = () => {
-  const loggedIn = useIsLoggedIn();
-  const navigate = useNavigate();
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
   const [fail, setFail] = useState(false);
   const [, mutate] = useMutation(loginMutation);
   const set = useSetAtom(authKeyAtom);
-
-  if (loggedIn) {
-    navigate('/admin/f/1');
-  }
 
   const doLogin = (e) => {
     mutate({ username: user, password: pass }).then((result) => {
@@ -79,27 +72,6 @@ export const LoginForm = () => {
         </Paper>
       </Container>
     </Center>
-
-    // <TextInput
-    //   label="Username"
-    //   name="username"
-    //   value={user}
-    //   onChange={(e) => setUser(e.target.value)}
-    // />
-    //
-    // <TextInput
-    //   label="Password"
-    //   name="password"
-    //   type="password"
-    //   error={
-    //     fail
-    //       ? 'Login Failed. Please check your username and password'
-    //       : undefined
-    //   }
-    //   value={pass}
-    //   onChange={(e) => setPass(e.target.value)}
-    // />
-    // <Button onClick={doLogin}>Login</Button>
   );
 };
 
