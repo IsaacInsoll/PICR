@@ -21,7 +21,7 @@ export const contextPermissionsForFolder = async (
   const hasUUID = !!context.uuid && context.uuid !== '';
   const folder = await Folder.findByPk(folderId);
 
-  if (folder.exists) {
+  if (folder && folder.exists) {
     if (user) {
       if (await FolderIsUnderFolderId(folder, user.folderId)) {
         return ['Admin', user];
