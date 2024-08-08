@@ -12,4 +12,4 @@ COPY --chown=node:node ./public ./public
 
 EXPOSE 6900
 
-CMD [ "node", "dist/src/server.js" ]
+CMD [ "node", "dist/backend/server.js" ]
