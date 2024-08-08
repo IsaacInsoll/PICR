@@ -18,7 +18,10 @@ import { existsSync, readFileSync } from 'node:fs';
 import Folder from './models/Folder';
 import { zipPath } from './helpers/zip';
 import { zipInProgress } from './helpers/zipQueue';
-import { generateVideoThumbnail } from './media/generateVideoThumbnail';
+import {
+  awaitVideoThumbnailGeneration,
+  generateVideoThumbnail,
+} from './media/generateVideoThumbnail';
 import { delay } from './helpers/delay';
 
 config(); // read .ENV
@@ -114,17 +117,15 @@ const server = async () => {
       if (!allSizes.includes(size)) res.sendStatus(400);
       const fp = fullPathFor(file, size);
       if (size != 'raw' && !existsSync(fp)) {
-        //TODO: handle video and other formats, not just images
         if (file.type == 'Image') await generateThumbnail(file, size);
         if (file.type == 'Video') {
           await generateVideoThumbnail(file, size);
-          await delay(2000); // wait for thumbs to generate
         }
       }
       if (file.type == 'Video' && size != 'raw') {
         const p = fullPathFor(file, size) + '/' + filename;
-        console.log(fullPathFor(file, size) + '/' + filename);
-        //this seems to truncate the file?
+        // it's possible that we have started thumbnail generation for this video but haven't finished it, so extra waits
+        await awaitVideoThumbnailGeneration(file, size);
         res.sendFile(p);
       } else {
         res.sendFile(fullPathFor(file, size));

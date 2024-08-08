@@ -7,10 +7,16 @@ import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensi
 import { existsSync } from 'node:fs';
 import { logger } from '../logger';
 
-export const generateVideoThumbnail = async (
+const numberOfVideoSnapshots = 10;
+
+// This operation takes some time, and might be requested multiple times before it completes
+// so lets queue it up
+const videoThumbnailQueue: { [key: string]: Promise<void> } = {};
+
+const processVideoThumbnail = async (
   file: File,
   size: ThumbnailSize,
-) => {
+): Promise<void> => {
   const { Duration } = JSON.parse(file.metadata) as VideoMetadata;
   if (Duration <= 0 || !file.imageRatio || file.imageRatio == 0) {
     console.log('Error generating video thumbnails for: ' + file.fullPath());
@@ -25,18 +31,48 @@ export const generateVideoThumbnail = async (
   }
 
   const px = thumbnailDimensions[size];
-  logger('generating video thumbnails for ' + px + ' ' + file.name);
+  // console.log('▶️ generating video thumbnails for ' + px + ' ' + file.name);
 
   const timemarks = Array(numberOfVideoSnapshots)
     .fill(0)
     .map((_, index) => (index / numberOfVideoSnapshots) * Duration);
 
-  ffmpegForFile(file).takeScreenshots({
-    filename: size + '.jpg',
-    timemarks,
-    folder: outFile,
-    size: px + 'x' + Math.round(px / file.imageRatio), //size eg: '150x100',
+  return new Promise((resolve) => {
+    ffmpegForFile(file)
+      .on('end', () => {
+        // console.log('⏸️ Screenshots done for ' + file.name + ' ' + size);
+        resolve(null);
+      })
+      .takeScreenshots({
+        filename: size + '.jpg',
+        timemarks,
+        folder: outFile,
+        size: px + 'x' + Math.round(px / file.imageRatio), //size eg: '150x100',
+      });
   });
 };
 
-const numberOfVideoSnapshots = 10;
+export const generateVideoThumbnail = async (
+  file: File,
+  size: ThumbnailSize,
+): Promise<void> => {
+  const pr = awaitVideoThumbnailGeneration(file, size);
+  if (pr) {
+    // it's possible that we have rendered thumbnails (so promise exists) but since then the files were deleted
+    await new Promise((r) => setTimeout(r, 1000));
+    if (existsSync(thumbnailPath(file, size))) {
+      return pr;
+    }
+  }
+  const p = processVideoThumbnail(file, size);
+  videoThumbnailQueue[file.id + '-' + size] = p;
+  return p;
+};
+
+export const awaitVideoThumbnailGeneration = (
+  file: File,
+  size: ThumbnailSize,
+): Promise<void> | undefined => {
+  const key = file.id + '-' + size;
+  return videoThumbnailQueue[key] ?? undefined;
+};

@@ -7,26 +7,13 @@ export const FolderIsUnderFolderId = async (
   child: Folder,
   parentId: number,
 ): Promise<boolean> => {
-  console.log('FUF ', child.id, ' under ', parentId);
-
   if (!child || !parentId) return false;
   if (child.id === parentId) {
-    console.log(['===id match for ', child.id]);
     return true;
   }
   if (!child.parentId) return false;
   const childParent = await Folder.findByPk(child.parentId);
-  if (childParent)
-    console.log(
-      '=== trying parent for ' +
-        child.name +
-        ' which is ' +
-        childParent.name +
-        ', superparent is ' +
-        parentId,
-    );
   if (!childParent) {
-    console.log('no parent for ' + child.name);
     return false;
   }
   return await FolderIsUnderFolderId(childParent, parentId);
