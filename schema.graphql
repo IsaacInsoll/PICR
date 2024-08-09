@@ -99,11 +99,11 @@ type Task {
 }
 
 type User {
-  enabled: Boolean!
+  enabled: Boolean
   folder: Folder
   folderId: ID!
-  id: ID!
-  name: String!
+  id: ID
+  name: String
   username: String
   uuid: String
 }

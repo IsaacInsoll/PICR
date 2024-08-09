@@ -185,11 +185,11 @@ export type Task = {
 
 export type User = {
   __typename?: 'User';
-  enabled: Scalars['Boolean']['output'];
+  enabled?: Maybe<Scalars['Boolean']['output']>;
   folder?: Maybe<Folder>;
   folderId: Scalars['ID']['output'];
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;
   uuid?: Maybe<Scalars['String']['output']>;
 };

@@ -1,4 +1,7 @@
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
+import {
+  contextPermissionsForFolder,
+  getUserFromUUID,
+} from '../../auth/contextPermissionsForFolder';
 import { GraphQLError } from 'graphql/error';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
 import Folder from '../../models/Folder';
@@ -52,5 +55,10 @@ export const adminsResolver = async (_, params, context) => {
 };
 
 export const meResolver = async (_, params, context) => {
-  return await getUserFromToken(context);
+  const user = await getUserFromToken(context);
+  if (user) return user;
+  const publicUser = await getUserFromUUID(context);
+  if (!publicUser) return null;
+  // don't expose many public user details
+  return { folderId: publicUser.folderId };
 };

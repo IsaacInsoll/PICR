@@ -3,11 +3,13 @@ import { useAtomValue } from 'jotai/index';
 import { authKeyAtom } from '../atoms/authAtom';
 import { useQuery } from 'urql';
 import { User } from '../../../graphql-types';
+import { getUUID } from '../Router';
 
 export const useMe = (): Pick<User, 'id' | 'name' | 'folderId'> | null => {
-  const token = useAtomValue(authKeyAtom);
   console.log('useMe()');
-  const [result] = useQuery({ query: meQuery, pause: !token });
+  const token = useAtomValue(authKeyAtom);
+  const uuid = getUUID();
+  const [result] = useQuery({ query: meQuery, pause: !token && !uuid });
   return result.data?.me ?? null;
 };
 

@@ -1,8 +1,7 @@
 import { createClient } from './urqlClient';
 import { Provider as URQLProvider } from 'urql';
 import { BrowserRouter } from 'react-router-dom';
-import { Router } from './Router';
-import { authKeyAtom, useIsLoggedIn } from './atoms/authAtom';
+import { authKeyAtom } from './atoms/authAtom';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from './atoms/themeModeAtom';
 

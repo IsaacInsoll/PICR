@@ -188,11 +188,11 @@ export type Task = {
 
 export type User = {
   __typename?: 'User';
-  enabled: Scalars['Boolean']['output'];
+  enabled?: Maybe<Scalars['Boolean']['output']>;
   folder?: Maybe<Folder>;
   folderId: Scalars['ID']['output'];
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;
   uuid?: Maybe<Scalars['String']['output']>;
 };
@@ -213,7 +213,7 @@ export type Video = FileInterface & {
 export type MeQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQueryQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: string, name: string, folderId: string } | null };
+export type MeQueryQuery = { __typename?: 'Query', me?: { __typename?: 'User', id?: string | null, name?: string | null, folderId: string } | null };
 
 type FileFragment_File_Fragment = { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: any };
 
@@ -229,7 +229,7 @@ export type ImageMetadataFragmentFragment = { __typename?: 'Image', metadata?: {
 
 export type MinimumFolderFragmentFragment = { __typename?: 'Folder', id: string, name: string, parentId?: string | null };
 
-export type UserFragmentFragment = { __typename?: 'User', id: string, name: string, username?: string | null, enabled: boolean, uuid?: string | null, folderId: string, folder?: { __typename?: 'Folder', id: string, name: string, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null };
+export type UserFragmentFragment = { __typename?: 'User', id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, folderId: string, folder?: { __typename?: 'Folder', id: string, name: string, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String']['input'];
@@ -248,7 +248,7 @@ export type EditUserMutationMutationVariables = Exact<{
 }>;
 
 
-export type EditUserMutationMutation = { __typename?: 'Mutation', editUser: { __typename?: 'User', id: string, name: string, username?: string | null, enabled: boolean, uuid?: string | null, folderId: string, folder?: { __typename?: 'Folder', id: string, name: string, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null } };
+export type EditUserMutationMutation = { __typename?: 'Mutation', editUser: { __typename?: 'User', id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, folderId: string, folder?: { __typename?: 'Folder', id: string, name: string, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null } };
 
 export type EditAdminUserMutationMutationVariables = Exact<{
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -260,7 +260,7 @@ export type EditAdminUserMutationMutationVariables = Exact<{
 }>;
 
 
-export type EditAdminUserMutationMutation = { __typename?: 'Mutation', editAdminUser: { __typename?: 'User', id: string, name: string, username?: string | null, enabled: boolean, uuid?: string | null, folderId: string, folder?: { __typename?: 'Folder', id: string, name: string, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null } };
+export type EditAdminUserMutationMutation = { __typename?: 'Mutation', editAdminUser: { __typename?: 'User', id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, folderId: string, folder?: { __typename?: 'Folder', id: string, name: string, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null } };
 
 export type GenerateThumbnailsQueryMutationVariables = Exact<{
   folderId: Scalars['ID']['input'];
@@ -281,7 +281,7 @@ export type ManageFolderQueryQueryVariables = Exact<{
 }>;
 
 
-export type ManageFolderQueryQuery = { __typename?: 'Query', folder: { __typename?: 'Folder', totalFiles: number, totalFolders: number, totalImages: number, totalSize: string, id: string, name: string, parentId?: string | null, permissions?: FolderPermissions | null, parents: Array<{ __typename?: 'Folder', id: string, name: string }> }, users: Array<{ __typename?: 'User', folderId: string, id: string, name: string, username?: string | null, enabled: boolean, uuid?: string | null, folder?: { __typename?: 'Folder', id: string, name: string, parentId?: string | null, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null }> };
+export type ManageFolderQueryQuery = { __typename?: 'Query', folder: { __typename?: 'Folder', totalFiles: number, totalFolders: number, totalImages: number, totalSize: string, id: string, name: string, parentId?: string | null, permissions?: FolderPermissions | null, parents: Array<{ __typename?: 'Folder', id: string, name: string }> }, users: Array<{ __typename?: 'User', folderId: string, id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, folder?: { __typename?: 'Folder', id: string, name: string, parentId?: string | null, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null }> };
 
 export type ReadAllFoldersQueryQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -300,7 +300,7 @@ export type TaskQueryQuery = { __typename?: 'Query', tasks: Array<{ __typename?:
 export type ViewAdminsQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ViewAdminsQueryQuery = { __typename?: 'Query', admins: Array<{ __typename?: 'User', id: string, name: string, username?: string | null, enabled: boolean, uuid?: string | null, folderId: string, folder?: { __typename?: 'Folder', id: string, name: string, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null }> };
+export type ViewAdminsQueryQuery = { __typename?: 'Query', admins: Array<{ __typename?: 'User', id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, folderId: string, folder?: { __typename?: 'Folder', id: string, name: string, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null }> };
 
 export type ViewFileQueryVariables = Exact<{
   fileId: Scalars['ID']['input'];
@@ -321,7 +321,7 @@ export type ViewUserQueryQueryVariables = Exact<{
 }>;
 
 
-export type ViewUserQueryQuery = { __typename?: 'Query', user: { __typename?: 'User', id: string, name: string, username?: string | null, enabled: boolean, uuid?: string | null, folderId: string, folder?: { __typename?: 'Folder', id: string, name: string, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null } };
+export type ViewUserQueryQuery = { __typename?: 'Query', user: { __typename?: 'User', id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, folderId: string, folder?: { __typename?: 'Folder', id: string, name: string, parents: Array<{ __typename?: 'Folder', id: string, name: string }> } | null } };
 
 export const ImageMetadataFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ImageMetadataFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Image"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Image"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Camera"}},{"kind":"Field","name":{"kind":"Name","value":"Lens"}},{"kind":"Field","name":{"kind":"Name","value":"Artist"}},{"kind":"Field","name":{"kind":"Name","value":"DateTimeOriginal"}},{"kind":"Field","name":{"kind":"Name","value":"DateTimeEdit"}},{"kind":"Field","name":{"kind":"Name","value":"Aperture"}},{"kind":"Field","name":{"kind":"Name","value":"ExposureTime"}},{"kind":"Field","name":{"kind":"Name","value":"ISO"}}]}}]}}]}}]} as unknown as DocumentNode<ImageMetadataFragmentFragment, unknown>;
 export const FileFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FileFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FileInterface"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"fileHash"}},{"kind":"Field","name":{"kind":"Name","value":"fileSize"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Video"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageRatio"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Image"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"imageRatio"}},{"kind":"FragmentSpread","name":{"kind":"Name","value":"ImageMetadataFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ImageMetadataFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Image"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Image"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Camera"}},{"kind":"Field","name":{"kind":"Name","value":"Lens"}},{"kind":"Field","name":{"kind":"Name","value":"Artist"}},{"kind":"Field","name":{"kind":"Name","value":"DateTimeOriginal"}},{"kind":"Field","name":{"kind":"Name","value":"DateTimeEdit"}},{"kind":"Field","name":{"kind":"Name","value":"Aperture"}},{"kind":"Field","name":{"kind":"Name","value":"ExposureTime"}},{"kind":"Field","name":{"kind":"Name","value":"ISO"}}]}}]}}]}}]} as unknown as DocumentNode<FileFragmentFragment, unknown>;

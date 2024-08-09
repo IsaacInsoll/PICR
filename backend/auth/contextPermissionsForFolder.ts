@@ -44,7 +44,7 @@ export const contextPermissionsForFolder = async (
   return ['None', null];
 };
 
-const getUserFromUUID = async (
+export const getUserFromUUID = async (
   context: CustomJwtPayload,
 ): Promise<User | undefined> => {
   const hasUUID = !!context.uuid && context.uuid !== '';
