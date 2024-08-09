@@ -1,8 +1,9 @@
-import { matchPath, Route, Routes } from 'react-router-dom';
+import { matchPath, Route, Routes, useNavigate } from 'react-router-dom';
 import { LoginForm } from './pages/LoginForm';
 import { ViewFolder } from './pages/ViewFolder';
 import { ManageUsers } from './pages/ManageUsers';
 import { PageNotFound } from './pages/PageNotFound';
+import { useMe } from './hooks/useMe';
 
 //note: if adding public paths not starting with `/s/:uuid/*` then edit getUUID below as urqlClient.ts depends on it
 export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
@@ -27,6 +28,8 @@ export const getUUID = () => {
 };
 
 const HomePage = () => {
-  //we must be logged in as an 'admin' user
-  return 'home';
+  const me = useMe();
+  const navigate = useNavigate();
+  if (me) navigate('/admin/f/' + me?.folderId);
+  return null;
 };

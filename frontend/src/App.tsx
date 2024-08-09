@@ -21,9 +21,6 @@ const App = () => {
   const authKey = useAtomValue(authKeyAtom);
   const client = createClient(authKey);
   const themeMode = useAtomValue(themeModeAtom);
-  // console.log('themeMode', themeMode);
-  // console.log('LoggedIn: ' + (loggedIn ? 'yes' : 'no'));
-  console.log('App Rerender');
 
   return (
     <HelmetProvider>
