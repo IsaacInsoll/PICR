@@ -3,12 +3,17 @@ import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize';
 import { basename, dirname, extname } from 'path';
 import { relativePath } from '../filesystem/fileManager';
 
-export const thumbnailPath = (file: File, size: ThumbnailSize): string => {
+export const thumbnailPath = (
+  file: File,
+  size: ThumbnailSize,
+  extension?: string,
+): string => {
   const fp = file.fullPath();
-  const ext = extname(fp); // .txt
-  const fileName = basename(fp, ext); // notes.txt
+  const ext = extension ?? extname(fp); // .txt
+  const fileName = basename(fp); // notes.txt
   const p = dirname(fp);
 
+  // console.log('thumbnailPath', extension, ext);
   const base = process.cwd() + `/cache/thumbs/${relativePath(p)}/`;
   // video is all in one folder, regardless of size
   // if (file.type == 'Video') {

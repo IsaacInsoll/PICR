@@ -5,7 +5,7 @@ import { config } from 'dotenv';
 import { gqlserver } from './graphql/gqlserver';
 import { logger } from './logger';
 import { randomBytes } from 'node:crypto';
-import path from 'path';
+import path, { extname } from 'path';
 import User from './models/User';
 import File from './models/File';
 import { hashPassword } from './helpers/hashPassword';
@@ -114,7 +114,8 @@ const server = async () => {
       const file = await File.findOne({ where: { id, fileHash: hash } });
       if (!file) res.sendStatus(404);
       if (!allSizes.includes(size)) res.sendStatus(400);
-      const fp = fullPathFor(file, size);
+      const extension = extname(filename);
+      const fp = fullPathFor(file, size, extension);
       if (size != 'raw' && !existsSync(fp)) {
         if (file.type == 'Image') await generateThumbnail(file, size);
         if (file.type == 'Video') {
@@ -127,7 +128,7 @@ const server = async () => {
         await awaitVideoThumbnailGeneration(file, size);
         res.sendFile(p);
       } else {
-        res.sendFile(fullPathFor(file, size));
+        res.sendFile(fullPathFor(file, size, extension));
       }
     },
   );

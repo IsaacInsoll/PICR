@@ -1,4 +1,4 @@
-import sharp, { ResizeOptions } from 'sharp';
+import sharp, { AvifOptions, JpegOptions, ResizeOptions } from 'sharp';
 import { fullPath } from '../filesystem/fileManager';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'path';
@@ -51,15 +51,17 @@ export const generateAllThumbs = async (file: File) => {
 
 export const generateThumbnail = async (file: File, size: ThumbnailSize) => {
   logger(`🖼️ Generating ${size} thumbnail for ${file.name}`);
-  const outFile = thumbnailPath(file, size);
-  mkdirSync(dirname(outFile), { recursive: true });
+  mkdirSync(dirname(thumbnailPath(file, size)), { recursive: true });
   const px = thumbnailDimensions[size];
+
+  const img = sharp(file.fullPath()).withMetadata().resize(px, px, sharpOpts);
   try {
-    return await sharp(file.fullPath())
-      .withMetadata()
-      .resize(px, px, sharpOpts)
+    return await img
       .jpeg(jpegOptions)
-      .toFile(outFile);
+      .toFile(thumbnailPath(file, size, '.jpg'))
+      .then(() => {
+        img.avif(avifOptions).toFile(thumbnailPath(file, size, '.avif'));
+      });
   } catch (e) {
     console.log('Error generating thumbnail for: ' + file.fullPath());
     console.log(e);
@@ -72,9 +74,14 @@ const sharpOpts: ResizeOptions = {
   withoutEnlargement: true, //don't upsize in case the originals are low resolution (EG: proofs)
 };
 
-const jpegOptions = { quality: 60 };
+const jpegOptions: JpegOptions = { quality: 60 };
+const avifOptions: AvifOptions = { quality: 45 }; // avif 45 visually better than jpeg60 from looking at sooty-001 @ 50-80% file size of the jpeg
 
-export const fullPathFor = (file: File, size: AllSize): string => {
+export const fullPathFor = (
+  file: File,
+  size: AllSize,
+  extension?: string,
+): string => {
   if (!file.relativePath) {
     console.log(file);
   }
@@ -82,6 +89,6 @@ export const fullPathFor = (file: File, size: AllSize): string => {
   if (size == 'raw') {
     return path;
   } else {
-    return thumbnailPath(file, size);
+    return thumbnailPath(file, size, extension);
   }
 };
