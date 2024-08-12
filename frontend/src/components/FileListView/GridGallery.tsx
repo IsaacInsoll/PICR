@@ -53,7 +53,7 @@ const GalleryImage = (props: GalleryImageProps) => {
     return <GalleryVideo {...props} />;
   }
 
-  return <PicrImage {...props.imageProps} file={file} size="md" />;
+  return <PicrImage style={props.imageProps.style} file={file} size="md" />;
 };
 
 const GalleryVideo = (props) => {

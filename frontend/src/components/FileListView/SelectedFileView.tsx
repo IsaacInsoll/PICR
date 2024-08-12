@@ -1,5 +1,5 @@
 // The "Lightbox" appears when an individual image is selected
-import { Lightbox } from 'yet-another-react-lightbox';
+import { Lightbox, Slide } from 'yet-another-react-lightbox';
 import {
   Captions,
   Counter,
@@ -19,6 +19,7 @@ import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { thumbnailSizes } from '../../helpers/thumbnailSize';
 import { thumbnailDimensions } from '../../helpers/thumbnailDimensions';
 import { theme } from '../../theme';
+import { ImageSource } from 'yet-another-react-lightbox/dist/types';
 
 export const SelectedFileView = ({
   files,
@@ -44,13 +45,13 @@ export const SelectedFileView = ({
   );
 };
 
-const filesForLightbox = (files: MinimalFile[]) => {
+const filesForLightbox = (files: MinimalFile[]): Slide[] => {
   return files.map((file) => {
     const title = file.name;
     const props =
       file.type == 'Image'
         ? {
-            srcSet: thumbnailSizes.map((size) => {
+            srcSet: thumbnailSizes.map((size): ImageSource => {
               const width = thumbnailDimensions[size];
               const height = width / (file.imageRatio ?? 1);
               return { src: imageURL(file, size), width, height };
