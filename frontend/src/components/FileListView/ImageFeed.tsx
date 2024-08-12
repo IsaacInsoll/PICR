@@ -4,7 +4,7 @@ import { imageURL } from '../../helpers/imageURL';
 import { useMemo, useState } from 'react';
 import useMeasure from 'react-use-measure';
 import { LoadingIndicator } from '../LoadingIndicator';
-import { Box, Image, Title } from '@mantine/core';
+import { Box, Image, Skeleton, Title } from '@mantine/core';
 import { Page } from '../Page';
 
 import { VideoBadge } from './VideoBadge';
@@ -52,9 +52,9 @@ const FeedItem = ({
     >
       <Box ref={ref} style={{ position: 'relative' }}>
         {!imageLoaded ? (
-          <Box style={{ height: tempHeight, ...tempBoxStyle }}>
+          <Skeleton style={{ height: tempHeight, ...tempBoxStyle }}>
             <LoadingIndicator size="large" />
-          </Box>
+          </Skeleton>
         ) : null}
         {/*<Link to={`./${file.id}`}>*/}
         <PicrImage
