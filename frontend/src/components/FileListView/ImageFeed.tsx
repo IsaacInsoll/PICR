@@ -8,6 +8,7 @@ import { Box, Image, Title } from '@mantine/core';
 import { Page } from '../Page';
 
 import { VideoBadge } from './VideoBadge';
+import { PicrImage } from '../PicrImage';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 export const ImageFeed = ({
@@ -56,13 +57,12 @@ const FeedItem = ({
           </Box>
         ) : null}
         {/*<Link to={`./${file.id}`}>*/}
-        <Image
+        <PicrImage
+          file={file}
+          size="lg"
           src={imageURL(file, 'lg')}
-          fit="contain"
-          alt={file.name}
-          onLoad={() => setImageLoaded(true)}
+          onImageLoaded={() => setImageLoaded(true)}
           onClick={() => onClick(file.id)}
-          style={{ cursor: 'pointer' }}
         />
         {/*</Link>*/}
         {file.type == 'Video' ? <VideoBadge file={file} size="xl" /> : null}
