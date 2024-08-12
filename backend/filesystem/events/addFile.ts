@@ -8,8 +8,9 @@ import { FileType } from '../../../graphql-types';
 import { getImageRatio } from '../../media/getImageRatio';
 import { getImageMetadata } from '../../media/getImageMetadata';
 import { getVideoMetadata } from '../../media/getVideoMetadata';
+import { generateAllThumbs } from '../../media/generateImageThumbnail';
 
-export const addFile = async (filePath: string) => {
+export const addFile = async (filePath: string, initComplete: boolean) => {
   const type = validExtension(filePath);
   if (!type) {
     logger(`🤷‍♂️ Ignoring ${filePath} as it's not a supported file format`);
@@ -56,7 +57,7 @@ export const addFile = async (filePath: string) => {
       file.imageRatio = await getImageRatio(filePath);
       const meta = await getImageMetadata(file);
       file.metadata = JSON.stringify(meta);
-      // generateAllThumbs(file); // will skip if thumbs exist
+      if (initComplete) generateAllThumbs(file); // will skip if thumbs exist
     }
     if (type == 'Video') {
       const meta = await getVideoMetadata(file);

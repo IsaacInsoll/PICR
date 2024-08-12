@@ -47,7 +47,7 @@ const processQueue = async (action: QueueAction, filePath: string) => {
       await removeFolder(filePath);
       break;
     case 'add':
-      await addFile(filePath);
+      await addFile(filePath, initComplete);
       break;
     case 'generateThumbnails':
       // lol, we pass an ID to this function, not a path, but it's fine, trust me!
