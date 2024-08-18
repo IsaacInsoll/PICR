@@ -26,6 +26,7 @@ import { TbInfoCircle } from 'react-icons/tb';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import { Portal } from '@mantine/core';
 
 export const SelectedFileView = ({
   files,
@@ -36,13 +37,13 @@ export const SelectedFileView = ({
   const selectedImageIndex = files.findIndex(({ id }) => id === selectedFileId);
   const selectedImage = files.find(({ id }) => id === selectedFileId);
   const ref = useRef<ControllerRef>(null);
-  const { fileView } = useParams();
+  const { fileId, fileView } = useParams();
 
   // set focus to Lightbox if there isn't a popup sub-view
   // EG: when closing metadata popup this will reallow left/right keyboard keys to change slides
   useEffect(() => {
     if (!fileView) {
-      // console.log('set focus on lightbox');
+      console.log('set focus on lightbox');
       ref.current?.focus();
     }
   }, [fileView, ref.current]);
@@ -93,7 +94,10 @@ export const SelectedFileView = ({
       on={{
         view: ({ index }) => {
           const f = files[index];
-          setFolder({ id: folderId }, f);
+          // don't change URL if we are already on that URL (IE: first opening gallery)
+          if (f.id != fileId) {
+            setFolder({ id: folderId }, f);
+          }
         },
       }}
     />

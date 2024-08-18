@@ -5,15 +5,24 @@ import {
   MRT_RowData,
   MRT_TableOptions,
   useMantineReactTable,
+  MRT_Row,
+  MRT_TableInstance,
 } from 'mantine-react-table';
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 export type PicrColumns<TData extends MRT_RowData> = MRT_ColumnDef<TData>;
+
+export interface MenuItemsProps<TData extends MRT_RowData> {
+  renderedRowIndex?: number;
+  row: MRT_Row<TData>;
+  table: MRT_TableInstance<TData>;
+}
 
 function picrGridProps<TData extends MRT_RowData>(
   columns: MRT_ColumnDef<TData>[],
   data: TData[],
   onClick: (row: TData) => void,
+  menuItems?: (props: MenuItemsProps) => ReactNode,
 ): MRT_TableOptions<TData> {
   return {
     columns,
@@ -30,6 +39,9 @@ function picrGridProps<TData extends MRT_RowData>(
       },
       style: { cursor: 'pointer' },
     }),
+    enableRowActions: !!menuItems,
+    renderRowActionMenuItems: menuItems,
+    positionActionsColumn: 'last',
   };
 }
 
@@ -37,13 +49,15 @@ export const PicrDataGrid = <TData extends MRT_RowData>({
   columns,
   data,
   onClick,
+  menuItems,
 }: {
   columns: MRT_ColumnDef<TData>[];
   data: TData[] | undefined;
   onClick: (row: TData) => void;
+  menuItems?: (props: MenuItemsProps) => ReactNode;
 }) => {
   const tableOptions = useMemo(
-    () => picrGridProps(columns, data, (row) => onClick(row)),
+    () => picrGridProps(columns, data, (row) => onClick(row), menuItems),
     [data],
   );
   const table = useMantineReactTable(tableOptions);

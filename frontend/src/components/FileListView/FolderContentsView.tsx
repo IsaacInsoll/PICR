@@ -55,6 +55,7 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
   if (!files || files.length === 0) return undefined;
   const filteredFiles = filtering ? filterFiles(files, filters) : files;
   const props = {
+    folderId,
     files: filteredFiles,
     selectedFileId: fileId,
     setSelectedFileId,
@@ -69,20 +70,23 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
       >
         {(style) => <FilteringOptions files={files} style={style} />}
       </Transition>
-      {fileId ? (
+      {fileId ? ( // SelectedFileView react lightbox 'blocks' fileinfo so we can't have them on at the same time
         <>
+          {!fileView ? (
+            <SelectedFileView
+              files={filteredFiles}
+              setSelectedFileId={setSelectedFileId}
+              selectedFileId={fileId}
+              folderId={folderId}
+            />
+          ) : null}
           {fileView == 'info' ? (
             <FileInfo
               file={fileDetails}
-              onClose={() => setFolder({ id: folderId }, fileDetails)}
+              onClose={() => history.back()}
+              // onClose={() => setFolder({ id: folderId }, fileDetails)}
             />
           ) : null}
-          <SelectedFileView
-            files={filteredFiles}
-            setSelectedFileId={setSelectedFileId}
-            selectedFileId={fileId}
-            folderId={folderId}
-          />
         </>
       ) : null}
       <Tabs value={view} onChange={setView}>

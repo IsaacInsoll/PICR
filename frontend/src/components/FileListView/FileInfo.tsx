@@ -5,7 +5,7 @@ import { MinimalFile } from '../../../types';
 import { metadataIcons } from './metadataIcons';
 import { formatValue } from './Filtering/MetadataBox';
 import prettyBytes from 'pretty-bytes';
-import { prettyDate, prettyDateNoTZ } from './Filtering/PrettyDate';
+import { prettyDate } from './Filtering/PrettyDate';
 
 export const FileInfo = ({
   file,
@@ -14,44 +14,45 @@ export const FileInfo = ({
   file: MinimalFile;
   onClose: (file: File) => void;
 }) => {
-  console.log(file);
   const isMobile = useMediaQuery('(max-width: 50em)');
 
+  console.log('fileinfo', file.name);
+
   return (
-    <>
-      <Modal
-        opened={true}
-        onClose={onClose}
-        title={'File Details: ' + file.name}
-        fullScreen={isMobile}
-        // transitionProps={{ transition: 'fade', duration: 200 }}
-      >
-        <Group style={{ width: '100%' }}>
-          <StatCard label="File size" value={prettyBytes(file.fileSize)} />
-          <StatCard label="File type" value={file.type} />
-          <StatCard
-            label="Last modified"
-            value={prettyDate(file.fileLastModified)}
-          />
-        </Group>
-        <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th colSpan={2}>Metadata</Table.Th>
+    <Modal
+      opened={true}
+      centered={true}
+      onClose={onClose}
+      title={'File Details: ' + file.name}
+      fullScreen={isMobile}
+      overlayProps={{ blur: 3 }}
+      // transitionProps={{ transition: 'fade', duration: 200 }}
+    >
+      <Group style={{ width: '100%' }}>
+        <StatCard label="File size" value={prettyBytes(file.fileSize)} />
+        <StatCard label="File type" value={file.type} />
+        <StatCard
+          label="Last modified"
+          value={prettyDate(file.fileLastModified)}
+        />
+      </Group>
+      <Table>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th colSpan={2}>Metadata</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {Object.keys(file.metadata).map((k) => (
+            <Table.Tr key={k}>
+              <Table.Td>{metadataIcons[k]}</Table.Td>
+              <Table.Td>{k}</Table.Td>
+              <Table.Td>{formatValue(k, file.metadata[k]).label}</Table.Td>
             </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {Object.keys(file.metadata).map((k) => (
-              <Table.Tr key={k}>
-                <Table.Td>{metadataIcons[k]}</Table.Td>
-                <Table.Td>{k}</Table.Td>
-                <Table.Td>{formatValue(k, file.metadata[k]).label}</Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      </Modal>
-    </>
+          ))}
+        </Table.Tbody>
+      </Table>
+    </Modal>
   );
 };
 
