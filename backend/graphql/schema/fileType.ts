@@ -8,7 +8,7 @@ import {
 } from 'graphql';
 import { metadataSummaryType } from './metadataSummaryType';
 import { fileTypeEnum } from './fileTypeEnum';
-import { GraphQLBigInt } from 'graphql-scalars';
+import { GraphQLBigInt, GraphQLDate, GraphQLDateTime } from 'graphql-scalars';
 
 const fileTypeFields = {
   id: { type: new GraphQLNonNull(GraphQLID) },
@@ -17,6 +17,7 @@ const fileTypeFields = {
   folderId: { type: new GraphQLNonNull(GraphQLID) },
   fileHash: { type: new GraphQLNonNull(GraphQLString) },
   fileSize: { type: new GraphQLNonNull(GraphQLBigInt) }, //custom BigInt as Int only goes to 2gb (32bit)
+  fileLastModified: { type: new GraphQLNonNull(GraphQLDateTime) }, //custom BigInt as Int only goes to 2gb (32bit)
 };
 
 export const fileInterface = new GraphQLInterfaceType({

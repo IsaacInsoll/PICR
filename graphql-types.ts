@@ -13,11 +13,13 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   BigInt: { input: any; output: any; }
+  DateTime: { input: any; output: any; }
 };
 
 export type File = FileInterface & {
   __typename?: 'File';
   fileHash: Scalars['String']['output'];
+  fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
@@ -27,6 +29,7 @@ export type File = FileInterface & {
 
 export type FileInterface = {
   fileHash: Scalars['String']['output'];
+  fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
@@ -64,6 +67,7 @@ export enum FolderPermissions {
 export type Image = FileInterface & {
   __typename?: 'Image';
   fileHash: Scalars['String']['output'];
+  fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
@@ -198,6 +202,7 @@ export type Video = FileInterface & {
   __typename?: 'Video';
   duration?: Maybe<Scalars['Float']['output']>;
   fileHash: Scalars['String']['output'];
+  fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];

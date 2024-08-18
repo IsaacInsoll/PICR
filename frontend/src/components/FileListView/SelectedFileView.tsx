@@ -1,5 +1,5 @@
 // The "Lightbox" appears when an individual image is selected
-import { Lightbox, Slide } from 'yet-another-react-lightbox';
+import { ControllerRef, Lightbox, Slide } from 'yet-another-react-lightbox';
 import {
   Captions,
   Counter,
@@ -24,6 +24,8 @@ import { theme } from '../../theme';
 import { ImageSource } from 'yet-another-react-lightbox/dist/types';
 import { TbInfoCircle } from 'react-icons/tb';
 import { useSetFolder } from '../../hooks/useSetFolder';
+import { useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 
 export const SelectedFileView = ({
   files,
@@ -33,6 +35,18 @@ export const SelectedFileView = ({
 }: FileListViewStyleComponentProps) => {
   const selectedImageIndex = files.findIndex(({ id }) => id === selectedFileId);
   const selectedImage = files.find(({ id }) => id === selectedFileId);
+  const ref = useRef<ControllerRef>(null);
+  const { fileView } = useParams();
+
+  // set focus to Lightbox if there isn't a popup sub-view
+  // EG: when closing metadata popup this will reallow left/right keyboard keys to change slides
+  useEffect(() => {
+    if (!fileView) {
+      // console.log('set focus on lightbox');
+      ref.current?.focus();
+    }
+  }, [fileView, ref.current]);
+
   const lightBoxStyles = {
     root: { fontFamily: theme.fontFamily, zIndex: 100 },
   };
@@ -40,6 +54,7 @@ export const SelectedFileView = ({
 
   return (
     <Lightbox
+      controller={{ ref }}
       plugins={[
         Captions,
         Counter,
@@ -77,7 +92,6 @@ export const SelectedFileView = ({
       thumbnails={{ position: 'bottom' }}
       on={{
         view: ({ index }) => {
-          console.log(index);
           const f = files[index];
           setFolder({ id: folderId }, f);
         },

@@ -11,7 +11,7 @@ import {
 import { Button, Group, Indicator, Modal, MultiSelect } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { metadataIcons } from '../metadataIcons';
-import { tz } from 'moment-timezone';
+import { prettyDateNoTZ } from './PrettyDate';
 
 export const MetadataBox = ({
   files,
@@ -144,10 +144,9 @@ export const formatValue = (
     };
 
   if (title.startsWith('DateTime')) {
-    console.log(value);
     return {
       value: value,
-      label: prettyDate(value),
+      label: prettyDateNoTZ(value),
       raw: value,
     };
   }
@@ -164,9 +163,3 @@ interface formattedValue {
   value: string;
   raw: string | number;
 }
-
-const prettyDate = (dateString: string): string => {
-  // This was tested as matching with Adobe Lightroom perfectly for both `capture time` and `export time`
-  const d = new Date(dateString);
-  return tz(d, 'YYYY-MM-DDTHH:mm:ss[Z]').format('MMMM Do YYYY, h:mm:ss a');
-};
