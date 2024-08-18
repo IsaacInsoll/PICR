@@ -22,6 +22,7 @@ import { Tabs, Transition } from '@mantine/core';
 import { Page } from '../Page';
 import { useParams } from 'react-router-dom';
 import { useSetFolder } from '../../hooks/useSetFolder';
+import { FileInfo } from './FileInfo';
 
 export interface FileListViewProps {
   files: MinimalFile[];
@@ -32,15 +33,18 @@ export interface FileListViewStyleComponentProps {
   files: MinimalFile[];
   selectedFileId?: string;
   setSelectedFileId: (id: string | undefined) => void;
+  folderId: string;
 }
 
 export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
-  const { fileId } = useParams();
+  const { fileId, fileView } = useParams();
   const setFolder = useSetFolder();
   const [view, setView] = useAtom(selectedViewAtom);
   const filtering = useAtomValue(filterAtom);
   const filters = useAtomValue(filterOptions);
   const resetFilters = useSetAtom(resetFilterOptions);
+
+  const fileDetails = fileId && files.find((f) => f.id == fileId);
 
   const setSelectedFileId = (fileId: string | undefined) => {
     const file = fileId ? { id: fileId } : undefined;
@@ -66,11 +70,20 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
         {(style) => <FilteringOptions files={files} style={style} />}
       </Transition>
       {fileId ? (
-        <SelectedFileView
-          files={filteredFiles}
-          setSelectedFileId={setSelectedFileId}
-          selectedFileId={fileId}
-        />
+        <>
+          {fileView == 'info' ? (
+            <FileInfo
+              file={fileDetails}
+              onClose={() => setFolder({ id: folderId }, fileDetails)}
+            />
+          ) : null}
+          <SelectedFileView
+            files={filteredFiles}
+            setSelectedFileId={setSelectedFileId}
+            selectedFileId={fileId}
+            folderId={folderId}
+          />
+        </>
       ) : null}
       <Tabs value={view} onChange={setView}>
         <Page>

@@ -8,8 +8,16 @@ export const useSetFolder = () => {
   const navigate = useNavigate();
   const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const baseUrl = useBaseViewFolderURL();
-  return (folder: MinimalFolder, file?: Pick<MinimalFile, 'id'>) => {
+  return (
+    folder: MinimalFolder,
+    file?: Pick<MinimalFile, 'id'>,
+    fileView?: fileViewType,
+  ) => {
     setPlaceholderFolder({ ...folder });
-    navigate(baseUrl + folder.id + (file ? `/${file.id}` : ''));
+    const base = baseUrl + folder.id;
+    const f = file ? `/${file.id}` + (fileView ? `/${fileView}` : '') : '';
+    navigate(base + f);
   };
 };
+
+export type fileViewType = 'info' | undefined;

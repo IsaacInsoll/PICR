@@ -5,13 +5,15 @@ import {
   Counter,
   Download,
   Fullscreen,
-  FullScreen,
+  Slideshow,
+  Thumbnails,
   Video,
 } from 'yet-another-react-lightbox/plugins';
 
 import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/counter.css';
+import 'yet-another-react-lightbox/plugins/thumbnails.css';
 
 import { MinimalFile } from '../../../types';
 import { imageURL } from '../../helpers/imageURL';
@@ -20,19 +22,33 @@ import { thumbnailSizes } from '../../helpers/thumbnailSize';
 import { thumbnailDimensions } from '../../helpers/thumbnailDimensions';
 import { theme } from '../../theme';
 import { ImageSource } from 'yet-another-react-lightbox/dist/types';
+import { TbInfoCircle } from 'react-icons/tb';
+import { useSetFolder } from '../../hooks/useSetFolder';
 
 export const SelectedFileView = ({
   files,
   selectedFileId,
   setSelectedFileId,
+  folderId,
 }: FileListViewStyleComponentProps) => {
   const selectedImageIndex = files.findIndex(({ id }) => id === selectedFileId);
-  const lightBoxStyles = { root: { fontFamily: theme.fontFamily } };
+  const selectedImage = files.find(({ id }) => id === selectedFileId);
+  const lightBoxStyles = {
+    root: { fontFamily: theme.fontFamily, zIndex: 100 },
+  };
+  const setFolder = useSetFolder();
 
-  console.log(filesForLightbox(files));
   return (
     <Lightbox
-      plugins={[Captions, Counter, Download, Fullscreen, Video]}
+      plugins={[
+        Captions,
+        Counter,
+        Download,
+        Fullscreen,
+        Slideshow,
+        Thumbnails,
+        Video,
+      ]}
       // captions={{ showToggle: true }} // no point as other UI is still on screen
       counter={{ container: { style: { top: 'unset', bottom: 0 } } }}
       slides={filesForLightbox(files)}
@@ -41,6 +57,31 @@ export const SelectedFileView = ({
       close={() => setSelectedFileId(undefined)}
       styles={lightBoxStyles}
       video={{ autoPlay: true, muted: false }}
+      toolbar={{
+        buttons: [
+          'download',
+          <button
+            key="my-button"
+            type="button"
+            className="yarl__button"
+            onClick={() => {
+              setFolder({ id: folderId }, selectedImage, 'info');
+            }}
+          >
+            <TbInfoCircle size="28" />
+          </button>,
+          'slideshow',
+          'close',
+        ],
+      }}
+      thumbnails={{ position: 'bottom' }}
+      on={{
+        view: ({ index }) => {
+          console.log(index);
+          const f = files[index];
+          setFolder({ id: folderId }, f);
+        },
+      }}
     />
   );
 };

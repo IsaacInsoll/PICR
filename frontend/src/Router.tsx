@@ -12,7 +12,10 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
       <Route path="/s/:uuid/:folderId/:fileId?" element={<ViewFolder />} />
       {loggedIn ? (
         <>
-          <Route path="/admin/f/:folderId/:fileId?" element={<ViewFolder />} />
+          <Route
+            path="/admin/f/:folderId/:fileId?/:fileView?"
+            element={<ViewFolder />}
+          />
           <Route path="/admin/users/:userId?" element={<ManageUsers />} />
           <Route path="/" element={<HomePage />} />
         </>

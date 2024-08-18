@@ -96,14 +96,6 @@ export const ViewFolderBody = ({
     );
   }
   if (hasFiles) {
-    //   //it's crap UX if you can change the 'view' but there is nothing to see
-    //   actions.push(
-    //     <ViewSelector
-    //       managing={managing}
-    //       toggleManaging={toggleManaging}
-    //       key="viewselector"
-    //     />,
-    //   );
     actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
   }
   if (hasFiles || hasFolders)
