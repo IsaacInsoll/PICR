@@ -1,6 +1,6 @@
 {
   "name": "picr",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "",
   "main": "backend/server.ts",
   "scripts": {
