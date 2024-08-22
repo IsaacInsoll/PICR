@@ -152,8 +152,8 @@ export const formatValue = (
   }
 
   return {
-    value: value.toString(),
-    label: value.toString(),
+    value: value ? value.toString() : '',
+    label: value ? value.toString() : '',
     raw: value,
   };
 };
