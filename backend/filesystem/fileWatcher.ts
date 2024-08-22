@@ -35,21 +35,21 @@ export const fileWatcher = async () => {
   watcher
     .on('add', (path) => {
       logger('➕ ' + path);
-      addToQueue('add', path);
+      addToQueue('add', { path });
     })
     // .on('change', path => log('✖️ ' + path))
     // .on('unlink', path => log('➖ ' + path))
     .on('error', (error) => console.log('⚠️ Error happened: ' + error))
     .on('addDir', (path) => {
       logger(`📁➕ ${relativePath(path)}`);
-      addToQueue('addDir', path, true);
+      addToQueue('addDir', { path }, true);
     })
     .on('unlinkDir', (path) => {
       logger(`📁➖ ${relativePath(path)}`);
-      addToQueue('unlinkDir', path, true);
+      addToQueue('unlinkDir', { path }, true);
     })
     .on('ready', () => {
-      addToQueue('initComplete', '');
+      addToQueue('initComplete', {});
     });
 };
 

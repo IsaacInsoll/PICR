@@ -19,39 +19,45 @@ let queueDone = 0;
 let queueTotal = 0;
 let initComplete = false;
 
+interface QueuePayload {
+  path?: string;
+  generateThumbs?: boolean;
+  id?: string;
+}
+
 export const addToQueue = (
   action: QueueAction,
-  filePath: string,
+  payload: QueuePayload,
   priority?: boolean,
 ) => {
   queueTotal++;
   if (queue) {
     if (priority) {
-      queue = processQueue(action, filePath).then(queue);
+      queue = processQueue(action, payload).then(queue);
     } else {
-      queue = queue.then(() => processQueue(action, filePath));
+      queue = queue.then(() => processQueue(action, payload));
     }
   } else {
     queueTotal = 1;
     queueDone = 0;
-    queue = processQueue(action, filePath);
+    queue = processQueue(action, payload);
   }
 };
 
-const processQueue = async (action: QueueAction, filePath: string) => {
+const processQueue = async (action: QueueAction, payload: QueuePayload) => {
   switch (action) {
     case 'addDir':
-      await addFolder(filePath);
+      await addFolder(payload.path);
       break;
     case 'unlinkDir':
-      await removeFolder(filePath);
+      await removeFolder(payload.path);
       break;
     case 'add':
-      await addFile(filePath, initComplete);
+      await addFile(payload.path, payload.generateThumbs);
       break;
     case 'generateThumbnails':
       // lol, we pass an ID to this function, not a path, but it's fine, trust me!
-      await generateAllThumbs(await File.findByPk(filePath));
+      await generateAllThumbs(await File.findByPk(payload.id));
       break;
     case 'initComplete':
       initComplete = true;

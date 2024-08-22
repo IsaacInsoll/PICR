@@ -15,6 +15,6 @@ export const generateThumbnails = async (_, params, context) => {
   const where = { folderId: folderIds };
   const ids = await File.findAll({ where, attributes: ['id'] });
   // console.log(ids);
-  ids?.map((id) => addToQueue('generateThumbnails', id.id));
+  ids?.map((id) => addToQueue('generateThumbnails', { id: id.id }));
   return true;
 };

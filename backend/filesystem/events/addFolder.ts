@@ -10,7 +10,7 @@ export const setupRootFolder = async () => {
   // const totalFolders = await Folder.count();
   const [root] = await Folder.findOrCreate({
     where: { parentId: null },
-    defaults: { name: 'Home' },
+    defaults: { name: 'Home', exists: true },
   });
   rootFolder = root;
   return root;
