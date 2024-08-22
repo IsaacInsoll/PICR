@@ -75,6 +75,7 @@ const server = async () => {
     dialectModule: pg,
     logging: picrConfig.debugSql,
     models: [__dirname + '/models'],
+    pool: { max: 50 }, //default max is 5, postgres default limit is 100
   });
 
   await envSecret();
