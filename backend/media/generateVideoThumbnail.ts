@@ -38,17 +38,33 @@ const processVideoThumbnail = async (
     .map((_, index) => (index / numberOfVideoSnapshots) * Duration);
 
   return new Promise((resolve) => {
-    ffmpegForFile(file)
-      .on('end', () => {
-        // console.log('⏸️ Screenshots done for ' + file.name + ' ' + size);
-        resolve(null);
-      })
-      .takeScreenshots({
-        filename: size + '.jpg',
-        timemarks,
-        folder: outFile,
-        size: px + 'x' + Math.round(px / file.imageRatio), //size eg: '150x100',
-      });
+    try {
+      ffmpegForFile(file)
+        .on('end', () => {
+          // console.log('⏸️ Screenshots done for ' + file.name + ' ' + size);
+          resolve(null);
+        })
+        .on('error', (e) => {
+          console.log(
+            'Error generating video thumbnails for ' + file.name + ' ' + size,
+          );
+          console.log(e);
+        })
+        .takeScreenshots({
+          filename: size + '.jpg',
+          timemarks,
+          folder: outFile,
+          size: px + 'x' + Math.round(px / file.imageRatio), //size eg: '150x100',
+        });
+    } catch (e) {
+      console.log(
+        'Caught error generating video thumbnails for ' +
+          file.name +
+          ' ' +
+          size,
+      );
+      console.log(e);
+    }
   });
 };
 
