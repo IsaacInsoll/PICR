@@ -1,6 +1,6 @@
 import chokidar from 'chokidar';
 import { directoryPath, relativePath } from './fileManager';
-import { addToQueue, initComplete } from './fileQueue';
+import { addToQueue } from './fileQueue';
 import { logger } from '../logger';
 import { picrConfig } from '../server';
 import File from '../models/File';
@@ -35,7 +35,7 @@ export const fileWatcher = async () => {
   watcher
     .on('add', (path) => {
       logger('➕ ' + path);
-      addToQueue('add', path, { initComplete: initComplete });
+      addToQueue('add', path);
     })
     // .on('change', path => log('✖️ ' + path))
     // .on('unlink', path => log('➖ ' + path))
