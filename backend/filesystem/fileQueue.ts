@@ -17,7 +17,7 @@ type QueueAction =
 let queue = null;
 let queueDone = 0;
 let queueTotal = 0;
-let initComplete = false;
+export let initComplete = false;
 
 export const addToQueue = (
   action: QueueAction,
@@ -38,7 +38,11 @@ export const addToQueue = (
   }
 };
 
-const processQueue = async (action: QueueAction, filePath: string) => {
+const processQueue = async (
+  action: QueueAction,
+  filePath: string,
+  options?: { initComplete: boolean } | undefined,
+) => {
   switch (action) {
     case 'addDir':
       await addFolder(filePath);
@@ -47,7 +51,7 @@ const processQueue = async (action: QueueAction, filePath: string) => {
       await removeFolder(filePath);
       break;
     case 'add':
-      await addFile(filePath, initComplete);
+      await addFile(filePath, options?.initComplete);
       break;
     case 'generateThumbnails':
       // lol, we pass an ID to this function, not a path, but it's fine, trust me!
