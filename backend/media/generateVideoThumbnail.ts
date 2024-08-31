@@ -49,6 +49,7 @@ const processVideoThumbnail = async (
             'Error generating video thumbnails for ' + file.name + ' ' + size,
           );
           console.log(e);
+          resolve(null);
         })
         .takeScreenshots({
           filename: size + '.jpg',
