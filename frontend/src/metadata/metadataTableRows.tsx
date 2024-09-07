@@ -75,7 +75,9 @@ export const MetadataTableRows = (file: MinimalFile) => {
         <Table.Tr key={description}>
           <Table.Td>{icon ?? metadataIcons[description]}</Table.Td>
           <Table.Td>
-            <Text c="dimmed">{description}</Text>
+            <Text c="dimmed" style={{ fontSize: 11 }}>
+              {description}
+            </Text>
           </Table.Td>
           <Table.Td>{label}</Table.Td>
         </Table.Tr>

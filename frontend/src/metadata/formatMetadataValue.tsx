@@ -35,5 +35,13 @@ export const formatMetadataValue = (
     data.label = humanizeDuration(value * 1000, { round: true });
   }
 
+  if (title === 'Framerate')
+    data.label = value ? (
+      <>
+        {value}
+        <sub>/s</sub>
+      </>
+    ) : null;
+
   return data;
 };
