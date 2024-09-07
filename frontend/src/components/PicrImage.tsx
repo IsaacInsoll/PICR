@@ -25,13 +25,13 @@ export const PicrImage = ({
   return (
     <picture>
       <source srcSet={imageURL(file, size, '.avif')} type="image/avif" />
-      {!loaded ? (
+      {!loaded && file.blurHash ? (
         <Blurhash
           hash={file.blurHash}
           style={{ ...style, cursor: 'pointer' }}
           resolutionX={32}
           resolutionY={32}
-          punch={0.5}
+          punch={1}
         />
       ) : null}
       <Image

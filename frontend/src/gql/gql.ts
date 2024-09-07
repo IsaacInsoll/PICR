@@ -14,11 +14,12 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n    }\n  }\n": types.MeQueryDocument,
-    "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
+    "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n    parents {\n      id\n      name\n    }\n  }\n": types.FolderFragmentFragmentDoc,
     "\n  fragment ImageMetadataFragment on Image {\n    ... on Image {\n      metadata {\n        Camera\n        Lens\n        Artist\n        DateTimeOriginal\n        DateTimeEdit\n        Aperture\n        ExposureTime\n        ISO\n      }\n    }\n  }\n": types.ImageMetadataFragmentFragmentDoc,
     "\n  fragment MinimumFolderFragment on Folder {\n    id\n    name\n    parentId\n  }\n": types.MinimumFolderFragmentFragmentDoc,
     "\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n": types.UserFragmentFragmentDoc,
+    "\n  fragment VideoMetadataFragment on Video {\n    ... on Video {\n      metadata {\n        Bitrate\n        Duration\n        Format\n        VideoCodec\n        VideoCodecDescription\n        Width\n        Height\n        Framerate\n        AudioCodec\n        AudioCodecDescription\n      }\n    }\n  }\n": types.VideoMetadataFragmentFragmentDoc,
     "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
     "\n  mutation EditUserMutation(\n    $id: ID\n    $name: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n    ) {\n      ...UserFragment\n    }\n  }\n": types.EditUserMutationDocument,
     "\n  mutation EditAdminUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $password: String\n    $enabled: Boolean\n    $folderId: ID\n  ) {\n    editAdminUser(\n      id: $id\n      name: $name\n      username: $username\n      password: $password\n      enabled: $enabled\n      folderId: $folderId\n    ) {\n      ...UserFragment\n    }\n  }\n": types.EditAdminUserMutationDocument,
@@ -54,7 +55,7 @@ export function graphql(source: "\n  query MeQuery {\n    me {\n      id\n      
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n"): (typeof documents)["\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n"];
+export function graphql(source: "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n"): (typeof documents)["\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -71,6 +72,10 @@ export function graphql(source: "\n  fragment MinimumFolderFragment on Folder {\
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment VideoMetadataFragment on Video {\n    ... on Video {\n      metadata {\n        Bitrate\n        Duration\n        Format\n        VideoCodec\n        VideoCodecDescription\n        Width\n        Height\n        Framerate\n        AudioCodec\n        AudioCodecDescription\n      }\n    }\n  }\n"): (typeof documents)["\n  fragment VideoMetadataFragment on Video {\n    ... on Video {\n      metadata {\n        Bitrate\n        Duration\n        Format\n        VideoCodec\n        VideoCodecDescription\n        Width\n        Height\n        Framerate\n        AudioCodec\n        AudioCodecDescription\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

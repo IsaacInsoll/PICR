@@ -25,6 +25,7 @@
     "eslint": "^8.57.0",
     "format-duration": "^3.0.2",
     "graphql": "^16.8.1",
+    "humanize-duration": "^3.32.1",
     "jotai": "^2.6.5",
     "lodash": "^4.17.21",
     "mantine-datatable": "^7.11.1",

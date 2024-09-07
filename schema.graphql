@@ -62,12 +62,12 @@ type Image implements FileInterface {
   folderId: ID!
   id: ID!
   imageRatio: Float
-  metadata: MetadataSummary
+  metadata: ImageMetadataSummary
   name: String!
   type: FileType!
 }
 
-type MetadataSummary {
+type ImageMetadataSummary {
   Aperture: Float
   Artist: String
   Camera: String
@@ -125,7 +125,20 @@ type Video implements FileInterface {
   folderId: ID!
   id: ID!
   imageRatio: Float
-  metadata: MetadataSummary
+  metadata: VideoMetadataSummary
   name: String!
   type: FileType!
+}
+
+type VideoMetadataSummary {
+  AudioCodec: String
+  AudioCodecDescription: String
+  Bitrate: Int
+  Duration: Float
+  Format: String
+  Framerate: Float
+  Height: Int
+  VideoCodec: String
+  VideoCodecDescription: String
+  Width: Int
 }

@@ -6,9 +6,10 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { metadataSummaryType } from './metadataSummaryType';
+import { imageMetadataSummaryType } from './imageMetadataSummaryType';
 import { fileTypeEnum } from './fileTypeEnum';
 import { GraphQLBigInt, GraphQLDate, GraphQLDateTime } from 'graphql-scalars';
+import { videoMetadataSummaryType } from './videoMetadataSummaryType';
 
 const fileTypeFields = {
   id: { type: new GraphQLNonNull(GraphQLID) },
@@ -37,7 +38,7 @@ export const imageFileType = new GraphQLObjectType({
   fields: {
     ...fileTypeFields,
     imageRatio: { type: GraphQLFloat },
-    metadata: { type: metadataSummaryType },
+    metadata: { type: imageMetadataSummaryType },
     blurHash: { type: new GraphQLNonNull(GraphQLString) },
   },
 });
@@ -48,7 +49,7 @@ export const videoFileType = new GraphQLObjectType({
   fields: {
     ...fileTypeFields,
     imageRatio: { type: GraphQLFloat },
-    metadata: { type: metadataSummaryType },
+    metadata: { type: videoMetadataSummaryType },
     duration: { type: GraphQLFloat },
   },
 });

@@ -1,8 +1,8 @@
 import { GraphQLFloat, GraphQLObjectType, GraphQLString } from 'graphql';
 
 //TODO: *NOT* capitalize these, that's just how they popped out of the exif reader, lol 🤪
-export const metadataSummaryType = new GraphQLObjectType({
-  name: 'MetadataSummary',
+export const imageMetadataSummaryType = new GraphQLObjectType({
+  name: 'ImageMetadataSummary',
   fields: () => ({
     Camera: { type: GraphQLString },
     Lens: { type: GraphQLString },

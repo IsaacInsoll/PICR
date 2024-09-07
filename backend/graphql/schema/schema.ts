@@ -5,13 +5,14 @@ import {
   imageFileType,
   videoFileType,
 } from './fileType';
-import { metadataSummaryType } from './metadataSummaryType';
+import { imageMetadataSummaryType } from './imageMetadataSummaryType';
 import { folderPermissionsType } from './folderPermissionsType';
 import { userType } from './userType';
 import { folderType } from './folderType';
 import { queryType } from './queryType';
 import { mutationType } from './mutationType';
 import { taskType } from './taskType';
+import { videoMetadataSummaryType } from './videoMetadataSummaryType';
 
 export const schema = new GraphQLSchema({
   query: queryType,
@@ -23,7 +24,8 @@ export const schema = new GraphQLSchema({
     imageFileType,
     videoFileType,
     folderPermissionsType,
-    metadataSummaryType,
+    imageMetadataSummaryType,
+    videoMetadataSummaryType,
     userType,
     taskType,
   ],

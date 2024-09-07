@@ -73,13 +73,13 @@ export type Image = FileInterface & {
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;
-  metadata?: Maybe<MetadataSummary>;
+  metadata?: Maybe<ImageMetadataSummary>;
   name: Scalars['String']['output'];
   type: FileType;
 };
 
-export type MetadataSummary = {
-  __typename?: 'MetadataSummary';
+export type ImageMetadataSummary = {
+  __typename?: 'ImageMetadataSummary';
   Aperture?: Maybe<Scalars['Float']['output']>;
   Artist?: Maybe<Scalars['String']['output']>;
   Camera?: Maybe<Scalars['String']['output']>;
@@ -208,7 +208,21 @@ export type Video = FileInterface & {
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;
-  metadata?: Maybe<MetadataSummary>;
+  metadata?: Maybe<VideoMetadataSummary>;
   name: Scalars['String']['output'];
   type: FileType;
+};
+
+export type VideoMetadataSummary = {
+  __typename?: 'VideoMetadataSummary';
+  AudioCodec?: Maybe<Scalars['String']['output']>;
+  AudioCodecDescription?: Maybe<Scalars['String']['output']>;
+  Bitrate?: Maybe<Scalars['Int']['output']>;
+  Duration?: Maybe<Scalars['Float']['output']>;
+  Format?: Maybe<Scalars['String']['output']>;
+  Framerate?: Maybe<Scalars['Float']['output']>;
+  Height?: Maybe<Scalars['Int']['output']>;
+  VideoCodec?: Maybe<Scalars['String']['output']>;
+  VideoCodecDescription?: Maybe<Scalars['String']['output']>;
+  Width?: Maybe<Scalars['Int']['output']>;
 };

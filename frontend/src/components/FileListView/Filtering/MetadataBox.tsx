@@ -1,7 +1,10 @@
 import { MinimalFile } from '../../../../types';
 import { MetadataOptionsForFiltering } from '../../../helpers/metadataForFiltering';
 import { MdOutlineCameraRoll } from 'react-icons/md';
-import { MetadataSummary } from '../../../gql/graphql';
+import {
+  ImageMetadataSummary,
+  VideoMetadataSummary,
+} from '../../../gql/graphql';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai/index';
 import {
   filterOptions,
@@ -12,6 +15,10 @@ import { Button, Group, Indicator, Modal, MultiSelect } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { metadataIcons } from '../metadataIcons';
 import { prettyDateNoTZ } from './PrettyDate';
+import prettyBytes from 'pretty-bytes';
+import humanizeDuration from 'humanize-duration';
+
+type AnyMetadataKey = keyof ImageMetadataSummary | typeof VideoMetadataSummary;
 
 export const MetadataBox = ({
   files,
@@ -38,7 +45,7 @@ export const MetadataBox = ({
           return (
             <MetadataSelect
               key={title}
-              title={title as keyof MetadataSummary}
+              title={title as AnyMetadataKey}
               options={options}
             />
           );
@@ -77,7 +84,7 @@ const MetadataSelect = ({
   title,
   options,
 }: {
-  title: keyof MetadataSummary;
+  title: AnyMetadataKey;
   options: (string | number)[];
 }) => {
   const [fo, setFo] = useAtom(filterOptions);
@@ -119,14 +126,14 @@ const MetadataSelect = ({
 };
 
 const formatValues = (
-  title: keyof MetadataSummary,
+  title: AnyMetadataKey,
   options: (string | number)[],
 ): formattedValue[] => {
   return options.map((o) => formatValue(title, o));
 };
 
 export const formatValue = (
-  title: keyof MetadataSummary,
+  title: AnyMetadataKey,
   value: string | number,
 ): formattedValue => {
   if (title === 'Aperture')
@@ -151,6 +158,18 @@ export const formatValue = (
     };
   }
 
+  if (title === 'Bitrate')
+    return {
+      value: value ? value.toString() : '',
+      label: value ? prettyBytes(value, { bits: true }) : '',
+      raw: value,
+    };
+  if (title === 'Duration' && value) {
+    return {
+      value: value ? value.toString() : '',
+      label: humanizeDuration(value * 1000, { round: true }),
+    };
+  }
   return {
     value: value ? value.toString() : '',
     label: value ? value.toString() : '',
