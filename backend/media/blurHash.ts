@@ -2,7 +2,7 @@ import sharp from 'sharp';
 import { encode } from 'blurhash';
 
 //from https://github.com/woltapp/blurhash/issues/43#issuecomment-597674435
-export const encodeImageToBlurhash: Promise<string> = (path) =>
+export const encodeImageToBlurhash = (path): Promise<string> =>
   new Promise((resolve, reject) => {
     sharp(path)
       .raw()
