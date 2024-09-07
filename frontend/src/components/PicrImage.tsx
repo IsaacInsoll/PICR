@@ -32,7 +32,7 @@ export const PicrImage = ({
         onClick={() => {
           if (onClick) onClick(file);
         }}
-        style={{ ...style, cursor: onClick ? 'pointer' : undefined }}
+        style={{ ...style, cursor: 'pointer' }}
         loading="lazy"
       />
     </picture>
