@@ -66,6 +66,7 @@ export enum FolderPermissions {
 
 export type Image = FileInterface & {
   __typename?: 'Image';
+  blurHash: Scalars['String']['output'];
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];

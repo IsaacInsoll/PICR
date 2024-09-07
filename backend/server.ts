@@ -114,6 +114,7 @@ const server = async () => {
       const { id, size, hash, filename } = req.params;
       const file = await File.findOne({ where: { id, fileHash: hash } });
       if (!file) res.sendStatus(404);
+      if (file.type == 'File') res.sendStatus(404);
       if (!allSizes.includes(size)) res.sendStatus(400);
       const extension = extname(filename);
       const fp = fullPathFor(file, size, extension);

@@ -15,6 +15,7 @@ export const fileFragment = gql(/* GraphQL */ `
     }
     ... on Image {
       imageRatio
+      blurHash
       ...ImageMetadataFragment
     }
   }

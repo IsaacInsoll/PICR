@@ -55,6 +55,7 @@ enum FolderPermissions {
 }
 
 type Image implements FileInterface {
+  blurHash: String!
   fileHash: String!
   fileLastModified: DateTime!
   fileSize: BigInt!

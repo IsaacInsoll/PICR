@@ -14,7 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n    }\n  }\n": types.MeQueryDocument,
-    "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n    }\n    ... on Image {\n      imageRatio\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
+    "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n    parents {\n      id\n      name\n    }\n  }\n": types.FolderFragmentFragmentDoc,
     "\n  fragment ImageMetadataFragment on Image {\n    ... on Image {\n      metadata {\n        Camera\n        Lens\n        Artist\n        DateTimeOriginal\n        DateTimeEdit\n        Aperture\n        ExposureTime\n        ISO\n      }\n    }\n  }\n": types.ImageMetadataFragmentFragmentDoc,
     "\n  fragment MinimumFolderFragment on Folder {\n    id\n    name\n    parentId\n  }\n": types.MinimumFolderFragmentFragmentDoc,
@@ -54,7 +54,7 @@ export function graphql(source: "\n  query MeQuery {\n    me {\n      id\n      
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n    }\n    ... on Image {\n      imageRatio\n      ...ImageMetadataFragment\n    }\n  }\n"): (typeof documents)["\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n    }\n    ... on Image {\n      imageRatio\n      ...ImageMetadataFragment\n    }\n  }\n"];
+export function graphql(source: "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n"): (typeof documents)["\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    ... on Video {\n      imageRatio\n      duration\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

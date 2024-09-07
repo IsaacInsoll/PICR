@@ -9,6 +9,7 @@ import { getImageRatio } from '../../media/getImageRatio';
 import { getImageMetadata } from '../../media/getImageMetadata';
 import { getVideoMetadata } from '../../media/getVideoMetadata';
 import { generateAllThumbs } from '../../media/generateImageThumbnail';
+import { blurHashFile, encodeImageToBlurhash } from '../../media/blurHash';
 
 export const addFile = async (filePath: string, generateThumbs: boolean) => {
   const type = validExtension(filePath);
@@ -41,7 +42,12 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
   if (modified) {
     console.log([file.fileLastModified, 'not', stats.mtime]);
   }
-  if (created || !file.fileHash || modified) {
+  if (
+    created ||
+    !file.fileHash ||
+    modified ||
+    (file.type == 'Image' && !file.blurHash) //TODO: remove this condition once everybody has 'upgraded' to blurhashes
+  ) {
     logger(
       (created
         ? 'New File: '
@@ -57,6 +63,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
       file.imageRatio = await getImageRatio(filePath);
       const meta = await getImageMetadata(file);
       file.metadata = JSON.stringify(meta);
+      file.blurHash = await encodeImageToBlurhash(filePath);
       if (generateThumbs) generateAllThumbs(file); // will skip if thumbs exist
     }
     if (type == 'Video') {

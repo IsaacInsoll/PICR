@@ -16,6 +16,9 @@ export default class File extends Model {
   declare name: string;
   @Column
   declare fileHash: string;
+
+  @Column
+  declare blurHash: string; // string for Images describing its 'micro thumbnail' https://www.npmjs.com/package/blurhash
   @Column
   declare relativePath: string;
 
