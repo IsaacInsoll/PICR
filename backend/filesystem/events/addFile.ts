@@ -9,7 +9,7 @@ import { getImageRatio } from '../../media/getImageRatio';
 import { getImageMetadata } from '../../media/getImageMetadata';
 import { getVideoMetadata } from '../../media/getVideoMetadata';
 import { generateAllThumbs } from '../../media/generateImageThumbnail';
-import { blurHashFile, encodeImageToBlurhash } from '../../media/blurHash';
+import { encodeImageToBlurhash } from '../../media/blurHash';
 
 export const addFile = async (filePath: string, generateThumbs: boolean) => {
   const type = validExtension(filePath);
