@@ -1,13 +1,36 @@
 import { ReactNode } from 'react';
 import { BsCamera, BsCamera2 } from 'react-icons/bs';
-import { MdCameraRoll, MdOutlineShutterSpeed } from 'react-icons/md';
+import {
+  MdCameraRoll,
+  MdOutlineNetworkCheck,
+  MdOutlineShutterSpeed,
+  MdSpeed,
+} from 'react-icons/md';
 import { IoApertureOutline } from 'react-icons/io5';
-import { MetadataSummary } from '../../../../graphql-types';
-import { TbCalendar, TbCalendarBolt } from 'react-icons/tb';
+import {
+  ImageMetadataSummary,
+  VideoMetadataSummary,
+} from '../../../../graphql-types';
+import {
+  TbArrowAutofitHeight,
+  TbArrowAutofitWidth,
+  TbAspectRatio,
+  TbBrandSpeedtest,
+  TbCalendar,
+  TbCalendarBolt,
+  TbClock,
+  TbFile,
+  TbPhotoVideo,
+  TbVolume,
+} from 'react-icons/tb';
 import { LiaSignatureSolid } from 'react-icons/lia';
 
-export const metadataIcons: Record<keyof MetadataSummary, ReactNode> = {
+export const metadataIcons: Record<
+  keyof ImageMetadataSummary | keyof VideoMetadataSummary,
+  ReactNode
+> = {
   __typename: null,
+  //PHOTO
   Camera: <BsCamera />,
   Lens: <BsCamera2 />,
   ISO: <MdCameraRoll />,
@@ -16,4 +39,23 @@ export const metadataIcons: Record<keyof MetadataSummary, ReactNode> = {
   Artist: <LiaSignatureSolid />,
   DateTimeEdit: <TbCalendarBolt />,
   DateTimeOriginal: <TbCalendar />,
+  //VIDEO
+  Audio: <TbVolume />,
+  Framerate: <TbBrandSpeedtest />,
+  Height: <TbArrowAutofitHeight />,
+  Width: <TbArrowAutofitWidth />,
+  Video: <TbPhotoVideo />,
+  Format: <TbFile />,
+  Duration: <TbClock />,
+  Bitrate: <MdOutlineNetworkCheck />,
+  AspectRatio: <TbAspectRatio />,
 } as const;
+
+export const metadataDescription: Record<
+  keyof ImageMetadataSummary | keyof VideoMetadataSummary,
+  string
+> = {
+  ExposureTime: 'Shutter Speed',
+  DateTimeEdit: 'Last Edited',
+  DateTimeOriginal: 'Created',
+};

@@ -3,10 +3,11 @@ import { Box, Card, Group, Modal, Table, Text } from '@mantine/core';
 import { MinimalFile } from '../../../types';
 
 import { metadataIcons } from './metadataIcons';
-import { formatValue } from './Filtering/MetadataBox';
 import prettyBytes from 'pretty-bytes';
 import { prettyDate } from './Filtering/PrettyDate';
 import { PicrImage } from '../PicrImage';
+import { formatMetadataValue } from '../../metadata/formatMetadataValue';
+import { MetadataTableRows } from '../../metadata/metadataTableRows';
 
 export const FileInfo = ({
   file,
@@ -16,8 +17,6 @@ export const FileInfo = ({
   onClose: (file: File) => void;
 }) => {
   const isMobile = useMediaQuery('(max-width: 50em)');
-
-  console.log('fileinfo', file.name);
 
   return (
     <Modal
@@ -31,7 +30,7 @@ export const FileInfo = ({
     >
       {file.type == 'Image' || file.type == 'Video' ? (
         <Box mb={16}>
-          <PicrImage file={file} size="md" />
+          <PicrImage file={file} size="md" clickable={false} />
         </Box>
       ) : null}
       <Group style={{ width: '100%' }}>
@@ -49,19 +48,7 @@ export const FileInfo = ({
               <Table.Th colSpan={2}>Metadata</Table.Th>
             </Table.Tr>
           </Table.Thead>
-          <Table.Tbody>
-            {Object.keys(file.metadata).map((k) => (
-              <Table.Tr key={k}>
-                <Table.Td>{metadataIcons[k]}</Table.Td>
-                <Table.Td>{k}</Table.Td>
-                <Table.Td>
-                  {file.metadata && file.metadata[k]
-                    ? formatValue(k, file.metadata[k]).label
-                    : ''}
-                </Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
+          <Table.Tbody>{MetadataTableRows(file)}</Table.Tbody>
         </Table>
       ) : null}
     </Modal>

@@ -1,5 +1,9 @@
 import { MetadataSummary } from './src/gql/graphql';
-import { FileType } from '../graphql-types';
+import {
+  FileType,
+  ImageMetadataSummary,
+  VideoMetadataSummary,
+} from '../graphql-types';
 
 export interface MinimalFolder {
   id: string;
@@ -15,7 +19,7 @@ export interface MinimalFile {
   fileHash?: string;
   imageRatio?: number | null;
   duration?: number | null;
-  metadata?: MetadataSummary | null;
+  metadata?: ImageMetadataSummary | VideoMetadataSummary | null;
   fileSize?: number | null;
   type: FileType;
 }

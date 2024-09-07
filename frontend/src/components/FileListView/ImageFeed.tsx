@@ -63,6 +63,7 @@ const FeedItem = ({
           src={imageURL(file, 'lg')}
           onImageLoaded={() => setImageLoaded(true)}
           onClick={() => onClick(file.id)}
+          clickable={true}
         />
         {/*</Link>*/}
         {file.type == 'Video' ? <VideoBadge file={file} size="xl" /> : null}

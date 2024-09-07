@@ -52,7 +52,14 @@ const GalleryImage = (props: GalleryImageProps) => {
   if (file.type == 'Video') {
     return <GalleryVideo {...props} />;
   }
-  return <PicrImage style={props.imageProps.style} file={file} size="md" />;
+  return (
+    <PicrImage
+      style={props.imageProps.style}
+      file={file}
+      size="md"
+      clickable={true}
+    />
+  );
 };
 
 const GalleryVideo = (props) => {

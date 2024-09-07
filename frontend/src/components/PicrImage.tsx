@@ -11,6 +11,7 @@ interface PicrImageProps {
   onClick?: (file: File) => void;
   onImageLoaded?: (file: File) => void;
   style?: MantineStyleProps;
+  clickable?: boolean; // for some reason onClick existing doesn't work
 }
 export const PicrImage = ({
   file,
@@ -18,6 +19,7 @@ export const PicrImage = ({
   onClick,
   onImageLoaded,
   style,
+  clickable,
 }: PicrImageProps) => {
   //<Image> is a mantine object that is pretty much an <img> tag
   //<picture> is HTML5 that allows you to specify multiple sources for a child image tag
@@ -45,7 +47,7 @@ export const PicrImage = ({
         onClick={() => {
           if (onClick) onClick(file);
         }}
-        style={{ ...style, cursor: 'pointer' }}
+        style={{ ...style, cursor: clickable ? 'pointer' : undefined }}
         loading="lazy"
       />
     </picture>
