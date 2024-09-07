@@ -1,11 +1,12 @@
 import { useMediaQuery } from '@mantine/hooks';
-import { Card, Group, Modal, Table, Text } from '@mantine/core';
+import { Box, Card, Group, Modal, Table, Text } from '@mantine/core';
 import { MinimalFile } from '../../../types';
 
 import { metadataIcons } from './metadataIcons';
 import { formatValue } from './Filtering/MetadataBox';
 import prettyBytes from 'pretty-bytes';
 import { prettyDate } from './Filtering/PrettyDate';
+import { PicrImage } from '../PicrImage';
 
 export const FileInfo = ({
   file,
@@ -23,11 +24,16 @@ export const FileInfo = ({
       opened={true}
       centered={true}
       onClose={onClose}
-      title={'File Details: ' + file.name}
+      title={file.type + ' Details: ' + file.name}
       fullScreen={isMobile}
       overlayProps={{ blur: 3 }}
       // transitionProps={{ transition: 'fade', duration: 200 }}
     >
+      {file.type == 'Image' ? (
+        <Box mb={16}>
+          <PicrImage file={file} size="md" />
+        </Box>
+      ) : null}
       <Group style={{ width: '100%' }}>
         <StatCard label="File size" value={prettyBytes(file.fileSize)} />
         <StatCard label="File type" value={file.type} />
