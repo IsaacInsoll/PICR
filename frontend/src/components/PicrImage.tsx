@@ -30,7 +30,7 @@ export const PicrImage = ({
       {!loaded && file.blurHash ? (
         <Blurhash
           hash={file.blurHash}
-          style={{ ...style, cursor: 'pointer' }}
+          style={{ ...style, cursor: 'pointer', float: 'left' }}
           resolutionX={32}
           resolutionY={32}
           punch={1}

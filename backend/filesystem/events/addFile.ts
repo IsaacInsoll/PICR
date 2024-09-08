@@ -42,12 +42,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
   if (modified) {
     console.log([file.fileLastModified, 'not', stats.mtime]);
   }
-  if (
-    created ||
-    !file.fileHash ||
-    modified ||
-    (file.type == 'Image' && !file.blurHash) //TODO: remove this condition once everybody has 'upgraded' to blurhashes
-  ) {
+  if (created || !file.fileHash || modified) {
     logger(
       (created
         ? 'New File: '
