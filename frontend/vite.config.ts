@@ -10,6 +10,7 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    port: 6969,
     proxy: {
       '/graphql': 'http://localhost:6900',
       '/image': 'http://localhost:6900',

@@ -82,3 +82,12 @@ Both times it was another postgres server running using the default port of `543
 - Davinci Resolve project server requires connecting to default port, so if you use that you can't expose 5432
 
 Neither of these affect PICR operation, but will be a problem if trying to connect to the PICR DB (EG: troubleshooting or development)
+
+### Development
+
+Two ports are exposed during development:
+- http://localhost:6900 is the 'built' PICR server running with whatever frontend was last compiled (usually built during a release)
+- http://localhost:6969 is the dynamically updating frontend using the 'built' backend
+
+For front end development you definitely want to use the 6969 address. For backend either would be fine but I typically just use 6969 anyway. 
+

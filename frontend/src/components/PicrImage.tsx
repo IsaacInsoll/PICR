@@ -30,7 +30,7 @@ export const PicrImage = ({
       {!loaded && file.blurHash ? (
         <Blurhash
           hash={file.blurHash}
-          style={{ ...style, cursor: 'pointer', float: 'left' }}
+          style={{ ...style, cursor: 'pointer' }}
           resolutionX={32}
           resolutionY={32}
           punch={1}
@@ -48,7 +48,6 @@ export const PicrImage = ({
           if (onClick) onClick(file);
         }}
         style={{ ...style, cursor: clickable ? 'pointer' : undefined }}
-        loading="lazy"
       />
     </picture>
   );
