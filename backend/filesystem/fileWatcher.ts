@@ -53,7 +53,7 @@ export const fileWatcher = async () => {
     });
 };
 
-const ignored = /(^\.|\/\.|@eaDir|desktop.ini)/;
+const ignored = /(^\.|\/\.|@eaDir|desktop.ini|Thumbs.db)/;
 // anything in root starting with .
 // any file/folder starting with a .
 // anything in a folder @eaDir which is a sneaky synology "metadata" folder
