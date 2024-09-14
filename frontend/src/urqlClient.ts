@@ -4,7 +4,8 @@ import { getUUID } from './Router';
 
 const cx = cacheExchange({
   keys: {
-    MetadataSummary: () => null,
+    ImageMetadataSummary: () => null,
+    VideoMetadataSummary: () => null,
   },
 });
 
