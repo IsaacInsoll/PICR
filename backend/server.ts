@@ -1,28 +1,19 @@
-import express, { Request } from 'express';
+import express from 'express';
 import pkg from '../package.json';
 import { fileWatcher } from './filesystem/fileWatcher';
 import { config } from 'dotenv';
 import { gqlserver } from './graphql/gqlserver';
 import { logger } from './logger';
-import { randomBytes } from 'node:crypto';
-import path, { extname } from 'path';
-import User from './models/User';
-import File from './models/File';
-import { hashPassword } from './helpers/hashPassword';
-import { fullPathFor, generateThumbnail } from './media/generateImageThumbnail';
-import { AllSize, allSizes } from '../frontend/src/helpers/thumbnailSize';
+import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
 import pg from 'pg';
 import { setupRootFolder } from './filesystem/events/addFolder';
-import { existsSync, readFileSync } from 'node:fs';
-import Folder from './models/Folder';
-import { zipPath } from './helpers/zip';
-import { zipInProgress } from './helpers/zipQueue';
-import {
-  awaitVideoThumbnailGeneration,
-  generateVideoThumbnail,
-} from './media/generateVideoThumbnail';
-import { delay } from './helpers/delay';
+import { envPassword } from './boot/envPassword';
+import { getVersion } from './boot/getVersion';
+import { envSecret } from './boot/envSecret';
+import { imageRequest } from './routes/imageRequest';
+import { zipRequest } from './routes/zipRequest';
+import { expressServer } from './express/express';
 
 config(); // read .ENV
 
@@ -40,33 +31,6 @@ if (picrConfig.dev) {
   console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
   console.log(picrConfig);
 }
-
-const envPassword = async () => {
-  const totalUsers = await User.count();
-  if (totalUsers == 0) {
-    User.create({
-      name: 'PICR Admin',
-      username: 'admin',
-      hashedPassword: hashPassword('picr1234'),
-      enabled: true,
-      folderId: 1,
-    }).then(() =>
-      console.log(
-        '🔐 No users found so "admin" user created with password "picr1234"',
-      ),
-    );
-  }
-};
-
-const envSecret = async () => {
-  if (!picrConfig.tokenSecret) {
-    const secret = randomBytes(64).toString('hex');
-    console.log(`ERROR: You haven't specified a TOKEN_SECRET in .ENV
-Heres one we just created for you:
-TOKEN_SECRET=${secret}`);
-    process.exit();
-  }
-};
 
 const server = async () => {
   getVersion();
@@ -88,80 +52,10 @@ const server = async () => {
     );
     process.exit();
   }
-
   await envPassword();
-
   await setupRootFolder();
-
-  const e = express();
-  const port = 6900;
   const appName = pkg.name;
-
-  e.all('/graphql', gqlserver);
-  e.use(express.static('public'));
-
-  e.get(
-    '/image/:id/:size/:hash/:filename', //filename is ignored but nice for users to see a 'nice' name
-    async (
-      req: Request<{
-        id: string;
-        size: AllSize;
-        hash: string;
-        filename?: string;
-      }>,
-      res,
-    ) => {
-      const { id, size, hash, filename } = req.params;
-      const file = await File.findOne({ where: { id, fileHash: hash } });
-      if (!file) res.sendStatus(404);
-      if (file.type == 'File') res.sendStatus(404);
-      if (!allSizes.includes(size)) res.sendStatus(400);
-      const extension = extname(filename);
-      const fp = fullPathFor(file, size, extension);
-      if (size != 'raw' && !existsSync(fp)) {
-        if (file.type == 'Image') await generateThumbnail(file, size);
-        if (file.type == 'Video') {
-          await generateVideoThumbnail(file, size);
-        }
-      }
-      if (file.type == 'Video' && size != 'raw') {
-        const p = fullPathFor(file, size) + '/' + filename;
-        // it's possible that we have started thumbnail generation for this video but haven't finished it, so extra waits
-        await awaitVideoThumbnailGeneration(file, size);
-        res.sendFile(p);
-      } else {
-        res.sendFile(fullPathFor(file, size, extension));
-      }
-    },
-  );
-
-  e.get(
-    '/zip/:folderId/:hash/:filename', //filename is ignored but nice for users to see a 'nice' name
-    async (req: Request<{ folderId: string; hash: string }>, res) => {
-      const { folderId, hash } = req.params;
-      const folder = await Folder.findOne({
-        where: { id: folderId },
-      });
-      if (!folder) res.sendStatus(404);
-      const zPath = zipPath({ folder, hash });
-      if (!existsSync(zPath)) {
-        res.sendStatus(404);
-      }
-      if (zipInProgress({ folder, hash })) {
-        res.sendStatus(400); // still zipping, can't send anything yet
-      }
-      res.sendFile(zPath);
-    },
-  );
-
-  //catch all other URLS and return the front end template
-  e.use((req, res) => {
-    res.sendFile(path.join(__dirname, '../../public/index.html'));
-  });
-
-  e.listen(port, () => {
-    logger(`🌐 App listening at http://localhost:${port}`, true);
-  });
+  const express = expressServer();
 
   //Close all the stuff
   process.on('exit', function () {
@@ -177,21 +71,6 @@ const server = async () => {
   });
 
   await fileWatcher();
-};
-
-const getVersion = () => {
-  // if (picrConfig.dev) {
-  //   logger('#️⃣ [DEV] Running version: ' + picrConfig.version, true);
-  // }
-  try {
-    picrConfig.version = readFileSync('dist/version.txt', 'utf8');
-    logger(
-      '#️⃣ Running version: ' + (picrConfig.dev ? '[DEV]' : picrConfig.version),
-      true,
-    );
-  } catch (e) {
-    // console.log(e);
-  }
 };
 
 server();
