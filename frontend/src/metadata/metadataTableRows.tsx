@@ -55,11 +55,25 @@ export const MetadataTableRows = (file: MinimalFile) => {
   }
 
   if (file.imageRatio) {
-    remove.push('Width', 'Height');
+    //   remove.push('Width', 'Height');
     list.push({
       icon: metadataIcons.AspectRatio,
       description: 'Aspect Ratio',
       label: prettyAspectRatio(file),
+    });
+  }
+
+  if (metadata.Width && metadata.Height) {
+    remove.push('Width', 'Height');
+    list.push({
+      icon: metadataIcons.AspectRatio,
+      description: 'Dimensions',
+      label: (
+        <>
+          {metadata.Width + ' x ' + metadata.Height}
+          <sub> px</sub>
+        </>
+      ),
     });
   }
 
