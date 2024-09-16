@@ -11,6 +11,7 @@ export interface MetadataSummary {
   ExposureTime?: number | null; // note this is in seconds so render as 1/${1/ExposureTime} if it's less than 1
   Width?: number | null;
   Height?: number | null;
+  Rating?: number | null;
 }
 
 export interface VideoMetadata {

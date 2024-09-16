@@ -89,6 +89,7 @@ export type ImageMetadataSummary = {
   Height?: Maybe<Scalars['Int']['output']>;
   ISO?: Maybe<Scalars['Float']['output']>;
   Lens?: Maybe<Scalars['String']['output']>;
+  Rating?: Maybe<Scalars['Int']['output']>;
   Width?: Maybe<Scalars['Int']['output']>;
 };
 

@@ -14,6 +14,7 @@ const imageMetadataFragment = gql(/* GraphQL */ `
         ISO
         Width
         Height
+        Rating
       }
     }
   }

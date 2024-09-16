@@ -19,5 +19,6 @@ export const imageMetadataSummaryType = new GraphQLObjectType({
     ISO: { type: GraphQLFloat },
     Width: { type: GraphQLInt },
     Height: { type: GraphQLInt },
+    Rating: { type: GraphQLInt },
   }),
 });

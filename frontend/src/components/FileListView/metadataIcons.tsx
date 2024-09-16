@@ -24,6 +24,7 @@ import {
   TbVolume,
 } from 'react-icons/tb';
 import { LiaSignatureSolid } from 'react-icons/lia';
+import { GiStarsStack } from 'react-icons/gi';
 
 export const metadataIcons: Record<
   keyof ImageMetadataSummary | keyof VideoMetadataSummary,
@@ -49,6 +50,7 @@ export const metadataIcons: Record<
   Duration: <TbClock />,
   Bitrate: <MdOutlineNetworkCheck />,
   AspectRatio: <TbAspectRatio />,
+  Rating: <GiStarsStack />,
 } as const;
 
 export const metadataDescription: Record<

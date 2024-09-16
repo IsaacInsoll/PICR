@@ -77,6 +77,7 @@ type ImageMetadataSummary {
   Height: Int
   ISO: Float
   Lens: String
+  Rating: Int
   Width: Int
 }
 

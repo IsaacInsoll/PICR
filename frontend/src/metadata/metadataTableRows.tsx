@@ -1,4 +1,4 @@
-import { Badge, Code, Group, Stack, Table, Text } from '@mantine/core';
+import { Badge, Code, Group, Rating, Stack, Table, Text } from '@mantine/core';
 import {
   metadataDescription,
   metadataIcons,
@@ -55,7 +55,6 @@ export const MetadataTableRows = (file: MinimalFile) => {
   }
 
   if (file.imageRatio) {
-    //   remove.push('Width', 'Height');
     list.push({
       icon: metadataIcons.AspectRatio,
       description: 'Aspect Ratio',
@@ -74,6 +73,15 @@ export const MetadataTableRows = (file: MinimalFile) => {
           <sub> px</sub>
         </>
       ),
+    });
+  }
+
+  if (metadata.Rating) {
+    remove.push('Rating');
+    list.push({
+      icon: metadataIcons.Rating,
+      description: 'Original Rating',
+      label: <Rating value={metadata.Rating} readOnly />,
     });
   }
 
