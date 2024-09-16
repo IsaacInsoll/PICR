@@ -9,6 +9,8 @@ export interface MetadataSummary {
   // ShutterSpeed?: string;
   ISO?: number | null;
   ExposureTime?: number | null; // note this is in seconds so render as 1/${1/ExposureTime} if it's less than 1
+  Width?: number | null;
+  Height?: number | null;
 }
 
 export interface VideoMetadata {

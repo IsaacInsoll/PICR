@@ -74,8 +74,10 @@ type ImageMetadataSummary {
   DateTimeEdit: String
   DateTimeOriginal: String
   ExposureTime: Float
+  Height: Int
   ISO: Float
   Lens: String
+  Width: Int
 }
 
 type Mutation {

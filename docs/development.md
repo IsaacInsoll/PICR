@@ -1,5 +1,15 @@
-
 # Development
+
+## Development
+
+Two ports are exposed during development:
+
+| URL                   | Name                  | Description                                                                                                        |
+|-----------------------|-----------------------|--------------------------------------------------------------------------------------------------------------------|
+| http://localhost:6900 | PICR Server (backend) | The 'built' PICR server running with whatever frontend was last compiled <br/>(usually built during a release)     |
+| http://localhost:6969 | Front End             | Dynamic frontend (vite HMR) which forwards GQL/file requests to backend (above)<br/>best for front end development |
+
+For front end development you definitely want to use the 6969 address. For backend either would be fine but I typically just use 6969 anyway.
 
 ## CLI Commands
 | Command                        | Description                               | When to use                                                                                            |
@@ -11,15 +21,12 @@
 | `npm run release`              | Tag new version, build+push docker images | Run when we have something 'release worthy'                                                            |
 
 
-known issue is that the `cli-progressbar` doesn't work with non-tty like  `concurrently` and `docker compose up` so progress bars are invisible :/
-You can work around docker with `docker compose run picr` which gives you a tty/interactive console
-
 | Folder   | Description                                            |
 |----------|--------------------------------------------------------|
-| src      | Node server source                                     |
-| dist     | *Compiled* Node Server Source                          |
-| frontend | React frontend source                                  |
-| public   | *Compiled* React front end and any other static assets |
+| `src`      | Node server source                                     |
+| `dist`     | *Compiled* Node Server Source                          |
+| `frontend` | React frontend source                                  |
+| `public`   | *Compiled* React front end and any other static assets |
 
 ## Building Release Version to Docker Hub
 
@@ -82,12 +89,3 @@ Both times it was another postgres server running using the default port of `543
 - Davinci Resolve project server requires connecting to default port, so if you use that you can't expose 5432
 
 Neither of these affect PICR operation, but will be a problem if trying to connect to the PICR DB (EG: troubleshooting or development)
-
-### Development
-
-Two ports are exposed during development:
-- http://localhost:6900 is the 'built' PICR server running with whatever frontend was last compiled (usually built during a release)
-- http://localhost:6969 is the dynamically updating frontend using the 'built' backend
-
-For front end development you definitely want to use the 6969 address. For backend either would be fine but I typically just use 6969 anyway. 
-

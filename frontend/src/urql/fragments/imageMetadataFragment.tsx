@@ -12,6 +12,8 @@ const imageMetadataFragment = gql(/* GraphQL */ `
         Aperture
         ExposureTime
         ISO
+        Width
+        Height
       }
     }
   }

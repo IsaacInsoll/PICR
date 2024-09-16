@@ -10,6 +10,7 @@ import { getImageMetadata } from '../../media/getImageMetadata';
 import { getVideoMetadata } from '../../media/getVideoMetadata';
 import { generateAllThumbs } from '../../media/generateImageThumbnail';
 import { encodeImageToBlurhash } from '../../media/blurHash';
+import { picrConfig } from '../../server';
 
 export const addFile = async (filePath: string, generateThumbs: boolean) => {
   const type = validExtension(filePath);
@@ -39,9 +40,6 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
   });
   const modified =
     !created && file.fileLastModified.getTime() != stats.mtime.getTime();
-  if (modified) {
-    console.log([file.fileLastModified, 'not', stats.mtime]);
-  }
   if (created || !file.fileHash || modified) {
     logger(
       (created
@@ -66,6 +64,18 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
       file.metadata = JSON.stringify(meta);
       file.duration = meta.Duration;
       file.imageRatio = meta.Height > 0 ? meta.Width / meta.Height : 0;
+    }
+  } else if (picrConfig.updateMetadata) {
+    logger('🔄️ update metadata: ' + file.id);
+    switch (type) {
+      case 'Image':
+        file.metadata = JSON.stringify(await getImageMetadata(file));
+        break;
+      case 'Video':
+        file.metadata = JSON.stringify(await getVideoMetadata(file));
+        break;
+      default:
+        break;
     }
   }
   file.exists = true;

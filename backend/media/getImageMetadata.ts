@@ -5,7 +5,7 @@ import { default as ex } from 'exif-reader';
 
 export const getImageMetadata = async (file: File) => {
   try {
-    const { exif } = await sharp(file.fullPath()).metadata();
+    const { exif, width, height } = await sharp(file.fullPath()).metadata();
     const x = ex(exif);
     // const et = x?.Photo?.ExposureTime;
     const result: MetadataSummary = {
@@ -16,6 +16,8 @@ export const getImageMetadata = async (file: File) => {
       DateTimeOriginal: x?.Photo?.DateTimeOriginal,
       Aperture: x?.Photo?.FNumber,
       ExposureTime: x?.Photo?.ExposureTime,
+      Width: width,
+      Height: height,
       // ShutterSpeed:
       //   et > 0
       //     ? et < 1

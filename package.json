@@ -36,6 +36,7 @@
     "pg-hstore": "^2.3.4",
     "progress": "^2.0.3",
     "reflect-metadata": "^0.2.1",
+    "semver": "^7.6.3",
     "sequelize": "^6.37.1",
     "sequelize-typescript": "^2.1.6",
     "sharp": "^0.33.2",

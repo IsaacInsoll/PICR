@@ -1,19 +1,14 @@
-import express from 'express';
 import pkg from '../package.json';
 import { fileWatcher } from './filesystem/fileWatcher';
 import { config } from 'dotenv';
-import { gqlserver } from './graphql/gqlserver';
-import { logger } from './logger';
-import path from 'path';
 import { Sequelize } from 'sequelize-typescript';
 import pg from 'pg';
 import { setupRootFolder } from './filesystem/events/addFolder';
 import { envPassword } from './boot/envPassword';
 import { getVersion } from './boot/getVersion';
 import { envSecret } from './boot/envSecret';
-import { imageRequest } from './routes/imageRequest';
-import { zipRequest } from './routes/zipRequest';
 import { expressServer } from './express/express';
+import { dbMigrate } from './boot/dbMigrate';
 
 config(); // read .ENV
 
@@ -26,6 +21,7 @@ export const picrConfig = {
   pollingInterval: parseInt(process.env.POLLING_INTERVAL) ?? 20,
   dev: process.env.NODE_ENV === 'development',
   version: 'dev', //overwritten elsewhere
+  updateMetadata: false, //re-read metadata, set by dbMigrate
 };
 if (picrConfig.dev) {
   console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
@@ -41,6 +37,7 @@ const server = async () => {
     models: [__dirname + '/models'],
     pool: { max: 50 }, //default max is 5, postgres default limit is 100
   });
+  await dbMigrate(sequelize);
 
   await envSecret();
   try {
