@@ -37,11 +37,11 @@ const server = async () => {
     models: [__dirname + '/models'],
     pool: { max: 50 }, //default max is 5, postgres default limit is 100
   });
-  await dbMigrate(sequelize);
 
   await envSecret();
   try {
     await sequelize.sync({}); // build DB
+    await dbMigrate(sequelize);
   } catch (e) {
     console.error(
       `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\`. 
