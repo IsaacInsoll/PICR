@@ -6,6 +6,7 @@ const cx = cacheExchange({
   keys: {
     ImageMetadataSummary: () => null,
     VideoMetadataSummary: () => null,
+    Task: () => null,
   },
 });
 

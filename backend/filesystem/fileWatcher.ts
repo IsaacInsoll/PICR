@@ -1,14 +1,14 @@
 import chokidar from 'chokidar';
 import { directoryPath, relativePath } from './fileManager';
 import { addToQueue } from './fileQueue';
-import { logger } from '../logger';
+import { log } from '../logger';
 import { picrConfig } from '../server';
 import File from '../models/File';
 import Folder from '../models/Folder';
 import { Op } from 'sequelize';
 
 export const fileWatcher = async () => {
-  logger(
+  log(
     '👀 Now watching: ' +
       directoryPath +
       (picrConfig.usePolling ? ' with POLLING' : ''),
@@ -34,18 +34,18 @@ export const fileWatcher = async () => {
 
   watcher
     .on('add', (path) => {
-      logger('➕ ' + path);
+      log('➕ ' + path);
       addToQueue('add', { path });
     })
     // .on('change', path => log('✖️ ' + path))
     // .on('unlink', path => log('➖ ' + path))
     .on('error', (error) => console.log('⚠️ Error happened: ' + error))
     .on('addDir', (path) => {
-      logger(`📁➕ ${relativePath(path)}`);
+      log(`📁➕ ${relativePath(path)}`);
       addToQueue('addDir', { path }, true);
     })
     .on('unlinkDir', (path) => {
-      logger(`📁➖ ${relativePath(path)}`);
+      log(`📁➖ ${relativePath(path)}`);
       addToQueue('unlinkDir', { path }, true);
     })
     .on('ready', () => {

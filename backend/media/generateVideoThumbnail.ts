@@ -5,7 +5,7 @@ import { ffmpegForFile } from './ffmpegForFile';
 import { VideoMetadata } from '../types/MetadataSummary';
 import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions';
 import { existsSync } from 'node:fs';
-import { logger } from '../logger';
+import { log } from '../logger';
 
 const numberOfVideoSnapshots = 10;
 
@@ -26,7 +26,7 @@ const processVideoThumbnail = async (
   const outFile = thumbnailPath(file, size);
   if (existsSync(outFile)) {
     //lets presume thumbnails already generated if this folder exists
-    logger('Skipping ' + file.name + ' because video cache folder exists');
+    log('Skipping ' + file.name + ' because video cache folder exists');
     return;
   }
 

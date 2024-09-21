@@ -9,6 +9,7 @@ import { getVersion } from './boot/getVersion';
 import { envSecret } from './boot/envSecret';
 import { expressServer } from './express/express';
 import { dbMigrate } from './boot/dbMigrate';
+import { addDevLogger } from './logger';
 
 config(); // read .ENV
 
@@ -16,7 +17,6 @@ export const picrConfig = {
   tokenSecret: process.env.TOKEN_SECRET,
   databaseUrl: process.env.DATABASE_URL,
   debugSql: process.env.DEBUG_SQL == 'true',
-  verbose: process.env.VERBOSE == 'true',
   usePolling: process.env.USE_POLLING == 'true',
   pollingInterval: parseInt(process.env.POLLING_INTERVAL) ?? 20,
   dev: process.env.NODE_ENV === 'development',
@@ -26,6 +26,7 @@ export const picrConfig = {
 if (picrConfig.dev) {
   console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
   console.log(picrConfig);
+  addDevLogger();
 }
 
 const server = async () => {

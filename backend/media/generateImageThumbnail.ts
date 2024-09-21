@@ -8,7 +8,7 @@ import {
   AllSize,
   ThumbnailSize,
 } from '../../frontend/src/helpers/thumbnailSize';
-import { logger } from '../logger';
+import { log } from '../logger';
 import { thumbnailPath } from './thumbnailPath';
 import { generateVideoThumbnail } from './generateVideoThumbnail';
 
@@ -50,7 +50,7 @@ export const generateAllThumbs = async (file: File) => {
 // };
 
 export const generateThumbnail = async (file: File, size: ThumbnailSize) => {
-  logger(`🖼️ Generating ${size} thumbnail for ${file.name}`);
+  log(`🖼️ Generating ${size} thumbnail for ${file.name}`);
   mkdirSync(dirname(thumbnailPath(file, size)), { recursive: true });
   const px = thumbnailDimensions[size];
 

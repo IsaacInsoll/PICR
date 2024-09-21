@@ -1,7 +1,7 @@
 import { basename, dirname, extname } from 'path';
 import { directoryPath, folderList, relativePath } from '../fileManager';
 import File from '../../models/File';
-import { logger } from '../../logger';
+import { log } from '../../logger';
 import { fastHash } from '../fileHash';
 import fs from 'fs';
 import { FileType } from '../../../graphql-types';
@@ -15,7 +15,7 @@ import { picrConfig } from '../../server';
 export const addFile = async (filePath: string, generateThumbs: boolean) => {
   const type = validExtension(filePath);
   if (!type) {
-    logger(`🤷‍♂️ Ignoring ${filePath} as it's not a supported file format`);
+    log(`🤷‍♂️ Ignoring ${filePath} as it's not a supported file format`);
     return;
   }
   // console.log(`${basename(filePath)} of type ${type} in ${dirname(filePath)}`);
@@ -41,7 +41,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
   const modified =
     !created && file.fileLastModified.getTime() != stats.mtime.getTime();
   if (created || !file.fileHash || modified) {
-    logger(
+    log(
       (created
         ? 'New File: '
         : modified
@@ -66,7 +66,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
       file.imageRatio = meta.Height > 0 ? meta.Width / meta.Height : 0;
     }
   } else if (picrConfig.updateMetadata) {
-    logger('🔄️ update metadata: ' + file.id);
+    log('🔄️ update metadata: ' + file.id);
     switch (type) {
       case 'Image':
         file.metadata = JSON.stringify(await getImageMetadata(file));
@@ -81,7 +81,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
   file.exists = true;
   file.save();
   // console.log(file);
-  logger('➕ [done]' + filePath);
+  log('➕ [done]' + filePath);
 };
 
 const findFolderId = async (fullPath: string) => {
@@ -89,7 +89,7 @@ const findFolderId = async (fullPath: string) => {
     if (fullPath == directoryPath) return 1;
     const id = folderList[relativePath(fullPath)];
     if (id && id !== '0') return id;
-    logger('💤 Sleeping waiting for a FolderID for a file in ' + fullPath);
+    log('💤 Sleeping waiting for a FolderID for a file in ' + fullPath);
     await new Promise((r) => setTimeout(r, 500));
   }
 };

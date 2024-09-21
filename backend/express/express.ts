@@ -1,7 +1,7 @@
 import express from 'express';
 import { gqlserver } from '../graphql/gqlserver';
 import path from 'path';
-import { logger } from '../logger';
+import { log } from '../logger';
 import { imageRequest } from './imageRequest';
 import { zipRequest } from './zipRequest';
 
@@ -21,7 +21,7 @@ export const expressServer = () => {
   });
 
   exp.listen(port, () => {
-    logger(`🌐 App listening at http://localhost:${port}`, true);
+    log(`🌐 App listening at http://localhost:${port}`, true);
   });
 
   return exp;

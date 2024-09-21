@@ -7,7 +7,7 @@ import archiver from 'archiver';
 import { mkdirSync } from 'node:fs';
 import { fullPath } from '../filesystem/fileManager';
 import { updateZipQueue } from './zipQueue';
-import { logger } from '../logger';
+import { log } from '../logger';
 
 export interface FolderHash {
   folder?: Folder;
@@ -44,7 +44,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
     updateZipQueue(folderHash, { status: 'Error' });
   };
   archive.pipe(output);
-  logger('🗜️ Creating ZIP at path: ' + path);
+  log('🗜️ Creating ZIP at path: ' + path);
 
   // output.on('close', function () {
   //   logger('🗜️ ZIP Done: ' + path + ' ' + archive.pointer() + ' total bytes');
@@ -81,7 +81,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
   });
 
   await archive.finalize();
-  logger('🗜️ ZIP Completed');
+  log('🗜️ ZIP Completed');
   updateZipQueue(folderHash, { status: 'Complete' });
 };
 

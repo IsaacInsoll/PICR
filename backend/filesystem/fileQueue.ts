@@ -5,7 +5,7 @@ import { Task } from '../../graphql-types';
 import { generateAllThumbs } from '../media/generateImageThumbnail';
 import File from '../models/File';
 import Folder from '../models/Folder';
-import { logger } from '../logger';
+import { log } from '../logger';
 
 type QueueAction =
   | 'addDir'
@@ -64,7 +64,7 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
       // I decided to leave them exist=false as 'archived' rather than actual delete
       // await File.destroy({ where: { exists: false } });
       // await Folder.destroy({ where: { exists: false } });
-      logger('✅ Initial scan complete. Ready for changes', true);
+      log('✅ Initial scan complete. Ready for changes', true);
       break;
   }
   queueDone++;

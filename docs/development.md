@@ -61,7 +61,6 @@ services:
 Copy this, make changes as necessary
 ```dotenv
 # NOTE: You will need to restart node server after editing these as `nodemon` doesn't monitor this file
-VERBOSE=false
 DEBUG_SQL=false
 USE_POLLING=true
 TOKEN_SECRET=<some-long-string>

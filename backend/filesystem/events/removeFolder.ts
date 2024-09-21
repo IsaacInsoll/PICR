@@ -2,7 +2,7 @@ import { delay } from '../../helpers/delay';
 import Folder from '../../models/Folder';
 import { folderList, relativePath } from '../fileManager';
 import { Op, literal } from 'sequelize';
-import { logger } from '../../logger';
+import { log } from '../../logger';
 
 export const removeFolder = async (path: string) => {
   // wait 1 sec, then see if a 'matching' folder was added in last 5 seconds, due to fileWatcher not detecting renames
@@ -22,13 +22,13 @@ export const removeFolder = async (path: string) => {
         }).then((newFolder) => {
           if (newFolder) {
             //TODO: Handle folder rename (move data across?)
-            logger(
+            log(
               `🔀 Appears to be folder Rename from ${folder.relativePath} to ${newFolder.relativePath}`,
             );
           }
           folderList[relativePath(path)] = undefined;
           // console.log(folderList);
-          folder.destroy().then(() => logger(`📁➖ ${relativePath(path)}`));
+          folder.destroy().then(() => log(`📁➖ ${relativePath(path)}`));
         });
       }
     },
