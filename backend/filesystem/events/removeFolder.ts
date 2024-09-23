@@ -23,12 +23,15 @@ export const removeFolder = async (path: string) => {
           if (newFolder) {
             //TODO: Handle folder rename (move data across?)
             log(
+              'info',
               `🔀 Appears to be folder Rename from ${folder.relativePath} to ${newFolder.relativePath}`,
             );
           }
           folderList[relativePath(path)] = undefined;
           // console.log(folderList);
-          folder.destroy().then(() => log(`📁➖ ${relativePath(path)}`));
+          folder
+            .destroy()
+            .then(() => log('info', `📁➖ ${relativePath(path)}`));
         });
       }
     },

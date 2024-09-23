@@ -26,7 +26,7 @@ const processVideoThumbnail = async (
   const outFile = thumbnailPath(file, size);
   if (existsSync(outFile)) {
     //lets presume thumbnails already generated if this folder exists
-    log('Skipping ' + file.name + ' because video cache folder exists');
+    log('info', 'Skipping ' + file.name + ' because video cache folder exists');
     return;
   }
 

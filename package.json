@@ -5,7 +5,7 @@
   "main": "backend/server.ts",
   "scripts": {
     "start:server-ts": "tsc -w",
-    "start:server": "nodemon dist/backend/server.js",
+    "start:server": "nodemon --watch .env --watch dist dist/backend/server.js",
     "start:client": "cd frontend && npm start",
     "start:db": "docker compose up -d",
     "start": "concurrently npm:start:*",

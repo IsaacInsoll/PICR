@@ -9,6 +9,7 @@ import { Op } from 'sequelize';
 
 export const fileWatcher = async () => {
   log(
+    'info',
     '👀 Now watching: ' +
       directoryPath +
       (picrConfig.usePolling ? ' with POLLING' : ''),
@@ -34,18 +35,18 @@ export const fileWatcher = async () => {
 
   watcher
     .on('add', (path) => {
-      log('➕ ' + path);
+      log('info', '➕ ' + path);
       addToQueue('add', { path });
     })
     // .on('change', path => log('✖️ ' + path))
     // .on('unlink', path => log('➖ ' + path))
     .on('error', (error) => console.log('⚠️ Error happened: ' + error))
     .on('addDir', (path) => {
-      log(`📁➕ ${relativePath(path)}`);
+      log('info', `📁➕ ${relativePath(path)}`);
       addToQueue('addDir', { path }, true);
     })
     .on('unlinkDir', (path) => {
-      log(`📁➖ ${relativePath(path)}`);
+      log('info', `📁➖ ${relativePath(path)}`);
       addToQueue('unlinkDir', { path }, true);
     })
     .on('ready', () => {

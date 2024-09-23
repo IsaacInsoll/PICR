@@ -60,8 +60,8 @@ services:
 ### Sample `.ENV`
 Copy this, make changes as necessary
 ```dotenv
-# NOTE: You will need to restart node server after editing these as `nodemon` doesn't monitor this file
 DEBUG_SQL=false
+CONSOLE_LOGGING=true
 USE_POLLING=true
 TOKEN_SECRET=<some-long-string>
 DATABASE_URL=postgres://user:pass@localhost/picr

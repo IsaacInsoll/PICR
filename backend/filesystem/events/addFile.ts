@@ -15,7 +15,7 @@ import { picrConfig } from '../../server';
 export const addFile = async (filePath: string, generateThumbs: boolean) => {
   const type = validExtension(filePath);
   if (!type) {
-    log(`🤷‍♂️ Ignoring ${filePath} as it's not a supported file format`);
+    log('info', `🤷‍♂️ Ignoring ${filePath} as it's not a supported file format`);
     return;
   }
   // console.log(`${basename(filePath)} of type ${type} in ${dirname(filePath)}`);
@@ -42,6 +42,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
     !created && file.fileLastModified.getTime() != stats.mtime.getTime();
   if (created || !file.fileHash || modified) {
     log(
+      'info',
       (created
         ? 'New File: '
         : modified
@@ -66,7 +67,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
       file.imageRatio = meta.Height > 0 ? meta.Width / meta.Height : 0;
     }
   } else if (picrConfig.updateMetadata) {
-    log('🔄️ update metadata: ' + file.id);
+    log('info', '🔄️ update metadata: ' + file.id);
     switch (type) {
       case 'Image':
         file.metadata = JSON.stringify(await getImageMetadata(file));
@@ -81,7 +82,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
   file.exists = true;
   file.save();
   // console.log(file);
-  log('➕ [done]' + filePath);
+  log('info', '➕ [done]' + filePath);
 };
 
 const findFolderId = async (fullPath: string) => {
@@ -89,7 +90,7 @@ const findFolderId = async (fullPath: string) => {
     if (fullPath == directoryPath) return 1;
     const id = folderList[relativePath(fullPath)];
     if (id && id !== '0') return id;
-    log('💤 Sleeping waiting for a FolderID for a file in ' + fullPath);
+    log('info', '💤 Sleeping waiting for a FolderID for a file in ' + fullPath);
     await new Promise((r) => setTimeout(r, 500));
   }
 };

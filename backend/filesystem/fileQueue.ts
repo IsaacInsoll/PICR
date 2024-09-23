@@ -64,7 +64,7 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
       // I decided to leave them exist=false as 'archived' rather than actual delete
       // await File.destroy({ where: { exists: false } });
       // await Folder.destroy({ where: { exists: false } });
-      log('✅ Initial scan complete. Ready for changes', true);
+      log('info', '✅ Initial scan complete. Ready for changes', true);
       break;
   }
   queueDone++;

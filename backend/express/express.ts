@@ -21,7 +21,7 @@ export const expressServer = () => {
   });
 
   exp.listen(port, () => {
-    log(`🌐 App listening at http://localhost:${port}`, true);
+    log('info', `🌐 App listening at http://localhost:${port}`, true);
   });
 
   return exp;

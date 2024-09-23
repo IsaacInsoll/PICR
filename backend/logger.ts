@@ -29,6 +29,10 @@ export const addDevLogger = () => {
   }
 };
 
-export const log = (message: string, important?: boolean) => {
-  logger.log('info', message);
+export const log = (level: LevelType, message: string, important?: boolean) => {
+  if (important) console.log(message); //basic "server running" type messages
+  logger.log(level, message);
 };
+
+// no idea where to find this type in winston :/
+type LevelType = 'error' | 'warning' | 'info' | 'verbose' | 'debug';

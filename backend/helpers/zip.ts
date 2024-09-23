@@ -44,7 +44,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
     updateZipQueue(folderHash, { status: 'Error' });
   };
   archive.pipe(output);
-  log('🗜️ Creating ZIP at path: ' + path);
+  log('info', '🗜️ Creating ZIP at path: ' + path);
 
   // output.on('close', function () {
   //   logger('🗜️ ZIP Done: ' + path + ' ' + archive.pointer() + ' total bytes');
@@ -81,7 +81,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
   });
 
   await archive.finalize();
-  log('🗜️ ZIP Completed');
+  log('info', '🗜️ ZIP Completed');
   updateZipQueue(folderHash, { status: 'Complete' });
 };
 
