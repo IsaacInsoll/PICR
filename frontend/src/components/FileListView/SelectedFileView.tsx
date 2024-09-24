@@ -26,7 +26,8 @@ import { TbInfoCircle } from 'react-icons/tb';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Portal } from '@mantine/core';
+import { Box, Paper, Portal } from '@mantine/core';
+import { FileRating } from './FileRating';
 
 export const SelectedFileView = ({
   files,
@@ -90,6 +91,11 @@ export const SelectedFileView = ({
           'close',
         ],
       }}
+      render={{
+        slideFooter: ({ slide }) => (
+          <LightboxFileRating slide={slide} selected={selectedImage} />
+        ),
+      }}
       thumbnails={{ position: 'bottom' }}
       on={{
         view: ({ index }) => {
@@ -134,4 +140,13 @@ const filesForLightbox = (files: MinimalFile[]): Slide[] => {
       ...props,
     };
   });
+};
+
+const LightboxFileRating = ({ selected }: { selected: MinimalFile }) => {
+  console.log(selected);
+  return (
+    <Paper style={{ position: 'absolute', bottom: 0 }} p="xs">
+      <FileRating file={selected} />
+    </Paper>
+  );
 };

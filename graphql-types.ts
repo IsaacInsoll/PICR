@@ -21,19 +21,28 @@ export type File = FileInterface & {
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
+  flag?: Maybe<FileFlag>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  rating?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
+
+export enum FileFlag {
+  Approved = 'Approved',
+  Rejected = 'Rejected'
+}
 
 export type FileInterface = {
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
+  flag?: Maybe<FileFlag>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  rating?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
 
@@ -70,11 +79,13 @@ export type Image = FileInterface & {
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
+  flag?: Maybe<FileFlag>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;
   metadata?: Maybe<ImageMetadataSummary>;
   name: Scalars['String']['output'];
+  rating?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
 
@@ -208,11 +219,13 @@ export type Video = FileInterface & {
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
+  flag?: Maybe<FileFlag>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;
   metadata?: Maybe<VideoMetadataSummary>;
   name: Scalars['String']['output'];
+  rating?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
 

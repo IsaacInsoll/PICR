@@ -45,13 +45,14 @@ const server = async () => {
 
   await envSecret();
   try {
-    await sequelize.sync({}); // build DB
+    await sequelize.sync({ alter: true }); // build DB
     await dbMigrate(sequelize);
   } catch (e) {
     console.error(
       `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\`. 
    Please ensure configuration is correct and database server is running`,
     );
+    console.log(e);
     process.exit();
   }
   await envPassword();

@@ -6,7 +6,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import Folder from './Folder';
-import { FileType } from '../../graphql-types';
+import { FileFlag, FileType } from '../../graphql-types';
 import { fullPath } from '../filesystem/fileManager';
 import { sep } from 'path';
 
@@ -27,6 +27,12 @@ export default class File extends Model {
 
   @Column({ type: DataType.ENUM(...Object.values(FileType)) })
   declare type: FileType; //dodgy JSON string of type `MetadataSummary.ts`
+
+  @Column({ type: DataType.ENUM(...Object.values(FileFlag)) })
+  declare flag: FileFlag; //dodgy JSON string of type `MetadataSummary.ts`
+
+  @Column({ type: DataType.INTEGER })
+  declare rating: number; // 0-5
 
   @Column({ type: DataType.FLOAT })
   declare imageRatio: number; // width / height (used for sizing on screen elements before image is loaded

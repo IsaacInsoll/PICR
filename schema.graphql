@@ -12,19 +12,28 @@ type File implements FileInterface {
   fileHash: String!
   fileLastModified: DateTime!
   fileSize: BigInt!
+  flag: FileFlag
   folderId: ID!
   id: ID!
   name: String!
+  rating: Int
   type: FileType!
+}
+
+enum FileFlag {
+  Approved
+  Rejected
 }
 
 interface FileInterface {
   fileHash: String!
   fileLastModified: DateTime!
   fileSize: BigInt!
+  flag: FileFlag
   folderId: ID!
   id: ID!
   name: String!
+  rating: Int
   type: FileType!
 }
 
@@ -59,11 +68,13 @@ type Image implements FileInterface {
   fileHash: String!
   fileLastModified: DateTime!
   fileSize: BigInt!
+  flag: FileFlag
   folderId: ID!
   id: ID!
   imageRatio: Float
   metadata: ImageMetadataSummary
   name: String!
+  rating: Int
   type: FileType!
 }
 
@@ -125,11 +136,13 @@ type Video implements FileInterface {
   fileHash: String!
   fileLastModified: DateTime!
   fileSize: BigInt!
+  flag: FileFlag
   folderId: ID!
   id: ID!
   imageRatio: Float
   metadata: VideoMetadataSummary
   name: String!
+  rating: Int
   type: FileType!
 }
 
