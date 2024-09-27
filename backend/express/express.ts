@@ -1,5 +1,5 @@
 import express from 'express';
-import { gqlserver } from '../graphql/gqlserver';
+import { gqlServer } from '../graphql/gqlServer';
 import path from 'path';
 import { log } from '../logger';
 import { imageRequest } from './imageRequest';
@@ -10,7 +10,7 @@ export const expressServer = () => {
 
   const port = 6900;
 
-  exp.all('/graphql', gqlserver);
+  exp.all('/graphql', gqlServer);
   exp.use(express.static('public'));
   exp.get('/image/:id/:size/:hash/:filename', imageRequest); //filename is ignored but nice for users to see a 'nice' name
   exp.get('/zip/:folderId/:hash/:filename', zipRequest); //filename is ignored but nice for users to see a 'nice' name
