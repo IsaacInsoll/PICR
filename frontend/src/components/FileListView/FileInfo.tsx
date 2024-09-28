@@ -8,6 +8,7 @@ import { prettyDate } from './Filtering/PrettyDate';
 import { PicrImage } from '../PicrImage';
 import { formatMetadataValue } from '../../metadata/formatMetadataValue';
 import { MetadataTableRows } from '../../metadata/metadataTableRows';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 export const FileInfo = ({
   file,
@@ -16,7 +17,7 @@ export const FileInfo = ({
   file: MinimalFile;
   onClose: (file: File) => void;
 }) => {
-  const isMobile = useMediaQuery('(max-width: 50em)');
+  const isMobile = useIsMobile();
 
   return (
     <Modal

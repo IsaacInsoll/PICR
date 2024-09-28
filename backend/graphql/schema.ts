@@ -23,12 +23,15 @@ import { videoMetadataSummaryType } from './types/videoMetadataSummaryType';
 import { userType } from './types/userType';
 import { taskType } from './types/taskType';
 import { addComment } from './mutations/addComment';
+import { commentType } from './types/commentType';
+import { comments } from './queries/comments';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
     /* General Purpose */
     admins,
     allFolders,
+    comments,
     file,
     /* Admin Only */
     folder,
@@ -53,6 +56,7 @@ const mutations = new GraphQLObjectType({
 });
 
 const types = [
+  commentType,
   fileInterface,
   fileType,
   folderType,

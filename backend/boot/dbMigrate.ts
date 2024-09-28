@@ -2,7 +2,7 @@ import { picrConfig } from '../server';
 import ServerOptions from '../models/ServerOptions';
 import { lt, valid } from 'semver';
 import { DataType, Sequelize } from 'sequelize-typescript';
-import { FileFlag } from '../../graphql-types';
+import File from './../models/File';
 
 export const dbMigrate = async (sequelize: Sequelize) => {
   const [opts, created] = await ServerOptions.findOrBuild({ where: { id: 1 } });
@@ -17,6 +17,11 @@ export const dbMigrate = async (sequelize: Sequelize) => {
       // q.addColumn('File', 'flag', {
       //   type: DataType.ENUM(...Object.values(FileFlag)),
       // });
+
+      await File.update(
+        { totalComments: 0 },
+        { where: { totalComments: null } },
+      );
     }
   }
   opts.lastBootedVersion = picrConfig.version;

@@ -25,6 +25,7 @@ export interface MinimalFile {
   type: FileType;
   flag: FileFlag | null;
   rating: number | null;
+  totalComments: number | null;
 }
 export interface MinimalSharedFolder {
   id: string;

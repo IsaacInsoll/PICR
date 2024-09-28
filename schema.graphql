@@ -3,6 +3,14 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
+type Comment {
+  comment: String
+  id: ID
+  systemGenerated: Boolean!
+  timestamp: DateTime!
+  user: User
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -17,6 +25,7 @@ type File implements FileInterface {
   id: ID!
   name: String!
   rating: Int
+  totalComments: Int
   type: FileType!
 }
 
@@ -35,6 +44,7 @@ interface FileInterface {
   id: ID!
   name: String!
   rating: Int
+  totalComments: Int
   type: FileType!
 }
 
@@ -76,6 +86,7 @@ type Image implements FileInterface {
   metadata: ImageMetadataSummary
   name: String!
   rating: Int
+  totalComments: Int
   type: FileType!
 }
 
@@ -94,7 +105,7 @@ type ImageMetadataSummary {
 }
 
 type Mutation {
-  addComment(comment: String, flag: FileFlag, id: ID!, name: String, rating: Int): FileInterface!
+  addComment(comment: String, flag: FileFlag, id: ID!, nickName: String, rating: Int): FileInterface!
   auth(password: String!, user: String!): String!
   editAdminUser(enabled: Boolean, folderId: ID, id: ID, name: String, password: String, username: String): User!
   editUser(enabled: Boolean, folderId: ID, id: ID, name: String, uuid: String): User!
@@ -105,6 +116,7 @@ type Mutation {
 type Query {
   admins: [User!]!
   allFolders(id: ID!): [Folder]!
+  comments(fileId: ID!): [Comment!]!
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
   me: User
@@ -145,6 +157,7 @@ type Video implements FileInterface {
   metadata: VideoMetadataSummary
   name: String!
   rating: Int
+  totalComments: Int
   type: FileType!
 }
 

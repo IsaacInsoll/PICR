@@ -16,6 +16,15 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+export type Comment = {
+  __typename?: 'Comment';
+  comment?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  systemGenerated: Scalars['Boolean']['output'];
+  timestamp: Scalars['DateTime']['output'];
+  user?: Maybe<User>;
+};
+
 export type File = FileInterface & {
   __typename?: 'File';
   fileHash: Scalars['String']['output'];
@@ -26,6 +35,7 @@ export type File = FileInterface & {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;
+  totalComments?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
 
@@ -44,6 +54,7 @@ export type FileInterface = {
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;
+  totalComments?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
 
@@ -87,6 +98,7 @@ export type Image = FileInterface & {
   metadata?: Maybe<ImageMetadataSummary>;
   name: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;
+  totalComments?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
 
@@ -120,7 +132,7 @@ export type MutationAddCommentArgs = {
   comment?: InputMaybe<Scalars['String']['input']>;
   flag?: InputMaybe<FileFlag>;
   id: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
+  nickName?: InputMaybe<Scalars['String']['input']>;
   rating?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -163,6 +175,7 @@ export type Query = {
   __typename?: 'Query';
   admins: Array<User>;
   allFolders: Array<Maybe<Folder>>;
+  comments: Array<Comment>;
   file: FileInterface;
   folder: Folder;
   me?: Maybe<User>;
@@ -174,6 +187,11 @@ export type Query = {
 
 export type QueryAllFoldersArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryCommentsArgs = {
+  fileId: Scalars['ID']['input'];
 };
 
 
@@ -237,6 +255,7 @@ export type Video = FileInterface & {
   metadata?: Maybe<VideoMetadataSummary>;
   name: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;
+  totalComments?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
 
