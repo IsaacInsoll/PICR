@@ -30,8 +30,9 @@ export type File = FileInterface & {
 };
 
 export enum FileFlag {
-  Approved = 'Approved',
-  Rejected = 'Rejected'
+  Approved = 'approved',
+  None = 'none',
+  Rejected = 'rejected'
 }
 
 export type FileInterface = {
@@ -106,11 +107,21 @@ export type ImageMetadataSummary = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addComment: FileInterface;
   auth: Scalars['String']['output'];
   editAdminUser: User;
   editUser: User;
   generateThumbnails: Scalars['Boolean']['output'];
   generateZip: Scalars['String']['output'];
+};
+
+
+export type MutationAddCommentArgs = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  flag?: InputMaybe<FileFlag>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  rating?: InputMaybe<Scalars['Int']['input']>;
 };
 
 

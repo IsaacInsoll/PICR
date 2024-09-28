@@ -13,6 +13,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $name: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      name: $name\n    ) {\n      ...FileFragment\n    }\n  }\n": types.AddCommentDocument,
     "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n    }\n  }\n": types.MeQueryDocument,
     "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    flag\n    rating\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n    parents {\n      id\n      name\n    }\n  }\n": types.FolderFragmentFragmentDoc,
@@ -48,6 +49,10 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $name: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      name: $name\n    ) {\n      ...FileFragment\n    }\n  }\n"): (typeof documents)["\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $name: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      name: $name\n    ) {\n      ...FileFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

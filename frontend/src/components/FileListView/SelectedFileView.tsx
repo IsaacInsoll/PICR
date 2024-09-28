@@ -143,7 +143,6 @@ const filesForLightbox = (files: MinimalFile[]): Slide[] => {
 };
 
 const LightboxFileRating = ({ selected }: { selected: MinimalFile }) => {
-  console.log(selected);
   return (
     <Paper style={{ position: 'absolute', bottom: 0 }} p="xs">
       <FileRating file={selected} />

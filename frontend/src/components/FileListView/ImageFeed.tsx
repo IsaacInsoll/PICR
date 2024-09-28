@@ -16,7 +16,6 @@ export const ImageFeed = ({
   files,
   setSelectedFileId,
 }: FileListViewStyleComponentProps) => {
-  //TODO: reasonable max width on container
   return (
     <>
       <Box>

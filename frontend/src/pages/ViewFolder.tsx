@@ -61,7 +61,6 @@ export const ViewFolderBody = ({
   const [data, reQuery] = useQuery({
     query: viewFolderQuery,
     variables: { folderId },
-    // context: headers,
   });
 
   const setFolder = useSetFolder();

@@ -22,45 +22,47 @@ import { imageMetadataSummaryType } from './types/imageMetadataSummaryType';
 import { videoMetadataSummaryType } from './types/videoMetadataSummaryType';
 import { userType } from './types/userType';
 import { taskType } from './types/taskType';
+import { addComment } from './mutations/addComment';
 
 const queries = new GraphQLObjectType({
-  name: 'Query',
   fields: () => ({
     /* General Purpose */
-    folder,
-    file,
-    tasks,
-    /* Admin Only */
-    users,
-    user,
     admins,
     allFolders,
+    file,
+    /* Admin Only */
+    folder,
     me,
+    tasks,
+    user,
+    users,
   }),
+  name: 'Query',
 });
 
 const mutations = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
+    addComment,
     auth,
-    editUser,
     editAdminUser,
+    editUser,
     generateThumbnails,
     generateZip,
   }),
 });
 
 const types = [
-  folderType,
   fileInterface,
   fileType,
-  imageFileType,
-  videoFileType,
+  folderType,
   folderPermissionsType,
+  imageFileType,
   imageMetadataSummaryType,
-  videoMetadataSummaryType,
-  userType,
   taskType,
+  userType,
+  videoFileType,
+  videoMetadataSummaryType,
 ];
 
 export const schema = new GraphQLSchema({

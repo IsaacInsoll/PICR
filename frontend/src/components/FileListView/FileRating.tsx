@@ -1,45 +1,29 @@
-import {
-  ActionIcon,
-  Box,
-  Divider,
-  Group,
-  Indicator,
-  Rating,
-  SegmentedControl,
-} from '@mantine/core';
+import { ActionIcon, Divider, Group, Indicator, Rating } from '@mantine/core';
 import { useState } from 'react';
 import { TbThumbDown, TbThumbUp } from 'react-icons/tb';
 import { BiComment, BiCommentDetail } from 'react-icons/bi';
 import { MinimalFile } from '../../../types';
+import { gql } from '../../helpers/gql';
+import { FileRatingFlag } from './Filtering/FileRatingFlag';
+import { useMutation } from 'urql';
 
 export const FileRating = ({ file }: { file: MinimalFile }) => {
-  const [value, setValue] = useState(2);
-  const [flag, setFlag] = useState<'approved' | 'rejected' | null>('approved');
   const [commentCount, setCommentCount] = useState(0);
 
+  const [, mutate] = useMutation(addCommentMutation);
+
+  const { id, flag, rating } = file;
+
   // Note when plumbing in mutations:
-  // ActionIcons have a loading prop
   //Rating will probably want something like   return <Loader color="blue" size="sm" type="dots" />;
   return (
     <Group gap="xs">
-      <ActionIcon
-        variant={flag == 'approved' ? 'filled' : 'default'}
-        onClick={() => setFlag(flag != 'approved' ? 'approved' : null)}
-        title="Approve"
-        color="green"
-      >
-        <TbThumbUp />
-      </ActionIcon>
-      <ActionIcon
-        variant={flag == 'rejected' ? 'filled' : 'default'}
-        onClick={() => setFlag(flag != 'rejected' ? 'rejected' : null)}
-        title="Reject"
-        color="red"
-      >
-        <TbThumbDown />
-      </ActionIcon>
+      <FileRatingFlag flag={flag} onChange={(flag) => mutate({ id, flag })} />
       <Divider orientation="vertical" />
-      <Rating value={value} onChange={setValue} />
+      <Rating
+        value={rating}
+        onChange={(rating) => mutate({ id: id, rating })}
+      />
       <Divider orientation="vertical" />
       <Indicator
         inline
@@ -57,3 +41,23 @@ export const FileRating = ({ file }: { file: MinimalFile }) => {
     </Group>
   );
 };
+
+const addCommentMutation = gql(/* GraphQL */ `
+  mutation addComment(
+    $id: ID!
+    $rating: Int
+    $flag: FileFlag
+    $comment: String
+    $name: String
+  ) {
+    addComment(
+      id: $id
+      rating: $rating
+      flag: $flag
+      comment: $comment
+      name: $name
+    ) {
+      ...FileFragment
+    }
+  }
+`);

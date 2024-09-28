@@ -49,6 +49,9 @@ export default class File extends Model {
   @Column
   declare exists: boolean; // bulk set as 'false' at boot, then set true when detected, to weed out files deleted while server down
 
+  @Column({ type: DataType.INTEGER })
+  declare totalComments: number; //we could calculate it but this is faster and easier
+
   @ForeignKey(() => Folder)
   @Column
   folderId: number;

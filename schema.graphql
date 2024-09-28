@@ -21,8 +21,9 @@ type File implements FileInterface {
 }
 
 enum FileFlag {
-  Approved
-  Rejected
+  approved
+  none
+  rejected
 }
 
 interface FileInterface {
@@ -93,6 +94,7 @@ type ImageMetadataSummary {
 }
 
 type Mutation {
+  addComment(comment: String, flag: FileFlag, id: ID!, name: String, rating: Int): FileInterface!
   auth(password: String!, user: String!): String!
   editAdminUser(enabled: Boolean, folderId: ID, id: ID, name: String, password: String, username: String): User!
   editUser(enabled: Boolean, folderId: ID, id: ID, name: String, uuid: String): User!
