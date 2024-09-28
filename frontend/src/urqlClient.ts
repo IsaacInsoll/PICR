@@ -1,8 +1,12 @@
 import { Client, fetchExchange } from 'urql';
 import { cacheExchange } from '@urql/exchange-graphcache';
 import { getUUID } from './Router';
+import schema from './../public/graphql.schema.json';
+
+
 
 const cx = cacheExchange({
+  schema,
   keys: {
     ImageMetadataSummary: () => null,
     VideoMetadataSummary: () => null,
