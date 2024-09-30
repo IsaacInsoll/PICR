@@ -33,15 +33,21 @@ export default class Comment extends Model {
   declare comment: string;
 }
 
-export const CommentFor = (
+export const CommentFor = async (
   file: File,
   user: User,
-  systemGenerated: boolean = false,
+  systemGenerated?: object,
 ) => {
   const c = new Comment();
   c.folderId = file.folderId;
   c.fileId = file.id;
   c.userId = user.id;
-  c.systemGenerated = systemGenerated;
+  if (systemGenerated) {
+    c.systemGenerated = true;
+    c.comment = JSON.stringify(systemGenerated);
+    await c.save();
+  } else {
+    c.systemGenerated = false;
+  }
   return c;
 };
