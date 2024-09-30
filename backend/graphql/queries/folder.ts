@@ -1,13 +1,13 @@
 import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
-import { allSubFoldersRecursive, getFolder } from './resolverHelpers';
 import { createAccessLog } from '../../models/AccessLog';
 import { Folder } from '../../../graphql-types';
 import { GraphQLFieldResolver } from 'graphql/type';
 import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
-import { doAuthError } from '../../auth/doAuthError';
-import { Folder as GqlFolder } from '../../../graphql-types';
+import { getFolder } from '../helpers/getFolder';
+import { GraphQLID, GraphQLNonNull } from 'graphql/index';
+import { folderType } from '../types/folderType';
 
-export const folderResolver: GraphQLFieldResolver<
+const folderResolver: GraphQLFieldResolver<
   Folder,
   IncomingCustomHeaders
 > = async (_, params, context, info): Promise<Folder> => {
@@ -18,12 +18,8 @@ export const folderResolver: GraphQLFieldResolver<
   return data;
 };
 
-export const allFoldersResolver: GraphQLFieldResolver<
-  Folder,
-  IncomingCustomHeaders
-> = async (_, params, context, info): Promise<Folder[]> => {
-  const [permissions, u] = await perms(context, params.id, true);
-  if (permissions !== 'Admin') doAuthError('Access Denied');
-  const folders = (await allSubFoldersRecursive(params.id)) as unknown;
-  return folders as GqlFolder[];
+export const folder = {
+  type: new GraphQLNonNull(folderType),
+  resolve: folderResolver,
+  args: { id: { type: new GraphQLNonNull(GraphQLID) } },
 };

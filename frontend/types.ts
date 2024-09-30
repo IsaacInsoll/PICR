@@ -1,5 +1,6 @@
 import { MetadataSummary } from './src/gql/graphql';
 import {
+  FileFlag,
   FileType,
   ImageMetadataSummary,
   VideoMetadataSummary,
@@ -22,6 +23,9 @@ export interface MinimalFile {
   metadata?: ImageMetadataSummary | VideoMetadataSummary | null;
   fileSize?: number | null;
   type: FileType;
+  flag: FileFlag | null;
+  rating: number | null;
+  totalComments: number | null;
 }
 export interface MinimalSharedFolder {
   id: string;

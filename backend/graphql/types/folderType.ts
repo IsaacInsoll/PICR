@@ -6,11 +6,11 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { fileInterface } from './fileType';
 import { folderPermissionsType } from './folderPermissionsType';
 import { AllChildFolderIds, ParentFolders } from '../../auth/folderUtils';
 import Folder from '../../models/Folder';
 import File from '../../models/File';
+import { fileInterface } from '../interfaces/fileInterface';
 
 export const folderType = new GraphQLObjectType({
   name: 'Folder',
@@ -29,7 +29,9 @@ export const folderType = new GraphQLObjectType({
       },
     },
     files: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(fileInterface))),
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(fileInterface)),
+      ),
     },
     permissions: { type: folderPermissionsType },
     totalSize: {

@@ -16,24 +16,45 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+export type Comment = {
+  __typename?: 'Comment';
+  comment?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  systemGenerated: Scalars['Boolean']['output'];
+  timestamp: Scalars['DateTime']['output'];
+  user?: Maybe<User>;
+};
+
 export type File = FileInterface & {
   __typename?: 'File';
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
+  flag?: Maybe<FileFlag>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  rating?: Maybe<Scalars['Int']['output']>;
+  totalComments?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
+
+export enum FileFlag {
+  Approved = 'approved',
+  None = 'none',
+  Rejected = 'rejected'
+}
 
 export type FileInterface = {
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
+  flag?: Maybe<FileFlag>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  rating?: Maybe<Scalars['Int']['output']>;
+  totalComments?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
 
@@ -70,11 +91,14 @@ export type Image = FileInterface & {
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
+  flag?: Maybe<FileFlag>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;
   metadata?: Maybe<ImageMetadataSummary>;
   name: Scalars['String']['output'];
+  rating?: Maybe<Scalars['Int']['output']>;
+  totalComments?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
 
@@ -95,11 +119,21 @@ export type ImageMetadataSummary = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addComment: FileInterface;
   auth: Scalars['String']['output'];
   editAdminUser: User;
   editUser: User;
   generateThumbnails: Scalars['Boolean']['output'];
   generateZip: Scalars['String']['output'];
+};
+
+
+export type MutationAddCommentArgs = {
+  comment?: InputMaybe<Scalars['String']['input']>;
+  flag?: InputMaybe<FileFlag>;
+  id: Scalars['ID']['input'];
+  nickName?: InputMaybe<Scalars['String']['input']>;
+  rating?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -141,6 +175,7 @@ export type Query = {
   __typename?: 'Query';
   admins: Array<User>;
   allFolders: Array<Maybe<Folder>>;
+  comments: Array<Comment>;
   file: FileInterface;
   folder: Folder;
   me?: Maybe<User>;
@@ -152,6 +187,11 @@ export type Query = {
 
 export type QueryAllFoldersArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryCommentsArgs = {
+  fileId: Scalars['ID']['input'];
 };
 
 
@@ -208,11 +248,14 @@ export type Video = FileInterface & {
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
+  flag?: Maybe<FileFlag>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;
   metadata?: Maybe<VideoMetadataSummary>;
   name: Scalars['String']['output'];
+  rating?: Maybe<Scalars['Int']['output']>;
+  totalComments?: Maybe<Scalars['Int']['output']>;
   type: FileType;
 };
 

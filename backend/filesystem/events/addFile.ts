@@ -36,6 +36,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
       fileSize: stats.size,
       fileLastModified: stats.mtime,
       exists: true,
+      totalComments: 0,
     },
   });
   const modified =

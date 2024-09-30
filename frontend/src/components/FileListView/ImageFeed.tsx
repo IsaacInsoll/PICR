@@ -4,18 +4,18 @@ import { imageURL } from '../../helpers/imageURL';
 import { useMemo, useState } from 'react';
 import useMeasure from 'react-use-measure';
 import { LoadingIndicator } from '../LoadingIndicator';
-import { Box, Image, Skeleton, Title } from '@mantine/core';
+import { Box, Group, Image, Skeleton, Title } from '@mantine/core';
 import { Page } from '../Page';
 
 import { VideoBadge } from './VideoBadge';
 import { PicrImage } from '../PicrImage';
+import { FileRating } from './FileRating';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 export const ImageFeed = ({
   files,
   setSelectedFileId,
 }: FileListViewStyleComponentProps) => {
-  //TODO: reasonable max width on container
   return (
     <>
       <Box>
@@ -68,7 +68,10 @@ const FeedItem = ({
         {/*</Link>*/}
         {file.type == 'Video' ? <VideoBadge file={file} size="xl" /> : null}
       </Box>
-      <Title order={5}>{file.name}</Title>
+      <Group justify="space-between" pb="sm" pt={4}>
+        <Title order={5}>{file.name}</Title>
+        <FileRating file={file} />
+      </Group>
     </Page>
   );
 };

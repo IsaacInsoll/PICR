@@ -9,6 +9,9 @@ export const fileFragment = gql(/* GraphQL */ `
     fileHash
     fileSize
     fileLastModified
+    flag
+    rating
+    totalComments
     ... on Video {
       imageRatio
       duration
