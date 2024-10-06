@@ -6,8 +6,12 @@ import { CommentButton } from './CommentButton';
 import { useSetAtom } from 'jotai/index';
 import { commentDialogAtom } from '../../atoms/commentDialogAtom';
 import { addCommentMutation } from './AddCommentMutation';
+import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 
-export const FileRating = ({ file }: { file: MinimalFile }) => {
+export const FileComments = ({ file }: { file: MinimalFile }) => {
+  const { commentPermissions, canView, canEdit } = useCommentPermissions();
+  if (commentPermissions == 'none') return null;
+
   const [, mutate] = useMutation(addCommentMutation);
   const { id, flag, rating, totalComments } = file;
 

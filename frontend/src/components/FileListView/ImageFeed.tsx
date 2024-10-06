@@ -9,7 +9,7 @@ import { Page } from '../Page';
 
 import { VideoBadge } from './VideoBadge';
 import { PicrImage } from '../PicrImage';
-import { FileRating } from './FileRating';
+import { FileComments } from './FileComments';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 export const ImageFeed = ({
@@ -70,7 +70,7 @@ const FeedItem = ({
       </Box>
       <Group justify="space-between" pb="sm" pt={4}>
         <Title order={5}>{file.name}</Title>
-        <FileRating file={file} />
+        <FileComments file={file} />
       </Group>
     </Page>
   );

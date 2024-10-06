@@ -5,7 +5,10 @@ import { useQuery } from 'urql';
 import { User } from '../../../graphql-types';
 import { getUUID } from '../Router';
 
-export const useMe = (): Pick<User, 'id' | 'name' | 'folderId'> | null => {
+export const useMe = (): Pick<
+  User,
+  'id' | 'name' | 'folderId' | 'commentPermissions'
+> | null => {
   console.log('useMe()');
   const token = useAtomValue(authKeyAtom);
   const uuid = getUUID();
@@ -19,6 +22,7 @@ const meQuery = gql(/* GraphQL */ `
       id
       name
       folderId
+      commentPermissions
     }
   }
 `);

@@ -10,6 +10,8 @@ export const FileRatingFlag = ({
   flag: FileFlag;
   onChange: (flag: FileFlag) => void;
 }) => {
+  // We can't really use disabled prop on this as it removes color from box which is essential to the UI
+
   const [loading, setLoading] = useState(false);
   const setFlag = async (flag: FileFlag) => {
     setLoading(true);
