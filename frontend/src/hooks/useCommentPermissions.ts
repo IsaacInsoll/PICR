@@ -6,13 +6,15 @@ export const useCommentPermissions = (): UseCommentPermissionsResult => {
   const perms = me.commentPermissions ?? CommentPermissions.None;
   return {
     commentPermissions: perms,
-    canView: perms == CommentPermissions.Read,
+    isNone: perms == CommentPermissions.None,
+    readOnly: perms == CommentPermissions.Read,
     canEdit: perms == CommentPermissions.Edit,
   };
 };
 
 interface UseCommentPermissionsResult {
   commentPermissions: CommentPermissions;
-  canView: boolean;
+  readOnly: boolean;
   canEdit: boolean;
+  isNone: boolean;
 }

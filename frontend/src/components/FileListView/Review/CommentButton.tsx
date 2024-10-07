@@ -1,6 +1,7 @@
 import { ActionIcon, Indicator } from '@mantine/core';
 import { BiComment, BiCommentDetail } from 'react-icons/bi';
 
+// A button showing total comments, click to view/add comments
 export const CommentButton = ({
   totalComments,
   onClick,

@@ -3,7 +3,8 @@ import { TbThumbDown, TbThumbUp } from 'react-icons/tb';
 import { FileFlag } from '../../../../../graphql-types';
 import { useState } from 'react';
 
-export const FileRatingFlag = ({
+// Buttons to `approve` and `reject` the selected file
+export const FileFlagButtons = ({
   flag,
   onChange,
 }: {

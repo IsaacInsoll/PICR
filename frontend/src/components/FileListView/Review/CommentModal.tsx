@@ -9,16 +9,17 @@ import {
   Textarea,
   Timeline,
 } from '@mantine/core';
-import { commentDialogAtom } from '../../atoms/commentDialogAtom';
+import { commentDialogAtom } from '../../../atoms/commentDialogAtom';
 import { useAtom } from 'jotai/index';
-import { LoadingIndicator } from '../LoadingIndicator';
+import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
-import { gql } from '../../helpers/gql';
+import { gql } from '../../../helpers/gql';
 import { useMutation, useQuery } from 'urql';
-import { MinimalFile } from '../../../types';
+import { MinimalFile } from '../../../../types';
 import { CommentBodyItem } from './CommentBodyItem';
-import { addCommentMutation } from '../FileListView/AddCommentMutation';
-import { useIsMobile } from '../../hooks/useIsMobile';
+import { addCommentMutation } from './addCommentMutation';
+import { useIsMobile } from '../../../hooks/useIsMobile';
+import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 
 export const CommentModal = () => {
   const [data, setData] = useAtom(commentDialogAtom);
@@ -52,6 +53,7 @@ const CommentBody = ({ file }: { file: MinimalFile }) => {
   const [, mutate] = useMutation(addCommentMutation);
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const { commentPermissions, readOnly, canEdit } = useCommentPermissions();
 
   const onSubmit = async () => {
     setSubmitting(true);
@@ -72,25 +74,29 @@ const CommentBody = ({ file }: { file: MinimalFile }) => {
           ))}
         </Timeline>
       </ScrollArea>
-      <Divider />
-      <Textarea
-        label="Add Comment"
-        value={text}
-        onChange={(event) => setText(event.currentTarget.value)}
-        autosize
-        minRows={2}
-        maxRows={4}
-      />
-      <Group justify="end">
-        <Button
-          variant="filled"
-          disabled={text.length == 0}
-          onClick={onSubmit}
-          loading={submitting}
-        >
-          Add Comment
-        </Button>
-      </Group>
+      {canEdit ? (
+        <>
+          <Divider />
+          <Textarea
+            label="Add Comment"
+            value={text}
+            onChange={(event) => setText(event.currentTarget.value)}
+            autosize
+            minRows={2}
+            maxRows={4}
+          />
+          <Group justify="end">
+            <Button
+              variant="filled"
+              disabled={text.length == 0}
+              onClick={onSubmit}
+              loading={submitting}
+            >
+              Add Comment
+            </Button>
+          </Group>
+        </>
+      ) : null}
     </Stack>
   );
 };

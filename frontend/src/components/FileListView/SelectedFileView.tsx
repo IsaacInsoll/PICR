@@ -27,7 +27,8 @@ import { useSetFolder } from '../../hooks/useSetFolder';
 import { useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Paper, Portal } from '@mantine/core';
-import { FileComments } from './FileComments';
+import { FileReview } from './Review/FileReview';
+import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 
 export const SelectedFileView = ({
   files,
@@ -143,9 +144,11 @@ const filesForLightbox = (files: MinimalFile[]): Slide[] => {
 };
 
 const LightboxFileRating = ({ selected }: { selected: MinimalFile }) => {
+  const { isNone } = useCommentPermissions();
+  if (isNone) return null;
   return (
     <Paper style={{ position: 'absolute', bottom: 0 }} p="xs">
-      <FileComments file={selected} />
+      <FileReview file={selected} />
     </Paper>
   );
 };

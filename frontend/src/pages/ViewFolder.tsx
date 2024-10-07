@@ -18,7 +18,7 @@ import { DownloadZipButton } from '../components/DownloadZipButton';
 import { Button, Group, Title } from '@mantine/core';
 import { TbSettings } from 'react-icons/tb';
 import { useSetFolder } from '../hooks/useSetFolder';
-import { CommentModal } from '../components/comments/CommentModal';
+import { CommentModal } from '../components/FileListView/Review/CommentModal';
 
 // This component is used in the 'public URL' and 'private URL' routes, so this is how we determine where each link should point
 export const useBaseViewFolderURL = () => {
