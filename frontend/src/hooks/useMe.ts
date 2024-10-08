@@ -9,7 +9,7 @@ export const useMe = (): Pick<
   User,
   'id' | 'name' | 'folderId' | 'commentPermissions'
 > | null => {
-  console.log('useMe()');
+  // console.log('useMe()');
   const token = useAtomValue(authKeyAtom);
   const uuid = getUUID();
   const [result] = useQuery({ query: meQuery, pause: !token && !uuid });

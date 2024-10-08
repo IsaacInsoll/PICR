@@ -3,10 +3,12 @@ import { FileListViewStyleComponentProps } from './FolderContentsView';
 import prettyBytes from 'pretty-bytes';
 import { PicrColumns, PicrDataGrid } from '../PicrDataGrid';
 import { Page } from '../Page';
-import { Menu } from '@mantine/core';
+import { Menu, Rating } from '@mantine/core';
 import { TbCloudDownload, TbFile, TbInfoCircle } from 'react-icons/tb';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { imageURL } from '../../helpers/imageURL';
+import { useCommentPermissions } from '../../hooks/useCommentPermissions';
+import { FileFlagBadge } from './Review/FileFlagBadge';
 
 export const FileDataListView = ({
   files,
@@ -14,6 +16,8 @@ export const FileDataListView = ({
   folderId,
 }: FileListViewStyleComponentProps) => {
   const setFolder = useSetFolder();
+  const { canView } = useCommentPermissions();
+  const cols = columns.filter(({ isComment }) => canView || !isComment);
 
   const fileMenuItems = ({ row }) => {
     const f: MinimalFile = row.original;
@@ -51,7 +55,7 @@ export const FileDataListView = ({
   return (
     <Page>
       <PicrDataGrid
-        columns={columns}
+        columns={cols}
         data={files}
         onClick={(row) => setSelectedFileId(row.id)}
         menuItems={fileMenuItems}
@@ -60,12 +64,42 @@ export const FileDataListView = ({
   );
 };
 
-const columns: PicrColumns<MinimalFile>[] = [
+const columns: (PicrColumns<MinimalFile> & { isComment: boolean })[] = [
   { accessorKey: 'name', header: 'Name' },
-  { accessorKey: 'type', header: 'Type' },
+  { accessorKey: 'type', header: 'Type', size: 10 },
+  {
+    accessorKey: 'rating',
+    header: 'Rating',
+    isComment: true,
+    Cell: ({ cell }) => {
+      const rating = cell.getValue();
+      return rating > 0 ? <Rating readOnly value={rating} /> : null;
+    },
+  },
+  {
+    accessorKey: 'flag',
+    header: 'Flag',
+    size: 10,
+    isComment: true,
+    Cell: ({ cell }) => <FileFlagBadge flag={cell.getValue()} />,
+  },
+  {
+    accessorKey: 'totalComments',
+    header: 'Comments',
+    size: 10,
+    Cell: ({ cell }) => {
+      const totalComments = cell.getValue();
+      return totalComments > 0 ? totalComments : '';
+    },
+    isComment: true,
+  },
   {
     accessorKey: 'fileSize',
     header: 'File Size',
-    accessorFn: ({ fileSize }) => (fileSize ? prettyBytes(fileSize) : null),
+    Cell: ({ cell }) => {
+      const fileSize = cell.getValue();
+      return <>{fileSize ? prettyBytes(fileSize) : null}</>;
+    },
+    size: 10,
   },
 ];

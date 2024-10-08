@@ -7,6 +7,7 @@ export const useCommentPermissions = (): UseCommentPermissionsResult => {
   return {
     commentPermissions: perms,
     isNone: perms == CommentPermissions.None,
+    canView: perms != CommentPermissions.None,
     readOnly: perms == CommentPermissions.Read,
     canEdit: perms == CommentPermissions.Edit,
   };
