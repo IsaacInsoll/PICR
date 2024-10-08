@@ -2,9 +2,15 @@ import { ActionIcon } from '@mantine/core';
 import { TbThumbDown, TbThumbUp } from 'react-icons/tb';
 import { FileFlag } from '../../../../../graphql-types';
 import { useState } from 'react';
-import { fileFlagStyles } from './FileFlagBadge';
+
+import {
+  approvedFlagStyle,
+  fileFlagStyles,
+  rejectedFlagStyle,
+} from './fileFlagStyles';
 
 // Buttons to `approve` and `reject` the selected file
+
 export const FileFlagButtons = ({
   flag,
   onChange,
@@ -30,19 +36,19 @@ export const FileFlagButtons = ({
         variant={isApproved ? 'filled' : 'default'}
         onClick={() => setFlag(!isApproved ? 'approved' : 'none')}
         title="Approve"
-        color={fileFlagStyles['approved'].color}
+        color={approvedFlagStyle.color}
         loading={loading}
       >
-        {fileFlagStyles['approved'].icon}
+        {approvedFlagStyle.icon}
       </ActionIcon>
       <ActionIcon
         variant={isRejected ? 'filled' : 'default'}
         onClick={() => setFlag(!isRejected ? 'rejected' : 'none')}
         title="Reject"
-        color={fileFlagStyles['rejected'].color}
+        color={rejectedFlagStyle.color}
         loading={loading}
       >
-        {fileFlagStyles['rejected'].icon}
+        {rejectedFlagStyle.icon}
       </ActionIcon>
     </>
   );

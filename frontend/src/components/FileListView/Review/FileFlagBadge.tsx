@@ -1,8 +1,6 @@
 import { FileFlag } from '../../../../../graphql-types';
 import { Badge } from '@mantine/core';
-import { ReactNode } from 'react';
-import { TbThumbDown, TbThumbUp } from 'react-icons/tb';
-import { MdOutlineThumbsUpDown } from 'react-icons/md';
+import { fileFlagStyles } from './fileFlagStyles';
 
 interface FileFlagBadgeProps {
   flag: FileFlag;
@@ -25,14 +23,3 @@ export const FileFlagBadge = ({ flag, hideIfNone }: FileFlagBadgeProps) => {
     </Badge>
   );
 };
-
-export const fileFlagStyles: { [key in FileFlag]: FlagStyles } = {
-  [FileFlag.Approved]: { color: 'green', icon: <TbThumbUp /> },
-  [FileFlag.Rejected]: { color: 'red', icon: <TbThumbDown /> },
-  [FileFlag.None]: { color: 'gray', icon: <MdOutlineThumbsUpDown /> },
-};
-
-interface FlagStyles {
-  color: string;
-  icon: ReactNode;
-}
