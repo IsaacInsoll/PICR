@@ -13,6 +13,7 @@ const resolver = async (_, params, context) => {
   const file = await File.findByPk(params.id);
   const [p, user] = await perms(context, file.folderId, true);
   if (p == 'None') doAuthError("You don't have permissions for this folder");
+  if (user.commentPermissions != 'edit') doAuthError('Not allowed to comment');
 
   //TODO: set rating, flag
   if (params.rating != null) {

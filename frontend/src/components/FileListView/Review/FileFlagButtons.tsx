@@ -2,6 +2,7 @@ import { ActionIcon } from '@mantine/core';
 import { TbThumbDown, TbThumbUp } from 'react-icons/tb';
 import { FileFlag } from '../../../../../graphql-types';
 import { useState } from 'react';
+import { fileFlagStyles } from './FileFlagBadge';
 
 // Buttons to `approve` and `reject` the selected file
 export const FileFlagButtons = ({
@@ -29,19 +30,19 @@ export const FileFlagButtons = ({
         variant={isApproved ? 'filled' : 'default'}
         onClick={() => setFlag(!isApproved ? 'approved' : 'none')}
         title="Approve"
-        color="green"
+        color={fileFlagStyles['approved'].color}
         loading={loading}
       >
-        <TbThumbUp />
+        {fileFlagStyles['approved'].icon}
       </ActionIcon>
       <ActionIcon
         variant={isRejected ? 'filled' : 'default'}
         onClick={() => setFlag(!isRejected ? 'rejected' : 'none')}
         title="Reject"
-        color="red"
+        color={fileFlagStyles['rejected'].color}
         loading={loading}
       >
-        <TbThumbDown />
+        {fileFlagStyles['rejected'].icon}
       </ActionIcon>
     </>
   );
