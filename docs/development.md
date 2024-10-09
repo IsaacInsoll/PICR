@@ -21,9 +21,9 @@ For front end development you definitely want to use the 6969 address. For backe
 | `npm run release`              | Tag new version, build+push docker images | Run when we have something 'release worthy'                                                            |
 
 
-| Folder   | Description                                            |
-|----------|--------------------------------------------------------|
-| `src`      | Node server source                                     |
+| Folder     | Description                                            |
+|------------|--------------------------------------------------------|
+| `backend`  | Node server source                                     |
 | `dist`     | *Compiled* Node Server Source                          |
 | `frontend` | React frontend source                                  |
 | `public`   | *Compiled* React front end and any other static assets |
@@ -39,8 +39,20 @@ Troubleshooting:
 
 
 # Initial Setup
+
+1. Install `node`, `npm`, `docker` if they aren't already installed
+2. Clone PICR repo
+3. Set up DB server (`docker-compose.yml` below)
+4. Set up `.env` file (below)
+5. Install deps (`npm install && cd frontend && npm install && cd ..`)
+6. Create empty `cache` folder and a `media` folder with some subfolders of images
+7. `npm start`
+8. Visit http://localhost:6969 and use login `admin` / `picr1234` to get started
+
 ### Database Server
 You will need a DB server running, something like this works great:
+
+#### `docker-compose.yml`
 ```yaml
 # Dev composer file: only a database as PICR server running locally
 services:
@@ -54,10 +66,11 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - ./database:/var/lib/postgresql/data
 ```
+Run a `docker compose up` to make sure it works correctly
 
-### Sample `.ENV`
+#### `.ENV`
 Copy this, make changes as necessary
 ```dotenv
 DEBUG_SQL=false
@@ -74,7 +87,8 @@ GITHUB_TOKEN="f941e0..." #only needed if wanting to do releases
 Run `npm install && cd frontend && npm install && cd ..` so that all dependencies are installed
 
 ### Set up folders
-- Create `data` and `cache` folders. These can be empty as this is where DB stores data and where PICR stores thumbnails/zips.
+- Create empty`cache` folder. These is where DB stores data and where PICR stores thumbnails/zips.  
+  You can delete the contents of this folder at any time without fear.
 - Create a `media` folder which should have a few subfolders and put a couple of images in each folder. 
   For example, create a `people` and `pets` folder and put a few pics in each.
 
