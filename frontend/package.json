@@ -13,8 +13,8 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.20",
-    "@types/react": "^18.2.58",
-    "@types/react-dom": "^18.2.19",
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/typescript-estree": "^7.0.2",
     "@uidotdev/usehooks": "^2.4.1",
@@ -33,9 +33,9 @@
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.45",
     "pretty-bytes": "^6.1.1",
-    "react": "^18.2.0",
+    "react": "19.0.0-rc-70fb1363-20241010",
     "react-blurhash": "^0.3.0",
-    "react-dom": "^18.2.0",
+    "react-dom": "19.0.0-rc-70fb1363-20241010",
     "react-grid-gallery": "^1.0.1-alpha.0",
     "react-helmet-async": "^2.0.5",
     "react-icons": "^5.0.1",
@@ -81,5 +81,9 @@
     "postcss-preset-mantine": "^1.15.0",
     "postcss-simple-vars": "^7.0.1"
   },
-  "proxy": "http://localhost:6900/"
+  "proxy": "http://localhost:6900/",
+  "overrides": {
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc"
+  }
 }
