@@ -1,9 +1,7 @@
 import {
-  Box,
   Button,
   Divider,
   Group,
-  Modal,
   ScrollArea,
   Stack,
   Textarea,
@@ -13,13 +11,14 @@ import { commentDialogAtom } from '../../../atoms/commentDialogAtom';
 import { useAtom } from 'jotai/index';
 import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
-import { gql } from '../../../helpers/gql';
 import { useMutation, useQuery } from 'urql';
 import { MinimalFile } from '../../../../types';
 import { CommentBodyItem } from './CommentBodyItem';
-import { addCommentMutation } from './addCommentMutation';
-import { useIsMobile } from '../../../hooks/useIsMobile';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
+import { PicrModal } from '../../PicrModal';
+import { addCommentMutation } from './AddCommentMutation';
+import { useIsMobile } from '../../../hooks/useIsMobile';
+import { gql } from '../../../helpers/gql';
 
 export const CommentModal = () => {
   const [data, setData] = useAtom(commentDialogAtom);
@@ -30,7 +29,7 @@ export const CommentModal = () => {
 
   return (
     <>
-      <Modal
+      <PicrModal
         opened={open}
         onClose={onClose}
         title={'Comments on ' + file?.name}
@@ -39,7 +38,7 @@ export const CommentModal = () => {
         <Suspense fallback={<LoadingIndicator />}>
           <CommentBody file={file} />
         </Suspense>
-      </Modal>
+      </PicrModal>
     </>
   );
 };
