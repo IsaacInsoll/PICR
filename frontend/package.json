@@ -36,7 +36,6 @@
     "react": "19.0.0-rc-70fb1363-20241010",
     "react-blurhash": "^0.3.0",
     "react-dom": "19.0.0-rc-70fb1363-20241010",
-    "react-grid-gallery": "^1.0.1-alpha.0",
     "react-helmet-async": "^2.0.5",
     "react-icons": "^5.0.1",
     "react-router-dom": "^6.22.1",
