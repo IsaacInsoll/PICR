@@ -13,14 +13,14 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  query commentHistoryQuery($fileId: ID!) {\n    comments(fileId: $fileId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n    }\n  }\n": types.CommentHistoryQueryDocument,
     "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n": types.AddCommentDocument,
-    "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n    }\n  }\n": types.MeQueryDocument,
+    "\n  query commentHistoryQuery($fileId: ID!) {\n    comments(fileId: $fileId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n    }\n  }\n": types.CommentHistoryQueryDocument,
+    "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      commentPermissions\n    }\n  }\n": types.MeQueryDocument,
     "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    flag\n    rating\n    totalComments\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    name\n    parentId\n    permissions\n    parents {\n      id\n      name\n    }\n  }\n": types.FolderFragmentFragmentDoc,
     "\n  fragment ImageMetadataFragment on Image {\n    ... on Image {\n      metadata {\n        Camera\n        Lens\n        Artist\n        DateTimeOriginal\n        DateTimeEdit\n        Aperture\n        ExposureTime\n        ISO\n        Width\n        Height\n        Rating\n      }\n    }\n  }\n": types.ImageMetadataFragmentFragmentDoc,
     "\n  fragment MinimumFolderFragment on Folder {\n    id\n    name\n    parentId\n  }\n": types.MinimumFolderFragmentFragmentDoc,
-    "\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n": types.UserFragmentFragmentDoc,
+    "\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    commentPermissions\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n": types.UserFragmentFragmentDoc,
     "\n  fragment VideoMetadataFragment on Video {\n    ... on Video {\n      metadata {\n        Bitrate\n        Duration\n        Format\n        VideoCodec\n        VideoCodecDescription\n        Width\n        Height\n        Framerate\n        AudioCodec\n        AudioCodecDescription\n      }\n    }\n  }\n": types.VideoMetadataFragmentFragmentDoc,
     "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
     "\n  mutation EditUserMutation(\n    $id: ID\n    $name: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n    ) {\n      ...UserFragment\n    }\n  }\n": types.EditUserMutationDocument,
@@ -53,15 +53,15 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query commentHistoryQuery($fileId: ID!) {\n    comments(fileId: $fileId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  query commentHistoryQuery($fileId: ID!) {\n    comments(fileId: $fileId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
 export function graphql(source: "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n"): (typeof documents)["\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n    }\n  }\n"): (typeof documents)["\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n    }\n  }\n"];
+export function graphql(source: "\n  query commentHistoryQuery($fileId: ID!) {\n    comments(fileId: $fileId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  query commentHistoryQuery($fileId: ID!) {\n    comments(fileId: $fileId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      commentPermissions\n    }\n  }\n"): (typeof documents)["\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      commentPermissions\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -81,7 +81,7 @@ export function graphql(source: "\n  fragment MinimumFolderFragment on Folder {\
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    commentPermissions\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    commentPermissions\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

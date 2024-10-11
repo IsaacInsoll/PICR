@@ -4,18 +4,24 @@ import { ViewFolder } from './pages/ViewFolder';
 import { ManageUsers } from './pages/ManageUsers';
 import { PageNotFound } from './pages/PageNotFound';
 import { useMe } from './hooks/useMe';
+import { FileViewType } from './hooks/useSetFolder';
+
+const folderRoute = '/:folderId/:fileId?/:fileView?';
+
+export interface FolderRouteParams {
+  folderId: string;
+  fileId?: string;
+  fileView?: FileViewType;
+}
 
 //note: if adding public paths not starting with `/s/:uuid/*` then edit getUUID below as urqlClient.ts depends on it
 export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
   return (
     <Routes>
-      <Route path="/s/:uuid/:folderId/:fileId?" element={<ViewFolder />} />
+      <Route path={`/s/:uuid/${folderRoute}`} element={<ViewFolder />} />
       {loggedIn ? (
         <>
-          <Route
-            path="/admin/f/:folderId/:fileId?/:fileView?"
-            element={<ViewFolder />}
-          />
+          <Route path={`/admin/f${folderRoute}`} element={<ViewFolder />} />
           <Route path="/admin/users/:userId?" element={<ManageUsers />} />
           <Route path="/" element={<HomePage />} />
         </>

@@ -1,14 +1,10 @@
 import { MinimalFile } from '../../../types';
-import {
-  selectedViewAtom,
-  useSelectedView,
-  viewOptions,
-} from '../ViewSelector';
+import { selectedViewAtom, viewOptions } from '../ViewSelector';
 import { GridGallery } from './GridGallery';
 import { FileDataListView } from './FileDataListView';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { ImageFeed } from './ImageFeed';
-import { SelectedFileView } from './SelectedFileView';
+import { SelectedFileView } from './SelectedFile/SelectedFileView';
 import {
   filterAtom,
   filterOptions,
@@ -22,7 +18,7 @@ import { Tabs, Transition } from '@mantine/core';
 import { Page } from '../Page';
 import { useParams } from 'react-router-dom';
 import { useSetFolder } from '../../hooks/useSetFolder';
-import { FileInfo } from './FileInfo';
+import { FolderRouteParams } from '../../Router';
 
 export interface FileListViewProps {
   files: MinimalFile[];
@@ -37,14 +33,12 @@ export interface FileListViewStyleComponentProps {
 }
 
 export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
-  const { fileId, fileView } = useParams();
+  const { fileId, fileView } = useParams<FolderRouteParams>();
   const setFolder = useSetFolder();
   const [view, setView] = useAtom(selectedViewAtom);
   const filtering = useAtomValue(filterAtom);
   const filters = useAtomValue(filterOptions);
   const resetFilters = useSetAtom(resetFilterOptions);
-
-  const fileDetails = fileId && files.find((f) => f.id == fileId);
 
   const setSelectedFileId = (fileId: string | undefined) => {
     const file = fileId ? { id: fileId } : undefined;
@@ -72,21 +66,12 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
       </Transition>
       {fileId ? ( // SelectedFileView react lightbox 'blocks' fileinfo so we can't have them on at the same time
         <>
-          {!fileView ? (
-            <SelectedFileView
-              files={filteredFiles}
-              setSelectedFileId={setSelectedFileId}
-              selectedFileId={fileId}
-              folderId={folderId}
-            />
-          ) : null}
-          {fileView == 'info' ? (
-            <FileInfo
-              file={fileDetails}
-              onClose={() => history.back()}
-              // onClose={() => setFolder({ id: folderId }, fileDetails)}
-            />
-          ) : null}
+          <SelectedFileView
+            files={filteredFiles}
+            setSelectedFileId={setSelectedFileId}
+            selectedFileId={fileId}
+            folderId={folderId}
+          />
         </>
       ) : null}
       <Tabs value={view} onChange={setView}>

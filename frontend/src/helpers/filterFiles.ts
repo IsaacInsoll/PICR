@@ -18,7 +18,8 @@ export const filterFiles = (
     return (
       ratioFilter(file, ratio) &&
       textFilter(file, searchText) &&
-      metadataFilter(file, metadata)
+      metadataFilter(file, metadata) &&
+      commentsFilter(file, filters)
     );
   });
 };
@@ -54,4 +55,30 @@ const metadataFilter = (
     }
   });
   return allowed;
+};
+
+const commentsFilter = (
+  file: MinimalFile,
+  filters: FilterOptionsInterface,
+): boolean => {
+  const { flag, rating, ratingComparison } = filters;
+  const flagOk =
+    flag == null || file.flag == flag || (flag == 'none' && !file.flag);
+  if (!flagOk) return false;
+  if (ratingComparison) {
+    const r = file.rating ?? 0;
+    console.log([ratingComparison, file.rating, rating]);
+    switch (ratingComparison) {
+      case 'equal':
+        if (r != rating) return false;
+        break;
+      case 'greaterThan':
+        if (!(r >= rating)) return false;
+        break;
+      case 'lessThan':
+        if (!(r <= rating)) return false;
+        break;
+    }
+  }
+  return true;
 };

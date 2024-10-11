@@ -1,5 +1,4 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
-import { type } from 'node:os';
 
 const config: CodegenConfig = {
   overwrite: true,
@@ -25,24 +24,7 @@ const config: CodegenConfig = {
     // for importing types into server TS files
     '../graphql-types.ts': {
       plugins: ['typescript', 'typescript-operations'],
-      config: {
-        // declarationKind: {
-        //   union: type,
-        //   type: 'interface',
-        //   input: 'interface',
-        //   scalar: 'interface',
-        //   arguments: 'interface',
-        //   interface: 'interface',
-        // },
-        // includeDirectives: true,
-        // commentDescriptions: true,
-        // flattenGeneratedTypes: true,
-        // avoidOptionals: {
-        //   field: false,
-        //   object: false,
-        //   inputValue: false,
-        // },
-      },
+      config: {},
     },
   },
 };

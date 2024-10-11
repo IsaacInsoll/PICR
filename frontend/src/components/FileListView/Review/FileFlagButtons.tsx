@@ -3,13 +3,23 @@ import { TbThumbDown, TbThumbUp } from 'react-icons/tb';
 import { FileFlag } from '../../../../../graphql-types';
 import { useState } from 'react';
 
-export const FileRatingFlag = ({
+import {
+  approvedFlagStyle,
+  fileFlagStyles,
+  rejectedFlagStyle,
+} from './fileFlagStyles';
+
+// Buttons to `approve` and `reject` the selected file
+
+export const FileFlagButtons = ({
   flag,
   onChange,
 }: {
   flag: FileFlag;
   onChange: (flag: FileFlag) => void;
 }) => {
+  // We can't really use disabled prop on this as it removes color from box which is essential to the UI
+
   const [loading, setLoading] = useState(false);
   const setFlag = async (flag: FileFlag) => {
     setLoading(true);
@@ -26,19 +36,19 @@ export const FileRatingFlag = ({
         variant={isApproved ? 'filled' : 'default'}
         onClick={() => setFlag(!isApproved ? 'approved' : 'none')}
         title="Approve"
-        color="green"
+        color={approvedFlagStyle.color}
         loading={loading}
       >
-        <TbThumbUp />
+        {approvedFlagStyle.icon}
       </ActionIcon>
       <ActionIcon
         variant={isRejected ? 'filled' : 'default'}
         onClick={() => setFlag(!isRejected ? 'rejected' : 'none')}
         title="Reject"
-        color="red"
+        color={rejectedFlagStyle.color}
         loading={loading}
       >
-        <TbThumbDown />
+        {rejectedFlagStyle.icon}
       </ActionIcon>
     </>
   );

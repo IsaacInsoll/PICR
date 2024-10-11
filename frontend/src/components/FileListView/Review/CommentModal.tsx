@@ -1,32 +1,31 @@
 import {
-  Box,
   Button,
   Divider,
   Group,
-  Modal,
   ScrollArea,
   Stack,
   Textarea,
   Timeline,
 } from '@mantine/core';
-import { commentDialogAtom } from '../../atoms/commentDialogAtom';
-import { useAtom } from 'jotai/index';
-import { LoadingIndicator } from '../LoadingIndicator';
+import { closeModalAtom, modalAtom } from '../../../atoms/modalAtom';
+import { useAtom, useSetAtom } from 'jotai/index';
+import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
-import { gql } from '../../helpers/gql';
 import { useMutation, useQuery } from 'urql';
-import { MinimalFile } from '../../../types';
+import { MinimalFile } from '../../../../types';
 import { CommentBodyItem } from './CommentBodyItem';
-import { addCommentMutation } from '../FileListView/AddCommentMutation';
-import { useIsMobile } from '../../hooks/useIsMobile';
-import { PicrModal } from '../PicrModal';
+import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
+import { PicrModal } from '../../PicrModal';
+import { addCommentMutation } from './AddCommentMutation';
+import { useIsMobile } from '../../../hooks/useIsMobile';
+import { gql } from '../../../helpers/gql';
+import { useAtomValue } from 'jotai';
 
 export const CommentModal = () => {
-  const [data, setData] = useAtom(commentDialogAtom);
-  const isMobile = useIsMobile();
-  const { file, open } = data;
+  const { file, open } = useAtomValue(modalAtom);
+  const onClose = useSetAtom(closeModalAtom);
 
-  const onClose = () => setData((d) => ({ ...d, open: false }));
+  const isMobile = useIsMobile();
 
   return (
     <>
@@ -53,6 +52,7 @@ const CommentBody = ({ file }: { file: MinimalFile }) => {
   const [, mutate] = useMutation(addCommentMutation);
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const { commentPermissions, readOnly, canEdit } = useCommentPermissions();
 
   const onSubmit = async () => {
     setSubmitting(true);
@@ -73,25 +73,29 @@ const CommentBody = ({ file }: { file: MinimalFile }) => {
           ))}
         </Timeline>
       </ScrollArea>
-      <Divider />
-      <Textarea
-        label="Add Comment"
-        value={text}
-        onChange={(event) => setText(event.currentTarget.value)}
-        autosize
-        minRows={2}
-        maxRows={4}
-      />
-      <Group justify="end">
-        <Button
-          variant="filled"
-          disabled={text.length == 0}
-          onClick={onSubmit}
-          loading={submitting}
-        >
-          Add Comment
-        </Button>
-      </Group>
+      {canEdit ? (
+        <>
+          <Divider />
+          <Textarea
+            label="Add Comment"
+            value={text}
+            onChange={(event) => setText(event.currentTarget.value)}
+            autosize
+            minRows={2}
+            maxRows={4}
+          />
+          <Group justify="end">
+            <Button
+              variant="filled"
+              disabled={text.length == 0}
+              onClick={onSubmit}
+              loading={submitting}
+            >
+              Add Comment
+            </Button>
+          </Group>
+        </>
+      ) : null}
     </Stack>
   );
 };

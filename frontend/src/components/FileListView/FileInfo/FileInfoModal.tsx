@@ -1,27 +1,23 @@
-import { useMediaQuery } from '@mantine/hooks';
-import { Box, Card, Group, Modal, Table, Text } from '@mantine/core';
-import { MinimalFile } from '../../../types';
-
-import { metadataIcons } from './metadataIcons';
+import { Box, Group, Table } from '@mantine/core';
+import { MinimalFile } from '../../../../types';
 import prettyBytes from 'pretty-bytes';
-import { prettyDate } from './Filtering/PrettyDate';
-import { PicrImage } from '../PicrImage';
-import { formatMetadataValue } from '../../metadata/formatMetadataValue';
-import { MetadataTableRows } from '../../metadata/metadataTableRows';
-import { useIsMobile } from '../../hooks/useIsMobile';
+import { prettyDate } from '../Filtering/PrettyDate';
+import { PicrImage } from '../../PicrImage';
+import { MetadataTableRows } from './metadataTableRows';
+import { useIsMobile } from '../../../hooks/useIsMobile';
+import { PicrModal } from '../../PicrModal';
+import { StatCard } from './StatCard';
+import { useAtomValue, useSetAtom } from 'jotai/index';
+import { closeModalAtom, modalAtom } from '../../../atoms/modalAtom';
 
-export const FileInfo = ({
-  file,
-  onClose,
-}: {
-  file: MinimalFile;
-  onClose: (file: File) => void;
-}) => {
+export const FileInfoModal = () => {
+  const { file, open } = useAtomValue(modalAtom);
+  const onClose = useSetAtom(closeModalAtom);
   const isMobile = useIsMobile();
 
   return (
-    <Modal
-      opened={true}
+    <PicrModal
+      opened={open}
       centered={true}
       onClose={onClose}
       title={file.type + ' Details: ' + file.name}
@@ -52,19 +48,6 @@ export const FileInfo = ({
           <Table.Tbody>{MetadataTableRows(file)}</Table.Tbody>
         </Table>
       ) : null}
-    </Modal>
-  );
-};
-
-const StatCard = ({ value, label }: { value: string; label: string }) => {
-  return (
-    <Card style={{ flexGrow: 1 }}>
-      <Text fz="lg" fw={500}>
-        {value}
-      </Text>
-      <Text fz="xs" tt="uppercase" fw={700} c="dimmed">
-        {label}
-      </Text>
-    </Card>
+    </PicrModal>
   );
 };

@@ -25,6 +25,12 @@ export type Comment = {
   user?: Maybe<User>;
 };
 
+export enum CommentPermissions {
+  Edit = 'edit',
+  None = 'none',
+  Read = 'read'
+}
+
 export type File = FileInterface & {
   __typename?: 'File';
   fileHash: Scalars['String']['output'];
@@ -233,6 +239,7 @@ export type Task = {
 
 export type User = {
   __typename?: 'User';
+  commentPermissions?: Maybe<CommentPermissions>;
   enabled?: Maybe<Scalars['Boolean']['output']>;
   folder?: Maybe<Folder>;
   folderId: Scalars['ID']['output'];

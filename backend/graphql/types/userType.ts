@@ -6,6 +6,7 @@ import {
   GraphQLString,
 } from 'graphql';
 import { folderType } from './folderType';
+import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 
 export const userType = new GraphQLObjectType({
   name: 'User',
@@ -17,5 +18,6 @@ export const userType = new GraphQLObjectType({
     enabled: { type: GraphQLBoolean },
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     folder: { type: folderType },
+    commentPermissions: { type: commentPermissionsEnum },
   }),
 });

@@ -1,5 +1,6 @@
 import { atom } from 'jotai/index';
 import { MetadataOptionsForFiltering } from '../helpers/metadataForFiltering';
+import { FileFlag } from '../../../graphql-types';
 
 export const filterAtom = atom<boolean>(false); // is filtering enabled?
 
@@ -9,16 +10,24 @@ export type AspectFilterOptions =
   | 'Square'
   | 'Portrait';
 
+export type RatingsComparisonOptions = 'equal' | 'lessThan' | 'greaterThan';
+
 export interface FilterOptionsInterface {
   ratio: AspectFilterOptions;
   searchText: string;
   metadata: MetadataOptionsForFiltering;
+  flag: FileFlag | null;
+  ratingComparison: RatingsComparisonOptions | null;
+  rating: number;
 }
 
 export const DefaultFilterOptions: FilterOptionsInterface = {
   ratio: 'Any Ratio',
   searchText: '',
   metadata: {},
+  flag: null,
+  ratingComparison: null,
+  rating: 0,
 };
 
 export const filterOptions = atom<FilterOptionsInterface>(DefaultFilterOptions);
@@ -28,11 +37,14 @@ export const resetFilterOptions = atom(null, (get, set, update) => {
 });
 
 export const totalFilterOptionsSelected = atom((get) => {
-  const { ratio, searchText, metadata } = get(filterOptions);
+  const { ratio, searchText, metadata, ratingComparison, flag } =
+    get(filterOptions);
   const totalMeta = get(totalMetadataFilterOptionsSelected);
   let total = totalMeta;
   if (ratio !== 'Any Ratio') total++;
   if (searchText && searchText !== '') total++;
+  if (ratingComparison) total++;
+  if (flag) total++;
   return total;
 });
 

@@ -1,7 +1,7 @@
-import { Comment } from '../../../../graphql-types';
+import { Comment } from '../../../../../graphql-types';
 import { Group, Rating, Stack, Text, Timeline } from '@mantine/core';
 import { CiLight } from 'react-icons/ci';
-import { prettyDate } from '../FileListView/Filtering/PrettyDate';
+import { prettyDate } from '../Filtering/PrettyDate';
 import { FileFlagBadge, FileFlagChip } from './FileFlagBadge';
 
 export const CommentBodyItem = ({ comment }: { comment: Comment }) => {
