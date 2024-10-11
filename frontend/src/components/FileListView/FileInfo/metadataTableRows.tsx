@@ -1,12 +1,9 @@
 import { Badge, Code, Group, Rating, Stack, Table, Text } from '@mantine/core';
-import {
-  metadataDescription,
-  metadataIcons,
-} from '../components/FileListView/metadataIcons';
-import { formatMetadataValue } from './formatMetadataValue';
-import { AnyMetadataKey } from '../components/FileListView/Filtering/MetadataBox';
-import { MinimalFile } from '../../types';
-import { prettyAspectRatio } from './prettyAspectRatio';
+import { metadataDescription, metadataIcons } from '../metadataIcons';
+import { formatMetadataValue } from '../../../metadata/formatMetadataValue';
+import { AnyMetadataKey } from '../Filtering/MetadataBox';
+import { MinimalFile } from '../../../../types';
+import { prettyAspectRatio } from '../../../metadata/prettyAspectRatio';
 
 // get all keys, remove nulls, add/merge others as expected
 export const MetadataTableRows = (file: MinimalFile) => {

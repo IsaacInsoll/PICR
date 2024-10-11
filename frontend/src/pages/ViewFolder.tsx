@@ -18,7 +18,7 @@ import { DownloadZipButton } from '../components/DownloadZipButton';
 import { Button, Group, Title } from '@mantine/core';
 import { TbSettings } from 'react-icons/tb';
 import { useSetFolder } from '../hooks/useSetFolder';
-import { CommentModal } from '../components/FileListView/Review/CommentModal';
+import { ModalManager } from '../components/ModalManager';
 
 // This component is used in the 'public URL' and 'private URL' routes, so this is how we determine where each link should point
 export const useBaseViewFolderURL = () => {
@@ -33,7 +33,7 @@ export const ViewFolder = () => {
   return (
     <>
       <Suspense fallback={<PlaceholderFolderHeader />}>
-        <CommentModal />
+        <ModalManager />
         <ViewFolderBody
           toggleManaging={() =>
             navigate(baseUrl + folderId + (managing ? '' : '/manage'))

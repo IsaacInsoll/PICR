@@ -3,8 +3,7 @@ import { MinimalFile } from '../../../../types';
 import { FileFlagButtons } from './FileFlagButtons';
 import { useMutation } from 'urql';
 import { CommentButton } from './CommentButton';
-import { useSetAtom } from 'jotai/index';
-import { commentDialogAtom } from '../../../atoms/commentDialogAtom';
+import { useOpenCommentsModal } from '../../../atoms/modalAtom';
 import { addCommentMutation } from './addCommentMutation';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { FileFlagBadge } from './FileFlagBadge';
@@ -18,7 +17,7 @@ export const FileReview = ({ file }: { file: MinimalFile }) => {
   const [, mutate] = useMutation(addCommentMutation);
   const { id, flag, rating, totalComments } = file;
 
-  const setComment = useSetAtom(commentDialogAtom);
+  const openComment = useOpenCommentsModal();
 
   // Note when plumbing in mutations:
   //Rating will probably want something like   return <Loader color="blue" size="sm" type="dots" />;
@@ -41,7 +40,7 @@ export const FileReview = ({ file }: { file: MinimalFile }) => {
       <Divider orientation="vertical" />
       <CommentButton
         totalComments={totalComments}
-        onClick={() => setComment({ file: file, open: true })}
+        onClick={() => openComment(file)}
       />
     </Group>
   );

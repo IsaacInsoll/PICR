@@ -7,8 +7,8 @@ import {
   Textarea,
   Timeline,
 } from '@mantine/core';
-import { commentDialogAtom } from '../../../atoms/commentDialogAtom';
-import { useAtom } from 'jotai/index';
+import { closeModalAtom, modalAtom } from '../../../atoms/modalAtom';
+import { useAtom, useSetAtom } from 'jotai/index';
 import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
@@ -19,13 +19,13 @@ import { PicrModal } from '../../PicrModal';
 import { addCommentMutation } from './AddCommentMutation';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { gql } from '../../../helpers/gql';
+import { useAtomValue } from 'jotai';
 
 export const CommentModal = () => {
-  const [data, setData] = useAtom(commentDialogAtom);
-  const isMobile = useIsMobile();
-  const { file, open } = data;
+  const { file, open } = useAtomValue(modalAtom);
+  const onClose = useSetAtom(closeModalAtom);
 
-  const onClose = () => setData((d) => ({ ...d, open: false }));
+  const isMobile = useIsMobile();
 
   return (
     <>

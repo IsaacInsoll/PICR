@@ -11,7 +11,7 @@ export const useSetFolder = () => {
   return (
     folder: MinimalFolder,
     file?: Pick<MinimalFile, 'id'>,
-    fileView?: fileViewType,
+    fileView?: FileViewType,
   ) => {
     setPlaceholderFolder({ ...folder });
     const base = baseUrl + folder.id;
@@ -20,4 +20,4 @@ export const useSetFolder = () => {
   };
 };
 
-export type fileViewType = 'info' | undefined;
+export type FileViewType = 'info' | 'comments' | undefined;

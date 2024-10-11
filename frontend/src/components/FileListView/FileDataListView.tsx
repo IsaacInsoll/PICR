@@ -3,12 +3,17 @@ import { FileListViewStyleComponentProps } from './FolderContentsView';
 import prettyBytes from 'pretty-bytes';
 import { PicrColumns, PicrDataGrid } from '../PicrDataGrid';
 import { Page } from '../Page';
-import { Menu, Rating } from '@mantine/core';
+import { Group, Menu, Rating, Text } from '@mantine/core';
 import { TbCloudDownload, TbFile, TbInfoCircle } from 'react-icons/tb';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { imageURL } from '../../helpers/imageURL';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { FileFlagBadge } from './Review/FileFlagBadge';
+import { BiComment, BiCommentDetail } from 'react-icons/bi';
+import {
+  useOpenCommentsModal,
+  useOpenFileInfoModal,
+} from '../../atoms/modalAtom';
 
 export const FileDataListView = ({
   files,
@@ -19,37 +24,56 @@ export const FileDataListView = ({
   const { canView } = useCommentPermissions();
   const cols = columns.filter(({ isComment }) => canView || !isComment);
 
+  const openComment = useOpenCommentsModal();
+  const openFileInfo = useOpenFileInfoModal();
+
   const fileMenuItems = ({ row }) => {
     const f: MinimalFile = row.original;
-    return [
-      <Menu.Item
-        leftSection={<TbFile size="20" />}
-        key={1}
-        onClick={() => {
-          setFolder({ id: folderId }, f);
-        }}
-      >
-        View {f.name}
-      </Menu.Item>,
-      <Menu.Item
-        leftSection={<TbInfoCircle size="20" />}
-        key={2}
-        onClick={() => {
-          setFolder({ id: folderId }, f, 'info');
-        }}
-      >
-        Details
-      </Menu.Item>,
-      <Menu.Item
-        component="a"
-        leftSection={<TbCloudDownload />}
-        key={3}
-        href={imageURL(f, 'raw')}
-        download={true}
-      >
-        Download
-      </Menu.Item>,
-    ];
+    return (
+      <>
+        <Menu.Item
+          leftSection={<TbFile size="20" />}
+          key={1}
+          onClick={() => {
+            setFolder({ id: folderId }, f);
+          }}
+        >
+          View {f.name}
+        </Menu.Item>
+        <Menu.Item
+          leftSection={<TbInfoCircle size="20" />}
+          key={2}
+          onClick={() => openFileInfo(f)}
+        >
+          Details
+        </Menu.Item>
+        {canView ? (
+          <Menu.Item
+            leftSection={
+              f.totalComments == 0 ? <BiComment /> : <BiCommentDetail />
+            }
+            key={2}
+            onClick={() => openComment(f)}
+          >
+            <Group gap={8}>
+              Comments
+              <Text c="dimmed" size="xs">
+                ({f.totalComments})
+              </Text>
+            </Group>
+          </Menu.Item>
+        ) : null}
+        <Menu.Item
+          component="a"
+          leftSection={<TbCloudDownload />}
+          key={3}
+          href={imageURL(f, 'raw')}
+          download={true}
+        >
+          Download
+        </Menu.Item>
+      </>
+    );
   };
 
   return (
