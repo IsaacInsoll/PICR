@@ -27,6 +27,7 @@ import { LoggedInHeader } from '../components/Header/LoggedInHeader';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
+import { useCommentPermissions } from '../hooks/useCommentPermissions';
 
 export const ViewFolder = () => {
   const { folderId } = useParams();
@@ -47,6 +48,7 @@ export const ViewFolderBody = () => {
   const managing = fileId === 'manage';
   const activity = fileId === 'activity';
   const setFolder = useSetFolder();
+  const { canView } = useCommentPermissions();
 
   const [data, reQuery] = useQuery({
     query: viewFolderQuery,
@@ -80,6 +82,20 @@ export const ViewFolderBody = () => {
     actions.push(<FileSortSelector />);
     actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
   }
+
+  // if (canView) {
+  //   actions.push(
+  //     <Button
+  //       variant="default"
+  //       onClick={() =>
+  //         navigate(baseUrl + folderId + (activity ? '' : '/activity'))
+  //       }
+  //     >
+  //       View Activity
+  //     </Button>,
+  //   );
+  // }
+
   if (hasFiles || hasFolders)
     actions.push(
       <DownloadZipButton

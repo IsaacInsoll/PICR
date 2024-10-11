@@ -1,7 +1,7 @@
 //https://benhowell.github.io/react-grid-gallery/examples/custom-overlay
 // TODO: Could use Skeleton as placeholders before content loads?
 import { imageURL } from '../../helpers/imageURL';
-import { Gallery, ThumbnailImageProps } from 'react-grid-gallery';
+import { Gallery, ThumbnailImageProps } from './react-grid-gallery';
 import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { MinimalFile } from '../../../types';
 import 'yet-another-react-lightbox/styles.css';
@@ -23,7 +23,6 @@ export const GridGallery = ({
       setSelectedFileId(files[index - folders.length].id);
     }
   };
-
   return (
     <>
       <Gallery
