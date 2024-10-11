@@ -19,6 +19,7 @@ import { MinimalFile } from '../../../types';
 import { CommentBodyItem } from './CommentBodyItem';
 import { addCommentMutation } from '../FileListView/AddCommentMutation';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { PicrModal } from '../PicrModal';
 
 export const CommentModal = () => {
   const [data, setData] = useAtom(commentDialogAtom);
@@ -29,7 +30,7 @@ export const CommentModal = () => {
 
   return (
     <>
-      <Modal
+      <PicrModal
         opened={open}
         onClose={onClose}
         title={'Comments on ' + file?.name}
@@ -38,7 +39,7 @@ export const CommentModal = () => {
         <Suspense fallback={<LoadingIndicator />}>
           <CommentBody file={file} />
         </Suspense>
-      </Modal>
+      </PicrModal>
     </>
   );
 };
