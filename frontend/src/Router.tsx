@@ -18,7 +18,7 @@ export interface FolderRouteParams {
 export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
   return (
     <Routes>
-      <Route path={`/s/:uuid/${folderRoute}`} element={<ViewFolder />} />
+      <Route path={`/s/:uuid${folderRoute}`} element={<ViewFolder />} />
       {loggedIn ? (
         <>
           <Route path={`/admin/f${folderRoute}`} element={<ViewFolder />} />

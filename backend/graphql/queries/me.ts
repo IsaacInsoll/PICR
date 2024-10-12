@@ -7,8 +7,9 @@ const resolver = async (_, params, context) => {
   if (user) return user;
   const publicUser = await getUserFromUUID(context);
   if (!publicUser) return null;
+  console.log(publicUser);
   // don't expose many public user details
-  return { folderId: publicUser.folderId };
+  return { ...publicUser.toJSON(), name: null };
 };
 
 export const me = {
