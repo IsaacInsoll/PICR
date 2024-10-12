@@ -20,6 +20,7 @@ export const VideoBadge = ({ file, size, percent }: VideoBadgeProps) => {
     right: 8,
     cursor: 'pointer',
     opacity: 0.66,
+    zIndex: 50,
   };
 
   return (

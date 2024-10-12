@@ -67,27 +67,48 @@ const GalleryVideo = (props) => {
   const file: MinimalFile = props.item.file;
   const w = props.imageProps.style.width ?? 0;
   const imageProps = props.imageProps;
-  useEffect(() => {
-    videoThumbnailPreloader(file, 'md');
-  }, [file.id]);
+  // useEffect(() => {
+  //   videoThumbnailPreloader(file, 'md');
+  // }, [file.id]);
   let frame = 0; // not mouseover
   if (w && x) {
     frame = Math.max(1, Math.round((x / w) * 10)); // 1-10
-    imageProps.src = imageURL(file, 'md', '.jpg', frame);
+  }
+
+  const finalStyle = {
+    ...imageProps.style,
+    height: undefined,
+    position: 'absolute',
+  };
+
+  if (frame > 0) {
+    // +1 because it's not enough otherwise, NFI about absolute positioning
+    finalStyle.top = (imageProps.style.height + 1) * -(frame - 1);
+    console.log([frame, finalStyle.top]);
   }
   return (
-    <Box style={{ position: 'relative' }}>
-      <Image {...imageProps} ref={ref} />
+    <Box style={{ position: 'relative', height: imageProps.style.height }}>
+      <Image {...imageProps} style={finalStyle} ref={ref} />
       <VideoBadge file={file} percent={frame * 10} />
-      {frame > 0 ? (
-        <Progress
-          color="blue"
-          radius="xl"
-          size="xs"
-          value={frame * 10}
-          style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}
-        />
-      ) : null}
+      {frame > 0 ? <VideoProgress frame={frame} /> : null}
     </Box>
+  );
+};
+
+const VideoProgress = ({ frame }: { frame: number }) => {
+  return (
+    <Progress
+      color="blue"
+      radius="xl"
+      size="xs"
+      value={frame * 10}
+      style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+      }}
+    />
   );
 };

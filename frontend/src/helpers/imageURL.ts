@@ -6,13 +6,12 @@ export const imageURL = (
   file: MinimalFile,
   size: AllSize,
   extension?: string,
-  frame?: number,
+  // frame?: number,
 ) => {
   const { id, fileHash, name, type } = file;
 
   const path = `/image/${id}/${size}/${fileHash}/`;
-  if (type == 'Video' && size != 'raw')
-    return path + `${size}_${frame ?? 2}.jpg`;
+  if (type == 'Video' && size != 'raw') return path + `joined.jpg`;
   return path + (extension ? name + extension : name);
 };
 

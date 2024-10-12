@@ -31,7 +31,9 @@
     "graphql": "^16.8.1",
     "graphql-http": "^1.22.0",
     "graphql-scalars": "^1.23.0",
+    "join-images": "^1.1.5",
     "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
     "nodemon": "^3.0.3",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
@@ -97,6 +99,11 @@
           "consumeWholeFile": true
         }
       }
+    }
+  },
+  "overrides": {
+    "join-images": {
+      "sharp": "^0.33"
     }
   }
 }

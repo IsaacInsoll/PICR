@@ -6,6 +6,8 @@ import { VideoMetadata } from '../types/MetadataSummary';
 import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions';
 import { existsSync } from 'node:fs';
 import { log } from '../logger';
+import joinImages from 'join-images';
+import { range } from 'lodash';
 
 const numberOfVideoSnapshots = 10;
 
@@ -40,9 +42,9 @@ const processVideoThumbnail = async (
   return new Promise((resolve) => {
     try {
       ffmpegForFile(file)
-        .on('end', () => {
+        .on('end', (outFile) => {
           // console.log('⏸️ Screenshots done for ' + file.name + ' ' + size);
-          resolve(null);
+          mergeImages(file, size).then(() => resolve(null));
         })
         .on('error', (e) => {
           console.log(
@@ -67,6 +69,15 @@ const processVideoThumbnail = async (
       console.log(e);
     }
   });
+};
+
+const mergeImages = async (file: File, size: ThumbnailSize) => {
+  const outFile = thumbnailPath(file, size);
+
+  const files = range(1, 11).map((r) => `${outFile}/${size}_${r}.jpg`);
+  console.log(files);
+  const img = await joinImages(files, { direction: 'vertical' });
+  await img.toFile(outFile + '/joined.jpg');
 };
 
 export const generateVideoThumbnail = async (
