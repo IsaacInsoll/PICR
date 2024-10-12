@@ -1,4 +1,4 @@
-import { Box, Group, Table } from '@mantine/core';
+import { Box, Group, Modal, Table } from '@mantine/core';
 import { MinimalFile } from '../../../../types';
 import prettyBytes from 'pretty-bytes';
 import { prettyDate } from '../Filtering/PrettyDate';
@@ -16,7 +16,7 @@ export const FileInfoModal = () => {
   const isMobile = useIsMobile();
 
   return (
-    <PicrModal
+    <Modal
       opened={open}
       centered={true}
       onClose={onClose}
@@ -48,6 +48,6 @@ export const FileInfoModal = () => {
           <Table.Tbody>{MetadataTableRows(file)}</Table.Tbody>
         </Table>
       ) : null}
-    </PicrModal>
+    </Modal>
   );
 };

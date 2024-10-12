@@ -2,6 +2,7 @@ import {
   Button,
   Divider,
   Group,
+  Modal,
   ScrollArea,
   Stack,
   Textarea,
@@ -29,7 +30,7 @@ export const CommentModal = () => {
 
   return (
     <>
-      <PicrModal
+      <Modal
         opened={open}
         onClose={onClose}
         title={'Comments on ' + file?.name}
@@ -38,7 +39,7 @@ export const CommentModal = () => {
         <Suspense fallback={<LoadingIndicator />}>
           <CommentBody file={file} />
         </Suspense>
-      </PicrModal>
+      </Modal>
     </>
   );
 };

@@ -63,6 +63,7 @@ export const SelectedFileView = ({
       }}
       thumbnails={{ position: 'bottom' }}
       on={{
+        entered: unInert,
         view: ({ index }) => {
           const f = files[index];
           // don't change URL if we are already on that URL (IE: first opening gallery)
@@ -81,3 +82,14 @@ const lightBoxStyles = {
 
 const counterProps = { container: { style: { top: 'unset', bottom: 0 } } };
 const videoProps = { autoPlay: true, muted: false };
+
+const unInert = () => {
+  // YARL "inerts" everything so lets undo that if we have modals
+  // https://github.com/igordanchenko/yet-another-react-lightbox/issues/310#issuecomment-2407706206
+  document
+    .querySelectorAll('body > div[data-portal="true"]')
+    .forEach((node) => {
+      node.removeAttribute('inert');
+      node.removeAttribute('aria-hidden');
+    });
+};
