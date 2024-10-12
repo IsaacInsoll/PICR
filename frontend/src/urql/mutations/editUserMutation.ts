@@ -27,6 +27,7 @@ export const editAdminUserMutation = gql(/* GraphQL */ `
     $password: String
     $enabled: Boolean
     $folderId: ID
+    $commentPermissions: CommentPermissions
   ) {
     editAdminUser(
       id: $id
@@ -35,6 +36,7 @@ export const editAdminUserMutation = gql(/* GraphQL */ `
       password: $password
       enabled: $enabled
       folderId: $folderId
+      commentPermissions: $commentPermissions
     ) {
       ...UserFragment
     }

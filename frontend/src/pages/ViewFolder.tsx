@@ -10,7 +10,7 @@ import { viewFolderQuery } from '../urql/queries/viewFolderQuery';
 import { SubfolderListView } from '../components/SubfolderListView';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
-import { ManageFolder } from './ManageFolder';
+import { ManageFolder } from './management/ManageFolder';
 import { getUUID } from '../Router';
 import { TaskSummary } from '../components/TaskSummary';
 import { FilterToggle } from '../components/FilterToggle';

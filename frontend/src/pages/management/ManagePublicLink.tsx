@@ -1,13 +1,11 @@
-import { MinimalFolder } from '../../types';
-import { randomString } from '../helpers/randomString';
+import { MinimalFolder } from '../../../types';
+import { randomString } from '../../helpers/randomString';
 import { useState } from 'react';
-import { useMutation, useQuery } from 'urql';
-import { editUserMutation } from '../urql/mutations/editUserMutation';
-import type { MutationEditUserArgs } from '../gql/graphql';
-import { viewUserQuery } from '../urql/queries/viewUserQuery';
-import { copyToClipboard, publicURLFor } from '../helpers/copyToClipboard';
+import { useMutation } from 'urql';
+import { editUserMutation } from '../../urql/mutations/editUserMutation';
+import type { MutationEditUserArgs } from '../../gql/graphql';
+import { copyToClipboard, publicURLFor } from '../../helpers/copyToClipboard';
 import {
-  Box,
   Button,
   Checkbox,
   Group,
@@ -23,6 +21,9 @@ import {
   TbUsersGroup,
 } from 'react-icons/tb';
 import { notifications } from '@mantine/notifications';
+import { useViewUser } from './useViewUser';
+import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
+import { CommentPermissions } from '../../../../graphql-types';
 
 export const ManagePublicLink = ({
   id,
@@ -33,21 +34,14 @@ export const ManagePublicLink = ({
   folder?: MinimalFolder; //if creating a new public link
   onClose: () => void;
 }) => {
-  const [response] = useQuery({
-    query: viewUserQuery,
-    variables: { id: id ?? '0' },
-    pause: !id,
-  });
-
-  const data = response.data?.user;
-
+  const [user, exists] = useViewUser(id);
   const [, mutate] = useMutation(editUserMutation);
 
-  const [name, setName] = useState(data?.name ?? '');
-  const [link, setLink] = useState(data?.uuid ?? randomString());
-  const [enabled, setEnabled] = useState(data?.enabled ?? true);
-
-  const exists = id && id !== '';
+  const [name, setName] = useState(user?.name ?? '');
+  const [link, setLink] = useState(user?.uuid ?? randomString());
+  const [enabled, setEnabled] = useState(user?.enabled ?? true);
+  const [commentPermissions, setCommentPermissions] =
+    useState<CommentPermissions>(user?.commentPermissions ?? 'none');
   const invalidLink = link === '' || name === '';
 
   const onSave = () => {
@@ -57,6 +51,7 @@ export const ManagePublicLink = ({
       uuid: link,
       enabled,
       folderId: folder?.id,
+      commentPermissions,
     };
     mutate(data).then(({ data, error }) => {
       if (error) {
@@ -92,6 +87,11 @@ export const ManagePublicLink = ({
           label="Public Link"
           description="this should be impossible to guess"
           onChange={(e) => setLink(e.target.value)}
+        />
+
+        <CommentPermissionsSelector
+          value={commentPermissions}
+          onChange={setCommentPermissions}
         />
 
         <Checkbox

@@ -10,6 +10,7 @@ import {
 } from 'graphql/index';
 import { userType } from '../types/userType';
 import User from '../../models/User';
+import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
@@ -25,7 +26,7 @@ const resolver = async (_, params, context) => {
   user.name = params.name;
   user.uuid = params.uuid;
   user.enabled = params.enabled;
-
+  user.commentPermissions = params.commentPermissions;
   await user.save();
 
   return { ...user.toJSON(), folder: getFolder(user.folderId) };
@@ -40,5 +41,6 @@ export const editUser = {
     name: { type: GraphQLString },
     uuid: { type: GraphQLString },
     enabled: { type: GraphQLBoolean },
+    commentPermissions: { type: commentPermissionsEnum },
   },
 };

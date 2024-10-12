@@ -16,6 +16,7 @@ import {
 } from 'graphql';
 import { userType } from '../types/userType';
 import { GraphQLFieldResolver } from 'graphql/type';
+import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
@@ -62,6 +63,7 @@ const resolver = async (_, params, context) => {
 
   user.username = params.username;
   user.enabled = params.enabled;
+  user.commentPermissions = params.commentPermissions;
   if (pass) user.hashedPassword = hashPassword(pass);
 
   await user.save();
@@ -79,5 +81,6 @@ export const editAdminUser = {
     username: { type: GraphQLString },
     password: { type: GraphQLString },
     enabled: { type: GraphQLBoolean },
+    commentPermissions: { type: commentPermissionsEnum },
   },
 };

@@ -1,7 +1,7 @@
 import { matchPath, Route, Routes, useNavigate } from 'react-router-dom';
 import { LoginForm } from './pages/LoginForm';
 import { ViewFolder } from './pages/ViewFolder';
-import { ManageUsers } from './pages/ManageUsers';
+import { ManageUsers } from './pages/management/ManageUsers';
 import { PageNotFound } from './pages/PageNotFound';
 import { useMe } from './hooks/useMe';
 import { FileViewType } from './hooks/useSetFolder';

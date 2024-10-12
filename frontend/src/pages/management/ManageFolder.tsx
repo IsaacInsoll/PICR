@@ -1,17 +1,17 @@
 import { Suspense, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
-import { manageFolderQuery } from '../urql/queries/manageFolderQuery';
-import QueryFeedback from '../components/QueryFeedback';
+import { manageFolderQuery } from '../../urql/queries/manageFolderQuery';
+import QueryFeedback from '../../components/QueryFeedback';
 import { ManagePublicLink } from './ManagePublicLink';
-import { MinimalSharedFolder } from '../../types';
+import { MinimalSharedFolder } from '../../../types';
 import { VscDebugDisconnect } from 'react-icons/vsc';
-import { ModalLoadingIndicator } from '../components/ModalLoadingIndicator';
+import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { TbLink, TbPhotoCheck } from 'react-icons/tb';
 import { Box, Button, Group } from '@mantine/core';
-import { Page } from '../components/Page';
-import { PicrColumns, PicrDataGrid } from '../components/PicrDataGrid';
-import { EmptyPlaceholder } from './EmptyPlaceholder';
-import { generateThumbnailsQuery } from '../urql/mutations/generateThumbnailsQuery';
+import { Page } from '../../components/Page';
+import { PicrColumns, PicrDataGrid } from '../../components/PicrDataGrid';
+import { EmptyPlaceholder } from '../EmptyPlaceholder';
+import { generateThumbnailsQuery } from '../../urql/mutations/generateThumbnailsQuery';
 
 export const ManageFolder = ({
   folderId,

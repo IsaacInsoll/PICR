@@ -1,12 +1,12 @@
 import { Box, Button, Text, Title } from '@mantine/core';
-import { Page } from '../components/Page';
+import { Page } from '../../components/Page';
 import { useQuery } from 'urql';
-import { viewAdminsQuery } from '../urql/queries/viewAdminsQuery';
-import { ModalLoadingIndicator } from '../components/ModalLoadingIndicator';
+import { viewAdminsQuery } from '../../urql/queries/viewAdminsQuery';
+import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { Suspense, useState } from 'react';
-import QueryFeedback from '../components/QueryFeedback';
-import { PicrColumns, PicrDataGrid } from '../components/PicrDataGrid';
-import { User } from '../../../graphql-types';
+import QueryFeedback from '../../components/QueryFeedback';
+import { PicrColumns, PicrDataGrid } from '../../components/PicrDataGrid';
+import { User } from '../../../../graphql-types';
 import { ManageUser } from './ManageUser';
 import { TbCircleCheck, TbCircleXFilled, TbUserPlus } from 'react-icons/tb';
 

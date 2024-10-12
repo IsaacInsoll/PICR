@@ -113,8 +113,8 @@ type ImageMetadataSummary {
 type Mutation {
   addComment(comment: String, flag: FileFlag, id: ID!, nickName: String, rating: Int): FileInterface!
   auth(password: String!, user: String!): String!
-  editAdminUser(enabled: Boolean, folderId: ID, id: ID, name: String, password: String, username: String): User!
-  editUser(enabled: Boolean, folderId: ID, id: ID, name: String, uuid: String): User!
+  editAdminUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, password: String, username: String): User!
+  editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, uuid: String): User!
   generateThumbnails(folderId: ID): Boolean!
   generateZip(folderId: ID): String!
 }

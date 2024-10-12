@@ -1294,6 +1294,18 @@
             "description": null,
             "args": [
               {
+                "name": "commentPermissions",
+                "description": null,
+                "type": {
+                  "kind": "ENUM",
+                  "name": "CommentPermissions",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
                 "name": "enabled",
                 "description": null,
                 "type": {
@@ -1382,6 +1394,18 @@
             "name": "editUser",
             "description": null,
             "args": [
+              {
+                "name": "commentPermissions",
+                "description": null,
+                "type": {
+                  "kind": "ENUM",
+                  "name": "CommentPermissions",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
               {
                 "name": "enabled",
                 "description": null,

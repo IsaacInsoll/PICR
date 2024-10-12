@@ -1,9 +1,7 @@
-import { MinimalFolder } from '../../types';
+import { MinimalFolder } from '../../../types';
 import { useState } from 'react';
-import { useMutation, useQuery } from 'urql';
-import { editAdminUserMutation } from '../urql/mutations/editUserMutation';
-import type { MutationEditUserArgs } from '../gql/graphql';
-import { viewUserQuery } from '../urql/queries/viewUserQuery';
+import { useMutation } from 'urql';
+import { editAdminUserMutation } from '../../urql/mutations/editUserMutation';
 import {
   Button,
   Checkbox,
@@ -14,8 +12,13 @@ import {
   TextInput,
 } from '@mantine/core';
 import { TbCloudUpload, TbDoorExit, TbUser } from 'react-icons/tb';
-import { FolderSelector } from '../components/FolderSelector';
-import { MutationEditAdminUserArgs } from '../../../graphql-types';
+import { FolderSelector } from '../../components/FolderSelector';
+import {
+  CommentPermissions,
+  MutationEditAdminUserArgs,
+} from '../../../../graphql-types';
+import { useViewUser } from './useViewUser';
+import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 
 export const ManageUser = ({
   id,
@@ -24,24 +27,18 @@ export const ManageUser = ({
   id?: string;
   onClose: () => void;
 }) => {
-  const [response] = useQuery({
-    query: viewUserQuery,
-    variables: { id: id ?? '0' },
-    pause: !id,
-  });
-
-  const data = response.data?.user;
+  const [user, exists] = useViewUser(id);
   const [, mutate] = useMutation(editAdminUserMutation);
 
-  const [name, setName] = useState(data?.name ?? '');
-  const [username, setUsername] = useState(data?.username);
+  const [name, setName] = useState(user?.name ?? '');
+  const [username, setUsername] = useState(user?.username);
   const [password, setPassword] = useState<string | null>(null);
-  const [enabled, setEnabled] = useState(data?.enabled ?? true);
+  const [enabled, setEnabled] = useState(user?.enabled ?? true);
+  const [commentPermissions, setCommentPermissions] =
+    useState<CommentPermissions>(user?.commentPermissions ?? 'edit');
   const [folder, setFolder] = useState<MinimalFolder>(
-    data?.folder ?? { id: '1' },
+    user?.folder ?? { id: '1' },
   );
-
-  const exists = id && id !== '';
   const invalidUsername = username === '' || name === '';
 
   const onSave = () => {
@@ -53,6 +50,7 @@ export const ManageUser = ({
       password: password,
       enabled,
       folderId: folder?.id,
+      commentPermissions,
     };
     mutate(data).then(({ data, error }) => {
       if (error) {
@@ -63,8 +61,6 @@ export const ManageUser = ({
       }
     });
   };
-
-  // console.log(data);
 
   return (
     <Modal
@@ -96,6 +92,11 @@ export const ManageUser = ({
           value={password ?? ''}
           label="Password"
           onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <CommentPermissionsSelector
+          value={commentPermissions}
+          onChange={setCommentPermissions}
         />
 
         <FolderSelector folder={folder} setFolder={setFolder} />

@@ -150,6 +150,7 @@ export type MutationAuthArgs = {
 
 
 export type MutationEditAdminUserArgs = {
+  commentPermissions?: InputMaybe<CommentPermissions>;
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   folderId?: InputMaybe<Scalars['ID']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -160,6 +161,7 @@ export type MutationEditAdminUserArgs = {
 
 
 export type MutationEditUserArgs = {
+  commentPermissions?: InputMaybe<CommentPermissions>;
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   folderId?: InputMaybe<Scalars['ID']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
