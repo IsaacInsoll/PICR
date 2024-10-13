@@ -5,12 +5,7 @@ import { Gallery, ThumbnailImageProps } from 'react-grid-gallery';
 import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { MinimalFile } from '../../../types';
 import 'yet-another-react-lightbox/styles.css';
-import { useMouse } from '@mantine/hooks';
-import { Box, Image, Progress } from '@mantine/core';
-import { useEffect } from 'react';
-import { videoThumbnailPreloader } from '../../helpers/videoThumbnailPreloader';
-import { VideoBadge } from './VideoBadge';
-import { PicrImage } from '../PicrImage';
+import { FilePreview } from './FilePreview';
 
 export const GridGallery = ({
   files,
@@ -46,69 +41,18 @@ const filesForGallery = (files: MinimalFile[]) => {
 
 type GalleryImageProps = ThumbnailImageProps & { item: { file: MinimalFile } };
 
-const GalleryImage = (props: GalleryImageProps) => {
-  const file: MinimalFile = props.item.file;
-
-  if (file.type == 'Video') {
-    return <GalleryVideo {...props} />;
-  }
-  return (
-    <PicrImage
-      style={props.imageProps.style}
-      file={file}
-      size="md"
-      clickable={true}
-    />
-  );
-};
-
-const GalleryVideo = (props) => {
-  const { ref, x } = useMouse({ resetOnExit: true });
-  const file: MinimalFile = props.item.file;
-  const w = props.imageProps.style.width ?? 0;
-  const imageProps = props.imageProps;
-  // useEffect(() => {
-  //   videoThumbnailPreloader(file, 'md');
-  // }, [file.id]);
-  let frame = 0; // not mouseover
-  if (w && x) {
-    frame = Math.max(1, Math.round((x / w) * 10)); // 1-10
-  }
-
-  const finalStyle = {
-    ...imageProps.style,
-    height: undefined,
-    position: 'absolute',
-  };
-
-  if (frame > 0) {
-    // +1 because it's not enough otherwise, NFI about absolute positioning
-    finalStyle.top = (imageProps.style.height + 1) * -(frame - 1);
-    console.log([frame, finalStyle.top]);
-  }
-  return (
-    <Box style={{ position: 'relative', height: imageProps.style.height }}>
-      <Image {...imageProps} style={finalStyle} ref={ref} />
-      <VideoBadge file={file} percent={frame * 10} />
-      {frame > 0 ? <VideoProgress frame={frame} /> : null}
-    </Box>
-  );
-};
-
-const VideoProgress = ({ frame }: { frame: number }) => {
-  return (
-    <Progress
-      color="blue"
-      radius="xl"
-      size="xs"
-      value={frame * 10}
-      style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 50,
-      }}
-    />
-  );
+const GalleryImage = ({ imageProps, item }: GalleryImageProps) => {
+  const file: MinimalFile = item.file;
+  return <FilePreview file={file} imageProps={imageProps} />;
+  // if (file.type == 'Video') {
+  //   return <PicrVideoPreview file={file} imageProps={imageProps} />;
+  // }
+  // return (
+  //   <PicrImage
+  //     style={imageProps.style}
+  //     file={file}
+  //     size="md"
+  //     clickable={true}
+  //   />
+  // );
 };

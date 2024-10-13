@@ -9,6 +9,8 @@ import { PicrModal } from '../../PicrModal';
 import { StatCard } from './StatCard';
 import { useAtomValue, useSetAtom } from 'jotai/index';
 import { closeModalAtom, modalAtom } from '../../../atoms/modalAtom';
+import { GalleryImage } from '../GridGallery';
+import { FilePreview } from '../FilePreview';
 
 export const FileInfoModal = () => {
   const { file, open } = useAtomValue(modalAtom);
@@ -27,7 +29,8 @@ export const FileInfoModal = () => {
     >
       {file.type == 'Image' || file.type == 'Video' ? (
         <Box mb={16}>
-          <PicrImage file={file} size="md" clickable={false} />
+          {/*<PicrImage file={file} size="md" clickable={false} />*/}
+          <FilePreview file={file} />
         </Box>
       ) : null}
       <Group style={{ width: '100%' }}>
