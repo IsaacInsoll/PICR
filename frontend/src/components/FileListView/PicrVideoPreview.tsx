@@ -1,10 +1,10 @@
 import { useElementSize, useMouse } from '@mantine/hooks';
 import { MinimalFile } from '../../../types';
-import { Box, Image } from '@mantine/core';
+import { Box, Image, LoadingOverlay } from '@mantine/core';
 import { VideoBadge } from './VideoBadge';
 import { VideoProgressIndicator } from './VideoProgressIndicator';
 import { ThumbnailImageComponentImageProps } from 'react-grid-gallery';
-import { CSSProperties } from 'react';
+import { CSSProperties, useState } from 'react';
 import { imageURL } from '../../helpers/imageURL';
 
 // Video 'scrubber' image preview. Requires either a `style` prop for dimensions or will work it out based on container width
@@ -17,6 +17,7 @@ export const PicrVideoPreview = ({
   style?: CSSProperties;
   imageProps?: ThumbnailImageComponentImageProps;
 }) => {
+  const [loaded, setLoaded] = useState(false);
   const { x, ...mouse } = useMouse({ resetOnExit: true });
   const element = useElementSize();
 
@@ -41,11 +42,23 @@ export const PicrVideoPreview = ({
       style={{ position: 'relative', overflow: 'hidden', height: h }}
       ref={element.ref}
     >
+      {!loaded ? (
+        <LoadingOverlay
+          visible={loaded}
+          zIndex={1000}
+          overlayProps={{ radius: 'sm', blur: 2 }}
+        />
+      ) : null}
       <Image
         {...imageProps}
         style={finalStyle}
         ref={mouse.ref}
         src={imageURL(file, 'md')}
+        onLoad={() => {
+          console.log('loaded');
+          setLoaded(true);
+          // if (onImageLoaded) onImageLoaded(file);
+        }}
       />
       <VideoBadge file={file} percent={frame * 10} />
       {frame > 0 ? <VideoProgressIndicator frame={frame} /> : null}

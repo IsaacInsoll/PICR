@@ -12,6 +12,7 @@ export const fileFragment = gql(/* GraphQL */ `
     flag
     rating
     totalComments
+    folderId
     ... on Video {
       imageRatio
       duration
