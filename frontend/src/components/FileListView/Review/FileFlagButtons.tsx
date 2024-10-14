@@ -1,4 +1,4 @@
-import { ActionIcon } from '@mantine/core';
+import { ActionIcon, Tooltip } from '@mantine/core';
 import { TbThumbDown, TbThumbUp } from 'react-icons/tb';
 import { FileFlag } from '../../../../../graphql-types';
 import { useState } from 'react';
@@ -32,24 +32,28 @@ export const FileFlagButtons = ({
 
   return (
     <>
-      <ActionIcon
-        variant={isApproved ? 'filled' : 'default'}
-        onClick={() => setFlag(!isApproved ? 'approved' : 'none')}
-        title="Approve"
-        color={approvedFlagStyle.color}
-        loading={loading}
-      >
-        {approvedFlagStyle.icon}
-      </ActionIcon>
-      <ActionIcon
-        variant={isRejected ? 'filled' : 'default'}
-        onClick={() => setFlag(!isRejected ? 'rejected' : 'none')}
-        title="Reject"
-        color={rejectedFlagStyle.color}
-        loading={loading}
-      >
-        {rejectedFlagStyle.icon}
-      </ActionIcon>
+      <Tooltip label="Approve (Thumbs Up)">
+        <ActionIcon
+          variant={isApproved ? 'filled' : 'default'}
+          onClick={() => setFlag(!isApproved ? 'approved' : 'none')}
+          title="Approve"
+          color={approvedFlagStyle.color}
+          loading={loading}
+        >
+          {approvedFlagStyle.icon}
+        </ActionIcon>
+      </Tooltip>
+      <Tooltip label="Reject (Thumbs Down)">
+        <ActionIcon
+          variant={isRejected ? 'filled' : 'default'}
+          onClick={() => setFlag(!isRejected ? 'rejected' : 'none')}
+          title="Reject"
+          color={rejectedFlagStyle.color}
+          loading={loading}
+        >
+          {rejectedFlagStyle.icon}
+        </ActionIcon>
+      </Tooltip>
     </>
   );
 };

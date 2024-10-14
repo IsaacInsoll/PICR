@@ -1,6 +1,14 @@
 import { useMediaQuery } from '@mantine/hooks';
+import { useMantineTheme } from '@mantine/core';
+
+export const useIsSmallScreen = () => {
+  const theme = useMantineTheme();
+  const size = theme.breakpoints.sm;
+  return useMediaQuery(`(max-width: ${size})`);
+};
 
 export const useIsMobile = () => {
-  const isMobile = useMediaQuery('(max-width: 50em)');
-  return isMobile;
+  const theme = useMantineTheme();
+  const size = theme.breakpoints.xs;
+  return useMediaQuery(`(max-width: ${size})`);
 };

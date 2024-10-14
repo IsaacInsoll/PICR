@@ -1,4 +1,4 @@
-import { Divider, Group } from '@mantine/core';
+import { Divider, Group, Tooltip } from '@mantine/core';
 import { MinimalFile } from '../../../../types';
 import { FileFlagButtons } from './FileFlagButtons';
 import { useMutation } from 'urql';
@@ -11,8 +11,8 @@ import { FileRating } from './FileRating';
 
 // Horizontal component containing Flag, Rating and Comment buttons
 export const FileReview = ({ file }: { file: MinimalFile }) => {
-  const { commentPermissions, readOnly, canEdit } = useCommentPermissions();
-  if (commentPermissions == 'none') return null;
+  const { readOnly, isNone } = useCommentPermissions();
+  if (isNone) return null;
 
   const [, mutate] = useMutation(addCommentMutation);
   const { id, flag, rating, totalComments } = file;

@@ -18,7 +18,7 @@ import { CommentBodyItem } from './CommentBodyItem';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { PicrModal } from '../../PicrModal';
 import { addCommentMutation } from './AddCommentMutation';
-import { useIsMobile } from '../../../hooks/useIsMobile';
+import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { gql } from '../../../helpers/gql';
 import { useAtomValue } from 'jotai';
 
@@ -26,7 +26,7 @@ export const CommentModal = () => {
   const { file, open } = useAtomValue(modalAtom);
   const onClose = useSetAtom(closeModalAtom);
 
-  const isMobile = useIsMobile();
+  const isMobile = useIsSmallScreen();
 
   return (
     <>

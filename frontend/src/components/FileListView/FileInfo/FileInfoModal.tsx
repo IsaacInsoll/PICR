@@ -4,7 +4,7 @@ import prettyBytes from 'pretty-bytes';
 import { prettyDate } from '../Filtering/PrettyDate';
 import { PicrImage } from '../../PicrImage';
 import { MetadataTableRows } from './metadataTableRows';
-import { useIsMobile } from '../../../hooks/useIsMobile';
+import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { PicrModal } from '../../PicrModal';
 import { StatCard } from './StatCard';
 import { useAtomValue, useSetAtom } from 'jotai/index';
@@ -15,7 +15,7 @@ import { FilePreview } from '../FilePreview';
 export const FileInfoModal = () => {
   const { file, open } = useAtomValue(modalAtom);
   const onClose = useSetAtom(closeModalAtom);
-  const isMobile = useIsMobile();
+  const isMobile = useIsSmallScreen();
 
   return (
     <Modal

@@ -3,13 +3,14 @@ import { MinimalFile } from '../../../types';
 import { imageURL } from '../../helpers/imageURL';
 import { useMemo, useState } from 'react';
 import useMeasure from 'react-use-measure';
-import { LoadingIndicator } from '../LoadingIndicator';
-import { Box, Group, Image, Skeleton, Title } from '@mantine/core';
+import { ActionIcon, Box, Divider, Group, Title, Tooltip } from '@mantine/core';
 import { Page } from '../Page';
-
-import { VideoBadge } from './VideoBadge';
 import { PicrImage } from '../PicrImage';
 import { FileReview } from './Review/FileReview';
+import { useCommentPermissions } from '../../hooks/useCommentPermissions';
+import { TbCloudDownload, TbInfoCircle } from 'react-icons/tb';
+import { useOpenFileInfoModal } from '../../atoms/modalAtom';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 export const ImageFeed = ({
@@ -37,6 +38,8 @@ const FeedItem = ({
 }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [ref, bounds] = useMeasure();
+  const { isNone } = useCommentPermissions();
+  const isMobile = useIsMobile();
 
   //we know image ratios and viewport width, so size things correctly before images have loaded
   const tempHeight = useMemo(() => {
@@ -79,12 +82,49 @@ const FeedItem = ({
           </Box>
         ) : null}
       </Box>
-      <Group justify="space-between" pb="sm" pt={4}>
-        <Title order={5}>{file.name}</Title>
-        <FileReview file={file} />
+      <Group
+        pb="lg"
+        pt={4}
+        style={{ flexDirection: isMobile && !isNone ? 'column' : 'row' }}
+        gap={4}
+      >
+        <Title order={5} flex={1}>
+          {file.name}
+        </Title>
+        <Group gap="xs">
+          <FileReview file={file} />
+          {!isNone ? <Divider orientation="vertical" /> : null}
+          <FileInfoButton file={file} />
+          <FileDownloadButton file={file} />
+        </Group>
       </Group>
     </Page>
   );
 };
 
-const tempBoxStyle = { justifyContent: 'center', alignItems: 'center' };
+const FileDownloadButton = ({ file }: { file: MinimalFile }) => {
+  return (
+    <Tooltip label={`Download ${file.name}`}>
+      <ActionIcon
+        variant="default"
+        component="a"
+        href={imageURL(file, 'raw')}
+        download={true}
+      >
+        <TbCloudDownload />
+      </ActionIcon>
+    </Tooltip>
+  );
+};
+
+const FileInfoButton = ({ file }: { file: MinimalFile }) => {
+  const openFileInfo = useOpenFileInfoModal();
+
+  return (
+    <Tooltip label={`File Info for ${file.name}`}>
+      <ActionIcon variant="default" onClick={() => openFileInfo(file)}>
+        <TbInfoCircle />
+      </ActionIcon>
+    </Tooltip>
+  );
+};
