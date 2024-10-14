@@ -43,6 +43,8 @@ const FeedItem = ({
     return bounds.width / (file.imageRatio ?? 1);
   }, [bounds.width, file.imageRatio]);
 
+  const { type } = file;
+
   return (
     <Page
     // round="small"
@@ -51,22 +53,31 @@ const FeedItem = ({
     // margin={{ bottom: 'small' }}
     >
       <Box ref={ref} style={{ position: 'relative' }}>
-        {!imageLoaded ? (
-          <Skeleton style={{ height: tempHeight, ...tempBoxStyle }}>
-            <LoadingIndicator size="large" />
-          </Skeleton>
-        ) : null}
+        {/*{!imageLoaded ? (*/}
+        {/*  <Skeleton style={{ height: tempHeight, ...tempBoxStyle }}>*/}
+        {/*    <LoadingIndicator size="large" />*/}
+        {/*  </Skeleton>*/}
+        {/*) : null}*/}
         {/*<Link to={`./${file.id}`}>*/}
-        <PicrImage
-          file={file}
-          size="lg"
-          src={imageURL(file, 'lg')}
-          onImageLoaded={() => setImageLoaded(true)}
-          onClick={() => onClick(file.id)}
-          clickable={true}
-        />
+        {type == 'Image' ? (
+          <PicrImage
+            file={file}
+            size="lg"
+            src={imageURL(file, 'lg')}
+            onImageLoaded={() => setImageLoaded(true)}
+            onClick={() => onClick(file.id)}
+            clickable={true}
+          />
+        ) : null}
         {/*</Link>*/}
-        {file.type == 'Video' ? <VideoBadge file={file} size="xl" /> : null}
+        {file.type == 'Video' ? (
+          <Box>
+            <video controls playsInline style={{ maxWidth: '100%' }}>
+              <source src={imageURL(file, 'raw')} />
+            </video>
+            {/*<VideoBadge file={file} size="xl" />*/}
+          </Box>
+        ) : null}
       </Box>
       <Group justify="space-between" pb="sm" pt={4}>
         <Title order={5}>{file.name}</Title>

@@ -5,6 +5,7 @@ import { Gallery, ThumbnailImageProps } from 'react-grid-gallery';
 import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { MinimalFile } from '../../../types';
 import 'yet-another-react-lightbox/styles.css';
+import './GridGallery.css';
 import { FilePreview } from './FilePreview';
 
 export const GridGallery = ({

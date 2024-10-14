@@ -11,14 +11,18 @@ export const FilePreview = ({
   imageProps?: ThumbnailImageComponentImageProps;
 }) => {
   if (file.type == 'Video') {
-    return <PicrVideoPreview file={file} {...imageProps} />;
+    return (
+      <PicrVideoPreview file={file} {...imageProps} key={imageProps?.key} />
+    );
   }
+  console.log(imageProps);
   return (
     <PicrImage
       // style={imageProps.style}
       file={file}
       size="md"
       clickable={true}
+      key={imageProps?.key}
       {...imageProps}
     />
   );
