@@ -54,8 +54,7 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "serve": "vite preview",
-    "gql": "graphql-codegen --config codegen.ts"
+    "serve": "vite preview"
   },
   "browserslist": {
     "production": [
@@ -71,9 +70,6 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@graphql-codegen/cli": "5.0.2",
-    "@graphql-codegen/client-preset": "4.2.4",
-    "@graphql-codegen/introspection": "^4.0.3",
     "@types/cli-progress": "^3.11.5",
     "@types/lodash": "^4.17.0",
     "@types/react-helmet": "^6.1.11",

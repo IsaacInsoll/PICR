@@ -17,7 +17,7 @@ For front end development you definitely want to use the 6969 address. For backe
 | `npm start`                    | Run Server + Frontend in Dev Mode         | When doing any dev and wanting instant reloads on changes of server or client files                    |
 | `npm run build`                | Build Server (including client)           | Before making docker image                                                                             |
 | `cd frontend && npm run build` | Build frontend                            | Update front end build (before doing backend build)                                                    |
-| `cd frontend && npm run gql`   | Build GQL files                           | Run after updating any GQL on server to "see" new stuff, <br/>or after updating a query on client side |
+| `npm run gql`                  | Build GQL files                           | Run after updating any GQL on server to "see" new stuff, <br/>or after updating a query on client side |
 | `npm run release`              | Tag new version, build+push docker images | Run when we have something 'release worthy'                                                            |
 
 
