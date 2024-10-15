@@ -5,12 +5,14 @@ const config: CodegenConfig = {
   schema: 'http://localhost:6900/graphql',
   // `src/gql/*` for useQuery/useMutation to return typed object
   generates: {
+    // used by codegen to add proper typescript typing to results from a gql query/mutation
     'frontend/src/gql/': {
       preset: 'client',
       documents: ['./frontend/src/**/*.tsx', './frontend/src/**/*.ts'],
       presetConfig: { fragmentMasking: false },
       plugins: [],
     },
+    //graphql.schema.json used by URQL for caching
     'frontend/public/graphql.schema.json': {
       plugins: ['introspection'],
     },

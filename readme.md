@@ -61,4 +61,4 @@ services:
 | `cache`  | thumbnails, zip files built from your media <br />_It's safe to delete contents of this folder, will be recreated if deleted_ |
 
 # Development
-See [docs/development.md](docs/development.md)
+See [docs/development.md](docs/index)
