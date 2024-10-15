@@ -15,7 +15,7 @@ export const FilePreview = ({
       <PicrVideoPreview file={file} {...imageProps} key={imageProps?.key} />
     );
   }
-  console.log(imageProps);
+  // console.log(imageProps);
   return (
     <PicrImage
       // style={imageProps.style}

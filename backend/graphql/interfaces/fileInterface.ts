@@ -20,6 +20,7 @@ export const fileInterfaceFields = {
   fileHash: { type: new GraphQLNonNull(GraphQLString) },
   fileSize: { type: new GraphQLNonNull(GraphQLBigInt) }, //custom BigInt as Int only goes to 2gb (32bit)
   fileLastModified: { type: new GraphQLNonNull(GraphQLDateTime) },
+  latestComment: { type: GraphQLDateTime },
 };
 export const fileInterface = new GraphQLInterfaceType({
   name: 'FileInterface',

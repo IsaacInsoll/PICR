@@ -29,6 +29,7 @@ type File implements FileInterface {
   flag: FileFlag
   folderId: ID!
   id: ID!
+  latestComment: DateTime
   name: String!
   rating: Int
   totalComments: Int
@@ -48,6 +49,7 @@ interface FileInterface {
   flag: FileFlag
   folderId: ID!
   id: ID!
+  latestComment: DateTime
   name: String!
   rating: Int
   totalComments: Int
@@ -89,6 +91,7 @@ type Image implements FileInterface {
   folderId: ID!
   id: ID!
   imageRatio: Float
+  latestComment: DateTime
   metadata: ImageMetadataSummary
   name: String!
   rating: Int
@@ -161,6 +164,7 @@ type Video implements FileInterface {
   folderId: ID!
   id: ID!
   imageRatio: Float
+  latestComment: DateTime
   metadata: VideoMetadataSummary
   name: String!
   rating: Int

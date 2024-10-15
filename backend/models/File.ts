@@ -52,6 +52,9 @@ export default class File extends Model {
   @Column({ type: DataType.INTEGER })
   declare totalComments: number; //we could calculate it but this is faster and easier
 
+  @Column
+  declare latestComment: Date;
+
   @ForeignKey(() => Folder)
   @Column
   folderId: number;

@@ -39,6 +39,7 @@ export type File = FileInterface & {
   flag?: Maybe<FileFlag>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
+  latestComment?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;
   totalComments?: Maybe<Scalars['Int']['output']>;
@@ -58,6 +59,7 @@ export type FileInterface = {
   flag?: Maybe<FileFlag>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
+  latestComment?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;
   totalComments?: Maybe<Scalars['Int']['output']>;
@@ -101,6 +103,7 @@ export type Image = FileInterface & {
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;
+  latestComment?: Maybe<Scalars['DateTime']['output']>;
   metadata?: Maybe<ImageMetadataSummary>;
   name: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;
@@ -261,6 +264,7 @@ export type Video = FileInterface & {
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;
+  latestComment?: Maybe<Scalars['DateTime']['output']>;
   metadata?: Maybe<VideoMetadataSummary>;
   name: Scalars['String']['output'];
   rating?: Maybe<Scalars['Int']['output']>;

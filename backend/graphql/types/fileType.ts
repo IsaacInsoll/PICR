@@ -9,8 +9,5 @@ export const fileType = new GraphQLObjectType({
   interfaces: [fileInterface],
   fields: {
     ...fileInterfaceFields,
-    // imageRatio: { type: GraphQLFloat },
-    // metadata: { type: metadataSummaryType },
-    // duration: { type: GraphQLFloat },
   },
 });

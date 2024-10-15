@@ -32,6 +32,7 @@ function picrGridProps<TData extends MRT_RowData>(
     enablePagination: false,
     enableTopToolbar: false,
     enableBottomToolbar: false,
+    // enableStickyHeader: true, // requires a maxHeight :/
     initialState: { density: 'xs' },
     mantineTableBodyRowProps: ({ row }) => ({
       onClick: () => {
@@ -58,7 +59,7 @@ export const PicrDataGrid = <TData extends MRT_RowData>({
 }) => {
   const tableOptions = useMemo(
     () => picrGridProps(columns, data, (row) => onClick(row), menuItems),
-    [data],
+    [columns, data],
   );
   const table = useMantineReactTable(tableOptions);
   return <MantineReactTable table={table} />;

@@ -11,3 +11,8 @@ export const prettyDateNoTZ = (dateString: string): string => {
   const d = new Date(dateString);
   return tz(d, 'YYYY-MM-DDTHH:mm:ss[Z]').format('MMMM Do YYYY, h:mm:ss a');
 };
+
+export const fromNow = (dateString: string): string => {
+  const d = new Date(dateString);
+  return moment(d).fromNow();
+};

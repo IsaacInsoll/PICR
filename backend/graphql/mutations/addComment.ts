@@ -33,6 +33,7 @@ const resolver = async (_, params, context) => {
     file.totalComments = file.totalComments + 1;
   }
 
+  file.latestComment = Date.now();
   await file.save();
 
   return fileToJSON(file);
