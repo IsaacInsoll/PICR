@@ -8,9 +8,10 @@ import { Page } from '../Page';
 import { PicrImage } from '../PicrImage';
 import { FileReview } from './Review/FileReview';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
-import { TbCloudDownload, TbInfoCircle } from 'react-icons/tb';
+import { TbCloudDownload, TbInfoCircle, TbSlideshow } from 'react-icons/tb';
 import { useOpenFileInfoModal } from '../../atoms/modalAtom';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { useSetFolder } from '../../hooks/useSetFolder';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 export const ImageFeed = ({
@@ -94,6 +95,7 @@ const FeedItem = ({
         <Group gap="xs">
           <FileReview file={file} />
           {!isNone ? <Divider orientation="vertical" /> : null}
+          {file.type == 'Video' ? <OpenFileButton file={file} /> : null}
           <FileInfoButton file={file} />
           <FileDownloadButton file={file} />
         </Group>
@@ -124,6 +126,22 @@ const FileInfoButton = ({ file }: { file: MinimalFile }) => {
     <Tooltip label={`File Info for ${file.name}`}>
       <ActionIcon variant="default" onClick={() => openFileInfo(file)}>
         <TbInfoCircle />
+      </ActionIcon>
+    </Tooltip>
+  );
+};
+const OpenFileButton = ({ file }: { file: MinimalFile }) => {
+  const setFolder = useSetFolder();
+
+  return (
+    <Tooltip label={`Open in Slideshow View`}>
+      <ActionIcon
+        variant="default"
+        onClick={() => {
+          setFolder({ id: file.folderId }, file);
+        }}
+      >
+        <TbSlideshow />
       </ActionIcon>
     </Tooltip>
   );
