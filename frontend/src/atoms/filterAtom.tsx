@@ -11,6 +11,7 @@ export type AspectFilterOptions =
   | 'Portrait';
 
 export type RatingsComparisonOptions = 'equal' | 'lessThan' | 'greaterThan';
+export type CommentsFilterOptions = 'None' | 'Some';
 
 export interface FilterOptionsInterface {
   ratio: AspectFilterOptions;
@@ -19,6 +20,7 @@ export interface FilterOptionsInterface {
   flag: FileFlag | null;
   ratingComparison: RatingsComparisonOptions | null;
   rating: number;
+  comments: CommentsFilterOptions | null;
 }
 
 export const DefaultFilterOptions: FilterOptionsInterface = {
@@ -28,6 +30,7 @@ export const DefaultFilterOptions: FilterOptionsInterface = {
   flag: null,
   ratingComparison: null,
   rating: 0,
+  comments: null,
 };
 
 export const filterOptions = atom<FilterOptionsInterface>(DefaultFilterOptions);
@@ -37,7 +40,7 @@ export const resetFilterOptions = atom(null, (get, set, update) => {
 });
 
 export const totalFilterOptionsSelected = atom((get) => {
-  const { ratio, searchText, metadata, ratingComparison, flag } =
+  const { ratio, searchText, metadata, ratingComparison, flag, comments } =
     get(filterOptions);
   const totalMeta = get(totalMetadataFilterOptionsSelected);
   let total = totalMeta;
@@ -45,6 +48,7 @@ export const totalFilterOptionsSelected = atom((get) => {
   if (searchText && searchText !== '') total++;
   if (ratingComparison) total++;
   if (flag) total++;
+  if (comments) total++;
   return total;
 });
 

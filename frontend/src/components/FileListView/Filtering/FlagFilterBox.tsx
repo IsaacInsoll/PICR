@@ -1,4 +1,4 @@
-import { ActionIcon } from '@mantine/core';
+import { ActionIcon, Button } from '@mantine/core';
 import { fileFlags } from '../Review/fileFlagStyles';
 import { useAtom } from 'jotai/index';
 import { filterOptions } from '../../../atoms/filterAtom';
@@ -12,22 +12,24 @@ export const FlagFilterBox = () => {
   };
 
   return (
-    <ActionIcon.Group>
-      {fileFlags.map(({ icon, value, color }) => {
+    <Button.Group>
+      {fileFlags.map(({ icon, value, color, label }) => {
         const isSelected = selected === value;
         return (
-          <ActionIcon
+          <Button
+            style={{ flexGrow: 1 }}
             title={value}
             color={color}
             variant={isSelected ? 'filled' : 'default'}
             onClick={() => onChange(isSelected ? null : value)}
             key={value}
-            size="lg"
+            size="xs"
+            leftSection={icon}
           >
-            {icon}
-          </ActionIcon>
+            {label}
+          </Button>
         );
       })}
-    </ActionIcon.Group>
+    </Button.Group>
   );
 };

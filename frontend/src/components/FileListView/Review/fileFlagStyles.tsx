@@ -7,22 +7,26 @@ interface FlagStyle {
   color: string;
   icon: ReactNode;
   value: FileFlag;
+  label: string;
 }
 
 export const approvedFlagStyle: FlagStyle = {
   color: 'green',
   icon: <TbThumbUp />,
   value: FileFlag.Approved,
+  label: 'Approved',
 };
 export const rejectedFlagStyle: FlagStyle = {
   color: 'red',
   icon: <TbThumbDown />,
   value: FileFlag.Rejected,
+  label: 'Rejected',
 };
 export const noneFlagStyle: FlagStyle = {
   color: 'gray',
   icon: <MdOutlineThumbsUpDown />,
   value: FileFlag.None,
+  label: 'None',
 };
 
 export const fileFlagStyles: { [key in FileFlag]: FlagStyle } = {

@@ -88,6 +88,7 @@ const columns: (PicrColumns<MinimalFile> & {
       return latest ? fromNow(latest) : '';
     },
     isComment: true,
+    visibleFor: 'sm',
   },
   {
     accessorKey: 'fileSize',

@@ -3,7 +3,7 @@ import { CommentPermissions } from '../../../graphql-types';
 
 export const useCommentPermissions = (): UseCommentPermissionsResult => {
   const me = useMe();
-  const perms = me.commentPermissions ?? CommentPermissions.None;
+  const perms = me?.commentPermissions ?? CommentPermissions.None;
   return {
     commentPermissions: perms,
     isNone: perms == CommentPermissions.None,
@@ -18,4 +18,5 @@ interface UseCommentPermissionsResult {
   readOnly: boolean;
   canEdit: boolean;
   isNone: boolean;
+  canView: boolean;
 }

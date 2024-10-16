@@ -13,7 +13,6 @@ export const RatingFilterBox = () => {
 
   return (
     <Group gap="sm">
-      <Text c="dimmed">Rating</Text>
       <RatingComparisonSelector
         value={options.ratingComparison}
         onChange={(ratingComparison) =>

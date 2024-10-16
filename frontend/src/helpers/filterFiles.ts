@@ -61,7 +61,7 @@ const commentsFilter = (
   file: MinimalFile,
   filters: FilterOptionsInterface,
 ): boolean => {
-  const { flag, rating, ratingComparison } = filters;
+  const { flag, rating, ratingComparison, comments } = filters;
   const flagOk =
     flag == null || file.flag == flag || (flag == 'none' && !file.flag);
   if (!flagOk) return false;
@@ -80,5 +80,8 @@ const commentsFilter = (
         break;
     }
   }
+  if (comments == 'None' && file.totalComments > 0) return false;
+  if (comments == 'Some' && file.totalComments == 0) return false;
+
   return true;
 };
