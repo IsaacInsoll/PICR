@@ -29,8 +29,6 @@ export const FileDataListView = ({
         (visibleFor == 'md' && (isNone || (!isMobile && !isSmall))),
     );
 
-  console.log({ isMobile, isSmall, cols: cols.length });
-
   return (
     <Page>
       <PicrDataGrid
