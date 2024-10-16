@@ -10,7 +10,7 @@ export type SelectedView = 'list' | 'gallery' | 'slideshow';
 export const selectedViewAtom = atomWithStorage<SelectedView>(
   'SelectedView',
   'gallery',
-  window.localStorage,
+  undefined,
   { getOnInit: true },
 );
 
