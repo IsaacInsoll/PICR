@@ -92,7 +92,7 @@ export const ViewFolderBody = ({
         onClick={toggleManaging}
         leftSection={<TbSettings />}
       >
-        Manage Folder
+        Manage
       </Button>,
     );
   }

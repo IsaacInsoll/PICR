@@ -92,11 +92,11 @@ const HeaderWrapper = ({
         </Breadcrumbs>
       </Box>
       <Grid>
-        <Grid.Col span={{ sm: 12, md: 6 }}>
+        <Grid.Col span={{ xs: 12, sm: 6 }}>
           <Title order={1}>{title}</Title>
           <Text>{subtitle}</Text>
         </Grid.Col>
-        <Grid.Col span={{ sm: 12, md: 6 }}>
+        <Grid.Col span={{ xs: 12, sm: 6 }}>
           <Flex hiddenFrom="md" justify="space-evenly" pb="md">
             {actions}
           </Flex>
@@ -107,7 +107,7 @@ const HeaderWrapper = ({
       </Grid>
 
       {children}
-    {/*<Divider mt="md" mb="md" />*/}
+      {/*<Divider mt="md" mb="md" />*/}
     </Page>
   );
 };

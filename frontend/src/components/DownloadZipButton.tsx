@@ -42,7 +42,7 @@ export const DownloadZipButton = ({
       disabled={disabled || tempDisabled}
       leftSection={<TbDownload />}
     >
-      Download .ZIP
+      Download
     </Button>
   );
 };

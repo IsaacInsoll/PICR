@@ -14,6 +14,7 @@ export const AspectSelector = () => {
     setOptions((o) => ({ ...o, ratio: a }));
   return (
     <Select
+      style={{ width: '150px' }}
       // label={options.ratio}
       value={options.ratio}
       onChange={(v) => v && onChange(v)}
