@@ -62,7 +62,13 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
         duration={400}
         timingFunction="ease"
       >
-        {(style) => <FilteringOptions files={files} style={style} />}
+        {(style) => (
+          <FilteringOptions
+            files={files}
+            style={style}
+            totalFiltered={filteredFiles.length}
+          />
+        )}
       </Transition>
       {fileId ? ( // SelectedFileView react lightbox 'blocks' fileinfo so we can't have them on at the same time
         <>
