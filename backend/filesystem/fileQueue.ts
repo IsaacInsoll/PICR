@@ -17,7 +17,7 @@ type QueueAction =
 let queue = null;
 let queueDone = 0;
 let queueTotal = 0;
-let initComplete = false;
+export let initComplete = false;
 
 interface QueuePayload {
   path?: string;

@@ -59,7 +59,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
       const meta = await getImageMetadata(file);
       file.metadata = JSON.stringify(meta);
       file.blurHash = await encodeImageToBlurhash(filePath);
-      if (generateThumbs) generateAllThumbs(file); // will skip if thumbs exist
+      if (generateThumbs) await generateAllThumbs(file); // will skip if thumbs exist
     }
     if (type == 'Video') {
       const meta = await getVideoMetadata(file);
@@ -83,7 +83,10 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
   file.exists = true;
   file.save();
   // console.log(file);
-  log('info', '➕ [done]' + filePath);
+  log(
+    'info',
+    '➕ [done] ' + (generateThumbs ? '[generateThumbs] ' : '') + filePath,
+  );
 };
 
 const findFolderId = async (fullPath: string) => {
