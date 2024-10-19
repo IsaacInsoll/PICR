@@ -26,7 +26,7 @@ import { addComment } from './mutations/addComment';
 import { commentType } from './types/commentType';
 import { comments } from './queries/comments';
 import { serverInfoType } from './types/serverInfoType';
-import { serverInfo, serverInfoQuery } from './queries/serverInfoQuery';
+import { serverInfo } from './queries/serverInfoQuery';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
