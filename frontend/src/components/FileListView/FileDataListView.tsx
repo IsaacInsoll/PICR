@@ -7,7 +7,7 @@ import { MantineSize, Rating } from '@mantine/core';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { FileFlagBadge } from './Review/FileFlagBadge';
 import { FileMenu } from './FileMenu';
-import { fromNow, prettyDate } from './Filtering/PrettyDate';
+import { fromNow } from './Filtering/PrettyDate';
 import { useIsMobile, useIsSmallScreen } from '../../hooks/useIsMobile';
 
 export const FileDataListView = ({

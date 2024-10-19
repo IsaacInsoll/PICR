@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Group, Text } from '@mantine/core';
+import { ActionIcon, Group } from '@mantine/core';
 import { useAtom } from 'jotai/index';
 import {
   filterOptions,

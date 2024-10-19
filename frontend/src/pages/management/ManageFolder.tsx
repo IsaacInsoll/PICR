@@ -6,12 +6,13 @@ import { ManagePublicLink } from './ManagePublicLink';
 import { MinimalSharedFolder } from '../../../types';
 import { VscDebugDisconnect } from 'react-icons/vsc';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
-import { TbLink, TbPhotoCheck } from 'react-icons/tb';
+import { TbPhotoCheck } from 'react-icons/tb';
 import { Box, Button, Group } from '@mantine/core';
 import { Page } from '../../components/Page';
 import { PicrColumns, PicrDataGrid } from '../../components/PicrDataGrid';
 import { EmptyPlaceholder } from '../EmptyPlaceholder';
 import { generateThumbnailsQuery } from '../../urql/mutations/generateThumbnailsQuery';
+import { PublicLinkIcon } from '../../PicrIcons';
 
 export const ManageFolder = ({
   folderId,
@@ -69,7 +70,7 @@ const ManageFolderBody = ({
       ) : null}
       <Group gap="md" pt="md" justify="space-evenly">
         <Button variant="default" onClick={() => setLinkId('')}>
-          <TbLink />
+          <PublicLinkIcon />
           Create Link
         </Button>
         <Button

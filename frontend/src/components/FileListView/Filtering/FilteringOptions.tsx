@@ -9,30 +9,24 @@ import {
   Box,
   Button,
   Container,
-  Divider,
-  Grid,
   Group,
   MantineStyleProp,
   Paper,
-  Stack,
-  StyleProp,
   Table,
   Text,
 } from '@mantine/core';
-import { Page } from '../../Page';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { FlagFilterBox } from './FlagFilterBox';
 import { RatingFilterBox } from './RatingFilterBox';
-import { ColSpan } from '@mantine/core/lib/components/Grid/GridCol/GridCol';
 import { CommentsFilterBox } from './CommentsFilterBox';
 import { useIsMobile } from '../../../hooks/useIsMobile';
-import { TbFileInfo, TbInfoCircle } from 'react-icons/tb';
 import {
   resetFilterOptions,
   totalFilterOptionsSelected,
 } from '../../../atoms/filterAtom';
 import { useAtomValue } from 'jotai';
 import { useSetAtom } from 'jotai/index';
+import { InfoIcon } from '../../../PicrIcons';
 
 export const FilteringOptions = ({
   files,
@@ -95,12 +89,7 @@ const FilterTable = ({ files, totalFiltered }) => {
             <Group>
               <Box flex={1}>
                 {totalFilters > 0 ? (
-                  <Alert
-                    variant="light"
-                    color="blue"
-                    icon={<TbInfoCircle />}
-                    p={8}
-                  >
+                  <Alert variant="light" color="blue" icon={<InfoIcon />} p={8}>
                     {totalFiltered == files.length
                       ? 'Showing all files'
                       : `Showing ${totalFiltered} of ${files.length} files`}

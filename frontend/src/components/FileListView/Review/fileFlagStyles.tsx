@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import { FileFlag } from '../../../../../graphql-types';
-import { TbThumbDown, TbThumbUp } from 'react-icons/tb';
-import { MdOutlineThumbsUpDown } from 'react-icons/md';
+import { ApproveIcon, NoFlagIcon, RejectIcon } from '../../../PicrIcons';
 
 interface FlagStyle {
   color: string;
@@ -12,19 +11,19 @@ interface FlagStyle {
 
 export const approvedFlagStyle: FlagStyle = {
   color: 'green',
-  icon: <TbThumbUp />,
+  icon: <ApproveIcon />,
   value: FileFlag.Approved,
   label: 'Approved',
 };
 export const rejectedFlagStyle: FlagStyle = {
   color: 'red',
-  icon: <TbThumbDown />,
+  icon: <RejectIcon />,
   value: FileFlag.Rejected,
   label: 'Rejected',
 };
 export const noneFlagStyle: FlagStyle = {
   color: 'gray',
-  icon: <MdOutlineThumbsUpDown />,
+  icon: <NoFlagIcon />,
   value: FileFlag.None,
   label: 'None',
 };

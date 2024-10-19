@@ -1,4 +1,3 @@
-import { MetadataSummary } from './src/gql/graphql';
 import {
   FileFlag,
   FileType,

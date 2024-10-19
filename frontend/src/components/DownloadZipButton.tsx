@@ -1,12 +1,11 @@
-import { ActionIcon, Button } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { generateZipMutation } from '../urql/mutations/generateZipMutation';
 import { useMutation } from 'urql';
 import { useState } from 'react';
 import { atom, useAtom } from 'jotai/index';
 import { Folder } from '../../../graphql-types';
 import { FolderHash } from '../../../backend/helpers/zip';
-import { TbDownload } from 'react-icons/tb';
-import { actionIconSize } from '../theme';
+import { DownloadIcon } from '../PicrIcons';
 
 // list of URLs we have requested to download that are currently generating.
 // delete from list once you have triggered it's download
@@ -40,7 +39,7 @@ export const DownloadZipButton = ({
       onClick={clickHandler}
       variant="default"
       disabled={disabled || tempDisabled}
-      leftSection={<TbDownload />}
+      leftSection={<DownloadIcon />}
     >
       Download
     </Button>

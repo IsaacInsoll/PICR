@@ -1,5 +1,4 @@
-import { Box, Button, Text, Title } from '@mantine/core';
-import { Page } from '../../components/Page';
+import { Box, Button, Text } from '@mantine/core';
 import { useQuery } from 'urql';
 import { viewAdminsQuery } from '../../urql/queries/viewAdminsQuery';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';

@@ -1,11 +1,8 @@
 import { Box, Group, Modal, Table } from '@mantine/core';
-import { MinimalFile } from '../../../../types';
 import prettyBytes from 'pretty-bytes';
 import { prettyDate } from '../Filtering/PrettyDate';
-import { PicrImage } from '../../PicrImage';
 import { MetadataTableRows } from './metadataTableRows';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
-import { PicrModal } from '../../PicrModal';
 import { StatCard } from './StatCard';
 import { useAtomValue, useSetAtom } from 'jotai/index';
 import { closeModalAtom, modalAtom } from '../../../atoms/modalAtom';

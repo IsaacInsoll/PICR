@@ -1,4 +1,4 @@
-import { Divider, Group, Tooltip } from '@mantine/core';
+import { Divider, Group } from '@mantine/core';
 import { MinimalFile } from '../../../../types';
 import { FileFlagButtons } from './FileFlagButtons';
 import { useMutation } from 'urql';

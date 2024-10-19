@@ -9,14 +9,13 @@ import {
   Timeline,
 } from '@mantine/core';
 import { closeModalAtom, modalAtom } from '../../../atoms/modalAtom';
-import { useAtom, useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai/index';
 import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import { MinimalFile } from '../../../../types';
 import { CommentBodyItem } from './CommentBodyItem';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
-import { PicrModal } from '../../PicrModal';
 import { addCommentMutation } from './AddCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { gql } from '../../../helpers/gql';

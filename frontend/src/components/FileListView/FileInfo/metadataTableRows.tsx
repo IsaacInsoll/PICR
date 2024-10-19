@@ -1,4 +1,4 @@
-import { Badge, Code, Group, Rating, Stack, Table, Text } from '@mantine/core';
+import { Badge, Code, Group, Rating, Table, Text } from '@mantine/core';
 import { metadataDescription, metadataIcons } from '../metadataIcons';
 import { formatMetadataValue } from '../../../metadata/formatMetadataValue';
 import { AnyMetadataKey } from '../Filtering/MetadataBox';

@@ -4,10 +4,7 @@ import {
   FilterOptionsInterface,
 } from '../atoms/filterAtom';
 import { MetadataOptionsForFiltering } from './metadataForFiltering';
-import { metadata } from 'reflect-metadata/no-conflict';
-import { Metadata } from 'sharp';
 import { MetadataSummary } from '../../../backend/types/MetadataSummary';
-import { entries } from 'lodash';
 
 export const filterFiles = (
   files: MinimalFile[],

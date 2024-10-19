@@ -6,9 +6,10 @@ import {
   useOpenFileInfoModal,
 } from '../../atoms/modalAtom';
 import { Group, Menu, Text } from '@mantine/core';
-import { TbCloudDownload, TbFile, TbInfoCircle } from 'react-icons/tb';
+import { TbCloudDownload, TbFile } from 'react-icons/tb';
 import { BiComment, BiCommentDetail } from 'react-icons/bi';
 import { imageURL } from '../../helpers/imageURL';
+import { InfoIcon } from '../../PicrIcons';
 
 export const FileMenu = ({ file }: { file: MinimalFile }) => {
   const setFolder = useSetFolder();
@@ -29,7 +30,7 @@ export const FileMenu = ({ file }: { file: MinimalFile }) => {
         View {file.name}
       </Menu.Item>
       <Menu.Item
-        leftSection={<TbInfoCircle size="20" />}
+        leftSection={<InfoIcon size="20" />}
         key={2}
         onClick={() => openFileInfo(file)}
       >

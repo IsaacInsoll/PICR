@@ -1,7 +1,7 @@
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
-import { Alert, Box, Button, Code, Stack, Text } from '@mantine/core';
+import { Alert, Box, Code, Stack } from '@mantine/core';
 import { BiSolidError } from 'react-icons/bi';
-import { useState } from 'react';
+import { ReactNode } from 'react';
 
 export const PicrErrorBoundary = ({ children }: { children: ReactNode }) => {
   return (

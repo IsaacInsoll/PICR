@@ -8,10 +8,11 @@ import { Page } from '../Page';
 import { PicrImage } from '../PicrImage';
 import { FileReview } from './Review/FileReview';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
-import { TbCloudDownload, TbInfoCircle, TbSlideshow } from 'react-icons/tb';
+import { TbCloudDownload, TbSlideshow } from 'react-icons/tb';
 import { useOpenFileInfoModal } from '../../atoms/modalAtom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
+import { InfoIcon } from '../../PicrIcons';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 export const ImageFeed = ({
@@ -125,7 +126,7 @@ const FileInfoButton = ({ file }: { file: MinimalFile }) => {
   return (
     <Tooltip label={`File Info for ${file.name}`}>
       <ActionIcon variant="default" onClick={() => openFileInfo(file)}>
-        <TbInfoCircle />
+        <InfoIcon />
       </ActionIcon>
     </Tooltip>
   );

@@ -1,5 +1,5 @@
-import { TbInfoCircle } from 'react-icons/tb';
 import { useOpenFileInfoModal } from '../../../atoms/modalAtom';
+import { InfoIcon } from '../../../PicrIcons';
 
 export const LightboxInfoButton = ({ file }) => {
   const openFileInfo = useOpenFileInfoModal();
@@ -10,7 +10,7 @@ export const LightboxInfoButton = ({ file }) => {
       className="yarl__button"
       onClick={() => openFileInfo(file)}
     >
-      <TbInfoCircle size="28" />
+      <InfoIcon size="28" />
     </button>
   );
 };

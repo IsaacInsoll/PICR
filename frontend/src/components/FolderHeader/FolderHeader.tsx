@@ -4,16 +4,12 @@ import { Helmet } from 'react-helmet-async';
 import { ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { placeholderFolder } from './PlaceholderFolder';
-import { LoadingIndicator } from '../LoadingIndicator';
 import { Page } from '../Page';
 import {
   Box,
   Breadcrumbs,
-  Container,
-  Divider,
   Flex,
   Grid,
-  Group,
   Loader,
   Skeleton,
   Text,

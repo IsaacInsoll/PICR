@@ -2,11 +2,11 @@
 import {
   MantineReactTable,
   MRT_ColumnDef,
+  MRT_Row,
   MRT_RowData,
+  MRT_TableInstance,
   MRT_TableOptions,
   useMantineReactTable,
-  MRT_Row,
-  MRT_TableInstance,
 } from 'mantine-react-table';
 import { ReactNode, useMemo } from 'react';
 

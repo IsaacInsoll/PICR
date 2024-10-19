@@ -1,12 +1,12 @@
-import { Group, rem, Tabs, Title } from '@mantine/core';
+import { Group, Tabs, Title } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ManageUsers } from './ManageUsers';
 import { Page } from '../../components/Page';
 import { ReactNode, Suspense } from 'react';
-import { TbInfoCircle, TbUserCog } from 'react-icons/tb';
 import { PicrLogo } from '../LoginForm';
 import { ServerInfo } from './ServerInfo';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
+import { InfoIcon, PublicLinkIcon, UserSettingsIcon } from '../../PicrIcons';
 
 export const Settings = () => {
   const { tab } = useParams();
@@ -58,6 +58,7 @@ interface SettingsTab {
 }
 
 const tabList: SettingsTab[] = [
-  { title: 'Users', slug: 'users', icon: <TbUserCog /> },
-  { title: 'Info', slug: 'info', icon: <TbInfoCircle /> },
+  { title: 'Users', slug: 'users', icon: <UserSettingsIcon /> },
+  { title: 'Links', slug: 'links', icon: <PublicLinkIcon /> },
+  { title: 'Info', slug: 'info', icon: <InfoIcon /> },
 ];

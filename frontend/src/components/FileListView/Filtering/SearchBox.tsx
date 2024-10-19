@@ -1,13 +1,13 @@
 import { useAtom } from 'jotai/index';
 import { filterOptions } from '../../../atoms/filterAtom';
 import { TextInput } from '@mantine/core';
-import { TbSearch } from 'react-icons/tb';
+import { SearchIcon } from '../../../PicrIcons';
 
 export const SearchBox = () => {
   const [options, setOptions] = useAtom(filterOptions);
   return (
     <TextInput
-      leftSection={<TbSearch />}
+      leftSection={<SearchIcon />}
       placeholder="Search"
       value={options.searchText}
       onChange={(e) =>

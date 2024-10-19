@@ -1,10 +1,4 @@
-import {
-  ActionIcon,
-  Box,
-  Button,
-  InputDescription,
-  InputLabel,
-} from '@mantine/core';
+import { Box, Button, InputDescription, InputLabel } from '@mantine/core';
 import { CommentPermissions } from '../../../graphql-types';
 
 export const CommentPermissionsSelector = ({

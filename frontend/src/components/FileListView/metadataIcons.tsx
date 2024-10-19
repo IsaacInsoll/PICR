@@ -4,7 +4,6 @@ import {
   MdCameraRoll,
   MdOutlineNetworkCheck,
   MdOutlineShutterSpeed,
-  MdSpeed,
 } from 'react-icons/md';
 import { IoApertureOutline } from 'react-icons/io5';
 import {

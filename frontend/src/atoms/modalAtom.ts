@@ -1,8 +1,6 @@
 import { atom, useSetAtom } from 'jotai/index';
 import { MinimalFile } from '../../types';
 import { FileViewType } from '../hooks/useSetFolder';
-import { DefaultFilterOptions, filterOptions } from './filterAtom';
-import { file } from '../../../backend/graphql/queries/file';
 
 export const modalAtom = atom<{
   file?: MinimalFile;

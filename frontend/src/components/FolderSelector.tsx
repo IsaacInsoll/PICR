@@ -1,14 +1,5 @@
+import { Button, Group, Input, Paper, Tree, useTree } from '@mantine/core';
 import {
-  Group,
-  Input,
-  Tree,
-  useTree,
-  Text,
-  Paper,
-  Button,
-} from '@mantine/core';
-import {
-  TbArrowUp,
   TbChevronDown,
   TbChevronUp,
   TbFolder,
@@ -21,7 +12,6 @@ import { buildTreeArray, treeNode } from '../helpers/buildTreeArray';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { MinimalFolder } from '../../types';
 import { LoadingIndicator } from './LoadingIndicator';
-import { IconButton } from 'yet-another-react-lightbox';
 import { values } from 'lodash';
 
 const prettyFolderPath = (folder: MinimalFolder) => {

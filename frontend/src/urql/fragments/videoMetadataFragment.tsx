@@ -1,5 +1,4 @@
 import { gql } from '../../helpers/gql';
-import { GraphQLFloat, GraphQLInt, GraphQLString } from 'graphql/index';
 
 const videoMetadataFragment = gql(/* GraphQL */ `
   fragment VideoMetadataFragment on Video {

@@ -17,13 +17,13 @@ import {
   TbClipboard,
   TbCloudUpload,
   TbDoorExit,
-  TbLink,
   TbUsersGroup,
 } from 'react-icons/tb';
 import { notifications } from '@mantine/notifications';
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { CommentPermissions } from '../../../../graphql-types';
+import { ClipboardIcon, PublicLinkIcon } from '../../PicrIcons';
 
 export const ManagePublicLink = ({
   id,
@@ -81,7 +81,7 @@ export const ManagePublicLink = ({
         />
 
         <TextInput
-          leftSection={<TbLink />}
+          leftSection={<PublicLinkIcon />}
           placeholder="Link ID (required)"
           value={link}
           label="Public Link"
@@ -113,7 +113,7 @@ export const ManagePublicLink = ({
               notifications.show({
                 title: 'Link copied to clipboard',
                 message: url,
-                icon: <TbClipboard />,
+                icon: <ClipboardIcon />,
               });
             }}
           >

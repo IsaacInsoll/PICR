@@ -1,5 +1,5 @@
 import { imageURL } from '../helpers/imageURL';
-import { Image, MantineStyleProp, MantineStyleProps } from '@mantine/core';
+import { Image, MantineStyleProps } from '@mantine/core';
 import File from '../../../backend/models/File';
 import { ThumbnailSize } from '../helpers/thumbnailSize';
 import { Blurhash } from 'react-blurhash';

@@ -1,12 +1,10 @@
-import { ActionIcon, Button, Group } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { useAtom } from 'jotai/index';
 import {
   CommentsFilterOptions,
   filterOptions,
 } from '../../../atoms/filterAtom';
 import { ReactNode } from 'react';
-import { TbEqual, TbMathEqualLower } from 'react-icons/tb';
-import { FileRating } from '../Review/FileRating';
 import { BiComment, BiCommentDetail } from 'react-icons/bi';
 
 export const CommentsFilterBox = () => {

@@ -1,4 +1,4 @@
-import { ActionIcon, Button } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { fileFlags } from '../Review/fileFlagStyles';
 import { useAtom } from 'jotai/index';
 import { filterOptions } from '../../../atoms/filterAtom';

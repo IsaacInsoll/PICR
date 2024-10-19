@@ -1,4 +1,4 @@
-import { ActionIcon, Button, createTheme } from '@mantine/core';
+import { createTheme } from '@mantine/core';
 
 const fonts =
   '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji';
