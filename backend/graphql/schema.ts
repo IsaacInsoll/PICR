@@ -25,6 +25,8 @@ import { taskType } from './types/taskType';
 import { addComment } from './mutations/addComment';
 import { commentType } from './types/commentType';
 import { comments } from './queries/comments';
+import { serverInfoType } from './types/serverInfoType';
+import { serverInfo, serverInfoQuery } from './queries/serverInfoQuery';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -39,6 +41,7 @@ const queries = new GraphQLObjectType({
     tasks,
     user,
     users,
+    serverInfo,
   }),
   name: 'Query',
 });
@@ -63,6 +66,7 @@ const types = [
   folderPermissionsType,
   imageFileType,
   imageMetadataSummaryType,
+  serverInfoType,
   taskType,
   userType,
   videoFileType,

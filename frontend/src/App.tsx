@@ -15,6 +15,7 @@ import { Notifications } from '@mantine/notifications';
 import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
 import { Suspense } from 'react';
+import { PicrErrorBoundary } from './components/PicrErrorBoundary';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
@@ -26,10 +27,12 @@ const App = () => {
       <URQLProvider value={client}>
         <BrowserRouter>
           <MantineProvider theme={theme} defaultColorScheme={themeMode}>
-            <Suspense fallback={<PicrLoadingOverlay />}>
-              <UserProvider />
-              <Notifications />
-            </Suspense>
+            <PicrErrorBoundary>
+              <Suspense fallback={<PicrLoadingOverlay />}>
+                <UserProvider />
+                <Notifications />
+              </Suspense>
+            </PicrErrorBoundary>
           </MantineProvider>
         </BrowserRouter>
       </URQLProvider>

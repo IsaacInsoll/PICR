@@ -129,9 +129,19 @@ type Query {
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
   me: User
+  serverInfo: ServerInfo
   tasks(folderId: ID): [Task!]!
   user(id: ID!): User!
   users(folderId: ID!, includeParents: Boolean): [User!]!
+}
+
+type ServerInfo {
+  cacheSize: BigInt!
+  databaseUrl: String!
+  dev: Boolean!
+  mediaSize: BigInt!
+  usePolling: Boolean!
+  version: String!
 }
 
 type Task {

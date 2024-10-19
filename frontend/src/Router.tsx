@@ -5,6 +5,7 @@ import { ManageUsers } from './pages/management/ManageUsers';
 import { PageNotFound } from './pages/PageNotFound';
 import { useMe } from './hooks/useMe';
 import { FileViewType } from './hooks/useSetFolder';
+import { Settings } from './pages/management/Settings';
 
 const folderRoute = '/:folderId/:fileId?/:fileView?';
 
@@ -22,7 +23,7 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
       {loggedIn ? (
         <>
           <Route path={`/admin/f${folderRoute}`} element={<ViewFolder />} />
-          <Route path="/admin/users/:userId?" element={<ManageUsers />} />
+          <Route path="/admin/settings/:tab?/:slug?" element={<Settings />} />
           <Route path="/" element={<HomePage />} />
         </>
       ) : null}

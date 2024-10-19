@@ -190,6 +190,7 @@ export type Query = {
   file: FileInterface;
   folder: Folder;
   me?: Maybe<User>;
+  serverInfo?: Maybe<ServerInfo>;
   tasks: Array<Task>;
   user: User;
   users: Array<User>;
@@ -229,6 +230,16 @@ export type QueryUserArgs = {
 export type QueryUsersArgs = {
   folderId: Scalars['ID']['input'];
   includeParents?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type ServerInfo = {
+  __typename?: 'ServerInfo';
+  cacheSize: Scalars['BigInt']['output'];
+  databaseUrl: Scalars['String']['output'];
+  dev: Scalars['Boolean']['output'];
+  mediaSize: Scalars['BigInt']['output'];
+  usePolling: Scalars['Boolean']['output'];
+  version: Scalars['String']['output'];
 };
 
 export type Task = {

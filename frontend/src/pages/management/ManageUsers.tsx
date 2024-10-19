@@ -12,15 +12,14 @@ import { TbCircleCheck, TbCircleXFilled, TbUserPlus } from 'react-icons/tb';
 
 export const ManageUsers = () => {
   return (
-    <Page>
-      <Title pt="xl">Manage Users</Title>
+    <>
       <Text py="md">
         Users who manage folders can manage users attached to its subfolders
       </Text>
       <Suspense fallback={<ModalLoadingIndicator />}>
         <ManageUsersBody />
       </Suspense>
-    </Page>
+    </>
   );
 };
 

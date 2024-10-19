@@ -25,6 +25,7 @@
     "dotenv": "^16.4.5",
     "exif-reader": "^2.0.1",
     "express": "^5.0.0-beta.3",
+    "fast-folder-size": "^2.3.0",
     "fast-xml-parser": "^4.5.0",
     "ffmpeg-static": "^5.2.0",
     "ffprobe-static": "^3.1.0",
