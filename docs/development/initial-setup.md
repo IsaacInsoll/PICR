@@ -52,3 +52,10 @@ Run `npm install && cd frontend && npm install && cd ..` so that all dependencie
   You can delete the contents of this folder at any time without fear.
 - Create a `media` folder which should have a few subfolders and put a couple of images in each folder.
   For example, create a `people` and `pets` folder and put a few pics in each.
+
+### Demo files
+If you don't have your own media to test with then use this:
+
+https://photosummaryapp.com/picr-demo-data.zip
+
+This has also been created for future use when we set up testing.
