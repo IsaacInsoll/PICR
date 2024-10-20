@@ -10,6 +10,7 @@ export const envPassword = async () => {
       hashedPassword: hashPassword('picr1234'),
       enabled: true,
       folderId: 1,
+      commentPermissions: 'edit',
     }).then(() =>
       console.log(
         '🔐 No users found so "admin" user created with password "picr1234"',
