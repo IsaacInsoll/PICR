@@ -20,7 +20,7 @@ export const folderAndAllParentIds = async (
   }
   if (rootId) {
     throw new Error(
-      `RootID ${rootID} not found navigating parents of ${folder.id}`,
+      `RootID ${rootId} not found navigating parents of ${folder.id}`,
     );
   }
   return ids;
