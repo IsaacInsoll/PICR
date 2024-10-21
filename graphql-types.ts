@@ -229,6 +229,7 @@ export type QueryUserArgs = {
 
 export type QueryUsersArgs = {
   folderId: Scalars['ID']['input'];
+  includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
   includeParents?: InputMaybe<Scalars['Boolean']['input']>;
 };
 

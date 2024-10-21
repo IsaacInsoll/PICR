@@ -44,13 +44,16 @@ export const ManagePublicLink = ({
     useState<CommentPermissions>(user?.commentPermissions ?? 'none');
   const invalidLink = link === '' || name === '';
 
+  //get folder from user if they exist as it may be a parent or child
+  const f: MinimalFolder = user?.folder ?? folder;
+
   const onSave = () => {
     const data: MutationEditUserArgs = {
       id: id ?? '',
       name,
       uuid: link,
       enabled,
-      folderId: folder?.id,
+      folderId: f?.id,
       commentPermissions,
     };
     mutate(data).then(({ data, error }) => {
@@ -66,7 +69,11 @@ export const ManagePublicLink = ({
   return (
     <Modal
       onClose={onClose}
-      title={`Manage Public Link for: ${folder?.name}`}
+      title={
+        <>
+          Public Link for: <em>{f?.name}</em>{' '}
+        </>
+      }
       centered
       opened={true}
     >
@@ -108,7 +115,7 @@ export const ManagePublicLink = ({
           <Button
             disabled={invalidLink}
             onClick={() => {
-              const url = publicURLFor(link, folder!.id);
+              const url = publicURLFor(link, f!.id);
               copyToClipboard(url);
               notifications.show({
                 title: 'Link copied to clipboard',

@@ -7,10 +7,14 @@ import { PicrLogo } from '../LoginForm';
 import { ServerInfo } from './ServerInfo';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { InfoIcon, PublicLinkIcon, UserSettingsIcon } from '../../PicrIcons';
+import { ManagePublicLinks } from './ManagePublicLinks';
+import { useMe } from '../../hooks/useMe';
+import { Tips } from '../../components/Tips';
 
 export const Settings = () => {
   const { tab } = useParams();
   const navigate = useNavigate();
+  const me = useMe();
 
   const onTabChange = (newTab) => {
     navigate('/admin/settings/' + newTab);
@@ -28,8 +32,19 @@ export const Settings = () => {
           ))}
         </Tabs.List>
         <Tabs.Panel value="users">
+          <Tips type="Users" />
           <Suspense fallback={<LoadingIndicator />}>
             <ManageUsers />
+          </Suspense>
+        </Tabs.Panel>
+        <Tabs.Panel value="links">
+          <Tips type="PublicLink" />
+          <Suspense fallback={<LoadingIndicator />}>
+            <ManagePublicLinks
+              folder={me.folder}
+              disableAddingLinks={true}
+              relations="children"
+            />
           </Suspense>
         </Tabs.Panel>
         <Tabs.Panel value="info">

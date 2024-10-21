@@ -10,7 +10,7 @@ import { viewFolderQuery } from '../urql/queries/viewFolderQuery';
 import { SubfolderListView } from '../components/SubfolderListView';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
-import { ManageFolder } from './management/ManageFolder';
+import { ManagePublicLinks } from './management/ManagePublicLinks';
 import { getUUID } from '../Router';
 import { TaskSummary } from '../components/TaskSummary';
 import { FilterToggle } from '../components/FilterToggle';
@@ -19,6 +19,8 @@ import { Button, Group, Title } from '@mantine/core';
 import { TbSettings } from 'react-icons/tb';
 import { useSetFolder } from '../hooks/useSetFolder';
 import { ModalManager } from '../components/ModalManager';
+import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
+import { Page } from '../components/Page';
 
 // This component is used in the 'public URL' and 'private URL' routes, so this is how we determine where each link should point
 export const useBaseViewFolderURL = () => {
@@ -122,7 +124,16 @@ export const ViewFolderBody = ({
           />
           <TaskSummary folderId={folder.id} />
           {managing ? (
-            <ManageFolder folderId={folderId} onClose={toggleManaging} />
+            <Page>
+              <ManagePublicLinks
+                folder={folder}
+                onClose={toggleManaging}
+                relations="options"
+              >
+                <GenerateThumbnailsButton folder={folder} />
+                <Button onClick={toggleManaging}>Close Settings</Button>
+              </ManagePublicLinks>
+            </Page>
           ) : (
             <>
               <SubfolderListView folder={folder} />

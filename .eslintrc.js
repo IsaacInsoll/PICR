@@ -34,6 +34,6 @@ module.exports = {
     'react/prop-types': 'off',
     'react-hooks/exhaustive-deps': 'warn',
     'react/destructuring-assignment': ['error', 'always'],
-    'react/no-unescaped-entities': 'error',
+    'react/no-unescaped-entities': 'off',
   },
 };

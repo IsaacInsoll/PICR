@@ -23,6 +23,10 @@ const meQuery = gql(/* GraphQL */ `
       name
       folderId
       commentPermissions
+      folder {
+        id
+        name
+      }
     }
   }
 `);

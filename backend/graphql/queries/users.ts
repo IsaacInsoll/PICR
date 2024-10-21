@@ -12,6 +12,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { userType } from '../types/userType';
+import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await contextPermissionsForFolder(
@@ -23,9 +24,17 @@ const resolver = async (_, params, context) => {
 
   const folder = await Folder.findByPk(params.folderId);
 
-  const ids = params.includeParents
-    ? [await folderAndAllParentIds(folder)]
-    : folder.id;
+  const ids = [folder.id];
+  if (params.includeParents) {
+    const parents = await folderAndAllParentIds(folder, u.folderId);
+    ids.push(...parents);
+  }
+  if (params.includeChildren) {
+    const children = await allSubFoldersRecursive(folder.id);
+    const childIds = children.map(({ id }) => id);
+    ids.push(...childIds);
+  }
+
   // we don't show 'real users' just 'shared public users'
   const data = await User.findAll({
     where: { folderId: { [Op.or]: ids }, uuid: { [Op.not]: null } },
@@ -41,5 +50,6 @@ export const users = {
   args: {
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     includeParents: { type: GraphQLBoolean },
+    includeChildren: { type: GraphQLBoolean },
   },
 };

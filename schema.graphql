@@ -132,7 +132,7 @@ type Query {
   serverInfo: ServerInfo
   tasks(folderId: ID): [Task!]!
   user(id: ID!): User!
-  users(folderId: ID!, includeParents: Boolean): [User!]!
+  users(folderId: ID!, includeChildren: Boolean, includeParents: Boolean): [User!]!
 }
 
 type ServerInfo {

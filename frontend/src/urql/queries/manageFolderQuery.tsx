@@ -1,15 +1,11 @@
 import { gql } from '../../helpers/gql';
 
 export const manageFolderQuery = gql(/*GraphQL*/ `
-    query ManageFolderQuery($folderId: ID!) {
+    query ManageFolderQuery($folderId: ID!, $includeParents: Boolean!, $includeChildren: Boolean!) {
         folder(id: $folderId) {
             ...FolderFragment
-            totalFiles
-            totalFolders
-            totalImages
-            totalSize
         }
-        users(folderId:$folderId, includeParents: true) {
+        users(folderId:$folderId, includeParents: $includeParents, includeChildren: $includeChildren) {
            ...UserFragment
            folderId
             folder {
