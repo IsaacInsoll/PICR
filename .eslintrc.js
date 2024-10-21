@@ -3,7 +3,13 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
+    'plugin:react-hooks/recommended',
+  ],
   overrides: [
     {
       env: {
@@ -20,6 +26,14 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint'],
-  rules: {},
+  plugins: ['@typescript-eslint', 'react', 'react-refresh', 'react-compiler'],
+  rules: {
+    'react-compiler/react-compiler': 'error',
+    'no-console': 'warn',
+    'react-refresh/only-export-components': 'error',
+    'react/prop-types': 'off',
+    'react-hooks/exhaustive-deps': 'warn',
+    'react/destructuring-assignment': ['error', 'always'],
+    'react/no-unescaped-entities': 'error',
+  },
 };
