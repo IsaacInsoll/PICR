@@ -10,6 +10,7 @@ import { InfoIcon, PublicLinkIcon, UserSettingsIcon } from '../../PicrIcons';
 import { ManagePublicLinks } from './ManagePublicLinks';
 import { useMe } from '../../hooks/useMe';
 import { Tips } from '../../components/Tips';
+import { TaskSummary } from '../../components/TaskSummary';
 
 export const Settings = () => {
   const { tab } = useParams();
@@ -23,10 +24,12 @@ export const Settings = () => {
   return (
     <Page>
       <TopBar />
-      <Tabs value={tab ?? 'users'} onChange={onTabChange}>
+      <TaskSummary folderId={me?.folderId} />
+
+      <Tabs value={tab ?? 'users'} onChange={onTabChange} keepMounted={false}>
         <Tabs.List>
           {tabList.map(({ title, slug, icon }) => (
-            <Tabs.Tab value={slug} leftSection={icon}>
+            <Tabs.Tab value={slug} leftSection={icon} key={slug}>
               {title}
             </Tabs.Tab>
           ))}
