@@ -12,14 +12,14 @@ import { sep } from 'path';
 
 @Table
 export default class File extends Model {
-  @Column
+  @Column(DataType.TEXT)
   declare name: string;
-  @Column
+  @Column(DataType.TEXT)
   declare fileHash: string;
 
-  @Column
+  @Column(DataType.TEXT)
   declare blurHash: string; // string for Images describing its 'micro thumbnail' https://www.npmjs.com/package/blurhash
-  @Column
+  @Column(DataType.TEXT)
   declare relativePath: string;
 
   @Column({ type: DataType.TEXT })
@@ -43,20 +43,20 @@ export default class File extends Model {
   @Column({ type: DataType.BIGINT })
   declare fileSize: number;
 
-  @Column
+  @Column(DataType.DATE)
   declare fileLastModified: Date;
 
-  @Column
+  @Column(DataType.BOOLEAN)
   declare exists: boolean; // bulk set as 'false' at boot, then set true when detected, to weed out files deleted while server down
 
   @Column({ type: DataType.INTEGER })
   declare totalComments: number; //we could calculate it but this is faster and easier
 
-  @Column
+  @Column(DataType.DATE)
   declare latestComment: Date;
 
   @ForeignKey(() => Folder)
-  @Column
+  @Column(DataType.INTEGER)
   folderId: number;
 
   fullPath() {

@@ -1,11 +1,11 @@
 import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
-import { createAccessLog } from '../../models/AccessLog';
 import { Folder } from '../../../graphql-types';
 import { GraphQLFieldResolver } from 'graphql/type';
 import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
 import { getFolder } from '../helpers/getFolder';
 import { GraphQLID, GraphQLNonNull } from 'graphql/index';
 import { folderType } from '../types/folderType';
+import { createAccessLog } from '../../createAccessLog';
 
 const folderResolver: GraphQLFieldResolver<
   Folder,

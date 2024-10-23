@@ -12,21 +12,21 @@ import File from './File';
 @Table
 export default class Comment extends Model {
   @ForeignKey(() => Folder)
-  @Column
+  @Column(DataType.INTEGER)
   folderId: number;
 
   @ForeignKey(() => File)
-  @Column
+  @Column(DataType.INTEGER)
   fileId: number;
 
   @ForeignKey(() => User)
-  @Column
+  @Column(DataType.INTEGER)
   userId: number;
 
-  @Column
+  @Column(DataType.BOOLEAN)
   declare systemGenerated: boolean; // EG: recording change of star rating / flag
 
-  @Column
+  @Column(DataType.STRING)
   declare nickName: string; // user-entered name (optional)
 
   @Column({ type: DataType.TEXT })

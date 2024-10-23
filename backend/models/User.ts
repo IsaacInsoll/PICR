@@ -12,20 +12,20 @@ import { CommentPermissions, FileType } from '../../graphql-types';
 
 @Table
 export default class User extends Model {
-  @Column
+  @Column(DataType.TEXT)
   declare name: string;
 
-  @Column
+  @Column(DataType.BOOLEAN)
   declare enabled: boolean;
 
   // IF REAL USER
-  @Column
+  @Column(DataType.TEXT)
   declare hashedPassword: string;
-  @Column
+  @Column(DataType.TEXT)
   declare username: string;
 
   // IF PUBLIC LINK
-  @Column
+  @Column(DataType.TEXT)
   declare uuid: string; //public hash
 
   @Column({ type: DataType.ENUM(...Object.values(CommentPermissions)) })
@@ -33,6 +33,6 @@ export default class User extends Model {
 
   // RELATIONSHIPS
   @ForeignKey(() => Folder)
-  @Column
+  @Column(DataType.INTEGER)
   folderId: number;
 }
