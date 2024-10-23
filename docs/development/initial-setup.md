@@ -8,7 +8,7 @@
 5. Install deps (`npm install && cd frontend && npm install && cd ..`)
 6. Create empty `cache` folder and a `media` folder with some subfolders of images
 7. `npm start`
-8. Visit http://localhost:6969 and use login `admin` / `picr1234` to get started
+8. Visit http://localhost:6969 and use login details found in `backend/auth/defaultCredentials.ts` to log in
 
 ### Database Server
 You will need a DB server running, something like this works great:
