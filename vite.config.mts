@@ -6,6 +6,10 @@ export default defineConfig({
     // onConsoleLog(log: string, type: 'stdout' | 'stderr'): boolean | void {
     //   console.log(log);
     //   return true;
+    // },poolOptions: {
     // },
+    forks: {
+      singleFork: true,
+    },
   },
 });
