@@ -16,7 +16,7 @@ export const useMe = (): Pick<
   return result.data?.me ?? null;
 };
 
-export const meQueryRaw = /* GraphQL */ `
+const meQueryRaw = /* GraphQL */ `
   query MeQuery {
     me {
       id
@@ -31,4 +31,4 @@ export const meQueryRaw = /* GraphQL */ `
   }
 `;
 
-const meQuery = gql(meQueryRaw);
+export const meQuery = gql(meQueryRaw);
