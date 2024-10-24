@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { testGraphqlClient } from './testGraphqlClient';
+import { testGraphqlClient } from '../frontend/testGraphqlClient';
 import { loginMutationRaw } from '../frontend/src/urql/mutations/LoginMutation';
 import { defaultCredentials } from '../backend/auth/defaultCredentials';
 

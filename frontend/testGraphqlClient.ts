@@ -1,6 +1,7 @@
-import { loginMutationRaw } from '../frontend/src/urql/mutations/LoginMutation';
+import { loginMutationRaw } from './src/urql/mutations/LoginMutation';
 import { defaultCredentials } from '../backend/auth/defaultCredentials';
 import { expect } from 'vitest';
+import { Client, fetchExchange } from 'urql';
 
 interface BaseParams {
   query: string;
@@ -43,4 +44,28 @@ export const adminGraphqlClient = async ({
   const h = { ...extraHeaders, authorization: `Bearer ${jwt}` };
   const result = await testGraphqlClient({ query, variables, extraHeaders: h });
   return result;
+};
+
+export const createTestGraphqlClient = async ({}) => {
+  const authResponse = await testGraphqlClient({
+    query: loginMutationRaw,
+    variables: defaultCredentials,
+  });
+  // console.log(authResponse);
+  const jwt = authResponse.auth;
+  if (!jwt || !jwt.startsWith('ey')) {
+    throw new Error('Login failed for defaultCredentials');
+  }
+  return new Client({
+    url: 'http://localhost:6900/graphql',
+    suspense: true,
+    exchanges: [fetchExchange],
+    fetchOptions: () => {
+      return {
+        headers: {
+          authorization: `Bearer ${jwt}`,
+        },
+      };
+    },
+  });
 };
