@@ -8,8 +8,6 @@ import { zipRequest } from './zipRequest';
 export const expressServer = () => {
   const exp = express();
 
-  const port = 6900;
-
   exp.all('/graphql', gqlServer);
   exp.use(express.static('public'));
   exp.get('/image/:id/:size/:hash/:filename', imageRequest); //filename is ignored but nice for users to see a 'nice' name
@@ -18,10 +16,6 @@ export const expressServer = () => {
   //catch all other URLS and return the front end template
   exp.use((req, res) => {
     res.sendFile(path.join(__dirname, '../../../public/index.html'));
-  });
-
-  exp.listen(port, () => {
-    log('info', `🌐 App listening at http://localhost:${port}`, true);
   });
 
   return exp;

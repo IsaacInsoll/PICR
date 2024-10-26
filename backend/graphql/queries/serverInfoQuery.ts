@@ -1,8 +1,8 @@
 import { serverInfoType } from '../types/serverInfoType';
-import { picrConfig } from '../../server';
 import { requireFullAdmin } from './admins';
 import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from 'graphql/index';
 import fastFolderSizeSync from 'fast-folder-size/sync';
+import { picrConfig } from '../../config/picrConfig';
 
 const resolver = async (_, params, context) => {
   requireFullAdmin(context);
@@ -11,8 +11,8 @@ const resolver = async (_, params, context) => {
     databaseUrl: picrConfig.databaseUrl,
     usePolling: picrConfig.usePolling,
     dev: picrConfig.dev,
-    cacheSize: fastFolderSizeSync(process.cwd() + '/cache'),
-    mediaSize: fastFolderSizeSync(process.cwd() + '/media'),
+    cacheSize: fastFolderSizeSync(picrConfig.cachePath),
+    mediaSize: fastFolderSizeSync(picrConfig.mediaPath),
   };
 };
 

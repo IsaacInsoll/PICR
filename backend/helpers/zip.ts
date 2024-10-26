@@ -5,9 +5,9 @@ import crypto from 'crypto';
 import fs from 'fs';
 import archiver from 'archiver';
 import { mkdirSync } from 'node:fs';
-import { fullPath } from '../filesystem/fileManager';
 import { updateZipQueue } from './zipQueue';
 import { log } from '../logger';
+import { picrConfig } from '../config/picrConfig';
 
 export interface FolderHash {
   folder?: Folder;
@@ -86,7 +86,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
 };
 
 export const zipPath = (folderHash: Pick<FolderHash, 'folder' | 'hash'>) => {
-  const path = process.cwd() + '/cache/zip/' + folderHash.folder.name;
+  const path = picrConfig.cachePath + '/zip/' + folderHash.folder.name;
   mkdirSync(path, { recursive: true });
   return `${path}/${folderHash.hash}.zip`;
 };

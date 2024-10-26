@@ -1,21 +1,21 @@
 import chokidar from 'chokidar';
-import { directoryPath, relativePath } from './fileManager';
+import { relativePath } from './fileManager';
 import { addToQueue, initComplete } from './fileQueue';
 import { log } from '../logger';
-import { picrConfig } from '../server';
 import File from '../models/File';
 import Folder from '../models/Folder';
 import { Op } from 'sequelize';
+import { picrConfig } from '../config/picrConfig';
 
-export const fileWatcher = async () => {
+export const fileWatcher = async (config) => {
   log(
     'info',
     '👀 Now watching: ' +
-      directoryPath +
-      (picrConfig.usePolling ? ' with POLLING' : ''),
+      picrConfig.mediaPath +
+      (config.usePolling ? ' with POLLING' : ''),
     true,
   );
-  const intervalMultiplier = picrConfig.pollingInterval; // multiply default interval values by this
+  const intervalMultiplier = config.pollingInterval; // multiply default interval values by this
 
   //update all files to 'not exist' then set as exist when we find them
   await File.update({ exists: false }, { where: {} });
@@ -24,11 +24,11 @@ export const fileWatcher = async () => {
     { where: { parentId: { [Op.ne]: null } } }, //don't set Home (root) to not exist
   );
 
-  const watcher = chokidar.watch(directoryPath, {
+  const watcher = chokidar.watch(picrConfig.mediaPath, {
     ignored: ignored,
     persistent: true,
     awaitWriteFinish: true,
-    usePolling: picrConfig.usePolling,
+    usePolling: config.usePolling,
     interval: 100 * intervalMultiplier,
     binaryInterval: 300 * intervalMultiplier,
   });

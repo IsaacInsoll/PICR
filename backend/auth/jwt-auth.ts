@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { config } from 'dotenv';
 import { CustomJwtPayload } from '../types/CustomJwtPayload';
 import User from '../models/User';
-import { picrConfig } from '../server';
+import { picrConfig } from '../config/picrConfig';
 
 export function generateAccessToken(obj) {
   const response = jwt.sign(obj, picrConfig.tokenSecret, {
