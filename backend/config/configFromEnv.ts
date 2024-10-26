@@ -8,6 +8,7 @@ import path from 'path';
 
 export const configFromEnv = () => {
   config(); // read .ENV
+  const port = Number(process.env.PORT);
 
   const c: IPicrConfiguration = {
     tokenSecret: process.env.TOKEN_SECRET,
@@ -15,7 +16,7 @@ export const configFromEnv = () => {
     debugSql: process.env.DEBUG_SQL == 'true',
     consoleLogging: process.env.CONSOLE_LOGGING == 'true',
     usePolling: process.env.USE_POLLING == 'true',
-    port: process.env.PORT ?? 6900,
+    port: !isNaN(port) ? port : 6900,
     pollingInterval: parseInt(process.env.POLLING_INTERVAL) ?? 20,
     dev: process.env.NODE_ENV === 'development',
     version: getVersion(),
