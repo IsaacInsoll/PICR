@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { config } from 'dotenv';
 import { CustomJwtPayload } from '../types/CustomJwtPayload';
 import User from '../models/User';
-import { picrConfig } from '../server';
+import { picrConfig } from '../config/picrConfig';
 
 export function generateAccessToken(obj) {
   const response = jwt.sign(obj, picrConfig.tokenSecret, {
@@ -15,7 +15,7 @@ export function generateAccessToken(obj) {
 export async function getUserFromToken(
   context: CustomJwtPayload,
 ): Promise<User | undefined> {
-  const token = context.auth.split(' ')[1];
+  const token = context?.auth?.split(' ')?.[1];
   if (token == null || token === '') return undefined;
   const secret = picrConfig.tokenSecret as string;
 

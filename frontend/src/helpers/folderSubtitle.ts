@@ -7,7 +7,7 @@ export const folderSubtitle = (folder: { subFolders: any[]; files: any[] }) => {
   return `${f}${join}${fi}`;
 };
 
-const pluralize = (num: number, title: string) => {
+export const pluralize = (num: number, title: string) => {
   if (num === 0) return '';
   return `${num} ${title}${num > 1 ? 's' : ''}`;
 };

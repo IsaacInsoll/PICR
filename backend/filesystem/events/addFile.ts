@@ -1,5 +1,5 @@
 import { basename, dirname, extname } from 'path';
-import { directoryPath, folderList, relativePath } from '../fileManager';
+import { folderList, relativePath } from '../fileManager';
 import File from '../../models/File';
 import { log } from '../../logger';
 import { fastHash } from '../fileHash';
@@ -10,7 +10,7 @@ import { getImageMetadata } from '../../media/getImageMetadata';
 import { getVideoMetadata } from '../../media/getVideoMetadata';
 import { generateAllThumbs } from '../../media/generateImageThumbnail';
 import { encodeImageToBlurhash } from '../../media/blurHash';
-import { picrConfig } from '../../server';
+import { picrConfig } from '../../config/picrConfig';
 
 export const addFile = async (filePath: string, generateThumbs: boolean) => {
   const type = validExtension(filePath);
@@ -91,7 +91,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
 
 const findFolderId = async (fullPath: string) => {
   while (true) {
-    if (fullPath == directoryPath) return 1;
+    if (fullPath == picrConfig.mediaPath) return 1;
     const id = folderList[relativePath(fullPath)];
     if (id && id !== '0') return id;
     log('info', '💤 Sleeping waiting for a FolderID for a file in ' + fullPath);

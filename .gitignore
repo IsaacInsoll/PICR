@@ -138,3 +138,5 @@ media/*
 /data/
 /public/
 /cache/
+
+/tests/env/*

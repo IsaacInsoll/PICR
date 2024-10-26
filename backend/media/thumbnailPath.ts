@@ -2,6 +2,7 @@ import File from '../models/File';
 import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize';
 import { basename, dirname, extname } from 'path';
 import { relativePath } from '../filesystem/fileManager';
+import { picrConfig } from '../config/picrConfig';
 
 export const thumbnailPath = (
   file: File,
@@ -14,7 +15,7 @@ export const thumbnailPath = (
   const p = dirname(fp);
 
   // console.log('thumbnailPath', extension, ext);
-  const base = process.cwd() + `/cache/thumbs/${relativePath(p)}/`;
+  const base = picrConfig.cachePath + `/thumbs/${relativePath(p)}/`;
   // video is all in one folder, regardless of size
   // if (file.type == 'Video') {
   //   return `${base}${fileName}-${file.fileHash}${ext}`;

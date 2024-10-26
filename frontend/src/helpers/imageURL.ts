@@ -3,7 +3,7 @@ import { AllSize, ThumbnailSize } from './thumbnailSize';
 import { thumbnailDimensions } from './thumbnailDimensions';
 
 export const imageURL = (
-  file: MinimalFile,
+  file: Partial<Pick<MinimalFile, 'id' | 'fileHash' | 'name' | 'type'>>,
   size: AllSize,
   extension?: string,
   // frame?: number,
