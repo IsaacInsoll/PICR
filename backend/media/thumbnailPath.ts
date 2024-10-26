@@ -15,7 +15,7 @@ export const thumbnailPath = (
   const p = dirname(fp);
 
   // console.log('thumbnailPath', extension, ext);
-  const base = picrConfig.cachePath`/thumbs/${relativePath(p)}/`;
+  const base = picrConfig.cachePath + `/thumbs/${relativePath(p)}/`;
   // video is all in one folder, regardless of size
   // if (file.type == 'Video') {
   //   return `${base}${fileName}-${file.fileHash}${ext}`;

@@ -6,9 +6,9 @@ export interface IPicrConfiguration {
   usePolling?: boolean;
   port?: number;
   pollingInterval?: number;
-  dev: boolean;
-  version: string;
+  dev?: boolean;
+  version?: string;
   updateMetadata?: boolean;
-  cachePath: string;
-  mediaPath: string;
+  cachePath?: string;
+  mediaPath?: string;
 }
