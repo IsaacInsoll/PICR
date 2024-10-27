@@ -1,11 +1,11 @@
 import { serverInfoType } from '../types/serverInfoType';
 import { requireFullAdmin } from './admins';
-import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from 'graphql/index';
 import fastFolderSizeSync from 'fast-folder-size/sync';
 import { picrConfig } from '../../config/picrConfig';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context, schema) => {
   requireFullAdmin(context);
+
   return {
     version: picrConfig.version,
     databaseUrl: picrConfig.databaseUrl,
@@ -13,6 +13,7 @@ const resolver = async (_, params, context) => {
     dev: picrConfig.dev,
     cacheSize: fastFolderSizeSync(picrConfig.cachePath),
     mediaSize: fastFolderSizeSync(picrConfig.mediaPath),
+    host: context.host,
   };
 };
 

@@ -14,7 +14,8 @@ export const ServerInfo = () => {
       <TableHeader />
       <Table.Tbody>
         <Version version={data.version} />
-        <Row title="Base URL">{window.location.origin}</Row>
+        <Row title="Client URL">{window.location.origin}</Row>
+        <Row title="Server URL">{data.host}</Row>
         <Row title="Media Size">{prettyBytes(data.mediaSize)}</Row>
         <Row title="Cache Size">{prettyBytes(data.cacheSize)}</Row>
         <Row title="Database URL">
@@ -81,6 +82,7 @@ const serverInfoQuery = gql(/* GraphQL */ `
       usePolling
       cacheSize
       mediaSize
+      host
     }
   }
 `);

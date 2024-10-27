@@ -139,6 +139,7 @@ type ServerInfo {
   cacheSize: BigInt!
   databaseUrl: String!
   dev: Boolean!
+  host: String!
   mediaSize: BigInt!
   usePolling: Boolean!
   version: String!

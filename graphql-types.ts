@@ -238,6 +238,7 @@ export type ServerInfo = {
   cacheSize: Scalars['BigInt']['output'];
   databaseUrl: Scalars['String']['output'];
   dev: Scalars['Boolean']['output'];
+  host: Scalars['String']['output'];
   mediaSize: Scalars['BigInt']['output'];
   usePolling: Scalars['Boolean']['output'];
   version: Scalars['String']['output'];

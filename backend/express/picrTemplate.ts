@@ -15,8 +15,6 @@ interface ITemplateFields {
 
 // Build basic template, mainly so there are metadata fields if sharing this link online so you get a 'rich link'
 export const picrTemplate = async (req: Request, res: Response) => {
-  log('info', 'picrTemplate: ' + req.path, true);
-
   let fields: ITemplateFields = fieldDefaults;
 
   // Replace metadata on public links
