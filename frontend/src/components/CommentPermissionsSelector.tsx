@@ -1,5 +1,6 @@
 import { Box, Button, InputDescription, InputLabel } from '@mantine/core';
 import { CommentPermissions } from '../../../graphql-types';
+import { commentPermissionsStyle } from './CommentPermissionsStyle';
 
 export const CommentPermissionsSelector = ({
   value,
@@ -17,8 +18,10 @@ export const CommentPermissionsSelector = ({
       <Button.Group>
         {options.map((opt) => {
           const isSelected = opt === value;
+          const { icon, color } = commentPermissionsStyle[opt];
           return (
             <Button
+              leftSection={icon}
               title={opt}
               variant={isSelected ? 'filled' : 'default'}
               onClick={() => onChange(opt)}

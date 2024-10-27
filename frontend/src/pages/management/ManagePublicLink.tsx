@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useMutation } from 'urql';
 import { editUserMutation } from '../../urql/mutations/editUserMutation';
 import type { MutationEditUserArgs } from '../../gql/graphql';
-import { copyToClipboard, publicURLFor } from '../../helpers/copyToClipboard';
 import {
   Button,
   Checkbox,
@@ -13,17 +12,12 @@ import {
   Stack,
   TextInput,
 } from '@mantine/core';
-import {
-  TbClipboard,
-  TbCloudUpload,
-  TbDoorExit,
-  TbUsersGroup,
-} from 'react-icons/tb';
-import { notifications } from '@mantine/notifications';
+import { TbCloudUpload, TbDoorExit, TbUsersGroup } from 'react-icons/tb';
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { CommentPermissions } from '../../../../graphql-types';
-import { ClipboardIcon, PublicLinkIcon } from '../../PicrIcons';
+import { PublicLinkIcon } from '../../PicrIcons';
+import { CopyPublicLinkButton } from './CopyPublicLinkButton';
 
 export const ManagePublicLink = ({
   id,
@@ -112,21 +106,11 @@ export const ManagePublicLink = ({
             <TbDoorExit />
             Cancel
           </Button>
-          <Button
+          <CopyPublicLinkButton
             disabled={invalidLink}
-            onClick={() => {
-              const url = publicURLFor(link, f!.id);
-              copyToClipboard(url);
-              notifications.show({
-                title: 'Link copied to clipboard',
-                message: url,
-                icon: <ClipboardIcon />,
-              });
-            }}
-          >
-            <TbClipboard />
-            Copy Link
-          </Button>
+            folderId={f!.id}
+            hash={link}
+          />
           <Button disabled={invalidLink} onClick={onSave}>
             <TbCloudUpload />
             {exists ? 'Save' : 'Create Link'}
