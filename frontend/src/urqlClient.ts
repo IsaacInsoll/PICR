@@ -2,6 +2,7 @@ import { Client, fetchExchange } from 'urql';
 import { cacheExchange } from '@urql/exchange-graphcache';
 import { getUUID } from './Router';
 import schema from './../public/graphql.schema.json';
+import { invalidateQueries } from './helpers/invalidateQueries';
 
 const cx = cacheExchange({
   schema,
@@ -9,6 +10,12 @@ const cx = cacheExchange({
     ImageMetadataSummary: () => null,
     VideoMetadataSummary: () => null,
     Task: () => null,
+  },
+  updates: {
+    Mutation: {
+      // REMINDER: name of individual operation, not the whole mutation you are posting
+      editUser: (_, args, cache) => invalidateQueries(cache, 'folder'),
+    },
   },
 });
 

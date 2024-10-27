@@ -1,5 +1,5 @@
 import { useQuery } from 'urql';
-import { Suspense, useEffect } from 'react';
+import { Suspense, useCallback, useEffect } from 'react';
 import {
   FolderHeader,
   PlaceholderFolderHeader,
@@ -11,7 +11,6 @@ import { SubfolderListView } from '../components/SubfolderListView';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
 import { ManagePublicLinks } from './management/ManagePublicLinks';
-import { getUUID } from '../Router';
 import { TaskSummary } from '../components/TaskSummary';
 import { FilterToggle } from '../components/FilterToggle';
 import { DownloadZipButton } from '../components/DownloadZipButton';
@@ -21,53 +20,36 @@ import { useSetFolder } from '../hooks/useSetFolder';
 import { ModalManager } from '../components/ModalManager';
 import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
 import { Page } from '../components/Page';
-
-// This component is used in the 'public URL' and 'private URL' routes, so this is how we determine where each link should point
-export const useBaseViewFolderURL = () => {
-  return getUUID() ? '/s/' + getUUID() + '/' : '/admin/f/';
-};
+import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 
 export const ViewFolder = () => {
-  const navigate = useNavigate();
-  const { folderId, fileId } = useParams();
-  const baseUrl = useBaseViewFolderURL();
-  const managing = fileId === 'manage';
+  const { folderId } = useParams();
+
   return (
     <>
       <Suspense fallback={<PlaceholderFolderHeader />}>
         <ModalManager />
-        <ViewFolderBody
-          toggleManaging={() =>
-            navigate(baseUrl + folderId + (managing ? '' : '/manage'))
-          }
-          key={folderId ?? '1'}
-          folderId={folderId ?? '1'}
-        />
+        <ViewFolderBody key={folderId ?? '1'} folderId={folderId ?? '1'} />
       </Suspense>
     </>
   );
 };
 
-export const ViewFolderBody = ({
-  folderId,
-  toggleManaging,
-}: {
-  folderId: string;
-  toggleManaging: () => void;
-}) => {
-  const { fileId } = useParams();
-
-  // const headers = useMemo(() => {
-  //   return uuid ? { fetchOptions: { headers: { uuid } } } : undefined;
-  // }, [uuid]);
+export const ViewFolderBody = () => {
+  const navigate = useNavigate();
+  const { folderId, fileId } = useParams();
+  const baseUrl = useBaseViewFolderURL();
   const managing = fileId === 'manage';
+  const setFolder = useSetFolder();
 
   const [data, reQuery] = useQuery({
     query: viewFolderQuery,
     variables: { folderId },
   });
 
-  const setFolder = useSetFolder();
+  const toggleManaging = useCallback(() => {
+    navigate(baseUrl + folderId + (managing ? '' : '/manage'));
+  }, [navigate, baseUrl, folderId, managing]);
 
   const folder = data.data?.folder;
   const hasFiles = folder && folder.files.length > 0;
@@ -130,7 +112,7 @@ export const ViewFolderBody = ({
                 onClose={toggleManaging}
                 relations="options"
               >
-                <GenerateThumbnailsButton folder={folder} />
+                <GenerateThumbnailsButton folderId={folder.id} />
                 <Button onClick={toggleManaging}>Close Settings</Button>
               </ManagePublicLinks>
             </Page>

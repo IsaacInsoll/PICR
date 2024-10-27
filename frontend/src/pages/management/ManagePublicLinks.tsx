@@ -39,7 +39,6 @@ export const ManagePublicLinks = ({
           <ManagePublicLink
             onClose={() => {
               setLinkId(null);
-              reQuery({ requestPolicy: 'network-only' });
             }}
             id={linkId}
             folder={folder}
@@ -89,7 +88,6 @@ const Body = ({ folderId, includeParents, includeChildren, setLinkId }) => {
   const [result, reQuery] = useQuery({
     query: manageFolderQuery,
     variables: { folderId, includeParents, includeChildren },
-    // context: headers,
   });
   return (
     <>

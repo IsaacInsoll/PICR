@@ -32,7 +32,6 @@ const ManageUsersBody = () => {
           <ManageUser
             onClose={() => {
               setUserId(null);
-              reQuery({ requestPolicy: 'network-only' });
             }}
             id={userId}
           />

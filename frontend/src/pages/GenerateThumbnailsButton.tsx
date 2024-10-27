@@ -6,23 +6,23 @@ import { Button } from '@mantine/core';
 import { TbPhotoCheck } from 'react-icons/tb';
 
 export const GenerateThumbnailsButton = ({
-  folder,
+  folderId,
 }: {
-  folder: MinimalFolder;
+  folderId: number;
 }) => {
   const [result] = useQuery({
     query: gql(/* GraphQL*/ `
         query generateThumbnailsStats($folderId: ID!) {
             folder(id: $folderId) {
+                ...FolderFragment
                 totalImages
             }
         }
     `),
-    variables: { folderId: folder.id },
+    variables: { folderId },
   });
-  const totalImages = result.data.folder?.totalImages;
+  const totalImages = result.data?.folder?.totalImages;
   const [, thumbsMutation] = useMutation(generateThumbnailsQuery);
-  console.log(folder);
   return (
     <Button
       variant="default"

@@ -2,7 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSetAtom } from 'jotai/index';
 import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder';
 import { MinimalFile, MinimalFolder } from '../../types';
-import { useBaseViewFolderURL } from '../pages/ViewFolder';
+
+import { useBaseViewFolderURL } from './useBaseViewFolderURL';
 
 export const useSetFolder = () => {
   const navigate = useNavigate();
