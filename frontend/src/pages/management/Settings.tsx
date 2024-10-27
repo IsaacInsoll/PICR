@@ -11,6 +11,7 @@ import { ManagePublicLinks } from './ManagePublicLinks';
 import { useMe } from '../../hooks/useMe';
 import { Tips } from '../../components/Tips';
 import { TaskSummary } from '../../components/TaskSummary';
+import { PicrTitle } from '../../components/PicrTitle';
 
 export const Settings = () => {
   const { tab } = useParams();
@@ -20,6 +21,8 @@ export const Settings = () => {
   const onTabChange = (newTab) => {
     navigate('/admin/settings/' + newTab);
   };
+
+  const title = 'PICR Settings';
 
   return (
     <Page>
@@ -37,12 +40,14 @@ export const Settings = () => {
         <Tabs.Panel value="users">
           <Tips type="Users" />
           <Suspense fallback={<LoadingIndicator />}>
+            <PicrTitle title={['Users', title]} />
             <ManageUsers />
           </Suspense>
         </Tabs.Panel>
         <Tabs.Panel value="links">
           <Tips type="PublicLink" />
           <Suspense fallback={<LoadingIndicator />}>
+            <PicrTitle title={['Links', title]} />
             <ManagePublicLinks
               folder={me.folder}
               disableAddingLinks={true}
@@ -52,6 +57,7 @@ export const Settings = () => {
         </Tabs.Panel>
         <Tabs.Panel value="info">
           <Suspense fallback={<LoadingIndicator />}>
+            <PicrTitle title={['Server Info', title]} />
             <ServerInfo />
           </Suspense>
         </Tabs.Panel>

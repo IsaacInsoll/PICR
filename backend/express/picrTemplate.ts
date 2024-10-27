@@ -6,6 +6,7 @@ import { folderStatsSummaryText } from '../graphql/helpers/folderStats';
 import { thumbnailForFolder } from '../helpers/thumbnailForFolder';
 import { imageURL } from '../../frontend/src/helpers/imageURL';
 import { Request, Response } from 'express';
+import { joinTitles } from '../helpers/joinTitle';
 
 interface ITemplateFields {
   title: string;
@@ -32,7 +33,7 @@ export const picrTemplate = async (req: Request, res: Response) => {
         const thumb = await thumbnailForFolder(folderId);
         fields = {
           ...fields,
-          title: folder.name + joiner + fields.title,
+          title: joinTitles([folder.name, fields.title]),
           description: summary,
           image: thumb ? imageURL(thumb, 'md') : fields.image,
         };
@@ -52,5 +53,3 @@ const fieldDefaults: ITemplateFields = {
   description: 'PICR File Sharing',
   image: '',
 };
-
-const joiner = ' » ';

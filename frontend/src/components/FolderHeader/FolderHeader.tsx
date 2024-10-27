@@ -15,6 +15,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { PicrTitle } from '../PicrTitle';
 
 export const FolderHeader = ({
   folder,
@@ -79,9 +80,7 @@ const HeaderWrapper = ({
 
   return (
     <Page>
-      <Helmet>
-        <title>{title ?? 'PICR'}</title>
-      </Helmet>
+      <PicrTitle title={[title, 'PICR']} />
       <Box style={{ minHeight: 25 }}>
         <Breadcrumbs separator="→" separatorMargin="md" mt="xs">
           {crumbs}
