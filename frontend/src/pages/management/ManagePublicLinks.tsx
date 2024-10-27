@@ -12,6 +12,7 @@ import { EmptyPlaceholder } from '../EmptyPlaceholder';
 import { PublicLinkIcon } from '../../PicrIcons';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { Tips } from '../../components/Tips';
+import { publicLinkColumns } from './userColumns';
 
 interface ManagePublicLinksProps {
   folder: MinimalFolder;
@@ -116,7 +117,7 @@ const SharedFolderDataGrid = ({
         />
       ) : (
         <PicrDataGrid
-          columns={columns}
+          columns={publicLinkColumns}
           data={sharedFolders}
           onClick={(row) => setSharedFolderId(row.id)}
         />
@@ -124,8 +125,3 @@ const SharedFolderDataGrid = ({
     </>
   );
 };
-
-const columns: PicrColumns<MinimalSharedFolder>[] = [
-  { accessorKey: 'name', header: 'Name' },
-  { accessorKey: 'folder.name', header: 'Shared Folder' },
-];

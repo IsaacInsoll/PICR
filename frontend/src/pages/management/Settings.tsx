@@ -26,7 +26,7 @@ export const Settings = () => {
 
   return (
     <Page>
-      <TopBar />
+      <TopBar title={title} />
       <TaskSummary folderId={me?.folderId} />
 
       <Tabs value={tab ?? 'users'} onChange={onTabChange} keepMounted={false}>
@@ -66,11 +66,12 @@ export const Settings = () => {
   );
 };
 
-const TopBar = () => {
+const TopBar = ({ title }: { title: string }) => {
   return (
     <Group pt="lg" pb="sm">
       <PicrLogo style={{ height: 32 }} />
-      <Title>PICR Settings</Title>
+      <Title>{title}</Title>
+      <PicrTitle title={title} />
     </Group>
   );
 };

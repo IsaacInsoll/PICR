@@ -1,13 +1,13 @@
-import { Box, Button, Text } from '@mantine/core';
+import { Box, Button } from '@mantine/core';
 import { useQuery } from 'urql';
 import { viewAdminsQuery } from '../../urql/queries/viewAdminsQuery';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { Suspense, useState } from 'react';
 import QueryFeedback from '../../components/QueryFeedback';
-import { PicrColumns, PicrDataGrid } from '../../components/PicrDataGrid';
-import { User } from '../../../../graphql-types';
+import { PicrDataGrid } from '../../components/PicrDataGrid';
 import { ManageUser } from './ManageUser';
-import { TbCircleCheck, TbCircleXFilled, TbUserPlus } from 'react-icons/tb';
+import { TbUserPlus } from 'react-icons/tb';
+import { userColumns } from './userColumns';
 
 export const ManageUsers = () => {
   return (
@@ -39,7 +39,7 @@ const ManageUsersBody = () => {
       ) : null}
       {result.data?.admins ? (
         <PicrDataGrid
-          columns={columns}
+          columns={userColumns}
           data={result.data?.admins}
           onClick={(row) => setUserId(row.id)}
         />
@@ -52,19 +52,3 @@ const ManageUsersBody = () => {
     </>
   );
 };
-
-const columns: PicrColumns<User>[] = [
-  { accessorKey: 'name', header: 'Name' },
-  { accessorKey: 'username', header: 'Username' },
-  { accessorKey: 'folder.name', header: 'Folder' }, //TODO: show parent folders if any
-  {
-    accessorKey: 'enabled',
-    header: 'Enabled',
-    accessorFn: ({ enabled }) =>
-      enabled ? (
-        <TbCircleCheck style={{ color: 'green' }} />
-      ) : (
-        <TbCircleXFilled style={{ color: 'red' }} />
-      ),
-  },
-];
