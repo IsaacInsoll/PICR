@@ -9,7 +9,7 @@ export const videoFileType = new GraphQLObjectType({
   name: 'Video',
   interfaces: [fileInterface],
   fields: {
-    ...fileInterfaceFields,
+    ...fileInterfaceFields(),
     imageRatio: { type: GraphQLFloat },
     metadata: { type: videoMetadataSummaryType },
     duration: { type: GraphQLFloat },

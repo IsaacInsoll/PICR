@@ -27,6 +27,7 @@ type File implements FileInterface {
   fileLastModified: DateTime!
   fileSize: BigInt!
   flag: FileFlag
+  folder: Folder
   folderId: ID!
   id: ID!
   latestComment: DateTime
@@ -47,6 +48,7 @@ interface FileInterface {
   fileLastModified: DateTime!
   fileSize: BigInt!
   flag: FileFlag
+  folder: Folder
   folderId: ID!
   id: ID!
   latestComment: DateTime
@@ -88,6 +90,7 @@ type Image implements FileInterface {
   fileLastModified: DateTime!
   fileSize: BigInt!
   flag: FileFlag
+  folder: Folder
   folderId: ID!
   id: ID!
   imageRatio: Float
@@ -129,6 +132,7 @@ type Query {
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
   me: User
+  searchFiles(folderId: ID, query: String!): [File!]!
   searchFolders(folderId: ID, query: String!): [Folder!]!
   serverInfo: ServerInfo
   tasks(folderId: ID): [Task!]!
@@ -173,6 +177,7 @@ type Video implements FileInterface {
   fileLastModified: DateTime!
   fileSize: BigInt!
   flag: FileFlag
+  folder: Folder
   folderId: ID!
   id: ID!
   imageRatio: Float

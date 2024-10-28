@@ -37,6 +37,7 @@ export type File = FileInterface & {
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
   flag?: Maybe<FileFlag>;
+  folder?: Maybe<Folder>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   latestComment?: Maybe<Scalars['DateTime']['output']>;
@@ -57,6 +58,7 @@ export type FileInterface = {
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
   flag?: Maybe<FileFlag>;
+  folder?: Maybe<Folder>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   latestComment?: Maybe<Scalars['DateTime']['output']>;
@@ -100,6 +102,7 @@ export type Image = FileInterface & {
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
   flag?: Maybe<FileFlag>;
+  folder?: Maybe<Folder>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;
@@ -190,6 +193,7 @@ export type Query = {
   file: FileInterface;
   folder: Folder;
   me?: Maybe<User>;
+  searchFiles: Array<File>;
   searchFolders: Array<Folder>;
   serverInfo?: Maybe<ServerInfo>;
   tasks: Array<Task>;
@@ -215,6 +219,12 @@ export type QueryFileArgs = {
 
 export type QueryFolderArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QuerySearchFilesArgs = {
+  folderId?: InputMaybe<Scalars['ID']['input']>;
+  query: Scalars['String']['input'];
 };
 
 
@@ -281,6 +291,7 @@ export type Video = FileInterface & {
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
   flag?: Maybe<FileFlag>;
+  folder?: Maybe<Folder>;
   folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
   imageRatio?: Maybe<Scalars['Float']['output']>;

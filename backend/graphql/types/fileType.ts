@@ -8,6 +8,6 @@ export const fileType = new GraphQLObjectType({
   name: 'File',
   interfaces: [fileInterface],
   fields: {
-    ...fileInterfaceFields,
+    ...fileInterfaceFields(),
   },
 });

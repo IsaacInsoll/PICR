@@ -8,8 +8,9 @@ import {
 import { fileTypeEnum } from '../enums/fileTypeEnum';
 import { fileFlagEnum } from '../enums/fileFlagEnum';
 import { GraphQLBigInt, GraphQLDateTime } from 'graphql-scalars';
+import { folderType } from '../types/folderType';
 
-export const fileInterfaceFields = {
+export const fileInterfaceFields = () => ({
   id: { type: new GraphQLNonNull(GraphQLID) },
   type: { type: new GraphQLNonNull(fileTypeEnum) },
   flag: { type: fileFlagEnum },
@@ -17,15 +18,16 @@ export const fileInterfaceFields = {
   totalComments: { type: GraphQLInt },
   name: { type: new GraphQLNonNull(GraphQLString) },
   folderId: { type: new GraphQLNonNull(GraphQLID) },
+  folder: { type: folderType },
   fileHash: { type: new GraphQLNonNull(GraphQLString) },
   fileSize: { type: new GraphQLNonNull(GraphQLBigInt) }, //custom BigInt as Int only goes to 2gb (32bit)
   fileLastModified: { type: new GraphQLNonNull(GraphQLDateTime) },
   latestComment: { type: GraphQLDateTime },
-};
+});
 export const fileInterface = new GraphQLInterfaceType({
   name: 'FileInterface',
   resolveType: (file) => file.type,
   fields: () => ({
-    ...fileInterfaceFields,
+    ...fileInterfaceFields(),
   }),
 });

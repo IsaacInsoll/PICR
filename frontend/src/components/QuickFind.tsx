@@ -9,6 +9,7 @@ import {
   Stack,
   Divider,
   Box,
+  Alert,
 } from '@mantine/core';
 import { useHotkeys } from '@mantine/hooks';
 import { useMe } from '../hooks/useMe';
@@ -21,6 +22,8 @@ import { gql } from '../helpers/gql';
 import { useQuery } from 'urql';
 import { PrettyFolderPath } from './PrettyFolderPath';
 import { useSetFolder } from '../hooks/useSetFolder';
+import { InfoIcon } from '../PicrIcons';
+import { Joiner } from './FolderName';
 
 type Scope = 'all' | 'current' | 'subfolders';
 type ScopeType = 'all' | 'file' | 'folder';
@@ -78,10 +81,11 @@ const Results = ({ folder }: { folder?: MinimalFolder }) => {
   });
   if (!debouncedQuery) return;
   const folders = results.data?.searchFolders;
+  const files = results.data?.searchFiles;
 
   return (
     <Stack>
-      {folders.map((f) => (
+      {folders?.map((f) => (
         <Box key={f.id}>
           <Box onClick={() => setFolder(f)} style={{ cursor: 'pointer' }}>
             <PrettyFolderPath folder={f} onClick={setFolder} />
@@ -89,16 +93,43 @@ const Results = ({ folder }: { folder?: MinimalFolder }) => {
           <Div />
         </Box>
       ))}
-      {folders.length == 0 ? (
-        <Group gap="md">
-          <>Nothing Found</>
-          {scope !== 'all' ? (
-            <Button variant="subtle" onClick={() => setScope('all')}>
-              Search all Folders
-            </Button>
-          ) : null}
-        </Group>
-      ) : null}
+      {files?.map((file) => (
+        <Box key={file.id}>
+          <Group
+            onClick={() => setFolder(file)}
+            style={{ cursor: 'pointer' }}
+            gap={1}
+          >
+            <Code onClick={() => setFolder(file)}>{folder.name}</Code>
+            <Joiner />
+            <Code color="green.7">{file.name}</Code>
+          </Group>
+          <Div />
+        </Box>
+      ))}
+
+      <Group gap="md">
+        {folders?.length == 0 && files?.length == 0 ? (
+          <Alert
+            variant="transparent"
+            color="orange"
+            title="Nothing found"
+            m="sm"
+            p="sm"
+            icon={<InfoIcon />}
+          />
+        ) : null}
+        {scope !== 'all' ? (
+          <Button
+            variant="outline"
+            onClick={() => setScope('all')}
+            size="xs"
+            color="orange"
+          >
+            Search all Folders
+          </Button>
+        ) : null}
+      </Group>
     </Stack>
   );
 };
@@ -143,6 +174,12 @@ const searchQuery = gql(/* GraphQL */ `
   query searchQuery($folderId: ID!, $query: String!) {
     searchFolders(folderId: $folderId, query: $query) {
       ...FolderFragment
+    }
+    searchFiles(folderId: $folderId, query: $query) {
+      ...FileFragment
+      folder {
+        ...MinimumFolderFragment
+      }
     }
   }
 `);

@@ -14,7 +14,7 @@ export const imageFileType = new GraphQLObjectType({
   name: 'Image',
   interfaces: [fileInterface],
   fields: {
-    ...fileInterfaceFields,
+    ...fileInterfaceFields(),
     imageRatio: { type: GraphQLFloat },
     metadata: { type: imageMetadataSummaryType },
     blurHash: { type: new GraphQLNonNull(GraphQLString) },

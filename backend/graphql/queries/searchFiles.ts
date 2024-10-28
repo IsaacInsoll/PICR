@@ -10,6 +10,9 @@ import { GraphQLString } from 'graphql';
 import { relativePath } from '../../filesystem/fileManager';
 import { Op } from 'sequelize';
 import { folderType } from '../types/folderType';
+import File from '../../models/File';
+import { fileType } from '../types/fileType';
+import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
 
 const resolver = async (_, params, context) => {
   const [p, user] = await contextPermissionsForFolder(
@@ -23,19 +26,26 @@ const resolver = async (_, params, context) => {
 
   const lower = params.query.toLowerCase().split(' ');
   const lowerMap = lower.map((l) => ({ [Op.iLike]: `%${l}%` }));
-  const folders = await Folder.findAll({
+  const files = await File.findAll({
     where: {
-      parentId: folderIds,
+      folderId: folderIds,
       exists: true,
-      relativePath: { [Op.and]: lowerMap },
+      name: { [Op.and]: lowerMap },
     },
     limit: 100,
   });
-  return folders;
+  const folders = await allSubFoldersRecursive(f.id);
+  return files;
+  return files.map((file) => {
+    return {
+      ...file,
+      // folder: folders.find(({ id }) => id == file.folderId),
+    };
+  });
 };
 
-export const searchFolders = {
-  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
+export const searchFiles = {
+  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(fileType))),
   resolve: resolver,
   args: {
     folderId: { type: GraphQLID },
