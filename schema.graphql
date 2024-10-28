@@ -129,6 +129,7 @@ type Query {
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
   me: User
+  searchFolders(folderId: ID, query: String!): [Folder!]!
   serverInfo: ServerInfo
   tasks(folderId: ID): [Task!]!
   user(id: ID!): User!

@@ -27,6 +27,7 @@ import { commentType } from './types/commentType';
 import { comments } from './queries/comments';
 import { serverInfoType } from './types/serverInfoType';
 import { serverInfo } from './queries/serverInfoQuery';
+import { searchFolders } from './queries/searchFolders';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -38,6 +39,7 @@ const queries = new GraphQLObjectType({
     /* Admin Only */
     folder,
     me,
+    searchFolders,
     tasks,
     user,
     users,

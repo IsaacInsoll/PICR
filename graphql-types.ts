@@ -190,6 +190,7 @@ export type Query = {
   file: FileInterface;
   folder: Folder;
   me?: Maybe<User>;
+  searchFolders: Array<Folder>;
   serverInfo?: Maybe<ServerInfo>;
   tasks: Array<Task>;
   user: User;
@@ -214,6 +215,12 @@ export type QueryFileArgs = {
 
 export type QueryFolderArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QuerySearchFoldersArgs = {
+  folderId?: InputMaybe<Scalars['ID']['input']>;
+  query: Scalars['String']['input'];
 };
 
 

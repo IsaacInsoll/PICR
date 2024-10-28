@@ -1,8 +1,8 @@
 import { MinimalFolder } from '../../types';
-import { Code, Group, Tooltip } from '@mantine/core';
-import { joiner } from '../../../backend/helpers/joinTitle';
-import { TbChevronRight, TbChevronsRight } from 'react-icons/tb';
+import { Code, Tooltip } from '@mantine/core';
+import { TbChevronRight } from 'react-icons/tb';
 import { HomeIcon } from '../PicrIcons';
+import { PrettyFolderPath } from './PrettyFolderPath';
 
 export const FolderName = ({ folder }: { folder: MinimalFolder }) => {
   return (
@@ -10,19 +10,7 @@ export const FolderName = ({ folder }: { folder: MinimalFolder }) => {
       withArrow={true}
       color="blue.9"
       disabled={folder.parents?.length == 0}
-      label={
-        <Group gap={1}>
-          {folder.parents?.toReversed().map((f) => (
-            <>
-              <Code key={f.id} color="blue.8">
-                {f.name}
-              </Code>
-              <Joiner />
-            </>
-          ))}
-          <Code color="blue.7">{folder.name}</Code>
-        </Group>
-      }
+      label={<PrettyFolderPath folder={folder} subColor="blue.8" />}
     >
       <Code>
         {folder.id == 1 ? (
@@ -35,6 +23,5 @@ export const FolderName = ({ folder }: { folder: MinimalFolder }) => {
 };
 
 export const Joiner = () => {
-  // eslint-disable-next-line react/jsx-no-undef
   return <TbChevronRight style={{ opacity: 0.5 }} />;
 };

@@ -21,6 +21,7 @@ import { ModalManager } from '../components/ModalManager';
 import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
 import { Page } from '../components/Page';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
+import { QuickFind } from '../components/QuickFind';
 
 export const ViewFolder = () => {
   const { folderId } = useParams();
@@ -94,6 +95,7 @@ export const ViewFolderBody = () => {
 
   return (
     <>
+      <QuickFind folder={folder} />
       <QueryFeedback result={data} reQuery={reQuery} />
       {!folder ? (
         <Title order={1}>Folder Not Found</Title>
