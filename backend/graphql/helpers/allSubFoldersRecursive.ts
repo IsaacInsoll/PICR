@@ -9,8 +9,11 @@ export const allSubFoldersRecursive = async (folderId: number | string) => {
   }
   return await Folder.findAll({
     where: {
-      relativePath: { [Op.startsWith]: f.relativePath },
       exists: true,
+      [Op.or]: [
+        { relativePath: { [Op.startsWith]: f.relativePath + '/' } },
+        { relativePath: f.relativePath },
+      ],
     },
   });
 };

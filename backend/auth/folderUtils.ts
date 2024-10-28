@@ -38,6 +38,8 @@ export const ParentFolders = async (
   return parents;
 };
 
+// TODO: work out if we need both allSubFoldersRecursive and AllChildFolderIds, they are different implementations of almost the same thing
+// This one is slower as it does multiple queries
 export const AllChildFolderIds = async (
   folder: Folder,
   // context,
@@ -47,7 +49,7 @@ export const AllChildFolderIds = async (
   const all = [folder.id];
   while (currentIds.length > 0) {
     const newlyFound = await Folder.findAll({
-      where: { parentId: currentIds },
+      where: { parentId: currentIds, exists: true },
     });
     currentIds = newlyFound.map((item) => item.id);
     if (currentIds.length) {
