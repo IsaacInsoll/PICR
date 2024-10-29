@@ -16,7 +16,7 @@ import { useMe } from '../hooks/useMe';
 import { MinimalFolder } from '../../types';
 import { atom, useAtomValue } from 'jotai';
 import { useAtom } from 'jotai/index';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { LoadingIndicator } from './LoadingIndicator';
 import { gql } from '../helpers/gql';
 import { useQuery } from 'urql';
@@ -36,6 +36,23 @@ export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
   const [query, setQuery] = useAtom(queryAtom);
 
   useHotkeys([['ctrl+f', () => toggle()]]);
+
+  //TODO: if activating: turn off modals (EG: comments modal, full screen image view
+  // or don't allow it to activate while they are up because it's shit UI to open up underneath
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.code == 'Backquote') {
+        toggle();
+        e.stopPropagation();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => {
+      window.removeEventListener('keydown', handler);
+    };
+  }, [toggle]);
+
   return (
     <>
       <Drawer
@@ -53,7 +70,10 @@ export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
           <TextInput
             value={query}
             data-autofocus
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              if (e.nativeEvent.data == '`') return; //don't allow entry of the backtick
+              setQuery(e.target.value);
+            }}
             // size="lg"
           />
           <Suspense fallback={<LoadingIndicator />}>
