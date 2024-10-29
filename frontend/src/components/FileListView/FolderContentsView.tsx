@@ -80,7 +80,7 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
           />
         </>
       ) : null}
-      <Tabs value={view} onChange={setView}>
+      <Tabs value={view} onChange={setView} keepMounted={false}>
         <Page>
           <Tabs.List grow mb="xs">
             {viewOptions.map((v) => (

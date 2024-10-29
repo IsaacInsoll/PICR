@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { addDevLogger, log } from '../logger';
 import { picrConfig } from './picrConfig';
@@ -48,5 +48,10 @@ TOKEN_SECRET=${secret}`);
 };
 
 export const getVersion = () => {
-  return readFileSync('dist/version.txt', 'utf8');
+  const p = 'dist/version.txt';
+  if (existsSync(p)) {
+    return readFileSync(p, 'utf8');
+  } else {
+    return 'DEV';
+  }
 };
