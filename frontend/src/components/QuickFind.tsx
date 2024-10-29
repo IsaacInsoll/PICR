@@ -103,26 +103,39 @@ const Results = ({ folder }: { folder?: MinimalFolder }) => {
   const folders = results.data?.searchFolders;
   const files = results.data?.searchFiles;
 
+  const handleClick = (e, folder, file) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFolder(folder, file);
+  };
+
   return (
     <Stack>
       {folders?.map((f) => (
         <Box key={f.id}>
-          <Box onClick={() => setFolder(f)} style={{ cursor: 'pointer' }}>
-            <PrettyFolderPath folder={f} onClick={setFolder} />
+          <Box onClick={(e) => handleClick(e, f)} style={{ cursor: 'pointer' }}>
+            <PrettyFolderPath folder={f} onClick={(e) => handleClick(e, f)} />
           </Box>
           <Div />
         </Box>
       ))}
       {files?.map((file) => (
-        <Box key={file.id}>
+        <Box key={file.id} onClick={(e) => handleClick(e, file.folder, file)}>
           <Group
-            onClick={() => setFolder(file)}
+            onClick={(e) => handleClick(e, file.folder, file)}
             style={{ cursor: 'pointer' }}
             gap={1}
           >
-            <Code onClick={() => setFolder(file)}>{folder.name}</Code>
+            <Code onClick={(e) => handleClick(e, file.folder)}>
+              {file.folder.name}
+            </Code>
             <Joiner />
-            <Code color="green.7">{file.name}</Code>
+            <Code
+              color="green.7"
+              onClick={(e) => handleClick(e, file.folder, file)}
+            >
+              {file.name}
+            </Code>
           </Group>
           <Div />
         </Box>

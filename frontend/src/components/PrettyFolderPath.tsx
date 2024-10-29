@@ -9,13 +9,11 @@ export const PrettyFolderPath = ({
 }: {
   folder: MinimalFolder;
   subColor?: MantineColor;
-  onClick?: (f: MinimalFolder) => void;
+  onClick?: (e: MouseEvent, f: MinimalFolder) => void;
 }) => {
-  const handleClick = (e, f) => {
+  const handleClick = (f, e) => {
     if (onClick) {
-      e.preventDefault();
-      e.stopPropagation();
-      onClick(f);
+      onClick(e, f);
     }
   };
   const style = { cursor: onClick ? 'pointer' : undefined };

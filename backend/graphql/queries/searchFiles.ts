@@ -35,11 +35,10 @@ const resolver = async (_, params, context) => {
     limit: 100,
   });
   const folders = await allSubFoldersRecursive(f.id);
-  return files;
   return files.map((file) => {
     return {
-      ...file,
-      // folder: folders.find(({ id }) => id == file.folderId),
+      ...file.toJSON(),
+      folder: folders.find(({ id }) => id == file.folderId),
     };
   });
 };
