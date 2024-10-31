@@ -1,39 +1,38 @@
-import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
+import { useDebouncedValue, useDisclosure, useHotkeys } from '@mantine/hooks';
 import {
-  Drawer,
-  Button,
-  SegmentedControl,
-  Group,
-  Code,
-  TextInput,
-  Stack,
-  Divider,
-  Box,
   Alert,
+  Button,
+  ButtonProps,
+  Code,
+  Divider,
+  Drawer,
+  Group,
+  SegmentedControl,
+  Stack,
+  TextInput,
 } from '@mantine/core';
-import { useHotkeys } from '@mantine/hooks';
 import { useMe } from '../hooks/useMe';
 import { MinimalFolder } from '../../types';
 import { atom, useAtomValue } from 'jotai';
-import { useAtom } from 'jotai/index';
-import { Suspense, useEffect, useState } from 'react';
+import { useAtom, useSetAtom } from 'jotai/index';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { LoadingIndicator } from './LoadingIndicator';
-import { gql } from '../helpers/gql';
 import { useQuery } from 'urql';
 import { PrettyFolderPath } from './PrettyFolderPath';
 import { useSetFolder } from '../hooks/useSetFolder';
 import { InfoIcon } from '../PicrIcons';
 import { Joiner } from './FolderName';
+import { searchQuery } from './searchQuery';
 
-type Scope = 'all' | 'current' | 'subfolders';
+type Scope = 'all' | 'current';
 type ScopeType = 'all' | 'file' | 'folder';
 const scopeAtom = atom<Scope>('current');
 const scopeTypeAtom = atom<ScopeType>('all');
 const queryAtom = atom('');
 export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
-  const me = useMe();
-  const [opened, { open, close, toggle }] = useDisclosure(false);
+  const [opened, { close, toggle }] = useDisclosure(false);
   const [query, setQuery] = useAtom(queryAtom);
+  const ref = useRef<HTMLInputElement | null>(null);
 
   useHotkeys([['ctrl+f', () => toggle()]]);
 
@@ -53,10 +52,18 @@ export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
     };
   }, [toggle]);
 
+  // "select all" the textbox when opened (IE: existing query)
+  useEffect(() => {
+    if (opened && ref.current) {
+      ref.current.select();
+    }
+  }, [opened]);
+
   return (
     <>
       <Drawer
         opened={opened}
+        keepMounted={true} // because of select all
         onClose={close}
         title={
           <Group justify="space-between">
@@ -68,6 +75,8 @@ export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
       >
         <Stack>
           <TextInput
+            style={{ flexGrow: 1 }}
+            ref={ref}
             value={query}
             data-autofocus
             onChange={(e) => {
@@ -77,7 +86,7 @@ export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
             // size="lg"
           />
           <Suspense fallback={<LoadingIndicator />}>
-            <Results folder={folder} />
+            <Results folder={folder} close={close} />
           </Suspense>
         </Stack>
       </Drawer>
@@ -85,64 +94,157 @@ export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
   );
 };
 
-const Results = ({ folder }: { folder?: MinimalFolder }) => {
+const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
   const setFolder = useSetFolder();
   const me = useMe();
   const query = useAtomValue(queryAtom);
-  const [scope, setScope] = useAtom(scopeAtom);
+  const scope = useAtomValue(scopeAtom);
   const type = useAtomValue(scopeTypeAtom);
   const folderId = scope == 'all' || !folder.id ? me.folderId : folder.id;
   const [debouncedQuery] = useDebouncedValue(query, 200);
+  const [index, setIndex] = useState<number | null>(null);
+  console.log(index);
+
   // if query = '' return nothing
   const [results] = useQuery({
     query: searchQuery,
     variables: { query: debouncedQuery, folderId },
     pause: debouncedQuery == '',
   });
-  if (!debouncedQuery) return;
-  const folders = results.data?.searchFolders;
-  const files = results.data?.searchFiles;
+  // if (!debouncedQuery) return;
+  const folders = results.data?.searchFolders ?? [];
+  const files = results.data?.searchFiles ?? [];
+
+  const list =
+    type == 'all' ? [...folders, ...files] : type == 'file' ? files : folders;
 
   const handleClick = (e, folder, file) => {
-    e.preventDefault();
-    e.stopPropagation();
+    close();
+    e?.preventDefault();
+    e?.stopPropagation();
     setFolder(folder, file);
   };
 
-  return (
-    <Stack>
-      {folders?.map((f) => (
-        <Box key={f.id}>
-          <Box onClick={(e) => handleClick(e, f)} style={{ cursor: 'pointer' }}>
-            <PrettyFolderPath folder={f} onClick={(e) => handleClick(e, f)} />
-          </Box>
-          <Div />
-        </Box>
-      ))}
-      {files?.map((file) => (
-        <Box key={file.id} onClick={(e) => handleClick(e, file.folder, file)}>
-          <Group
-            onClick={(e) => handleClick(e, file.folder, file)}
-            style={{ cursor: 'pointer' }}
-            gap={1}
-          >
-            <Code onClick={(e) => handleClick(e, file.folder)}>
-              {file.folder.name}
-            </Code>
-            <Joiner />
-            <Code
-              color="green.7"
-              onClick={(e) => handleClick(e, file.folder, file)}
-            >
-              {file.name}
-            </Code>
-          </Group>
-          <Div />
-        </Box>
-      ))}
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.code == 'ArrowUp') {
+        e.stopPropagation();
+        setIndex((i) => {
+          return i > 0 ? i - 1 : null;
+        });
+      }
+      if (e.code == 'ArrowDown') {
+        e.stopPropagation();
+        setIndex((i) =>
+          i == null ? 0 : i >= list.length - 1 ? list.length - 1 : i + 1,
+        );
+      }
+      if (e.code == 'Enter') {
+        const item = list[index];
+        if (item['__typename'] == 'Folder') {
+          handleClick(e, item);
+        } else {
+          handleClick(e, item.folder, item);
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => {
+      window.removeEventListener('keydown', handler);
+    };
+  });
 
+  return (
+    <Stack gap={0}>
+      {list?.map((item, i) => {
+        if (item['__typename'] == 'Folder') {
+          return (
+            <ResultButton
+              key={item.id}
+              onClick={(e) => handleClick(e, item)}
+              selected={i == index}
+            >
+              <PrettyFolderPath
+                folder={item}
+                onClick={(e) => handleClick(e, item)}
+              />
+            </ResultButton>
+          );
+        }
+        const file = item;
+        return (
+          <ResultButton
+            key={file.id}
+            onClick={(e) => handleClick(e, file.folder, file)}
+            selected={i == index}
+          >
+            <PrettyFilePath file={file} />
+          </ResultButton>
+        );
+      })}
+
+      <QuickFindFooter
+        totalFiles={files.length}
+        totalFolders={folders.length}
+        inHomeFolder={scope == 'current' && folderId !== me?.folderId}
+      />
+    </Stack>
+  );
+};
+
+const PrettyFilePath = ({ file, handleClick }) => {
+  const folder = file.folder;
+  return (
+    <Group
+      onClick={(e) => handleClick(e, folder, file)}
+      style={{ cursor: 'pointer' }}
+      gap={1}
+    >
+      <Code onClick={(e) => handleClick(e, folder)}>{file.folder.name}</Code>
+      <Joiner />
+      <Code color="green.7" onClick={(e) => handleClick(e, folder, file)}>
+        {file.name}
+      </Code>
+    </Group>
+  );
+};
+
+const ResultButton = ({
+  selected,
+  children,
+  ...props
+}: { selected: boolean } & ButtonProps) => {
+  return (
+    <>
+      <Button
+        variant={selected ? 'light' : 'subtle'}
+        fullWidth
+        justify="left"
+        {...props}
+      >
+        {children}
+      </Button>
+      <Divider opacity={0.25} />
+    </>
+  );
+};
+
+const QuickFindFooter = ({
+  totalFolders,
+  totalFiles,
+  inHomeFolder,
+}: {
+  totalFiles: number;
+  totalFolders: number;
+  inHomeFolder: boolean;
+}) => {
+  const setSelectedScope = useSetAtom(scopeAtom);
+  const total = totalFiles + totalFolders;
+  const moreResults = totalFiles == 100 || totalFolders == 100;
+  return (
+    <Stack p="lg">
       <Group gap="md">
-        {folders?.length == 0 && files?.length == 0 ? (
+        {total == 0 ? (
           <Alert
             variant="transparent"
             color="orange"
@@ -152,10 +254,10 @@ const Results = ({ folder }: { folder?: MinimalFolder }) => {
             icon={<InfoIcon />}
           />
         ) : null}
-        {scope !== 'all' ? (
+        {inHomeFolder ? (
           <Button
             variant="outline"
-            onClick={() => setScope('all')}
+            onClick={() => setSelectedScope('all')}
             size="xs"
             color="orange"
           >
@@ -163,11 +265,20 @@ const Results = ({ folder }: { folder?: MinimalFolder }) => {
           </Button>
         ) : null}
       </Group>
+      {moreResults ? (
+        <Alert
+          variant="light"
+          color="orange"
+          title="Search Limit Reached"
+          icon={<InfoIcon />}
+        >
+          Results are limited to 100 files and folders. Use a more specific
+          search.
+        </Alert>
+      ) : null}
     </Stack>
   );
 };
-
-const Div = () => <Divider mt="md" opacity={0.25} />;
 
 const ScopeSelector = ({ folder }: { folder?: MinimalFolder }) => {
   const [selectedScope, setSelectedScope] = useAtom(scopeAtom);
@@ -178,12 +289,6 @@ const ScopeSelector = ({ folder }: { folder?: MinimalFolder }) => {
       data={[
         { label: folder?.name ?? 'This Folder', value: 'current' },
         { label: 'All Folders', value: 'all' },
-        // {
-        //   label: folder?.name
-        //     ? folder.name + ' + subfolders'
-        //     : 'This Folder + subfolders',
-        //   value: 'subfolders',
-        // },
       ]}
     />
   );
@@ -196,23 +301,9 @@ const TypeSelector = () => {
       onChange={setSelectedType}
       data={[
         { label: 'Everything', value: 'all' },
-        { label: 'Files', value: 'files' },
-        { label: 'Folders', value: 'folders' },
+        { label: 'Files', value: 'file' },
+        { label: 'Folders', value: 'folder' },
       ]}
     />
   );
 };
-
-const searchQuery = gql(/* GraphQL */ `
-  query searchQuery($folderId: ID!, $query: String!) {
-    searchFolders(folderId: $folderId, query: $query) {
-      ...FolderFragment
-    }
-    searchFiles(folderId: $folderId, query: $query) {
-      ...FileFragment
-      folder {
-        ...MinimumFolderFragment
-      }
-    }
-  }
-`);
