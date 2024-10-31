@@ -120,8 +120,8 @@ export const ViewFolderBody = () => {
             </Page>
           ) : (
             <>
-              <SubfolderListView folder={folder} />
-              <FolderContentsView folderId={folderId} files={folder.files} />
+              {/*<SubfolderListView folder={folder} />*/}
+              <FolderContentsView folder={folder} />
             </>
           )}
         </>

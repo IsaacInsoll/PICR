@@ -1,11 +1,10 @@
 import { Button } from '@mantine/core';
-import { generateZipMutation } from '../urql/mutations/generateZipMutation';
-import { useMutation } from 'urql';
 import { useState } from 'react';
-import { atom, useAtom } from 'jotai/index';
+import { atom } from 'jotai/index';
 import { Folder } from '../../../graphql-types';
 import { FolderHash } from '../../../backend/helpers/zip';
 import { DownloadIcon } from '../PicrIcons';
+import { useGenerateZip } from './useGenerateZip';
 
 // list of URLs we have requested to download that are currently generating.
 // delete from list once you have triggered it's download
@@ -18,25 +17,13 @@ export const DownloadZipButton = ({
   folder: Folder;
   disabled?: boolean;
 }) => {
-  const [links, setLinks] = useAtom(linksToDownloadAtom);
-  const [, mutate] = useMutation(generateZipMutation);
+  const generateZip = useGenerateZip(folder, () => setTempDisabled(false));
   const [tempDisabled, setTempDisabled] = useState(false);
-
-  const clickHandler = () => {
-    setTempDisabled(true);
-    mutate({ folderId: folder.id }).then((res) => {
-      if (res?.data) {
-        const fh: FolderHash = { folder, hash: res.data.generateZip };
-        setLinks((l) => [...l, fh]);
-        setTempDisabled(false);
-      }
-    });
-  };
 
   return (
     <Button
       title="Download All Files"
-      onClick={clickHandler}
+      onClick={generateZip}
       variant="default"
       disabled={disabled || tempDisabled}
       leftSection={<DownloadIcon />}

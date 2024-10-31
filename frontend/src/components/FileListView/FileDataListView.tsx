@@ -9,13 +9,17 @@ import { FileFlagBadge } from './Review/FileFlagBadge';
 import { FileMenu } from './FileMenu';
 import { fromNow } from './Filtering/PrettyDate';
 import { useIsMobile, useIsSmallScreen } from '../../hooks/useIsMobile';
+import { FolderMenu } from './FolderMenu';
+import { useSetFolder } from '../../hooks/useSetFolder';
 
 export const FileDataListView = ({
   files,
   setSelectedFileId,
   folderId,
+  folders,
 }: FileListViewStyleComponentProps) => {
   const { canView, isNone } = useCommentPermissions();
+  const setFolder = useSetFolder();
 
   const isMobile = useIsMobile();
   const isSmall = useIsSmallScreen();
@@ -33,9 +37,19 @@ export const FileDataListView = ({
     <Page>
       <PicrDataGrid
         columns={cols}
-        data={files}
-        onClick={(row) => setSelectedFileId(row.id)}
-        menuItems={({ row }) => <FileMenu file={row.original} />}
+        data={[...folders, ...files]}
+        onClick={(row) =>
+          row.__typename == 'Folder'
+            ? setFolder(row)
+            : setSelectedFileId(row.id)
+        }
+        menuItems={({ row }) =>
+          row.original.__typename == 'Folder' ? (
+            <FolderMenu folder={row.original} />
+          ) : (
+            <FileMenu file={row.original} />
+          )
+        }
       />
     </Page>
   );
@@ -46,7 +60,14 @@ const columns: (PicrColumns<MinimalFile> & {
   visibleFor: MantineSize;
 })[] = [
   { accessorKey: 'name', header: 'Name', size: 10, visibleFor: 'xs' },
-  { accessorKey: 'type', header: 'Type', size: 10, visibleFor: 'md' },
+  {
+    header: 'Type',
+    size: 10,
+    visibleFor: 'md',
+    accessorFn: (row) => {
+      return row.type ?? 'Folder';
+    },
+  },
   {
     accessorKey: 'rating',
     header: 'Rating',

@@ -1,4 +1,4 @@
-import { MinimalFile } from '../../../types';
+import { MinimalFile, MinimalFolder } from '../../../types';
 import { selectedViewAtom, viewOptions } from '../ViewSelector';
 import { GridGallery } from './GridGallery';
 import { FileDataListView } from './FileDataListView';
@@ -27,12 +27,15 @@ export interface FileListViewProps {
 
 export interface FileListViewStyleComponentProps {
   files: MinimalFile[];
+  folders: MinimalFolder[];
   selectedFileId?: string;
   setSelectedFileId: (id: string | undefined) => void;
   folderId: string;
 }
 
-export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
+export const FolderContentsView = ({ folder }) => {
+  const files = folder.files;
+  const folderId = folder.id;
   const { fileId, fileView } = useParams<FolderRouteParams>();
   const setFolder = useSetFolder();
   const [view, setView] = useAtom(selectedViewAtom);
@@ -46,10 +49,10 @@ export const FolderContentsView = ({ files, folderId }: FileListViewProps) => {
   };
 
   useEffect(() => resetFilters(null), [resetFilters, folderId]);
-  if (!files || files.length === 0) return undefined;
   const filteredFiles = filtering ? filterFiles(files, filters) : files;
   const props = {
     folderId,
+    folders: folder.subFolders,
     files: filteredFiles,
     selectedFileId: fileId,
     setSelectedFileId,

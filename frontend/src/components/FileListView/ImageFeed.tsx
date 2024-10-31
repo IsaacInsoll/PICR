@@ -21,19 +21,30 @@ import { useOpenFileInfoModal } from '../../atoms/modalAtom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { InfoIcon } from '../../PicrIcons';
+import { PicrFolder } from '../PicrFolder';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 export const ImageFeed = ({
   files,
+  folders,
   setSelectedFileId,
 }: FileListViewStyleComponentProps) => {
+  const setFolder = useSetFolder();
   return (
     <>
-      <Box>
-        {files.map((file) => (
-          <FeedItem file={file} key={file.id} onClick={setSelectedFileId} />
-        ))}
-      </Box>
+      {folders.map((f) => (
+        <Page key={f.id}>
+          <PicrFolder
+            folder={f}
+            mb="md"
+            style={{ height: 50 }}
+            onClick={() => setFolder(f)}
+          />
+        </Page>
+      ))}
+      {files.map((file) => (
+        <FeedItem file={file} key={file.id} onClick={setSelectedFileId} />
+      ))}
     </>
   );
 };

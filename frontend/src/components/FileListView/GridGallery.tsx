@@ -7,29 +7,52 @@ import { MinimalFile } from '../../../types';
 import 'yet-another-react-lightbox/styles.css';
 import './GridGallery.css';
 import { FilePreview } from './FilePreview';
+import { PicrFolder } from '../PicrFolder';
+import { useSetFolder } from '../../hooks/useSetFolder';
 
 export const GridGallery = ({
   files,
+  folders,
   setSelectedFileId,
 }: FileListViewStyleComponentProps) => {
+  const setFolder = useSetFolder();
   const handleClick = (index: number) => {
-    setSelectedFileId(files[index].id);
+    if (index < folders.length) {
+      setFolder(folders[index]);
+    } else {
+      setSelectedFileId(files[index - folders.length].id);
+    }
   };
 
   return (
     <>
       <Gallery
-        images={filesForGallery(files)}
+        images={[...foldersForGallery(folders), ...filesForGallery(files)]}
         onClick={handleClick}
         enableImageSelection={false}
-        thumbnailImageComponent={GalleryImage}
+        thumbnailImageComponent={(p) =>
+          p.item.folder ? (
+            <PicrFolder folder={p.item.folder} {...p.imageProps} />
+          ) : (
+            <GalleryImage {...p} />
+          )
+        }
       />
     </>
   );
 };
+const size = 250;
+
+const foldersForGallery = (folders: Minimalolder[]) => {
+  return folders.map((folder) => ({
+    key: 'f' + folder.id,
+    width: size * 2,
+    height: size,
+    folder: folder,
+  }));
+};
 
 const filesForGallery = (files: MinimalFile[]) => {
-  const size = 250;
   return files.map((file) => ({
     key: file.id,
     src: imageURL(file, 'md'),
