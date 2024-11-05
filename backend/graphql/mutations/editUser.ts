@@ -11,6 +11,10 @@ import {
 import { userType } from '../types/userType';
 import User from '../../models/User';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
+import { FolderIsUnderFolderId } from '../../auth/folderUtils';
+import Folder from '../../models/Folder';
+import { Op } from 'sequelize';
+import { log } from '../../logger';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
@@ -19,9 +23,28 @@ const resolver = async (_, params, context) => {
   if (params.id) {
     user = await User.findByPk(params.id);
     if (!user) throw new GraphQLError('No user found for ID: ' + params.id);
+    const userFolder = await Folder.findByPk(user.folderId);
+    const folderAllowed = await FolderIsUnderFolderId(
+      userFolder,
+      params.folderId,
+    );
+
+    if (!folderAllowed)
+      throw new GraphQLError(
+        "You don't have access to edit users in folder " + userFolder.id,
+      );
   } else {
     user = new User();
   }
+
+  const existingUuid = await User.findAll({
+    where: { uuid: params.uuid, [Op.not]: { id: user.id } },
+  });
+
+  if (existingUuid.length > 0) {
+    throw new GraphQLError('Public Link Address already used');
+  }
+
   user.folderId = params.folderId;
   user.name = params.name;
   user.uuid = params.uuid;

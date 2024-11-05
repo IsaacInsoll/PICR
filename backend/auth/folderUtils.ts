@@ -8,7 +8,7 @@ export const FolderIsUnderFolderId = async (
   parentId: number,
 ): Promise<boolean> => {
   if (!child || !parentId) return false;
-  if (child.id === parentId) {
+  if (child.id == parentId) {
     return true;
   }
   if (!child.parentId) return false;

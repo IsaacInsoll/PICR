@@ -19,6 +19,7 @@ import {
 } from '../../../../graphql-types';
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
+import { ErrorAlert } from '../../components/ErrorAlert';
 
 export const ManageUser = ({
   id,
@@ -39,10 +40,13 @@ export const ManageUser = ({
   const [folder, setFolder] = useState<MinimalFolder>(
     user?.folder ?? { id: '1' },
   );
+  const [error, setError] = useState('');
+
   const invalidUsername = username === '' || name === '';
 
   const onSave = () => {
     //TODO: not pass password if it's null or ''
+    setError('');
     const data: MutationEditAdminUserArgs = {
       id: id ?? '',
       name,
@@ -54,8 +58,7 @@ export const ManageUser = ({
     };
     mutate(data).then(({ data, error }) => {
       if (error) {
-        console.log(error);
-        alert(error);
+        setError(error.toString());
       } else {
         onClose();
       }
@@ -107,6 +110,7 @@ export const ManageUser = ({
           description="Can user log in?"
           onChange={(event) => setEnabled(event.currentTarget.checked)}
         />
+        <ErrorAlert message={error} />
         <Group>
           <Button onClick={onClose} variant="outline">
             <TbDoorExit />

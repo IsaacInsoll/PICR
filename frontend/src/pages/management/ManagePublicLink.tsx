@@ -18,6 +18,7 @@ import { CommentPermissionsSelector } from '../../components/CommentPermissionsS
 import { CommentPermissions } from '../../../../graphql-types';
 import { PublicLinkIcon } from '../../PicrIcons';
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
+import { ErrorAlert } from '../../components/ErrorAlert';
 
 export const ManagePublicLink = ({
   id,
@@ -36,12 +37,15 @@ export const ManagePublicLink = ({
   const [enabled, setEnabled] = useState(user?.enabled ?? true);
   const [commentPermissions, setCommentPermissions] =
     useState<CommentPermissions>(user?.commentPermissions ?? 'none');
+  const [error, setError] = useState('');
+
   const invalidLink = link === '' || name === '';
 
   //get folder from user if they exist as it may be a parent or child
   const f: MinimalFolder = user?.folder ?? folder;
 
   const onSave = () => {
+    setError('');
     const data: MutationEditUserArgs = {
       id: id ?? '',
       name,
@@ -52,8 +56,7 @@ export const ManagePublicLink = ({
     };
     mutate(data).then(({ data, error }) => {
       if (error) {
-        console.log(error);
-        alert(error);
+        setError(error.toString());
       } else {
         onClose();
       }
@@ -101,6 +104,7 @@ export const ManagePublicLink = ({
           description="link will only work if this is 'on'"
           onChange={(event) => setEnabled(event.currentTarget.checked)}
         />
+        <ErrorAlert message={error} />
         <Group>
           <Button onClick={onClose}>
             <TbDoorExit />

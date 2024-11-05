@@ -4,6 +4,7 @@ import {
   TbFilter,
   TbHome,
   TbInfoCircle,
+  TbInfoTriangle,
   TbLink,
   TbSearch,
   TbThumbDown,
@@ -32,3 +33,6 @@ export const FilterIcon = (props: IconBaseProps) => <TbFilter {...props} />;
 export const DownloadIcon = (props: IconBaseProps) => <TbDownload {...props} />;
 export const SearchIcon = (props: IconBaseProps) => <TbSearch {...props} />;
 export const HomeIcon = (props: IconBaseProps) => <TbHome {...props} />;
+export const WarningIcon = (props: IconBaseProps) => (
+  <TbInfoTriangle {...props} />
+);
