@@ -26,6 +26,7 @@ import { useRequery } from '../hooks/useRequery';
 import { LoggedInHeader } from '../components/Header/LoggedInHeader';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { FileSortSelector } from '../components/FileListView/FileSortSelector';
+import { FolderActivity } from './FolderActivity';
 
 export const ViewFolder = () => {
   const { folderId } = useParams();
@@ -44,6 +45,7 @@ export const ViewFolderBody = () => {
   const { folderId, fileId } = useParams();
   const baseUrl = useBaseViewFolderURL();
   const managing = fileId === 'manage';
+  const activity = fileId === 'activity';
   const setFolder = useSetFolder();
 
   const [data, reQuery] = useQuery({
@@ -64,7 +66,7 @@ export const ViewFolderBody = () => {
   // redirect to 'no file selected' if you are in a valid folder but the file isn't found
   useEffect(() => {
     const fileIds = folder?.files.map((f) => f.id);
-    if (fileId && fileIds && fileIds.length > 0 && !managing) {
+    if (fileId && fileIds && fileIds.length > 0 && !managing && !activity) {
       if (!fileIds.includes(fileId)) {
         console.log('File not found in folder, redirecting to folder');
         setFolder(folder);
@@ -114,12 +116,18 @@ export const ViewFolderBody = () => {
                 <Button onClick={toggleManaging}>Close Settings</Button>
               </ManagePublicLinks>
             </Page>
-          ) : (
+          ) : null}
+          {activity ? (
+            <Page>
+              <FolderActivity folderId={folder.id} />
+            </Page>
+          ) : null}
+          {!managing && !activity ? (
             <>
               {/*<SubfolderListView folder={folder} />*/}
               <FolderContentsView folder={folder} />
             </>
-          )}
+          ) : null}
         </>
       )}
     </>
