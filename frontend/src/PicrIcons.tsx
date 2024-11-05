@@ -2,6 +2,7 @@ import {
   TbClipboard,
   TbDownload,
   TbFilter,
+  TbFolder,
   TbHome,
   TbInfoCircle,
   TbInfoTriangle,
@@ -36,3 +37,4 @@ export const HomeIcon = (props: IconBaseProps) => <TbHome {...props} />;
 export const WarningIcon = (props: IconBaseProps) => (
   <TbInfoTriangle {...props} />
 );
+export const FolderIcon = (props: IconBaseProps) => <TbFolder {...props} />;
