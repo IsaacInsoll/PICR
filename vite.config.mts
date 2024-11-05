@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config';
+import { async } from './tests/testSetup';
 
 export default defineConfig({
   test: {
@@ -7,6 +8,7 @@ export default defineConfig({
     // setupFiles: ['tests/setup-test-environment.ts'],
 
     //globalSetup currently not being used but should work fine
-    // globalSetup: ['tests/globalSetup.ts'],
+    globalSetup: ['tests/testSetup.ts'],
+    testTimeout: 20000,
   },
 });
