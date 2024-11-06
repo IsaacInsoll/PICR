@@ -35,7 +35,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
       type: type,
       fileSize: stats.size,
       fileLastModified: stats.mtime,
-      exists: true,
+      exists: false, //set as `true` once we have all the hash/metadata
       totalComments: 0,
     },
   });
@@ -81,7 +81,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
     }
   }
   file.exists = true;
-  file.save();
+  await file.save();
   // console.log(file);
   log(
     'info',
