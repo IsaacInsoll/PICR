@@ -1,15 +1,13 @@
 import type { GlobalSetupContext } from 'vitest/node';
-import { Readable } from 'node:stream';
-import fs from 'fs';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
 import decompress from 'decompress';
-import { IPicrConfiguration } from '../backend/config/IPicrConfiguration';
 import path from 'path';
-import { getVersion } from '../backend/config/configFromEnv';
-import { picrConfig } from '../backend/config/picrConfig';
-import { downMany, upMany } from 'docker-compose';
+import { buildOne, downMany, upMany } from 'docker-compose';
 
-const services = ['test-db', 'test-picr'];
+// note: service[0] is built, rest are just started
+const services = ['test-picr', 'test-db'];
+
+const composeOpts = { cwd: path.join(__dirname), log: true };
 
 export async function setup({ provide }: GlobalSetupContext) {
   // provide('wsPort', 3000)
@@ -27,7 +25,8 @@ export async function setup({ provide }: GlobalSetupContext) {
   mkdirSync(cache);
   await decompress(samplePath, media);
 
-  await upMany(services, { cwd: path.join(__dirname), log: true });
+  await buildOne(services[0], composeOpts);
+  await upMany(services, composeOpts);
 
   //we need to wait a bit longer for everything to finish booting
   await new Promise((r) => setTimeout(r, 2000));
@@ -40,7 +39,7 @@ export async function setup({ provide }: GlobalSetupContext) {
 }
 
 export async function teardown() {
-  await downMany(services, { cwd: path.join(__dirname), log: true });
+  await downMany(services, composeOpts);
   console.log('Test Teardown Complete');
 }
 

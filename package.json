@@ -13,7 +13,8 @@
     "run": " node dist/backend/app.js",
     "gql": "graphql-codegen --config codegen.ts",
     "release": "dotenv -- release-it --only-version",
-    "test": "vitest run"
+    "test": "npm run build && vitest run",
+    "test-only": "vitest run"
   },
   "author": "Isaac Insoll",
   "license": "ISC",
@@ -85,9 +86,9 @@
     },
     "hooks": {
       "before:init": [
-        "npm run test",
         "cd frontend && npm run build",
-        "npm run build"
+        "npm run build",
+        "npm run test-only"
       ],
       "after:git:release": [
         "docker build . -t isaacinsoll/picr:latest -t isaacinsoll/picr:${version} -t ghcr.io/isaacinsoll/picr:latest -t ghcr.io/isaacinsoll/picr:${version}",
