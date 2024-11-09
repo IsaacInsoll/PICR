@@ -112,10 +112,6 @@ export const ManageUser = ({
         />
         <ErrorAlert message={error} />
         <Group>
-          <Button onClick={onClose} variant="outline">
-            <TbDoorExit />
-            Cancel
-          </Button>
           <Button disabled={invalidUsername} onClick={onSave}>
             <TbCloudUpload />
             {exists ? 'Save' : 'Create Link'}

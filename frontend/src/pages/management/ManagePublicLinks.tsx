@@ -13,6 +13,7 @@ import { PublicLinkIcon } from '../../PicrIcons';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { Tips } from '../../components/Tips';
 import { publicLinkColumns } from './userColumns';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 interface ManagePublicLinksProps {
   folder: MinimalFolder;
@@ -27,6 +28,7 @@ export const ManagePublicLinks = ({
   disableAddingLinks,
   relations,
 }: ManagePublicLinksProps) => {
+  const isMobile = useIsMobile();
   const [includeParents, setIncludeParents] = useState(relations == 'parents');
   const [includeChildren, setIncludeChildren] = useState(
     relations == 'children',
@@ -54,12 +56,12 @@ export const ManagePublicLinks = ({
             <Switch
               value={includeParents}
               onChange={(e) => setIncludeParents(e.currentTarget.checked)}
-              label="Include Parent Folders"
+              label={isMobile ? 'Include Parents' : 'Include Parent Folders'}
             />
             <Switch
               value={includeChildren}
               onChange={(e) => setIncludeChildren(e.currentTarget.checked)}
-              label="Include Child Folders"
+              label={isMobile ? 'Include Children' : 'Include Child Folders'}
             />
           </Group>
         </Stack>

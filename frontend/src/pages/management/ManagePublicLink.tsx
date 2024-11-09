@@ -106,10 +106,6 @@ export const ManagePublicLink = ({
         />
         <ErrorAlert message={error} />
         <Group>
-          <Button onClick={onClose}>
-            <TbDoorExit />
-            Cancel
-          </Button>
           <CopyPublicLinkButton
             disabled={invalidLink}
             folderId={f!.id}

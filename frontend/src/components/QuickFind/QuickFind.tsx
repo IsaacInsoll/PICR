@@ -165,7 +165,7 @@ const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
         if (item['__typename'] == 'Folder') {
           return (
             <ResultButton
-              key={item.id}
+              key={'folder' + item.id}
               onClick={(e) => handleClick(e, item)}
               onMouseOver={() => setIndex(i)}
               selected={i == index}
@@ -289,6 +289,11 @@ const QuickFindFooter = ({
 };
 
 const ScopeSelector = ({ folder }: { folder?: MinimalFolder }) => {
+  const me = useMe();
+
+  //if we are in root folder, no point specifying "this or all folders"
+  if (me.folderId == folder.id) return null;
+
   const [selectedScope, setSelectedScope] = useAtom(scopeAtom);
   return (
     <SegmentedControl
