@@ -1,0 +1,5 @@
+.result {
+    &[--button-hover] {
+        background-color: "#ff0000";
+    }
+}

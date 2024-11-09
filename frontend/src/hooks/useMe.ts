@@ -5,15 +5,19 @@ import { useQuery } from 'urql';
 import { User } from '../../../graphql-types';
 import { getUUID } from '../Router';
 
-export const useMe = (): Pick<
-  User,
-  'id' | 'name' | 'folderId' | 'commentPermissions'
-> | null => {
+export const useMe = ():
+  | (Pick<User, 'id' | 'name' | 'folderId' | 'commentPermissions'> & {
+      isUser: boolean;
+      isPublicLink: boolean;
+    })
+  | null => {
   // console.log('useMe()');
   const token = useAtomValue(authKeyAtom);
   const uuid = getUUID();
   const [result] = useQuery({ query: meQuery, pause: !token && !uuid });
-  return result.data?.me ?? null;
+  const me = result.data?.me;
+  if (!me) return null;
+  return { ...me, isUser: !me.uuid, isPublicLink: !!me.uuid };
 };
 
 export const meQuery = gql(/* GraphQL */ `
@@ -22,6 +26,7 @@ export const meQuery = gql(/* GraphQL */ `
       id
       name
       folderId
+      uuid
       commentPermissions
       folder {
         id

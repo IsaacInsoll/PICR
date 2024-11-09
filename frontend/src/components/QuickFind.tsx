@@ -24,15 +24,26 @@ import { InfoIcon } from '../PicrIcons';
 import { Joiner } from './FolderName';
 import { searchQuery } from './searchQuery';
 
+import classes from './QuickFind.module.css';
+
 type Scope = 'all' | 'current';
 type ScopeType = 'all' | 'file' | 'folder';
 const scopeAtom = atom<Scope>('current');
 const scopeTypeAtom = atom<ScopeType>('all');
 const queryAtom = atom('');
+const quickFindOpenAtom = atom(false);
+
+export const useQuickFind = () => {
+  return useAtom(quickFindOpenAtom);
+};
+
 export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
-  const [opened, { close, toggle }] = useDisclosure(false);
+  const [opened, setOpened] = useQuickFind();
   const [query, setQuery] = useAtom(queryAtom);
   const ref = useRef<HTMLInputElement | null>(null);
+
+  const toggle = () => setOpened((o) => !o);
+  const close = () => setOpened(false);
 
   useHotkeys([['ctrl+f', () => toggle()]]);
 
@@ -50,7 +61,7 @@ export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
     return () => {
       window.removeEventListener('keydown', handler);
     };
-  }, [toggle]);
+  }, [opened]);
 
   // "select all" the textbox when opened (IE: existing query)
   useEffect(() => {
@@ -162,6 +173,7 @@ const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
             <ResultButton
               key={item.id}
               onClick={(e) => handleClick(e, item)}
+              onMouseOver={() => setIndex(i)}
               selected={i == index}
             >
               <PrettyFolderPath
@@ -176,6 +188,7 @@ const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
           <ResultButton
             key={file.id}
             onClick={(e) => handleClick(e, file.folder, file)}
+            onMouseOver={() => setIndex(i)}
             selected={i == index}
           >
             <PrettyFilePath file={file} />
@@ -217,6 +230,7 @@ const ResultButton = ({
   return (
     <>
       <Button
+        style={!selected ? { backgroundColor: 'transparent' } : undefined}
         variant={selected ? 'light' : 'subtle'}
         fullWidth
         justify="left"

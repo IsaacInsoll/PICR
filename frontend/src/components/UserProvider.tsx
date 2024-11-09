@@ -1,11 +1,13 @@
 import { Router } from '../Router';
 import { useMe } from '../hooks/useMe';
+import { LoggedInHeader } from './Header/LoggedInHeader';
 
 // Doesn't do much yet, but will eventually catch "logged in but don't have access to this item" issues
 export const UserProvider = () => {
   const me = useMe();
   return (
     <>
+      {me?.isUser ? <LoggedInHeader /> : null}
       <Router loggedIn={!!me} />
     </>
   );

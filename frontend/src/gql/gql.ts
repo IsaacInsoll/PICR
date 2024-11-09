@@ -16,7 +16,7 @@ const documents = {
     "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n": types.AddCommentDocument,
     "\n  query commentHistoryQuery($fileId: ID!) {\n    comments(fileId: $fileId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n    }\n  }\n": types.CommentHistoryQueryDocument,
     "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n": types.SearchQueryDocument,
-    "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n  }\n": types.MeQueryDocument,
+    "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      uuid\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n  }\n": types.MeQueryDocument,
     "\n        query generateThumbnailsStats($folderId: ID!) {\n            folder(id: $folderId) {\n                ...FolderFragment\n                totalImages\n            }\n        }\n    ": types.GenerateThumbnailsStatsDocument,
     "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      databaseUrl\n      dev\n      usePolling\n      cacheSize\n      mediaSize\n      host\n    }\n  }\n": types.ServerInfoQueryDocument,
     "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    flag\n    rating\n    totalComments\n    latestComment\n    folderId\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
@@ -68,7 +68,7 @@ export function graphql(source: "\n  query searchQuery($folderId: ID!, $query: S
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      uuid\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      uuid\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

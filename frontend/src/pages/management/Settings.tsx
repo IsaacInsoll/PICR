@@ -12,6 +12,7 @@ import { useMe } from '../../hooks/useMe';
 import { Tips } from '../../components/Tips';
 import { TaskSummary } from '../../components/TaskSummary';
 import { PicrTitle } from '../../components/PicrTitle';
+import { QuickFind } from '../../components/QuickFind';
 
 export const Settings = () => {
   const { tab } = useParams();
@@ -26,9 +27,9 @@ export const Settings = () => {
 
   return (
     <Page>
+      <QuickFind folder={me.folder} />
       <TopBar title={title} />
       <TaskSummary folderId={me?.folderId} />
-
       <Tabs value={tab ?? 'users'} onChange={onTabChange} keepMounted={false}>
         <Tabs.List>
           {tabList.map(({ title, slug, icon }) => (
