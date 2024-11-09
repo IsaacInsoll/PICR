@@ -1,4 +1,4 @@
-import { useDebouncedValue, useDisclosure, useHotkeys } from '@mantine/hooks';
+import { useDebouncedValue, useHotkeys } from '@mantine/hooks';
 import {
   Alert,
   Button,
@@ -11,31 +11,25 @@ import {
   Stack,
   TextInput,
 } from '@mantine/core';
-import { useMe } from '../hooks/useMe';
-import { MinimalFolder } from '../../types';
+import { useMe } from '../../hooks/useMe';
+import { MinimalFolder } from '../../../types';
 import { atom, useAtomValue } from 'jotai';
 import { useAtom, useSetAtom } from 'jotai/index';
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { LoadingIndicator } from './LoadingIndicator';
+import { LoadingIndicator } from '../LoadingIndicator';
 import { useQuery } from 'urql';
-import { PrettyFolderPath } from './PrettyFolderPath';
-import { useSetFolder } from '../hooks/useSetFolder';
-import { InfoIcon } from '../PicrIcons';
-import { Joiner } from './FolderName';
-import { searchQuery } from './searchQuery';
-
-import classes from './QuickFind.module.css';
+import { PrettyFolderPath } from '../PrettyFolderPath';
+import { useSetFolder } from '../../hooks/useSetFolder';
+import { InfoIcon } from '../../PicrIcons';
+import { Joiner } from '../FolderName';
+import { searchQuery } from '../searchQuery';
+import { useQuickFind } from './useQuickFind';
 
 type Scope = 'all' | 'current';
 type ScopeType = 'all' | 'file' | 'folder';
 const scopeAtom = atom<Scope>('current');
 const scopeTypeAtom = atom<ScopeType>('all');
 const queryAtom = atom('');
-const quickFindOpenAtom = atom(false);
-
-export const useQuickFind = () => {
-  return useAtom(quickFindOpenAtom);
-};
 
 export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
   const [opened, setOpened] = useQuickFind();

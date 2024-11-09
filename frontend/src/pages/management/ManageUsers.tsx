@@ -10,16 +10,6 @@ import { TbUserPlus } from 'react-icons/tb';
 import { userColumns } from './userColumns';
 
 export const ManageUsers = () => {
-  return (
-    <>
-      <Suspense fallback={<ModalLoadingIndicator />}>
-        <ManageUsersBody />
-      </Suspense>
-    </>
-  );
-};
-
-const ManageUsersBody = () => {
   const [result, reQuery] = useQuery({ query: viewAdminsQuery });
   const [userId, setUserId] = useState<string | null>(null);
 

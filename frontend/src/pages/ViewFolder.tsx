@@ -21,7 +21,7 @@ import { ModalManager } from '../components/ModalManager';
 import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
 import { Page } from '../components/Page';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
-import { QuickFind } from '../components/QuickFind';
+import { QuickFind } from '../components/QuickFind/QuickFind';
 
 export const ViewFolder = () => {
   const { folderId } = useParams();

@@ -12,7 +12,7 @@ import { useMe } from '../../hooks/useMe';
 import { Tips } from '../../components/Tips';
 import { TaskSummary } from '../../components/TaskSummary';
 import { PicrTitle } from '../../components/PicrTitle';
-import { QuickFind } from '../../components/QuickFind';
+import { QuickFind } from '../../components/QuickFind/QuickFind';
 
 export const Settings = () => {
   const { tab } = useParams();
