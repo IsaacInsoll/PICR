@@ -6,5 +6,6 @@ export const minimumFolderFragment = gql(/* GraphQL */ `
     __typename
     name
     parentId
+    ...HeroImageFragment
   }
 `);

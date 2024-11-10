@@ -77,6 +77,7 @@ export enum FileType {
 export type Folder = {
   __typename?: 'Folder';
   files: Array<FileInterface>;
+  heroImage?: Maybe<Image>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   parentId?: Maybe<Scalars['ID']['output']>;

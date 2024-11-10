@@ -7,6 +7,7 @@ import { thumbnailForFolder } from '../helpers/thumbnailForFolder';
 import { imageURL } from '../../frontend/src/helpers/imageURL';
 import { Request, Response } from 'express';
 import { joinTitles } from '../helpers/joinTitle';
+import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder';
 
 interface ITemplateFields {
   title: string;
@@ -30,7 +31,7 @@ export const picrTemplate = async (req: Request, res: Response) => {
       if (perms != 'None') {
         const folder = await Folder.findByPk(folderId);
         const summary = await folderStatsSummaryText(folderId);
-        const thumb = await thumbnailForFolder(folderId);
+        const thumb = await heroImageForFolder(folder);
         fields = {
           ...fields,
           title: joinTitles([folder.name, fields.title]),

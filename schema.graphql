@@ -66,6 +66,7 @@ enum FileType {
 
 type Folder {
   files: [FileInterface!]!
+  heroImage: Image
   id: ID!
   name: String!
   parentId: ID

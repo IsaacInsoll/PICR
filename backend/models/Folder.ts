@@ -27,5 +27,9 @@ export default class Folder extends Model {
   children: Folder[];
 
   @HasMany(() => File)
-  files: Folder[];
+  files: File[];
+
+  @ForeignKey(() => File)
+  @Column
+  heroImageId: number;
 }

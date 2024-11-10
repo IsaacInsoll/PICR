@@ -105,7 +105,7 @@ const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
   const query = useAtomValue(queryAtom);
   const scope = useAtomValue(scopeAtom);
   const type = useAtomValue(scopeTypeAtom);
-  const folderId = scope == 'all' || !folder.id ? me.folderId : folder.id;
+  const folderId = scope == 'all' || !folder?.id ? me.folderId : folder.id;
   const [debouncedQuery] = useDebouncedValue(query, 200);
   const [index, setIndex] = useState<number | null>(null);
   console.log(index);
@@ -292,7 +292,7 @@ const ScopeSelector = ({ folder }: { folder?: MinimalFolder }) => {
   const me = useMe();
 
   //if we are in root folder, no point specifying "this or all folders"
-  if (me.folderId == folder.id) return null;
+  if (me.folderId == folder?.id) return null;
 
   const [selectedScope, setSelectedScope] = useAtom(scopeAtom);
   return (

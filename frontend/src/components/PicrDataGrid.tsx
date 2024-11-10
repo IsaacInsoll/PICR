@@ -43,6 +43,11 @@ function picrGridProps<TData extends MRT_RowData>(
     enableRowActions: !!menuItems,
     renderRowActionMenuItems: menuItems,
     positionActionsColumn: 'last',
+    // mantineTableProps: {
+    //   sx: {
+    //     tableLayout: 'fixed',
+    //   },
+    // },
   };
 }
 

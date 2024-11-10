@@ -13,10 +13,10 @@ import { imageMetadataSummaryType } from './imageMetadataSummaryType';
 export const imageFileType = new GraphQLObjectType({
   name: 'Image',
   interfaces: [fileInterface],
-  fields: {
+  fields: () => ({
     ...fileInterfaceFields(),
     imageRatio: { type: GraphQLFloat },
     metadata: { type: imageMetadataSummaryType },
     blurHash: { type: new GraphQLNonNull(GraphQLString) },
-  },
+  }),
 });

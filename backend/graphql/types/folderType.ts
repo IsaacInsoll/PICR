@@ -11,6 +11,7 @@ import { AllChildFolderIds, ParentFolders } from '../../auth/folderUtils';
 import Folder from '../../models/Folder';
 import File from '../../models/File';
 import { fileInterface } from '../interfaces/fileInterface';
+import { imageFileType } from './imageFileType';
 
 export const folderType = new GraphQLObjectType({
   name: 'Folder',
@@ -32,6 +33,9 @@ export const folderType = new GraphQLObjectType({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(fileInterface)),
       ),
+    },
+    heroImage: {
+      type: imageFileType,
     },
     permissions: { type: folderPermissionsType },
     totalSize: {
