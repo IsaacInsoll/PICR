@@ -1,9 +1,7 @@
 import { readFileSync } from 'node:fs';
-import { log } from '../logger';
 import { contextPermissionsForFolder } from '../auth/contextPermissionsForFolder';
 import Folder from '../models/Folder';
 import { folderStatsSummaryText } from '../graphql/helpers/folderStats';
-import { thumbnailForFolder } from '../helpers/thumbnailForFolder';
 import { imageURL } from '../../frontend/src/helpers/imageURL';
 import { Request, Response } from 'express';
 import { joinTitles } from '../helpers/joinTitle';

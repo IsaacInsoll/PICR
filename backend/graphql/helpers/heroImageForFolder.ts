@@ -7,7 +7,7 @@ export const heroImageForFolder = async (f: Folder) => {
   if (!heroImage || !heroImage.exists || !heroImage.folderId != f.id) {
     const first = await File.findOne({
       where: { folderId: f.id, type: 'Image', exists: true },
-      order: [['name']],
+      order: [['name', 'ASC']],
     });
     // console.log(f.relativePath + ' no hero image so found: ' + first?.name);
     return first;
