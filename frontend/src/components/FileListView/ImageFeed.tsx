@@ -37,7 +37,7 @@ export const ImageFeed = ({
           <PicrFolder
             folder={f}
             mb="md"
-            style={{ height: 50 }}
+            style={{ height: 75 }}
             onClick={() => setFolder(f)}
           />
         </Page>
