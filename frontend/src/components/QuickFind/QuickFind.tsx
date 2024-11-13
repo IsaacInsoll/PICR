@@ -108,7 +108,6 @@ const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
   const folderId = scope == 'all' || !folder?.id ? me.folderId : folder.id;
   const [debouncedQuery] = useDebouncedValue(query, 200);
   const [index, setIndex] = useState<number | null>(null);
-  console.log(index);
 
   // if query = '' return nothing
   const [results] = useQuery({
