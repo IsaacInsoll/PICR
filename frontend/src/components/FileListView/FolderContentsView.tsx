@@ -49,17 +49,16 @@ export const FolderContentsView = ({ folder }) => {
   };
 
   useEffect(() => resetFilters(null), [resetFilters, folderId]);
-  const props = useMemo(() => {
-    console.log('FCV props recalculate');
-    const filteredFiles = filtering ? filterFiles(files, filters) : files;
-    return {
-      folderId,
-      folders: folder.subFolders,
-      files: filteredFiles,
-      selectedFileId: fileId,
-      setSelectedFileId,
-    };
-  }, [folderId, filters]);
+
+  // don't memo files because it breaks graphicache (IE: file changing rating won't reflect)
+  const filteredFiles = filtering ? filterFiles(files, filters) : files;
+  const props = {
+    folderId,
+    folders: folder.subFolders,
+    files: filteredFiles,
+    selectedFileId: fileId,
+    setSelectedFileId,
+  };
 
   console.log('FCV render');
   return (
