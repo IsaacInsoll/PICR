@@ -1,7 +1,7 @@
 import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { MinimalFile } from '../../../types';
 import { imageURL } from '../../helpers/imageURL';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import useMeasure from 'react-use-measure';
 import {
   ActionIcon,
@@ -9,9 +9,6 @@ import {
   Container,
   Divider,
   Group,
-  Loader,
-  MantineStyleProps,
-  Stack,
   Title,
   Tooltip,
 } from '@mantine/core';
@@ -25,10 +22,11 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { InfoIcon } from '../../PicrIcons';
 import { PicrFolder } from '../PicrFolder';
-import { useInViewport } from '@mantine/hooks';
 import { useInView } from 'react-intersection-observer';
+import { useLazyLoad } from '../../hooks/useLazyLoad';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
+
 export const ImageFeed = ({
   files,
   folders,
@@ -37,18 +35,8 @@ export const ImageFeed = ({
   const setFolder = useSetFolder();
   const [ref, bounds] = useMeasure();
 
-  const lazyThreshold = 5;
-  const [lazyLoaded, setLazyLoaded] = useState(15); //default to 10 files (and all folders!!)
+  const [lazyLoaded, onBecomeVisible] = useLazyLoad(15, files.length);
   const loadedFiles = files.slice(0, lazyLoaded);
-  console.log('lazy loaded', lazyLoaded);
-
-  const onBecomeVisible = (i: number) => {
-    //originally i was loading "next 5" when you could see "last 5" but this "exponential loading" feels better
-    const max = Math.floor(i * 2);
-    //if(i > lazyLoaded - lazyThreshold && lazyLoaded < files.length
-    if (lazyLoaded < files.length && max > lazyLoaded)
-      setLazyLoaded(Math.floor(i * 2));
-  };
 
   return (
     <Container>

@@ -19,6 +19,7 @@ import { Page } from '../Page';
 import { useParams } from 'react-router-dom';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { FolderRouteParams } from '../../Router';
+import { FileListView } from './FileListView';
 
 export interface FileListViewProps {
   files: MinimalFile[];
@@ -99,7 +100,7 @@ export const FolderContentsView = ({ folder }) => {
         </Page>
 
         <Tabs.Panel value="list">
-          <FileDataListView {...props} />
+          <FileListView {...props} />
         </Tabs.Panel>
         <Tabs.Panel value="gallery">
           <GridGallery {...props} />

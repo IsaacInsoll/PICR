@@ -1,6 +1,7 @@
 import {
   TbClipboard,
   TbDownload,
+  TbFile,
   TbFilter,
   TbFolder,
   TbHome,
@@ -12,6 +13,7 @@ import {
   TbThumbDown,
   TbThumbUp,
   TbUserCog,
+  TbVideo,
 } from 'react-icons/tb';
 import { IconBaseProps } from 'react-icons/lib/iconBase';
 import { MdOutlineThumbsUpDown } from 'react-icons/md';
@@ -41,3 +43,6 @@ export const WarningIcon = (props: IconBaseProps) => (
 
 export const FolderIcon = (props: IconBaseProps) => <TbFolder {...props} />;
 export const LogOutIcon = (props: IconBaseProps) => <TbLogout {...props} />;
+
+export const FileIcon = (props: IconBaseProps) => <TbFile {...props} />;
+export const VideoIcon = (props: IconBaseProps) => <TbVideo {...props} />;
