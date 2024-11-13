@@ -2,7 +2,7 @@ import { MinimalFile, MinimalFolder } from '../../../types';
 import { selectedViewAtom, viewOptions } from '../ViewSelector';
 import { GridGallery } from './GridGallery';
 import { FileDataListView } from './FileDataListView';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { ImageFeed } from './ImageFeed';
 import { SelectedFileView } from './SelectedFile/SelectedFileView';
 import {
@@ -49,14 +49,19 @@ export const FolderContentsView = ({ folder }) => {
   };
 
   useEffect(() => resetFilters(null), [resetFilters, folderId]);
-  const filteredFiles = filtering ? filterFiles(files, filters) : files;
-  const props = {
-    folderId,
-    folders: folder.subFolders,
-    files: filteredFiles,
-    selectedFileId: fileId,
-    setSelectedFileId,
-  };
+  const props = useMemo(() => {
+    console.log('FCV props recalculate');
+    const filteredFiles = filtering ? filterFiles(files, filters) : files;
+    return {
+      folderId,
+      folders: folder.subFolders,
+      files: filteredFiles,
+      selectedFileId: fileId,
+      setSelectedFileId,
+    };
+  }, [folderId, filters]);
+
+  console.log('FCV render');
   return (
     <>
       <Transition
@@ -69,14 +74,14 @@ export const FolderContentsView = ({ folder }) => {
           <FilteringOptions
             files={files}
             style={style}
-            totalFiltered={filteredFiles.length}
+            totalFiltered={props.files.length}
           />
         )}
       </Transition>
       {fileId ? ( // SelectedFileView react lightbox 'blocks' fileinfo so we can't have them on at the same time
         <>
           <SelectedFileView
-            files={filteredFiles}
+            files={props.files}
             setSelectedFileId={setSelectedFileId}
             selectedFileId={fileId}
             folderId={folderId}

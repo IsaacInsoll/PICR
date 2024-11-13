@@ -1,14 +1,17 @@
 import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { MinimalFile } from '../../../types';
 import { imageURL } from '../../helpers/imageURL';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useMeasure from 'react-use-measure';
 import {
   ActionIcon,
   Box,
+  Container,
   Divider,
   Group,
+  Loader,
   MantineStyleProps,
+  Stack,
   Title,
   Tooltip,
 } from '@mantine/core';
@@ -22,6 +25,8 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { InfoIcon } from '../../PicrIcons';
 import { PicrFolder } from '../PicrFolder';
+import { useInViewport } from '@mantine/hooks';
+import { useInView } from 'react-intersection-observer';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 export const ImageFeed = ({
@@ -30,56 +35,113 @@ export const ImageFeed = ({
   setSelectedFileId,
 }: FileListViewStyleComponentProps) => {
   const setFolder = useSetFolder();
+  const [ref, bounds] = useMeasure();
+
+  const lazyThreshold = 5;
+  const [lazyLoaded, setLazyLoaded] = useState(15); //default to 10 files (and all folders!!)
+  const loadedFiles = files.slice(0, lazyLoaded);
+  console.log('lazy loaded', lazyLoaded);
+
+  const onBecomeVisible = (i: number) => {
+    //originally i was loading "next 5" when you could see "last 5" but this "exponential loading" feels better
+    const max = Math.floor(i * 2);
+    //if(i > lazyLoaded - lazyThreshold && lazyLoaded < files.length
+    if (lazyLoaded < files.length && max > lazyLoaded)
+      setLazyLoaded(Math.floor(i * 2));
+  };
+
   return (
-    <>
-      {folders.map((f) => (
-        <Page key={f.id}>
-          <PicrFolder
-            folder={f}
-            mb="md"
-            style={{ height: 75 }}
-            onClick={() => setFolder(f)}
-          />
-        </Page>
-      ))}
-      {files.map((file) => (
-        <FeedItem file={file} key={file.id} onClick={setSelectedFileId} />
-      ))}
-    </>
+    <Container>
+      <Box ref={ref}></Box>
+      {bounds.width == 0 ? null : (
+        <>
+          {folders.map((f) => (
+            <Page key={f.id}>
+              <PicrFolder
+                folder={f}
+                mb="md"
+                style={{ height: 75 }}
+                onClick={() => setFolder(f)}
+              />
+            </Page>
+          ))}
+          {loadedFiles.map((file, i) => {
+            return (
+              <FeedItem
+                file={file}
+                key={file.id}
+                onClick={setSelectedFileId}
+                width={bounds.width}
+                onBecomeVisible={() => onBecomeVisible(i)}
+              />
+            );
+          })}
+        </>
+      )}
+    </Container>
   );
 };
+
+// const LoadMoreBox = ({ onLoadMore }: { onLoadMore: () => void }) => {
+//   const { ref, inView } = useInView({ threshold: 0 });
+//   console.log(inView ? 'inviewport' : 'not inviewport');
+//   useEffect(() => {
+//     if (inView) {
+//       console.log('loading more');
+//       onLoadMore();
+//     }
+//   }, [inView]);
+//   return (
+//     <Stack>
+//       <Box style={{ height: 1 }} ref={ref} />
+//       <Group justifyContent="center">
+//         <Loader color="blue" />
+//       </Group>
+//     </Stack>
+//   );
+// };
 
 //I've done a bunch of 'detect if image loaded' because it feels shit without it
 const FeedItem = ({
   file,
   onClick,
+  width,
+  onBecomeVisible,
 }: {
   file: MinimalFile;
   onClick: (str: string) => void;
+  width: number;
+  onBecomeVisible?: () => void;
 }) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [ref, bounds] = useMeasure();
   const { isNone } = useCommentPermissions();
   const isMobile = useIsMobile();
+
+  const { ref, inView } = useInView({ threshold: 0 });
+  useEffect(() => {
+    if (inView && onBecomeVisible) {
+      onBecomeVisible();
+    }
+  }, [inView, onBecomeVisible]);
 
   //we know image ratios and viewport width, so size things correctly before images have loaded
   const dimensions = useMemo(() => {
     return {
-      width: bounds.width,
-      height: bounds.width / (file.imageRatio ?? 1),
+      width: width,
+      height: width / (file.imageRatio ?? 1),
     };
-  }, [bounds.width, file.imageRatio]);
+  }, [width, file.imageRatio]);
 
   const { type } = file;
-
   return (
-    <Page
-    // round="small"
-    // elevation="small"
-    // overflow="hidden"
-    // margin={{ bottom: 'small' }}
+    <Box
+      ref={ref}
+      style={{ minHeight: dimensions.height }}
+      // round="small"
+      // elevation="small"
+      // overflow="hidden"
+      // margin={{ bottom: 'small' }}
     >
-      <Box ref={ref} style={{ position: 'relative' }}>
+      <Box style={{ position: 'relative' }}>
         {/*{!imageLoaded ? (*/}
         {/*  <Skeleton style={{ height: tempHeight, ...tempBoxStyle }}>*/}
         {/*    <LoadingIndicator size="large" />*/}
@@ -92,7 +154,6 @@ const FeedItem = ({
               file={file}
               size="lg"
               src={imageURL(file, 'lg')}
-              onImageLoaded={() => setImageLoaded(true)}
               onClick={() => onClick(file.id)}
               clickable={true}
               style={dimensions}
@@ -126,7 +187,7 @@ const FeedItem = ({
           <FileDownloadButton file={file} />
         </Group>
       </Group>
-    </Page>
+    </Box>
   );
 };
 

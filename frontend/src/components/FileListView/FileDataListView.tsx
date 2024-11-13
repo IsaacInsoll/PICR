@@ -15,7 +15,6 @@ import { useSetFolder } from '../../hooks/useSetFolder';
 export const FileDataListView = ({
   files,
   setSelectedFileId,
-  folderId,
   folders,
 }: FileListViewStyleComponentProps) => {
   const { canView, isNone } = useCommentPermissions();
