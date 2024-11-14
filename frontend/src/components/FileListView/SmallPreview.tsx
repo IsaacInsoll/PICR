@@ -1,5 +1,5 @@
 import { MinimalFile, MinimalFolder } from '../../../types';
-import { Box, MantineStyleProps } from '@mantine/core';
+import { Avatar, Box, MantineStyleProps } from '@mantine/core';
 import { PicrImage } from '../PicrImage';
 import { FileIcon, FolderIcon, VideoIcon } from '../../PicrIcons';
 
@@ -14,6 +14,7 @@ export const SmallPreview = ({
     height,
     display: 'flex',
     justifyContent: 'center',
+    alignItems: 'center',
   };
 
   if (isFolder && file.heroImage) {
@@ -38,15 +39,26 @@ export const SmallPreview = ({
       </Box>
     );
   }
+
+  const iconProps = { size: 24 };
   return (
     <Box style={style}>
-      {isFolder ? (
-        <FolderIcon style={{ ...style }} size={24} opacity={0.5} />
-      ) : file.type == 'Video' ? (
-        <VideoIcon style={{ ...style }} size={24} opacity={0.5} />
-      ) : (
-        <FileIcon style={{ ...style }} size={24} opacity={0.5} />
-      )}
+      <Avatar
+        radius="xs"
+        size="md"
+        opacity={0.5}
+        variant="light"
+        name={file.name}
+        color="initials"
+      >
+        {isFolder ? (
+          <FolderIcon {...iconProps} />
+        ) : file.type == 'Video' ? (
+          <VideoIcon {...iconProps} />
+        ) : (
+          <FileIcon {...iconProps} />
+        )}
+      </Avatar>
     </Box>
   );
 };
