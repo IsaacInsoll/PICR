@@ -26,7 +26,7 @@ export const imageRequest = async (
   if (!file) res.sendStatus(404);
   if (file.type == 'File') res.sendStatus(404);
   if (!allSizes.includes(size)) res.sendStatus(400);
-  const extension = extname(filename);
+  const extension = extname(filename).toLowerCase(); //extension ignored for original file, only used for thumbs
   const fp = fullPathFor(file, size, extension);
   if (size != 'raw' && !existsSync(fp)) {
     if (file.type == 'Image') await generateThumbnail(file, size);

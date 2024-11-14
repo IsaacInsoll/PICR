@@ -22,7 +22,7 @@ export const PicrFolder = ({
 
   const dark = useIsDarkMode();
   return (
-    <BackgroundImage src={src} radius={0} ref={ref}>
+    <BackgroundImage src={src?.replace(' ', '%20')} radius={0} ref={ref}>
       <Box
         style={{
           backdropFilter: hovered ? 'blur(3px)' : 'blur(8px)',
