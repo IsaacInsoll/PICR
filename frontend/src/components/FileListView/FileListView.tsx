@@ -5,12 +5,25 @@ import { useIsMobile, useIsSmallScreen } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
 import { MinimalFile, MinimalFolder } from '../../../types';
-import { Group, Rating, Stack, Table, Text } from '@mantine/core';
+import {
+  ActionIcon,
+  Group,
+  Menu,
+  Rating,
+  rem,
+  Stack,
+  Table,
+  Text,
+} from '@mantine/core';
 import { FileFlagBadge } from './Review/FileFlagBadge';
 import prettyBytes from 'pretty-bytes';
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
 import { SmallPreview } from './SmallPreview';
+import { pluralize } from '../../helpers/folderSubtitle';
+import { TbDots } from 'react-icons/tb';
+import { FileMenu } from './FileMenu';
+import { fileFlagStyles } from './Review/fileFlagStyles';
 
 export const FileListView = ({
   files,
@@ -55,7 +68,8 @@ const Row = ({
   const isSmall = useIsSmallScreen();
 
   const isFolder = file.__typename == 'Folder';
-  const onClick = () => {
+  const onClick = (e) => {
+    console.log(e.target);
     isFolder ? setFolder(file) : setSelectedFileId(file.id);
   };
 
@@ -67,11 +81,11 @@ const Row = ({
   }, [inView, onBecomeVisible]);
 
   return (
-    <Table.Tr onClick={onClick} style={{ cursor: 'pointer' }} ref={ref}>
-      <Table.Td w={100}>
+    <Table.Tr style={{ cursor: 'pointer' }} ref={ref}>
+      <Table.Td w={100} onClick={onClick}>
         <SmallPreview file={file} />
       </Table.Td>
-      <Table.Td>
+      <Table.Td onClick={onClick}>
         <Group gap="sm">
           {/*<Avatar size={40} src={item.avatar} radius={40} />*/}
           <div>
@@ -84,11 +98,30 @@ const Row = ({
             {/*    {file.fileSize ? ', ' + prettyBytes(file.fileSize) : null}*/}
             {/*  </Text>*/}
             {/*) : null}*/}
+            {canView ? (
+              <Group gap="xs" align="center">
+                {isMobile && file.flag && file.flag != 'None'
+                  ? fileFlagStyles[file.flag].icon
+                  : null}
+                {isMobile && file.rating ? (
+                  <Text c="dimmed" fz="xs">
+                    {pluralize(file.rating, 'Star')}
+                    {/*{file.fileSize ? ', ' + prettyBytes(file.fileSize) : null}*/}
+                  </Text>
+                ) : null}
+                {file.totalComments ? (
+                  <Text c="dimmed" fz="xs">
+                    {pluralize(file.totalComments, 'Comment')}
+                    {/*{file.fileSize ? ', ' + prettyBytes(file.fileSize) : null}*/}
+                  </Text>
+                ) : null}
+              </Group>
+            ) : null}
           </div>
         </Group>
       </Table.Td>
-      {canView ? (
-        <Table.Td>
+      {canView && !isMobile ? (
+        <Table.Td onClick={onClick}>
           <Stack align="end">
             {file.rating > 0 ? (
               <Rating readOnly value={file.rating} size="xs" />
@@ -98,7 +131,7 @@ const Row = ({
         </Table.Td>
       ) : null}
       {!isMobile ? (
-        <Table.Td>
+        <Table.Td onClick={onClick}>
           <Text fz="sm" ta="right">
             {file.fileSize ? prettyBytes(file.fileSize) : null}
           </Text>
@@ -107,55 +140,31 @@ const Row = ({
           </Text>
         </Table.Td>
       ) : null}
-      {/*<Table.Td>*/}
-      {/*  <Group gap={0} justify="flex-end">*/}
-      {/*    <ActionIcon variant="subtle" color="gray">*/}
-      {/*      <IconPencil*/}
-      {/*        style={{ width: rem(16), height: rem(16) }}*/}
-      {/*        stroke={1.5}*/}
-      {/*      />*/}
-      {/*    </ActionIcon>*/}
-      {/*<Menu*/}
-      {/*  transitionProps={{ transition: 'pop' }}*/}
-      {/*  withArrow*/}
-      {/*  position="bottom-end"*/}
-      {/*  withinPortal*/}
-      {/*>*/}
-      {/*  <Menu.Target>*/}
-      {/*    <ActionIcon variant="subtle" color="gray">*/}
-      {/*      <IconDots style={{ width: rem(16), height: rem(16) }} stroke={1.5} />*/}
-      {/*    </ActionIcon>*/}
-      {/*  </Menu.Target>*/}
-      {/*  <Menu.Dropdown>*/}
-      {/*    <Menu.Item*/}
-      {/*      leftSection={*/}
-      {/*        <IconMessages style={{ width: rem(16), height: rem(16) }} stroke={1.5} />*/}
-      {/*      }*/}
-      {/*    >*/}
-      {/*      Send message*/}
-      {/*    </Menu.Item>*/}
-      {/*    <Menu.Item*/}
-      {/*      leftSection={<IconNote style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}*/}
-      {/*    >*/}
-      {/*      Add note*/}
-      {/*    </Menu.Item>*/}
-      {/*    <Menu.Item*/}
-      {/*      leftSection={*/}
-      {/*        <IconReportAnalytics style={{ width: rem(16), height: rem(16) }} stroke={1.5} />*/}
-      {/*      }*/}
-      {/*    >*/}
-      {/*      Analytics*/}
-      {/*    </Menu.Item>*/}
-      {/*    <Menu.Item*/}
-      {/*      leftSection={<IconTrash style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}*/}
-      {/*      color="red"*/}
-      {/*    >*/}
-      {/*      Terminate contract*/}
-      {/*    </Menu.Item>*/}
-      {/*  </Menu.Dropdown>*/}
-      {/*</Menu>*/}
-      {/*</Group>*/}
-      {/*</Table.Td>*/}
+      <Table.Td>
+        <Group gap={0} justify="flex-end">
+          {/*    <ActionIcon variant="subtle" color="gray">*/}
+          {/*      <IconPencil*/}
+          {/*        style={{ width: rem(16), height: rem(16) }}*/}
+          {/*        stroke={1.5}*/}
+          {/*      />*/}
+          {/*    </ActionIcon>*/}
+          <Menu
+            transitionProps={{ transition: 'pop' }}
+            withArrow
+            position="bottom-end"
+            withinPortal
+          >
+            <Menu.Target>
+              <ActionIcon variant="light" color="gray">
+                <TbDots />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <FileMenu file={file} />
+            </Menu.Dropdown>
+          </Menu>
+        </Group>
+      </Table.Td>
     </Table.Tr>
   );
 };
