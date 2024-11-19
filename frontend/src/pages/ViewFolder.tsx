@@ -22,6 +22,7 @@ import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
 import { Page } from '../components/Page';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 import { QuickFind } from '../components/QuickFind/QuickFind';
+import { useRequery } from '../hooks/useRequery';
 
 export const ViewFolder = () => {
   const { folderId } = useParams();
@@ -47,6 +48,8 @@ export const ViewFolderBody = () => {
     query: viewFolderQuery,
     variables: { folderId },
   });
+
+  useRequery(reQuery, 10000);
 
   const toggleManaging = useCallback(() => {
     navigate(baseUrl + folderId + (managing ? '' : '/manage'));

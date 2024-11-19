@@ -13,6 +13,7 @@ import {
 } from '@mantine/core';
 import { Page } from './Page';
 import { taskQuery } from '../urql/queries/taskQuery';
+import { useRequery } from '../hooks/useRequery';
 
 export const TaskSummary = ({ folderId }: { folderId: string }) => {
   const [result, requery] = useQuery({
@@ -22,13 +23,7 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
 
   const [zips, setZips] = useAtom(linksToDownloadAtom);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (!document.visibilityState || document.visibilityState === 'visible')
-        requery({ requestPolicy: 'network-only' });
-    }, 1000);
-    return () => clearInterval(timer);
-  });
+  useRequery(requery, 1000);
 
   const tasks = result.data?.tasks;
   const complete = tasks?.filter((t) => t.status == 'Complete');
