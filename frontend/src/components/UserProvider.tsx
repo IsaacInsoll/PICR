@@ -7,7 +7,6 @@ export const UserProvider = () => {
   const me = useMe();
   return (
     <>
-      {me?.isUser ? <LoggedInHeader /> : null}
       <Router loggedIn={!!me} />
     </>
   );

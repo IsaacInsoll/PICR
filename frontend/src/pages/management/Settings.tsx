@@ -13,6 +13,7 @@ import { Tips } from '../../components/Tips';
 import { TaskSummary } from '../../components/TaskSummary';
 import { PicrTitle } from '../../components/PicrTitle';
 import { QuickFind } from '../../components/QuickFind/QuickFind';
+import { LoggedInHeader } from '../../components/Header/LoggedInHeader';
 
 export const Settings = () => {
   const { tab } = useParams();
@@ -26,44 +27,47 @@ export const Settings = () => {
   const title = 'PICR Settings';
 
   return (
-    <Page>
-      <QuickFind folder={me.folder} />
-      <TopBar title={title} />
-      <TaskSummary folderId={me?.folderId} />
-      <Tabs value={tab ?? 'users'} onChange={onTabChange} keepMounted={false}>
-        <Tabs.List>
-          {tabList.map(({ title, slug, icon }) => (
-            <Tabs.Tab value={slug} leftSection={icon} key={slug}>
-              {title}
-            </Tabs.Tab>
-          ))}
-        </Tabs.List>
-        <Tabs.Panel value="users">
-          <Tips type="Users" />
-          <Suspense fallback={<LoadingIndicator />}>
-            <PicrTitle title={['Users', title]} />
-            <ManageUsers />
-          </Suspense>
-        </Tabs.Panel>
-        <Tabs.Panel value="links">
-          <Tips type="PublicLink" />
-          <Suspense fallback={<LoadingIndicator />}>
-            <PicrTitle title={['Links', title]} />
-            <ManagePublicLinks
-              folder={me.folder}
-              disableAddingLinks={true}
-              relations="children"
-            />
-          </Suspense>
-        </Tabs.Panel>
-        <Tabs.Panel value="info">
-          <Suspense fallback={<LoadingIndicator />}>
-            <PicrTitle title={['Server Info', title]} />
-            <ServerInfo />
-          </Suspense>
-        </Tabs.Panel>
-      </Tabs>
-    </Page>
+    <>
+      <LoggedInHeader />
+      <Page>
+        <QuickFind folder={me.folder} />
+        <TopBar title={title} />
+        <TaskSummary folderId={me?.folderId} />
+        <Tabs value={tab ?? 'users'} onChange={onTabChange} keepMounted={false}>
+          <Tabs.List>
+            {tabList.map(({ title, slug, icon }) => (
+              <Tabs.Tab value={slug} leftSection={icon} key={slug}>
+                {title}
+              </Tabs.Tab>
+            ))}
+          </Tabs.List>
+          <Tabs.Panel value="users">
+            <Tips type="Users" />
+            <Suspense fallback={<LoadingIndicator />}>
+              <PicrTitle title={['Users', title]} />
+              <ManageUsers />
+            </Suspense>
+          </Tabs.Panel>
+          <Tabs.Panel value="links">
+            <Tips type="PublicLink" />
+            <Suspense fallback={<LoadingIndicator />}>
+              <PicrTitle title={['Links', title]} />
+              <ManagePublicLinks
+                folder={me.folder}
+                disableAddingLinks={true}
+                relations="children"
+              />
+            </Suspense>
+          </Tabs.Panel>
+          <Tabs.Panel value="info">
+            <Suspense fallback={<LoadingIndicator />}>
+              <PicrTitle title={['Server Info', title]} />
+              <ServerInfo />
+            </Suspense>
+          </Tabs.Panel>
+        </Tabs>
+      </Page>
+    </>
   );
 };
 

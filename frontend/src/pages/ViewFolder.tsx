@@ -23,6 +23,8 @@ import { Page } from '../components/Page';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 import { QuickFind } from '../components/QuickFind/QuickFind';
 import { useRequery } from '../hooks/useRequery';
+import { LoggedInHeader } from '../components/Header/LoggedInHeader';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export const ViewFolder = () => {
   const { folderId } = useParams();
@@ -71,19 +73,19 @@ export const ViewFolderBody = () => {
   }, [folderId, fileId, managing]);
 
   const actions = [];
-  if (folder?.permissions === 'Admin') {
-    actions.push(
-      <Button
-        key="manage"
-        variant={managing ? 'filled' : 'default'}
-        title={managing ? 'View Folder' : 'Manage'}
-        onClick={toggleManaging}
-        leftSection={<TbSettings />}
-      >
-        Manage
-      </Button>,
-    );
-  }
+  // if (folder?.permissions === 'Admin') {
+  //   actions.push(
+  //     <Button
+  //       key="manage"
+  //       variant={managing ? 'filled' : 'default'}
+  //       title={managing ? 'View Folder' : 'Manage'}
+  //       onClick={toggleManaging}
+  //       leftSection={<TbSettings />}
+  //     >
+  //       Manage
+  //     </Button>,
+  //   );
+  // }
   if (hasFiles) {
     actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
   }
@@ -98,6 +100,7 @@ export const ViewFolderBody = () => {
 
   return (
     <>
+      <LoggedInHeader folder={folder} managing={managing} />
       <QuickFind folder={folder} />
       <QueryFeedback result={data} reQuery={reQuery} />
       {!folder ? (
