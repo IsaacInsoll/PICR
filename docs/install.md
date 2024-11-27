@@ -20,7 +20,7 @@ services:
       - DATABASE_URL=postgres://user:pass@db/picr
       - USE_POLLING=true # recommended if you have > 10,000 files
   db:
-    image: postgres
+    image: postgres:17
     container_name: picr-db
     environment:
       POSTGRES_USER: user
