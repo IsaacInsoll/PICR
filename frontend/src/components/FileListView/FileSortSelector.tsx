@@ -15,13 +15,17 @@ import {
 import { ReactNode } from 'react';
 import { BiComment } from 'react-icons/bi';
 import { useDisclosure } from '@mantine/hooks';
+import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 
 export const FileSortSelector = () => {
+  const { canView } = useCommentPermissions();
   const [sort, setSort] = useAtom(fileSortAtom);
   const [dropdownOpened, { toggle, close }] = useDisclosure();
   const { type, direction } = sort;
   const sortIcon = sortIcons[direction];
   const { icon } = sortOptions.find((s) => s.value == type);
+
+  const options = sortOptions.filter((s) => !s.requiresComments || canView);
 
   const renderSelectOption: SelectProps['renderOption'] = ({
     option,
@@ -77,7 +81,7 @@ export const FileSortSelector = () => {
           comboboxProps={{ width: 200, position: 'bottom-start' }}
           dropdownOpened={dropdownOpened}
           checkIconPosition="right"
-          data={sortOptions}
+          data={options}
           value={type}
           onChange={handleClick}
           renderOption={renderSelectOption}
@@ -95,15 +99,33 @@ export const FileSortSelector = () => {
   );
 };
 
-const sortOptions: [{ value: FileSortType; label: string }] = [
-  { value: 'Filename', label: 'Filename', icon: <TbFileTypography /> },
-  { value: 'LastModified', label: 'Modified', icon: <TbCalendar /> },
+const sortOptions: [
+  { value: FileSortType; label: string; requiresComments: boolean },
+] = [
+  {
+    value: 'Filename',
+    label: 'Filename',
+    icon: <TbFileTypography />,
+    requiresComments: false,
+  },
+  {
+    value: 'LastModified',
+    label: 'Modified',
+    icon: <TbCalendar />,
+    requiresComments: false,
+  },
   {
     value: 'RecentlyCommented',
     label: 'Commented',
     icon: <BiComment />,
+    requiresComments: true,
   },
-  { value: 'Rating', label: 'Rating', icon: <TbStar /> },
+  {
+    value: 'Rating',
+    label: 'Rating',
+    icon: <TbStar />,
+    requiresComments: true,
+  },
 ];
 
 const sortIcons: {

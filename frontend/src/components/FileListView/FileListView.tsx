@@ -7,6 +7,7 @@ import { useLazyLoad } from '../../hooks/useLazyLoad';
 import { MinimalFile, MinimalFolder } from '../../../types';
 import {
   ActionIcon,
+  Badge,
   Group,
   Menu,
   Rating,
@@ -25,6 +26,8 @@ import { TbDots } from 'react-icons/tb';
 import { FileMenu } from './FileMenu';
 import { fileFlagStyles } from './Review/fileFlagStyles';
 import { prettyDate } from './Filtering/PrettyDate';
+import { fileSortAtom } from '../../atoms/fileSortAtom';
+import { useAtomValue } from 'jotai/index';
 
 export const FileListView = ({
   files,
@@ -63,14 +66,33 @@ const Row = ({
   file: MinimalFile | MinimalFolder;
   onBecomeVisible: () => void;
 }) => {
-  const { canView, isNone } = useCommentPermissions();
+  const { canView } = useCommentPermissions();
   const setFolder = useSetFolder();
   const isMobile = useIsMobile();
   const isSmall = useIsSmallScreen();
 
+  // if filtering by RecentlyCommented or LastModified then lets show that data
+  const { type } = useAtomValue(fileSortAtom);
+  const descriptionOverride =
+    type == 'RecentlyCommented' ? (
+      <>
+        <Badge color="gray" size="xs">
+          {file.totalComments}
+        </Badge>
+        <Text c="dimmed" fz="xs">
+          Latest: {prettyDate(file.latestComment)}
+        </Text>
+      </>
+    ) : type == 'LastModified' ? (
+      <>
+        <Text c="dimmed" fz="xs">
+          Modified {prettyDate(file.fileLastModified)}
+        </Text>
+      </>
+    ) : null;
+
   const isFolder = file.__typename == 'Folder';
   const onClick = (e) => {
-    console.log(e.target);
     isFolder ? setFolder(file) : setSelectedFileId(file.id);
   };
 
@@ -105,21 +127,31 @@ const Row = ({
             {/*) : null}*/}
             {canView ? (
               <Group gap="xs" align="center">
-                {isMobile && file.flag && file.flag != 'None'
-                  ? fileFlagStyles[file.flag].icon
-                  : null}
-                {isMobile && file.rating ? (
-                  <Text c="dimmed" fz="xs">
-                    {pluralize(file.rating, 'Star')}
-                    {/*{file.fileSize ? ', ' + prettyBytes(file.fileSize) : null}*/}
-                  </Text>
-                ) : null}
-                {file.totalComments ? (
-                  <Text c="dimmed" fz="xs">
-                    {pluralize(file.totalComments, 'Comment')}
-                    {/*{file.fileSize ? ', ' + prettyBytes(file.fileSize) : null}*/}
-                  </Text>
-                ) : null}
+                {descriptionOverride ? (
+                  { ...descriptionOverride }
+                ) : (
+                  <>
+                    {isMobile ? (
+                      <>
+                        {file.flag && file.flag != 'None'
+                          ? fileFlagStyles[file.flag].icon
+                          : null}
+                        {file.rating ? (
+                          <Text c="dimmed" fz="xs">
+                            {pluralize(file.rating, 'Star')}
+                            {/*{file.fileSize ? ', ' + prettyBytes(file.fileSize) : null}*/}
+                          </Text>
+                        ) : null}
+                      </>
+                    ) : null}
+                    {file.totalComments ? (
+                      <Text c="dimmed" fz="xs">
+                        {pluralize(file.totalComments, 'Comment')}
+                        {/*{file.fileSize ? ', ' + prettyBytes(file.fileSize) : null}*/}
+                      </Text>
+                    ) : null}
+                  </>
+                )}
               </Group>
             ) : null}
           </div>
