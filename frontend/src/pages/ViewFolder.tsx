@@ -25,6 +25,7 @@ import { QuickFind } from '../components/QuickFind/QuickFind';
 import { useRequery } from '../hooks/useRequery';
 import { LoggedInHeader } from '../components/Header/LoggedInHeader';
 import { useIsMobile } from '../hooks/useIsMobile';
+import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 
 export const ViewFolder = () => {
   const { folderId } = useParams();
@@ -87,6 +88,7 @@ export const ViewFolderBody = () => {
   //   );
   // }
   if (hasFiles) {
+    actions.push(<FileSortSelector />);
     actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
   }
   if (hasFiles || hasFolders)

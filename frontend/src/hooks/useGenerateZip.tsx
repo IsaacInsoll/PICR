@@ -2,7 +2,7 @@ import { useSetAtom } from 'jotai/index';
 import { useMutation } from 'urql';
 import { generateZipMutation } from '../urql/mutations/generateZipMutation';
 import { FolderHash } from '../../../backend/helpers/zip';
-import { linksToDownloadAtom } from './DownloadZipButton';
+import { linksToDownloadAtom } from '../components/DownloadZipButton';
 
 export const useGenerateZip = (
   folder: MinimalFolder,

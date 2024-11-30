@@ -12,7 +12,7 @@ import {
 } from '../../atoms/filterAtom';
 import { useAtomValue } from 'jotai';
 import { FilteringOptions } from './Filtering/FilteringOptions';
-import { filterFiles } from '../../helpers/filterFiles';
+import { filterFiles, sortFiles } from '../../helpers/filterFiles';
 import { useAtom, useSetAtom } from 'jotai/index';
 import { Tabs, Transition } from '@mantine/core';
 import { Page } from '../Page';
@@ -20,6 +20,7 @@ import { useParams } from 'react-router-dom';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { FolderRouteParams } from '../../Router';
 import { FileListView } from './FileListView';
+import { fileSortAtom } from '../../atoms/fileSortAtom';
 
 export interface FileListViewProps {
   files: MinimalFile[];
@@ -43,6 +44,7 @@ export const FolderContentsView = ({ folder }) => {
   const filtering = useAtomValue(filterAtom);
   const filters = useAtomValue(filterOptions);
   const resetFilters = useSetAtom(resetFilterOptions);
+  const sort = useAtomValue(fileSortAtom);
 
   const setSelectedFileId = (fileId: string | undefined) => {
     const file = fileId ? { id: fileId } : undefined;
@@ -53,15 +55,16 @@ export const FolderContentsView = ({ folder }) => {
 
   // don't memo files because it breaks graphicache (IE: file changing rating won't reflect)
   const filteredFiles = filtering ? filterFiles(files, filters) : files;
+  const sortedFiles = sortFiles(filteredFiles, sort);
   const props = {
     folderId,
     folders: folder.subFolders,
-    files: filteredFiles,
+    files: sortedFiles,
     selectedFileId: fileId,
     setSelectedFileId,
   };
 
-  console.log('FCV render');
+  // console.log('FCV render');
   return (
     <>
       <Transition

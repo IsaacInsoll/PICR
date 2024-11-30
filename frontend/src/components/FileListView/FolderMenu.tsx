@@ -12,7 +12,7 @@ import { imageURL } from '../../helpers/imageURL';
 import { DownloadIcon, FolderIcon, InfoIcon } from '../../PicrIcons';
 import { useMutation } from 'urql';
 import { generateZipMutation } from '../../urql/mutations/generateZipMutation';
-import { useGenerateZip } from '../useGenerateZip';
+import { useGenerateZip } from '../../hooks/useGenerateZip';
 
 export const FolderMenu = ({ folder }: { folder: MinimalFolder }) => {
   const setFolder = useSetFolder();

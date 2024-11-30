@@ -4,7 +4,7 @@ import { atom } from 'jotai/index';
 import { Folder } from '../../../graphql-types';
 import { FolderHash } from '../../../backend/helpers/zip';
 import { DownloadIcon } from '../PicrIcons';
-import { useGenerateZip } from './useGenerateZip';
+import { useGenerateZip } from '../hooks/useGenerateZip';
 
 // list of URLs we have requested to download that are currently generating.
 // delete from list once you have triggered it's download

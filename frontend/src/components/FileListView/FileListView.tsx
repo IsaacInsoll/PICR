@@ -24,6 +24,7 @@ import { pluralize } from '../../helpers/folderSubtitle';
 import { TbDots } from 'react-icons/tb';
 import { FileMenu } from './FileMenu';
 import { fileFlagStyles } from './Review/fileFlagStyles';
+import { prettyDate } from './Filtering/PrettyDate';
 
 export const FileListView = ({
   files,
@@ -89,7 +90,11 @@ const Row = ({
         <Group gap="sm">
           {/*<Avatar size={40} src={item.avatar} radius={40} />*/}
           <div>
-            <Text fz="md" fw={500}>
+            <Text
+              fz="md"
+              fw={500}
+              title={`Modified: ${prettyDate(file.fileLastModified)}\nLast Comment: ${prettyDate(file.latestComment)}`}
+            >
               {file.name}
             </Text>
             {/*{isMobile ? (*/}
