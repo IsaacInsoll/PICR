@@ -76,17 +76,21 @@ const Row = ({
   const descriptionOverride =
     type == 'RecentlyCommented' ? (
       <>
-        <Badge color="gray" size="xs">
-          {file.totalComments}
-        </Badge>
-        <Text c="dimmed" fz="xs">
-          Latest: {prettyDate(file.latestComment)}
-        </Text>
+        {file.latestComment ? (
+          <>
+            <Badge color="gray" size="xs">
+              {file.totalComments}
+            </Badge>
+            <Text c="dimmed" fz="xs">
+              Latest: {prettyDate(file.latestComment)}
+            </Text>
+          </>
+        ) : null}
       </>
     ) : type == 'LastModified' ? (
       <>
         <Text c="dimmed" fz="xs">
-          Modified {prettyDate(file.fileLastModified)}
+          Modified: {prettyDate(file.fileLastModified)}
         </Text>
       </>
     ) : null;
