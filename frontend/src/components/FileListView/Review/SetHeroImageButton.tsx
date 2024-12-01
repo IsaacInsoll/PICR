@@ -4,15 +4,17 @@ import { ActionIcon, Tooltip } from '@mantine/core';
 import { TbPhotoHeart } from 'react-icons/tb';
 import { gql } from '../../../helpers/gql';
 import { useMutation } from 'urql';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useReward } from 'react-rewards';
+import { confettiOptions } from './ConfettiOptions';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 
 export const SetHeroImageButton = ({ file }: { file: MinimalFile }) => {
   const { isUser } = useMe();
   const [, mutate] = useMutation(editFolderMutation);
   const [loading, setLoading] = useState(false);
 
-  const id = 'heroImageButton-' + file.id;
+  const id = useId();
   const { reward } = useReward(id, 'confetti', confettiOptions);
 
   if (!isUser || !file || !file.type == 'Image') return null;
@@ -60,9 +62,3 @@ const editFolderMutation = gql(/* GraphQL */ `
     }
   }
 `);
-
-const confettiOptions = {
-  zIndex: 1000,
-  position: 'absolute',
-  lifetime: 100,
-};

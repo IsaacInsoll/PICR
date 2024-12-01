@@ -9,10 +9,12 @@ import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { FileFlagBadge } from './FileFlagBadge';
 import { FileRating } from './FileRating';
 import { SetHeroImageButton } from './SetHeroImageButton';
+import { useId } from 'react';
 
 // Horizontal component containing Flag, Rating and Comment buttons
 export const FileReview = ({ file }: { file: MinimalFile }) => {
   const { readOnly, isNone } = useCommentPermissions();
+
   if (isNone) return null;
 
   const [, mutate] = useMutation(addCommentMutation);

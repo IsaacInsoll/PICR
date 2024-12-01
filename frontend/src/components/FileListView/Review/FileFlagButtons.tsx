@@ -1,8 +1,10 @@
 import { ActionIcon, Tooltip } from '@mantine/core';
 import { FileFlag } from '../../../../../graphql-types';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 import { approvedFlagStyle, rejectedFlagStyle } from './fileFlagStyles';
+import { greenBaloonsOptions } from './ConfettiOptions';
+import { useReward } from 'react-rewards';
 
 // Buttons to `approve` and `reject` the selected file
 
@@ -16,7 +18,10 @@ export const FileFlagButtons = ({
   // We can't really use disabled prop on this as it removes color from box which is essential to the UI
 
   const [loading, setLoading] = useState(false);
+  const id = useId();
+  const { reward } = useReward(id, 'balloons', greenBaloonsOptions);
   const setFlag = async (flag: FileFlag) => {
+    if (flag == 'approved') reward();
     setLoading(true);
     await onChange(flag);
     setLoading(false);
@@ -27,6 +32,7 @@ export const FileFlagButtons = ({
 
   return (
     <>
+      <span id={id} />
       <Tooltip label="Approve (Thumbs Up)">
         <ActionIcon
           variant={isApproved ? 'filled' : 'default'}
