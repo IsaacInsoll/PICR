@@ -18,9 +18,30 @@ export const heroImageForFolder = async (f: Folder) => {
   });
   if (first) return first;
 
-  // 3. Hero image in any subfolder
+  // 3. Hero image in subfolder
+  const subFolder = await heroImageForSubFolder(f.id);
+  if (subFolder) return subFolder;
+
+  // 4. First image in any subfolder
+  const allSubFolders = await allSubFoldersRecursive(f.id);
+  const subFolderIds = allSubFolders.map((f) => f.id);
+  const s = await heroImageForSubFolder(subFolderIds);
+  if (s) return s;
+
+  const allImages = await File.findOne({
+    where: {
+      folderId: subFolderIds,
+      type: 'Image',
+      exists: true,
+    },
+    order: [['name', 'ASC']],
+  });
+  return allImages;
+};
+
+const heroImageForSubFolder = async (parentIds: string[]) => {
   const subFolder = await Folder.findOne({
-    where: { parentId: f.id, exists: true, [Op.not]: { heroImageId: 0 } },
+    where: { parentId: parentIds, exists: true, [Op.not]: { heroImageId: 0 } },
     order: [['name', 'ASC']],
   });
 
@@ -34,15 +55,4 @@ export const heroImageForFolder = async (f: Folder) => {
   ) {
     return subHeroImage;
   }
-  // 4. First image in any subfolder
-  const allSubFolders = await allSubFoldersRecursive(f.id);
-  const allImages = await File.findOne({
-    where: {
-      folderId: allSubFolders.map((f) => f.id),
-      type: 'Image',
-      exists: true,
-    },
-    order: [['name', 'ASC']],
-  });
-  return allImages;
 };
