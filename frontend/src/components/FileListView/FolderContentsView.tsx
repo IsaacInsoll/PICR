@@ -56,10 +56,15 @@ export const FolderContentsView = ({ folder }) => {
   // don't memo files because it breaks graphicache (IE: file changing rating won't reflect)
   const filteredFiles = filtering ? filterFiles(files, filters) : files;
   const sortedFiles = sortFiles(filteredFiles, sort);
+
+  const withProps = sortedFiles.map((f) => {
+    return { ...f, isHeroImage: f.id == folder.heroImage?.id };
+  });
+
   const props = {
     folderId,
     folders: folder.subFolders,
-    files: sortedFiles,
+    files: withProps,
     selectedFileId: fileId,
     setSelectedFileId,
   };
