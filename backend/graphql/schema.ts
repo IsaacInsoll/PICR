@@ -29,6 +29,7 @@ import { serverInfoType } from './types/serverInfoType';
 import { serverInfo } from './queries/serverInfoQuery';
 import { searchFolders } from './queries/searchFolders';
 import { searchFiles } from './queries/searchFiles';
+import { editFolder } from './mutations/editFolder';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -59,6 +60,7 @@ const mutations = new GraphQLObjectType({
     editUser,
     generateThumbnails,
     generateZip,
+    editFolder,
   }),
 });
 

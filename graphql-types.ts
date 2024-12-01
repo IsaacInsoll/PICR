@@ -135,6 +135,7 @@ export type Mutation = {
   addComment: FileInterface;
   auth: Scalars['String']['output'];
   editAdminUser: User;
+  editFolder: Folder;
   editUser: User;
   generateThumbnails: Scalars['Boolean']['output'];
   generateZip: Scalars['String']['output'];
@@ -164,6 +165,12 @@ export type MutationEditAdminUserArgs = {
   name?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationEditFolderArgs = {
+  folderId: Scalars['ID']['input'];
+  heroImageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 

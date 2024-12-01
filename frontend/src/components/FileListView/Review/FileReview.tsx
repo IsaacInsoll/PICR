@@ -8,6 +8,7 @@ import { addCommentMutation } from './addCommentMutation';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { FileFlagBadge } from './FileFlagBadge';
 import { FileRating } from './FileRating';
+import { SetHeroImageButton } from './SetHeroImageButton';
 
 // Horizontal component containing Flag, Rating and Comment buttons
 export const FileReview = ({ file }: { file: MinimalFile }) => {
@@ -42,6 +43,7 @@ export const FileReview = ({ file }: { file: MinimalFile }) => {
         totalComments={totalComments}
         onClick={() => openComment(file.id)}
       />
+      <SetHeroImageButton file={file} />
     </Group>
   );
 };
