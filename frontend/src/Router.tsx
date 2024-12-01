@@ -3,8 +3,8 @@ import { LoginForm } from './pages/LoginForm';
 import { ViewFolder } from './pages/ViewFolder';
 import { PageNotFound } from './pages/PageNotFound';
 import { useMe } from './hooks/useMe';
-import { FileViewType } from './hooks/useSetFolder';
 import { Settings } from './pages/management/Settings';
+import { FileViewType } from './atoms/modalAtom';
 
 const folderRoute = '/:folderId/:fileId?/:fileView?';
 

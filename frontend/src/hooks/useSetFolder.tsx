@@ -4,6 +4,7 @@ import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder'
 import { MinimalFile, MinimalFolder } from '../../types';
 
 import { useBaseViewFolderURL } from './useBaseViewFolderURL';
+import { FileViewType } from '../atoms/modalAtom';
 
 export const useSetFolder = () => {
   const navigate = useNavigate();
@@ -20,5 +21,3 @@ export const useSetFolder = () => {
     navigate(base + f);
   };
 };
-
-export type FileViewType = 'info' | 'comments' | undefined;

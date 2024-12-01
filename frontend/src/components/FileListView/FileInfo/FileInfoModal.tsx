@@ -9,14 +9,13 @@ import { closeModalAtom, modalAtom } from '../../../atoms/modalAtom';
 import { GalleryImage } from '../GridGallery';
 import { FilePreview } from '../FilePreview';
 
-export const FileInfoModal = () => {
-  const { file, open } = useAtomValue(modalAtom);
+export const FileInfoModal = ({ file }) => {
   const onClose = useSetAtom(closeModalAtom);
   const isMobile = useIsSmallScreen();
 
   return (
     <Modal
-      opened={open}
+      opened={true}
       centered={true}
       onClose={onClose}
       title={file.type + ' Details: ' + file.name}

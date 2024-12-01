@@ -77,7 +77,7 @@ export const SelectedFileView = ({
 };
 
 const lightBoxStyles = {
-  root: { fontFamily: theme.fontFamily, zIndex: 199 }, // mantine modals are 200
+  root: { fontFamily: theme.fontFamily, zIndex: 200 }, // mantine modals are 200
 };
 
 const counterProps = { container: { style: { top: 'unset', bottom: 0 } } };

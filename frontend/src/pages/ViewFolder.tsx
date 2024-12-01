@@ -17,7 +17,7 @@ import { DownloadZipButton } from '../components/DownloadZipButton';
 import { Button, Group, Title } from '@mantine/core';
 import { TbSettings } from 'react-icons/tb';
 import { useSetFolder } from '../hooks/useSetFolder';
-import { ModalManager } from '../components/ModalManager';
+import { FolderModalManager } from '../components/FolderModalManager';
 import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
 import { Page } from '../components/Page';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
@@ -33,7 +33,6 @@ export const ViewFolder = () => {
   return (
     <>
       <Suspense fallback={<PlaceholderFolderHeader />}>
-        <ModalManager />
         <ViewFolderBody key={folderId ?? '1'} folderId={folderId ?? '1'} />
       </Suspense>
     </>
@@ -52,7 +51,7 @@ export const ViewFolderBody = () => {
     variables: { folderId },
   });
 
-  useRequery(reQuery, 10000);
+  useRequery(reQuery, 20000);
 
   const toggleManaging = useCallback(() => {
     navigate(baseUrl + folderId + (managing ? '' : '/manage'));
@@ -74,19 +73,7 @@ export const ViewFolderBody = () => {
   }, [folderId, fileId, managing]);
 
   const actions = [];
-  // if (folder?.permissions === 'Admin') {
-  //   actions.push(
-  //     <Button
-  //       key="manage"
-  //       variant={managing ? 'filled' : 'default'}
-  //       title={managing ? 'View Folder' : 'Manage'}
-  //       onClick={toggleManaging}
-  //       leftSection={<TbSettings />}
-  //     >
-  //       Manage
-  //     </Button>,
-  //   );
-  // }
+
   if (hasFiles) {
     actions.push(<FileSortSelector />);
     actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
@@ -104,6 +91,7 @@ export const ViewFolderBody = () => {
     <>
       <LoggedInHeader folder={folder} managing={managing} />
       <QuickFind folder={folder} />
+      <FolderModalManager folder={folder} />
       <QueryFeedback result={data} reQuery={reQuery} />
       {!folder ? (
         <Title order={1}>Folder Not Found</Title>

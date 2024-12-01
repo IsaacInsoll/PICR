@@ -40,7 +40,7 @@ export const FileReview = ({ file }: { file: MinimalFile }) => {
       <Divider orientation="vertical" />
       <CommentButton
         totalComments={totalComments}
-        onClick={() => openComment(file)}
+        onClick={() => openComment(file.id)}
       />
     </Group>
   );

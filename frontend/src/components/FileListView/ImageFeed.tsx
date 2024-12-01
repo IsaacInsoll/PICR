@@ -199,7 +199,7 @@ const FileInfoButton = ({ file }: { file: MinimalFile }) => {
 
   return (
     <Tooltip label={`File Info for ${file.name}`}>
-      <ActionIcon variant="default" onClick={() => openFileInfo(file)}>
+      <ActionIcon variant="default" onClick={() => openFileInfo(file.id)}>
         <InfoIcon />
       </ActionIcon>
     </Tooltip>

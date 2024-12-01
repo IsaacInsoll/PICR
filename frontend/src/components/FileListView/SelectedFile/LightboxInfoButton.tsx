@@ -8,7 +8,7 @@ export const LightboxInfoButton = ({ file }) => {
       key="my-button"
       type="button"
       className="yarl__button"
-      onClick={() => openFileInfo(file)}
+      onClick={() => openFileInfo(file.id)}
     >
       <InfoIcon size="28" />
     </button>

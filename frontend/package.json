@@ -27,6 +27,7 @@
     "graphql": "^16.8.1",
     "humanize-duration": "^3.32.1",
     "jotai": "^2.10.1",
+    "jotai-location": "^0.5.5",
     "lodash": "^4.17.21",
     "mantine-datatable": "^7.11.1",
     "mantine-react-table": "^2.0.0-beta.7",

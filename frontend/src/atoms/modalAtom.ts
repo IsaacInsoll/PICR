@@ -1,34 +1,30 @@
 import { atom, useSetAtom } from 'jotai/index';
 import { MinimalFile } from '../../types';
-import { FileViewType } from '../hooks/useSetFolder';
+import { atomWithHash } from 'jotai-location';
+import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 
-export const modalAtom = atom<{
-  file?: MinimalFile;
-  mode: FileViewType;
-  open: boolean;
-}>({
-  open: false,
-});
+export type FileViewType = 'info' | 'comments' | undefined;
+
+export const modalTypeAtom = atomWithHash('m', '', opts);
 
 export const closeModalAtom = atom(null, (get, set) => {
-  set(modalAtom, (a) => ({ ...a, open: false }));
+  //TODO: clear these from URL bar so it's not modalType=&modalId= sitting there empty
+  set(modalTypeAtom, '');
 });
 
 const openModalAtom = atom(
   null,
-  (get, set, args: { file: MinimalFile; mode: FileViewType }) => {
-    set(modalAtom, () => {
-      return { ...args, open: true };
-    });
+  (get, set, args: { fileId: string; mode: FileViewType }) => {
+    set(modalTypeAtom, args.mode + (args.fileId ? '-' + args.fileId : ''));
   },
 );
 
 export const useOpenCommentsModal = () => {
   const open = useSetAtom(openModalAtom);
-  return (file: MinimalFile) => open({ mode: 'comments', file });
+  return (fileId: string) => open({ mode: 'comments', fileId });
 };
 
 export const useOpenFileInfoModal = () => {
   const open = useSetAtom(openModalAtom);
-  return (file: MinimalFile) => open({ mode: 'info', file });
+  return (fileId: string) => open({ mode: 'info', fileId });
 };

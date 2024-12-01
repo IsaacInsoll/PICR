@@ -21,8 +21,7 @@ import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { gql } from '../../../helpers/gql';
 import { useAtomValue } from 'jotai';
 
-export const CommentModal = () => {
-  const { file, open } = useAtomValue(modalAtom);
+export const CommentModal = ({ file }) => {
   const onClose = useSetAtom(closeModalAtom);
 
   const isMobile = useIsSmallScreen();
@@ -30,7 +29,7 @@ export const CommentModal = () => {
   return (
     <>
       <Modal
-        opened={open}
+        opened={true}
         onClose={onClose}
         title={'Comments on ' + file?.name}
         fullScreen={isMobile}

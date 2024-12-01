@@ -32,7 +32,7 @@ export const FileMenu = ({ file }: { file: MinimalFile }) => {
       <Menu.Item
         leftSection={<InfoIcon size="20" />}
         key={2}
-        onClick={() => openFileInfo(file)}
+        onClick={() => openFileInfo(file.id)}
       >
         Details
       </Menu.Item>
@@ -42,7 +42,7 @@ export const FileMenu = ({ file }: { file: MinimalFile }) => {
             file.totalComments == 0 ? <BiComment /> : <BiCommentDetail />
           }
           key={3}
-          onClick={() => openComment(file)}
+          onClick={() => openComment(file.id)}
         >
           <Group gap={8}>
             Comments
