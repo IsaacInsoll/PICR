@@ -50,17 +50,16 @@ export const FileSortSelector = () => {
 
   const handleClick = (v) => {
     if (v && v != type) {
-      setSort((s) => ({
-        ...s,
+      setSort({
         type: v,
         direction: 'Asc',
         // direction: v == 'Filename' ? 'Asc' : 'Desc',
-      }));
+      });
     } else {
-      setSort((s) => ({
-        ...s,
-        direction: s.direction == 'Asc' ? 'Desc' : 'Asc',
-      }));
+      setSort({
+        ...sort,
+        direction: sort.direction == 'Asc' ? 'Desc' : 'Asc',
+      });
     }
     close();
   };
