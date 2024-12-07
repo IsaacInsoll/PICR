@@ -19,6 +19,7 @@ export type Scalars = {
 export type Comment = {
   __typename?: 'Comment';
   comment?: Maybe<Scalars['String']['output']>;
+  file?: Maybe<File>;
   id?: Maybe<Scalars['ID']['output']>;
   systemGenerated: Scalars['Boolean']['output'];
   timestamp: Scalars['DateTime']['output'];
@@ -216,7 +217,8 @@ export type QueryAllFoldersArgs = {
 
 
 export type QueryCommentsArgs = {
-  fileId: Scalars['ID']['input'];
+  fileId?: InputMaybe<Scalars['ID']['input']>;
+  folderId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 

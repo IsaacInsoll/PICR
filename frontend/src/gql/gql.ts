@@ -15,7 +15,6 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n": types.AddCommentDocument,
-    "\n  query commentHistoryQuery($fileId: ID!) {\n    comments(fileId: $fileId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n    }\n  }\n": types.CommentHistoryQueryDocument,
     "\n  mutation editFolder($folderId: ID!, $heroImageId: ID!) {\n    editFolder(folderId: $folderId, heroImageId: $heroImageId) {\n      ...FolderFragment\n      ...HeroImageFragment\n    }\n  }\n": types.EditFolderDocument,
     "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n": types.SearchQueryDocument,
     "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      uuid\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n  }\n": types.MeQueryDocument,
@@ -33,6 +32,7 @@ const documents = {
     "\n  mutation EditAdminUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $password: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editAdminUser(\n      id: $id\n      name: $name\n      username: $username\n      password: $password\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n": types.EditAdminUserMutationDocument,
     "\n    mutation generateThumbnailsQuery($folderId: ID!) {\n        generateThumbnails(folderId: $folderId)\n    }": types.GenerateThumbnailsQueryDocument,
     "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n": types.GenerateZipDocument,
+    "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n      file {\n        ...FileFragment\n      }\n    }\n  }\n": types.CommentHistoryQueryDocument,
     "\n    query ManageFolderQuery($folderId: ID!, $includeParents: Boolean!, $includeChildren: Boolean!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n        }\n        users(folderId:$folderId, includeParents: $includeParents, includeChildren: $includeChildren) {\n           ...UserFragment\n           folderId\n            folder {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n": types.ManageFolderQueryDocument,
     "\n  query readAllFoldersQuery($id: ID!) {\n    allFolders(id: $id) {\n      ...FolderFragment\n    }\n  }\n": types.ReadAllFoldersQueryDocument,
     "\n  query TaskQuery($folderId: ID!) {\n    tasks(folderId: $folderId) {\n      id\n      name\n      step\n      totalSteps\n      status\n    }\n  }\n": types.TaskQueryDocument,
@@ -60,10 +60,6 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n"): (typeof documents)["\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query commentHistoryQuery($fileId: ID!) {\n    comments(fileId: $fileId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  query commentHistoryQuery($fileId: ID!) {\n    comments(fileId: $fileId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -132,6 +128,10 @@ export function graphql(source: "\n    mutation generateThumbnailsQuery($folderI
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n"): (typeof documents)["\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n      file {\n        ...FileFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      user {\n        id\n      }\n      file {\n        ...FileFragment\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

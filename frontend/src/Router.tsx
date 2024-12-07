@@ -10,8 +10,7 @@ const folderRoute = '/:folderId/:fileId?/:fileView?';
 
 export interface FolderRouteParams {
   folderId: string;
-  fileId?: string;
-  fileView?: FileViewType;
+  fileId?: 'manage' | 'activity' | string;
 }
 
 //note: if adding public paths not starting with `/s/:uuid/*` then edit getUUID below as urqlClient.ts depends on it

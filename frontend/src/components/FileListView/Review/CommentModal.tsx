@@ -8,7 +8,7 @@ import {
   Textarea,
   Timeline,
 } from '@mantine/core';
-import { closeModalAtom, modalAtom } from '../../../atoms/modalAtom';
+import { closeModalAtom } from '../../../atoms/modalAtom';
 import { useSetAtom } from 'jotai/index';
 import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
@@ -18,8 +18,7 @@ import { CommentBodyItem } from './CommentBodyItem';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { addCommentMutation } from './AddCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
-import { gql } from '../../../helpers/gql';
-import { useAtomValue } from 'jotai';
+import { commentHistoryQuery } from '../../../urql/queries/commentHistoryQuery';
 
 export const CommentModal = ({ file }) => {
   const onClose = useSetAtom(closeModalAtom);
@@ -98,17 +97,3 @@ const CommentBody = ({ file }: { file: MinimalFile }) => {
     </Stack>
   );
 };
-
-const commentHistoryQuery = gql(/* GraphQL */ `
-  query commentHistoryQuery($fileId: ID!) {
-    comments(fileId: $fileId) {
-      id
-      comment
-      systemGenerated
-      timestamp
-      user {
-        id
-      }
-    }
-  }
-`);

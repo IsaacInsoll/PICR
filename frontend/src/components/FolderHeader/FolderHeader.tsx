@@ -16,6 +16,7 @@ import {
   Title,
 } from '@mantine/core';
 import { PicrTitle } from '../PicrTitle';
+import { LoggedInHeader } from '../Header/LoggedInHeader';
 
 export const FolderHeader = ({
   folder,
@@ -42,6 +43,7 @@ export const PlaceholderFolderHeader = () => {
   const folder = useAtomValue(placeholderFolder);
   return (
     <>
+      <LoggedInHeader folder={folder} />
       <HeaderWrapper
         title={folder?.name ?? 'Loading'}
         subtitle={<Loader color="blue" type="dots" />}

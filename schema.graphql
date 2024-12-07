@@ -5,6 +5,7 @@ scalar BigInt
 
 type Comment {
   comment: String
+  file: File
   id: ID
   systemGenerated: Boolean!
   timestamp: DateTime!
@@ -130,7 +131,7 @@ type Mutation {
 type Query {
   admins: [User!]!
   allFolders(id: ID!): [Folder]!
-  comments(fileId: ID!): [Comment!]!
+  comments(fileId: ID, folderId: ID): [Comment!]!
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
   me: User

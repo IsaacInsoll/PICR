@@ -5,11 +5,12 @@ import { FileIcon, FolderIcon, VideoIcon } from '../../PicrIcons';
 
 export const SmallPreview = ({
   file,
+  height = 48,
 }: {
   file: MinimalFile | MinimalFolder;
+  height: number;
 }) => {
   const isFolder = file.__typename == 'Folder';
-  const height = 48;
   const style: MantineStyleProps = {
     height,
     display: 'flex',

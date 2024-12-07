@@ -1,24 +1,58 @@
 import { Comment } from '../../../../../graphql-types';
-import { Group, Rating, Stack, Text, Timeline } from '@mantine/core';
+import { Box, Code, Group, Rating, Stack, Text, Timeline } from '@mantine/core';
 import { CiLight } from 'react-icons/ci';
 import { prettyDate } from '../Filtering/PrettyDate';
 import { FileFlagBadge } from './FileFlagBadge';
+import { MinimalFile } from '../../../../types';
+import { PicrImage } from '../../PicrImage';
+import { SmallPreview } from '../SmallPreview';
 
 export const CommentBodyItem = ({ comment }: { comment: Comment }) => {
-  const { id, timestamp, userId, systemGenerated } = comment;
+  const { id, timestamp, userId, systemGenerated, file } = comment;
 
   // We could use the 'title' prop on `Item` but it's a huge font size
+  // Bullet should be user avatar
   return (
-    <Timeline.Item bullet={<CiLight size={12} />}>
-      {systemGenerated ? (
-        <CommentAction comment={comment} />
-      ) : (
-        <Text size="sm">{comment.comment}</Text>
-      )}
-      <Text c="dimmed" size="xs" mt={4}>
-        {prettyDate(timestamp)}
-      </Text>
+    <Timeline.Item
+      bullet={<CiLight size={12} />}
+      lineVariant={systemGenerated ? 'dashed' : 'solid'}
+    >
+      <Group>
+        {file ? <FilePreview file={file} /> : null}
+        <Stack style={{ flexGrow: 1 }} gap="xs">
+          {systemGenerated ? (
+            <CommentAction comment={comment} />
+          ) : (
+            <Text size="sm">{comment.comment}</Text>
+          )}
+          <Group>
+            <Code style={{ opacity: 0.33 }}>{file.name}</Code>
+            <Text c="dimmed" size="xs">
+              {prettyDate(timestamp)}
+            </Text>
+          </Group>
+        </Stack>
+      </Group>
     </Timeline.Item>
+  );
+};
+
+const FilePreview = ({ file }: { file: MinimalFile }) => {
+  return (
+    <Box>
+      {
+        file.type == 'Image' ? (
+          <PicrImage
+            file={file}
+            size="sm"
+            style={{
+              width: 96 * (file.imageRatio ?? 1),
+              height: 80,
+            }}
+          />
+        ) : null // <Code>{file.name}</Code>
+      }
+    </Box>
   );
 };
 

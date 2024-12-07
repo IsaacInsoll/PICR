@@ -1,29 +1,44 @@
 import File from '../../models/File';
 import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
-
-import { fileToJSON } from '../helpers/fileToJSON';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
-import { fileInterface } from '../interfaces/fileInterface';
 import { commentType } from '../types/commentType';
 import Comment from '../../models/Comment';
+import { GraphQLError } from 'graphql/error';
+import { subFiles, subFilesMap } from '../helpers/subFiles';
 
 const resolver = async (_, params, context) => {
-  const file = await File.findByPk(params.fileId);
-  const [p, u] = await contextPermissionsForFolder(
-    context,
-    file.folderId,
-    true,
-  );
-  const list = await Comment.findAll({ where: { fileId: file.id } });
-  // return comments;
-  return list.map((x) => {
-    console.log(x);
-    return { ...x.toJSON(), timestamp: x.createdAt };
-  });
+  //TODO: maybe support subfolders?
+  //TODO: pagination?
+  if (!params.fileId && !params.folderId) {
+    throw new GraphQLError('Must specify either fileId or folderId');
+  }
+  //presume file, otherwise try folder
+  const order = [['createdAt', 'DESC']];
+
+  if (params.fileId) {
+    const file = await File.findByPk(params.fileId);
+    const [p, u] = await contextPermissionsForFolder(
+      context,
+      file.folderId,
+      true,
+    );
+    const list = await Comment.findAll({ where: { fileId: file.id }, order });
+    return list.map((x) => {
+      return { ...x.toJSON(), timestamp: x.createdAt };
+    });
+  } else {
+    const folderId = params.folderId;
+    const [p, u] = await contextPermissionsForFolder(context, folderId, true);
+    const files = await subFilesMap(folderId);
+    const list = await Comment.findAll({ where: { folderId }, order });
+    return list.map((x) => {
+      return { ...x.toJSON(), timestamp: x.createdAt, file: files[x.fileId] };
+    });
+  }
 };
 
 export const comments = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(commentType))),
   resolve: resolver,
-  args: { fileId: { type: new GraphQLNonNull(GraphQLID) } },
+  args: { fileId: { type: GraphQLID }, folderId: { type: GraphQLID } },
 };

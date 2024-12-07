@@ -21,6 +21,7 @@ import { RatingFilterBox } from './RatingFilterBox';
 import { CommentsFilterBox } from './CommentsFilterBox';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import {
+  filterAtom,
   resetFilterOptions,
   totalFilterOptionsSelected,
 } from '../../../atoms/filterAtom';
@@ -53,6 +54,7 @@ export const FilteringOptions = ({
 };
 
 const FilterTable = ({ files, totalFiltered }) => {
+  const setFiltering = useSetAtom(filterAtom);
   const { canView } = useCommentPermissions();
   const meta = useMemo(() => metadataForFiltering(files), [files]);
   const totalFilters = useAtomValue(totalFilterOptionsSelected);
@@ -103,6 +105,13 @@ const FilterTable = ({ files, totalFiltered }) => {
                 onClick={() => resetFilters()}
               >
                 Clear {totalFilters > 0 ? totalFilters : ''} Filters
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setFiltering(false)}
+              >
+                Close
               </Button>
             </Group>
           </Table.Td>
