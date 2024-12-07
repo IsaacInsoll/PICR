@@ -15,7 +15,6 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
-import { ParticleBackground } from '../components/ParticleBackground';
 
 export const LoginForm = () => {
   const [user, setUser] = useState('');
@@ -34,48 +33,45 @@ export const LoginForm = () => {
   };
 
   return (
-    <>
-      <ParticleBackground />
-      <Center style={{ height: '100vh' }}>
-        <Container size="md">
-          <Paper radius="md" p="xl" withBorder>
-            <PicrLogo style={{ width: 32, float: 'right' }} />
-            <Text size="lg" fw={500} pb="lg">
-              Login to PICR
-            </Text>
-            <form onSubmit={doLogin}>
-              <Stack>
-                <TextInput
-                  required
-                  label="Username"
-                  value={user}
-                  onChange={(event) => setUser(event.currentTarget.value)}
-                  radius="md"
-                />
+    <Center style={{ height: '100vh' }}>
+      <Container size="md">
+        <Paper radius="md" p="xl" withBorder>
+          <PicrLogo style={{ width: 32, float: 'right' }} />
+          <Text size="lg" fw={500} pb="lg">
+            Login to PICR
+          </Text>
+          <form onSubmit={doLogin}>
+            <Stack>
+              <TextInput
+                required
+                label="Username"
+                value={user}
+                onChange={(event) => setUser(event.currentTarget.value)}
+                radius="md"
+              />
 
-                <PasswordInput
-                  required
-                  label="Password"
-                  placeholder="Your password"
-                  value={pass}
-                  onChange={(event) => {
-                    if (fail) setFail(false);
-                    setPass(event.currentTarget.value);
-                  }}
-                  error={
-                    fail
-                      ? 'Login Failed. Please check your username and password'
-                      : undefined
-                  }
-                  radius="md"
-                />
-                <Button type="submit">Login</Button>
-              </Stack>
-            </form>
-          </Paper>
-        </Container>
-      </Center>
-    </>
+              <PasswordInput
+                required
+                label="Password"
+                placeholder="Your password"
+                value={pass}
+                onChange={(event) => {
+                  if (fail) setFail(false);
+                  setPass(event.currentTarget.value);
+                }}
+                error={
+                  fail
+                    ? 'Login Failed. Please check your username and password'
+                    : undefined
+                }
+                radius="md"
+              />
+              <Button type="submit">Login</Button>
+            </Stack>
+          </form>
+        </Paper>
+      </Container>
+    </Center>
   );
 };
 
