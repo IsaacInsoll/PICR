@@ -35,7 +35,6 @@ export const LoginForm = () => {
 
   return (
     <>
-      <ParticleBackground />
       <Center style={{ height: '100vh' }}>
         <Container size="md">
           <Paper radius="md" p="xl" withBorder>

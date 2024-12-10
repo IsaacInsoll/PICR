@@ -5,6 +5,7 @@ import { PageNotFound } from './pages/PageNotFound';
 import { useMe } from './hooks/useMe';
 import { Settings } from './pages/management/Settings';
 import { FileViewType } from './atoms/modalAtom';
+import { ParticleBackground } from './components/ParticleBackground';
 
 const folderRoute = '/:folderId/:fileId?/:fileView?';
 
@@ -25,7 +26,19 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
           <Route path="/" element={<HomePage />} />
         </>
       ) : null}
-      <Route path="*" element={loggedIn ? <PageNotFound /> : <LoginForm />} />
+      <Route
+        path="*"
+        element={
+          loggedIn ? (
+            <PageNotFound />
+          ) : (
+            <>
+              <ParticleBackground />
+              <LoginForm />
+            </>
+          )
+        }
+      />
     </Routes>
   );
 };
