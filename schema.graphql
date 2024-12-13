@@ -10,6 +10,7 @@ type Comment {
   systemGenerated: Boolean!
   timestamp: DateTime!
   user: User
+  userId: ID
 }
 
 enum CommentPermissions {
@@ -123,7 +124,7 @@ type Mutation {
   auth(password: String!, user: String!): String!
   editAdminUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, password: String, username: String): User!
   editFolder(folderId: ID!, heroImageId: ID): Folder!
-  editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, uuid: String): User!
+  editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, username: String, uuid: String): User!
   generateThumbnails(folderId: ID): Boolean!
   generateZip(folderId: ID): String!
 }
@@ -168,6 +169,7 @@ type User {
   enabled: Boolean
   folder: Folder
   folderId: ID!
+  gravatar: String
   id: ID
   name: String
   username: String

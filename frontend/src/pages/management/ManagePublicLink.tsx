@@ -16,7 +16,7 @@ import { TbCloudUpload, TbDoorExit, TbUsersGroup } from 'react-icons/tb';
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { CommentPermissions } from '../../../../graphql-types';
-import { PublicLinkIcon } from '../../PicrIcons';
+import { PublicLinkIcon, EmailIcon } from '../../PicrIcons';
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
 import { ErrorAlert } from '../../components/ErrorAlert';
 
@@ -33,6 +33,7 @@ export const ManagePublicLink = ({
   const [, mutate] = useMutation(editUserMutation);
 
   const [name, setName] = useState(user?.name ?? '');
+  const [username, setUsername] = useState(user?.username ?? '');
   const [link, setLink] = useState(user?.uuid ?? randomString());
   const [enabled, setEnabled] = useState(user?.enabled ?? true);
   const [commentPermissions, setCommentPermissions] =
@@ -44,6 +45,7 @@ export const ManagePublicLink = ({
   //get folder from user if they exist as it may be a parent or child
   const f: MinimalFolder = user?.folder ?? folder;
 
+  console.log(f);
   const onSave = () => {
     setError('');
     const data: MutationEditUserArgs = {
@@ -53,6 +55,7 @@ export const ManagePublicLink = ({
       enabled,
       folderId: f?.id,
       commentPermissions,
+      username,
     };
     mutate(data).then(({ data, error }) => {
       if (error) {
@@ -79,9 +82,16 @@ export const ManagePublicLink = ({
           leftSection={<TbUsersGroup />}
           placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
           value={name}
-          label="Who is using this link?"
-          description="only you will see this name"
+          label="Name"
+          // description="only you will see this name"
           onChange={(e) => setName(e.target.value)}
+        />
+        <TextInput
+          leftSection={<EmailIcon />}
+          label="Email Address"
+          value={username}
+          description="(optional)"
+          onChange={(e) => setUsername(e.target.value)}
         />
 
         <TextInput

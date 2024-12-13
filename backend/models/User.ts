@@ -22,7 +22,7 @@ export default class User extends Model {
   @Column
   declare hashedPassword: string;
   @Column
-  declare username: string;
+  declare username: string; //email address, also used to log in
 
   // IF PUBLIC LINK
   @Column

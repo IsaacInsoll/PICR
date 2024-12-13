@@ -47,6 +47,7 @@ const resolver = async (_, params, context) => {
 
   user.folderId = params.folderId;
   user.name = params.name;
+  user.username = params.username;
   user.uuid = params.uuid;
   user.enabled = params.enabled;
   user.commentPermissions = params.commentPermissions;
@@ -62,6 +63,7 @@ export const editUser = {
     id: { type: GraphQLID },
     folderId: { type: GraphQLID },
     name: { type: GraphQLString },
+    username: { type: GraphQLString },
     uuid: { type: GraphQLString },
     enabled: { type: GraphQLBoolean },
     commentPermissions: { type: commentPermissionsEnum },

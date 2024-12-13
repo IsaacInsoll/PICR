@@ -15,6 +15,7 @@ import {
   TbUserCog,
   TbVideo,
 } from 'react-icons/tb';
+import { CiAt } from 'react-icons/ci';
 import { IconBaseProps } from 'react-icons/lib/iconBase';
 import { MdOutlineThumbsUpDown } from 'react-icons/md';
 
@@ -46,3 +47,5 @@ export const LogOutIcon = (props: IconBaseProps) => <TbLogout {...props} />;
 
 export const FileIcon = (props: IconBaseProps) => <TbFile {...props} />;
 export const VideoIcon = (props: IconBaseProps) => <TbVideo {...props} />;
+
+export const EmailIcon = (props: IconBaseProps) => <CiAt {...props} />;

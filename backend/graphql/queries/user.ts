@@ -4,6 +4,7 @@ import User from '../../models/User';
 import { getFolder } from '../helpers/getFolder';
 import { GraphQLID, GraphQLNonNull } from 'graphql/index';
 import { userType } from '../types/userType';
+import { userToJSON } from '../helpers/userToJSON';
 
 const resolver = async (_, params, context) => {
   const user = await User.findByPk(params.id);
@@ -14,7 +15,7 @@ const resolver = async (_, params, context) => {
     true,
   );
   if (p !== 'Admin') throw new GraphQLError('You must be an Admin to see this');
-  return { ...user.toJSON(), folder: getFolder(user.folderId) };
+  return { ...userToJSON(user), folder: getFolder(user.folderId) };
 };
 
 export const user = {

@@ -7,9 +7,7 @@ export const commentHistoryQuery = gql(/* GraphQL */ `
       comment
       systemGenerated
       timestamp
-      user {
-        id
-      }
+      userId
       file {
         ...FileFragment
       }

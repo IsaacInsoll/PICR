@@ -17,6 +17,7 @@ import {
 import { userType } from '../types/userType';
 import { GraphQLFieldResolver } from 'graphql/type';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
+import { Op } from 'sequelize';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
@@ -31,7 +32,10 @@ const resolver = async (_, params, context) => {
 
   if (username) {
     const existingUsername = await User.findOne({
-      where: { username: username },
+      where: {
+        username: username,
+        uuid: { [Op.ne]: null },
+      },
     });
     if (existingUsername) {
       if (existingUsername.id != params.id || !params.id) {

@@ -5,12 +5,13 @@ import { Op } from 'sequelize';
 import { getFolder } from '../helpers/getFolder';
 import { GraphQLList, GraphQLNonNull } from 'graphql';
 import { userType } from '../types/userType';
+import { userToJSON } from '../helpers/userToJSON';
 
 const resolver = async (_, params, context) => {
   await requireFullAdmin(context);
   const data = await User.findAll({ where: { uuid: { [Op.is]: null } } });
   return data.map((pl) => {
-    return { ...pl.toJSON(), folder: getFolder(pl.folderId) };
+    return { ...userToJSON(pl), folder: getFolder(pl.folderId) };
   });
 };
 

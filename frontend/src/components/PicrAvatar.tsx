@@ -1,5 +1,5 @@
 import { MinimalSharedFolder } from '../../types';
-import { Avatar, AvatarProps } from '@mantine/core';
+import { Avatar, AvatarProps, Tooltip } from '@mantine/core';
 
 export const PicrAvatar = ({
   user,
@@ -8,5 +8,14 @@ export const PicrAvatar = ({
   user: MinimalSharedFolder;
   props?: AvatarProps;
 }) => {
-  return <Avatar name={user.name} color="initials" {...props} />;
+  return (
+    <Tooltip.Floating label={user.name}>
+      <Avatar
+        name={user.name}
+        src={user.gravatar}
+        color="initials"
+        {...props}
+      />
+    </Tooltip.Floating>
+  );
 };

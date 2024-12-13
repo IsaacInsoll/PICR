@@ -1,11 +1,10 @@
-import { Comment } from '../../../../../graphql-types';
 import { Box, Code, Group, Rating, Stack, Text, Timeline } from '@mantine/core';
-import { CiLight } from 'react-icons/ci';
-import { prettyDate } from '../Filtering/PrettyDate';
-import { FileFlagBadge } from './FileFlagBadge';
+import { Comment } from '../../../../../graphql-types';
 import { MinimalFile } from '../../../../types';
 import { PicrImage } from '../../PicrImage';
-import { SmallPreview } from '../SmallPreview';
+import { prettyDate } from '../Filtering/PrettyDate';
+import { FileFlagBadge } from './FileFlagBadge';
+import { LazyPicrAvatar } from '../../LazyPicrAvatar';
 
 export const CommentBodyItem = ({ comment }: { comment: Comment }) => {
   const { id, timestamp, userId, systemGenerated, file } = comment;
@@ -14,7 +13,7 @@ export const CommentBodyItem = ({ comment }: { comment: Comment }) => {
   // Bullet should be user avatar
   return (
     <Timeline.Item
-      bullet={<CiLight size={12} />}
+      bullet={<LazyPicrAvatar size={24} userId={userId} />}
       lineVariant={systemGenerated ? 'dashed' : 'solid'}
     >
       <Group>

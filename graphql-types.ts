@@ -24,6 +24,7 @@ export type Comment = {
   systemGenerated: Scalars['Boolean']['output'];
   timestamp: Scalars['DateTime']['output'];
   user?: Maybe<User>;
+  userId?: Maybe<Scalars['ID']['output']>;
 };
 
 export enum CommentPermissions {
@@ -181,6 +182,7 @@ export type MutationEditUserArgs = {
   folderId?: InputMaybe<Scalars['ID']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
   uuid?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -288,6 +290,7 @@ export type User = {
   enabled?: Maybe<Scalars['Boolean']['output']>;
   folder?: Maybe<Folder>;
   folderId: Scalars['ID']['output'];
+  gravatar?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;

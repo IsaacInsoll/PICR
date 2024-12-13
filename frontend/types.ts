@@ -1,4 +1,5 @@
 import {
+  CommentPermissions,
   FileFlag,
   FileType,
   ImageMetadataSummary,
@@ -27,8 +28,11 @@ export interface MinimalFile {
   totalComments: number | null;
 }
 export interface MinimalSharedFolder {
-  id: string;
+  id?: string;
   name?: string;
+  username?: string;
+  gravatar?: string;
+  commentPermissions?: CommentPermissions;
   uuid?: string;
   enabled?: boolean;
   folder?: MinimalFolder | null;

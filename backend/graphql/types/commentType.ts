@@ -13,6 +13,7 @@ export const commentType = new GraphQLObjectType({
   name: 'Comment',
   fields: () => ({
     id: { type: GraphQLID },
+    userId: { type: GraphQLID },
     timestamp: { type: new GraphQLNonNull(GraphQLDateTime) },
     comment: { type: GraphQLString },
     user: { type: userType },

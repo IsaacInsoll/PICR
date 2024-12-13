@@ -13,6 +13,7 @@ import {
 } from 'graphql';
 import { userType } from '../types/userType';
 import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
+import { userToJSON } from '../helpers/userToJSON';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await contextPermissionsForFolder(
@@ -40,7 +41,7 @@ const resolver = async (_, params, context) => {
     where: { folderId: { [Op.or]: ids }, uuid: { [Op.not]: null } },
   });
   return data.map((pl) => {
-    return { ...pl.toJSON(), folder: getFolder(pl.folderId) };
+    return { ...userToJSON(pl), folder: getFolder(pl.folderId) };
   });
 };
 

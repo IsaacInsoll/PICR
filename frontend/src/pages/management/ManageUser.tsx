@@ -11,7 +11,7 @@ import {
   Stack,
   TextInput,
 } from '@mantine/core';
-import { TbCloudUpload, TbDoorExit, TbUser } from 'react-icons/tb';
+import { TbCloudUpload, TbUser } from 'react-icons/tb';
 import { FolderSelector } from '../../components/FolderSelector';
 import {
   CommentPermissions,
@@ -20,6 +20,7 @@ import {
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { ErrorAlert } from '../../components/ErrorAlert';
+import { EmailIcon } from '../../PicrIcons';
 
 export const ManageUser = ({
   id,
@@ -36,7 +37,9 @@ export const ManageUser = ({
   const [password, setPassword] = useState<string | null>(null);
   const [enabled, setEnabled] = useState(user?.enabled ?? true);
   const [commentPermissions, setCommentPermissions] =
-    useState<CommentPermissions>(user?.commentPermissions ?? 'edit');
+    useState<CommentPermissions>(
+      user?.commentPermissions ?? CommentPermissions.Edit,
+    );
   const [folder, setFolder] = useState<MinimalFolder>(
     user?.folder ?? { id: '1' },
   );
@@ -82,10 +85,10 @@ export const ManageUser = ({
         />
 
         <TextInput
-          leftSection={<TbUser />}
-          placeholder="EG: kimk"
+          leftSection={<EmailIcon />}
+          placeholder="EG: kimk or kim@k.com"
           value={username}
-          label="Username"
+          label="Email"
           onChange={(e) => setUsername(e.target.value)}
         />
 
