@@ -20,6 +20,7 @@ import { addCommentMutation } from './AddCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { commentHistoryQuery } from '../../../urql/queries/commentHistoryQuery';
 import { CommentHistory } from './CommentHistory';
+import { FilePreview } from '../FilePreview';
 
 export const CommentModal = ({
   file,
@@ -79,6 +80,8 @@ const CommentBody = ({
 
   return (
     <Stack>
+      {/* previously this was `highlight ? <FilePreview file={file} /> : null` so you don't see preview if you came from gallery*/}
+      <FilePreview file={file} />
       <CommentHistory
         comments={comments}
         singleFile={true}

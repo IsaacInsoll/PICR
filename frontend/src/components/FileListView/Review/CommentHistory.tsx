@@ -18,16 +18,22 @@ export const CommentHistory = ({
   comments: Comment[];
 } & CommentHistoryProps) => {
   const filter = useAtomValue(commentFilterAtom);
+  const sort = useAtomValue(commentSortAtom);
   const filteredComments = comments.filter((c) => {
     if (filter == 'all') return true;
     if (filter == 'comments') return !c.systemGenerated;
     if (filter == 'ratings') return c.systemGenerated;
   });
+  const sortedComments =
+    sort == 'desc' ? filteredComments : filteredComments.toReversed();
   return (
     <>
-      <CommentFilter />
+      <Group justify="space-between">
+        <CommentFilter />
+        <CommentSort />
+      </Group>
       <Timeline active={1} bulletSize={24} lineWidth={2}>
-        {filteredComments.map((c) => (
+        {sortedComments.map((c) => (
           <CommentBodyItem comment={c} key={c.id} {...p} />
         ))}
       </Timeline>
@@ -52,6 +58,25 @@ const CommentFilter = () => {
     </Group>
   );
 };
+const CommentSort = () => {
+  const [value, setValue] = useAtom(commentSortAtom);
+  return (
+    <Group>
+      <SegmentedControl
+        value={value}
+        onChange={setValue}
+        size="xs"
+        data={[
+          { label: 'Newest First', value: 'desc' },
+          { label: 'Oldest First', value: 'asc' },
+        ]}
+      />
+    </Group>
+  );
+};
 
 type CommentFilter = 'all' | 'comments' | 'ratings';
 const commentFilterAtom = atom<CommentFilter>('all');
+
+type CommentSort = 'desc' | 'asc';
+const commentSortAtom = atom<CommentSort>('desc');
