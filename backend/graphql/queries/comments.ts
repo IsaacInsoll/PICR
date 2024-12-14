@@ -6,6 +6,7 @@ import Comment from '../../models/Comment';
 import { GraphQLError } from 'graphql/error';
 import { subFiles, subFilesMap } from '../helpers/subFiles';
 import { fileToJSON } from '../helpers/fileToJSON';
+import { Order } from 'sequelize';
 
 const resolver = async (_, params, context) => {
   //TODO: maybe support subfolders?
@@ -14,7 +15,7 @@ const resolver = async (_, params, context) => {
     throw new GraphQLError('Must specify either fileId or folderId');
   }
   //presume file, otherwise try folder
-  const order = [['createdAt', 'DESC']];
+  const order: Order = [['createdAt', 'DESC']];
 
   if (params.fileId) {
     const file = await File.findByPk(params.fileId);
