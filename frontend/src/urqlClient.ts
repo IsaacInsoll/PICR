@@ -15,6 +15,7 @@ const cx = cacheExchange({
     Mutation: {
       // REMINDER: name of individual operation, not the whole mutation you are posting
       editUser: (_, args, cache) => invalidateQueries(cache, 'folder'),
+      addComment: (_, args, cache) => invalidateQueries(cache, 'comments'),
     },
   },
 });

@@ -17,7 +17,6 @@ import { LazyPicrAvatar } from '../../LazyPicrAvatar';
 import { useSetFolder } from '../../../hooks/useSetFolder';
 import { useOpenCommentsModal } from '../../../atoms/modalAtom';
 import { CommentHistoryProps } from './CommentHistory';
-import { FilePreview } from '../FilePreview';
 
 export const CommentBodyItem = ({
   comment,

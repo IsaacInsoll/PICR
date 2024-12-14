@@ -79,13 +79,11 @@ const CommentBody = ({
 
   return (
     <Stack>
-      <ScrollArea>
-        <CommentHistory
-          comments={comments}
-          singleFile={true}
-          highlight={highlight}
-        />
-      </ScrollArea>
+      <CommentHistory
+        comments={comments}
+        singleFile={true}
+        highlight={highlight}
+      />
       {canEdit ? (
         <>
           <Divider />

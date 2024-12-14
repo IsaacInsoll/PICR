@@ -30,7 +30,7 @@ export const FolderActivity = ({ folderId }: { folderId: number }) => {
   const comments = result.data.comments;
 
   return (
-    <Stack>
+    <Stack pt="md">
       <CommentHistory comments={comments} />
     </Stack>
   );
