@@ -19,11 +19,20 @@ import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { addCommentMutation } from './AddCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { commentHistoryQuery } from '../../../urql/queries/commentHistoryQuery';
+import { CommentHistory } from './CommentHistory';
 
-export const CommentModal = ({ file }) => {
+export const CommentModal = ({
+  file,
+  highlight,
+}: {
+  file: MinimalFile;
+  highlight?: string;
+}) => {
   const onClose = useSetAtom(closeModalAtom);
 
   const isMobile = useIsSmallScreen();
+
+  console.log(file.id, highlight);
 
   return (
     <>
@@ -34,14 +43,20 @@ export const CommentModal = ({ file }) => {
         fullScreen={isMobile}
       >
         <Suspense fallback={<LoadingIndicator />}>
-          <CommentBody file={file} />
+          <CommentBody file={file} highlight={highlight} />
         </Suspense>
       </Modal>
     </>
   );
 };
 
-const CommentBody = ({ file }: { file: MinimalFile }) => {
+const CommentBody = ({
+  file,
+  highlight,
+}: {
+  file: MinimalFile;
+  highlight?: string;
+}) => {
   const [result, requery] = useQuery({
     query: commentHistoryQuery,
     variables: { fileId: file.id },
@@ -65,11 +80,11 @@ const CommentBody = ({ file }: { file: MinimalFile }) => {
   return (
     <Stack>
       <ScrollArea>
-        <Timeline active={1} bulletSize={24} lineWidth={2}>
-          {comments.map((c) => (
-            <CommentBodyItem comment={c} />
-          ))}
-        </Timeline>
+        <CommentHistory
+          comments={comments}
+          singleFile={true}
+          highlight={highlight}
+        />
       </ScrollArea>
       {canEdit ? (
         <>

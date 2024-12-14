@@ -5,6 +5,7 @@ import { commentType } from '../types/commentType';
 import Comment from '../../models/Comment';
 import { GraphQLError } from 'graphql/error';
 import { subFiles, subFilesMap } from '../helpers/subFiles';
+import { fileToJSON } from '../helpers/fileToJSON';
 
 const resolver = async (_, params, context) => {
   //TODO: maybe support subfolders?
@@ -24,7 +25,7 @@ const resolver = async (_, params, context) => {
     );
     const list = await Comment.findAll({ where: { fileId: file.id }, order });
     return list.map((x) => {
-      return { ...x.toJSON(), timestamp: x.createdAt };
+      return { ...x.toJSON(), timestamp: x.createdAt, file: file.toJSON() };
     });
   } else {
     const folderId = params.folderId;

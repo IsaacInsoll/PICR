@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useCommentPermissions } from '../hooks/useCommentPermissions';
 import { ScrollArea, Stack, Timeline } from '@mantine/core';
 import { CommentBodyItem } from '../components/FileListView/Review/CommentBodyItem';
+import { CommentHistory } from '../components/FileListView/Review/CommentHistory';
 
 export const FolderActivity = ({ folderId }: { folderId: number }) => {
   const [result, requery] = useQuery({
@@ -30,13 +31,7 @@ export const FolderActivity = ({ folderId }: { folderId: number }) => {
 
   return (
     <Stack>
-      <ScrollArea>
-        <Timeline active={1} bulletSize={24} lineWidth={2}>
-          {comments.map((c) => (
-            <CommentBodyItem comment={c} />
-          ))}
-        </Timeline>
-      </ScrollArea>
+      <CommentHistory comments={comments} />
     </Stack>
   );
 };

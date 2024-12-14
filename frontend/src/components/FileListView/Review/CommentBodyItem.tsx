@@ -1,47 +1,93 @@
-import { Box, Code, Group, Rating, Stack, Text, Timeline } from '@mantine/core';
+import {
+  Box,
+  Code,
+  Group,
+  Paper,
+  Rating,
+  Stack,
+  Text,
+  Timeline,
+} from '@mantine/core';
 import { Comment } from '../../../../../graphql-types';
 import { MinimalFile } from '../../../../types';
 import { PicrImage } from '../../PicrImage';
 import { prettyDate } from '../Filtering/PrettyDate';
 import { FileFlagBadge } from './FileFlagBadge';
 import { LazyPicrAvatar } from '../../LazyPicrAvatar';
+import { useSetFolder } from '../../../hooks/useSetFolder';
+import { useOpenCommentsModal } from '../../../atoms/modalAtom';
+import { CommentHistoryProps } from './CommentHistory';
+import { FilePreview } from '../FilePreview';
 
-export const CommentBodyItem = ({ comment }: { comment: Comment }) => {
+export const CommentBodyItem = ({
+  comment,
+  ...p
+}: { comment: Comment } & CommentHistoryProps) => {
   const { id, timestamp, userId, systemGenerated, file } = comment;
+  const setFolder = useSetFolder();
+  const openCommentModal = useOpenCommentsModal();
+
+  const showFile = file && !p?.singleFile;
+
+  const openFile = () => {
+    setFolder({ id: file.folderId }, file);
+  };
+
+  const isHighlighted = p?.highlight == id;
 
   // We could use the 'title' prop on `Item` but it's a huge font size
-  // Bullet should be user avatar
   return (
     <Timeline.Item
       bullet={<LazyPicrAvatar size={24} userId={userId} />}
       lineVariant={systemGenerated ? 'dashed' : 'solid'}
     >
-      <Group>
-        {file ? <FilePreview file={file} /> : null}
-        <Stack style={{ flexGrow: 1 }} gap="xs">
-          {systemGenerated ? (
-            <CommentAction comment={comment} />
-          ) : (
-            <Text size="sm">{comment.comment}</Text>
-          )}
-          <Group>
-            <Code style={{ opacity: 0.33 }}>{file.name}</Code>
-            <Text c="dimmed" size="xs">
-              {prettyDate(timestamp)}
-            </Text>
-          </Group>
-        </Stack>
-      </Group>
+      <Paper
+        withBorder={isHighlighted}
+        p={isHighlighted ? 'sm' : undefined}
+        shadow={isHighlighted ? 'xl' : undefined}
+      >
+        <Group>
+          {showFile ? (
+            <FilePreview
+              file={file}
+              onClick={() => openCommentModal(file.id, id)}
+            />
+          ) : null}
+          <Stack style={{ flexGrow: 1 }} gap="xs">
+            {systemGenerated ? (
+              <CommentAction comment={comment} />
+            ) : (
+              <Text size="sm">{comment.comment}</Text>
+            )}
+            <Group>
+              {showFile ? (
+                <Code style={{ opacity: 0.33 }}>{file?.name}</Code>
+              ) : null}
+              <Text c="dimmed" size="xs">
+                {prettyDate(timestamp)}
+              </Text>
+            </Group>
+          </Stack>
+        </Group>
+      </Paper>
     </Timeline.Item>
   );
 };
 
-const FilePreview = ({ file }: { file: MinimalFile }) => {
+const FilePreview = ({
+  file,
+  onClick,
+}: {
+  file: MinimalFile;
+  onClick?: () => void;
+}) => {
   return (
     <Box>
       {
         file.type == 'Image' ? (
           <PicrImage
+            onClick={onClick}
+            clickable={true}
             file={file}
             size="sm"
             style={{

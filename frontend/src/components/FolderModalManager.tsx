@@ -7,15 +7,15 @@ import { MinimalFolder } from '../../types';
 export const FolderModalManager = ({ folder }: { folder: MinimalFolder }) => {
   const a = useAtomValue(modalTypeAtom);
   if (!a) return;
-  const [type, id] = a.split('-');
+  const [type, id, highlight] = a.split('-');
+
+  const file = folder.files.find((f) => f.id == id);
   return (
     <>
       {type == 'comments' ? (
-        <CommentModal file={folder.files.find((f) => f.id == id)} />
+        <CommentModal file={file} highlight={highlight} />
       ) : null}
-      {type == 'info' ? (
-        <FileInfoModal file={folder.files.find((f) => f.id == id)} />
-      ) : null}
+      {type == 'info' ? <FileInfoModal file={file} /> : null}
     </>
   );
 };

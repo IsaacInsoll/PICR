@@ -23,8 +23,8 @@ export interface MinimalFile {
   metadata?: ImageMetadataSummary | VideoMetadataSummary | null;
   fileSize?: number | null;
   type: FileType;
-  flag: FileFlag | null;
-  rating: number | null;
+  flag?: FileFlag | null;
+  rating?: number | null;
   totalComments: number | null;
 }
 export interface MinimalSharedFolder {

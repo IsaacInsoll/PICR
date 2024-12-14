@@ -14,14 +14,25 @@ export const closeModalAtom = atom(null, (get, set) => {
 
 const openModalAtom = atom(
   null,
-  (get, set, args: { fileId: string; mode: FileViewType }) => {
-    set(modalTypeAtom, args.mode + (args.fileId ? '-' + args.fileId : ''));
+  (
+    get,
+    set,
+    args: { fileId: string; mode: FileViewType; highlight?: string },
+  ) => {
+    set(
+      modalTypeAtom,
+      args.mode +
+        (args.fileId
+          ? '-' + args.fileId + (args.highlight ? '-' + args.highlight : '')
+          : ''),
+    );
   },
 );
 
 export const useOpenCommentsModal = () => {
   const open = useSetAtom(openModalAtom);
-  return (fileId: string) => open({ mode: 'comments', fileId });
+  return (fileId: string, highlight?: string) =>
+    open({ mode: 'comments', fileId, highlight });
 };
 
 export const useOpenFileInfoModal = () => {
