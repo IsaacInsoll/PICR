@@ -9,24 +9,36 @@ import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 import 'mantine-react-table/styles.css';
 
-import { LoadingOverlay, MantineProvider } from '@mantine/core';
+import { LoadingOverlay, MantineProvider, Portal } from '@mantine/core';
 import { HelmetProvider } from 'react-helmet-async';
 import { Notifications } from '@mantine/notifications';
 import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
-import { Suspense } from 'react';
+import { RefObject, Suspense, useEffect, useRef } from 'react';
 import { PicrErrorBoundary } from './components/PicrErrorBoundary';
+import { atom, useSetAtom } from 'jotai/index';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
   const client = createClient(authKey);
   const themeMode = useAtomValue(themeModeAtom);
 
+  //we put a portal at the start, otherwise Mantine Modals will be hidden behind it
+  const portal = useRef<HTMLDivElement>(null);
+  const setPortal = useSetAtom(lightboxRefAtom);
+
+  useEffect(() => {
+    setPortal(portal);
+  }, [setPortal, portal]);
+
   return (
     <HelmetProvider>
       <URQLProvider value={client}>
         <BrowserRouter>
           <MantineProvider theme={theme} defaultColorScheme={themeMode}>
+            <Portal className="lightbox-portal">
+              <div ref={portal} />
+            </Portal>
             <PicrErrorBoundary>
               <Suspense fallback={<PicrLoadingOverlay />}>
                 <UserProvider />
@@ -52,3 +64,5 @@ const PicrLoadingOverlay = () => {
     />
   );
 };
+
+export const lightboxRefAtom = atom<RefObject<HTMLDivElement> | null>(null);

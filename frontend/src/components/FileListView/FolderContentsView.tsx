@@ -38,7 +38,7 @@ export interface FileListViewStyleComponentProps {
 export const FolderContentsView = ({ folder }) => {
   const files = folder.files;
   const folderId = folder.id;
-  const { fileId, fileView } = useParams<FolderRouteParams>();
+  const { fileId } = useParams<FolderRouteParams>();
   const setFolder = useSetFolder();
   const [view, setView] = useAtom(selectedViewAtom);
   const filtering = useAtomValue(filterAtom);
