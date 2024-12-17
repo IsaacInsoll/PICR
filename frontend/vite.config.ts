@@ -1,10 +1,21 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc';
+import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
+
+const ReactCompilerConfig = {
+  /* ... */
+};
+
 export default defineConfig({
   base: '/',
-  plugins: [react()],
+  plugins: [
+    react({
+      babel: {
+        plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],
+      },
+    }),
+  ],
   build: {
     outDir: '../public',
     emptyOutDir: true,

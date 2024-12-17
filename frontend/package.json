@@ -13,13 +13,13 @@
     "@tsparticles/slim": "^3.7.1",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.20",
-    "@types/react": "^18.2.58",
-    "@types/react-dom": "^18.2.19",
+    "@types/react": "19.0.1",
+    "@types/react-dom": "19.0.2",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/typescript-estree": "^7.0.2",
     "@uidotdev/usehooks": "^2.4.1",
     "@urql/exchange-graphcache": "^6.4.1",
-    "@vitejs/plugin-react-swc": "^3.7.0",
+    "@vitejs/plugin-react": "^4.3.4",
     "blurhash": "^2.0.5",
     "dayjs": "^1.11.11",
     "eslint": "^8.57.0",
@@ -77,9 +77,15 @@
     "@types/cli-progress": "^3.11.5",
     "@types/lodash": "^4.17.0",
     "@types/react-helmet": "^6.1.11",
+    "babel-plugin-react-compiler": "^19.0.0-beta-201e55d-20241215",
+    "eslint-plugin-react-compiler": "^19.0.0-beta-201e55d-20241215",
     "postcss": "^8.4.39",
     "postcss-preset-mantine": "^1.15.0",
     "postcss-simple-vars": "^7.0.1"
   },
-  "proxy": "http://localhost:6900/"
+  "proxy": "http://localhost:6900/",
+  "overrides": {
+    "react-helmet-async": {"react": "^19","react-dom": "^19"},
+    "react-rewards": {"react": "^19","react-dom": "^19"}
+  }
 }
