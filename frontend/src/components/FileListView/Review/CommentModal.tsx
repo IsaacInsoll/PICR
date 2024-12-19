@@ -16,11 +16,12 @@ import { useMutation, useQuery } from 'urql';
 import { MinimalFile } from '../../../../types';
 import { CommentBodyItem } from './CommentBodyItem';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
-import { addCommentMutation } from './AddCommentMutation';
+import { addCommentMutation } from './addCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { commentHistoryQuery } from '../../../urql/queries/commentHistoryQuery';
 import { CommentHistory } from './CommentHistory';
 import { FilePreview } from '../FilePreview';
+import { MutationAddCommentArgs } from '../../../../../graphql-types';
 
 export const CommentModal = ({
   file,
@@ -30,10 +31,7 @@ export const CommentModal = ({
   highlight?: string;
 }) => {
   const onClose = useSetAtom(closeModalAtom);
-
   const isMobile = useIsSmallScreen();
-
-  console.log(file.id, highlight);
 
   return (
     <>
@@ -63,20 +61,8 @@ const CommentBody = ({
     variables: { fileId: file.id },
     requestPolicy: 'cache-and-network',
   });
-  const [, mutate] = useMutation(addCommentMutation);
-  const [text, setText] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const { commentPermissions, readOnly, canEdit } = useCommentPermissions();
 
-  const onSubmit = async () => {
-    setSubmitting(true);
-    const result = await mutate({ id: file?.id, comment: text });
-    await requery();
-    setSubmitting(false);
-    if (!result.error) setText('');
-  };
-
-  const comments = result.data.comments;
+  const comments = result.data?.comments;
 
   return (
     <Stack>
@@ -87,29 +73,58 @@ const CommentBody = ({
         singleFile={true}
         highlight={highlight}
       />
-      {canEdit ? (
-        <>
-          <Divider />
-          <Textarea
-            label="Add Comment"
-            value={text}
-            onChange={(event) => setText(event.currentTarget.value)}
-            autosize
-            minRows={2}
-            maxRows={4}
-          />
-          <Group justify="end">
-            <Button
-              variant="filled"
-              disabled={text.length == 0}
-              onClick={onSubmit}
-              loading={submitting}
-            >
-              Add Comment
-            </Button>
-          </Group>
-        </>
-      ) : null}
+      <AddCommentBox fileId={file.id} onComplete={requery} />
     </Stack>
+  );
+};
+
+const AddCommentBox = ({
+  fileId,
+  folderId,
+  onComplete,
+}: {
+  fileId?: string;
+  folderId?: string;
+  onComplete: () => void;
+}) => {
+  const [, mutate] = useMutation(addCommentMutation);
+  const [submitting, setSubmitting] = useState(false);
+  const { canEdit } = useCommentPermissions();
+  const [text, setText] = useState('');
+
+  if (!canEdit) return null;
+  if (!fileId && !folderId)
+    throw new Error('AddCommentBox requires either a fileId or folderId!');
+
+  const onSubmit = async () => {
+    setSubmitting(true);
+    const payload: MutationAddCommentArgs = { id: fileId, comment: text };
+    const result = await mutate(payload);
+    await onComplete();
+    setSubmitting(false);
+    if (!result.error) setText('');
+  };
+  return (
+    <>
+      <Divider />
+      <Textarea
+        label="Add Comment"
+        value={text}
+        onChange={(event) => setText(event.currentTarget.value)}
+        autosize
+        minRows={2}
+        maxRows={4}
+      />
+      <Group justify="end">
+        <Button
+          variant="filled"
+          disabled={text.length == 0}
+          onClick={onSubmit}
+          loading={submitting}
+        >
+          Add Comment
+        </Button>
+      </Group>
+    </>
   );
 };

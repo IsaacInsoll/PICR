@@ -14,8 +14,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 const documents = {
-    "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n": types.AddCommentDocument,
     "\n  mutation editFolder($folderId: ID!, $heroImageId: ID!) {\n    editFolder(folderId: $folderId, heroImageId: $heroImageId) {\n      ...FolderFragment\n      ...HeroImageFragment\n    }\n  }\n": types.EditFolderDocument,
+    "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n": types.AddCommentDocument,
     "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n": types.SearchQueryDocument,
     "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      uuid\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n  }\n": types.MeQueryDocument,
     "\n        query generateThumbnailsStats($folderId: ID!) {\n            folder(id: $folderId) {\n                ...FolderFragment\n                totalImages\n            }\n        }\n    ": types.GenerateThumbnailsStatsDocument,
@@ -59,11 +59,11 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n"): (typeof documents)["\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n"];
+export function graphql(source: "\n  mutation editFolder($folderId: ID!, $heroImageId: ID!) {\n    editFolder(folderId: $folderId, heroImageId: $heroImageId) {\n      ...FolderFragment\n      ...HeroImageFragment\n    }\n  }\n"): (typeof documents)["\n  mutation editFolder($folderId: ID!, $heroImageId: ID!) {\n    editFolder(folderId: $folderId, heroImageId: $heroImageId) {\n      ...FolderFragment\n      ...HeroImageFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation editFolder($folderId: ID!, $heroImageId: ID!) {\n    editFolder(folderId: $folderId, heroImageId: $heroImageId) {\n      ...FolderFragment\n      ...HeroImageFragment\n    }\n  }\n"): (typeof documents)["\n  mutation editFolder($folderId: ID!, $heroImageId: ID!) {\n    editFolder(folderId: $folderId, heroImageId: $heroImageId) {\n      ...FolderFragment\n      ...HeroImageFragment\n    }\n  }\n"];
+export function graphql(source: "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n"): (typeof documents)["\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
