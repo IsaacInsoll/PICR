@@ -26,7 +26,6 @@ export const sortFiles = (files: MinimalFile[], sort: FileSort) => {
   }
   if (type == 'RecentlyCommented') {
     return files.toSorted((a, b) => {
-      console.log(a.latestComment, b.latestComment);
       if (!a.latestComment || a.latestComment < b.latestComment)
         return positive;
       if (!b.latestComment || a.latestComment > b.latestComment)

@@ -4,9 +4,8 @@ import { prettyDate } from '../Filtering/PrettyDate';
 import { MetadataTableRows } from './metadataTableRows';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { StatCard } from './StatCard';
-import { useAtomValue, useSetAtom } from 'jotai/index';
-import { closeModalAtom, modalAtom } from '../../../atoms/modalAtom';
-import { GalleryImage } from '../GridGallery';
+import { useSetAtom } from 'jotai/index';
+import { closeModalAtom } from '../../../atoms/modalAtom';
 import { FilePreview } from '../FilePreview';
 
 export const FileInfoModal = ({ file }) => {

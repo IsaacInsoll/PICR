@@ -41,7 +41,7 @@ export const SelectedFileView = ({
 
   const toolbarButtons = [
     'download',
-    <LightboxInfoButton file={selectedImage} />,
+    <LightboxInfoButton file={selectedImage} key="InfoButton" />,
     'slideshow',
     'close',
   ];

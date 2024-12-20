@@ -108,18 +108,19 @@ export const ViewFolderBody = () => {
   const actions = [];
 
   if (hasFiles && mode == 'files') {
-    actions.push(<FileSortSelector />);
+    actions.push(<FileSortSelector key="FileSortSelector" />);
     // actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
   }
 
   if (mode === 'files') {
-    actions.push(<FolderOverflowMenu folder={folder} />);
+    actions.push(<FolderOverflowMenu folder={folder} key="Overflow" />);
   } else {
     actions.push(
       <Button
         variant="default"
         onClick={() => setFolder(folder)}
         leftSection={<FolderIcon />}
+        key="BackToFolder"
       >
         Back to folder
       </Button>,
