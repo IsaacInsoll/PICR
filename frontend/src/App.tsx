@@ -14,9 +14,10 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Notifications } from '@mantine/notifications';
 import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
-import { RefObject, Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { PicrErrorBoundary } from './components/PicrErrorBoundary';
-import { atom, useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai/index';
+import { lightboxRefAtom } from './atoms/lightboxRefAtom';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
@@ -64,5 +65,3 @@ const PicrLoadingOverlay = () => {
     />
   );
 };
-
-export const lightboxRefAtom = atom<RefObject<HTMLDivElement> | null>(null);

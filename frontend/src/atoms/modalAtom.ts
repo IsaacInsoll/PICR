@@ -1,7 +1,7 @@
 import { atom, useSetAtom } from 'jotai/index';
-import { MinimalFile } from '../../types';
 import { atomWithHash } from 'jotai-location';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
+import { lightboxControllerRefAtom } from './lightboxControllerRefAtom';
 
 export type FileViewType = 'info' | 'comments' | undefined;
 
@@ -9,6 +9,8 @@ export const modalTypeAtom = atomWithHash('m', '', opts);
 
 export const closeModalAtom = atom(null, (get, set) => {
   //TODO: clear these from URL bar so it's not modalType=&modalId= sitting there empty
+  const lb = get(lightboxControllerRefAtom);
+  lb?.current?.focus();
   set(modalTypeAtom, '');
 });
 

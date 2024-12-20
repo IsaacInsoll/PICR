@@ -14,8 +14,10 @@ import { LightboxFileRating } from './LightboxFileRating';
 import { filesForLightbox } from './filesForLightbox';
 import { LightboxInfoButton } from './LightboxInfoButton';
 import { lightboxPlugins } from './lightboxPlugins';
-import { lightboxRefAtom } from '../../../App';
 import { useAtomValue } from 'jotai';
+import { useSetAtom } from 'jotai/index';
+import { lightboxControllerRefAtom } from '../../../atoms/lightboxControllerRefAtom';
+import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
 
 export const SelectedFileView = ({
   files,
@@ -29,14 +31,11 @@ export const SelectedFileView = ({
   const { fileId, fileView } = useParams();
   const portal = useAtomValue(lightboxRefAtom);
 
-  // set focus to Lightbox if there isn't a popup sub-view
-  // EG: when closing metadata popup this will reallow left/right keyboard keys to change slides
+  const setControllerRef = useSetAtom(lightboxControllerRefAtom);
+
   useEffect(() => {
-    if (!fileView) {
-      console.log('set focus on lightbox');
-      ref.current?.focus();
-    }
-  }, [fileView, ref?.current]);
+    setControllerRef(ref);
+  }, [setControllerRef, ref]);
 
   const setFolder = useSetFolder();
 
