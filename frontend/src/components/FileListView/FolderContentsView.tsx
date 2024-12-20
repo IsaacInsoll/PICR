@@ -16,7 +16,7 @@ import { filterFiles, sortFiles } from '../../helpers/filterFiles';
 import { useAtom, useSetAtom } from 'jotai/index';
 import { Tabs, Transition } from '@mantine/core';
 import { Page } from '../Page';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { FolderRouteParams } from '../../Router';
 import { FileListView } from './FileListView';

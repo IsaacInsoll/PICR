@@ -1,10 +1,9 @@
-import { matchPath, Route, Routes, useNavigate } from 'react-router-dom';
+import { matchPath, Route, Routes, useNavigate } from 'react-router';
 import { LoginForm } from './pages/LoginForm';
 import { ViewFolder } from './pages/ViewFolder';
 import { PageNotFound } from './pages/PageNotFound';
 import { useMe } from './hooks/useMe';
 import { Settings } from './pages/management/Settings';
-import { FileViewType } from './atoms/modalAtom';
 import { ParticleBackground } from './components/ParticleBackground';
 
 const folderRoute = '/:folderId/:fileId?/:fileView?';

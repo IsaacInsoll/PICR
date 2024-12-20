@@ -1,5 +1,5 @@
 import { Group, Tabs, Title } from '@mantine/core';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { ManageUsers } from './ManageUsers';
 import { Page } from '../../components/Page';
 import { ReactNode, Suspense } from 'react';

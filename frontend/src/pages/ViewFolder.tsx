@@ -5,7 +5,7 @@ import {
   PlaceholderFolderHeader,
 } from '../components/FolderHeader/FolderHeader';
 import { folderSubtitle } from '../helpers/folderSubtitle';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { viewFolderQuery } from '../urql/queries/viewFolderQuery';
 import { SubfolderListView } from '../components/SubfolderListView';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';

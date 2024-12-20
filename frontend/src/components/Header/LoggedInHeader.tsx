@@ -7,7 +7,7 @@ import { PicrLogo } from '../../pages/LoginForm';
 import { PicrAvatar } from '../PicrAvatar';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useQuickFind } from '../QuickFind/useQuickFind';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { LogOutIcon, SearchIcon, UserSettingsIcon } from '../../PicrIcons';
 import { useSetAtom } from 'jotai/index';
 import { authKeyAtom } from '../../atoms/authAtom';

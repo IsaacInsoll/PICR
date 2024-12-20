@@ -9,7 +9,7 @@ import { FileListViewStyleComponentProps } from '../FolderContentsView';
 import { theme } from '../../../theme';
 import { useSetFolder } from '../../../hooks/useSetFolder';
 import { useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { LightboxFileRating } from './LightboxFileRating';
 import { filesForLightbox } from './filesForLightbox';
 import { LightboxInfoButton } from './LightboxInfoButton';
