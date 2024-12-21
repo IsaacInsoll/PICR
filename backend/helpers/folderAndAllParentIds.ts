@@ -1,10 +1,10 @@
-import Folder from '../models/Folder';
+import { DBFolder, DBFolderForId } from '../db/picrDb';
 
 export const folderAndAllParentIds = async (
-  folder: Folder,
+  folder: DBFolder,
   rootId?: number,
 ): Promise<string[]> => {
-  let f = folder;
+  let f: DBFolder | undefined = folder;
   const ids = [f.id];
 
   if (rootId && f.id == rootId) {
@@ -16,7 +16,7 @@ export const folderAndAllParentIds = async (
     if (rootId && f.parentId == rootId) {
       return ids;
     }
-    f = await Folder.findByPk(f.parentId);
+    f = await DBFolderForId(f?.parentId);
   }
   if (rootId) {
     throw new Error(

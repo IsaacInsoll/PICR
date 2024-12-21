@@ -1,6 +1,6 @@
 import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
 import { doAuthError } from '../../auth/doAuthError';
-import { AllChildFolderIds } from '../../auth/folderUtils';
+import { AllChildFolderIds } from '../../helpers/folderUtils';
 import File from '../../models/File';
 import { addToQueue } from '../../filesystem/fileQueue';
 import Folder from '../../models/Folder';
@@ -11,11 +11,12 @@ import {
   GraphQLNonNull,
 } from 'graphql/index';
 import { GraphQLFieldResolver } from 'graphql/type';
+import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
   if (p == 'None') doAuthError("You don't have permissions for this folder");
-  const folder = await Folder.findByPk(params.folderId);
+  const folder = await DBFolderForId(params.folderId);
   // console.log(params.folderId, folder);
   const folderIds = await AllChildFolderIds(folder);
   // console.log('folderIds', folderIds);

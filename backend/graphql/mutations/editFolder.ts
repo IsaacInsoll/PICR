@@ -4,11 +4,12 @@ import Folder from '../../models/Folder';
 import File from '../../models/File';
 import { GraphQLID, GraphQLNonNull } from 'graphql/index';
 import { folderType } from '../types/folderType';
+import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
   if (p != 'Admin') doAuthError("You don't have permissions for this folder");
-  const folder = await Folder.findByPk(params.folderId);
+  const folder = await DBFolderForId(params.folderId);
   const heroImage = await File.findByPk(params.heroImageId);
   if (!heroImage) doAuthError('Invalid hero image ID');
   if (heroImage.type != 'Image') doAuthError('Not an image');

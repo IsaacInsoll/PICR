@@ -2,6 +2,9 @@ import Folder from '../../models/Folder';
 import File from '../../models/File';
 import { Op } from 'sequelize';
 import { allSubFoldersRecursive } from './allSubFoldersRecursive';
+import { db } from '../../server';
+import { asc } from 'drizzle-orm';
+import { folderTable } from '../../db/models';
 
 export const heroImageForFolder = async (f: Folder) => {
   // 1. Hero Image set for current folder
@@ -40,9 +43,12 @@ export const heroImageForFolder = async (f: Folder) => {
 };
 
 const heroImageForSubFolder = async (parentIds: string[]) => {
-  const subFolder = await Folder.findOne({
-    where: { parentId: parentIds, exists: true, [Op.not]: { heroImageId: 0 } },
-    order: [['name', 'ASC']],
+  const subFolder = await db.query.folderTable.findFirst({
+    where: (f, { eq, not }) =>
+      eq(f.parentId, parentIds) &&
+      eq(f.exists, true) &&
+      not(eq(f.heroImageId, 0)),
+    orderBy: asc(folderTable.name),
   });
 
   const subHeroImage = subFolder

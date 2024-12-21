@@ -7,7 +7,7 @@ import {
   GraphQLString,
 } from 'graphql';
 import { folderPermissionsType } from './folderPermissionsType';
-import { AllChildFolderIds, ParentFolders } from '../../auth/folderUtils';
+import { AllChildFolderIds, ParentFolders } from '../../helpers/folderUtils';
 import Folder from '../../models/Folder';
 import File from '../../models/File';
 import { fileInterface } from '../interfaces/fileInterface';

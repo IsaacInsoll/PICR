@@ -1,6 +1,6 @@
 import Folder from '../models/Folder';
 import File from '../models/File';
-import { AllChildFolderIds } from '../auth/folderUtils';
+import { AllChildFolderIds } from './folderUtils';
 import crypto from 'crypto';
 import fs from 'fs';
 import archiver from 'archiver';

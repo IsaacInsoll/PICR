@@ -1,7 +1,6 @@
 import Folder from '../models/Folder';
-import File from '../models/File';
-import { contextPermissionsForFolder as perms } from './contextPermissionsForFolder';
-import { FileType } from '../../graphql-types';
+import { contextPermissionsForFolder as perms } from '../auth/contextPermissionsForFolder';
+import { DBFolder, DBFolderForId } from '../db/picrDb';
 
 export const FolderIsUnderFolderId = async (
   child: Folder,
@@ -12,7 +11,7 @@ export const FolderIsUnderFolderId = async (
     return true;
   }
   if (!child.parentId) return false;
-  const childParent = await Folder.findByPk(child.parentId);
+  const childParent = await DBFolderForId(child.parentId);
   if (!childParent) {
     return false;
   }
@@ -26,7 +25,7 @@ export const ParentFolders = async (
   let current = folder;
   const parents: Folder[] = [];
   while (current.parentId) {
-    current = await Folder.findByPk(current.parentId);
+    current = await DBFolderForId(current.parentId);
     if (!current) break; // in case parent folder no longer exists?
     const [permissions] = await perms(context, current.id);
     if (!permissions || permissions === 'None') {
@@ -41,7 +40,7 @@ export const ParentFolders = async (
 // TODO: work out if we need both allSubFoldersRecursive and AllChildFolderIds, they are different implementations of almost the same thing
 // This one is slower as it does multiple queries
 export const AllChildFolderIds = async (
-  folder: Folder,
+  folder: DBFolder,
   // context,
 ): Promise<string[]> => {
   //NOTE: no permissions done here, if you can see parent you can see the children
@@ -59,11 +58,11 @@ export const AllChildFolderIds = async (
   return all;
 };
 
-export const AllChildFiles = async (
-  folder: Folder,
-  type?: FileType,
-): Promise<File[]> => {
-  const folderIds = await AllChildFolderIds(folder);
-  const where = { folderId: folderIds };
-  return File.findAll({ where });
-};
+// export const AllChildFiles = async (
+//   folder: Folder,
+//   type?: FileType,
+// ): Promise<File[]> => {
+//   const folderIds = await AllChildFolderIds(folder);
+//   const where = { folderId: folderIds };
+//   return File.findAll({ where });
+// };

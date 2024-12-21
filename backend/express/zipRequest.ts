@@ -3,15 +3,15 @@ import Folder from '../models/Folder';
 import { zipPath } from '../helpers/zip';
 import { existsSync } from 'node:fs';
 import { zipInProgress } from '../helpers/zipQueue';
+import { DBFolderForId } from '../db/picrDb';
+import { folder } from '../graphql/queries/folder';
 
 export const zipRequest = async (
   req: Request<{ folderId: string; hash: string }>,
   res,
 ) => {
   const { folderId, hash } = req.params;
-  const folder = await Folder.findOne({
-    where: { id: folderId },
-  });
+  const folder = await DBFolderForId(folderId);
   if (!folder) res.sendStatus(404);
   const zPath = zipPath({ folder, hash });
   if (!existsSync(zPath)) {

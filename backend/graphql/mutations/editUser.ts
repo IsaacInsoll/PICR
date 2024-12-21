@@ -11,10 +11,11 @@ import {
 import { userType } from '../types/userType';
 import User from '../../models/User';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
-import { FolderIsUnderFolderId } from '../../auth/folderUtils';
+import { FolderIsUnderFolderId } from '../../helpers/folderUtils';
 import Folder from '../../models/Folder';
 import { Op } from 'sequelize';
 import { log } from '../../logger';
+import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
@@ -23,7 +24,7 @@ const resolver = async (_, params, context) => {
   if (params.id) {
     user = await User.findByPk(params.id);
     if (!user) throw new GraphQLError('No user found for ID: ' + params.id);
-    const userFolder = await Folder.findByPk(user.folderId);
+    const userFolder = await DBFolderForId(user.folderId);
     const folderAllowed = await FolderIsUnderFolderId(
       userFolder,
       params.folderId,

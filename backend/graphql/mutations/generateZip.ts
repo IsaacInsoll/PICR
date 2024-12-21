@@ -10,11 +10,12 @@ import {
   GraphQLString,
 } from 'graphql/index';
 import { GraphQLFieldResolver } from 'graphql/type';
+import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
   if (p == 'None') doAuthError("You don't have permissions for this folder");
-  const folder = await Folder.findByPk(params.folderId);
+  const folder = await DBFolderForId(params.folderId);
   const h = await hashFolderContents(folder);
   addToZipQueue(h);
   return h.hash;
