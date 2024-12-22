@@ -7,6 +7,10 @@ import { GraphQLError } from 'graphql/error';
 import { subFiles, subFilesMap } from '../helpers/subFiles';
 import { fileToJSON } from '../helpers/fileToJSON';
 import { Order } from 'sequelize';
+import { commentTable } from '../../db/models/commentTable';
+import { db } from '../../server';
+import { desc, eq } from 'drizzle-orm';
+import { file } from './file';
 
 const resolver = async (_, params, context) => {
   //TODO: maybe support subfolders?
@@ -14,8 +18,6 @@ const resolver = async (_, params, context) => {
   if (!params.fileId && !params.folderId) {
     throw new GraphQLError('Must specify either fileId or folderId');
   }
-  //presume file, otherwise try folder
-  const order: Order = [['createdAt', 'DESC']];
 
   if (params.fileId) {
     const file = await File.findByPk(params.fileId);
@@ -24,17 +26,29 @@ const resolver = async (_, params, context) => {
       file.folderId,
       true,
     );
-    const list = await Comment.findAll({ where: { fileId: file.id }, order });
+    // const list = await Comment.findAll({ where: { fileId: file.id }, order });
+    const list = await db
+      .select()
+      .from(commentTable)
+      .where(eq(commentTable.fileId, file.id))
+      .orderBy(desc(commentTable.createdAt));
+
     return list.map((x) => {
-      return { ...x.toJSON(), timestamp: x.createdAt, file: file.toJSON() };
+      return { ...x, timestamp: x.createdAt, file: file.toJSON() };
     });
   } else {
     const folderId = params.folderId;
     const [p, u] = await contextPermissionsForFolder(context, folderId, true);
     const files = await subFilesMap(folderId);
-    const list = await Comment.findAll({ where: { folderId }, order });
+
+    const list = await db
+      .select()
+      .from(commentTable)
+      .where(eq(commentTable.folderId, folderId))
+      .orderBy(desc(commentTable.createdAt));
+
     return list.map((x) => {
-      return { ...x.toJSON(), timestamp: x.createdAt, file: files[x.fileId] };
+      return { ...x, timestamp: x.createdAt, file: files[x.fileId] };
     });
   }
 };

@@ -2,12 +2,14 @@ import { GraphQLID, GraphQLNonNull } from 'graphql/type';
 import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
 import { doAuthError } from '../../auth/doAuthError';
 import File from '../../models/File';
-import { CommentFor } from '../../models/Comment';
 import { fileToJSON } from '../helpers/fileToJSON';
 import { GraphQLInt, GraphQLString } from 'graphql';
 import { fileFlagEnum } from '../enums/fileFlagEnum';
 import { fileInterface } from '../interfaces/fileInterface';
 import sanitizeHtml from 'sanitize-html';
+import User from '../../models/User';
+import { db } from '../../server';
+import { commentTable } from '../../db/models/commentTable';
 
 const resolver = async (_, params, context) => {
   const file = await File.findByPk(params.id);
@@ -26,10 +28,7 @@ const resolver = async (_, params, context) => {
   }
 
   if (params.comment) {
-    const realComment = await CommentFor(file, user);
-    realComment.comment = sanitizeHtml(params.comment);
-    // if (params.nickName) realComment.nickName = params.nickName;
-    await realComment.save();
+    await CommentFor(file, user, null, params.comment);
     file.totalComments = file.totalComments + 1;
   }
 
@@ -50,4 +49,28 @@ export const addComment = {
     flag: { type: fileFlagEnum },
     comment: { type: GraphQLString },
   },
+};
+
+const CommentFor = async (
+  file: File,
+  user: User,
+  systemGenerated?: object,
+  comment?: string,
+): Promise<typeof commentTable.$inferSelect> => {
+  const insert: typeof commentTable.$inferInsert = {
+    updatedAt: new Date(),
+    folderId: file.folderId,
+    fileId: file.id,
+    userId: user.id,
+    systemGenerated: false,
+  };
+
+  if (systemGenerated) {
+    insert.systemGenerated = true;
+    insert.comment = JSON.stringify(systemGenerated);
+  } else {
+    insert.comment = sanitizeHtml(comment);
+  }
+  const ret = await db.insert(commentTable).values(insert).returning();
+  return ret[0];
 };

@@ -20,11 +20,3 @@ export const AccessLogRelations = relations(accessLogTable, ({ one }) => ({
     references: [folderTable.id],
   }),
 }));
-
-// todo: this
-// export const createAccessLog = (userId: number, folderId: number) => {
-//   const log = new AccessLog();
-//   log.userId = userId;
-//   log.folderId = folderId;
-//   log.save();
-// };

@@ -29,23 +29,3 @@ export const CommentRelations = relations(commentTable, ({ one }) => ({
     references: [fileTable.id],
   }),
 }));
-
-// todo: this
-// export const CommentFor = async (
-//   file: File,
-//   user: User,
-//   systemGenerated?: object,
-// ) => {
-//   const c = new Comment();
-//   c.folderId = file.folderId;
-//   c.fileId = file.id;
-//   c.userId = user.id;
-//   if (systemGenerated) {
-//     c.systemGenerated = true;
-//     c.comment = JSON.stringify(systemGenerated);
-//     await c.save();
-//   } else {
-//     c.systemGenerated = false;
-//   }
-//   return c;
-// };
