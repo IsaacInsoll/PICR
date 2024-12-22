@@ -5,7 +5,8 @@ import Folder from '../models/Folder';
 import { doAuthError } from './doAuthError';
 import { GraphQLError } from 'graphql/error';
 import User from '../models/User';
-import { FolderIsUnderFolderId } from './folderUtils';
+import { FolderIsUnderFolderId } from '../helpers/folderUtils';
+import { DBFolderForId } from '../db/picrDb';
 
 export const contextPermissionsForFolder = async (
   context: CustomJwtPayload,
@@ -17,7 +18,7 @@ export const contextPermissionsForFolder = async (
     return ['None', null];
   }
 
-  const folder = await Folder.findByPk(folderId);
+  const folder = await DBFolderForId(folderId);
   const user = await getUserFromToken(context);
 
   if (user && folder && folder.exists) {

@@ -3,12 +3,13 @@ import { getUserFromUUID } from '../../auth/contextPermissionsForFolder';
 import { userType } from '../types/userType';
 import Folder from '../../models/Folder';
 import { userToJSON } from '../helpers/userToJSON';
+import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
   const user = await getUserFromToken(context);
   if (user) {
-    const folder = await Folder.findByPk(user.folderId);
-    return { ...userToJSON(user), folder: folder.toJSON() };
+    const folder = await DBFolderForId(user.folderId);
+    return { ...userToJSON(user), folder };
   }
   const publicUser = await getUserFromUUID(context);
   if (!publicUser) return null;

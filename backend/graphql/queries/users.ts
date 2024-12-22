@@ -14,6 +14,7 @@ import {
 import { userType } from '../types/userType';
 import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
 import { userToJSON } from '../helpers/userToJSON';
+import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await contextPermissionsForFolder(
@@ -23,7 +24,7 @@ const resolver = async (_, params, context) => {
   );
   if (p !== 'Admin') throw new GraphQLError('You must be an Admin to see this');
 
-  const folder = await Folder.findByPk(params.folderId);
+  const folder = await DBFolderForId(params.folderId);
 
   const ids = [folder.id];
   if (params.includeParents) {

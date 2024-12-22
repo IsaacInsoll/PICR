@@ -3,7 +3,7 @@ import { doAuthError } from '../../auth/doAuthError';
 import User from '../../models/User';
 import { GraphQLError } from 'graphql/error';
 import Folder from '../../models/Folder';
-import { FolderIsUnderFolderId } from '../../auth/folderUtils';
+import { FolderIsUnderFolderId } from '../../helpers/folderUtils';
 import { hashPassword } from '../../helpers/hashPassword';
 
 import { getFolder } from '../helpers/getFolder';
@@ -18,6 +18,7 @@ import { userType } from '../types/userType';
 import { GraphQLFieldResolver } from 'graphql/type';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 import { Op } from 'sequelize';
+import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
   const [p, u] = await perms(context, params.folderId, true);
@@ -47,7 +48,7 @@ const resolver = async (_, params, context) => {
   if (params.id) {
     user = await User.findByPk(params.id);
     if (!user) throw new GraphQLError('No user found for ID: ' + params.id);
-    const userFolder = await Folder.findByPk(user.folderId);
+    const userFolder = await DBFolderForId(user.folderId);
     if (!(await FolderIsUnderFolderId(userFolder, u.folderId))) {
       throw new GraphQLError(
         'You cant edit this user as they are above your level of access',
