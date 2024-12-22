@@ -1,28 +1,23 @@
-import ServerOptions from '../models/ServerOptions';
-import { lt, valid } from 'semver';
-import { DataType, Sequelize } from 'sequelize-typescript';
-import File from './../models/File';
+import { valid } from 'semver';
+import { serverOptionsTable } from '../db/models/serverOptionsTable';
+import { db } from '../server';
+import { IPicrConfiguration } from '../config/IPicrConfiguration';
 
-export const dbMigrate = async (config, sequelize: Sequelize) => {
-  const [opts, created] = await ServerOptions.findOrBuild({ where: { id: 1 } });
+export const dbMigrate = async (config: IPicrConfiguration) => {
+  const opts = await db.select().from(serverOptionsTable);
 
-  const q = sequelize.getQueryInterface();
-
-  if (valid(opts.lastBootedVersion)) {
-    if (lt(opts.lastBootedVersion, '0.2.5')) {
-      // config.updateMetadata = true;
-      console.log('🖲️ Migrating 0.2.4 ▶️ 0.2.5');
-      // console.log(await q.describeTable('File'));
-      // q.addColumn('File', 'flag', {
-      //   type: DataType.ENUM(...Object.values(FileFlag)),
-      // });
-
-      await File.update(
-        { totalComments: 0 },
-        { where: { totalComments: null } },
-      );
-    }
+  const options = opts[0];
+  if (valid(options?.lastBootedVersion)) {
+    // if (lt(opts.lastBootedVersion, '0.2.5')) {
+    //   console.log('🖲️ Migrating 0.2.4 ▶️ 0.2.5');
   }
-  opts.lastBootedVersion = config.version;
-  await opts.save();
+  if (options) {
+    await db
+      .update(serverOptionsTable)
+      .set({ lastBootedVersion: config.version });
+  } else {
+    await db
+      .insert(serverOptionsTable)
+      .values({ lastBootedVersion: config.version, updatedAt: new Date() });
+  }
 };

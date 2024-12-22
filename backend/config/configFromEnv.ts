@@ -50,7 +50,7 @@ TOKEN_SECRET=${secret}`);
 export const getVersion = () => {
   const p = 'dist/version.txt';
   if (existsSync(p)) {
-    return readFileSync(p, 'utf8');
+    return readFileSync(p, 'utf8').trim();
   } else {
     return 'DEV';
   }

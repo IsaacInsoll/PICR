@@ -27,7 +27,7 @@ export const server = async () => {
 
   try {
     await sequelize.sync(); // build DB
-    await dbMigrate(picrConfig, sequelize);
+    await dbMigrate(picrConfig);
   } catch (e) {
     console.error(
       `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\`. 
