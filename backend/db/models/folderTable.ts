@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, text, varchar } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgTable, varchar } from 'drizzle-orm/pg-core';
 import { fileTable } from './fileTable';
 import { baseColumns } from '../column.helpers';
 import { relations } from 'drizzle-orm';

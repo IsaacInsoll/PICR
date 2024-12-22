@@ -20,7 +20,7 @@ export const userTable = pgTable('Users', {
   uuid: varchar('uuid', { length: 255 }),
 });
 
-export const fileRelations = relations(fileTable, ({ one, many }) => ({
+export const userRelations = relations(fileTable, ({ one, many }) => ({
   folder: one(folderTable, {
     fields: [fileTable.id],
     references: [folderTable.id],

@@ -9,14 +9,14 @@ import { dbMigrate } from './boot/dbMigrate';
 import { log } from './logger';
 import { picrConfig } from './config/picrConfig';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
+import * as schema from './db/models/index';
 
-export let db: NodePgDatabase = null;
+export let db: NodePgDatabase<typeof schema>;
 
 export const server = async () => {
   //TODO: //picrConfig.debugSql prop
   //TODO: sequelise had "pool=50" (default of 5), can't remember why, see ea9feae4
-  db = drizzle(process.env.DATABASE_URL!);
-
+  db = drizzle(process.env.DATABASE_URL!, { schema });
   const sequelize = new Sequelize(picrConfig.databaseUrl, {
     dialect: 'postgres',
     dialectModule: pg,
