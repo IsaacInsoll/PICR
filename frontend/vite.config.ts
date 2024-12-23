@@ -12,7 +12,15 @@ export default defineConfig({
   plugins: [
     react({
       babel: {
-        plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],
+        plugins: [
+          ['babel-plugin-react-compiler', ReactCompilerConfig],
+          [
+            '@locator/babel-jsx/dist',
+            {
+              env: 'development',
+            },
+          ],
+        ],
       },
     }),
   ],

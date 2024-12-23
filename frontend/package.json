@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@locator/babel-jsx": "^0.4.4",
     "@mantine/core": "^7",
     "@mantine/dates": "^7",
     "@mantine/hooks": "^7",
