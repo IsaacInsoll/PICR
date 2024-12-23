@@ -149,6 +149,7 @@ type ServerInfo {
   databaseUrl: String!
   dev: Boolean!
   host: String!
+  latest: String!
   mediaSize: BigInt!
   usePolling: Boolean!
   version: String!
