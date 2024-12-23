@@ -16,6 +16,13 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+export type Branding = {
+  __typename?: 'Branding';
+  id: Scalars['ID']['output'];
+  mode?: Maybe<ThemeMode>;
+  primaryColor?: Maybe<PrimaryColor>;
+};
+
 export type Comment = {
   __typename?: 'Comment';
   comment?: Maybe<Scalars['String']['output']>;
@@ -78,6 +85,7 @@ export enum FileType {
 
 export type Folder = {
   __typename?: 'Folder';
+  branding?: Maybe<Branding>;
   files: Array<FileInterface>;
   heroImage?: Maybe<Image>;
   id: Scalars['ID']['output'];
@@ -196,6 +204,23 @@ export type MutationGenerateZipArgs = {
   folderId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+export enum PrimaryColor {
+  Blue = 'blue',
+  Cyan = 'cyan',
+  Dark = 'dark',
+  Grape = 'grape',
+  Gray = 'gray',
+  Green = 'green',
+  Indigo = 'indigo',
+  Lime = 'lime',
+  Orange = 'orange',
+  Pink = 'pink',
+  Red = 'red',
+  Teal = 'teal',
+  Violet = 'violet',
+  Yellow = 'yellow'
+}
+
 export type Query = {
   __typename?: 'Query';
   admins: Array<User>;
@@ -284,6 +309,12 @@ export type Task = {
   step?: Maybe<Scalars['Int']['output']>;
   totalSteps?: Maybe<Scalars['Int']['output']>;
 };
+
+export enum ThemeMode {
+  Auto = 'auto',
+  Dark = 'dark',
+  Light = 'light'
+}
 
 export type User = {
   __typename?: 'User';

@@ -7,11 +7,16 @@ import {
   GraphQLString,
 } from 'graphql';
 import { folderPermissionsType } from './folderPermissionsType';
-import { AllChildFolderIds, ParentFolders } from '../../auth/folderUtils';
+import {
+  AllChildFolderIds,
+  BrandingForFolder,
+  ParentFolders,
+} from '../../auth/folderUtils';
 import Folder from '../../models/Folder';
 import File from '../../models/File';
 import { fileInterface } from '../interfaces/fileInterface';
 import { imageFileType } from './imageFileType';
+import { brandingType } from './brandingType';
 
 export const folderType = new GraphQLObjectType({
   name: 'Folder',
@@ -38,6 +43,12 @@ export const folderType = new GraphQLObjectType({
       type: imageFileType,
     },
     permissions: { type: folderPermissionsType },
+    branding: {
+      type: brandingType,
+      resolve: async (f: Folder) => {
+        return await BrandingForFolder(f);
+      },
+    },
     totalSize: {
       type: new GraphQLNonNull(GraphQLString), // because GraphQLInt is 32bit which is TINY
       resolve: async (f: Folder, params, context) => {

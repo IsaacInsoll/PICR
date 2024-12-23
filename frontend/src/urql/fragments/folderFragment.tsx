@@ -11,6 +11,11 @@ export const folderFragment = gql(/* GraphQL */ `
       id
       name
     }
+    branding {
+      id
+      mode
+      primaryColor
+    }
     ...HeroImageFragment
   }
 `);

@@ -6,6 +6,7 @@ import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
 import { getFolder } from '../helpers/getFolder';
 import { GraphQLID, GraphQLNonNull } from 'graphql/index';
 import { folderType } from '../types/folderType';
+import { BrandingForFolder } from '../../auth/folderUtils';
 
 const folderResolver: GraphQLFieldResolver<
   Folder,
@@ -13,6 +14,7 @@ const folderResolver: GraphQLFieldResolver<
 > = async (_, params, context, info): Promise<Folder> => {
   const [permissions, u] = await perms(context, params.id, true);
   const f = await getFolder(params.id);
+  // const branding = await BrandingForFolder(f);
   const data = { ...f, permissions };
   createAccessLog(u.id, f.id);
   return data;

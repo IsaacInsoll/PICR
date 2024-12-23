@@ -22,7 +22,7 @@ import { lightboxRefAtom } from './atoms/lightboxRefAtom';
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
   const client = createClient(authKey);
-  const themeMode = useAtomValue(themeModeAtom);
+  const customTheme = useAtomValue(themeModeAtom);
 
   //we put a portal at the start, otherwise Mantine Modals will be hidden behind it
   const portal = useRef<HTMLDivElement>(null);
@@ -36,7 +36,13 @@ const App = () => {
     <HelmetProvider>
       <URQLProvider value={client}>
         <BrowserRouter>
-          <MantineProvider theme={theme} defaultColorScheme={themeMode}>
+          <MantineProvider
+            theme={{ ...theme, primaryColor: customTheme.primaryColor }}
+            forceColorScheme={
+              customTheme.mode == 'auto' ? undefined : customTheme.mode
+            }
+            defaultColorScheme={'auto'}
+          >
             <Portal className="lightbox-portal">
               <div ref={portal} />
             </Portal>

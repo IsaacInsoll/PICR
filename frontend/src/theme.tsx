@@ -8,7 +8,6 @@ export const theme = createTheme({
   fontFamilyMonospace:
     'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace',
   headings: { fontFamily: 'Signika, ' + fonts },
-
   components: {
     // ActionIcon: ActionIcon.extend({
     //   defaultProps: {

@@ -3,6 +3,12 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
+type Branding {
+  id: ID!
+  mode: ThemeMode
+  primaryColor: PrimaryColor
+}
+
 type Comment {
   comment: String
   file: File
@@ -67,6 +73,7 @@ enum FileType {
 }
 
 type Folder {
+  branding: Branding
   files: [FileInterface!]!
   heroImage: Image
   id: ID!
@@ -129,6 +136,23 @@ type Mutation {
   generateZip(folderId: ID): String!
 }
 
+enum PrimaryColor {
+  blue
+  cyan
+  dark
+  grape
+  gray
+  green
+  indigo
+  lime
+  orange
+  pink
+  red
+  teal
+  violet
+  yellow
+}
+
 type Query {
   admins: [User!]!
   allFolders(id: ID!): [Folder]!
@@ -163,6 +187,12 @@ type Task {
   status: String
   step: Int
   totalSteps: Int
+}
+
+enum ThemeMode {
+  auto
+  dark
+  light
 }
 
 type User {

@@ -54,6 +54,12 @@ import { useGenerateZip } from '../hooks/useGenerateZip';
 import { useAtom, useSetAtom } from 'jotai/index';
 import { filterAtom } from '../atoms/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
+import {
+  defaultTheme,
+  IPicrTheme,
+  themeModeAtom,
+} from '../atoms/themeModeAtom';
+import { theme } from '../theme';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -74,6 +80,7 @@ export const ViewFolderBody = () => {
   const { folderId, fileId } = useParams<FolderRouteParams>();
   const baseUrl = useBaseViewFolderURL();
   const setFolder = useSetFolder();
+  const setThemeMode = useSetAtom(themeModeAtom);
 
   const mode: ViewFolderMode = ['manage', 'activity'].includes(fileId)
     ? fileId
@@ -86,6 +93,14 @@ export const ViewFolderBody = () => {
     variables: { folderId },
   });
   useRequery(reQuery, 20000);
+
+  useEffect(() => {
+    const theme: IPicrTheme = {
+      ...defaultTheme,
+      ...data?.data?.folder?.branding,
+    };
+    setThemeMode(theme);
+  }, [data?.data?.folder?.branding, setThemeMode]);
 
   const toggleManaging = useCallback(() => {
     navigate(baseUrl + folderId + (managing ? '' : '/manage'));
