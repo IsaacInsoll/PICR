@@ -6,6 +6,7 @@ import { imageURL } from '../../frontend/src/helpers/imageURL';
 import { Request, Response } from 'express';
 import { joinTitles } from '../helpers/joinTitle';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder';
+import { log } from '../logger';
 
 interface ITemplateFields {
   title: string;
@@ -16,6 +17,11 @@ interface ITemplateFields {
 // Build basic template, mainly so there are metadata fields if sharing this link online so you get a 'rich link'
 export const picrTemplate = async (req: Request, res: Response) => {
   let fields: ITemplateFields = fieldDefaults;
+
+  //FB messenger was adding `%E2%81%A9` to outgoing links so we need to strip that. - observed december 25th, 2024
+  if (req.path.endsWith('%E2%81%A9')) {
+    return res.redirect(req.path.replace('%E2%81%A9', ''));
+  }
 
   // Replace metadata on public links
   const sub = req.path.split('/');
