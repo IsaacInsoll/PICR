@@ -1,8 +1,12 @@
 import Folder from '../models/Folder';
 import File from '../models/File';
 import { contextPermissionsForFolder as perms } from './contextPermissionsForFolder';
-import { FileType, PrimaryColor, ThemeMode } from '../../graphql-types';
-import { folder } from '../graphql/queries/folder';
+import {
+  Branding as BrandingType,
+  FileType,
+  PrimaryColor,
+  ThemeMode,
+} from '../../graphql-types';
 import Branding from '../models/Branding';
 
 export const FolderIsUnderFolderId = async (
@@ -70,7 +74,9 @@ export const AllChildFiles = async (
   return File.findAll({ where });
 };
 
-export const BrandingForFolder = async (folder: Folder): Promise<Branding> => {
+export const BrandingForFolder = async (
+  folder: Folder,
+): Promise<BrandingType> => {
   let f = folder;
   while (f) {
     const branding = await Branding.findOne({ where: { folderId: f.id } });
@@ -80,5 +86,10 @@ export const BrandingForFolder = async (folder: Folder): Promise<Branding> => {
       f = await Folder.findByPk(f.parentId);
     }
   }
-  return { id: 0, mode: ThemeMode.Auto, primaryColor: PrimaryColor.Blue };
+  return {
+    folderId: '',
+    id: '',
+    mode: ThemeMode.Auto,
+    primaryColor: PrimaryColor.Blue,
+  };
 };
