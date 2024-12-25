@@ -1,14 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import setupLocatorUI from '@locator/runtime';
 
 import App from './App';
-
-// locator.js init (for improved DX)
-if (process.env.NODE_ENV === 'development') {
-  console.log('setting up Locator.js');
-  setupLocatorUI();
-}
 
 const element = document.getElementById('root');
 if (element) {
