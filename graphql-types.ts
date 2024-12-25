@@ -18,7 +18,10 @@ export type Scalars = {
 
 export type Branding = {
   __typename?: 'Branding';
+  folder?: Maybe<Folder>;
+  folderId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
+  logoUrl?: Maybe<Scalars['String']['output']>;
   mode?: Maybe<ThemeMode>;
   primaryColor?: Maybe<PrimaryColor>;
 };
@@ -225,6 +228,7 @@ export type Query = {
   __typename?: 'Query';
   admins: Array<User>;
   allFolders: Array<Maybe<Folder>>;
+  brandings: Array<Branding>;
   comments: Array<Comment>;
   file: FileInterface;
   folder: Folder;

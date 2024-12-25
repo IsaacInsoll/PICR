@@ -1,15 +1,10 @@
 import { atom } from 'jotai';
-import { MantineColorScheme, MantineThemeColors } from '@mantine/core';
-import { DefaultMantineColor } from '@mantine/core/lib/core/MantineProvider/theme.types';
+import { Branding, PrimaryColor, ThemeMode } from '../../../graphql-types';
 
-export interface IPicrTheme {
-  mode: MantineColorScheme;
-  primaryColor: DefaultMantineColor;
-}
-
-export const defaultTheme: IPicrTheme = {
-  mode: 'auto',
-  primaryColor: 'blue',
+export const defaultTheme: Branding = {
+  id: '',
+  mode: ThemeMode.Auto,
+  primaryColor: PrimaryColor.Blue,
 };
 
-export const themeModeAtom = atom<IPicrTheme>(defaultTheme);
+export const themeModeAtom = atom<Branding>(defaultTheme);

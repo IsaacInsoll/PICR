@@ -91,7 +91,7 @@ const FilterTable = ({ files, totalFiltered }) => {
             <Group>
               <Box flex={1}>
                 {totalFilters > 0 ? (
-                  <Alert variant="light" color="blue" icon={<InfoIcon />} p={8}>
+                  <Alert variant="light" icon={<InfoIcon />} p={8}>
                     {totalFiltered == files.length
                       ? 'Showing all files'
                       : `Showing ${totalFiltered} of ${files.length} files`}

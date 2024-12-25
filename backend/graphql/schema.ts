@@ -31,12 +31,14 @@ import { searchFolders } from './queries/searchFolders';
 import { searchFiles } from './queries/searchFiles';
 import { editFolder } from './mutations/editFolder';
 import { brandingType } from './types/brandingType';
+import { brandings } from './queries/brandings';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
     /* General Purpose */
     admins,
     allFolders,
+    brandings,
     comments,
     file,
     /* Admin Only */

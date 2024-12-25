@@ -1,7 +1,8 @@
 import Folder from '../models/Folder';
 import File from '../models/File';
 import { contextPermissionsForFolder as perms } from './contextPermissionsForFolder';
-import { FileType, ThemeMode } from '../../graphql-types';
+import { FileType, PrimaryColor, ThemeMode } from '../../graphql-types';
+import { folder } from '../graphql/queries/folder';
 import Branding from '../models/Branding';
 
 export const FolderIsUnderFolderId = async (
@@ -79,5 +80,5 @@ export const BrandingForFolder = async (folder: Folder): Promise<Branding> => {
       f = await Folder.findByPk(f.parentId);
     }
   }
-  return { id: 0, mode: ThemeMode.Auto, primaryColor: 'blue' };
+  return { id: 0, mode: ThemeMode.Auto, primaryColor: PrimaryColor.Blue };
 };

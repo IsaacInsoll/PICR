@@ -4,7 +4,10 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 scalar BigInt
 
 type Branding {
+  folder: Folder
+  folderId: ID!
   id: ID!
+  logoUrl: String
   mode: ThemeMode
   primaryColor: PrimaryColor
 }
@@ -156,6 +159,7 @@ enum PrimaryColor {
 type Query {
   admins: [User!]!
   allFolders(id: ID!): [Folder]!
+  brandings: [Branding!]!
   comments(fileId: ID, folderId: ID): [Comment!]!
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!

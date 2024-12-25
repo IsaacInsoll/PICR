@@ -46,7 +46,7 @@ export const PlaceholderFolderHeader = () => {
       <LoggedInHeader folder={folder} />
       <HeaderWrapper
         title={folder?.name ?? 'Loading'}
-        subtitle={<Loader color="blue" type="dots" />}
+        subtitle={<Loader type="dots" />}
         parent={folder?.parents}
       />
       <Page>

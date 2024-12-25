@@ -70,25 +70,6 @@ export const ImageFeed = ({
   );
 };
 
-// const LoadMoreBox = ({ onLoadMore }: { onLoadMore: () => void }) => {
-//   const { ref, inView } = useInView({ threshold: 0 });
-//   console.log(inView ? 'inviewport' : 'not inviewport');
-//   useEffect(() => {
-//     if (inView) {
-//       console.log('loading more');
-//       onLoadMore();
-//     }
-//   }, [inView]);
-//   return (
-//     <Stack>
-//       <Box style={{ height: 1 }} ref={ref} />
-//       <Group justifyContent="center">
-//         <Loader color="blue" />
-//       </Group>
-//     </Stack>
-//   );
-// };
-
 //I've done a bunch of 'detect if image loaded' because it feels shit without it
 const FeedItem = ({
   file,

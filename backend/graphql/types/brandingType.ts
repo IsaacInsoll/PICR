@@ -1,14 +1,11 @@
 import {
-  GraphQLBoolean,
   GraphQLID,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { userType } from './userType';
-import { GraphQLDateTime } from 'graphql-scalars';
-import { fileType } from './fileType';
 import { primaryColorEnum, themeModeEnum } from '../enums/themeModeEnum';
+import { folderType } from './folderType';
 
 export const brandingType = new GraphQLObjectType({
   name: 'Branding',
@@ -16,5 +13,8 @@ export const brandingType = new GraphQLObjectType({
     id: { type: new GraphQLNonNull(GraphQLID) },
     mode: { type: themeModeEnum },
     primaryColor: { type: primaryColorEnum },
+    logoUrl: { type: GraphQLString },
+    folderId: { type: new GraphQLNonNull(GraphQLID) },
+    folder: { type: folderType },
   }),
 });

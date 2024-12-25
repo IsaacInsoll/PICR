@@ -6,9 +6,6 @@ export const LoadingIndicator = ({
   size?: 'large' | 'small' | undefined;
 }) => {
   return (
-    <Loader
-      color="blue"
-      size={size == 'large' ? 32 : size == 'small' ? 16 : undefined}
-    />
+    <Loader size={size == 'large' ? 32 : size == 'small' ? 16 : undefined} />
   );
 };

@@ -20,8 +20,6 @@ export default class Branding extends Model {
   @Column({ type: DataType.ENUM(...Object.values(PrimaryColor)) })
   declare primaryColor: PrimaryColor;
 
-  //
-  // @Column({ type: DataType.TEXT })
-  // declare comment: string;
-  //
+  @Column
+  declare logoUrl: string;
 }

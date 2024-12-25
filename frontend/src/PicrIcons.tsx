@@ -12,6 +12,7 @@ import {
   TbSearch,
   TbThumbDown,
   TbThumbUp,
+  TbTypeface,
   TbUserCog,
   TbVideo,
 } from 'react-icons/tb';
@@ -49,3 +50,4 @@ export const FileIcon = (props: IconBaseProps) => <TbFile {...props} />;
 export const VideoIcon = (props: IconBaseProps) => <TbVideo {...props} />;
 
 export const EmailIcon = (props: IconBaseProps) => <CiAt {...props} />;
+export const BrandingIcon = (props: IconBaseProps) => <TbTypeface {...props} />;

@@ -7,24 +7,12 @@ import {
 import { folderSubtitle } from '../helpers/folderSubtitle';
 import { useNavigate, useParams } from 'react-router';
 import { viewFolderQuery } from '../urql/queries/viewFolderQuery';
-import { SubfolderListView } from '../components/SubfolderListView';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
 import { ManagePublicLinks } from './management/ManagePublicLinks';
 import { TaskSummary } from '../components/TaskSummary';
-import { FilterToggle } from '../components/FilterToggle';
-import { DownloadZipButton } from '../components/DownloadZipButton';
-import {
-  ActionIcon,
-  Burger,
-  Button,
-  Center,
-  Group,
-  Menu,
-  Text,
-  Title,
-} from '@mantine/core';
-import { TbDots, TbHome, TbSettings } from 'react-icons/tb';
+import { ActionIcon, Button, Center, Group, Menu, Title } from '@mantine/core';
+import { TbDots } from 'react-icons/tb';
 import { useSetFolder } from '../hooks/useSetFolder';
 import { FolderModalManager } from '../components/FolderModalManager';
 import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
@@ -33,33 +21,19 @@ import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 import { QuickFind } from '../components/QuickFind/QuickFind';
 import { useRequery } from '../hooks/useRequery';
 import { LoggedInHeader } from '../components/Header/LoggedInHeader';
-import { useIsMobile } from '../hooks/useIsMobile';
 import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
 import { useCommentPermissions } from '../hooks/useCommentPermissions';
 import { MinimalFolder } from '../../types';
-import { PicrAvatar } from '../components/PicrAvatar';
-import {
-  DownloadIcon,
-  FilterIcon,
-  FolderIcon,
-  LogOutIcon,
-  SearchIcon,
-  UserSettingsIcon,
-} from '../PicrIcons';
-import { useDisclosure } from '@mantine/hooks';
+import { DownloadIcon, FilterIcon, FolderIcon } from '../PicrIcons';
 import { FolderRouteParams } from '../Router';
 import { BiComment } from 'react-icons/bi';
 import { useGenerateZip } from '../hooks/useGenerateZip';
-import { useAtom, useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai/index';
 import { filterAtom } from '../atoms/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
-import {
-  defaultTheme,
-  IPicrTheme,
-  themeModeAtom,
-} from '../atoms/themeModeAtom';
-import { theme } from '../theme';
+import { defaultTheme, themeModeAtom } from '../atoms/themeModeAtom';
+import { Branding } from '../../../graphql-types';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -95,7 +69,7 @@ export const ViewFolderBody = () => {
   useRequery(reQuery, 20000);
 
   useEffect(() => {
-    const theme: IPicrTheme = {
+    const theme: Branding = {
       ...defaultTheme,
       ...data?.data?.folder?.branding,
     };
