@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@locator/babel-jsx": "^0.4.4",
     "@mantine/core": "^7",
     "@mantine/dates": "^7",
     "@mantine/hooks": "^7",
@@ -74,6 +73,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@locator/babel-jsx": "^0.4.4",
     "@locator/runtime": "^0.4.4",
     "@types/cli-progress": "^3.11.5",
     "@types/lodash": "^4.17.0",

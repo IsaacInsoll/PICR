@@ -6,6 +6,7 @@ import App from './App';
 
 // locator.js init (for improved DX)
 if (process.env.NODE_ENV === 'development') {
+  console.log('setting up Locator.js');
   setupLocatorUI();
 }
 
