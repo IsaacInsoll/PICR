@@ -33,7 +33,14 @@ const PrimaryColorChip = ({ color }: { color: DefaultMantineColor }) => {
 };
 
 const ModeChip = ({ mode }: { mode: ThemeMode }) => {
-  return <Badge color={modeMap[mode]}>{mode}</Badge>;
+  return (
+    <Badge
+      color={modeMap[mode]}
+      variant={mode == 'auto' ? 'default' : undefined}
+    >
+      {mode}
+    </Badge>
+  );
 };
 
 const modeMap = {

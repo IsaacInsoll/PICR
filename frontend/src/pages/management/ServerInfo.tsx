@@ -10,7 +10,6 @@ import { LoadingIndicator } from '../../components/LoadingIndicator';
 export const ServerInfo = () => {
   const [result] = useQuery({ query: serverInfoQuery });
   const data = result?.data?.serverInfo;
-  console.log(data);
   return (
     <Table striped highlightOnHover withTableBorder>
       <TableHeader />
