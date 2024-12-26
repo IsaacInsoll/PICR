@@ -81,7 +81,7 @@ export const BrandingForFolder = async (
   while (f) {
     const branding = await Branding.findOne({ where: { folderId: f.id } });
     if (branding) {
-      return branding.toJSON();
+      return { ...branding.toJSON(), folder: f };
     } else {
       f = await Folder.findByPk(f.parentId);
     }

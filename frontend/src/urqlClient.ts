@@ -14,8 +14,12 @@ const cx = cacheExchange({
   updates: {
     Mutation: {
       // REMINDER: name of individual operation, not the whole mutation you are posting
-      editUser: (_, args, cache) => invalidateQueries(cache, 'folder'),
-      addComment: (_, args, cache) => invalidateQueries(cache, 'comments'),
+      editUser: (_, args, cache) => invalidateQueries(cache, ['folder']),
+      addComment: (_, args, cache) => invalidateQueries(cache, ['comments']),
+      deleteBranding: (_, args, cache) =>
+        invalidateQueries(cache, ['brandings', 'folder']),
+      editBranding: (_, args, cache) =>
+        invalidateQueries(cache, ['brandings', 'folder']),
     },
   },
 });

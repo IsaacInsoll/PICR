@@ -8,8 +8,9 @@ export const viewBrandingsQuery = gql(/*GraphQL*/ `
             logoUrl
             primaryColor
             mode
+            folderId
             folder {
-               ...FolderFragment
+               ...MinimumFolderFragment
             }
         }
     }

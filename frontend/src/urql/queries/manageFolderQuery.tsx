@@ -9,7 +9,7 @@ export const manageFolderQuery = gql(/*GraphQL*/ `
            ...UserFragment
            folderId
             folder {
-                ...MinimumFolderFragment
+                ...FolderFragment
             }
         }
     }

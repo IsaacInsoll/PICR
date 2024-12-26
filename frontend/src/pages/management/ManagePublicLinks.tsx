@@ -6,7 +6,7 @@ import { ManagePublicLink } from './ManagePublicLink';
 import { MinimalFolder, MinimalSharedFolder } from '../../../types';
 import { VscDebugDisconnect } from 'react-icons/vsc';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
-import { Button, Divider, Group, Stack, Switch } from '@mantine/core';
+import { Alert, Button, Divider, Group, Stack, Switch } from '@mantine/core';
 import { PicrColumns, PicrDataGrid } from '../../components/PicrDataGrid';
 import { EmptyPlaceholder } from '../EmptyPlaceholder';
 import { PublicLinkIcon } from '../../PicrIcons';

@@ -147,7 +147,9 @@ export type Mutation = {
   __typename?: 'Mutation';
   addComment: FileInterface;
   auth: Scalars['String']['output'];
+  deleteBranding: Folder;
   editAdminUser: User;
+  editBranding: Folder;
   editFolder: Folder;
   editUser: User;
   generateThumbnails: Scalars['Boolean']['output'];
@@ -170,6 +172,11 @@ export type MutationAuthArgs = {
 };
 
 
+export type MutationDeleteBrandingArgs = {
+  folderId: Scalars['ID']['input'];
+};
+
+
 export type MutationEditAdminUserArgs = {
   commentPermissions?: InputMaybe<CommentPermissions>;
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -178,6 +185,14 @@ export type MutationEditAdminUserArgs = {
   name?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationEditBrandingArgs = {
+  folderId: Scalars['ID']['input'];
+  logoUrl?: InputMaybe<Scalars['String']['input']>;
+  mode?: InputMaybe<ThemeMode>;
+  primaryColor?: InputMaybe<PrimaryColor>;
 };
 
 

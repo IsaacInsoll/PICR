@@ -32,6 +32,8 @@ import { searchFiles } from './queries/searchFiles';
 import { editFolder } from './mutations/editFolder';
 import { brandingType } from './types/brandingType';
 import { brandings } from './queries/brandings';
+import { editBranding } from './mutations/editBranding';
+import { deleteBranding } from './mutations/deleteBranding';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -64,6 +66,8 @@ const mutations = new GraphQLObjectType({
     generateThumbnails,
     generateZip,
     editFolder,
+    editBranding,
+    deleteBranding,
   }),
 });
 

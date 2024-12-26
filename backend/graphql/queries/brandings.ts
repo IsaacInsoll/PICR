@@ -14,7 +14,7 @@ const resolver = async (_, params, context, schema) => {
   return list.map((b) => {
     return {
       ...b.toJSON(),
-      folder: folders.find((f) => f.id == b.folderId).toJSON(),
+      folder: folders.find((f) => f.id == b.folderId)?.toJSON(),
     };
   });
 };

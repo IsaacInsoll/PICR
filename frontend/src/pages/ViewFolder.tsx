@@ -1,5 +1,5 @@
 import { useQuery } from 'urql';
-import { Suspense, useCallback, useEffect } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import {
   FolderHeader,
   PlaceholderFolderHeader,
@@ -11,7 +11,15 @@ import { FolderContentsView } from '../components/FileListView/FolderContentsVie
 import QueryFeedback from '../components/QueryFeedback';
 import { ManagePublicLinks } from './management/ManagePublicLinks';
 import { TaskSummary } from '../components/TaskSummary';
-import { ActionIcon, Button, Center, Group, Menu, Title } from '@mantine/core';
+import {
+  ActionIcon,
+  Alert,
+  Button,
+  Center,
+  Group,
+  Menu,
+  Title,
+} from '@mantine/core';
 import { TbDots } from 'react-icons/tb';
 import { useSetFolder } from '../hooks/useSetFolder';
 import { FolderModalManager } from '../components/FolderModalManager';
@@ -25,15 +33,22 @@ import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
 import { useCommentPermissions } from '../hooks/useCommentPermissions';
 import { MinimalFolder } from '../../types';
-import { DownloadIcon, FilterIcon, FolderIcon } from '../PicrIcons';
+import {
+  BrandingIcon,
+  DownloadIcon,
+  FilterIcon,
+  FolderIcon,
+} from '../PicrIcons';
 import { FolderRouteParams } from '../Router';
 import { BiComment } from 'react-icons/bi';
 import { useGenerateZip } from '../hooks/useGenerateZip';
 import { useSetAtom } from 'jotai/index';
 import { filterAtom } from '../atoms/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
-import { defaultTheme, themeModeAtom } from '../atoms/themeModeAtom';
+import { defaultBranding, themeModeAtom } from '../atoms/themeModeAtom';
 import { Branding } from '../../../graphql-types';
+import { folder } from '../../../backend/graphql/queries/folder';
+import { BrandingModal } from './management/BrandingModal';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -70,7 +85,7 @@ export const ViewFolderBody = () => {
 
   useEffect(() => {
     const theme: Branding = {
-      ...defaultTheme,
+      ...defaultBranding,
       ...data?.data?.folder?.branding,
     };
     setThemeMode(theme);
@@ -151,16 +166,7 @@ export const ViewFolderBody = () => {
             }
           >
             {managing ? (
-              <Page>
-                <ManagePublicLinks
-                  folder={folder}
-                  onClose={toggleManaging}
-                  relations="options"
-                >
-                  <GenerateThumbnailsButton folderId={folder.id} />
-                  <Button onClick={toggleManaging}>Close Settings</Button>
-                </ManagePublicLinks>
-              </Page>
+              <ManageFolder folder={folder} toggleManaging={toggleManaging} />
             ) : null}
             {activity ? (
               <Page>
@@ -176,6 +182,40 @@ export const ViewFolderBody = () => {
           </Suspense>
         </>
       )}
+    </>
+  );
+};
+
+const ManageFolder = ({ folder, toggleManaging }) => {
+  const folderHasBranding = folder.branding.folderId == folder.id;
+  return (
+    <Page>
+      <ManagePublicLinks folder={folder} relations="options">
+        <GenerateThumbnailsButton folderId={folder.id} />
+        <BrandingButton folder={folder} />
+        <Button onClick={toggleManaging}>Close Settings</Button>
+      </ManagePublicLinks>
+    </Page>
+  );
+};
+
+const BrandingButton = ({ folder }) => {
+  const folderHasBranding = folder.branding.folderId == folder.id;
+  // it might be a branding from parent so lets set sensible defaults if so
+  const branding: Branding = { ...folder.branding, folderId: folder.id };
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      {open ? (
+        <BrandingModal branding={branding} onClose={() => setOpen(false)} />
+      ) : null}
+      <Button
+        variant="default"
+        leftSection={<BrandingIcon />}
+        onClick={() => setOpen(true)}
+      >
+        {folderHasBranding ? 'Edit Branding' : 'Add Branding'}
+      </Button>
     </>
   );
 };
