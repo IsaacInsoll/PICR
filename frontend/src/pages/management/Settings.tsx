@@ -7,6 +7,7 @@ import { PicrLogo } from '../LoginForm';
 import { ServerInfo } from './ServerInfo';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import {
+  AccessLogsIcon,
   BrandingIcon,
   InfoIcon,
   PublicLinkIcon,
@@ -20,6 +21,7 @@ import { PicrTitle } from '../../components/PicrTitle';
 import { QuickFind } from '../../components/QuickFind/QuickFind';
 import { LoggedInHeader } from '../../components/Header/LoggedInHeader';
 import { ManageBrandings } from './ManageBrandings';
+import { AccessLogs } from './AccessLogs/AccessLogs';
 
 export const Settings = () => {
   const { tab } = useParams();
@@ -65,6 +67,13 @@ export const Settings = () => {
               />
             </Suspense>
           </Tabs.Panel>
+          <Tabs.Panel value="logs">
+            <Tips type="Logs" />
+            <Suspense fallback={<LoadingIndicator />}>
+              <PicrTitle title={['Logs', title]} />
+              <AccessLogs folderId={me?.folderId} includeChildren={true} />
+            </Suspense>
+          </Tabs.Panel>
           <Tabs.Panel value="branding">
             <Tips type="Branding" />
             <Suspense fallback={<LoadingIndicator />}>
@@ -103,6 +112,7 @@ interface SettingsTab {
 const tabList: SettingsTab[] = [
   { title: 'Users', slug: 'users', icon: <UserSettingsIcon /> },
   { title: 'Links', slug: 'links', icon: <PublicLinkIcon /> },
+  { title: 'AccessLogs', slug: 'logs', icon: <AccessLogsIcon /> },
   { title: 'Branding', slug: 'branding', icon: <BrandingIcon /> },
   { title: 'Info', slug: 'info', icon: <InfoIcon /> },
 ];

@@ -170,7 +170,7 @@ enum PrimaryColor {
 }
 
 type Query {
-  accessLogs(folderId: ID!, includeChildren: Boolean, userId: ID): [AccessLog!]!
+  accessLogs(folderId: ID!, includeChildren: Boolean, userId: ID, userType: UserType): [AccessLog!]!
   admins: [User!]!
   allFolders(id: ID!): [Folder]!
   brandings: [Branding!]!
@@ -223,6 +223,12 @@ type User {
   name: String
   username: String
   uuid: String
+}
+
+enum UserType {
+  All
+  Link
+  User
 }
 
 type Video implements FileInterface {

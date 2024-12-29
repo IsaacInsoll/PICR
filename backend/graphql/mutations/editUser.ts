@@ -44,6 +44,10 @@ const resolver = async (_, params, context) => {
     throw new GraphQLError('Public Link Address already used');
   }
 
+  if (!params.uuid || params.uuid.length < 6) {
+    throw new GraphQLError('Public Link Address must be at least 6 characters');
+  }
+
   user.folderId = params.folderId;
   user.name = params.name;
   user.username = params.username;

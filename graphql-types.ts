@@ -274,6 +274,7 @@ export type QueryAccessLogsArgs = {
   folderId: Scalars['ID']['input'];
   includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
   userId?: InputMaybe<Scalars['ID']['input']>;
+  userType?: InputMaybe<UserType>;
 };
 
 
@@ -367,6 +368,12 @@ export type User = {
   username?: Maybe<Scalars['String']['output']>;
   uuid?: Maybe<Scalars['String']['output']>;
 };
+
+export enum UserType {
+  All = 'All',
+  Link = 'Link',
+  User = 'User'
+}
 
 export type Video = FileInterface & {
   __typename?: 'Video';

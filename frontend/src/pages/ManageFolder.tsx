@@ -2,11 +2,11 @@ import { Branding } from '../../../graphql-types';
 import { useState } from 'react';
 import { BrandingModal } from './management/BrandingModal';
 import { Button, Tabs } from '@mantine/core';
-import { BrandingIcon } from '../PicrIcons';
+import { AccessLogsIcon, BrandingIcon, PublicLinkIcon } from '../PicrIcons';
 import { Page } from '../components/Page';
 import { ManagePublicLinks } from './management/ManagePublicLinks';
 import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
-import { AccessLogs } from './management/AccessLogs';
+import { AccessLogs } from './management/AccessLogs/AccessLogs';
 
 export const ManageFolder = ({ folder, toggleManaging }) => {
   const [activeTab, setActiveTab] = useState<'links' | 'logs'>('links');
@@ -14,8 +14,12 @@ export const ManageFolder = ({ folder, toggleManaging }) => {
     <Page>
       <Tabs value={activeTab} onChange={setActiveTab}>
         <Tabs.List>
-          <Tabs.Tab value="links">Links</Tabs.Tab>
-          <Tabs.Tab value="logs">Access Logs</Tabs.Tab>
+          <Tabs.Tab value="links" leftSection={<PublicLinkIcon />}>
+            Links
+          </Tabs.Tab>
+          <Tabs.Tab value="logs" leftSection={<AccessLogsIcon />}>
+            Access Logs
+          </Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="links">
           <ManagePublicLinks folder={folder} relations="options">

@@ -14,7 +14,7 @@ import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { Tips } from '../../components/Tips';
 import { publicLinkColumns } from './userColumns';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import { AccessLogs } from './AccessLogs';
+import { AccessLogs } from './AccessLogs/AccessLogs';
 
 interface ManagePublicLinksProps {
   folder: MinimalFolder;

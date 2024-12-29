@@ -1,22 +1,24 @@
-import { gql } from '../../helpers/gql';
+import { gql } from '../../../helpers/gql';
 import { useQuery } from 'urql';
-import { PicrColumns, PicrDataGrid } from '../../components/PicrDataGrid';
-import { AccessLog } from '../../../../graphql-types';
-import { fromNow } from '../../components/FileListView/Filtering/PrettyDate';
-import { LazyPicrAvatar } from '../../components/LazyPicrAvatar';
+import { PicrColumns, PicrDataGrid } from '../../../components/PicrDataGrid';
+import { AccessLog, UserType } from '../../../../../graphql-types';
+import { fromNow } from '../../../components/FileListView/Filtering/PrettyDate';
+import { LazyPicrAvatar } from '../../../components/LazyPicrAvatar';
 import { UAParser } from 'ua-parser-js';
 import { Badge, BadgeProps, Code, Group, Stack } from '@mantine/core';
-import { MinimalSharedFolder } from '../../../types';
+import { MinimalSharedFolder } from '../../../../types';
 import { Suspense, useState } from 'react';
-import { LoadingIndicator } from '../../components/LoadingIndicator';
+import { LoadingIndicator } from '../../../components/LoadingIndicator';
 import { AccessLogsUsersSelector } from './AccessLogsUsersSelector';
+import { FolderName } from '../../../components/FolderName';
 
 export const AccessLogs = ({
   folderId,
-  users,
+  includeChildren,
 }: {
   folderId: string;
   users?: MinimalSharedFolder[];
+  includeChildren?: boolean;
 }) => {
   const [userId, setUserId] = useState<string | undefined>(undefined);
 
@@ -26,18 +28,23 @@ export const AccessLogs = ({
         folderId={folderId}
         userId={userId}
         setUserId={setUserId}
+        includeChildren={includeChildren}
       />
       <Suspense fallback={<LoadingIndicator />}>
-        <Body folderId={folderId} userId={userId} />
+        <Body
+          folderId={folderId}
+          userId={userId}
+          includeChildren={includeChildren}
+        />
       </Suspense>
     </Stack>
   );
 };
 
-const Body = ({ folderId, userId }) => {
+const Body = ({ folderId, userId, includeChildren }) => {
   const [result] = useQuery({
     query: accessLogQuery,
-    variables: { folderId, userId },
+    variables: { folderId, userId, includeChildren, userType: UserType.Link },
   });
   const data = result.data?.accessLogs ?? [];
 
@@ -51,14 +58,27 @@ const Body = ({ folderId, userId }) => {
 };
 
 const accessLogQuery = gql(/* GraphQL */ `
-  query AccessLogsQuery($folderId: ID!, $userId: ID) {
-    accessLogs(folderId: $folderId, userId: $userId) {
+  query AccessLogsQuery(
+    $folderId: ID!
+    $userId: ID
+    $includeChildren: Boolean
+    $userType: UserType
+  ) {
+    accessLogs(
+      folderId: $folderId
+      userId: $userId
+      includeChildren: $includeChildren
+      userType: $userType
+    ) {
       id
       timestamp
       userId
       folderId
       ipAddress
       userAgent
+      folder {
+        ...FolderFragment
+      }
     }
   }
 `);
@@ -71,6 +91,12 @@ const accessLogColumns: PicrColumns<AccessLog>[] = [
       const latest: string = cell.getValue();
       return latest ? fromNow(latest) : '';
     },
+  },
+  {
+    accessorKey: 'folder.name',
+    header: 'Folder',
+    minSize: 25,
+    accessorFn: ({ folder }) => <FolderName folder={folder} />,
   },
   {
     header: 'User',
@@ -91,13 +117,6 @@ const accessLogColumns: PicrColumns<AccessLog>[] = [
     minSize: 75,
     accessorFn: (al: AccessLog) => <UserAgent userAgent={al.userAgent} />,
   },
-  // {
-  //   header: 'Comments',
-  //   maxSize: 75,
-  //   accessorFn: (user: User) => (
-  //     <CommentChip commentPermissions={user.commentPermissions} />
-  //   ),
-  // },
 ];
 
 const UserAgent = ({ userAgent }: { userAgent: string }) => {
@@ -106,7 +125,7 @@ const UserAgent = ({ userAgent }: { userAgent: string }) => {
 
   const { device, browser, os } = uap;
   return (
-    <Group>
+    <Group gap="xs">
       {browser.name ? (
         <Badge {...badgeProps} variant="outline">
           {browser.name}

@@ -36,6 +36,7 @@ import { editBranding } from './mutations/editBranding';
 import { deleteBranding } from './mutations/deleteBranding';
 import { accessLogs } from './queries/accessLogs';
 import { accessLogType } from './types/accessLogType';
+import { userTypeEnum } from './enums/userTypeEnum';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -89,6 +90,7 @@ const types = [
   userType,
   videoFileType,
   videoMetadataSummaryType,
+  userTypeEnum,
 ];
 
 export const schema = new GraphQLSchema({

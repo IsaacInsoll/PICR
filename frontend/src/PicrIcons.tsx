@@ -10,6 +10,7 @@ import {
   TbLink,
   TbLogout,
   TbSearch,
+  TbSpy,
   TbThumbDown,
   TbThumbUp,
   TbTrash,
@@ -53,3 +54,4 @@ export const VideoIcon = (props: IconBaseProps) => <TbVideo {...props} />;
 export const EmailIcon = (props: IconBaseProps) => <CiAt {...props} />;
 export const BrandingIcon = (props: IconBaseProps) => <TbTypeface {...props} />;
 export const DeleteIcon = (props: IconBaseProps) => <TbTrash {...props} />;
+export const AccessLogsIcon = (props: IconBaseProps) => <TbSpy {...props} />;

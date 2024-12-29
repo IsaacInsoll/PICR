@@ -1,6 +1,7 @@
 import { Alert, AlertProps } from '@mantine/core';
 import { ReactNode } from 'react';
 import {
+  AccessLogsIcon,
   BrandingIcon,
   InfoIcon,
   PublicLinkIcon,
@@ -65,9 +66,19 @@ const Branding: TipType = {
     </>
   ),
 };
+const Logs: TipType = {
+  icon: <AccessLogsIcon />,
+  content: (
+    <>
+      Picr logs each time a folder is opened by a user so you can check who is
+      using your links.
+    </>
+  ),
+};
 
 const TipList = {
   PublicLink,
   Users,
   Branding,
+  Logs,
 } as const;
