@@ -1,4 +1,4 @@
-import { AllChildFolderIds } from '../../auth/folderUtils';
+import { allChildFolderIds } from '../../helpers/allChildFolderIds';
 import { contextPermissions } from '../../auth/contextPermissions';
 import Folder from '../../models/Folder';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
@@ -13,7 +13,7 @@ const resolver = async (_, params, context) => {
     'View',
   );
 
-  const folderIds = await AllChildFolderIds(folder);
+  const folderIds = await allChildFolderIds(folder);
 
   const lower = params.query.toLowerCase().split(' ');
   const lowerMap = lower.map((l) => ({ [Op.iLike]: `%${l}%` }));

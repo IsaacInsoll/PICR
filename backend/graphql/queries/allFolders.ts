@@ -2,7 +2,7 @@ import { GraphQLFieldResolver } from 'graphql/type';
 import { Folder as GqlFolder, Folder } from '../../../graphql-types';
 import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
 import { contextPermissions } from '../../auth/contextPermissions';
-import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
+import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { folderType } from '../types/folderType';
 

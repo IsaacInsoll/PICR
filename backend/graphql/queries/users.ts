@@ -12,7 +12,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { userType } from '../types/userType';
-import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
+import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';
 import { userToJSON } from '../helpers/userToJSON';
 
 const resolver = async (_, params, context) => {

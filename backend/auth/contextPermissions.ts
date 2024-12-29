@@ -8,8 +8,8 @@ import Folder from '../models/Folder';
 import { doAuthError } from './doAuthError';
 import { GraphQLError } from 'graphql/error';
 import User from '../models/User';
-import { FolderIsUnderFolderId } from './folderUtils';
 import { getUserFromUUID } from './getUserFromUUID';
+import { folderIsUnderFolderId } from '../helpers/folderIsUnderFolderId';
 
 // Will return `folder` only if you have access to it.
 // Will throw error if you don't have at least `requires` permissions
@@ -28,14 +28,14 @@ export const contextPermissions = async (
   const user = await getUserFromToken(context);
 
   if (user && folder && folder.exists) {
-    if (await FolderIsUnderFolderId(folder, user.folderId)) {
+    if (await folderIsUnderFolderId(folder, user.folderId)) {
       return { permissions: 'Admin', user, folder };
     }
   }
 
   const publicUser = await getUserFromUUID(context);
   if (publicUser && folder && folder.exists) {
-    if (await FolderIsUnderFolderId(folder, publicUser.folderId)) {
+    if (await folderIsUnderFolderId(folder, publicUser.folderId)) {
       if (requires == 'Admin')
         throw new GraphQLError('No admin permissions for ' + folder.name);
       return {

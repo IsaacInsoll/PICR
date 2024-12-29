@@ -1,6 +1,6 @@
 import { queueTaskStatus } from '../../filesystem/fileQueue';
 import { Task } from '../../../frontend/src/gql/graphql';
-import { AllChildFolderIds } from '../../auth/folderUtils';
+import { allChildFolderIds } from '../../helpers/allChildFolderIds';
 import { queueZipTaskStatus } from '../../helpers/zipQueue';
 import { contextPermissions } from '../../auth/contextPermissions';
 import Folder from '../../models/Folder';
@@ -13,7 +13,7 @@ const resolver = async (_, params, context) => {
   const f = await Folder.findByPk(params.folderId);
 
   const taskList: Task[] = [];
-  const folderIds = await AllChildFolderIds(f);
+  const folderIds = await allChildFolderIds(f);
   taskList.push(...queueZipTaskStatus(folderIds));
 
   const thumbs = queueTaskStatus();

@@ -1,5 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import { AllChildFolderIds } from '../../auth/folderUtils';
+import { allChildFolderIds } from '../../helpers/allChildFolderIds';
 import File from '../../models/File';
 import { addToQueue } from '../../filesystem/fileQueue';
 import { GraphQLBoolean, GraphQLID, GraphQLNonNull } from 'graphql/index';
@@ -10,7 +10,7 @@ const resolver = async (_, params, context) => {
     params.folderId,
     'Admin',
   );
-  const folderIds = await AllChildFolderIds(folder);
+  const folderIds = await allChildFolderIds(folder);
   const where = { folderId: folderIds };
   const ids = await File.findAll({ where, attributes: ['id'] });
   ids?.map((id) => addToQueue('generateThumbnails', { id: id.id }));

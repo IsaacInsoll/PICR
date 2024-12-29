@@ -11,9 +11,9 @@ import {
 import { userType } from '../types/userType';
 import User from '../../models/User';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
-import { FolderIsUnderFolderId } from '../../auth/folderUtils';
 import Folder from '../../models/Folder';
 import { Op } from 'sequelize';
+import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
 
 const resolver = async (_, params, context) => {
   await contextPermissions(context, params.folderId, 'Admin');
@@ -23,7 +23,7 @@ const resolver = async (_, params, context) => {
     user = await User.findByPk(params.id);
     if (!user) throw new GraphQLError('No user found for ID: ' + params.id);
     const userFolder = await Folder.findByPk(user.folderId);
-    const folderAllowed = await FolderIsUnderFolderId(
+    const folderAllowed = await folderIsUnderFolderId(
       userFolder,
       params.folderId,
     );

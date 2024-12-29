@@ -1,6 +1,6 @@
 import Folder from '../models/Folder';
 import File from '../models/File';
-import { AllChildFolderIds } from '../auth/folderUtils';
+import { allChildFolderIds } from './allChildFolderIds';
 import crypto from 'crypto';
 import fs from 'fs';
 import archiver from 'archiver';
@@ -19,7 +19,7 @@ export interface FolderHash {
 export const hashFolderContents = async (
   folder: Folder,
 ): Promise<FolderHash> => {
-  const folderIds = await AllChildFolderIds(folder);
+  const folderIds = await allChildFolderIds(folder);
   const files = await File.findAll({
     where: { folderId: folderIds },
     attributes: ['id', 'fileHash'],
@@ -70,7 +70,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
 
   //TODO: add empty folders
 
-  const folderIds = await AllChildFolderIds(folder);
+  const folderIds = await allChildFolderIds(folder);
   const files = await File.findAll({
     where: { folderId: folderIds },
     attributes: ['id', 'fileHash', 'relativePath', 'name'],

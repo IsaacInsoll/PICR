@@ -1,4 +1,4 @@
-import Folder from '../../models/Folder';
+import Folder from '../models/Folder';
 import { Op } from 'sequelize';
 
 export const allSubFoldersRecursive = async (folderId: number | string) => {

@@ -8,7 +8,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
+import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';
 import AccessLogModel from '../../models/AccessLogModel';
 import { accessLogType } from '../types/accessLogType';
 

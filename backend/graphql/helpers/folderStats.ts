@@ -1,4 +1,4 @@
-import { allSubFoldersRecursive } from './allSubFoldersRecursive';
+import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';
 import File from '../../models/File';
 import { sortBy } from 'lodash';
 import { pluralize } from '../../../frontend/src/helpers/folderSubtitle';

@@ -1,7 +1,7 @@
 import Folder from '../../models/Folder';
 import File from '../../models/File';
 import { Op } from 'sequelize';
-import { allSubFoldersRecursive } from './allSubFoldersRecursive';
+import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';
 
 export const heroImageForFolder = async (f: Folder) => {
   // 1. Hero Image set for current folder

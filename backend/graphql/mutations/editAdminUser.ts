@@ -2,7 +2,6 @@ import { contextPermissions } from '../../auth/contextPermissions';
 import User from '../../models/User';
 import { GraphQLError } from 'graphql/error';
 import Folder from '../../models/Folder';
-import { FolderIsUnderFolderId } from '../../auth/folderUtils';
 import { hashPassword } from '../../helpers/hashPassword';
 
 import { getFolder } from '../helpers/getFolder';
@@ -15,6 +14,7 @@ import {
 import { userType } from '../types/userType';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 import { Op } from 'sequelize';
+import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
 
 const resolver = async (_, params, context) => {
   const { user } = await contextPermissions(context, params.folderId, 'Admin');
@@ -45,7 +45,7 @@ const resolver = async (_, params, context) => {
     if (!adminUser)
       throw new GraphQLError('No user found for ID: ' + params.id);
     const userFolder = await Folder.findByPk(adminUser.folderId);
-    if (!(await FolderIsUnderFolderId(userFolder, user.folderId))) {
+    if (!(await folderIsUnderFolderId(userFolder, user.folderId))) {
       throw new GraphQLError(
         'You cant edit this user as they are above your level of access',
       );
