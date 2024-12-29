@@ -1,4 +1,4 @@
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
+import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
 import Folder from '../../models/Folder';
 import { Op } from 'sequelize';
@@ -13,14 +13,11 @@ import AccessLogModel from '../../models/AccessLogModel';
 import { accessLogType } from '../types/accessLogType';
 
 const resolver = async (_, params, context) => {
-  const [p, u] = await contextPermissionsForFolder(
+  const { folder } = await contextPermissions(
     context,
     params.folderId,
-    true,
+    'Admin',
   );
-  if (p !== 'Admin') throw new GraphQLError('You must be an Admin to see this');
-
-  const folder = await Folder.findByPk(params.folderId);
 
   const ids = [folder.id];
 

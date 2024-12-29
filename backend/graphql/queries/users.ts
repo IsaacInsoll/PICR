@@ -1,4 +1,4 @@
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
+import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
 import Folder from '../../models/Folder';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
@@ -16,18 +16,15 @@ import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
 import { userToJSON } from '../helpers/userToJSON';
 
 const resolver = async (_, params, context) => {
-  const [p, u] = await contextPermissionsForFolder(
+  const { folder, user } = await contextPermissions(
     context,
     params.folderId,
-    true,
+    'Admin',
   );
-  if (p !== 'Admin') throw new GraphQLError('You must be an Admin to see this');
-
-  const folder = await Folder.findByPk(params.folderId);
 
   const ids = [folder.id];
   if (params.includeParents) {
-    const parents = await folderAndAllParentIds(folder, u.folderId);
+    const parents = await folderAndAllParentIds(folder, user.folderId);
     ids.push(...parents);
   }
   if (params.includeChildren) {

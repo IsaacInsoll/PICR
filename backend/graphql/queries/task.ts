@@ -2,17 +2,13 @@ import { queueTaskStatus } from '../../filesystem/fileQueue';
 import { Task } from '../../../frontend/src/gql/graphql';
 import { AllChildFolderIds } from '../../auth/folderUtils';
 import { queueZipTaskStatus } from '../../helpers/zipQueue';
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
+import { contextPermissions } from '../../auth/contextPermissions';
 import Folder from '../../models/Folder';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
 import { taskType } from '../types/taskType';
 
 const resolver = async (_, params, context) => {
-  const [p, user] = await contextPermissionsForFolder(
-    context,
-    params.folderId ?? 1,
-    false,
-  );
+  const { user } = await contextPermissions(context, params.folderId ?? 1);
 
   const f = await Folder.findByPk(params.folderId);
 

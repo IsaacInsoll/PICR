@@ -5,11 +5,11 @@ import { AccessLog } from '../../../../graphql-types';
 import { fromNow } from '../../components/FileListView/Filtering/PrettyDate';
 import { LazyPicrAvatar } from '../../components/LazyPicrAvatar';
 import { UAParser } from 'ua-parser-js';
-import { Badge, BadgeProps, Code, Group, Select, Stack } from '@mantine/core';
+import { Badge, BadgeProps, Code, Group, Stack } from '@mantine/core';
 import { MinimalSharedFolder } from '../../../types';
 import { Suspense, useState } from 'react';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
-import { manageFolderQuery } from '../../urql/queries/manageFolderQuery';
+import { AccessLogsUsersSelector } from './AccessLogsUsersSelector';
 
 export const AccessLogs = ({
   folderId,
@@ -123,23 +123,3 @@ const UserAgent = ({ userAgent }: { userAgent: string }) => {
 };
 
 const badgeProps: BadgeProps = { size: 'xs' };
-
-const AccessLogsUsersSelector = ({ folderId, userId, setUserId }) => {
-  const [result] = useQuery({
-    query: manageFolderQuery,
-    variables: { folderId, includeParents: false, includeChildren: false },
-  });
-  const users = result.data?.users ?? [];
-  if (!users.length) return null;
-  return (
-    <Select
-      pt="md"
-      clearable
-      label="Filter by Link"
-      placeholder="<Any user or link>"
-      value={userId}
-      onChange={(e) => setUserId(e)}
-      data={users.map((u) => ({ value: u.id, label: u.name }))}
-    />
-  );
-};

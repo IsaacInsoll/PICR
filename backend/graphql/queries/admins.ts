@@ -1,4 +1,4 @@
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
+import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
 import User from '../../models/User';
 import { Op } from 'sequelize';
@@ -22,6 +22,5 @@ export const admins = {
 
 export const requireFullAdmin = async (context) => {
   //TODO: currently hard coded to folderId 1, do this a better way in future
-  const [p] = await contextPermissionsForFolder(context, 1, true);
-  if (p !== 'Admin') throw new GraphQLError('You must be an Admin to see this');
+  await contextPermissions(context, 1, 'Admin');
 };

@@ -1,25 +1,19 @@
-import { queueTaskStatus } from '../../filesystem/fileQueue';
-import { Task } from '../../../frontend/src/gql/graphql';
 import { AllChildFolderIds } from '../../auth/folderUtils';
-import { queueZipTaskStatus } from '../../helpers/zipQueue';
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
+import { contextPermissions } from '../../auth/contextPermissions';
 import Folder from '../../models/Folder';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
-import { taskType } from '../types/taskType';
 import { GraphQLString } from 'graphql';
-import { relativePath } from '../../filesystem/fileManager';
 import { Op } from 'sequelize';
 import { folderType } from '../types/folderType';
 
 const resolver = async (_, params, context) => {
-  const [p, user] = await contextPermissionsForFolder(
+  const { folder } = await contextPermissions(
     context,
     params.folderId ?? 1,
-    false,
+    'View',
   );
 
-  const f = await Folder.findByPk(params.folderId);
-  const folderIds = await AllChildFolderIds(f);
+  const folderIds = await AllChildFolderIds(folder);
 
   const lower = params.query.toLowerCase().split(' ');
   const lowerMap = lower.map((l) => ({ [Op.iLike]: `%${l}%` }));

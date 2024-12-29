@@ -1,8 +1,8 @@
 import { getUserFromToken } from '../../auth/jwt-auth';
-import { getUserFromUUID } from '../../auth/contextPermissionsForFolder';
 import { userType } from '../types/userType';
 import Folder from '../../models/Folder';
 import { userToJSON } from '../helpers/userToJSON';
+import { getUserFromUUID } from '../../auth/getUserFromUUID';
 
 const resolver = async (_, params, context) => {
   const user = await getUserFromToken(context);

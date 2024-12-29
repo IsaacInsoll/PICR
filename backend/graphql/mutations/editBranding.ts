@@ -1,17 +1,14 @@
-import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
-import { doAuthError } from '../../auth/doAuthError';
+import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql/index';
-import { brandingType } from '../types/brandingType';
 import Branding from '../../models/Branding';
 import { getFolder } from '../helpers/getFolder';
 import { primaryColorEnum, themeModeEnum } from '../enums/themeModeEnum';
 import { folderType } from '../types/folderType';
 
 const resolver = async (_, params, context) => {
-  const [p, u] = await perms(context, params.folderId, true);
-  if (p != 'Admin') doAuthError("You don't have permissions for this folder");
+  await contextPermissions(context, params.folderId, 'Admin');
 
-  const [obj, isNew] = await Branding.findOrCreate({
+  const [obj] = await Branding.findOrCreate({
     where: { folderId: params.folderId },
   });
 

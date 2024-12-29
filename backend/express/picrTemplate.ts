@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { contextPermissionsForFolder } from '../auth/contextPermissionsForFolder';
+import { contextPermissions } from '../auth/contextPermissions';
 import Folder from '../models/Folder';
 import { folderStatsSummaryText } from '../graphql/helpers/folderStats';
 import { imageURL } from '../../frontend/src/helpers/imageURL';
@@ -28,12 +28,11 @@ export const picrTemplate = async (req: Request, res: Response) => {
   if (sub[1] == 's' && sub.length >= 3) {
     const folderId = parseInt(sub[3]);
     if (!isNaN(folderId)) {
-      const [perms, user] = await contextPermissionsForFolder(
+      const { permissions, folder } = await contextPermissions(
         { uuid: sub[2], auth: '' },
         folderId,
       );
-      if (perms != 'None') {
-        const folder = await Folder.findByPk(folderId);
+      if (permissions != 'None' && folder) {
         const summary = await folderStatsSummaryText(folderId);
         const thumb = await heroImageForFolder(folder);
         fields = {

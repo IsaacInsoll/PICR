@@ -1,6 +1,6 @@
 import Folder from '../models/Folder';
 import File from '../models/File';
-import { contextPermissionsForFolder as perms } from './contextPermissionsForFolder';
+import { contextPermissions } from './contextPermissions';
 import {
   Branding as BrandingType,
   FileType,
@@ -34,7 +34,7 @@ export const ParentFolders = async (
   while (current.parentId) {
     current = await Folder.findByPk(current.parentId);
     if (!current) break; // in case parent folder no longer exists?
-    const [permissions] = await perms(context, current.id);
+    const { permissions } = await contextPermissions(context, current.id);
     if (!permissions || permissions === 'None') {
       break;
     } else {

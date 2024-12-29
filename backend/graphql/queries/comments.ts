@@ -1,11 +1,10 @@
 import File from '../../models/File';
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
+import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { commentType } from '../types/commentType';
 import Comment from '../../models/Comment';
 import { GraphQLError } from 'graphql/error';
-import { subFiles, subFilesMap } from '../helpers/subFiles';
-import { fileToJSON } from '../helpers/fileToJSON';
+import { subFilesMap } from '../helpers/subFiles';
 import { Order } from 'sequelize';
 
 const resolver = async (_, params, context) => {
@@ -19,18 +18,14 @@ const resolver = async (_, params, context) => {
 
   if (params.fileId) {
     const file = await File.findByPk(params.fileId);
-    const [p, u] = await contextPermissionsForFolder(
-      context,
-      file.folderId,
-      true,
-    );
+    await contextPermissions(context, file.folderId, 'View');
     const list = await Comment.findAll({ where: { fileId: file.id }, order });
     return list.map((x) => {
       return { ...x.toJSON(), timestamp: x.createdAt, file: file.toJSON() };
     });
   } else {
     const folderId = params.folderId;
-    const [p, u] = await contextPermissionsForFolder(context, folderId, true);
+    await contextPermissions(context, folderId, 'View');
     const files = await subFilesMap(folderId);
     const list = await Comment.findAll({ where: { folderId }, order });
     return list.map((x) => {

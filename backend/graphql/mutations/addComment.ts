@@ -1,5 +1,5 @@
 import { GraphQLID, GraphQLNonNull } from 'graphql/type';
-import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
+import { contextPermissions } from '../../auth/contextPermissions';
 import { doAuthError } from '../../auth/doAuthError';
 import File from '../../models/File';
 import { CommentFor } from '../../models/Comment';
@@ -11,8 +11,8 @@ import sanitizeHtml from 'sanitize-html';
 
 const resolver = async (_, params, context) => {
   const file = await File.findByPk(params.id);
-  const [p, user] = await perms(context, file.folderId, true);
-  if (p == 'None') doAuthError("You don't have permissions for this folder");
+  const { user } = await contextPermissions(context, file.folderId, 'View');
+
   if (user.commentPermissions != 'edit') doAuthError('Not allowed to comment');
 
   //TODO: set rating, flag

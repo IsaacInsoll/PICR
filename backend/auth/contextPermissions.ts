@@ -1,20 +1,27 @@
 import { CustomJwtPayload } from '../types/CustomJwtPayload';
 import { getUserFromToken } from './jwt-auth';
-import { FolderPermissions } from '../types/FolderPermissions';
+import {
+  ContextualPermissions,
+  FolderPermissions,
+} from '../types/FolderPermissions';
 import Folder from '../models/Folder';
 import { doAuthError } from './doAuthError';
 import { GraphQLError } from 'graphql/error';
 import User from '../models/User';
 import { FolderIsUnderFolderId } from './folderUtils';
+import { getUserFromUUID } from './getUserFromUUID';
 
-export const contextPermissionsForFolder = async (
+// Will return `folder` only if you have access to it.
+// Will throw error if you don't have at least `requires` permissions
+export const contextPermissions = async (
   context: CustomJwtPayload,
   folderId?: number,
-  throwErrorIfNoPermission: boolean = false,
-): Promise<[FolderPermissions, User]> => {
+  requires?: FolderPermissions,
+): Promise<ContextualPermissions> => {
+  // Check valid folderId
   if (!folderId) {
-    if (throwErrorIfNoPermission) throw new GraphQLError('Not Found');
-    return ['None', null];
+    if (requires) throw new GraphQLError('Not Found');
+    return { permissions: 'None', user: null };
   }
 
   const folder = await Folder.findByPk(folderId);
@@ -22,18 +29,24 @@ export const contextPermissionsForFolder = async (
 
   if (user && folder && folder.exists) {
     if (await FolderIsUnderFolderId(folder, user.folderId)) {
-      return ['Admin', user];
+      return { permissions: 'Admin', user, folder };
     }
   }
 
   const publicUser = await getUserFromUUID(context);
   if (publicUser && folder && folder.exists) {
     if (await FolderIsUnderFolderId(folder, publicUser.folderId)) {
-      return ['View', await User.findByPk(publicUser.id)];
+      if (requires == 'Admin')
+        throw new GraphQLError('No admin permissions for ' + folder.name);
+      return {
+        permissions: 'View',
+        user: await User.findByPk(publicUser.id),
+        folder,
+      };
     }
   }
 
-  if (throwErrorIfNoPermission) {
+  if (requires) {
     if (publicUser) {
       throw new GraphQLError('Invalid Link (UUID)');
     } else {
@@ -41,18 +54,5 @@ export const contextPermissionsForFolder = async (
       doAuthError('Access Denied');
     }
   }
-  return ['None', null];
-};
-
-export const getUserFromUUID = async (
-  context: CustomJwtPayload,
-): Promise<User | undefined> => {
-  const hasUUID = !!context.uuid && context.uuid !== '';
-  if (hasUUID) {
-    const user = await User.findOne({ where: { uuid: context.uuid } });
-    //todo: check expiry dates etc
-    if (user && user.enabled) {
-      return user;
-    }
-  }
+  return { permissions: 'None', user: null };
 };

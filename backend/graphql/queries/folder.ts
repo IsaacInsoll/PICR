@@ -1,4 +1,4 @@
-import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
+import { contextPermissions } from '../../auth/contextPermissions';
 import { createAccessLog } from '../../models/AccessLogModel';
 import { Folder } from '../../../graphql-types';
 import { GraphQLFieldResolver } from 'graphql/type';
@@ -11,10 +11,14 @@ const folderResolver: GraphQLFieldResolver<
   Folder,
   IncomingCustomHeaders
 > = async (_, params, context, info): Promise<Folder> => {
-  const [permissions, u] = await perms(context, params.id, true);
+  const { permissions, user } = await contextPermissions(
+    context,
+    params.id,
+    'View',
+  );
   const f = await getFolder(params.id);
   const data = { ...f, permissions };
-  await createAccessLog(u.id, f.id, context);
+  await createAccessLog(user.id, f.id, context);
   return data;
 };
 

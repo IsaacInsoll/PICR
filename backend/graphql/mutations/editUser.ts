@@ -1,4 +1,4 @@
-import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
+import { contextPermissions } from '../../auth/contextPermissions';
 import { doAuthError } from '../../auth/doAuthError';
 import { GraphQLError } from 'graphql/error';
 import { getFolder } from '../helpers/getFolder';
@@ -14,11 +14,10 @@ import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 import { FolderIsUnderFolderId } from '../../auth/folderUtils';
 import Folder from '../../models/Folder';
 import { Op } from 'sequelize';
-import { log } from '../../logger';
 
 const resolver = async (_, params, context) => {
-  const [p, u] = await perms(context, params.folderId, true);
-  if (p !== 'Admin') doAuthError("You don't have permissions for this folder");
+  await contextPermissions(context, params.folderId, 'Admin');
+
   let user: User | null = null;
   if (params.id) {
     user = await User.findByPk(params.id);

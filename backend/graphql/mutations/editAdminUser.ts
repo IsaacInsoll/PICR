@@ -1,5 +1,4 @@
-import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
-import { doAuthError } from '../../auth/doAuthError';
+import { contextPermissions } from '../../auth/contextPermissions';
 import User from '../../models/User';
 import { GraphQLError } from 'graphql/error';
 import Folder from '../../models/Folder';
@@ -9,20 +8,17 @@ import { hashPassword } from '../../helpers/hashPassword';
 import { getFolder } from '../helpers/getFolder';
 import {
   GraphQLBoolean,
-  GraphQLField,
   GraphQLID,
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
 import { userType } from '../types/userType';
-import { GraphQLFieldResolver } from 'graphql/type';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 import { Op } from 'sequelize';
 
 const resolver = async (_, params, context) => {
-  const [p, u] = await perms(context, params.folderId, true);
-  if (p !== 'Admin') doAuthError("You don't have permissions for this folder");
-  let user: User | null = null;
+  const { user } = await contextPermissions(context, params.folderId, 'Admin');
+  let adminUser: User | null = null;
 
   const pass = params.password;
   const username = params.username;
@@ -45,34 +41,35 @@ const resolver = async (_, params, context) => {
   }
 
   if (params.id) {
-    user = await User.findByPk(params.id);
-    if (!user) throw new GraphQLError('No user found for ID: ' + params.id);
-    const userFolder = await Folder.findByPk(user.folderId);
-    if (!(await FolderIsUnderFolderId(userFolder, u.folderId))) {
+    adminUser = await User.findByPk(params.id);
+    if (!adminUser)
+      throw new GraphQLError('No user found for ID: ' + params.id);
+    const userFolder = await Folder.findByPk(adminUser.folderId);
+    if (!(await FolderIsUnderFolderId(userFolder, user.folderId))) {
       throw new GraphQLError(
         'You cant edit this user as they are above your level of access',
       );
     }
   } else {
     if (pass && username) {
-      user = new User();
+      adminUser = new User();
     } else {
       throw new GraphQLError(
         'Cannot create new user without username and password',
       );
     }
   }
-  user.folderId = params.folderId;
-  user.name = params.name;
+  adminUser.folderId = params.folderId;
+  adminUser.name = params.name;
 
-  user.username = params.username;
-  user.enabled = params.enabled;
-  user.commentPermissions = params.commentPermissions;
-  if (pass) user.hashedPassword = hashPassword(pass);
+  adminUser.username = params.username;
+  adminUser.enabled = params.enabled;
+  adminUser.commentPermissions = params.commentPermissions;
+  if (pass) adminUser.hashedPassword = hashPassword(pass);
 
-  await user.save();
+  await adminUser.save();
 
-  return { ...user.toJSON(), folder: getFolder(user.folderId) };
+  return { ...adminUser.toJSON(), folder: getFolder(adminUser.folderId) };
 };
 
 export const editAdminUser = {

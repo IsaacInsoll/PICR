@@ -1,25 +1,15 @@
-import { queueTaskStatus } from '../../filesystem/fileQueue';
-import { Task } from '../../../frontend/src/gql/graphql';
 import { AllChildFolderIds } from '../../auth/folderUtils';
-import { queueZipTaskStatus } from '../../helpers/zipQueue';
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
+import { contextPermissions } from '../../auth/contextPermissions';
 import Folder from '../../models/Folder';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
-import { taskType } from '../types/taskType';
 import { GraphQLString } from 'graphql';
-import { relativePath } from '../../filesystem/fileManager';
 import { Op } from 'sequelize';
-import { folderType } from '../types/folderType';
 import File from '../../models/File';
 import { fileType } from '../types/fileType';
 import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
 
 const resolver = async (_, params, context) => {
-  const [p, user] = await contextPermissionsForFolder(
-    context,
-    params.folderId ?? 1,
-    false,
-  );
+  await contextPermissions(context, params.folderId ?? 1, 'View');
 
   const f = await Folder.findByPk(params.folderId);
   const folderIds = await AllChildFolderIds(f);
