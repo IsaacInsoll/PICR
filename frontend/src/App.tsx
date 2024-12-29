@@ -1,7 +1,7 @@
 import { createClient } from './urqlClient';
 import { Provider as URQLProvider } from 'urql';
 import { BrowserRouter } from 'react-router';
-import { authKeyAtom } from './atoms/authAtom';
+import { authKeyAtom, sessionKeyAtom, useSessionKey } from './atoms/authAtom';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from './atoms/themeModeAtom';
 
@@ -21,7 +21,8 @@ import { lightboxRefAtom } from './atoms/lightboxRefAtom';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
-  const client = createClient(authKey);
+  const sessionKey = useSessionKey();
+  const client = createClient(authKey, sessionKey);
   const customTheme = useAtomValue(themeModeAtom);
 
   //we put a portal at the start, otherwise Mantine Modals will be hidden behind it

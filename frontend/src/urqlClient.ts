@@ -24,7 +24,7 @@ const cx = cacheExchange({
   },
 });
 
-export const createClient = (authToken: string) =>
+export const createClient = (authToken: string, sessionKey: string) =>
   new Client({
     url: '/graphql',
     suspense: true,
@@ -35,6 +35,7 @@ export const createClient = (authToken: string) =>
         headers: {
           authorization: authToken !== '' && !uuid ? `Bearer ${authToken}` : '',
           uuid: uuid ?? '',
+          sessionId: sessionKey,
         },
       };
     },

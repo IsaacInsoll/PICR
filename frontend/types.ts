@@ -18,6 +18,7 @@ export interface MinimalFile {
   name?: string;
   fileLastModified: string;
   fileHash?: string;
+  blurHash?: string;
   imageRatio?: number | null;
   duration?: number | null;
   metadata?: ImageMetadataSummary | VideoMetadataSummary | null;

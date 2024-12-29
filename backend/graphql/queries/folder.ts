@@ -1,10 +1,10 @@
 import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
-import { createAccessLog } from '../../models/AccessLog';
+import { createAccessLog } from '../../models/AccessLogModel';
 import { Folder } from '../../../graphql-types';
 import { GraphQLFieldResolver } from 'graphql/type';
 import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
 import { getFolder } from '../helpers/getFolder';
-import { GraphQLID, GraphQLNonNull } from 'graphql/index';
+import { GraphQLID, GraphQLNonNull } from 'graphql';
 import { folderType } from '../types/folderType';
 
 const folderResolver: GraphQLFieldResolver<
@@ -14,7 +14,7 @@ const folderResolver: GraphQLFieldResolver<
   const [permissions, u] = await perms(context, params.id, true);
   const f = await getFolder(params.id);
   const data = { ...f, permissions };
-  createAccessLog(u.id, f.id);
+  await createAccessLog(u.id, f.id, context);
   return data;
 };
 

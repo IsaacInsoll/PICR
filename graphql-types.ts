@@ -16,6 +16,18 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+export type AccessLog = {
+  __typename?: 'AccessLog';
+  folder?: Maybe<Folder>;
+  folderId?: Maybe<Scalars['ID']['output']>;
+  id: Scalars['ID']['output'];
+  ipAddress?: Maybe<Scalars['String']['output']>;
+  timestamp: Scalars['DateTime']['output'];
+  user?: Maybe<User>;
+  userAgent?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['ID']['output']>;
+};
+
 export type Branding = {
   __typename?: 'Branding';
   folder?: Maybe<Folder>;
@@ -241,6 +253,7 @@ export enum PrimaryColor {
 
 export type Query = {
   __typename?: 'Query';
+  accessLogs: Array<AccessLog>;
   admins: Array<User>;
   allFolders: Array<Maybe<Folder>>;
   brandings: Array<Branding>;
@@ -254,6 +267,13 @@ export type Query = {
   tasks: Array<Task>;
   user: User;
   users: Array<User>;
+};
+
+
+export type QueryAccessLogsArgs = {
+  folderId: Scalars['ID']['input'];
+  includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 

@@ -34,6 +34,8 @@ import { brandingType } from './types/brandingType';
 import { brandings } from './queries/brandings';
 import { editBranding } from './mutations/editBranding';
 import { deleteBranding } from './mutations/deleteBranding';
+import { accessLogs } from './queries/accessLogs';
+import { accessLogType } from './types/accessLogType';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -44,6 +46,7 @@ const queries = new GraphQLObjectType({
     comments,
     file,
     /* Admin Only */
+    accessLogs,
     folder,
     me,
     searchFiles,
@@ -72,6 +75,7 @@ const mutations = new GraphQLObjectType({
 });
 
 const types = [
+  accessLogType,
   brandingType,
   commentType,
   fileInterface,

@@ -6,14 +6,15 @@ import { ManagePublicLink } from './ManagePublicLink';
 import { MinimalFolder, MinimalSharedFolder } from '../../../types';
 import { VscDebugDisconnect } from 'react-icons/vsc';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
-import { Alert, Button, Divider, Group, Stack, Switch } from '@mantine/core';
-import { PicrColumns, PicrDataGrid } from '../../components/PicrDataGrid';
+import { Button, Divider, Group, Stack, Switch, Tabs } from '@mantine/core';
+import { PicrDataGrid } from '../../components/PicrDataGrid';
 import { EmptyPlaceholder } from '../EmptyPlaceholder';
 import { PublicLinkIcon } from '../../PicrIcons';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { Tips } from '../../components/Tips';
 import { publicLinkColumns } from './userColumns';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { AccessLogs } from './AccessLogs';
 
 interface ManagePublicLinksProps {
   folder: MinimalFolder;
@@ -92,13 +93,14 @@ const Body = ({ folderId, includeParents, includeChildren, setLinkId }) => {
     query: manageFolderQuery,
     variables: { folderId, includeParents, includeChildren },
   });
+  const users = result.data?.users ?? [];
   return (
     <>
+      <QueryFeedback result={result} reQuery={reQuery} />
       <SharedFolderDataGrid
-        sharedFolders={result.data?.users ?? []}
+        sharedFolders={users}
         setSharedFolderId={setLinkId}
       />
-      <QueryFeedback result={result} reQuery={reQuery} />
     </>
   );
 };

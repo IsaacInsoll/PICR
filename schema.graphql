@@ -1,3 +1,14 @@
+type AccessLog {
+  folder: Folder
+  folderId: ID
+  id: ID!
+  ipAddress: String
+  timestamp: DateTime!
+  user: User
+  userAgent: String
+  userId: ID
+}
+
 """
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
@@ -159,6 +170,7 @@ enum PrimaryColor {
 }
 
 type Query {
+  accessLogs(folderId: ID!, includeChildren: Boolean, userId: ID): [AccessLog!]!
   admins: [User!]!
   allFolders(id: ID!): [Folder]!
   brandings: [Branding!]!

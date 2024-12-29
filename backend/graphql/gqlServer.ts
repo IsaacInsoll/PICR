@@ -6,10 +6,14 @@ export const gqlServer = createHandler({
   schema: schema,
   context: async (req, params) => {
     const headers = req.headers as IncomingCustomHeaders;
+
     return {
       auth: headers.authorization ?? '',
       uuid: headers.uuid,
       host: headers.host,
+      sessionId: headers.sessionid, //note: header field is lower case
+      ipAddress: req.raw.ip ?? '',
+      userAgent: headers['user-agent'],
     };
   },
 });

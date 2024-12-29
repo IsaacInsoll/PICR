@@ -1,15 +1,15 @@
 import { imageURL } from '../helpers/imageURL';
 import { Image, MantineStyleProps } from '@mantine/core';
-import File from '../../../backend/models/File';
 import { ThumbnailSize } from '../helpers/thumbnailSize';
 import { Blurhash } from 'react-blurhash';
 import { useState } from 'react';
+import { MinimalFile } from '../../types';
 
 interface PicrImageProps {
-  file: File;
+  file: MinimalFile;
   size: ThumbnailSize;
-  onClick?: (file: File) => void;
-  onImageLoaded?: (file: File) => void;
+  onClick?: (file: MinimalFile) => void;
+  onImageLoaded?: (file: MinimalFile) => void;
   style?: MantineStyleProps;
   clickable?: boolean; // for some reason onClick existing doesn't work
 }
