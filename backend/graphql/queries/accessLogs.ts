@@ -1,20 +1,14 @@
 import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
 import { GraphQLError } from 'graphql/error';
 import Folder from '../../models/Folder';
-import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
-import User from '../../models/User';
 import { Op } from 'sequelize';
-import { getFolder } from '../helpers/getFolder';
 import {
   GraphQLBoolean,
   GraphQLID,
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import { userType } from '../types/userType';
 import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
-import { userToJSON } from '../helpers/userToJSON';
-import AccessLogModel from '../../models/AccessLogModel';
 import AccessLogModel from '../../models/AccessLogModel';
 import { accessLogType } from '../types/accessLogType';
 
