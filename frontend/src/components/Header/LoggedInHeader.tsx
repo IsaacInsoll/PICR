@@ -31,15 +31,34 @@ export const LoggedInHeader = ({
   managing?: boolean;
 }) => {
   const me = useMe();
+
   return (
     <header className={classes.header}>
       <Page>
-        <Group>
-          <LeftSide me={me} folder={folder} managing={managing} />
-          <RightSide me={me} />
-        </Group>
+        {me?.isUser ? (
+          <Group>
+            <LeftSide me={me} folder={folder} managing={managing} />
+            <RightSide me={me} />
+          </Group>
+        ) : null}
+        {me?.isPublicLink ? <PublicUser me={me} folder={folder} /> : null}
       </Page>
     </header>
+  );
+};
+
+const PublicUser = ({ me, folder }) => {
+  console.log(folder);
+  return (
+    <Group>
+      <Box style={{ flexGrow: 1 }}></Box>
+      <Group>
+        <Text size="xs" c="dimmed">
+          {me.name}
+        </Text>
+        <PicrAvatar user={me} size="sm" />
+      </Group>
+    </Group>
   );
 };
 

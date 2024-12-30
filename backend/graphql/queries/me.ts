@@ -13,7 +13,7 @@ const resolver = async (_, params, context) => {
   const publicUser = await getUserFromUUID(context);
   if (!publicUser) return null;
   // don't expose many public user details
-  return { ...userToJSON(publicUser), name: null };
+  return { ...userToJSON(publicUser) };
 };
 
 export const me = {

@@ -93,7 +93,6 @@ export const ManagePublicLink = ({
           placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
           value={name}
           label="Name"
-          // description="only you will see this name"
           onChange={(e) => setName(e.target.value)}
           error={name.length == 0 ? 'Name is required' : undefined}
         />
