@@ -7,11 +7,7 @@ export const subFolders = async (parentId: string | number) => {
     order: [['name', 'ASC']],
   });
 
-  const heroImages = await Promise.all(
-    folders.map((f) => heroImageForFolder(f)),
-  );
-
-  return folders.map((f, index) => {
-    return { ...f.toJSON(), heroImage: heroImages[index] };
+  return folders.map((f) => {
+    return { ...f.toJSON() };
   });
 };

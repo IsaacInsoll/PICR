@@ -15,6 +15,9 @@ import { imageFileType } from './imageFileType';
 import { brandingType } from './brandingType';
 import { parentFolders } from '../../helpers/parentFolders';
 import { brandingForFolder } from '../helpers/brandingForFolder';
+import { heroImageForFolder } from '../helpers/heroImageForFolder';
+import { subFiles } from '../helpers/subFiles';
+import { subFolders } from '../helpers/subFolders';
 
 export const folderType = new GraphQLObjectType({
   name: 'Folder',
@@ -24,7 +27,7 @@ export const folderType = new GraphQLObjectType({
     parentId: { type: GraphQLID },
     subFolders: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
-      // resolve: resolver(User.Tasks)
+      resolve: async (f: Folder) => subFolders(f.id),
     },
     parents: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
@@ -36,9 +39,11 @@ export const folderType = new GraphQLObjectType({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(fileInterface)),
       ),
+      resolve: async (f: Folder) => subFiles(f.id),
     },
     heroImage: {
       type: imageFileType,
+      resolve: async (f: Folder) => heroImageForFolder(f),
     },
     permissions: { type: folderPermissionsType },
     branding: {
