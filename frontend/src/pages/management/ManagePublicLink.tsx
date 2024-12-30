@@ -5,20 +5,30 @@ import { useMutation } from 'urql';
 import { editUserMutation } from '../../urql/mutations/editUserMutation';
 import type { MutationEditUserArgs } from '../../gql/graphql';
 import {
+  ActionIcon,
   Button,
   Checkbox,
+  Code,
   Group,
   Modal,
   Stack,
+  Text,
   TextInput,
+  Tooltip,
 } from '@mantine/core';
-import { TbCloudUpload, TbDoorExit, TbUsersGroup } from 'react-icons/tb';
+import {
+  TbCloudUpload,
+  TbLabel,
+  TbRefresh,
+  TbUsersGroup,
+} from 'react-icons/tb';
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { CommentPermissions } from '../../../../graphql-types';
-import { PublicLinkIcon, EmailIcon } from '../../PicrIcons';
+import { EmailIcon, PublicLinkIcon } from '../../PicrIcons';
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
 import { ErrorAlert } from '../../components/ErrorAlert';
+import { badChars } from '../../../../backend/graphql/helpers/badChars';
 
 export const ManagePublicLink = ({
   id,
@@ -40,12 +50,9 @@ export const ManagePublicLink = ({
     useState<CommentPermissions>(user?.commentPermissions ?? 'none');
   const [error, setError] = useState('');
 
-  const invalidLink = link === '' || name === '';
-
   //get folder from user if they exist as it may be a parent or child
   const f: MinimalFolder = user?.folder ?? folder;
 
-  console.log(f);
   const onSave = () => {
     setError('');
     const data: MutationEditUserArgs = {
@@ -66,6 +73,9 @@ export const ManagePublicLink = ({
     });
   };
 
+  const badLink = badChars(link);
+  const invalidLink = badLink.length > 0 || name === '' || link.length < 6;
+
   return (
     <Modal
       onClose={onClose}
@@ -85,6 +95,7 @@ export const ManagePublicLink = ({
           label="Name"
           // description="only you will see this name"
           onChange={(e) => setName(e.target.value)}
+          error={name.length == 0 ? 'Name is required' : undefined}
         />
         <TextInput
           leftSection={<EmailIcon />}
@@ -94,14 +105,53 @@ export const ManagePublicLink = ({
           onChange={(e) => setUsername(e.target.value)}
         />
 
-        <TextInput
-          leftSection={<PublicLinkIcon />}
-          placeholder="Link ID (required)"
-          value={link}
-          label="Public Link"
-          description="this should be impossible to guess"
-          onChange={(e) => setLink(e.target.value)}
-        />
+        <Group gap="xs" style={{ alignItems: 'center' }}>
+          <TextInput
+            style={{ flexGrow: 1 }}
+            leftSection={<PublicLinkIcon />}
+            placeholder="Link ID (required)"
+            value={link}
+            label="Public Link"
+            description="this should be impossible to guess"
+            onChange={(e) => setLink(e.target.value)}
+            error={
+              badLink.length > 0 ? (
+                <Group gap="xs">
+                  <Text size="xs">Can't use:</Text>
+                  {badLink.map((l) => (
+                    <Code key={l}>{l == ' ' ? 'space' : l}</Code>
+                  ))}
+                </Group>
+              ) : link.length < 6 ? (
+                'Must be at least 6 characters long'
+              ) : undefined
+            }
+          />
+          <Stack style={{ alignContent: 'center' }} gap="xs" pt="xl">
+            <Tooltip label="Generate a 'pretty' link">
+              <ActionIcon
+                variant="default"
+                onClick={() => {
+                  const pretty =
+                    folder?.name?.replaceAll(' ', '-') +
+                    '-' +
+                    randomString().substring(0, 4);
+                  setLink(pretty);
+                }}
+              >
+                <TbLabel />
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label="Generate very-hard-to-guess link">
+              <ActionIcon
+                variant="default"
+                onClick={() => setLink(randomString())}
+              >
+                <TbRefresh />
+              </ActionIcon>
+            </Tooltip>
+          </Stack>
+        </Group>
 
         <CommentPermissionsSelector
           value={commentPermissions}

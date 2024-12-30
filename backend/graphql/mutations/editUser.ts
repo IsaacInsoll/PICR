@@ -14,6 +14,7 @@ import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 import Folder from '../../models/Folder';
 import { Op } from 'sequelize';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
+import { badChars } from '../helpers/badChars';
 
 const resolver = async (_, params, context) => {
   await contextPermissions(context, params.folderId, 'Admin');
@@ -46,6 +47,13 @@ const resolver = async (_, params, context) => {
 
   if (!params.uuid || params.uuid.length < 6) {
     throw new GraphQLError('Public Link Address must be at least 6 characters');
+  }
+
+  if (badChars(params.uuid).length > 0) {
+    throw new GraphQLError(
+      "Public Link Address can't contain these characters: " +
+        badChars(params.uuid).join(', '),
+    );
   }
 
   user.folderId = params.folderId;
