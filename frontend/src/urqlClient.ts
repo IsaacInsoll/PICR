@@ -1,8 +1,8 @@
 import { Client, fetchExchange } from 'urql';
 import { cacheExchange } from '@urql/exchange-graphcache';
-import { getUUID } from './Router';
 import schema from './../public/graphql.schema.json';
 import { invalidateQueries } from './helpers/invalidateQueries';
+import { getUUID } from './helpers/getUUID';
 
 const cx = cacheExchange({
   schema,

@@ -6,6 +6,7 @@ import Comment from '../../models/Comment';
 import { GraphQLError } from 'graphql/error';
 import { subFilesMap } from '../helpers/subFiles';
 import { Order } from 'sequelize';
+import { addUserRelationship } from '../helpers/addUserRelationship';
 
 const resolver = async (_, params, context) => {
   //TODO: maybe support subfolders?
@@ -20,17 +21,29 @@ const resolver = async (_, params, context) => {
     const file = await File.findByPk(params.fileId);
     await contextPermissions(context, file.folderId, 'View');
     const list = await Comment.findAll({ where: { fileId: file.id }, order });
-    return list.map((x) => {
-      return { ...x.toJSON(), timestamp: x.createdAt, file: file.toJSON() };
-    });
+    return addUserRelationship(
+      list.map((x) => {
+        return {
+          ...x.toJSON(),
+          timestamp: x.createdAt,
+          file: file.toJSON(),
+        };
+      }),
+    );
   } else {
     const folderId = params.folderId;
     await contextPermissions(context, folderId, 'View');
     const files = await subFilesMap(folderId);
     const list = await Comment.findAll({ where: { folderId }, order });
-    return list.map((x) => {
-      return { ...x.toJSON(), timestamp: x.createdAt, file: files[x.fileId] };
-    });
+    return addUserRelationship(
+      list.map((x) => {
+        return {
+          ...x.toJSON(),
+          timestamp: x.createdAt,
+          file: files[x.fileId],
+        };
+      }),
+    );
   }
 };
 

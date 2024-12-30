@@ -1,8 +1,7 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
 import User from '../../models/User';
-import { getFolder } from '../helpers/getFolder';
-import { GraphQLID, GraphQLNonNull } from 'graphql/index';
+import { GraphQLID, GraphQLNonNull } from 'graphql';
 import { userType } from '../types/userType';
 import { userToJSON } from '../helpers/userToJSON';
 

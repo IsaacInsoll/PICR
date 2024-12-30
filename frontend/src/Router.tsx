@@ -1,4 +1,4 @@
-import { matchPath, Route, Routes, useNavigate } from 'react-router';
+import { Route, Routes, useNavigate } from 'react-router';
 import { LoginForm } from './pages/LoginForm';
 import { ViewFolder } from './pages/ViewFolder';
 import { PageNotFound } from './pages/PageNotFound';
@@ -40,11 +40,6 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
       />
     </Routes>
   );
-};
-
-export const getUUID = () => {
-  const match = matchPath({ path: '/s/:uuid/*' }, window.location.pathname);
-  return match?.params.uuid;
 };
 
 const HomePage = () => {

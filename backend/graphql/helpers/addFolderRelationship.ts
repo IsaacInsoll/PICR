@@ -11,7 +11,6 @@ export const addFolderRelationship = async (
     .filter((v, i, a) => a.indexOf(v) === i);
 
   if (ids.length == 0) return list;
-  console.log('Found ' + ids.length + ' folders');
 
   const folders = await Folder.findAll({ where: { id: ids } });
   return list.map((obj) => {

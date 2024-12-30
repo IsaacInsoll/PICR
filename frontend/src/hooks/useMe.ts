@@ -3,7 +3,8 @@ import { useAtomValue } from 'jotai/index';
 import { authKeyAtom } from '../atoms/authAtom';
 import { useQuery } from 'urql';
 import { User } from '../../../graphql-types';
-import { getUUID } from '../Router';
+
+import { getUUID } from '../helpers/getUUID';
 
 export const useMe = ():
   | (Pick<User, 'id' | 'name' | 'folderId' | 'commentPermissions'> & {

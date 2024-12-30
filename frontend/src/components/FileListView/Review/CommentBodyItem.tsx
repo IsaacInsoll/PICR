@@ -13,16 +13,17 @@ import { MinimalFile } from '../../../../types';
 import { PicrImage } from '../../PicrImage';
 import { prettyDate } from '../Filtering/PrettyDate';
 import { FileFlagBadge } from './FileFlagBadge';
-import { LazyPicrAvatar } from '../../LazyPicrAvatar';
 import { useSetFolder } from '../../../hooks/useSetFolder';
 import { useOpenCommentsModal } from '../../../atoms/modalAtom';
 import { CommentHistoryProps } from './CommentHistory';
+import { PicrAvatar } from '../../PicrAvatar';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 
 export const CommentBodyItem = ({
   comment,
   ...p
 }: { comment: Comment } & CommentHistoryProps) => {
-  const { id, timestamp, userId, systemGenerated, file } = comment;
+  const { id, timestamp, user, systemGenerated, file } = comment;
   const setFolder = useSetFolder();
   const openCommentModal = useOpenCommentsModal();
 
@@ -33,11 +34,13 @@ export const CommentBodyItem = ({
   };
 
   const isHighlighted = p?.highlight == id;
+  const isMobile = useIsMobile();
 
   // We could use the 'title' prop on `Item` but it's a huge font size
   return (
     <Timeline.Item
-      bullet={<LazyPicrAvatar size={24} userId={userId} />}
+      // bullet={<LazyPicrAvatar size={24} userId={userId} />}
+      bullet={<PicrAvatar size={24} user={user} />}
       lineVariant={systemGenerated ? 'dashed' : 'solid'}
     >
       <Paper
@@ -45,7 +48,12 @@ export const CommentBodyItem = ({
         p={isHighlighted ? 'sm' : undefined}
         shadow={isHighlighted ? 'xl' : undefined}
       >
-        <Group>
+        <Group
+          style={{
+            flexDirection: isMobile ? 'column' : 'row',
+            alignItems: 'flex-start',
+          }}
+        >
           {showFile ? (
             <FilePreview
               file={file}
@@ -53,6 +61,9 @@ export const CommentBodyItem = ({
             />
           ) : null}
           <Stack style={{ flexGrow: 1 }} gap="xs">
+            <Text size="xs" c="dimmed" fw={500}>
+              {user?.name}
+            </Text>
             {systemGenerated ? (
               <CommentAction comment={comment} />
             ) : (
