@@ -26,6 +26,7 @@ export const GridGallery = ({
   return (
     <>
       <Gallery
+        // rowHeight={180}
         images={[...foldersForGallery(folders), ...filesForGallery(files)]}
         onClick={handleClick}
         enableImageSelection={false}
