@@ -11,7 +11,6 @@ import {
   Group,
   Menu,
   Rating,
-  rem,
   Stack,
   Table,
   Text,
@@ -22,12 +21,12 @@ import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
 import { SmallPreview } from './SmallPreview';
 import { pluralize } from '../../helpers/folderSubtitle';
-import { TbDots } from 'react-icons/tb';
 import { FileMenu } from './FileMenu';
 import { fileFlagStyles } from './Review/fileFlagStyles';
 import { prettyDate } from './Filtering/PrettyDate';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import { useAtomValue } from 'jotai/index';
+import { DotsIcon } from '../../PicrIcons';
 
 export const FileListView = ({
   files,
@@ -197,7 +196,7 @@ const Row = ({
           >
             <Menu.Target>
               <ActionIcon variant="light" color="gray">
-                <TbDots />
+                <DotsIcon />
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>

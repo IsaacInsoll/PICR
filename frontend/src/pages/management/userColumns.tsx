@@ -1,11 +1,11 @@
 import { PicrColumns } from '../../components/PicrDataGrid';
 import { User } from '../../../../graphql-types';
-import { TbCircleCheck, TbCircleXFilled } from 'react-icons/tb';
 import { FolderName } from '../../components/FolderName';
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
 import { CommentChip } from '../../components/CommentChip';
 import { Group } from '@mantine/core';
 import { ViewFolderButton } from '../../components/ViewFolderButton';
+import { BooleanIcon } from './BooleanIcon';
 
 export const userColumns: PicrColumns<User>[] = [
   { accessorKey: 'name', header: 'Name', minSize: 25 },
@@ -20,12 +20,7 @@ export const userColumns: PicrColumns<User>[] = [
     accessorKey: 'enabled',
     maxSize: 50,
     header: 'Enabled',
-    accessorFn: ({ enabled }) =>
-      enabled ? (
-        <TbCircleCheck style={{ color: 'green' }} />
-      ) : (
-        <TbCircleXFilled style={{ color: 'red' }} />
-      ),
+    accessorFn: ({ enabled }) => <BooleanIcon value={enabled} />,
   },
 ];
 

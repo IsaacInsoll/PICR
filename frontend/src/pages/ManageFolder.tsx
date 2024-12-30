@@ -7,12 +7,19 @@ import { Page } from '../components/Page';
 import { ManagePublicLinks } from './management/ManagePublicLinks';
 import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
 import { AccessLogs } from './management/AccessLogs/AccessLogs';
+import { useNavigate, useParams } from 'react-router';
 
 export const ManageFolder = ({ folder, toggleManaging }) => {
-  const [activeTab, setActiveTab] = useState<'links' | 'logs'>('links');
+  const { folderId, tab } = useParams();
+  const navigate = useNavigate();
+
+  const setActiveTab = (tab: string) => {
+    //TODO: I hate this hard coded navigation but don't know a better way :/
+    navigate(`/admin/f/${folderId}/manage/${tab}`);
+  };
   return (
     <Page>
-      <Tabs value={activeTab} onChange={setActiveTab}>
+      <Tabs value={tab ?? 'links'} onChange={setActiveTab}>
         <Tabs.List>
           <Tabs.Tab value="links" leftSection={<PublicLinkIcon />}>
             Links

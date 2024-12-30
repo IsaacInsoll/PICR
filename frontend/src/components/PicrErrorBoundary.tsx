@@ -1,7 +1,7 @@
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { Alert, Box, Code, Stack } from '@mantine/core';
-import { BiSolidError } from 'react-icons/bi';
 import { ReactNode } from 'react';
+import { ErrorIcon } from '../PicrIcons';
 
 export const PicrErrorBoundary = ({ children }: { children: ReactNode }) => {
   return (
@@ -16,7 +16,7 @@ function fallbackRender({ error }: FallbackProps) {
       variant="light"
       color="red"
       title="Something went wrong"
-      icon={<BiSolidError />}
+      icon={<ErrorIcon />}
     >
       <Stack gap="sm">
         <Box>

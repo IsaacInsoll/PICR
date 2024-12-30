@@ -1,17 +1,7 @@
-import { MinimalFile, MinimalFolder } from '../../../types';
+import { MinimalFolder } from '../../../types';
 import { useSetFolder } from '../../hooks/useSetFolder';
-import { useCommentPermissions } from '../../hooks/useCommentPermissions';
-import {
-  useOpenCommentsModal,
-  useOpenFileInfoModal,
-} from '../../atoms/modalAtom';
-import { Group, Menu, Text } from '@mantine/core';
-import { TbCloudDownload, TbFile } from 'react-icons/tb';
-import { BiComment, BiCommentDetail } from 'react-icons/bi';
-import { imageURL } from '../../helpers/imageURL';
-import { DownloadIcon, FolderIcon, InfoIcon } from '../../PicrIcons';
-import { useMutation } from 'urql';
-import { generateZipMutation } from '../../urql/mutations/generateZipMutation';
+import { Menu } from '@mantine/core';
+import { DownloadIcon, FolderIcon } from '../../PicrIcons';
 import { useGenerateZip } from '../../hooks/useGenerateZip';
 
 export const FolderMenu = ({ folder }: { folder: MinimalFolder }) => {
@@ -31,22 +21,6 @@ export const FolderMenu = ({ folder }: { folder: MinimalFolder }) => {
       >
         Open {folder.name}
       </Menu.Item>
-      {/*{canView ? (*/}
-      {/*  <Menu.Item*/}
-      {/*    leftSection={*/}
-      {/*      file.totalComments == 0 ? <BiComment /> : <BiCommentDetail />*/}
-      {/*    }*/}
-      {/*    key={3}*/}
-      {/*    onClick={() => openComment(file)}*/}
-      {/*  >*/}
-      {/*    <Group gap={8}>*/}
-      {/*      Comments*/}
-      {/*      <Text c="dimmed" size="xs">*/}
-      {/*        ({file.totalComments})*/}
-      {/*      </Text>*/}
-      {/*    </Group>*/}
-      {/*  </Menu.Item>*/}
-      {/*) : null}*/}
       <Menu.Item leftSection={<DownloadIcon />} key={4} onClick={generateZip}>
         Download
       </Menu.Item>

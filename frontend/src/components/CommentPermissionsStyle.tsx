@@ -1,6 +1,7 @@
 import { CommentPermissions } from '../../../graphql-types';
 import { ReactNode } from 'react';
-import { BiComment, BiCommentAdd, BiCommentX } from 'react-icons/bi';
+import { BiCommentAdd, BiCommentX } from 'react-icons/bi';
+import { CommentIcon } from '../PicrIcons';
 
 export const commentPermissionsStyle: {
   [key in CommentPermissions]: { icon: ReactNode; color: string };
@@ -10,7 +11,7 @@ export const commentPermissionsStyle: {
     color: 'gray',
   },
   [CommentPermissions.Read]: {
-    icon: <BiComment />,
+    icon: <CommentIcon />,
     color: 'blue',
   },
   [CommentPermissions.Edit]: {

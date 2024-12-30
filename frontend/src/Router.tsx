@@ -6,7 +6,7 @@ import { useMe } from './hooks/useMe';
 import { Settings } from './pages/management/Settings';
 import { ParticleBackground } from './components/ParticleBackground';
 
-const folderRoute = '/:folderId/:fileId?/:fileView?';
+const folderRoute = '/:folderId/:fileId?/:tab?';
 
 export interface FolderRouteParams {
   folderId: string;

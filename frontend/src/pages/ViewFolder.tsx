@@ -11,7 +11,6 @@ import { FolderContentsView } from '../components/FileListView/FolderContentsVie
 import QueryFeedback from '../components/QueryFeedback';
 import { TaskSummary } from '../components/TaskSummary';
 import { ActionIcon, Button, Center, Group, Menu, Title } from '@mantine/core';
-import { TbDots } from 'react-icons/tb';
 import { useSetFolder } from '../hooks/useSetFolder';
 import { FolderModalManager } from '../components/FolderModalManager';
 import { Page } from '../components/Page';
@@ -23,9 +22,14 @@ import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
 import { useCommentPermissions } from '../hooks/useCommentPermissions';
 import { MinimalFolder } from '../../types';
-import { DownloadIcon, FilterIcon, FolderIcon } from '../PicrIcons';
+import {
+  CommentIcon,
+  DotsIcon,
+  DownloadIcon,
+  FilterIcon,
+  FolderIcon,
+} from '../PicrIcons';
 import { FolderRouteParams } from '../Router';
-import { BiComment } from 'react-icons/bi';
 import { useGenerateZip } from '../hooks/useGenerateZip';
 import { useSetAtom } from 'jotai/index';
 import { filterAtom } from '../atoms/filterAtom';
@@ -186,7 +190,7 @@ const FolderOverflowMenu = ({ folder }: { folder: MinimalFolder }) => {
     >
       <Menu.Target>
         <ActionIcon variant="default" color="gray" size="lg">
-          <TbDots />
+          <DotsIcon />
         </ActionIcon>
       </Menu.Target>
 
@@ -205,7 +209,7 @@ const FolderOverflowMenu = ({ folder }: { folder: MinimalFolder }) => {
           <>
             <Menu.Label>Comments & Ratings</Menu.Label>
             <Menu.Item
-              leftSection={<BiComment />}
+              leftSection={<CommentIcon />}
               onClick={() => setFolder(folder, 'activity')}
             >
               View Activity

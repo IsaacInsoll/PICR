@@ -11,6 +11,8 @@ import { Suspense, useState } from 'react';
 import { LoadingIndicator } from '../../../components/LoadingIndicator';
 import { AccessLogsUsersSelector } from './AccessLogsUsersSelector';
 import { FolderName } from '../../../components/FolderName';
+import { EmptyPlaceholder } from '../../EmptyPlaceholder';
+import { TbUnlink } from 'react-icons/tb';
 
 export const AccessLogs = ({
   folderId,
@@ -49,11 +51,20 @@ const Body = ({ folderId, userId, includeChildren }) => {
   const data = result.data?.accessLogs ?? [];
 
   return (
-    <PicrDataGrid
-      columns={accessLogColumns}
-      data={data}
-      onClick={(row) => console.log(row)}
-    />
+    <>
+      {data.length > 0 ? (
+        <PicrDataGrid
+          columns={accessLogColumns}
+          data={data}
+          onClick={(row) => console.log(row)}
+        />
+      ) : (
+        <EmptyPlaceholder
+          text="Nobody has used a public link to view this folder (yet!)"
+          icon={<TbUnlink />}
+        />
+      )}
+    </>
   );
 };
 

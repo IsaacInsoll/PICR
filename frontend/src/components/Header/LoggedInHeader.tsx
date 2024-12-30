@@ -7,16 +7,19 @@ import { PicrLogo } from '../../pages/LoginForm';
 import { PicrAvatar } from '../PicrAvatar';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useQuickFind } from '../QuickFind/useQuickFind';
-import { useNavigate, useParams } from 'react-router';
-import { LogOutIcon, SearchIcon, UserSettingsIcon } from '../../PicrIcons';
+import { useNavigate } from 'react-router';
+import {
+  FolderIcon,
+  HomeIcon,
+  LogOutIcon,
+  SearchIcon,
+  UserSettingsIcon,
+} from '../../PicrIcons';
 import { useSetAtom } from 'jotai/index';
 import { authKeyAtom } from '../../atoms/authAtom';
-import { TbFolder, TbFolderStar, TbFolderUp, TbHome } from 'react-icons/tb';
+import { TbFolderStar } from 'react-icons/tb';
 import { MinimalFolder } from '../../../types';
 import { useBaseViewFolderURL } from '../../hooks/useBaseViewFolderURL';
-import { useQuery } from 'urql';
-import { viewFolderQuery } from '../../urql/queries/viewFolderQuery';
-import { useRequery } from '../../hooks/useRequery';
 import { useCallback } from 'react';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
@@ -92,17 +95,17 @@ const ManageFolderButton = ({
   managing,
 }: {
   folder: MinimalFolder;
-  managing: boollean;
+  managing: boolean;
 }) => {
   const navigate = useNavigate();
   const baseUrl = useBaseViewFolderURL();
   // const setFolder = useSetFolder();
 
   const toggleManaging = useCallback(() => {
-    navigate(baseUrl + folder.id + (managing ? '' : '/manage'));
+    navigate(baseUrl + folder.id + (managing ? '' : '/manage/links'));
   }, [navigate, baseUrl, folder.id, managing]);
 
-  const icon = managing ? <TbFolder /> : <TbFolderStar />;
+  const icon = managing ? <FolderIcon /> : <TbFolderStar />;
 
   return (
     <Button
@@ -144,7 +147,7 @@ const RightSide = ({ me }) => {
       <Menu.Dropdown>
         <Menu.Label>Files & Folders</Menu.Label>
         <Menu.Item
-          leftSection={<TbHome />}
+          leftSection={<HomeIcon />}
           onClick={() => setFolder(me.folder)}
         >
           {me.folder?.name ?? 'Home'}
