@@ -113,7 +113,9 @@ const accessLogColumns: PicrColumns<AccessLog>[] = [
     header: 'User',
     minSize: 25,
     accessorFn: (al: AccessLog) => (
-      <LazyPicrAvatar userId={al.userId} size="sm" showName={true} />
+      <Suspense fallback={<LoadingIndicator size="small" />}>
+        <LazyPicrAvatar userId={al.userId} size="sm" showName={true} />
+      </Suspense>
     ),
   },
   // { accessorKey: 'folderId', header: 'Folder', minSize: 25 },
