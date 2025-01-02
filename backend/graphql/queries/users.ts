@@ -1,8 +1,6 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import { GraphQLError } from 'graphql/error';
-import Folder from '../../models/Folder';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
-import User from '../../models/User';
+import UserModel from '../../db/UserModel';
 import { Op } from 'sequelize';
 import { getFolder } from '../helpers/getFolder';
 import {
@@ -34,7 +32,7 @@ const resolver = async (_, params, context) => {
   }
 
   // we don't show 'real users' just 'shared public users'
-  const data = await User.findAll({
+  const data = await UserModel.findAll({
     where: { folderId: { [Op.or]: ids }, uuid: { [Op.not]: null } },
   });
   return data.map((pl) => {

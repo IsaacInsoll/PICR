@@ -1,12 +1,12 @@
 import { CustomJwtPayload } from '../types/CustomJwtPayload';
-import User from '../models/User';
+import UserModel from '../db/UserModel';
 
 export const getUserFromUUID = async (
   context: CustomJwtPayload,
-): Promise<User | undefined> => {
+): Promise<UserModel | undefined> => {
   const hasUUID = !!context.uuid && context.uuid !== '';
   if (hasUUID) {
-    const user = await User.findOne({ where: { uuid: context.uuid } });
+    const user = await UserModel.findOne({ where: { uuid: context.uuid } });
     //todo: check expiry dates etc
     if (user && user.enabled) {
       return user;

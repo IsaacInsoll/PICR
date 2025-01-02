@@ -3,8 +3,7 @@ import { addFolder } from './events/addFolder';
 import { removeFolder } from './events/removeFolder';
 import { Task } from '../../graphql-types';
 import { generateAllThumbs } from '../media/generateImageThumbnail';
-import File from '../models/File';
-import Folder from '../models/Folder';
+import FileModel from '../db/FileModel';
 import { log } from '../logger';
 
 type QueueAction =
@@ -57,7 +56,7 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
       break;
     case 'generateThumbnails':
       // lol, we pass an ID to this function, not a path, but it's fine, trust me!
-      await generateAllThumbs(await File.findByPk(payload.id));
+      await generateAllThumbs(await FileModel.findByPk(payload.id));
       break;
     case 'initComplete':
       initComplete = true;

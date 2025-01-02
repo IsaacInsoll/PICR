@@ -1,14 +1,12 @@
-import User from '../../models/User';
+import UserModel from '../../db/UserModel';
 import { hashPassword } from '../../helpers/hashPassword';
 import { generateAccessToken } from '../../auth/jwt-auth';
-import { GraphQLField, GraphQLNonNull, GraphQLString } from 'graphql';
-import { GraphQLFieldResolver } from 'graphql/type';
-import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
+import { GraphQLNonNull, GraphQLString } from 'graphql';
 
 const resolver = async (_, params, context) => {
   const p = params.password;
   if (!p || p === '') return '';
-  const user = await User.findOne({
+  const user = await UserModel.findOne({
     where: {
       username: params.user,
       hashedPassword: hashPassword(p),

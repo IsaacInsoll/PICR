@@ -1,14 +1,14 @@
 import { folderList, pathSplit, relativePath } from '../fileManager';
-import Folder from '../../models/Folder';
+import FolderModel from '../../db/FolderModel';
 import { updateFolderHash } from './updateFolderHash';
 import { log } from '../../logger';
 import { sep } from 'path';
 
-let rootFolder: Folder | null = null;
+let rootFolder: FolderModel | null = null;
 
 export const setupRootFolder = async () => {
   // const totalFolders = await Folder.count();
-  const [root] = await Folder.findOrCreate({
+  const [root] = await FolderModel.findOrCreate({
     where: { parentId: null },
     defaults: { name: 'Home', exists: true },
   });
@@ -25,7 +25,7 @@ export const addFolder = async (path: string) => {
   const ps = pathSplit(path);
   for (let i = 0; i < ps.length; i++) {
     const p = ps.slice(0, i + 1).join(sep);
-    const [newFolder, created] = await Folder.findOrCreate({
+    const [newFolder, created] = await FolderModel.findOrCreate({
       where: {
         name: ps[i],
         parentId: f,

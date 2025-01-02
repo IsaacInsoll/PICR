@@ -1,11 +1,11 @@
-import User from '../models/User';
+import UserModel from '../db/UserModel';
 import { hashPassword } from '../helpers/hashPassword';
 import { defaultCredentials } from '../auth/defaultCredentials';
 
 export const envPassword = async () => {
-  const totalUsers = await User.count();
+  const totalUsers = await UserModel.count();
   if (totalUsers == 0) {
-    User.create({
+    UserModel.create({
       name: 'PICR Admin',
       username: defaultCredentials.username,
       hashedPassword: hashPassword(defaultCredentials.password),

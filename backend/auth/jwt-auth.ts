@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { config } from 'dotenv';
 import { CustomJwtPayload } from '../types/CustomJwtPayload';
-import User from '../models/User';
+import UserModel from '../db/UserModel';
 import { picrConfig } from '../config/picrConfig';
 
 export function generateAccessToken(obj) {
@@ -14,14 +13,14 @@ export function generateAccessToken(obj) {
 
 export async function getUserFromToken(
   context: CustomJwtPayload,
-): Promise<User | undefined> {
+): Promise<UserModel | undefined> {
   const token = context?.auth?.split(' ')?.[1];
   if (token == null || token === '') return undefined;
   const secret = picrConfig.tokenSecret as string;
 
   try {
     const decoded = jwt.verify(token, secret) as CustomJwtPayload;
-    const user = await User.findByPk(decoded.userId);
+    const user = await UserModel.findByPk(decoded.userId);
     if (user.hashedPassword == decoded.hashedPassword && user.enabled)
       return user;
     return undefined;

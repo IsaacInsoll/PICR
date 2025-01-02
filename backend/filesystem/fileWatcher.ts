@@ -2,8 +2,8 @@ import chokidar from 'chokidar';
 import { relativePath } from './fileManager';
 import { addToQueue, initComplete } from './fileQueue';
 import { log } from '../logger';
-import File from '../models/File';
-import Folder from '../models/Folder';
+import FileModel from '../db/FileModel';
+import FolderModel from '../db/FolderModel';
 import { Op } from 'sequelize';
 import { picrConfig } from '../config/picrConfig';
 
@@ -18,8 +18,8 @@ export const fileWatcher = async (config) => {
   const intervalMultiplier = config.pollingInterval; // multiply default interval values by this
 
   //update all files to 'not exist' then set as exist when we find them
-  await File.update({ exists: false }, { where: {} });
-  await Folder.update(
+  await FileModel.update({ exists: false }, { where: {} });
+  await FolderModel.update(
     { exists: false },
     { where: { parentId: { [Op.ne]: null } } }, //don't set Home (root) to not exist
   );

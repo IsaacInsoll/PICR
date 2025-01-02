@@ -4,10 +4,10 @@ import {
   ContextualPermissions,
   FolderPermissions,
 } from '../types/FolderPermissions';
-import Folder from '../models/Folder';
+import FolderModel from '../db/FolderModel';
 import { doAuthError } from './doAuthError';
 import { GraphQLError } from 'graphql/error';
-import User from '../models/User';
+import UserModel from '../db/UserModel';
 import { getUserFromUUID } from './getUserFromUUID';
 import { folderIsUnderFolderId } from '../helpers/folderIsUnderFolderId';
 
@@ -24,7 +24,7 @@ export const contextPermissions = async (
     return { permissions: 'None', user: null };
   }
 
-  const folder = await Folder.findByPk(folderId);
+  const folder = await FolderModel.findByPk(folderId);
   const user = await getUserFromToken(context);
 
   if (user && folder && folder.exists) {
@@ -40,7 +40,7 @@ export const contextPermissions = async (
         throw new GraphQLError('No admin permissions for ' + folder.name);
       return {
         permissions: 'View',
-        user: await User.findByPk(publicUser.id),
+        user: await UserModel.findByPk(publicUser.id),
         folder,
       };
     }

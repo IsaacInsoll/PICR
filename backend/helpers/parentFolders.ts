@@ -1,14 +1,14 @@
-import Folder from '../models/Folder';
+import FolderModel from '../db/FolderModel';
 import { contextPermissions } from '../auth/contextPermissions';
 
 export const parentFolders = async (
-  folder: Folder,
+  folder: FolderModel,
   context,
-): Promise<Folder[]> => {
+): Promise<FolderModel[]> => {
   let current = folder;
-  const parents: Folder[] = [];
+  const parents: FolderModel[] = [];
   while (current.parentId) {
-    current = await Folder.findByPk(current.parentId);
+    current = await FolderModel.findByPk(current.parentId);
     if (!current) break; // in case parent folder no longer exists?
     const { permissions } = await contextPermissions(context, current.id);
     if (!permissions || permissions === 'None') {

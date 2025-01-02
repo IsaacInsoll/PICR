@@ -1,13 +1,13 @@
 import { getUserFromToken } from '../../auth/jwt-auth';
 import { userType } from '../types/userType';
-import Folder from '../../models/Folder';
+import FolderModel from '../../db/FolderModel';
 import { userToJSON } from '../helpers/userToJSON';
 import { getUserFromUUID } from '../../auth/getUserFromUUID';
 
 const resolver = async (_, params, context) => {
   const user = await getUserFromToken(context);
   if (user) {
-    const folder = await Folder.findByPk(user.folderId);
+    const folder = await FolderModel.findByPk(user.folderId);
     return { ...userToJSON(user), folder: folder.toJSON() };
   }
   const publicUser = await getUserFromUUID(context);

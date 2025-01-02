@@ -1,6 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import { GraphQLError } from 'graphql/error';
-import User from '../../models/User';
+import UserModel from '../../db/UserModel';
 import { Op } from 'sequelize';
 import { getFolder } from '../helpers/getFolder';
 import { GraphQLList, GraphQLNonNull } from 'graphql';
@@ -9,7 +8,7 @@ import { userToJSON } from '../helpers/userToJSON';
 
 const resolver = async (_, params, context) => {
   await requireFullAdmin(context);
-  const data = await User.findAll({ where: { uuid: { [Op.is]: null } } });
+  const data = await UserModel.findAll({ where: { uuid: { [Op.is]: null } } });
   return data.map((pl) => {
     return { ...userToJSON(pl), folder: getFolder(pl.folderId) };
   });

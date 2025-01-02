@@ -1,7 +1,7 @@
-import Folder from '../models/Folder';
+import FolderModel from '../db/FolderModel';
 
 export const folderIsUnderFolderId = async (
-  child: Folder,
+  child: FolderModel,
   parentId: number,
 ): Promise<boolean> => {
   if (!child || !parentId) return false;
@@ -9,7 +9,7 @@ export const folderIsUnderFolderId = async (
     return true;
   }
   if (!child.parentId) return false;
-  const childParent = await Folder.findByPk(child.parentId);
+  const childParent = await FolderModel.findByPk(child.parentId);
   if (!childParent) {
     return false;
   }

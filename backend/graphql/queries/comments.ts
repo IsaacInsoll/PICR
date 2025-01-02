@@ -1,8 +1,8 @@
-import File from '../../models/File';
+import FileModel from '../../db/FileModel';
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { commentType } from '../types/commentType';
-import Comment from '../../models/Comment';
+import CommentModel from '../../db/CommentModel';
 import { GraphQLError } from 'graphql/error';
 import { subFilesMap } from '../helpers/subFiles';
 import { Order } from 'sequelize';
@@ -18,9 +18,12 @@ const resolver = async (_, params, context) => {
   const order: Order = [['createdAt', 'DESC']];
 
   if (params.fileId) {
-    const file = await File.findByPk(params.fileId);
+    const file = await FileModel.findByPk(params.fileId);
     await contextPermissions(context, file.folderId, 'View');
-    const list = await Comment.findAll({ where: { fileId: file.id }, order });
+    const list = await CommentModel.findAll({
+      where: { fileId: file.id },
+      order,
+    });
     return addUserRelationship(
       list.map((x) => {
         return {
@@ -34,7 +37,7 @@ const resolver = async (_, params, context) => {
     const folderId = params.folderId;
     await contextPermissions(context, folderId, 'View');
     const files = await subFilesMap(folderId);
-    const list = await Comment.findAll({ where: { folderId }, order });
+    const list = await CommentModel.findAll({ where: { folderId }, order });
     return addUserRelationship(
       list.map((x) => {
         return {

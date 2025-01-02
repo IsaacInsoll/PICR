@@ -1,5 +1,4 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import { doAuthError } from '../../auth/doAuthError';
 import { GraphQLError } from 'graphql/error';
 import { getFolder } from '../helpers/getFolder';
 import {
@@ -9,9 +8,9 @@ import {
   GraphQLString,
 } from 'graphql/index';
 import { userType } from '../types/userType';
-import User from '../../models/User';
+import UserModel from '../../db/UserModel';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
-import Folder from '../../models/Folder';
+import FolderModel from '../../db/FolderModel';
 import { Op } from 'sequelize';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
 import { badChars } from '../helpers/badChars';
@@ -19,11 +18,11 @@ import { badChars } from '../helpers/badChars';
 const resolver = async (_, params, context) => {
   await contextPermissions(context, params.folderId, 'Admin');
 
-  let user: User | null = null;
+  let user: UserModel | null = null;
   if (params.id) {
-    user = await User.findByPk(params.id);
+    user = await UserModel.findByPk(params.id);
     if (!user) throw new GraphQLError('No user found for ID: ' + params.id);
-    const userFolder = await Folder.findByPk(user.folderId);
+    const userFolder = await FolderModel.findByPk(user.folderId);
     const folderAllowed = await folderIsUnderFolderId(
       userFolder,
       params.folderId,
@@ -34,10 +33,10 @@ const resolver = async (_, params, context) => {
         "You don't have access to edit users in folder " + userFolder.id,
       );
   } else {
-    user = new User();
+    user = new UserModel();
   }
 
-  const existingUuid = await User.findAll({
+  const existingUuid = await UserModel.findAll({
     where: { uuid: params.uuid, [Op.not]: { id: user.id } },
   });
 

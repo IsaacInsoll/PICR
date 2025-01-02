@@ -19,6 +19,6 @@ export const userType = new GraphQLObjectType({
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     folder: { type: folderType },
     commentPermissions: { type: commentPermissionsEnum },
-    gravatar: {type: GraphQLString}
+    gravatar: { type: GraphQLString },
   }),
 });

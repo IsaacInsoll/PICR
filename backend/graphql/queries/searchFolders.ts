@@ -1,6 +1,6 @@
 import { allChildFolderIds } from '../../helpers/allChildFolderIds';
 import { contextPermissions } from '../../auth/contextPermissions';
-import Folder from '../../models/Folder';
+import FolderModel from '../../db/FolderModel';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
 import { GraphQLString } from 'graphql';
 import { Op } from 'sequelize';
@@ -17,7 +17,7 @@ const resolver = async (_, params, context) => {
 
   const lower = params.query.toLowerCase().split(' ');
   const lowerMap = lower.map((l) => ({ [Op.iLike]: `%${l}%` }));
-  const folders = await Folder.findAll({
+  const folders = await FolderModel.findAll({
     where: {
       parentId: folderIds,
       exists: true,

@@ -5,13 +5,13 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import Folder from './Folder';
-import { CommentPermissions, FileType } from '../../graphql-types';
+import FolderModel from './FolderModel';
+import { CommentPermissions } from '../../graphql-types';
 
 // Either a 'real user' with a hashedPassword or a 'public link' user with a UUID
 
-@Table
-export default class User extends Model {
+@Table({ tableName: 'Users' })
+export default class UserModel extends Model {
   @Column
   declare name: string;
 
@@ -32,7 +32,7 @@ export default class User extends Model {
   declare commentPermissions: CommentPermissions; //dodgy JSON string of type `MetadataSummary.ts`
 
   // RELATIONSHIPS
-  @ForeignKey(() => Folder)
+  @ForeignKey(() => FolderModel)
   @Column
   folderId: number;
 }

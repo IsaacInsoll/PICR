@@ -5,21 +5,21 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import Folder from './Folder';
-import User from './User';
-import File from './File';
+import FolderModel from './FolderModel';
+import UserModel from './UserModel';
+import FileModel from './FileModel';
 
-@Table
-export default class Comment extends Model {
-  @ForeignKey(() => Folder)
+@Table({ tableName: 'Comments' })
+export default class CommentModel extends Model {
+  @ForeignKey(() => FolderModel)
   @Column
   folderId: number;
 
-  @ForeignKey(() => File)
+  @ForeignKey(() => FileModel)
   @Column
   fileId: number;
 
-  @ForeignKey(() => User)
+  @ForeignKey(() => UserModel)
   @Column
   userId: number;
 
@@ -34,11 +34,11 @@ export default class Comment extends Model {
 }
 
 export const CommentFor = async (
-  file: File,
-  user: User,
+  file: FileModel,
+  user: UserModel,
   systemGenerated?: object,
 ) => {
-  const c = new Comment();
+  const c = new CommentModel();
   c.folderId = file.folderId;
   c.fileId = file.id;
   c.userId = user.id;

@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { AllSize, allSizes } from '../../frontend/src/helpers/thumbnailSize';
-import File from '../models/File';
+import FileModel from '../db/FileModel';
 import { extname } from 'path';
 import {
   fullPathFor,
@@ -22,7 +22,7 @@ export const imageRequest = async (
   res,
 ) => {
   const { id, size, hash, filename } = req.params;
-  const file = await File.findOne({ where: { id, fileHash: hash } });
+  const file = await FileModel.findOne({ where: { id, fileHash: hash } });
   if (!file) res.sendStatus(404);
   if (file.type == 'File') res.sendStatus(404);
   if (!allSizes.includes(size)) res.sendStatus(400);

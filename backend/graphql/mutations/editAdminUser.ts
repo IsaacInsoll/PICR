@@ -1,7 +1,7 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import User from '../../models/User';
+import UserModel from '../../db/UserModel';
 import { GraphQLError } from 'graphql/error';
-import Folder from '../../models/Folder';
+import FolderModel from '../../db/FolderModel';
 import { hashPassword } from '../../helpers/hashPassword';
 
 import { getFolder } from '../helpers/getFolder';
@@ -18,7 +18,7 @@ import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
 
 const resolver = async (_, params, context) => {
   const { user } = await contextPermissions(context, params.folderId, 'Admin');
-  let adminUser: User | null = null;
+  let adminUser: UserModel | null = null;
 
   const pass = params.password;
   const username = params.username;
@@ -27,7 +27,7 @@ const resolver = async (_, params, context) => {
   }
 
   if (username) {
-    const existingUsername = await User.findOne({
+    const existingUsername = await UserModel.findOne({
       where: {
         username: username,
         uuid: { [Op.ne]: null },
@@ -41,10 +41,10 @@ const resolver = async (_, params, context) => {
   }
 
   if (params.id) {
-    adminUser = await User.findByPk(params.id);
+    adminUser = await UserModel.findByPk(params.id);
     if (!adminUser)
       throw new GraphQLError('No user found for ID: ' + params.id);
-    const userFolder = await Folder.findByPk(adminUser.folderId);
+    const userFolder = await FolderModel.findByPk(adminUser.folderId);
     if (!(await folderIsUnderFolderId(userFolder, user.folderId))) {
       throw new GraphQLError(
         'You cant edit this user as they are above your level of access',
@@ -52,7 +52,7 @@ const resolver = async (_, params, context) => {
     }
   } else {
     if (pass && username) {
-      adminUser = new User();
+      adminUser = new UserModel();
     } else {
       throw new GraphQLError(
         'Cannot create new user without username and password',

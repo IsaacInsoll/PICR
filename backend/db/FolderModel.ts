@@ -6,10 +6,10 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-import File from './File';
+import FileModel from './FileModel';
 
-@Table
-export default class Folder extends Model {
+@Table({ tableName: 'Folders' })
+export default class FolderModel extends Model {
   @Column
   declare name: string;
   @Column
@@ -19,17 +19,17 @@ export default class Folder extends Model {
   @Column
   declare exists: boolean; // bulk set as 'false' at boot, then set true when detected, to weed out folders deleted while server down
 
-  @ForeignKey(() => Folder)
+  @ForeignKey(() => FolderModel)
   @Column
   parentId: number;
 
-  @HasMany(() => Folder)
-  children: Folder[];
+  @HasMany(() => FolderModel)
+  children: FolderModel[];
 
-  @HasMany(() => File)
-  files: File[];
+  @HasMany(() => FileModel)
+  files: FileModel[];
 
-  @ForeignKey(() => File)
+  @ForeignKey(() => FileModel)
   @Column
   heroImageId: number;
 }

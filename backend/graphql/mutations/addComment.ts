@@ -1,8 +1,8 @@
 import { GraphQLID, GraphQLNonNull } from 'graphql/type';
 import { contextPermissions } from '../../auth/contextPermissions';
 import { doAuthError } from '../../auth/doAuthError';
-import File from '../../models/File';
-import { CommentFor } from '../../models/Comment';
+import FileModel from '../../db/FileModel';
+import { CommentFor } from '../../db/CommentModel';
 import { fileToJSON } from '../helpers/fileToJSON';
 import { GraphQLInt, GraphQLString } from 'graphql';
 import { fileFlagEnum } from '../enums/fileFlagEnum';
@@ -10,7 +10,7 @@ import { fileInterface } from '../interfaces/fileInterface';
 import sanitizeHtml from 'sanitize-html';
 
 const resolver = async (_, params, context) => {
-  const file = await File.findByPk(params.id);
+  const file = await FileModel.findByPk(params.id);
   const { user } = await contextPermissions(context, file.folderId, 'View');
 
   if (user.commentPermissions != 'edit') doAuthError('Not allowed to comment');

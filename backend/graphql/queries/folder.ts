@@ -1,5 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import { createAccessLog } from '../../models/AccessLogModel';
+import { createAccessLog } from '../../db/AccessLogModel';
 import { Folder } from '../../../graphql-types';
 import { GraphQLFieldResolver } from 'graphql/type';
 import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';

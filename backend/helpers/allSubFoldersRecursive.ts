@@ -1,13 +1,13 @@
-import Folder from '../models/Folder';
+import FolderModel from '../db/FolderModel';
 import { Op } from 'sequelize';
 
 export const allSubFoldersRecursive = async (folderId: number | string) => {
-  const f = await Folder.findByPk(folderId);
+  const f = await FolderModel.findByPk(folderId);
   if (!f.relativePath) {
     //root folder
-    return await Folder.findAll({ where: { exists: true } });
+    return await FolderModel.findAll({ where: { exists: true } });
   }
-  return await Folder.findAll({
+  return await FolderModel.findAll({
     where: {
       exists: true,
       [Op.or]: [

@@ -4,7 +4,6 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { primaryColorEnum, themeModeEnum } from '../enums/themeModeEnum';
 import { folderType } from './folderType';
 import { GraphQLDateTime } from 'graphql-scalars';
 import { userType } from './userType';

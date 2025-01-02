@@ -1,6 +1,6 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { doAuthError } from '../../auth/doAuthError';
-import File from '../../models/File';
+import FileModel from '../../db/FileModel';
 import { GraphQLID, GraphQLNonNull } from 'graphql/index';
 import { folderType } from '../types/folderType';
 
@@ -11,7 +11,7 @@ const resolver = async (_, params, context) => {
     'Admin',
   );
 
-  const heroImage = await File.findByPk(params.heroImageId);
+  const heroImage = await FileModel.findByPk(params.heroImageId);
   if (!heroImage) doAuthError('Invalid hero image ID');
   if (heroImage.type != 'Image') doAuthError('Not an image');
   if (heroImage.folderId != folder.id) doAuthError('Not in this folder');

@@ -1,7 +1,7 @@
-import Folder from '../models/Folder';
+import FolderModel from '../db/FolderModel';
 
 export const folderAndAllParentIds = async (
-  folder: Folder,
+  folder: FolderModel,
   rootId?: number,
 ): Promise<string[]> => {
   let f = folder;
@@ -16,7 +16,7 @@ export const folderAndAllParentIds = async (
     if (rootId && f.parentId == rootId) {
       return ids;
     }
-    f = await Folder.findByPk(f.parentId);
+    f = await FolderModel.findByPk(f.parentId);
   }
   if (rootId) {
     throw new Error(

@@ -1,10 +1,10 @@
-import ServerOptions from '../models/ServerOptions';
+import { getServerOptions } from '../db/ServerOptionsModel';
 import { lt, valid } from 'semver';
-import { DataType, Sequelize } from 'sequelize-typescript';
-import File from './../models/File';
+import { Sequelize } from 'sequelize-typescript';
+import FileModel from '../db/FileModel';
 
 export const dbMigrate = async (config, sequelize: Sequelize) => {
-  const [opts, created] = await ServerOptions.findOrBuild({ where: { id: 1 } });
+  const opts = await getServerOptions();
 
   const q = sequelize.getQueryInterface();
 
@@ -17,7 +17,7 @@ export const dbMigrate = async (config, sequelize: Sequelize) => {
       //   type: DataType.ENUM(...Object.values(FileFlag)),
       // });
 
-      await File.update(
+      await FileModel.update(
         { totalComments: 0 },
         { where: { totalComments: null } },
       );

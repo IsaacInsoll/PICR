@@ -1,9 +1,9 @@
-import File from '../models/File';
+import FileModel from '../db/FileModel';
 import { ffprobe, FfprobeData, setFfprobePath } from 'fluent-ffmpeg';
 import util from 'node:util';
 import { VideoMetadata } from '../types/MetadataSummary';
 
-export const getVideoMetadata = async (file: File) => {
+export const getVideoMetadata = async (file: FileModel) => {
   setFfprobePath('node_modules/ffprobe-static/bin/linux/x64/ffprobe');
 
   //ffprobe is 'traditional callback' style so lets promise-ify it

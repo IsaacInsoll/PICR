@@ -1,4 +1,4 @@
-import User from '../../models/User';
+import UserModel from '../../db/UserModel';
 import { userToJSON } from './userToJSON';
 
 type UserRelationship = { userId: string }[];
@@ -10,7 +10,7 @@ export const addUserRelationship = async (
   const ids = list.map((b) => b.userId).filter((v, i, a) => a.indexOf(v) === i);
   if (ids.length == 0) return list;
 
-  const users = await User.findAll({ where: { id: ids } });
+  const users = await UserModel.findAll({ where: { id: ids } });
   console.log('second map');
   return list.map((obj) => {
     const user = userToJSON(users.find((f) => f.id == obj.userId));

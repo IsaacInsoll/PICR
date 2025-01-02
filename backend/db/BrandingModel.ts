@@ -5,12 +5,12 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import Folder from './Folder';
+import FolderModel from './FolderModel';
 import { PrimaryColor, ThemeMode } from '../../graphql-types';
 
-@Table
-export default class Branding extends Model {
-  @ForeignKey(() => Folder)
+@Table({ tableName: 'Brandings' })
+export default class BrandingModel extends Model {
+  @ForeignKey(() => FolderModel)
   @Column
   folderId: number;
   //
@@ -23,3 +23,7 @@ export default class Branding extends Model {
   @Column
   declare logoUrl: string;
 }
+
+export const brandingForFolderId = async (folderId: number) => {
+  return await BrandingModel.findOne({ where: { folderId: folderId } });
+};

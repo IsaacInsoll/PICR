@@ -5,13 +5,13 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import Folder from './Folder';
+import FolderModel from './FolderModel';
 import { FileFlag, FileType } from '../../graphql-types';
 import { fullPath } from '../filesystem/fileManager';
 import { sep } from 'path';
 
-@Table
-export default class File extends Model {
+@Table({ tableName: 'Files' })
+export default class FileModel extends Model {
   @Column
   declare name: string;
   @Column
@@ -55,7 +55,7 @@ export default class File extends Model {
   @Column
   declare latestComment: Date;
 
-  @ForeignKey(() => Folder)
+  @ForeignKey(() => FolderModel)
   @Column
   folderId: number;
 

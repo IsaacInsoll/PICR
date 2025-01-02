@@ -1,4 +1,4 @@
-import Folder from '../../models/Folder';
+import FolderModel from '../../db/FolderModel';
 
 type FolderRelationship = { folderId: string }[];
 
@@ -12,7 +12,7 @@ export const addFolderRelationship = async (
 
   if (ids.length == 0) return list;
 
-  const folders = await Folder.findAll({ where: { id: ids } });
+  const folders = await FolderModel.findAll({ where: { id: ids } });
   return list.map((obj) => {
     const folder = folders.find((f) => f.id == obj.folderId)?.toJSON();
     return { ...obj, folder };

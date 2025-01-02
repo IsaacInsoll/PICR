@@ -1,6 +1,4 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import { GraphQLError } from 'graphql/error';
-import Folder from '../../models/Folder';
 import { Op } from 'sequelize';
 import {
   GraphQLBoolean,
@@ -9,12 +7,11 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';
-import AccessLogModel from '../../models/AccessLogModel';
+import AccessLogModel, { getAccessLogs } from '../../db/AccessLogModel';
 import { accessLogType } from '../types/accessLogType';
 import { userTypeEnum } from '../enums/userTypeEnum';
 import { addFolderRelationship } from '../helpers/addFolderRelationship';
-import { UserType } from '../../../graphql-types';
-import User from '../../models/User';
+import UserModel from '../../db/UserModel';
 
 const resolver = async (_, params, context) => {
   const { folder } = await contextPermissions(
@@ -37,19 +34,22 @@ const resolver = async (_, params, context) => {
   // }
 
   const userIds = (
-    await User.findAll({
+    await UserModel.findAll({
       where: { uuid: { [Op.ne]: null } },
     })
   ).map((u) => u.id);
 
-  const data = await AccessLogModel.findAll({
-    where: {
-      folderId: { [Op.or]: ids },
-      userId: params.userId ?? { [Op.or]: userIds },
-    },
-    order: [['createdAt', 'DESC']],
-    limit: 100,
-  });
+  // const data = await AccessLogModel.findAll({
+  //   where: {
+  //     folderId: { [Op.or]: ids },
+  //     userId: params.userId ?? { [Op.or]: userIds },
+  //   },
+  //   order: [['createdAt', 'DESC']],
+  //   limit: 100,
+  // });
+
+  const data = await getAccessLogs(ids, params.userId ?? userIds);
+
   return addFolderRelationship(
     data.map((al) => {
       return { ...al.toJSON(), timestamp: al.createdAt };

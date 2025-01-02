@@ -1,12 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { contextPermissions } from '../auth/contextPermissions';
-import Folder from '../models/Folder';
 import { folderStatsSummaryText } from '../graphql/helpers/folderStats';
 import { imageURL } from '../../frontend/src/helpers/imageURL';
 import { Request, Response } from 'express';
 import { joinTitles } from '../helpers/joinTitle';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder';
-import { log } from '../logger';
 
 interface ITemplateFields {
   title: string;

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import Folder from '../models/Folder';
+import FolderModel from '../db/FolderModel';
 import { zipPath } from '../helpers/zip';
 import { existsSync } from 'node:fs';
 import { zipInProgress } from '../helpers/zipQueue';
@@ -9,7 +9,7 @@ export const zipRequest = async (
   res,
 ) => {
   const { folderId, hash } = req.params;
-  const folder = await Folder.findOne({
+  const folder = await FolderModel.findOne({
     where: { id: folderId },
   });
   if (!folder) res.sendStatus(404);

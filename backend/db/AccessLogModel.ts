@@ -1,16 +1,16 @@
 import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
-import Folder from './Folder';
-import User from './User';
+import FolderModel from './FolderModel';
+import UserModel from './UserModel';
 import { IncomingCustomHeaders } from '../types/incomingCustomHeaders';
 import { literal, Op } from 'sequelize';
 
 @Table({ tableName: 'AccessLogs' })
 export default class AccessLogModel extends Model {
-  @ForeignKey(() => Folder)
+  @ForeignKey(() => FolderModel)
   @Column
   folderId: number;
 
-  @ForeignKey(() => User)
+  @ForeignKey(() => UserModel)
   @Column
   userId: number;
 
@@ -54,4 +54,19 @@ export const createAccessLog = async (
   const log = new AccessLogModel();
   log.set(props);
   await log.save();
+};
+
+export const getAccessLogs = async (
+  folderIds: number[],
+  userId: number | number[],
+) => {
+  const data = await AccessLogModel.findAll({
+    where: {
+      folderId: { [Op.or]: folderIds },
+      userId: !Array.isArray(userId) ? userId : { [Op.or]: userId },
+    },
+    order: [['createdAt', 'DESC']],
+    limit: 100,
+  });
+  return data;
 };

@@ -1,6 +1,6 @@
 import { basename, dirname, extname } from 'path';
 import { folderList, relativePath } from '../fileManager';
-import File from '../../models/File';
+import FileModel from '../../db/FileModel';
 import { log } from '../../logger';
 import { fastHash } from '../fileHash';
 import fs from 'fs';
@@ -29,7 +29,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
     relativePath: relativePath(dirname(filePath)),
   };
   // console.log(props);
-  const [file, created] = await File.findOrCreate({
+  const [file, created] = await FileModel.findOrCreate({
     where: props,
     defaults: {
       type: type,

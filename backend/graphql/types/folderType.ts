@@ -8,8 +8,8 @@ import {
 } from 'graphql';
 import { folderPermissionsType } from './folderPermissionsType';
 import { allChildFolderIds } from '../../helpers/allChildFolderIds';
-import Folder from '../../models/Folder';
-import File from '../../models/File';
+import FolderModel from '../../db/FolderModel';
+import FileModel from '../../db/FileModel';
 import { fileInterface } from '../interfaces/fileInterface';
 import { imageFileType } from './imageFileType';
 import { brandingType } from './brandingType';
@@ -27,11 +27,11 @@ export const folderType = new GraphQLObjectType({
     parentId: { type: GraphQLID },
     subFolders: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
-      resolve: async (f: Folder) => subFolders(f.id),
+      resolve: async (f: FolderModel) => subFolders(f.id),
     },
     parents: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
-      resolve: (f: Folder, params, context) => {
+      resolve: (f: FolderModel, params, context) => {
         return parentFolders(f, context);
       },
     },
@@ -39,24 +39,24 @@ export const folderType = new GraphQLObjectType({
       type: new GraphQLNonNull(
         new GraphQLList(new GraphQLNonNull(fileInterface)),
       ),
-      resolve: async (f: Folder) => subFiles(f.id),
+      resolve: async (f: FolderModel) => subFiles(f.id),
     },
     heroImage: {
       type: imageFileType,
-      resolve: async (f: Folder) => heroImageForFolder(f),
+      resolve: async (f: FolderModel) => heroImageForFolder(f),
     },
     permissions: { type: folderPermissionsType },
     branding: {
       type: brandingType,
-      resolve: async (f: Folder) => {
+      resolve: async (f: FolderModel) => {
         return await brandingForFolder(f);
       },
     },
     totalSize: {
       type: new GraphQLNonNull(GraphQLString), // because GraphQLInt is 32bit which is TINY
-      resolve: async (f: Folder, params, context) => {
+      resolve: async (f: FolderModel, params, context) => {
         const folderIds = await allChildFolderIds(f);
-        const totes = await File.sum('fileSize', {
+        const totes = await FileModel.sum('fileSize', {
           where: { folderId: folderIds },
         });
         return totes ?? '0';
@@ -64,23 +64,23 @@ export const folderType = new GraphQLObjectType({
     },
     totalFiles: {
       type: new GraphQLNonNull(GraphQLInt),
-      resolve: async (f: Folder, params, context) => {
+      resolve: async (f: FolderModel, params, context) => {
         const folderIds = await allChildFolderIds(f);
-        return await File.count({ where: { folderId: folderIds } });
+        return await FileModel.count({ where: { folderId: folderIds } });
       },
     },
     totalFolders: {
       type: new GraphQLNonNull(GraphQLInt),
-      resolve: async (f: Folder, params, context) => {
+      resolve: async (f: FolderModel, params, context) => {
         const total = await allChildFolderIds(f);
         return total.length - 1;
       },
     },
     totalImages: {
       type: new GraphQLNonNull(GraphQLInt),
-      resolve: async (f: Folder, params, context) => {
+      resolve: async (f: FolderModel, params, context) => {
         const folderIds = await allChildFolderIds(f);
-        return await File.count({
+        return await FileModel.count({
           where: { folderId: folderIds, type: 'Image' },
         });
       },

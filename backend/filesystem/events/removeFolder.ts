@@ -1,17 +1,17 @@
 import { delay } from '../../helpers/delay';
-import Folder from '../../models/Folder';
+import FolderModel from '../../db/FolderModel';
 import { folderList, relativePath } from '../fileManager';
-import { Op, literal } from 'sequelize';
+import { literal, Op } from 'sequelize';
 import { log } from '../../logger';
 
 export const removeFolder = async (path: string) => {
   // wait 1 sec, then see if a 'matching' folder was added in last 5 seconds, due to fileWatcher not detecting renames
   // don't filter including parentId as it might be a cut/paste from different folder levels???
   await delay(1000);
-  Folder.findOne({ where: { relativePath: relativePath(path) } }).then(
+  FolderModel.findOne({ where: { relativePath: relativePath(path) } }).then(
     (folder) => {
       if (folder) {
-        Folder.findOne({
+        FolderModel.findOne({
           where: {
             folderHash: folder.folderHash,
             createdAt: {
