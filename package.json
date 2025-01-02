@@ -61,6 +61,7 @@
     "@types/lodash": "^4.17.12",
     "@types/node": "^20.11.19",
     "@types/pg": "^8.11.4",
+    "@types/sanitize-html": "^2.13.0",
     "@types/semver": "^7.5.8",
     "@types/supertest": "^6.0.2",
     "@types/validator": "^13.11.9",

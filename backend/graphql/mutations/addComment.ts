@@ -27,7 +27,9 @@ const resolver = async (_, params, context) => {
 
   if (params.comment) {
     const realComment = await CommentFor(file, user);
-    realComment.comment = sanitizeHtml(params.comment);
+    // no point sanitizing as it gets escaped on the front end anyway, and un-escaping is a PITA
+    // realComment.comment = sanitizeHtml(params.comment);
+    realComment.comment = params.comment;
     // if (params.nickName) realComment.nickName = params.nickName;
     await realComment.save();
     file.totalComments = file.totalComments + 1;
