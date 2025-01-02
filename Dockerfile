@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:23.5-alpine
 MAINTAINER Isaac Insoll '<isaac@snibi.com>'
 LABEL org.opencontainers.image.source=https://github.com/isaacinsoll/picr
 
