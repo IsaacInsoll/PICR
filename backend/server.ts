@@ -1,6 +1,6 @@
 import pkg from '../package.json';
 import { fileWatcher } from './filesystem/fileWatcher';
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize } from '@sequelize/core';
 import pg from 'pg';
 import { setupRootFolder } from './filesystem/events/addFolder';
 import { envPassword } from './boot/envPassword';

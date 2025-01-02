@@ -1,35 +1,35 @@
+import { DataTypes, Model } from '@sequelize/core';
 import {
-  Column,
+  Attribute,
   ForeignKey,
   HasMany,
-  Model,
   Table,
-} from 'sequelize-typescript';
+} from '@sequelize/core/decorators-legacy';
 
 import File from './File';
 
 @Table
 export default class Folder extends Model {
-  @Column
+  @Attribute(DataTypes.STRING)
   declare name: string;
-  @Column
+  @Attribute(DataTypes.STRING)
   declare folderHash: string;
-  @Column
+  @Attribute(DataTypes.STRING)
   declare relativePath: string;
-  @Column
+  @Attribute(DataTypes.BOOLEAN)
   declare exists: boolean; // bulk set as 'false' at boot, then set true when detected, to weed out folders deleted while server down
 
   @ForeignKey(() => Folder)
-  @Column
+  @Attribute(DataTypes.INTEGER)
   parentId: number;
 
-  @HasMany(() => Folder)
+  @HasMany(() => Folder, 'parentId')
   children: Folder[];
 
-  @HasMany(() => File)
+  @HasMany(() => File, 'folderId')
   files: File[];
 
   @ForeignKey(() => File)
-  @Column
+  @Attribute(DataTypes.INTEGER)
   heroImageId: number;
 }

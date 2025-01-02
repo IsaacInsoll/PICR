@@ -1,25 +1,24 @@
+import { DataTypes, Model } from '@sequelize/core';
 import {
-  Column,
-  DataType,
+  Attribute,
   ForeignKey,
-  Model,
   Table,
-} from 'sequelize-typescript';
+} from '@sequelize/core/decorators-legacy';
 import Folder from './Folder';
 import { PrimaryColor, ThemeMode } from '../../graphql-types';
 
 @Table
 export default class Branding extends Model {
   @ForeignKey(() => Folder)
-  @Column
+  @Attribute(DataTypes.INTEGER)
   folderId: number;
   //
-  @Column({ type: DataType.ENUM(...Object.values(ThemeMode)) })
+  @Attribute({ type: DataTypes.ENUM(...Object.values(ThemeMode)) })
   declare mode: ThemeMode;
 
-  @Column({ type: DataType.ENUM(...Object.values(PrimaryColor)) })
+  @Attribute({ type: DataTypes.ENUM(...Object.values(PrimaryColor)) })
   declare primaryColor: PrimaryColor;
 
-  @Column
+  @Attribute(DataTypes.STRING)
   declare logoUrl: string;
 }

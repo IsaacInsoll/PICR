@@ -1,7 +1,7 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
 import Folder from '../../models/Folder';
-import { Op } from 'sequelize';
+import { Op } from '@sequelize/core';
 import {
   GraphQLBoolean,
   GraphQLID,

@@ -1,10 +1,9 @@
+import { DataTypes, Model } from '@sequelize/core';
 import {
-  Column,
-  DataType,
+  Attribute,
   ForeignKey,
-  Model,
   Table,
-} from 'sequelize-typescript';
+} from '@sequelize/core/decorators-legacy';
 import Folder from './Folder';
 import { FileFlag, FileType } from '../../graphql-types';
 import { fullPath } from '../filesystem/fileManager';
@@ -12,51 +11,51 @@ import { sep } from 'path';
 
 @Table
 export default class File extends Model {
-  @Column
+  @Attribute(DataTypes.STRING)
   declare name: string;
-  @Column
+  @Attribute(DataTypes.STRING)
   declare fileHash: string;
 
-  @Column
+  @Attribute(DataTypes.STRING)
   declare blurHash: string; // string for Images describing its 'micro thumbnail' https://www.npmjs.com/package/blurhash
-  @Column
+  @Attribute(DataTypes.STRING)
   declare relativePath: string;
 
-  @Column({ type: DataType.TEXT })
+  @Attribute(DataTypes.TEXT)
   declare metadata: string; //dodgy JSON string of type `MetadataSummary.ts`
 
-  @Column({ type: DataType.ENUM(...Object.values(FileType)) })
+  @Attribute(DataTypes.ENUM(...Object.values(FileType)))
   declare type: FileType; //dodgy JSON string of type `MetadataSummary.ts`
 
-  @Column({ type: DataType.ENUM(...Object.values(FileFlag)) })
+  @Attribute(DataTypes.ENUM(...Object.values(FileFlag)))
   declare flag: FileFlag; //dodgy JSON string of type `MetadataSummary.ts`
 
-  @Column({ type: DataType.INTEGER })
+  @Attribute(DataTypes.INTEGER)
   declare rating: number; // 0-5
 
-  @Column({ type: DataType.FLOAT })
+  @Attribute(DataTypes.FLOAT)
   declare imageRatio: number; // width / height (used for sizing on screen elements before image is loaded
 
-  @Column({ type: DataType.FLOAT })
+  @Attribute(DataTypes.FLOAT)
   declare duration: number; // seconds (video files)
 
-  @Column({ type: DataType.BIGINT })
+  @Attribute(DataTypes.BIGINT)
   declare fileSize: number;
 
-  @Column
+  @Attribute(DataTypes.DATE)
   declare fileLastModified: Date;
 
-  @Column
+  @Attribute(DataTypes.BOOLEAN)
   declare exists: boolean; // bulk set as 'false' at boot, then set true when detected, to weed out files deleted while server down
 
-  @Column({ type: DataType.INTEGER })
+  @Attribute(DataTypes.INTEGER)
   declare totalComments: number; //we could calculate it but this is faster and easier
 
-  @Column
+  @Attribute(DataTypes.DATE)
   declare latestComment: Date;
 
   @ForeignKey(() => Folder)
-  @Column
+  @Attribute(DataTypes.INTEGER)
   folderId: number;
 
   fullPath() {

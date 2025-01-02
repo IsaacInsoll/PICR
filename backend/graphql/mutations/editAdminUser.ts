@@ -13,7 +13,7 @@ import {
 } from 'graphql';
 import { userType } from '../types/userType';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
-import { Op } from 'sequelize';
+import { Op } from '@sequelize/core';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
 
 const resolver = async (_, params, context) => {

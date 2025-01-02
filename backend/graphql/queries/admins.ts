@@ -1,7 +1,7 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
 import User from '../../models/User';
-import { Op } from 'sequelize';
+import { Op } from '@sequelize/core';
 import { getFolder } from '../helpers/getFolder';
 import { GraphQLList, GraphQLNonNull } from 'graphql';
 import { userType } from '../types/userType';

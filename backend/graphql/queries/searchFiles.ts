@@ -3,7 +3,7 @@ import { contextPermissions } from '../../auth/contextPermissions';
 import Folder from '../../models/Folder';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
 import { GraphQLString } from 'graphql';
-import { Op } from 'sequelize';
+import { Op } from '@sequelize/core';
 import File from '../../models/File';
 import { fileType } from '../types/fileType';
 import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';

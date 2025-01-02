@@ -1,6 +1,6 @@
 import ServerOptions from '../models/ServerOptions';
 import { lt, valid } from 'semver';
-import { DataType, Sequelize } from 'sequelize-typescript';
+import { Sequelize } from '@sequelize/core';
 import File from './../models/File';
 
 export const dbMigrate = async (config, sequelize: Sequelize) => {

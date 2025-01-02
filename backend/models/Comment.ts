@@ -1,10 +1,9 @@
+import { DataTypes, Model } from '@sequelize/core';
 import {
-  Column,
-  DataType,
+  Attribute,
   ForeignKey,
-  Model,
   Table,
-} from 'sequelize-typescript';
+} from '@sequelize/core/decorators-legacy';
 import Folder from './Folder';
 import User from './User';
 import File from './File';
@@ -12,24 +11,24 @@ import File from './File';
 @Table
 export default class Comment extends Model {
   @ForeignKey(() => Folder)
-  @Column
+  @Attribute(DataTypes.INTEGER)
   folderId: number;
 
   @ForeignKey(() => File)
-  @Column
+  @Attribute(DataTypes.INTEGER)
   fileId: number;
 
   @ForeignKey(() => User)
-  @Column
+  @Attribute(DataTypes.INTEGER)
   userId: number;
 
-  @Column
+  @Attribute(DataTypes.BOOLEAN)
   declare systemGenerated: boolean; // EG: recording change of star rating / flag
 
-  @Column
+  @Attribute(DataTypes.STRING)
   declare nickName: string; // user-entered name (optional)
 
-  @Column({ type: DataType.TEXT })
+  @Attribute(DataTypes.TEXT)
   declare comment: string;
 }
 

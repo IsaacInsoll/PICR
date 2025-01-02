@@ -1,5 +1,5 @@
 import Folder from '../models/Folder';
-import { Op } from 'sequelize';
+import { Op } from '@sequelize/core';
 
 export const allSubFoldersRecursive = async (folderId: number | string) => {
   const f = await Folder.findByPk(folderId);

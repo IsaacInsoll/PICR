@@ -12,7 +12,7 @@ import { userType } from '../types/userType';
 import User from '../../models/User';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 import Folder from '../../models/Folder';
-import { Op } from 'sequelize';
+import { Op } from '@sequelize/core';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
 import { badChars } from '../helpers/badChars';
 

@@ -1,7 +1,7 @@
 import { delay } from '../../helpers/delay';
 import Folder from '../../models/Folder';
 import { folderList, relativePath } from '../fileManager';
-import { Op, literal } from 'sequelize';
+import { Op, literal } from '@sequelize/core';
 import { log } from '../../logger';
 
 export const removeFolder = async (path: string) => {

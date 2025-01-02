@@ -4,7 +4,7 @@ import { addToQueue, initComplete } from './fileQueue';
 import { log } from '../logger';
 import File from '../models/File';
 import Folder from '../models/Folder';
-import { Op } from 'sequelize';
+import { Op } from '@sequelize/core';
 import { picrConfig } from '../config/picrConfig';
 
 export const fileWatcher = async (config) => {

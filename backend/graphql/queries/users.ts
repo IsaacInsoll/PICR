@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql/error';
 import Folder from '../../models/Folder';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
 import User from '../../models/User';
-import { Op } from 'sequelize';
+import { Op } from '@sequelize/core';
 import { getFolder } from '../helpers/getFolder';
 import {
   GraphQLBoolean,

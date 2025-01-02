@@ -1,26 +1,31 @@
-import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { DataTypes, Model } from '@sequelize/core';
+import {
+  Attribute,
+  ForeignKey,
+  Table,
+} from '@sequelize/core/decorators-legacy';
 import Folder from './Folder';
 import User from './User';
 import { IncomingCustomHeaders } from '../types/incomingCustomHeaders';
-import { literal, Op } from 'sequelize';
+import { literal, Op } from '@sequelize/core';
 
 @Table({ tableName: 'AccessLogs' })
 export default class AccessLogModel extends Model {
   @ForeignKey(() => Folder)
-  @Column
+  @Attribute(DataTypes.INTEGER)
   folderId: number;
 
   @ForeignKey(() => User)
-  @Column
+  @Attribute(DataTypes.INTEGER)
   userId: number;
 
-  @Column
+  @Attribute(DataTypes.STRING)
   ipAddress: string;
 
-  @Column
+  @Attribute(DataTypes.STRING)
   sessionId: string;
 
-  @Column
+  @Attribute(DataTypes.STRING)
   userAgent: string;
 }
 

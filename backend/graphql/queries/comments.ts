@@ -5,7 +5,7 @@ import { commentType } from '../types/commentType';
 import Comment from '../../models/Comment';
 import { GraphQLError } from 'graphql/error';
 import { subFilesMap } from '../helpers/subFiles';
-import { Order } from 'sequelize';
+import { Order } from '@sequelize/core';
 import { addUserRelationship } from '../helpers/addUserRelationship';
 
 const resolver = async (_, params, context) => {

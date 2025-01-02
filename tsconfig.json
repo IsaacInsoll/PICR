@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
+    "target": "ES2022",
+    "module": "NodeNext",
     "outDir": "dist",
     "sourceMap": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+//    "moduleResolution": "NodeNext",
+    "resolvePackageJsonExports": true,
     "lib": [
       "ES2021.String"
     ]
