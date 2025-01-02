@@ -1,8 +1,15 @@
-import { Column, ForeignKey, Model, Table } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import FolderModel from './FolderModel';
 import UserModel from './UserModel';
 import { IncomingCustomHeaders } from '../types/incomingCustomHeaders';
 import { literal, Op } from 'sequelize';
+import { AccessType } from '../../graphql-types';
 
 @Table({ tableName: 'AccessLogs' })
 export default class AccessLogModel extends Model {
@@ -22,18 +29,23 @@ export default class AccessLogModel extends Model {
 
   @Column
   userAgent: string;
+
+  @Column({ type: DataType.ENUM(...Object.values(AccessType)) })
+  declare type: AccessType;
 }
 
 export const createAccessLog = async (
   userId: number,
   folderId: number,
   context: IncomingCustomHeaders,
+  type: AccessType,
 ) => {
   //Check if sessionId/ipAddress/user already accessed this in last hour and don't create if so
 
   const props = {
     userId: userId,
     folderId: folderId,
+    type: type,
     ipAddress: context.ipAddress,
     sessionId: context.sessionId,
     userAgent: context.userAgent,

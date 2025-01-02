@@ -83,6 +83,7 @@ const accessLogQuery = gql(/* GraphQL */ `
     ) {
       id
       timestamp
+      type
       userId
       folderId
       ipAddress

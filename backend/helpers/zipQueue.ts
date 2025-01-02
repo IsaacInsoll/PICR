@@ -55,8 +55,8 @@ export const queueZipTaskStatus = (folderIds: string[] | null): Task[] => {
     if (folderIds && !folderIds.includes(q.folder.id)) return;
     list.push({
       name: 'Zip ' + q.folder.name,
-      step: q.bytesDone,
-      totalSteps: q.bytesTotal,
+      step: q.filesDone,
+      totalSteps: q.filesTotal,
       status: q.status,
       id: k,
     });

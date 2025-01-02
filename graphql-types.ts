@@ -23,10 +23,16 @@ export type AccessLog = {
   id: Scalars['ID']['output'];
   ipAddress?: Maybe<Scalars['String']['output']>;
   timestamp: Scalars['DateTime']['output'];
+  type: AccessType;
   user?: Maybe<User>;
   userAgent?: Maybe<Scalars['String']['output']>;
   userId?: Maybe<Scalars['ID']['output']>;
 };
+
+export enum AccessType {
+  Download = 'Download',
+  View = 'View'
+}
 
 export type Branding = {
   __typename?: 'Branding';

@@ -26,10 +26,10 @@ export default class FileModel extends Model {
   declare metadata: string; //dodgy JSON string of type `MetadataSummary.ts`
 
   @Column({ type: DataType.ENUM(...Object.values(FileType)) })
-  declare type: FileType; //dodgy JSON string of type `MetadataSummary.ts`
+  declare type: FileType;
 
   @Column({ type: DataType.ENUM(...Object.values(FileFlag)) })
-  declare flag: FileFlag; //dodgy JSON string of type `MetadataSummary.ts`
+  declare flag: FileFlag;
 
   @Column({ type: DataType.INTEGER })
   declare rating: number; // 0-5

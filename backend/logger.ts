@@ -24,6 +24,7 @@ export const addDevLogger = () => {
     logger.add(
       new transports.Console({
         format: format.combine(format.colorize(), format.simple()),
+        level: picrConfig.consoleLogging ? 'info' : undefined,
       }),
     );
   }

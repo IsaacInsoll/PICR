@@ -2,6 +2,8 @@ import { getServerOptions } from '../db/ServerOptionsModel';
 import { lt, valid } from 'semver';
 import { Sequelize } from 'sequelize-typescript';
 import FileModel from '../db/FileModel';
+import AccessLogModel from '../db/AccessLogModel';
+import { AccessType } from '../../graphql-types';
 
 export const dbMigrate = async (config, sequelize: Sequelize) => {
   const opts = await getServerOptions();
@@ -20,6 +22,13 @@ export const dbMigrate = async (config, sequelize: Sequelize) => {
       await FileModel.update(
         { totalComments: 0 },
         { where: { totalComments: null } },
+      );
+    }
+    if (lt(opts.lastBootedVersion, '0.5.6')) {
+      console.log('🖲️ Migrating 0.5.5 ▶️ 0.5.6');
+      AccessLogModel.update(
+        { type: AccessType.View },
+        { where: { type: null } },
       );
     }
   }

@@ -4,7 +4,7 @@ import {
   PrimaryColor,
   ThemeMode,
 } from '../../../graphql-types';
-import BrandingModel, { brandingForFolderId } from '../../db/BrandingModel';
+import { brandingForFolderId } from '../../db/BrandingModel';
 
 export const brandingForFolder = async (
   folder: FolderModel,
@@ -21,7 +21,7 @@ export const brandingForFolder = async (
   }
   return {
     folderId: '',
-    id: '',
+    id: '0', //urql will complain otherwise
     mode: ThemeMode.Auto,
     primaryColor: PrimaryColor.Blue,
   };

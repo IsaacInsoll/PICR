@@ -4,9 +4,15 @@ type AccessLog {
   id: ID!
   ipAddress: String
   timestamp: DateTime!
+  type: AccessType!
   user: User
   userAgent: String
   userId: ID
+}
+
+enum AccessType {
+  Download
+  View
 }
 
 """

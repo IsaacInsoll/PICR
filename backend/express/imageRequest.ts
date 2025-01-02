@@ -22,7 +22,9 @@ export const imageRequest = async (
   res,
 ) => {
   const { id, size, hash, filename } = req.params;
-  const file = await FileModel.findOne({ where: { id, fileHash: hash } });
+  const file = await FileModel.findOne({
+    where: { id, fileHash: hash, exists: true },
+  });
   if (!file) res.sendStatus(404);
   if (file.type == 'File') res.sendStatus(404);
   if (!allSizes.includes(size)) res.sendStatus(400);

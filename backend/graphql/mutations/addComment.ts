@@ -7,11 +7,12 @@ import { fileToJSON } from '../helpers/fileToJSON';
 import { GraphQLInt, GraphQLString } from 'graphql';
 import { fileFlagEnum } from '../enums/fileFlagEnum';
 import { fileInterface } from '../interfaces/fileInterface';
-import sanitizeHtml from 'sanitize-html';
+import { GraphQLError } from 'graphql/error';
 
 const resolver = async (_, params, context) => {
   const file = await FileModel.findByPk(params.id);
   const { user } = await contextPermissions(context, file.folderId, 'View');
+  if (!file.exists) throw new GraphQLError('File not found');
 
   if (user.commentPermissions != 'edit') doAuthError('Not allowed to comment');
 

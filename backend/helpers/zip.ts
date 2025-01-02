@@ -21,7 +21,7 @@ export const hashFolderContents = async (
 ): Promise<FolderHash> => {
   const folderIds = await allChildFolderIds(folder);
   const files = await FileModel.findAll({
-    where: { folderId: folderIds },
+    where: { folderId: folderIds, exists: true },
     attributes: ['id', 'fileHash'],
   });
   const hash = crypto.createHash('sha256');
@@ -72,7 +72,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
 
   const folderIds = await allChildFolderIds(folder);
   const files = await FileModel.findAll({
-    where: { folderId: folderIds },
+    where: { folderId: folderIds, exists: true },
     attributes: ['id', 'fileHash', 'relativePath', 'name'],
   });
   files.forEach((f) => {
