@@ -1,6 +1,5 @@
 import { MinimalFolder } from '../../../types';
 import { FolderLink } from '../FolderLink';
-import { Helmet } from 'react-helmet-async';
 import { ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { placeholderFolder } from './PlaceholderFolder';

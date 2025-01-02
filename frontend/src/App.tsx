@@ -10,7 +10,6 @@ import '@mantine/notifications/styles.css';
 import 'mantine-react-table/styles.css';
 
 import { LoadingOverlay, MantineProvider, Portal } from '@mantine/core';
-import { HelmetProvider } from 'react-helmet-async';
 import { Notifications } from '@mantine/notifications';
 import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
@@ -34,29 +33,27 @@ const App = () => {
   }, [setPortal, portal]);
 
   return (
-    <HelmetProvider>
-      <URQLProvider value={client}>
-        <BrowserRouter>
-          <MantineProvider
-            theme={{ ...theme, primaryColor: customTheme.primaryColor }}
-            forceColorScheme={
-              customTheme.mode == 'auto' ? undefined : customTheme.mode
-            }
-            defaultColorScheme={'auto'}
-          >
-            <Portal className="lightbox-portal">
-              <div ref={portal} />
-            </Portal>
-            <PicrErrorBoundary>
-              <Suspense fallback={<PicrLoadingOverlay />}>
-                <UserProvider />
-                <Notifications />
-              </Suspense>
-            </PicrErrorBoundary>
-          </MantineProvider>
-        </BrowserRouter>
-      </URQLProvider>
-    </HelmetProvider>
+    <URQLProvider value={client}>
+      <BrowserRouter>
+        <MantineProvider
+          theme={{ ...theme, primaryColor: customTheme.primaryColor }}
+          forceColorScheme={
+            customTheme.mode == 'auto' ? undefined : customTheme.mode
+          }
+          defaultColorScheme={'auto'}
+        >
+          <Portal className="lightbox-portal">
+            <div ref={portal} />
+          </Portal>
+          <PicrErrorBoundary>
+            <Suspense fallback={<PicrLoadingOverlay />}>
+              <UserProvider />
+              <Notifications />
+            </Suspense>
+          </PicrErrorBoundary>
+        </MantineProvider>
+      </BrowserRouter>
+    </URQLProvider>
   );
 };
 
