@@ -22,7 +22,6 @@
     "archiver": "^7.0.1",
     "blurhash": "^2.0.5",
     "chokidar": "^3.6.0",
-    "cli-progress": "^3.12.0",
     "concurrently": "^8.2.2",
     "dotenv": "^16.4.5",
     "exif-reader": "^2.0.1",
@@ -42,14 +41,11 @@
     "nodemon": "^3",
     "pg": "^8",
     "pg-hstore": "^2.3.4",
-    "progress": "^2.0.3",
-    "reflect-metadata": "^0.2.1",
     "sanitize-html": "^2.13.0",
     "semver": "^7.6.3",
     "sequelize": "^6.37.1",
     "sequelize-typescript": "^2.1.6",
     "sharp": "^0.33.2",
-    "sqlite3": "^5.1.7",
     "winston": "^3.14.2"
   },
   "devDependencies": {

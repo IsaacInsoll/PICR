@@ -2,7 +2,6 @@ import { serverInfoType } from '../types/serverInfoType';
 import { requireFullAdmin } from './admins';
 import fastFolderSizeSync from 'fast-folder-size/sync';
 import { picrConfig } from '../../config/picrConfig';
-import { delay } from '../../helpers/delay';
 
 const resolver = async (_, params, context, schema) => {
   await requireFullAdmin(context);
