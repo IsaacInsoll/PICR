@@ -6,7 +6,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';
+import { allSubfolders } from '../../helpers/allSubfolders';
 import AccessLogModel, { getAccessLogs } from '../../db/AccessLogModel';
 import { accessLogType } from '../types/accessLogType';
 import { userTypeEnum } from '../enums/userTypeEnum';
@@ -23,7 +23,7 @@ const resolver = async (_, params, context) => {
   const ids = [folder.id];
 
   if (params.includeChildren) {
-    const children = await allSubFoldersRecursive(folder.id);
+    const children = await allSubfolders(folder.id);
     const childIds = children.map(({ id }) => id);
     ids.push(...childIds);
   }

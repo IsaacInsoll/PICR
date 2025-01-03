@@ -1,7 +1,7 @@
 import FolderModel from '../../db/FolderModel';
 import FileModel from '../../db/FileModel';
 import { Op } from 'sequelize';
-import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';
+import { allSubfolders } from '../../helpers/allSubfolders';
 
 export const heroImageForFolder = async (f: FolderModel) => {
   // 1. Hero Image set for current folder
@@ -23,7 +23,7 @@ export const heroImageForFolder = async (f: FolderModel) => {
   if (subFolder) return subFolder;
 
   // 4. First image in any subfolder
-  const allSubFolders = await allSubFoldersRecursive(f.id);
+  const allSubFolders = await allSubfolders(f.id);
   const subFolderIds = allSubFolders.map((f) => f.id);
   const s = await heroImageForSubFolder(subFolderIds);
   if (s) return s;

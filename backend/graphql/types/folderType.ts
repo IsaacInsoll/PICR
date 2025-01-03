@@ -7,7 +7,6 @@ import {
   GraphQLString,
 } from 'graphql';
 import { folderPermissionsType } from './folderPermissionsType';
-import { allChildFolderIds } from '../../helpers/allChildFolderIds';
 import FolderModel from '../../db/FolderModel';
 import FileModel from '../../db/FileModel';
 import { fileInterface } from '../interfaces/fileInterface';
@@ -18,6 +17,7 @@ import { brandingForFolder } from '../helpers/brandingForFolder';
 import { heroImageForFolder } from '../helpers/heroImageForFolder';
 import { subFiles } from '../helpers/subFiles';
 import { subFolders } from '../helpers/subFolders';
+import { allSubfolderIds } from '../../helpers/allSubfolders';
 
 export const folderType = new GraphQLObjectType({
   name: 'Folder',
@@ -55,7 +55,7 @@ export const folderType = new GraphQLObjectType({
     totalSize: {
       type: new GraphQLNonNull(GraphQLString), // because GraphQLInt is 32bit which is TINY
       resolve: async (f: FolderModel, params, context) => {
-        const folderIds = await allChildFolderIds(f);
+        const folderIds = await allSubfolderIds(f);
         const totes = await FileModel.sum('fileSize', {
           where: { folderId: folderIds },
         });
@@ -65,21 +65,21 @@ export const folderType = new GraphQLObjectType({
     totalFiles: {
       type: new GraphQLNonNull(GraphQLInt),
       resolve: async (f: FolderModel, params, context) => {
-        const folderIds = await allChildFolderIds(f);
+        const folderIds = await allSubfolderIds(f);
         return await FileModel.count({ where: { folderId: folderIds } });
       },
     },
     totalFolders: {
       type: new GraphQLNonNull(GraphQLInt),
       resolve: async (f: FolderModel, params, context) => {
-        const total = await allChildFolderIds(f);
+        const total = await allSubfolderIds(f);
         return total.length - 1;
       },
     },
     totalImages: {
       type: new GraphQLNonNull(GraphQLInt),
       resolve: async (f: FolderModel, params, context) => {
-        const folderIds = await allChildFolderIds(f);
+        const folderIds = await allSubfolderIds(f);
         return await FileModel.count({
           where: { folderId: folderIds, type: 'Image' },
         });

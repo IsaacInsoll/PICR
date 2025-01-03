@@ -2,7 +2,7 @@ import { GraphQLFieldResolver } from 'graphql/type';
 import { Folder as GqlFolder, Folder } from '../../../graphql-types';
 import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
 import { contextPermissions } from '../../auth/contextPermissions';
-import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';
+import { allSubfolders } from '../../helpers/allSubfolders';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { folderType } from '../types/folderType';
 
@@ -13,7 +13,7 @@ const resolver: GraphQLFieldResolver<Folder, IncomingCustomHeaders> = async (
   info,
 ): Promise<Folder[]> => {
   await contextPermissions(context, params.id, 'Admin');
-  const folders = (await allSubFoldersRecursive(params.id)) as unknown;
+  const folders = (await allSubfolders(params.id)) as unknown;
   return folders as GqlFolder[];
 };
 

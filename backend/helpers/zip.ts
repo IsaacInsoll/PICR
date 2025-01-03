@@ -1,6 +1,5 @@
 import FolderModel from '../db/FolderModel';
 import FileModel from '../db/FileModel';
-import { allChildFolderIds } from './allChildFolderIds';
 import crypto from 'crypto';
 import fs from 'fs';
 import archiver from 'archiver';
@@ -8,6 +7,7 @@ import { mkdirSync } from 'node:fs';
 import { updateZipQueue } from './zipQueue';
 import { log } from '../logger';
 import { picrConfig } from '../config/picrConfig';
+import { allSubfolderIds } from './allSubfolders';
 
 export interface FolderHash {
   folder?: FolderModel;
@@ -19,7 +19,7 @@ export interface FolderHash {
 export const hashFolderContents = async (
   folder: FolderModel,
 ): Promise<FolderHash> => {
-  const folderIds = await allChildFolderIds(folder);
+  const folderIds = await allSubfolderIds(folder);
   const files = await FileModel.findAll({
     where: { folderId: folderIds, exists: true },
     attributes: ['id', 'fileHash'],
@@ -70,7 +70,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
 
   //TODO: add empty folders
 
-  const folderIds = await allChildFolderIds(folder);
+  const folderIds = await allSubfolderIds(folder);
   const files = await FileModel.findAll({
     where: { folderId: folderIds, exists: true },
     attributes: ['id', 'fileHash', 'relativePath', 'name'],

@@ -10,7 +10,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { userType } from '../types/userType';
-import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';
+import { allSubfolders } from '../../helpers/allSubfolders';
 import { userToJSON } from '../helpers/userToJSON';
 
 const resolver = async (_, params, context) => {
@@ -26,7 +26,7 @@ const resolver = async (_, params, context) => {
     ids.push(...parents);
   }
   if (params.includeChildren) {
-    const children = await allSubFoldersRecursive(folder.id);
+    const children = await allSubfolders(folder.id);
     const childIds = children.map(({ id }) => id);
     ids.push(...childIds);
   }

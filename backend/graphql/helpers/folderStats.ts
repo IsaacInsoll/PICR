@@ -1,10 +1,10 @@
-import { allSubFoldersRecursive } from '../../helpers/allSubFoldersRecursive';
+import { allSubfolders } from '../../helpers/allSubfolders';
 import FileModel from '../../db/FileModel';
 import { sortBy } from 'lodash';
 import { pluralize } from '../../../frontend/src/helpers/folderSubtitle';
 
 export const folderStats = async (folderId: number): Promise<FolderStat[]> => {
-  const children = await allSubFoldersRecursive(folderId);
+  const children = await allSubfolders(folderId);
   const childIds = children.map(({ id }) => id);
   const result: FolderStat[] = [
     { type: 'Folder', total: childIds.length },

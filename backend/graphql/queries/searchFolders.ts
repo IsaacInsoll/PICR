@@ -1,10 +1,10 @@
-import { allChildFolderIds } from '../../helpers/allChildFolderIds';
 import { contextPermissions } from '../../auth/contextPermissions';
 import FolderModel from '../../db/FolderModel';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
 import { GraphQLString } from 'graphql';
 import { Op } from 'sequelize';
 import { folderType } from '../types/folderType';
+import { allSubfolderIds } from '../../helpers/allSubfolders';
 
 const resolver = async (_, params, context) => {
   const { folder } = await contextPermissions(
@@ -13,7 +13,7 @@ const resolver = async (_, params, context) => {
     'View',
   );
 
-  const folderIds = await allChildFolderIds(folder);
+  const folderIds = await allSubfolderIds(folder);
 
   const lower = params.query.toLowerCase().split(' ');
   const lowerMap = lower.map((l) => ({ [Op.iLike]: `%${l}%` }));
