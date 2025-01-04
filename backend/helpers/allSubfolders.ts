@@ -1,7 +1,8 @@
 import FolderModel from '../db/FolderModel';
 import { Op } from 'sequelize';
 
-//NOTE: no permissions done here, if you can see parent you can see the children
+// Recursively find all subfolders
+// NOTE: no permissions done here, if you can see parent you can see the children
 export const allSubfolders = async (folderId: number | string) => {
   const f = await FolderModel.findByPk(folderId);
   if (!f.relativePath) {
@@ -18,6 +19,8 @@ export const allSubfolders = async (folderId: number | string) => {
     },
   });
 };
+
+// Recursively find all subfolder ids
 export const allSubfolderIds = async (
   folder: FolderModel,
 ): Promise<string[]> => {

@@ -4,8 +4,10 @@ import { Anchor, Code, Group, Table } from '@mantine/core';
 import { FaGithub } from 'react-icons/fa6';
 import { ReactNode, Suspense } from 'react';
 import prettyBytes from 'pretty-bytes';
-import { data } from 'react-router';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
+import { useMe } from '../../hooks/useMe';
+import { MdOutlineSdStorage } from 'react-icons/md';
+import { PicrLink } from '../../components/PicrLink';
 
 export const ServerInfo = () => {
   const [result] = useQuery({ query: serverInfoQuery });
@@ -22,6 +24,7 @@ export const ServerInfo = () => {
             <>
               <Row title="Media Size">
                 <LoadingIndicator size="small" />
+                <TreesizeLink />
               </Row>
               <Row title="Cache Size">
                 <LoadingIndicator size="small" />
@@ -64,6 +67,15 @@ const Version = ({ version, latest }) => {
         <FaGithub /> View PICR Releases
       </Anchor>
     </Row>
+  );
+};
+
+const TreesizeLink = () => {
+  const me = useMe();
+  return (
+    <PicrLink to={'/admin/settings/treesize/' + me?.folderId} size="xs">
+      <MdOutlineSdStorage /> Storage Analytics
+    </PicrLink>
   );
 };
 
@@ -124,6 +136,7 @@ const ServerFolderSize = () => {
     <>
       <Row title="Media Size">
         {prettyBytes(result?.data?.serverInfo.mediaSize)}
+        <TreesizeLink />
       </Row>
       <Row title="Cache Size">
         {prettyBytes(result?.data?.serverInfo.cacheSize)}

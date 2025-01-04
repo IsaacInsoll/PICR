@@ -22,6 +22,7 @@ import { QuickFind } from '../../components/QuickFind/QuickFind';
 import { LoggedInHeader } from '../../components/Header/LoggedInHeader';
 import { ManageBrandings } from './ManageBrandings';
 import { AccessLogs } from './AccessLogs/AccessLogs';
+import { TreeSize } from './treesize/TreeSize';
 
 export const Settings = () => {
   const { tab } = useParams();
@@ -86,6 +87,9 @@ export const Settings = () => {
               <PicrTitle title={['Server Info', title]} />
               <ServerInfo />
             </Suspense>
+          </Tabs.Panel>
+          <Tabs.Panel value="treesize">
+            <TreeSize rootId={me?.folderId} />
           </Tabs.Panel>
         </Tabs>
       </Page>

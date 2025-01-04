@@ -57,7 +57,16 @@ export const folderType = new GraphQLObjectType({
       resolve: async (f: FolderModel, params, context) => {
         const folderIds = await allSubfolderIds(f);
         const totes = await FileModel.sum('fileSize', {
-          where: { folderId: folderIds },
+          where: { folderId: folderIds, exists: true },
+        });
+        return totes ?? '0';
+      },
+    },
+    totalDirectSize: {
+      type: new GraphQLNonNull(GraphQLString), // because GraphQLInt is 32bit which is TINY
+      resolve: async (f: FolderModel, params, context) => {
+        const totes = await FileModel.sum('fileSize', {
+          where: { folderId: f.id, exists: true },
         });
         return totes ?? '0';
       },
@@ -66,7 +75,9 @@ export const folderType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLInt),
       resolve: async (f: FolderModel, params, context) => {
         const folderIds = await allSubfolderIds(f);
-        return await FileModel.count({ where: { folderId: folderIds } });
+        return await FileModel.count({
+          where: { folderId: folderIds, exists: true },
+        });
       },
     },
     totalFolders: {
@@ -81,7 +92,7 @@ export const folderType = new GraphQLObjectType({
       resolve: async (f: FolderModel, params, context) => {
         const folderIds = await allSubfolderIds(f);
         return await FileModel.count({
-          where: { folderId: folderIds, type: 'Image' },
+          where: { folderId: folderIds, type: 'Image', exists: true },
         });
       },
     },

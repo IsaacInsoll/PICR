@@ -102,6 +102,7 @@ type Folder {
   parents: [Folder!]!
   permissions: FolderPermissions
   subFolders: [Folder!]!
+  totalDirectSize: String!
   totalFiles: Int!
   totalFolders: Int!
   totalImages: Int!

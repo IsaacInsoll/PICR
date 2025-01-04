@@ -24,6 +24,8 @@ const documents = {
     "\n  mutation DeleteBrandingMutation($folderId: ID!) {\n    deleteBranding(folderId: $folderId) {\n      ...FolderFragment\n    }\n  }\n": types.DeleteBrandingMutationDocument,
     "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      #      cacheSize\n      #      mediaSize\n      host\n    }\n  }\n": types.ServerInfoQueryDocument,
     "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n": types.ExpensiveServerFileSizeQueryDocument,
+    "\n  query TreeSizeQuery($folderId: ID!) {\n    folder(id: $folderId) {\n      parents {\n        id\n        name\n      }\n      ...TreeSizeFragment\n      files {\n        id\n        name\n        type\n        fileSize\n      }\n      subFolders {\n        ...TreeSizeFragment\n        subFolders {\n          ...TreeSizeFragment\n        }\n      }\n    }\n  }\n": types.TreeSizeQueryDocument,
+    "\n  fragment TreeSizeFragment on Folder {\n    id\n    name\n    totalFiles\n    totalFolders\n    totalSize\n    totalDirectSize\n  }\n": types.TreeSizeFragmentFragmentDoc,
     "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    flag\n    rating\n    totalComments\n    latestComment\n    folderId\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    __typename\n    name\n    parentId\n    permissions\n    parents {\n      id\n      name\n    }\n    branding {\n      id\n      folderId\n      mode\n      primaryColor\n      logoUrl\n      folder {\n        id\n        name\n      }\n    }\n    ...HeroImageFragment\n  }\n": types.FolderFragmentFragmentDoc,
     "\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n    }\n  }\n": types.HeroImageFragmentFragmentDoc,
@@ -101,6 +103,14 @@ export function graphql(source: "\n  query serverInfoQuery {\n    serverInfo {\n
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n"): (typeof documents)["\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query TreeSizeQuery($folderId: ID!) {\n    folder(id: $folderId) {\n      parents {\n        id\n        name\n      }\n      ...TreeSizeFragment\n      files {\n        id\n        name\n        type\n        fileSize\n      }\n      subFolders {\n        ...TreeSizeFragment\n        subFolders {\n          ...TreeSizeFragment\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query TreeSizeQuery($folderId: ID!) {\n    folder(id: $folderId) {\n      parents {\n        id\n        name\n      }\n      ...TreeSizeFragment\n      files {\n        id\n        name\n        type\n        fileSize\n      }\n      subFolders {\n        ...TreeSizeFragment\n        subFolders {\n          ...TreeSizeFragment\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment TreeSizeFragment on Folder {\n    id\n    name\n    totalFiles\n    totalFolders\n    totalSize\n    totalDirectSize\n  }\n"): (typeof documents)["\n  fragment TreeSizeFragment on Folder {\n    id\n    name\n    totalFiles\n    totalFolders\n    totalSize\n    totalDirectSize\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
