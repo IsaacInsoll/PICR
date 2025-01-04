@@ -7,7 +7,7 @@ import { MinimalFile } from '../../../types';
 import 'yet-another-react-lightbox/styles.css';
 import './GridGallery.css';
 import { FilePreview } from './FilePreview';
-import { PicrFolder } from '../PicrFolder';
+import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { useSetFolder } from '../../hooks/useSetFolder';
 
 export const GridGallery = ({
@@ -30,13 +30,15 @@ export const GridGallery = ({
         images={[...foldersForGallery(folders), ...filesForGallery(files)]}
         onClick={handleClick}
         enableImageSelection={false}
-        thumbnailImageComponent={(p) =>
-          p.item.folder ? (
-            <PicrFolder folder={p.item.folder} {...p.imageProps} />
-          ) : (
-            <GalleryImage {...p} />
-          )
-        }
+        thumbnailImageComponent={(p) => {
+          if (p.item.folder)
+            return <PicrFolder folder={p.item.folder} {...p.imageProps} />;
+
+          if (p.item.file.type == 'File')
+            return <PicrGenericFile file={p.item.file} {...p.imageProps} />;
+
+          return <GalleryImage {...p} />;
+        }}
       />
     </>
   );
