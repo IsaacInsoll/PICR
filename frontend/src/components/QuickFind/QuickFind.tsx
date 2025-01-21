@@ -115,7 +115,6 @@ const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
     variables: { query: debouncedQuery, folderId },
     pause: debouncedQuery == '',
   });
-  // if (!debouncedQuery) return;
   const folders = results.data?.searchFolders ?? [];
   const files = results.data?.searchFiles ?? [];
 
@@ -157,6 +156,7 @@ const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
       window.removeEventListener('keydown', handler);
     };
   });
+  if (!debouncedQuery) return;
 
   return (
     <Stack gap={0}>
