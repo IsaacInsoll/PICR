@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import {
   AccessLogsIcon,
   BrandingIcon,
+  DashboardIcon,
   InfoIcon,
   PublicLinkIcon,
   UserSettingsIcon,
@@ -76,9 +77,17 @@ const Logs: TipType = {
   ),
 };
 
+const Dashboard: TipType = {
+  icon: <DashboardIcon />,
+  content: (
+    <>PICR enables you to share your photos/videos with your clients. </>
+  ),
+};
+
 const TipList = {
   PublicLink,
   Users,
   Branding,
   Logs,
+  Dashboard,
 } as const;

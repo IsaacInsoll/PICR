@@ -39,16 +39,9 @@ const resolver = async (_, params, context) => {
     })
   ).map((u) => u.id);
 
-  // const data = await AccessLogModel.findAll({
-  //   where: {
-  //     folderId: { [Op.or]: ids },
-  //     userId: params.userId ?? { [Op.or]: userIds },
-  //   },
-  //   order: [['createdAt', 'DESC']],
-  //   limit: 100,
-  // });
+  const grouped = params.grouped ?? false;
 
-  const data = await getAccessLogs(ids, params.userId ?? userIds);
+  const data = await getAccessLogs(ids, params.userId ?? userIds, grouped);
 
   return addFolderRelationship(
     data.map((al) => {
@@ -65,5 +58,6 @@ export const accessLogs = {
     userId: { type: GraphQLID },
     includeChildren: { type: GraphQLBoolean },
     userType: { type: userTypeEnum },
+    grouped: { type: GraphQLBoolean },
   },
 };

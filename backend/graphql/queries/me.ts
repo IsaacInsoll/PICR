@@ -8,10 +8,12 @@ const resolver = async (_, params, context) => {
   const user = await getUserFromToken(context);
   if (user) {
     const folder = await FolderModel.findByPk(user.folderId);
+    user.updateLastAccess();
     return { ...userToJSON(user), folder: folder.toJSON() };
   }
   const publicUser = await getUserFromUUID(context);
   if (!publicUser) return null;
+  publicUser.updateLastAccess();
   // don't expose many public user details
   return { ...userToJSON(publicUser) };
 };

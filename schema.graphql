@@ -177,7 +177,7 @@ enum PrimaryColor {
 }
 
 type Query {
-  accessLogs(folderId: ID!, includeChildren: Boolean, userId: ID, userType: UserType): [AccessLog!]!
+  accessLogs(folderId: ID!, grouped: Boolean, includeChildren: Boolean, userId: ID, userType: UserType): [AccessLog!]!
   admins: [User!]!
   allFolders(id: ID!): [Folder]!
   brandings: [Branding!]!
@@ -190,7 +190,7 @@ type Query {
   serverInfo: ServerInfo
   tasks(folderId: ID): [Task!]!
   user(id: ID!): User!
-  users(folderId: ID!, includeChildren: Boolean, includeParents: Boolean): [User!]!
+  users(folderId: ID!, includeChildren: Boolean, includeParents: Boolean, sortByRecent: Boolean): [User!]!
 }
 
 type ServerInfo {
@@ -227,12 +227,14 @@ type User {
   folderId: ID!
   gravatar: String
   id: ID
+  lastAccess: DateTime
   name: String
   username: String
   uuid: String
 }
 
 enum UserType {
+  Admin
   All
   Link
   User

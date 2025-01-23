@@ -1,9 +1,8 @@
-import { Group, Tabs, Title } from '@mantine/core';
+import { Tabs } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router';
 import { ManageUsers } from './ManageUsers';
 import { Page } from '../../components/Page';
 import { ReactNode, Suspense } from 'react';
-import { PicrLogo } from '../LoginForm';
 import { ServerInfo } from './ServerInfo';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import {
@@ -23,6 +22,7 @@ import { LoggedInHeader } from '../../components/Header/LoggedInHeader';
 import { ManageBrandings } from './ManageBrandings';
 import { AccessLogs } from './AccessLogs/AccessLogs';
 import { TreeSize } from './treesize/TreeSize';
+import { TopBar } from './TopBar';
 
 export const Settings = () => {
   const { tab } = useParams();
@@ -94,16 +94,6 @@ export const Settings = () => {
         </Tabs>
       </Page>
     </>
-  );
-};
-
-const TopBar = ({ title }: { title: string }) => {
-  return (
-    <Group pt="lg" pb="sm">
-      <PicrLogo style={{ height: 32 }} />
-      <Title>{title}</Title>
-      <PicrTitle title={title} />
-    </Group>
   );
 };
 

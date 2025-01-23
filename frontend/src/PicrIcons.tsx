@@ -8,6 +8,7 @@ import {
   TbHome,
   TbInfoCircle,
   TbInfoTriangle,
+  TbLayoutDashboard,
   TbLink,
   TbLogout,
   TbSearch,
@@ -62,4 +63,7 @@ export const DotsIcon = (props: IconBaseProps) => <TbDots {...props} />;
 export const CommentIcon = (props: IconBaseProps) => <BiComment {...props} />;
 export const CommentsIcon = (props: IconBaseProps) => (
   <BiCommentDetail {...props} />
+);
+export const DashboardIcon = (props: IconBaseProps) => (
+  <TbLayoutDashboard {...props} />
 );
