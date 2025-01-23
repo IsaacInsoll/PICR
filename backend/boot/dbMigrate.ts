@@ -9,6 +9,7 @@ export const dbMigrate = async (config, sequelize: Sequelize) => {
   const opts = await getServerOptions();
 
   const q = sequelize.getQueryInterface();
+  console.log('last booted', opts.lastBootedVersion);
 
   if (valid(opts.lastBootedVersion)) {
     if (lt(opts.lastBootedVersion, '0.2.5')) {
@@ -30,6 +31,10 @@ export const dbMigrate = async (config, sequelize: Sequelize) => {
         { type: AccessType.View },
         { where: { type: null } },
       );
+    }
+    if (lt(opts.lastBootedVersion, '0.5.8')) {
+      console.log('🖲️ Migrating 0.5.7 ▶️ 0.5.8');
+      //TODO: update user.lastAccess based on accesslogs
     }
   }
   opts.lastBootedVersion = config.version;

@@ -9,6 +9,7 @@ import { useSetFolder } from '../../hooks/useSetFolder';
 import { useQuickFind } from '../QuickFind/useQuickFind';
 import { useNavigate } from 'react-router';
 import {
+  DashboardIcon,
   FolderIcon,
   HomeIcon,
   LogOutIcon,
@@ -165,6 +166,12 @@ const RightSide = ({ me }) => {
 
       <Menu.Dropdown>
         <Menu.Label>Files & Folders</Menu.Label>
+        <Menu.Item
+          leftSection={<DashboardIcon />}
+          onClick={() => navigate('/')}
+        >
+          Dashboard
+        </Menu.Item>
         <Menu.Item
           leftSection={<HomeIcon />}
           onClick={() => setFolder(me.folder)}

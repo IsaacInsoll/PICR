@@ -5,6 +5,7 @@ import { PageNotFound } from './pages/PageNotFound';
 import { useMe } from './hooks/useMe';
 import { Settings } from './pages/management/Settings';
 import { ParticleBackground } from './components/ParticleBackground';
+import { Dashboard } from './pages/Dashboard';
 
 const folderRoute = '/:folderId/:fileId?/:tab?';
 
@@ -22,7 +23,7 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
         <>
           <Route path={`/admin/f${folderRoute}`} element={<ViewFolder />} />
           <Route path="/admin/settings/:tab?/:slug?" element={<Settings />} />
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Dashboard />} />
         </>
       ) : null}
       <Route
@@ -42,6 +43,7 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
   );
 };
 
+//this is "redirect to users root folder" as an alternative to showing dashboard
 const HomePage = () => {
   const me = useMe();
   const navigate = useNavigate();
