@@ -117,7 +117,7 @@ export const ManageUser = ({
         <Group>
           <Button disabled={invalidUsername} onClick={onSave}>
             <TbCloudUpload />
-            {exists ? 'Save' : 'Create Link'}
+            {exists ? 'Save' : 'Create User'}
           </Button>
         </Group>
       </Stack>
