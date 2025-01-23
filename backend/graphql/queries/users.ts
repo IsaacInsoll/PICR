@@ -32,10 +32,17 @@ const resolver = async (_, params, context) => {
   }
 
   // we don't show 'real users' just 'shared public users'
+  const where = { folderId: { [Op.or]: ids }, uuid: { [Op.not]: null } };
+  if (params.sortByRecent) {
+    where['lastAccess'] = { [Op.not]: null };
+  }
   const data = await UserModel.findAll({
-    where: { folderId: { [Op.or]: ids }, uuid: { [Op.not]: null } },
+    where,
+    order: params.sortByRecent ? [['lastAccess', 'DESC']] : undefined,
+    limit: params.sortByRecent ? 10 : 1000,
   });
   return data.map((pl) => {
+    console.log(pl.name);
     return { ...userToJSON(pl), folder: getFolder(pl.folderId) };
   });
 };
@@ -47,5 +54,6 @@ export const users = {
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     includeParents: { type: GraphQLBoolean },
     includeChildren: { type: GraphQLBoolean },
+    sortByRecent: { type: GraphQLBoolean },
   },
 };

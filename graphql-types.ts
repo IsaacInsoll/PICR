@@ -279,6 +279,7 @@ export type Query = {
 
 export type QueryAccessLogsArgs = {
   folderId: Scalars['ID']['input'];
+  grouped?: InputMaybe<Scalars['Boolean']['input']>;
   includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
   userId?: InputMaybe<Scalars['ID']['input']>;
   userType?: InputMaybe<UserType>;
@@ -332,6 +333,7 @@ export type QueryUsersArgs = {
   folderId: Scalars['ID']['input'];
   includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
   includeParents?: InputMaybe<Scalars['Boolean']['input']>;
+  sortByRecent?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type ServerInfo = {
@@ -371,12 +373,14 @@ export type User = {
   folderId: Scalars['ID']['output'];
   gravatar?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
+  lastAccess?: Maybe<Scalars['DateTime']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;
   uuid?: Maybe<Scalars['String']['output']>;
 };
 
 export enum UserType {
+  Admin = 'Admin',
   All = 'All',
   Link = 'Link',
   User = 'User'
