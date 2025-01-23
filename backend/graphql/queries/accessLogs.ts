@@ -39,9 +39,7 @@ const resolver = async (_, params, context) => {
     })
   ).map((u) => u.id);
 
-  const grouped = params.grouped ?? false;
-
-  const data = await getAccessLogs(ids, params.userId ?? userIds, grouped);
+  const data = await getAccessLogs(ids, params.userId ?? userIds);
 
   return addFolderRelationship(
     data.map((al) => {
@@ -58,6 +56,5 @@ export const accessLogs = {
     userId: { type: GraphQLID },
     includeChildren: { type: GraphQLBoolean },
     userType: { type: userTypeEnum },
-    grouped: { type: GraphQLBoolean },
   },
 };

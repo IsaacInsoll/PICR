@@ -3,7 +3,7 @@ import { lt, valid } from 'semver';
 import { Sequelize } from 'sequelize-typescript';
 import FileModel from '../db/FileModel';
 import AccessLogModel from '../db/AccessLogModel';
-import { AccessType } from '../../graphql-types';
+import { AccessType, UserType } from '../../graphql-types';
 import UserModel from '../db/UserModel';
 
 export const dbMigrate = async (config, sequelize: Sequelize) => {
@@ -44,7 +44,7 @@ export const dbMigrate = async (config, sequelize: Sequelize) => {
         if (lastAccess) {
           user.lastAccess = lastAccess.createdAt;
         }
-        user.userType = user.uuid ? 'Link' : 'Admin';
+        user.userType = user.uuid ? UserType.Link : UserType.Admin;
         await user.save();
       }
     }
