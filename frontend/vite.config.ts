@@ -28,6 +28,7 @@ export default defineConfig({
     outDir: '../public',
     emptyOutDir: true,
   },
+  esbuild: { minifyIdentifiers: false }, //keep function names for easier debugging on production
   server: {
     port: 6969,
     proxy: {
