@@ -23,7 +23,7 @@ const documents = {
     "\n  query AccessLogsQuery(\n    $folderId: ID!\n    $userId: ID\n    $includeChildren: Boolean\n    $userType: UserType\n  ) {\n    accessLogs(\n      folderId: $folderId\n      userId: $userId\n      includeChildren: $includeChildren\n      userType: $userType\n    ) {\n      id\n      timestamp\n      type\n      userId\n      folderId\n      ipAddress\n      userAgent\n      folder {\n        ...FolderFragment\n      }\n    }\n  }\n": types.AccessLogsQueryDocument,
     "\n  mutation EditBrandingMutation(\n    $folderId: ID!\n    $mode: ThemeMode\n    $primaryColor: PrimaryColor\n    $logoUrl: String\n  ) {\n    editBranding(\n      folderId: $folderId\n      mode: $mode\n      primaryColor: $primaryColor\n      logoUrl: $logoUrl\n    ) {\n      ...FolderFragment\n    }\n  }\n": types.EditBrandingMutationDocument,
     "\n  mutation DeleteBrandingMutation($folderId: ID!) {\n    deleteBranding(folderId: $folderId) {\n      ...FolderFragment\n    }\n  }\n": types.DeleteBrandingMutationDocument,
-    "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      #      cacheSize\n      #      mediaSize\n      host\n    }\n  }\n": types.ServerInfoQueryDocument,
+    "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n    }\n  }\n": types.ServerInfoQueryDocument,
     "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n": types.ExpensiveServerFileSizeQueryDocument,
     "\n  query TreeSizeQuery($folderId: ID!) {\n    folder(id: $folderId) {\n      parents {\n        id\n        name\n      }\n      ...TreeSizeFragment\n      files {\n        id\n        name\n        type\n        fileSize\n      }\n      subFolders {\n        ...TreeSizeFragment\n        subFolders {\n          ...TreeSizeFragment\n        }\n      }\n    }\n  }\n": types.TreeSizeQueryDocument,
     "\n  fragment TreeSizeFragment on Folder {\n    id\n    name\n    totalFiles\n    totalFolders\n    totalSize\n    totalDirectSize\n  }\n": types.TreeSizeFragmentFragmentDoc,
@@ -103,7 +103,7 @@ export function graphql(source: "\n  mutation DeleteBrandingMutation($folderId: 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      #      cacheSize\n      #      mediaSize\n      host\n    }\n  }\n"): (typeof documents)["\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      #      cacheSize\n      #      mediaSize\n      host\n    }\n  }\n"];
+export function graphql(source: "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n    }\n  }\n"): (typeof documents)["\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

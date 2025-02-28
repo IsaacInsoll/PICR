@@ -174,6 +174,7 @@ const Row = ({
         <Table.Td onClick={onClick}>
           <Text fz="sm" ta="right">
             {file.fileSize ? prettyBytes(file.fileSize) : null}
+            {/*  TODO: replace null with 'if folder, show users'*/}
           </Text>
           <Text fz="xs" ta="right" c="dimmed">
             {file.type ?? 'Folder'}

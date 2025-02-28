@@ -5,20 +5,21 @@ import { FaGithub } from 'react-icons/fa6';
 import { ReactNode, Suspense } from 'react';
 import prettyBytes from 'pretty-bytes';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
-import { useMe } from '../../hooks/useMe';
+import { useAvifEnabled, useMe } from '../../hooks/useMe';
 import { MdOutlineSdStorage } from 'react-icons/md';
 import { PicrLink } from '../../components/PicrLink';
 
 export const ServerInfo = () => {
   const [result] = useQuery({ query: serverInfoQuery });
-  const data = result?.data?.serverInfo;
+  console.log(result);
+  const server = result?.data?.serverInfo;
   return (
     <Table striped highlightOnHover withTableBorder>
       <TableHeader />
       <Table.Tbody>
-        <Version version={data.version} latest={data.latest} />
+        <Version version={server.version} latest={server.latest} />
         <Row title="Client URL">{window.location.origin}</Row>
-        <Row title="Server URL">{data.host}</Row>
+        <Row title="Server URL">{server.host}</Row>
         <Suspense
           fallback={
             <>
@@ -36,16 +37,28 @@ export const ServerInfo = () => {
         </Suspense>
 
         <Row title="Database URL">
-          <Code>{data.databaseUrl}</Code>
+          <Code>{server.databaseUrl}</Code>
         </Row>
         <Row title="Dev Mode">
-          <Bool value={data.dev} />
+          <Bool value={server.dev} />
         </Row>
         <Row title="Use Polling">
-          <Bool value={data.usePolling} />
+          <Bool value={server.usePolling} />
         </Row>
+        <Suspense>
+          <AvifEnabled />
+        </Suspense>
       </Table.Tbody>
     </Table>
+  );
+};
+
+const AvifEnabled = () => {
+  const avif = useAvifEnabled();
+  return (
+    <Row title="AVIF Enabled">
+      <Bool value={avif} />
+    </Row>
   );
 };
 
@@ -113,8 +126,6 @@ const serverInfoQuery = gql(/* GraphQL */ `
       databaseUrl
       dev
       usePolling
-      #      cacheSize
-      #      mediaSize
       host
     }
   }
