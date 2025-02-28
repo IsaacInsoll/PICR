@@ -38,6 +38,8 @@ import { accessLogs } from './queries/accessLogs';
 import { accessLogType } from './types/accessLogType';
 import { userTypeEnum } from './enums/userTypeEnum';
 import { accessTypeEnum } from './enums/accessTypeEnum';
+import { clientInfo } from './queries/clientInfoQuery';
+import { clientInfoType } from './types/clientInfoType';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -45,6 +47,7 @@ const queries = new GraphQLObjectType({
     admins,
     allFolders,
     brandings,
+    clientInfo,
     comments,
     file,
     /* Admin Only */
@@ -80,6 +83,7 @@ const types = [
   accessTypeEnum,
   accessLogType,
   brandingType,
+  clientInfoType,
   commentType,
   fileInterface,
   fileType,

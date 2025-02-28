@@ -4,6 +4,8 @@ import { Column, Model, Table } from 'sequelize-typescript';
 export default class ServerOptionsModel extends Model {
   @Column
   declare lastBootedVersion: string; //in case we need to do a data migration
+  @Column
+  declare avifEnabled: boolean; // show as f**k generating thumbnails so lets make it optional
 }
 
 export const getServerOptions = async () => {

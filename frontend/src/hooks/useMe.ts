@@ -10,15 +10,21 @@ export const useMe = ():
   | (Pick<User, 'id' | 'name' | 'folderId' | 'commentPermissions'> & {
       isUser: boolean;
       isPublicLink: boolean;
+      clientInfo: { avifEnabled?: boolean };
     })
   | null => {
   // console.log('useMe()');
   const token = useAtomValue(authKeyAtom);
   const uuid = getUUID();
   const [result] = useQuery({ query: meQuery, pause: !token && !uuid });
-  const me = result.data?.me;
-  if (!me) return null;
-  return { ...me, isUser: !me.uuid, isPublicLink: !!me.uuid };
+  const data = result.data;
+  if (!data) return null;
+  return {
+    ...data.me,
+    isUser: !data.me?.uuid,
+    isPublicLink: !!data.me?.uuid,
+    clientInfo: data.clientInfo,
+  };
 };
 
 export const meQuery = gql(/* GraphQL */ `
@@ -34,5 +40,13 @@ export const meQuery = gql(/* GraphQL */ `
         name
       }
     }
+    clientInfo {
+      avifEnabled
+    }
   }
 `);
+
+export const useAvifEnabled = () => {
+  const me = useMe();
+  return me?.clientInfo?.avifEnabled ?? false;
+};

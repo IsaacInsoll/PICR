@@ -11,6 +11,7 @@ import {
   awaitVideoThumbnailGeneration,
   generateVideoThumbnail,
 } from '../media/generateVideoThumbnail';
+import { getServerOptions } from '../db/ServerOptionsModel';
 
 export const imageRequest = async (
   req: Request<{
@@ -31,7 +32,15 @@ export const imageRequest = async (
   const extension = extname(filename).toLowerCase(); //extension ignored for original file, only used for thumbs
   const fp = fullPathFor(file, size, extension);
   if (size != 'raw' && !existsSync(fp)) {
-    if (file.type == 'Image') await generateThumbnail(file, size);
+    if (file.type == 'Image') {
+      await generateThumbnail(file, size);
+      const opts = await getServerOptions();
+      // The below works fine (return JPEG when AVIF requested and doesn't exist, but it feels dodgy)
+      if (extension == '.avif' && !opts.avifEnabled) {
+        // console.log('⚠️ AVIF not enabled for this server, returning original');
+        return res.sendFile(fullPathFor(file, size)); //intentionally excluding extension as server doesn't support AVIF
+      }
+    }
     if (file.type == 'Video') {
       await generateVideoThumbnail(file, size);
     }

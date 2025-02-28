@@ -280,6 +280,34 @@
       },
       {
         "kind": "OBJECT",
+        "name": "ClientInfo",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "avifEnabled",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "Comment",
         "description": null,
         "isOneOf": null,
@@ -2226,18 +2254,6 @@
                 "deprecationReason": null
               },
               {
-                "name": "grouped",
-                "description": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Boolean",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "includeChildren",
                 "description": null,
                 "type": {
@@ -2375,6 +2391,18 @@
                   }
                 }
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "clientInfo",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "ClientInfo",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

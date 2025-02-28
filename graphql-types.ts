@@ -44,6 +44,11 @@ export type Branding = {
   primaryColor?: Maybe<PrimaryColor>;
 };
 
+export type ClientInfo = {
+  __typename?: 'ClientInfo';
+  avifEnabled: Scalars['Boolean']['output'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
   comment?: Maybe<Scalars['String']['output']>;
@@ -264,6 +269,7 @@ export type Query = {
   admins: Array<User>;
   allFolders: Array<Maybe<Folder>>;
   brandings: Array<Branding>;
+  clientInfo?: Maybe<ClientInfo>;
   comments: Array<Comment>;
   file: FileInterface;
   folder: Folder;
@@ -279,7 +285,6 @@ export type Query = {
 
 export type QueryAccessLogsArgs = {
   folderId: Scalars['ID']['input'];
-  grouped?: InputMaybe<Scalars['Boolean']['input']>;
   includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
   userId?: InputMaybe<Scalars['ID']['input']>;
   userType?: InputMaybe<UserType>;

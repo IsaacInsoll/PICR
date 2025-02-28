@@ -4,6 +4,7 @@ import { ThumbnailSize } from '../helpers/thumbnailSize';
 import { Blurhash } from 'react-blurhash';
 import { useState } from 'react';
 import { MinimalFile } from '../../types';
+import { useAvifEnabled } from '../hooks/useMe';
 
 interface PicrImageProps {
   file: MinimalFile;
@@ -24,9 +25,13 @@ export const PicrImage = ({
   //<Image> is a mantine object that is pretty much an <img> tag
   //<picture> is HTML5 that allows you to specify multiple sources for a child image tag
   const [loaded, setLoaded] = useState(false);
+  const avif = useAvifEnabled();
   return (
     <picture>
-      <source srcSet={imageURL(file, size, '.avif')} type="image/avif" />
+      {avif ? (
+        <source srcSet={imageURL(file, size, '.avif')} type="image/avif" />
+      ) : null}
+      <source srcSet={imageURL(file, size)} type="image/jpeg" />
       {!loaded && file.blurHash ? (
         <Blurhash
           hash={file.blurHash}

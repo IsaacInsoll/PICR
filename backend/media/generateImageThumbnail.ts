@@ -11,6 +11,7 @@ import {
 import { log } from '../logger';
 import { thumbnailPath } from './thumbnailPath';
 import { generateVideoThumbnail } from './generateVideoThumbnail';
+import { getServerOptions } from '../db/ServerOptionsModel';
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
 export const generateAllThumbs = async (file: FileModel) => {
@@ -58,11 +59,20 @@ export const generateThumbnail = async (
   const px = thumbnailDimensions[size];
 
   const img = sharp(file.fullPath()).withMetadata().resize(px, px, sharpOpts);
+
+  const opts = await getServerOptions();
+
   try {
-    return await Promise.all([
+    const promises = [];
+    promises.push(
       img.jpeg(jpegOptions).toFile(thumbnailPath(file, size, '.jpg')),
-      img.avif(avifOptions).toFile(thumbnailPath(file, size, '.avif')),
-    ]);
+    );
+    if (opts.avifEnabled) {
+      promises.push(
+        img.avif(avifOptions).toFile(thumbnailPath(file, size, '.avif')),
+      );
+    }
+    return await Promise.all(promises);
   } catch (e) {
     console.log('Error generating thumbnail for: ' + file.fullPath());
     console.log(e);
