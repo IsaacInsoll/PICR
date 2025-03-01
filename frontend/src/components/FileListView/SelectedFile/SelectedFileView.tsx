@@ -71,7 +71,7 @@ export const SelectedFileView = ({
           const f = files[index];
           // don't change URL if we are already on that URL (IE: first opening gallery)
           if (f?.id && f.id != fileId) {
-            setFolder({ id: folderId }, f);
+            setFolder({ id: folderId }, f, { replace: true });
           }
         },
       }}
