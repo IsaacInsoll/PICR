@@ -27,6 +27,7 @@ import { prettyDate } from './Filtering/PrettyDate';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import { useAtomValue } from 'jotai/index';
 import { DotsIcon } from '../../PicrIcons';
+import { FolderMenu } from './FolderMenu';
 
 export const FileListView = ({
   files,
@@ -201,7 +202,11 @@ const Row = ({
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-              <FileMenu file={file} />
+              {isFolder ? (
+                <FolderMenu folder={file} />
+              ) : (
+                <FileMenu file={file} />
+              )}
             </Menu.Dropdown>
           </Menu>
         </Group>
