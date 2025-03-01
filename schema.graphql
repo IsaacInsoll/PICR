@@ -111,6 +111,7 @@ type Folder {
   totalFolders: Int!
   totalImages: Int!
   totalSize: String!
+  users: [User!]
 }
 
 enum FolderPermissions {

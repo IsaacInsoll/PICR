@@ -18,6 +18,11 @@ import { heroImageForFolder } from '../helpers/heroImageForFolder';
 import { subFiles } from '../helpers/subFiles';
 import { subFolders } from '../helpers/subFolders';
 import { allSubfolderIds } from '../../helpers/allSubfolders';
+import { userType } from './userType';
+import UserModel from '../../db/UserModel';
+import { userToJSON } from '../helpers/userToJSON';
+import { getFolder } from '../helpers/getFolder';
+import { contextPermissions } from '../../auth/contextPermissions';
 
 export const folderType = new GraphQLObjectType({
   name: 'Folder',
@@ -93,6 +98,22 @@ export const folderType = new GraphQLObjectType({
         const folderIds = await allSubfolderIds(f);
         return await FileModel.count({
           where: { folderId: folderIds, type: 'Image', exists: true },
+        });
+      },
+    },
+    users: {
+      type: new GraphQLList(new GraphQLNonNull(userType)),
+      resolve: async (f: FolderModel, params, context) => {
+        const { permissions } = await contextPermissions(context, f.id);
+        if (permissions != 'Admin') return null;
+
+        const users = await UserModel.findAll({
+          where: { folderId: f.id },
+          // order: params.sortByRecent ? [['lastAccess', 'DESC']] : undefined,
+          // limit: params.sortByRecent ? 10 : 1000,
+        });
+        return users.map((pl) => {
+          return { ...userToJSON(pl) };
         });
       },
     },

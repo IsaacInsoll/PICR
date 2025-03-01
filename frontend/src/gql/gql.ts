@@ -46,7 +46,7 @@ const documents = {
     "\n    query ViewAdminsQuery {\n        admins {\n            ...UserFragment\n        }\n    }\n": types.ViewAdminsQueryDocument,
     "\n    query ViewBrandingsQuery {\n        brandings {\n            id\n            logoUrl\n            primaryColor\n            mode\n            folderId\n            folder {\n               ...MinimumFolderFragment\n            }\n        }\n    }\n": types.ViewBrandingsQueryDocument,
     "\n    query ViewFile($fileId: ID!) {\n        file(id:$fileId) {\n            ...FileFragment\n            ...ImageMetadataFragment\n        }\n    }\n": types.ViewFileDocument,
-    "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n            }\n            subFolders {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n": types.ViewFolderDocument,
+    "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n            }\n            subFolders {\n                ...MinimumFolderFragment\n                users {\n                    id\n                    name\n                    enabled\n                    commentPermissions\n                    gravatar\n                }\n            }\n        }\n    }\n": types.ViewFolderDocument,
     "\n    query ViewUserQuery($id: ID!) {\n        user(id:$id) {\n            ...UserFragment\n            \n        }\n    }\n": types.ViewUserQueryDocument,
 };
 
@@ -195,7 +195,7 @@ export function graphql(source: "\n    query ViewFile($fileId: ID!) {\n        f
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n            }\n            subFolders {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n"): (typeof documents)["\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n            }\n            subFolders {\n                ...MinimumFolderFragment\n            }\n        }\n    }\n"];
+export function graphql(source: "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n            }\n            subFolders {\n                ...MinimumFolderFragment\n                users {\n                    id\n                    name\n                    enabled\n                    commentPermissions\n                    gravatar\n                }\n            }\n        }\n    }\n"): (typeof documents)["\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n            }\n            subFolders {\n                ...MinimumFolderFragment\n                users {\n                    id\n                    name\n                    enabled\n                    commentPermissions\n                    gravatar\n                }\n            }\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

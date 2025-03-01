@@ -7,7 +7,10 @@ import { useLazyLoad } from '../../hooks/useLazyLoad';
 import { MinimalFile, MinimalFolder } from '../../../types';
 import {
   ActionIcon,
+  Avatar,
+  AvatarGroup,
   Badge,
+  Box,
   Group,
   Menu,
   Rating,
@@ -28,6 +31,7 @@ import { fileSortAtom } from '../../atoms/fileSortAtom';
 import { useAtomValue } from 'jotai/index';
 import { DotsIcon } from '../../PicrIcons';
 import { FolderMenu } from './FolderMenu';
+import { PicrAvatar } from '../PicrAvatar';
 
 export const FileListView = ({
   files,
@@ -173,9 +177,15 @@ const Row = ({
       ) : null}
       {!isMobile ? (
         <Table.Td onClick={onClick}>
+          {file.users ? (
+            <Avatar.Group spacing="xs" style={{ justifyContent: 'flex-end' }}>
+              {file.users.map((u) => (
+                <PicrAvatar user={u} size="sm" key={u.id} />
+              ))}
+            </Avatar.Group>
+          ) : null}
           <Text fz="sm" ta="right">
             {file.fileSize ? prettyBytes(file.fileSize) : null}
-            {/*  TODO: replace null with 'if folder, show users'*/}
           </Text>
           <Text fz="xs" ta="right" c="dimmed">
             {file.type ?? 'Folder'}

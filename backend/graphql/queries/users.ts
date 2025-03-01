@@ -42,7 +42,6 @@ const resolver = async (_, params, context) => {
     limit: params.sortByRecent ? 10 : 1000,
   });
   return data.map((pl) => {
-    console.log(pl.name);
     return { ...userToJSON(pl), folder: getFolder(pl.folderId) };
   });
 };

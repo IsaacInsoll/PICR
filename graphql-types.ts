@@ -125,6 +125,7 @@ export type Folder = {
   totalFolders: Scalars['Int']['output'];
   totalImages: Scalars['Int']['output'];
   totalSize: Scalars['String']['output'];
+  users?: Maybe<Array<User>>;
 };
 
 export enum FolderPermissions {
