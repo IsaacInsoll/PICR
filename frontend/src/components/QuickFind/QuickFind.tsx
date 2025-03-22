@@ -289,11 +289,11 @@ const QuickFindFooter = ({
 
 const ScopeSelector = ({ folder }: { folder?: MinimalFolder }) => {
   const me = useMe();
+  const [selectedScope, setSelectedScope] = useAtom(scopeAtom);
 
   //if we are in root folder, no point specifying "this or all folders"
-  if (me.folderId == folder?.id) return null;
+  if (me?.folderId == folder?.id) return null;
 
-  const [selectedScope, setSelectedScope] = useAtom(scopeAtom);
   return (
     <SegmentedControl
       value={selectedScope}
