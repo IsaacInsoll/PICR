@@ -21,7 +21,7 @@ export const useMe = ():
   if (!data) return null;
   return {
     ...data.me,
-    isUser: !data.me?.uuid,
+    isUser: data.me?.id && !data.me?.uuid,
     isPublicLink: !!data.me?.uuid,
     clientInfo: data.clientInfo,
   };
