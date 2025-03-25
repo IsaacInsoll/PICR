@@ -81,19 +81,21 @@ const LeftSide = ({
         {folder ? (
           <ManageFolderButton folder={folder} managing={managing} />
         ) : null}
+        {!folder || !isMobile ? (
+          <Button
+            onClick={() => {
+              setFolder(me.folder);
+            }}
+            leftSection={<PicrLogo style={{ maxWidth: 16 }} />}
+            variant="subtle"
+            color="gray"
+            size="xs"
+          >
+            {me.folder?.name ?? 'Home'}
+          </Button>
+        ) : null}
         {!isMobile ? (
           <>
-            <Button
-              onClick={() => {
-                setFolder(me.folder);
-              }}
-              leftSection={<PicrLogo style={{ maxWidth: 16 }} />}
-              variant="subtle"
-              color="gray"
-              size="xs"
-            >
-              {me.folder?.name ?? 'Home'}
-            </Button>{' '}
             <ActionIcon
               variant="subtle"
               color="gray"
