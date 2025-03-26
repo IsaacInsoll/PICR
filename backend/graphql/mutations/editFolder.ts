@@ -1,6 +1,6 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { doAuthError } from '../../auth/doAuthError';
-import FileModel from '../../db/FileModel';
+import FileModel from '../../db/sequelize/FileModel';
 import { GraphQLID, GraphQLNonNull } from 'graphql/index';
 import { folderType } from '../types/folderType';
 import { DBFolderForId } from '../../db/picrDb';

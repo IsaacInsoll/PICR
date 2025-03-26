@@ -16,6 +16,7 @@ import { taskQuery } from '../urql/queries/taskQuery';
 import { useRequery } from '../hooks/useRequery';
 
 export const TaskSummary = ({ folderId }: { folderId: string }) => {
+  return <>nope</>;
   const [result, requery] = useQuery({
     query: taskQuery,
     variables: { folderId },

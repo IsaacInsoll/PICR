@@ -10,8 +10,8 @@ import { folderPermissionsType } from './folderPermissionsType';
 import { AllChildFolderIds, ParentFolders } from '../../helpers/folderUtils';
 import Folder from '../../models/Folder';
 import File from '../../models/File';
-import FolderModel from '../../db/FolderModel';
-import FileModel from '../../db/FileModel';
+import FolderModel from '../../db/sequelize/FolderModel';
+import FileModel from '../../db/sequelize/FileModel';
 import { fileInterface } from '../interfaces/fileInterface';
 import { imageFileType } from './imageFileType';
 import { brandingType } from './brandingType';
@@ -22,10 +22,11 @@ import { subFiles } from '../helpers/subFiles';
 import { subFolders } from '../helpers/subFolders';
 import { allSubfolderIds } from '../../helpers/allSubfolders';
 import { userType } from './userType';
-import UserModel from '../../db/UserModel';
+import UserModel from '../../db/sequelize/UserModel';
 import { userToJSON } from '../helpers/userToJSON';
 import { getFolder } from '../helpers/getFolder';
 import { contextPermissions } from '../../auth/contextPermissions';
+import { log } from '../../logger';
 
 export const folderType = new GraphQLObjectType({
   name: 'Folder',
@@ -107,8 +108,8 @@ export const folderType = new GraphQLObjectType({
     users: {
       type: new GraphQLList(new GraphQLNonNull(userType)),
       resolve: async (f: FolderModel, params, context) => {
-        const { permissions } = await contextPermissions(context, f.id);
-        if (permissions != 'Admin') return null;
+        log('info', '✅ in resolver', true);
+        await contextPermissions(context, f.id, 'Admin');
 
         const users = await UserModel.findAll({
           where: { folderId: f.id },

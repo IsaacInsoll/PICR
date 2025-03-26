@@ -6,9 +6,9 @@ import {
   Table,
 } from 'sequelize-typescript';
 import FolderModel from './FolderModel';
-import { CommentPermissions, UserType } from '../../graphql-types';
+import { CommentPermissions, UserType } from '../../../graphql-types';
 import { sep } from 'path';
-import { userTypeEnum } from '../graphql/enums/userTypeEnum';
+import { userTypeEnum } from '../../graphql/enums/userTypeEnum';
 
 // Either a 'real user' with a hashedPassword or a 'public link' user with a UUID
 

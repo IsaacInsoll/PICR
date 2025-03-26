@@ -1,4 +1,4 @@
-import FolderModel from '../../db/FolderModel';
+import FolderModel from '../../db/sequelize/FolderModel';
 
 export const subFolders = async (parentId: string | number) => {
   const folders = await FolderModel.findAll({

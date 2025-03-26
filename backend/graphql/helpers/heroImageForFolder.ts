@@ -1,21 +1,21 @@
 import Folder from '../../models/Folder';
 import File from '../../models/File';
-import { Op } from 'sequelize';
 import { allSubFoldersRecursive } from './allSubFoldersRecursive';
 import { db } from '../../server';
 import { asc } from 'drizzle-orm';
 import { folderTable } from '../../db/models';
+import FileModel from '../../db/sequelize/FileModel';
 
 export const heroImageForFolder = async (f: Folder) => {
   // 1. Hero Image set for current folder
   const heroImage =
-    f.heroImageId != 0 ? await File.findByPk(f.heroImageId) : undefined;
+    f.heroImageId != 0 ? await FileModel.findByPk(f.heroImageId) : undefined;
   if (heroImage && heroImage.exists && heroImage.folderId == f.id) {
     return heroImage;
   }
 
   // 2. First image in this folder
-  const first = await File.findOne({
+  const first = await FileModel.findOne({
     where: { folderId: f.id, type: 'Image', exists: true },
     order: [['name', 'ASC']],
   });
@@ -31,7 +31,7 @@ export const heroImageForFolder = async (f: Folder) => {
   const s = await heroImageForSubFolder(subFolderIds);
   if (s) return s;
 
-  const allImages = await File.findOne({
+  const allImages = await FileModel.findOne({
     where: {
       folderId: subFolderIds,
       type: 'Image',
@@ -52,7 +52,7 @@ const heroImageForSubFolder = async (parentIds: string[]) => {
   });
 
   const subHeroImage = subFolder
-    ? await File.findByPk(subFolder.heroImageId)
+    ? await FileModel.findByPk(subFolder.heroImageId)
     : undefined;
   if (
     subHeroImage &&

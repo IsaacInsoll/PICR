@@ -3,7 +3,7 @@ import { Task } from '../../../frontend/src/gql/graphql';
 import { AllChildFolderIds } from '../../helpers/folderUtils';
 import { queueZipTaskStatus } from '../../helpers/zipQueue';
 import { contextPermissions } from '../../auth/contextPermissions';
-import FolderModel from '../../db/FolderModel';
+import FolderModel from '../../db/sequelize/FolderModel';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
 import { taskType } from '../types/taskType';
 import { allSubfolderIds } from '../../helpers/allSubfolders';

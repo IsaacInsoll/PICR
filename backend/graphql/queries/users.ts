@@ -1,6 +1,6 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
-import UserModel from '../../db/UserModel';
+import UserModel from '../../db/sequelize/UserModel';
 import { Op } from 'sequelize';
 import { getFolder } from '../helpers/getFolder';
 import {
@@ -20,11 +20,8 @@ const resolver = async (_, params, context) => {
     params.folderId,
     'Admin',
   );
-  if (p !== 'Admin') throw new GraphQLError('You must be an Admin to see this');
 
-  const folder = await DBFolderForId(params.folderId);
-
-  const ids = [folder.id];
+  const ids = [folder?.id];
   if (params.includeParents) {
     const parents = await folderAndAllParentIds(folder, user.folderId);
     ids.push(...parents);

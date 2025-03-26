@@ -1,6 +1,6 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLNonNull } from 'graphql';
-import { brandingForFolderId } from '../../db/BrandingModel';
+import { brandingForFolderId } from '../../db/sequelize/BrandingModel';
 import { getFolder } from '../helpers/getFolder';
 import { folderType } from '../types/folderType';
 import { GraphQLError } from 'graphql/error';

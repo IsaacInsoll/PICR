@@ -31,8 +31,6 @@ export const picrTemplate = async (req: Request, res: Response) => {
         { uuid: sub[2], auth: '' },
         folderId,
       );
-      if (perms != 'None') {
-        const folder = await DBFolderForId(folderId);
       if (permissions != 'None' && folder) {
         const summary = await folderStatsSummaryText(folderId);
         const thumb = await heroImageForFolder(folder);

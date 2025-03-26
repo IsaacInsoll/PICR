@@ -1,5 +1,6 @@
 // Only needed so we get proper typing on the `db` object
 export * from './accessLogTable';
+export * from './brandingTable';
 export * from './commentTable';
 export * from './enums';
 export * from './fileTable';

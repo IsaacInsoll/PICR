@@ -1,8 +1,8 @@
 import Folder from '../models/Folder';
 import File from '../models/File';
 import { AllChildFolderIds } from './folderUtils';
-import FolderModel from '../db/FolderModel';
-import FileModel from '../db/FileModel';
+import FolderModel from '../db/sequelize/FolderModel';
+import FileModel from '../db/sequelize/FileModel';
 import crypto from 'crypto';
 import fs from 'fs';
 import archiver from 'archiver';

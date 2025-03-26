@@ -7,11 +7,13 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { allSubfolders } from '../../helpers/allSubfolders';
-import AccessLogModel, { getAccessLogs } from '../../db/AccessLogModel';
+import AccessLogModel, {
+  getAccessLogs,
+} from '../../db/sequelize/AccessLogModel';
 import { accessLogType } from '../types/accessLogType';
 import { userTypeEnum } from '../enums/userTypeEnum';
 import { addFolderRelationship } from '../helpers/addFolderRelationship';
-import UserModel from '../../db/UserModel';
+import UserModel from '../../db/sequelize/UserModel';
 
 const resolver = async (_, params, context) => {
   const { folder } = await contextPermissions(

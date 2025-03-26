@@ -3,7 +3,7 @@ import { addFolder } from './events/addFolder';
 import { removeFolder } from './events/removeFolder';
 import { Task } from '../../graphql-types';
 import { generateAllThumbs } from '../media/generateImageThumbnail';
-import FileModel from '../db/FileModel';
+import FileModel from '../db/sequelize/FileModel';
 import { log } from '../logger';
 
 type QueueAction =

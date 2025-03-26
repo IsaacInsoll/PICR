@@ -7,9 +7,9 @@ import {
 } from 'sequelize-typescript';
 import FolderModel from './FolderModel';
 import UserModel from './UserModel';
-import { IncomingCustomHeaders } from '../types/incomingCustomHeaders';
+import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
 import { literal, Op } from 'sequelize';
-import { AccessType } from '../../graphql-types';
+import { AccessType } from '../../../graphql-types';
 
 @Table({ tableName: 'AccessLogs' })
 export default class AccessLogModel extends Model {

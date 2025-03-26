@@ -1,5 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import FolderModel from '../../db/FolderModel';
+import FolderModel from '../../db/sequelize/FolderModel';
 import { queueTaskStatus } from '../../filesystem/fileQueue';
 import { Task } from '../../../frontend/src/gql/graphql';
 import { AllChildFolderIds } from '../../helpers/folderUtils';

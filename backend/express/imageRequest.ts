@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { AllSize, allSizes } from '../../frontend/src/helpers/thumbnailSize';
-import FileModel from '../db/FileModel';
+import FileModel from '../db/sequelize/FileModel';
 import { extname } from 'path';
 import {
   fullPathFor,
@@ -11,7 +11,7 @@ import {
   awaitVideoThumbnailGeneration,
   generateVideoThumbnail,
 } from '../media/generateVideoThumbnail';
-import { getServerOptions } from '../db/ServerOptionsModel';
+import { getServerOptions } from '../db/picrDb';
 
 export const imageRequest = async (
   req: Request<{

@@ -8,7 +8,7 @@ import {
   GraphQLString,
 } from 'graphql/index';
 import { userType } from '../types/userType';
-import UserModel from '../../db/UserModel';
+import UserModel from '../../db/sequelize/UserModel';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 import { FolderIsUnderFolderId } from '../../helpers/folderUtils';
 import Folder from '../../models/Folder';

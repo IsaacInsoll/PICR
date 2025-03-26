@@ -2,8 +2,8 @@ import chokidar from 'chokidar';
 import { relativePath } from './fileManager';
 import { addToQueue, initComplete } from './fileQueue';
 import { log } from '../logger';
-import FileModel from '../db/FileModel';
-import FolderModel from '../db/FolderModel';
+import FileModel from '../db/sequelize/FileModel';
+import FolderModel from '../db/sequelize/FolderModel';
 import { Op } from 'sequelize';
 import { picrConfig } from '../config/picrConfig';
 

@@ -1,4 +1,4 @@
-import FolderModel from '../db/FolderModel';
+import FolderModel from '../db/sequelize/FolderModel';
 import { contextPermissions } from '../auth/contextPermissions';
 
 export const parentFolders = async (

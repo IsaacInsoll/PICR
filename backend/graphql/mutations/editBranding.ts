@@ -1,6 +1,6 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql/index';
-import BrandingModel from '../../db/BrandingModel';
+import BrandingModel from '../../db/sequelize/BrandingModel';
 import { getFolder } from '../helpers/getFolder';
 import { primaryColorEnum, themeModeEnum } from '../enums/themeModeEnum';
 import { folderType } from '../types/folderType';

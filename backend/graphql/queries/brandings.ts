@@ -1,7 +1,7 @@
 import { requireFullAdmin } from './admins';
 import { brandingType } from '../types/brandingType';
 import { GraphQLList, GraphQLNonNull } from 'graphql';
-import BrandingModel from '../../db/BrandingModel';
+import BrandingModel from '../../db/sequelize/BrandingModel';
 import { addFolderRelationship } from '../helpers/addFolderRelationship';
 
 const resolver = async (_, params, context) => {

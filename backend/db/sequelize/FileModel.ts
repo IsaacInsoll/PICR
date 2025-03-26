@@ -6,8 +6,8 @@ import {
   Table,
 } from 'sequelize-typescript';
 import FolderModel from './FolderModel';
-import { FileFlag, FileType } from '../../graphql-types';
-import { fullPath } from '../filesystem/fileManager';
+import { FileFlag, FileType } from '../../../graphql-types';
+import { fullPath } from '../../filesystem/fileManager';
 import { sep } from 'path';
 
 @Table({ tableName: 'Files' })

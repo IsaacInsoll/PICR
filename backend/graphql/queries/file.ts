@@ -1,4 +1,4 @@
-import FileModel from '../../db/FileModel';
+import FileModel from '../../db/sequelize/FileModel';
 import { contextPermissions } from '../../auth/contextPermissions';
 
 import { fileToJSON } from '../helpers/fileToJSON';

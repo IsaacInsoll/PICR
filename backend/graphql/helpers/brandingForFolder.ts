@@ -1,10 +1,10 @@
-import FolderModel from '../../db/FolderModel';
+import FolderModel from '../../db/sequelize/FolderModel';
 import {
   Branding as BrandingType,
   PrimaryColor,
   ThemeMode,
 } from '../../../graphql-types';
-import { brandingForFolderId } from '../../db/BrandingModel';
+import { brandingForFolderId } from '../../db/sequelize/BrandingModel';
 
 export const brandingForFolder = async (
   folder: FolderModel,

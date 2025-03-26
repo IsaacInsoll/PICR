@@ -1,5 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import UserModel from '../../db/UserModel';
+import UserModel from '../../db/sequelize/UserModel';
 import { Op } from 'sequelize';
 import { getFolder } from '../helpers/getFolder';
 import { GraphQLList, GraphQLNonNull } from 'graphql';

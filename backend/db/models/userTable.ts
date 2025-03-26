@@ -1,6 +1,12 @@
-import { boolean, integer, pgTable, varchar } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  integer,
+  pgTable,
+  varchar,
+  timestamp,
+} from 'drizzle-orm/pg-core';
 import { baseColumns } from '../column.helpers';
-import { commentPermissionsEnum } from './enums';
+import { commentPermissionsEnum, userTypeEnum } from './enums';
 import { folderTable } from './folderTable';
 import { relations } from 'drizzle-orm';
 import { fileTable } from './fileTable';
@@ -18,6 +24,8 @@ export const userTable = pgTable('Users', {
 
   // IF PUBLIC LINK
   uuid: varchar('uuid', { length: 255 }),
+  lastAccess: timestamp({ withTimezone: true }),
+  userType: userTypeEnum(),
 });
 
 export const userRelations = relations(fileTable, ({ one, many }) => ({

@@ -2,7 +2,7 @@ import sharp, { AvifOptions, JpegOptions, ResizeOptions } from 'sharp';
 import { fullPath } from '../filesystem/fileManager';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'path';
-import FileModel from '../db/FileModel';
+import FileModel from '../db/sequelize/FileModel';
 import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions';
 import {
   AllSize,
@@ -11,7 +11,7 @@ import {
 import { log } from '../logger';
 import { thumbnailPath } from './thumbnailPath';
 import { generateVideoThumbnail } from './generateVideoThumbnail';
-import { getServerOptions } from '../db/ServerOptionsModel';
+import { getServerOptions } from '../db/picrDb';
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
 export const generateAllThumbs = async (file: FileModel) => {

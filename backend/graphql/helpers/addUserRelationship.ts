@@ -1,4 +1,4 @@
-import UserModel from '../../db/UserModel';
+import UserModel from '../../db/sequelize/UserModel';
 import { userToJSON } from './userToJSON';
 
 type UserRelationship = { userId: string }[];

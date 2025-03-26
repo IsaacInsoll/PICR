@@ -21,7 +21,7 @@ export const server = async () => {
     dialect: 'postgres',
     dialectModule: pg,
     logging: picrConfig.debugSql,
-    models: [__dirname + '/db'],
+    models: [__dirname + '/db/sequelize'],
     pool: { max: 50 }, //default max is 5, postgres default limit is 100
   });
 

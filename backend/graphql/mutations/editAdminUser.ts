@@ -1,9 +1,9 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import UserModel from '../../db/UserModel';
+import UserModel from '../../db/sequelize/UserModel';
 import { GraphQLError } from 'graphql/error';
 import Folder from '../../models/Folder';
 import { FolderIsUnderFolderId } from '../../helpers/folderUtils';
-import FolderModel from '../../db/FolderModel';
+import FolderModel from '../../db/sequelize/FolderModel';
 import { hashPassword } from '../../helpers/hashPassword';
 
 import { getFolder } from '../helpers/getFolder';

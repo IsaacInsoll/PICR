@@ -1,4 +1,4 @@
-import FolderModel from '../../db/FolderModel';
+import FolderModel from '../../db/sequelize/FolderModel';
 
 type FolderRelationship = { folderId: string }[];
 

@@ -1,5 +1,5 @@
 import { folderList, pathSplit, relativePath } from '../fileManager';
-import FolderModel from '../../db/FolderModel';
+import FolderModel from '../../db/sequelize/FolderModel';
 import { updateFolderHash } from './updateFolderHash';
 import { log } from '../../logger';
 import { sep } from 'path';

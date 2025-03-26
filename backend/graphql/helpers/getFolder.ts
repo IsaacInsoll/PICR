@@ -1,4 +1,3 @@
-import Folder from '../../models/Folder';
 import { subFiles } from './subFiles';
 
 import { subFolders } from './subFolders';

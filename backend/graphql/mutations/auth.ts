@@ -1,4 +1,4 @@
-import UserModel from '../../db/UserModel';
+import UserModel from '../../db/sequelize/UserModel';
 import { hashPassword } from '../../helpers/hashPassword';
 import { generateAccessToken } from '../../auth/jwt-auth';
 import { GraphQLNonNull, GraphQLString } from 'graphql';
