@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { contextPermissionsForFolder } from '../auth/contextPermissionsForFolder';
-import Folder from '../models/Folder';
+import { contextPermissions } from '../auth/contextPermissions';
 import { folderStatsSummaryText } from '../graphql/helpers/folderStats';
 import { imageURL } from '../../frontend/src/helpers/imageURL';
 import { Request, Response } from 'express';
@@ -18,17 +17,23 @@ interface ITemplateFields {
 export const picrTemplate = async (req: Request, res: Response) => {
   let fields: ITemplateFields = fieldDefaults;
 
+  //FB messenger was adding `%E2%81%A9` to outgoing links so we need to strip that. - observed december 25th, 2024
+  if (req.path.endsWith('%E2%81%A9')) {
+    return res.redirect(req.path.replace('%E2%81%A9', ''));
+  }
+
   // Replace metadata on public links
   const sub = req.path.split('/');
   if (sub[1] == 's' && sub.length >= 3) {
     const folderId = parseInt(sub[3]);
     if (!isNaN(folderId)) {
-      const [perms, user] = await contextPermissionsForFolder(
+      const { permissions, folder } = await contextPermissions(
         { uuid: sub[2], auth: '' },
         folderId,
       );
       if (perms != 'None') {
         const folder = await DBFolderForId(folderId);
+      if (permissions != 'None' && folder) {
         const summary = await folderStatsSummaryText(folderId);
         const thumb = await heroImageForFolder(folder);
         fields = {

@@ -15,15 +15,6 @@ export const FilePreview = ({
       <PicrVideoPreview file={file} {...imageProps} key={imageProps?.key} />
     );
   }
-  const { key, p } = imageProps ?? {};
-  return (
-    <PicrImage
-      // style={imageProps.style}
-      file={file}
-      size="md"
-      clickable={true}
-      key={key}
-      {...p}
-    />
-  );
+  const { key, ...p } = imageProps ?? {};
+  return <PicrImage file={file} size="md" clickable={true} key={key} {...p} />;
 };

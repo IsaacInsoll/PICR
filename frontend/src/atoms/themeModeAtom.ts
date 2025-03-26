@@ -1,4 +1,10 @@
 import { atom } from 'jotai';
-import { MantineColorScheme } from '@mantine/core';
+import { Branding, PrimaryColor, ThemeMode } from '../../../graphql-types';
 
-export const themeModeAtom = atom<MantineColorScheme>('auto');
+export const defaultBranding: Branding = {
+  id: '',
+  mode: ThemeMode.Auto,
+  primaryColor: PrimaryColor.Blue,
+};
+
+export const themeModeAtom = atom<Branding>(defaultBranding);

@@ -1,8 +1,8 @@
 import { Client, fetchExchange } from 'urql';
 import { cacheExchange } from '@urql/exchange-graphcache';
-import { getUUID } from './Router';
 import schema from './../public/graphql.schema.json';
 import { invalidateQueries } from './helpers/invalidateQueries';
+import { getUUID } from './helpers/getUUID';
 
 const cx = cacheExchange({
   schema,
@@ -14,13 +14,17 @@ const cx = cacheExchange({
   updates: {
     Mutation: {
       // REMINDER: name of individual operation, not the whole mutation you are posting
-      editUser: (_, args, cache) => invalidateQueries(cache, 'folder'),
-      addComment: (_, args, cache) => invalidateQueries(cache, 'comments'),
+      editUser: (_, args, cache) => invalidateQueries(cache, ['folder']),
+      addComment: (_, args, cache) => invalidateQueries(cache, ['comments']),
+      deleteBranding: (_, args, cache) =>
+        invalidateQueries(cache, ['brandings', 'folder']),
+      editBranding: (_, args, cache) =>
+        invalidateQueries(cache, ['brandings', 'folder']),
     },
   },
 });
 
-export const createClient = (authToken: string) =>
+export const createClient = (authToken: string, sessionKey: string) =>
   new Client({
     url: '/graphql',
     suspense: true,
@@ -31,6 +35,7 @@ export const createClient = (authToken: string) =>
         headers: {
           authorization: authToken !== '' && !uuid ? `Bearer ${authToken}` : '',
           uuid: uuid ?? '',
+          sessionId: sessionKey,
         },
       };
     },

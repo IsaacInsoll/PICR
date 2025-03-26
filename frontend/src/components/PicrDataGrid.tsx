@@ -22,6 +22,7 @@ function picrGridProps<TData extends MRT_RowData>(
   columns: MRT_ColumnDef<TData>[],
   data: TData[],
   onClick: (row: TData) => void,
+  onMouseOver?: (row: TData) => void,
   menuItems?: (props: MenuItemsProps) => ReactNode,
 ): MRT_TableOptions<TData> {
   return {
@@ -37,6 +38,9 @@ function picrGridProps<TData extends MRT_RowData>(
     mantineTableBodyRowProps: ({ row }) => ({
       onClick: () => {
         onClick(row.original);
+      },
+      onMouseOver: () => {
+        onMouseOver ? onMouseOver(row.original) : null;
       },
       style: { cursor: 'pointer' },
     }),
@@ -55,15 +59,26 @@ export const PicrDataGrid = <TData extends MRT_RowData>({
   columns,
   data,
   onClick,
+  onMouseover,
   menuItems,
 }: {
   columns: MRT_ColumnDef<TData>[];
   data: TData[] | undefined;
   onClick: (row: TData) => void;
+  onMouseover?: (row: TData) => void;
   menuItems?: (props: MenuItemsProps) => ReactNode;
 }) => {
   const tableOptions = useMemo(
-    () => picrGridProps(columns, data, (row) => onClick(row), menuItems),
+    () =>
+      picrGridProps(
+        columns,
+        data,
+        (row) => onClick(row),
+        (row) => {
+          if (onMouseover) onMouseover(row);
+        },
+        menuItems,
+      ),
     [columns, data],
   );
   const table = useMantineReactTable(tableOptions);

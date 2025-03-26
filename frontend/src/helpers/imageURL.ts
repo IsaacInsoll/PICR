@@ -13,7 +13,7 @@ export const imageURL = (
   const path = `/image/${id}/${size}/${fileHash}/`;
   if (type == 'Video' && size != 'raw') return path + `joined.jpg`;
 
-  return path + (extension ? name : name);
+  return path + (extension ? name + extension : name);
 };
 
 export const imageDimensions = (file: MinimalFile, size: ThumbnailSize) => {

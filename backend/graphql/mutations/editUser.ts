@@ -1,5 +1,4 @@
-import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
-import { doAuthError } from '../../auth/doAuthError';
+import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
 import { getFolder } from '../helpers/getFolder';
 import {
@@ -9,20 +8,21 @@ import {
   GraphQLString,
 } from 'graphql/index';
 import { userType } from '../types/userType';
-import User from '../../models/User';
+import UserModel from '../../db/UserModel';
 import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 import { FolderIsUnderFolderId } from '../../helpers/folderUtils';
 import Folder from '../../models/Folder';
 import { Op } from 'sequelize';
-import { log } from '../../logger';
+import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
+import { badChars } from '../helpers/badChars';
 import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
-  const [p, u] = await perms(context, params.folderId, true);
-  if (p !== 'Admin') doAuthError("You don't have permissions for this folder");
-  let user: User | null = null;
+  await contextPermissions(context, params.folderId, 'Admin');
+
+  let user: UserModel | null = null;
   if (params.id) {
-    user = await User.findByPk(params.id);
+    user = await UserModel.findByPk(params.id);
     if (!user) throw new GraphQLError('No user found for ID: ' + params.id);
     const userFolder = await DBFolderForId(user.folderId);
     const folderAllowed = await FolderIsUnderFolderId(
@@ -35,15 +35,26 @@ const resolver = async (_, params, context) => {
         "You don't have access to edit users in folder " + userFolder.id,
       );
   } else {
-    user = new User();
+    user = new UserModel();
   }
 
-  const existingUuid = await User.findAll({
+  const existingUuid = await UserModel.findAll({
     where: { uuid: params.uuid, [Op.not]: { id: user.id } },
   });
 
   if (existingUuid.length > 0) {
     throw new GraphQLError('Public Link Address already used');
+  }
+
+  if (!params.uuid || params.uuid.length < 6) {
+    throw new GraphQLError('Public Link Address must be at least 6 characters');
+  }
+
+  if (badChars(params.uuid).length > 0) {
+    throw new GraphQLError(
+      "Public Link Address can't contain these characters: " +
+        badChars(params.uuid).join(', '),
+    );
   }
 
   user.folderId = params.folderId;

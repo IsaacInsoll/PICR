@@ -12,7 +12,15 @@ export default defineConfig({
   plugins: [
     react({
       babel: {
-        plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],
+        plugins: [
+          ['babel-plugin-react-compiler', ReactCompilerConfig],
+          [
+            '@locator/babel-jsx/dist',
+            {
+              env: 'development',
+            },
+          ],
+        ],
       },
     }),
   ],
@@ -20,6 +28,7 @@ export default defineConfig({
     outDir: '../public',
     emptyOutDir: true,
   },
+  esbuild: { minifyIdentifiers: false }, //keep function names for easier debugging on production
   server: {
     port: 6969,
     proxy: {

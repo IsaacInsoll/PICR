@@ -1,5 +1,5 @@
-import File from '../../models/File';
+import FileModel from '../../db/FileModel';
 
-export const fileToJSON = (f: File) => {
+export const fileToJSON = (f: FileModel) => {
   return { ...f.toJSON(), metadata: JSON.parse(f.metadata) };
 };

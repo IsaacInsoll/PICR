@@ -5,13 +5,13 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import Folder from './Folder';
+import FolderModel from './FolderModel';
 import { FileFlag, FileType } from '../../graphql-types';
 import { fullPath } from '../filesystem/fileManager';
 import { sep } from 'path';
 
-@Table
-export default class File extends Model {
+@Table({ tableName: 'Files' })
+export default class FileModel extends Model {
   @Column
   declare name: string;
   @Column
@@ -26,10 +26,10 @@ export default class File extends Model {
   declare metadata: string; //dodgy JSON string of type `MetadataSummary.ts`
 
   @Column({ type: DataType.ENUM(...Object.values(FileType)) })
-  declare type: FileType; //dodgy JSON string of type `MetadataSummary.ts`
+  declare type: FileType;
 
   @Column({ type: DataType.ENUM(...Object.values(FileFlag)) })
-  declare flag: FileFlag; //dodgy JSON string of type `MetadataSummary.ts`
+  declare flag: FileFlag;
 
   @Column({ type: DataType.INTEGER })
   declare rating: number; // 0-5
@@ -55,7 +55,7 @@ export default class File extends Model {
   @Column
   declare latestComment: Date;
 
-  @ForeignKey(() => Folder)
+  @ForeignKey(() => FolderModel)
   @Column
   folderId: number;
 

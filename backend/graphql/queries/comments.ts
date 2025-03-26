@@ -1,16 +1,16 @@
-import File from '../../models/File';
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
+import FileModel from '../../db/FileModel';
+import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { commentType } from '../types/commentType';
-import Comment from '../../models/Comment';
+import CommentModel from '../../db/CommentModel';
 import { GraphQLError } from 'graphql/error';
-import { subFiles, subFilesMap } from '../helpers/subFiles';
-import { fileToJSON } from '../helpers/fileToJSON';
+import { subFilesMap } from '../helpers/subFiles';
 import { Order } from 'sequelize';
 import { commentTable } from '../../db/models/commentTable';
 import { db } from '../../server';
 import { desc, eq } from 'drizzle-orm';
 import { file } from './file';
+import { addUserRelationship } from '../helpers/addUserRelationship';
 
 const resolver = async (_, params, context) => {
   //TODO: maybe support subfolders?
@@ -21,11 +21,8 @@ const resolver = async (_, params, context) => {
 
   if (params.fileId) {
     const file = await File.findByPk(params.fileId);
-    const [p, u] = await contextPermissionsForFolder(
-      context,
-      file.folderId,
-      true,
-    );
+    await contextPermissions(context, file.folderId, 'View');
+
     // const list = await Comment.findAll({ where: { fileId: file.id }, order });
     const list = await db
       .select()
@@ -35,10 +32,24 @@ const resolver = async (_, params, context) => {
 
     return list.map((x) => {
       return { ...x, timestamp: x.createdAt, file: file.toJSON() };
+    const file = await FileModel.findByPk(params.fileId);
+    await contextPermissions(context, file.folderId, 'View');
+    const list = await CommentModel.findAll({
+      where: { fileId: file.id },
+      order,
     });
+    return addUserRelationship(
+      list.map((x) => {
+        return {
+          ...x.toJSON(),
+          timestamp: x.createdAt,
+          file: file.toJSON(),
+        };
+      }),
+    );
   } else {
     const folderId = params.folderId;
-    const [p, u] = await contextPermissionsForFolder(context, folderId, true);
+    await contextPermissions(context, folderId, 'View');
     const files = await subFilesMap(folderId);
 
     const list = await db
@@ -47,9 +58,15 @@ const resolver = async (_, params, context) => {
       .where(eq(commentTable.folderId, folderId))
       .orderBy(desc(commentTable.createdAt));
 
-    return list.map((x) => {
-      return { ...x, timestamp: x.createdAt, file: files[x.fileId] };
-    });
+    return addUserRelationship(
+      list.map((x) => {
+        return {
+          ...x.toJSON(),
+          timestamp: x.createdAt,
+          file: files[x.fileId],
+        };
+      }),
+    );
   }
 };
 

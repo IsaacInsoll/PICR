@@ -1,15 +1,16 @@
 import { imageURL } from '../helpers/imageURL';
 import { Image, MantineStyleProps } from '@mantine/core';
-import File from '../../../backend/models/File';
 import { ThumbnailSize } from '../helpers/thumbnailSize';
 import { Blurhash } from 'react-blurhash';
 import { useState } from 'react';
+import { MinimalFile } from '../../types';
+import { useAvifEnabled } from '../hooks/useMe';
 
 interface PicrImageProps {
-  file: File;
+  file: MinimalFile;
   size: ThumbnailSize;
-  onClick?: (file: File) => void;
-  onImageLoaded?: (file: File) => void;
+  onClick?: (file: MinimalFile) => void;
+  onImageLoaded?: (file: MinimalFile) => void;
   style?: MantineStyleProps;
   clickable?: boolean; // for some reason onClick existing doesn't work
 }
@@ -24,9 +25,13 @@ export const PicrImage = ({
   //<Image> is a mantine object that is pretty much an <img> tag
   //<picture> is HTML5 that allows you to specify multiple sources for a child image tag
   const [loaded, setLoaded] = useState(false);
+  const avif = useAvifEnabled();
   return (
     <picture>
-      <source srcSet={imageURL(file, size, '.avif')} type="image/avif" />
+      {avif ? (
+        <source srcSet={imageURL(file, size, '.avif')} type="image/avif" />
+      ) : null}
+      <source srcSet={imageURL(file, size)} type="image/jpeg" />
       {!loaded && file.blurHash ? (
         <Blurhash
           hash={file.blurHash}

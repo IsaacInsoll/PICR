@@ -1,33 +1,22 @@
-import { queueTaskStatus } from '../../filesystem/fileQueue';
-import { Task } from '../../../frontend/src/gql/graphql';
-import { AllChildFolderIds } from '../../helpers/folderUtils';
-import { queueZipTaskStatus } from '../../helpers/zipQueue';
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
-import Folder from '../../models/Folder';
+import { contextPermissions } from '../../helpers/contextPermissions';
+import FolderModel from '../../db/FolderModel';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
-import { taskType } from '../types/taskType';
 import { GraphQLString } from 'graphql';
-import { relativePath } from '../../filesystem/fileManager';
 import { Op } from 'sequelize';
-import { folderType } from '../types/folderType';
-import File from '../../models/File';
+import FileModel from '../../db/FileModel';
 import { fileType } from '../types/fileType';
-import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
+import { allSubfolderIds, allSubfolders } from '../../helpers/allSubfolders';
 import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
-  const [p, user] = await contextPermissionsForFolder(
-    context,
-    params.folderId ?? 1,
-    false,
-  );
+  await contextPermissions(context, params.folderId ?? 1, 'View');
 
   const f = await DBFolderForId(params.folderId);
   const folderIds = await AllChildFolderIds(f);
 
   const lower = params.query.toLowerCase().split(' ');
   const lowerMap = lower.map((l) => ({ [Op.iLike]: `%${l}%` }));
-  const files = await File.findAll({
+  const files = await FileModel.findAll({
     where: {
       folderId: folderIds,
       exists: true,
@@ -35,7 +24,7 @@ const resolver = async (_, params, context) => {
     },
     limit: 100,
   });
-  const folders = await allSubFoldersRecursive(f.id);
+  const folders = await allSubfolders(f.id);
   return files.map((file) => {
     return {
       ...file.toJSON(),

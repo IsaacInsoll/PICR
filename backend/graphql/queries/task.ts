@@ -2,23 +2,20 @@ import { queueTaskStatus } from '../../filesystem/fileQueue';
 import { Task } from '../../../frontend/src/gql/graphql';
 import { AllChildFolderIds } from '../../helpers/folderUtils';
 import { queueZipTaskStatus } from '../../helpers/zipQueue';
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
-import Folder from '../../models/Folder';
+import { contextPermissions } from '../../auth/contextPermissions';
+import FolderModel from '../../db/FolderModel';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
 import { taskType } from '../types/taskType';
+import { allSubfolderIds } from '../../helpers/allSubfolders';
 import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
-  const [p, user] = await contextPermissionsForFolder(
-    context,
-    params.folderId ?? 1,
-    false,
-  );
+  const { user } = await contextPermissions(context, params.folderId ?? 1);
 
   const f = await DBFolderForId(params.folderId);
 
   const taskList: Task[] = [];
-  const folderIds = await AllChildFolderIds(f);
+  const folderIds = await allSubfolderIds(f);
   taskList.push(...queueZipTaskStatus(folderIds));
 
   const thumbs = queueTaskStatus();

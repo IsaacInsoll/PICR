@@ -1,7 +1,7 @@
 import { createClient } from './urqlClient';
 import { Provider as URQLProvider } from 'urql';
 import { BrowserRouter } from 'react-router';
-import { authKeyAtom } from './atoms/authAtom';
+import { authKeyAtom, sessionKeyAtom, useSessionKey } from './atoms/authAtom';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from './atoms/themeModeAtom';
 
@@ -10,7 +10,6 @@ import '@mantine/notifications/styles.css';
 import 'mantine-react-table/styles.css';
 
 import { LoadingOverlay, MantineProvider, Portal } from '@mantine/core';
-import { HelmetProvider } from 'react-helmet-async';
 import { Notifications } from '@mantine/notifications';
 import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
@@ -21,8 +20,9 @@ import { lightboxRefAtom } from './atoms/lightboxRefAtom';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
-  const client = createClient(authKey);
-  const themeMode = useAtomValue(themeModeAtom);
+  const sessionKey = useSessionKey();
+  const client = createClient(authKey, sessionKey);
+  const customTheme = useAtomValue(themeModeAtom);
 
   //we put a portal at the start, otherwise Mantine Modals will be hidden behind it
   const portal = useRef<HTMLDivElement>(null);
@@ -33,23 +33,27 @@ const App = () => {
   }, [setPortal, portal]);
 
   return (
-    <HelmetProvider>
-      <URQLProvider value={client}>
-        <BrowserRouter>
-          <MantineProvider theme={theme} defaultColorScheme={themeMode}>
-            <Portal className="lightbox-portal">
-              <div ref={portal} />
-            </Portal>
-            <PicrErrorBoundary>
-              <Suspense fallback={<PicrLoadingOverlay />}>
-                <UserProvider />
-                <Notifications />
-              </Suspense>
-            </PicrErrorBoundary>
-          </MantineProvider>
-        </BrowserRouter>
-      </URQLProvider>
-    </HelmetProvider>
+    <URQLProvider value={client}>
+      <BrowserRouter>
+        <MantineProvider
+          theme={{ ...theme, primaryColor: customTheme.primaryColor }}
+          forceColorScheme={
+            customTheme.mode == 'auto' ? undefined : customTheme.mode
+          }
+          defaultColorScheme={'auto'}
+        >
+          <Portal className="lightbox-portal">
+            <div ref={portal} />
+          </Portal>
+          <PicrErrorBoundary>
+            <Suspense fallback={<PicrLoadingOverlay />}>
+              <UserProvider />
+              <Notifications />
+            </Suspense>
+          </PicrErrorBoundary>
+        </MantineProvider>
+      </BrowserRouter>
+    </URQLProvider>
   );
 };
 

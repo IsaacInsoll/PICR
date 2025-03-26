@@ -4,7 +4,7 @@ import {
   AnyMetadataKey,
   formattedValue,
 } from '../components/FileListView/Filtering/MetadataBox';
-import humanizeDuration from 'humanize-duration';
+import formatDuration from 'format-duration';
 
 export const formatMetadataValue = (
   title: AnyMetadataKey,
@@ -32,7 +32,7 @@ export const formatMetadataValue = (
     data.label = value ? prettyBytes(value, { bits: true }) : '';
 
   if (title === 'Duration' && value) {
-    data.label = humanizeDuration(value * 1000, { round: true });
+    data.label = formatDuration(value * 1000);
   }
 
   if (title === 'Framerate')

@@ -1,11 +1,11 @@
-import File from '../models/File';
+import FileModel from '../db/FileModel';
 import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize';
 import { basename, dirname, extname } from 'path';
 import { relativePath } from '../filesystem/fileManager';
 import { picrConfig } from '../config/picrConfig';
 
 export const thumbnailPath = (
-  file: File,
+  file: FileModel,
   size: ThumbnailSize,
   extension?: string,
 ): string => {

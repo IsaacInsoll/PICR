@@ -1,11 +1,10 @@
-import File from '../../models/File';
+import FileModel from '../../db/FileModel';
 
 import { fileToJSON } from './fileToJSON';
-import { nodeId, treeNode } from '../../../frontend/src/helpers/buildTreeArray';
 import { FileInterface } from '../../../graphql-types';
 
 export const subFiles = async (folderId: string | number) => {
-  const files = await File.findAll({
+  const files = await FileModel.findAll({
     where: { folderId, exists: true },
     order: [['name', 'ASC']],
   });
@@ -16,7 +15,7 @@ export const subFiles = async (folderId: string | number) => {
 };
 
 export const subFilesMap = async (folderId: string | number) => {
-  const files = await File.findAll({
+  const files = await FileModel.findAll({
     where: { folderId, exists: true },
     order: [['name', 'ASC']],
   });

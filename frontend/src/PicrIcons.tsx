@@ -1,5 +1,6 @@
 import {
   TbClipboard,
+  TbDots,
   TbDownload,
   TbFile,
   TbFilter,
@@ -7,17 +8,22 @@ import {
   TbHome,
   TbInfoCircle,
   TbInfoTriangle,
+  TbLayoutDashboard,
   TbLink,
   TbLogout,
   TbSearch,
+  TbSpy,
   TbThumbDown,
   TbThumbUp,
+  TbTrash,
+  TbTypeface,
   TbUserCog,
   TbVideo,
 } from 'react-icons/tb';
 import { CiAt } from 'react-icons/ci';
 import { IconBaseProps } from 'react-icons/lib/iconBase';
 import { MdOutlineThumbsUpDown } from 'react-icons/md';
+import { BiComment, BiCommentDetail, BiSolidError } from 'react-icons/bi';
 
 // Most icons are used in multiple places, so lets have a master list for consistency
 export const PublicLinkIcon = (props: IconBaseProps) => <TbLink {...props} />;
@@ -49,3 +55,15 @@ export const FileIcon = (props: IconBaseProps) => <TbFile {...props} />;
 export const VideoIcon = (props: IconBaseProps) => <TbVideo {...props} />;
 
 export const EmailIcon = (props: IconBaseProps) => <CiAt {...props} />;
+export const BrandingIcon = (props: IconBaseProps) => <TbTypeface {...props} />;
+export const DeleteIcon = (props: IconBaseProps) => <TbTrash {...props} />;
+export const AccessLogsIcon = (props: IconBaseProps) => <TbSpy {...props} />;
+export const ErrorIcon = (props: IconBaseProps) => <BiSolidError {...props} />;
+export const DotsIcon = (props: IconBaseProps) => <TbDots {...props} />;
+export const CommentIcon = (props: IconBaseProps) => <BiComment {...props} />;
+export const CommentsIcon = (props: IconBaseProps) => (
+  <BiCommentDetail {...props} />
+);
+export const DashboardIcon = (props: IconBaseProps) => (
+  <TbLayoutDashboard {...props} />
+);

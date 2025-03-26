@@ -1,12 +1,13 @@
-import { matchPath, Route, Routes, useNavigate } from 'react-router';
+import { Route, Routes, useNavigate } from 'react-router';
 import { LoginForm } from './pages/LoginForm';
 import { ViewFolder } from './pages/ViewFolder';
 import { PageNotFound } from './pages/PageNotFound';
 import { useMe } from './hooks/useMe';
 import { Settings } from './pages/management/Settings';
 import { ParticleBackground } from './components/ParticleBackground';
+import { Dashboard } from './pages/Dashboard';
 
-const folderRoute = '/:folderId/:fileId?/:fileView?';
+const folderRoute = '/:folderId/:fileId?/:tab?';
 
 export interface FolderRouteParams {
   folderId: string;
@@ -22,7 +23,7 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
         <>
           <Route path={`/admin/f${folderRoute}`} element={<ViewFolder />} />
           <Route path="/admin/settings/:tab?/:slug?" element={<Settings />} />
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Dashboard />} />
         </>
       ) : null}
       <Route
@@ -42,11 +43,7 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
   );
 };
 
-export const getUUID = () => {
-  const match = matchPath({ path: '/s/:uuid/*' }, window.location.pathname);
-  return match?.params.uuid;
-};
-
+//this is "redirect to users root folder" as an alternative to showing dashboard
 const HomePage = () => {
   const me = useMe();
   const navigate = useNavigate();

@@ -1,7 +1,37 @@
+type AccessLog {
+  folder: Folder
+  folderId: ID
+  id: ID!
+  ipAddress: String
+  timestamp: DateTime!
+  type: AccessType!
+  user: User
+  userAgent: String
+  userId: ID
+}
+
+enum AccessType {
+  Download
+  View
+}
+
 """
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
+
+type Branding {
+  folder: Folder
+  folderId: ID!
+  id: ID!
+  logoUrl: String
+  mode: ThemeMode
+  primaryColor: PrimaryColor
+}
+
+type ClientInfo {
+  avifEnabled: Boolean!
+}
 
 type Comment {
   comment: String
@@ -67,6 +97,7 @@ enum FileType {
 }
 
 type Folder {
+  branding: Branding
   files: [FileInterface!]!
   heroImage: Image
   id: ID!
@@ -75,10 +106,12 @@ type Folder {
   parents: [Folder!]!
   permissions: FolderPermissions
   subFolders: [Folder!]!
+  totalDirectSize: String!
   totalFiles: Int!
   totalFolders: Int!
   totalImages: Int!
   totalSize: String!
+  users: [User!]
 }
 
 enum FolderPermissions {
@@ -122,16 +155,38 @@ type ImageMetadataSummary {
 type Mutation {
   addComment(comment: String, flag: FileFlag, id: ID!, nickName: String, rating: Int): FileInterface!
   auth(password: String!, user: String!): String!
+  deleteBranding(folderId: ID!): Folder!
   editAdminUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, password: String, username: String): User!
+  editBranding(folderId: ID!, logoUrl: String, mode: ThemeMode, primaryColor: PrimaryColor): Folder!
   editFolder(folderId: ID!, heroImageId: ID): Folder!
   editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, username: String, uuid: String): User!
   generateThumbnails(folderId: ID): Boolean!
   generateZip(folderId: ID): String!
 }
 
+enum PrimaryColor {
+  blue
+  cyan
+  dark
+  grape
+  gray
+  green
+  indigo
+  lime
+  orange
+  pink
+  red
+  teal
+  violet
+  yellow
+}
+
 type Query {
+  accessLogs(folderId: ID!, includeChildren: Boolean, userId: ID, userType: UserType): [AccessLog!]!
   admins: [User!]!
   allFolders(id: ID!): [Folder]!
+  brandings: [Branding!]!
+  clientInfo: ClientInfo
   comments(fileId: ID, folderId: ID): [Comment!]!
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
@@ -141,7 +196,7 @@ type Query {
   serverInfo: ServerInfo
   tasks(folderId: ID): [Task!]!
   user(id: ID!): User!
-  users(folderId: ID!, includeChildren: Boolean, includeParents: Boolean): [User!]!
+  users(folderId: ID!, includeChildren: Boolean, includeParents: Boolean, sortByRecent: Boolean): [User!]!
 }
 
 type ServerInfo {
@@ -149,6 +204,7 @@ type ServerInfo {
   databaseUrl: String!
   dev: Boolean!
   host: String!
+  latest: String!
   mediaSize: BigInt!
   usePolling: Boolean!
   version: String!
@@ -164,6 +220,12 @@ type Task {
   totalSteps: Int
 }
 
+enum ThemeMode {
+  auto
+  dark
+  light
+}
+
 type User {
   commentPermissions: CommentPermissions
   enabled: Boolean
@@ -171,9 +233,17 @@ type User {
   folderId: ID!
   gravatar: String
   id: ID
+  lastAccess: DateTime
   name: String
   username: String
   uuid: String
+}
+
+enum UserType {
+  Admin
+  All
+  Link
+  User
 }
 
 type Video implements FileInterface {

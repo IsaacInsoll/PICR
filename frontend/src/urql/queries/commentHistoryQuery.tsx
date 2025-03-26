@@ -11,6 +11,11 @@ export const commentHistoryQuery = gql(/* GraphQL */ `
       file {
         ...FileFragment
       }
+      user {
+        id
+        gravatar
+        name
+      }
     }
   }
 `);

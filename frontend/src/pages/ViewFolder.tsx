@@ -7,53 +7,36 @@ import {
 import { folderSubtitle } from '../helpers/folderSubtitle';
 import { useNavigate, useParams } from 'react-router';
 import { viewFolderQuery } from '../urql/queries/viewFolderQuery';
-import { SubfolderListView } from '../components/SubfolderListView';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
-import { ManagePublicLinks } from './management/ManagePublicLinks';
 import { TaskSummary } from '../components/TaskSummary';
-import { FilterToggle } from '../components/FilterToggle';
-import { DownloadZipButton } from '../components/DownloadZipButton';
-import {
-  ActionIcon,
-  Burger,
-  Button,
-  Center,
-  Group,
-  Menu,
-  Text,
-  Title,
-} from '@mantine/core';
-import { TbDots, TbHome, TbSettings } from 'react-icons/tb';
+import { ActionIcon, Button, Center, Group, Menu, Title } from '@mantine/core';
 import { useSetFolder } from '../hooks/useSetFolder';
 import { FolderModalManager } from '../components/FolderModalManager';
-import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
 import { Page } from '../components/Page';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 import { QuickFind } from '../components/QuickFind/QuickFind';
 import { useRequery } from '../hooks/useRequery';
 import { LoggedInHeader } from '../components/Header/LoggedInHeader';
-import { useIsMobile } from '../hooks/useIsMobile';
 import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
 import { useCommentPermissions } from '../hooks/useCommentPermissions';
 import { MinimalFolder } from '../../types';
-import { PicrAvatar } from '../components/PicrAvatar';
 import {
+  CommentIcon,
+  DotsIcon,
   DownloadIcon,
   FilterIcon,
   FolderIcon,
-  LogOutIcon,
-  SearchIcon,
-  UserSettingsIcon,
 } from '../PicrIcons';
-import { useDisclosure } from '@mantine/hooks';
 import { FolderRouteParams } from '../Router';
-import { BiComment } from 'react-icons/bi';
 import { useGenerateZip } from '../hooks/useGenerateZip';
-import { useAtom, useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai/index';
 import { filterAtom } from '../atoms/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
+import { defaultBranding, themeModeAtom } from '../atoms/themeModeAtom';
+import { Branding } from '../../../graphql-types';
+import { ManageFolder } from './ManageFolder';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -74,6 +57,7 @@ export const ViewFolderBody = () => {
   const { folderId, fileId } = useParams<FolderRouteParams>();
   const baseUrl = useBaseViewFolderURL();
   const setFolder = useSetFolder();
+  const setThemeMode = useSetAtom(themeModeAtom);
 
   const mode: ViewFolderMode = ['manage', 'activity'].includes(fileId)
     ? fileId
@@ -86,6 +70,14 @@ export const ViewFolderBody = () => {
     variables: { folderId },
   });
   useRequery(reQuery, 20000);
+
+  useEffect(() => {
+    const theme: Branding = {
+      ...defaultBranding,
+      ...data?.data?.folder?.branding,
+    };
+    setThemeMode(theme);
+  }, [data?.data?.folder?.branding, setThemeMode]);
 
   const toggleManaging = useCallback(() => {
     navigate(baseUrl + folderId + (managing ? '' : '/manage'));
@@ -162,16 +154,7 @@ export const ViewFolderBody = () => {
             }
           >
             {managing ? (
-              <Page>
-                <ManagePublicLinks
-                  folder={folder}
-                  onClose={toggleManaging}
-                  relations="options"
-                >
-                  <GenerateThumbnailsButton folderId={folder.id} />
-                  <Button onClick={toggleManaging}>Close Settings</Button>
-                </ManagePublicLinks>
-              </Page>
+              <ManageFolder folder={folder} toggleManaging={toggleManaging} />
             ) : null}
             {activity ? (
               <Page>
@@ -207,7 +190,7 @@ const FolderOverflowMenu = ({ folder }: { folder: MinimalFolder }) => {
     >
       <Menu.Target>
         <ActionIcon variant="default" color="gray" size="lg">
-          <TbDots />
+          <DotsIcon />
         </ActionIcon>
       </Menu.Target>
 
@@ -226,7 +209,7 @@ const FolderOverflowMenu = ({ folder }: { folder: MinimalFolder }) => {
           <>
             <Menu.Label>Comments & Ratings</Menu.Label>
             <Menu.Item
-              leftSection={<BiComment />}
+              leftSection={<CommentIcon />}
               onClick={() => setFolder(folder, 'activity')}
             >
               View Activity

@@ -1,24 +1,30 @@
-import { allSubFoldersRecursive } from './allSubFoldersRecursive';
-import File from '../../models/File';
+import { allSubfolders } from '../../helpers/allSubfolders';
+import FileModel from '../../db/FileModel';
 import { sortBy } from 'lodash';
 import { pluralize } from '../../../frontend/src/helpers/folderSubtitle';
 
 export const folderStats = async (folderId: number): Promise<FolderStat[]> => {
-  const children = await allSubFoldersRecursive(folderId);
+  const children = await allSubfolders(folderId);
   const childIds = children.map(({ id }) => id);
   const result: FolderStat[] = [
     { type: 'Folder', total: childIds.length },
     {
       type: 'Image',
-      total: await File.count({ where: { folderId: childIds, type: 'Image' } }),
+      total: await FileModel.count({
+        where: { folderId: childIds, type: 'Image' },
+      }),
     },
     {
       type: 'Video',
-      total: await File.count({ where: { folderId: childIds, type: 'Video' } }),
+      total: await FileModel.count({
+        where: { folderId: childIds, type: 'Video' },
+      }),
     },
     {
       type: 'File',
-      total: await File.count({ where: { folderId: childIds, type: 'File' } }),
+      total: await FileModel.count({
+        where: { folderId: childIds, type: 'File' },
+      }),
     },
   ];
   // can't await inside an interator so top level it is

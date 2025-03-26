@@ -5,7 +5,7 @@ import {
   filterOptions,
 } from '../../../atoms/filterAtom';
 import { ReactNode } from 'react';
-import { BiComment, BiCommentDetail } from 'react-icons/bi';
+import { CommentIcon, CommentsIcon } from '../../../PicrIcons';
 
 export const CommentsFilterBox = () => {
   const [options, setOptions] = useAtom(filterOptions);
@@ -42,6 +42,6 @@ const x: {
   title: string;
   icon: ReactNode;
 }[] = [
-  { v: 'None', title: 'No Comments', icon: <BiComment /> },
-  { v: 'Some', title: 'Has Comments', icon: <BiCommentDetail /> },
+  { v: 'None', title: 'No Comments', icon: <CommentIcon /> },
+  { v: 'Some', title: 'Has Comments', icon: <CommentsIcon /> },
 ];

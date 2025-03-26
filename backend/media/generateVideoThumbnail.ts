@@ -1,4 +1,4 @@
-import File from '../models/File';
+import FileModel from '../db/FileModel';
 import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize';
 import { thumbnailPath } from './thumbnailPath';
 import { ffmpegForFile } from './ffmpegForFile';
@@ -16,7 +16,7 @@ const numberOfVideoSnapshots = 10;
 const videoThumbnailQueue: { [key: string]: Promise<void> } = {};
 
 const processVideoThumbnail = async (
-  file: File,
+  file: FileModel,
   size: ThumbnailSize,
 ): Promise<void> => {
   // lets only do medium thumbnails as large can just be 'embedded video' and small is probably useless?
@@ -74,7 +74,7 @@ const processVideoThumbnail = async (
   });
 };
 
-const mergeImages = async (file: File, size: ThumbnailSize) => {
+const mergeImages = async (file: FileModel, size: ThumbnailSize) => {
   const outFile = thumbnailPath(file, size);
 
   const files = range(1, 11).map((r) => `${outFile}/${size}_${r}.jpg`);
@@ -84,7 +84,7 @@ const mergeImages = async (file: File, size: ThumbnailSize) => {
 };
 
 export const generateVideoThumbnail = async (
-  file: File,
+  file: FileModel,
   size: ThumbnailSize,
 ): Promise<void> => {
   const pr = awaitVideoThumbnailGeneration(file, size);
@@ -101,7 +101,7 @@ export const generateVideoThumbnail = async (
 };
 
 export const awaitVideoThumbnailGeneration = (
-  file: File,
+  file: FileModel,
   size: ThumbnailSize,
 ): Promise<void> | undefined => {
   const key = file.id + '-' + size;

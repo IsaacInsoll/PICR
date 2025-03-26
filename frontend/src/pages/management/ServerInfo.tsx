@@ -2,40 +2,76 @@ import { gql } from '../../helpers/gql';
 import { useQuery } from 'urql';
 import { Anchor, Code, Group, Table } from '@mantine/core';
 import { FaGithub } from 'react-icons/fa6';
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import prettyBytes from 'pretty-bytes';
+import { LoadingIndicator } from '../../components/LoadingIndicator';
+import { useAvifEnabled, useMe } from '../../hooks/useMe';
+import { MdOutlineSdStorage } from 'react-icons/md';
+import { PicrLink } from '../../components/PicrLink';
 
 export const ServerInfo = () => {
   const [result] = useQuery({ query: serverInfoQuery });
-  const data = result?.data?.serverInfo;
-  console.log(data);
+  console.log(result);
+  const server = result?.data?.serverInfo;
   return (
     <Table striped highlightOnHover withTableBorder>
       <TableHeader />
       <Table.Tbody>
-        <Version version={data.version} />
+        <Version version={server.version} latest={server.latest} />
         <Row title="Client URL">{window.location.origin}</Row>
-        <Row title="Server URL">{data.host}</Row>
-        <Row title="Media Size">{prettyBytes(data.mediaSize)}</Row>
-        <Row title="Cache Size">{prettyBytes(data.cacheSize)}</Row>
+        <Row title="Server URL">{server.host}</Row>
+        <Suspense
+          fallback={
+            <>
+              <Row title="Media Size">
+                <LoadingIndicator size="small" />
+                <TreesizeLink />
+              </Row>
+              <Row title="Cache Size">
+                <LoadingIndicator size="small" />
+              </Row>
+            </>
+          }
+        >
+          <ServerFolderSize />
+        </Suspense>
+
         <Row title="Database URL">
-          <Code>{data.databaseUrl}</Code>
+          <Code>{server.databaseUrl}</Code>
         </Row>
         <Row title="Dev Mode">
-          <Bool value={data.dev} />
+          <Bool value={server.dev} />
         </Row>
         <Row title="Use Polling">
-          <Bool value={data.usePolling} />
+          <Bool value={server.usePolling} />
         </Row>
+        <Suspense>
+          <AvifEnabled />
+        </Suspense>
       </Table.Tbody>
     </Table>
   );
 };
 
-const Version = ({ version }) => {
+const AvifEnabled = () => {
+  const avif = useAvifEnabled();
+  return (
+    <Row title="AVIF Enabled">
+      <Bool value={avif} />
+    </Row>
+  );
+};
+
+const Version = ({ version, latest }) => {
+  const isLatest = latest == version;
   return (
     <Row title="PICR Version">
-      <Code>{version}</Code>
+      <Code c={isLatest ? 'green' : 'red'}>{version}</Code>
+      {!isLatest ? (
+        <>
+          Latest: <Code>{latest}</Code>
+        </>
+      ) : null}
       <Anchor
         href="https://github.com/IsaacInsoll/PICR/releases"
         size="xs"
@@ -44,6 +80,15 @@ const Version = ({ version }) => {
         <FaGithub /> View PICR Releases
       </Anchor>
     </Row>
+  );
+};
+
+const TreesizeLink = () => {
+  const me = useMe();
+  return (
+    <PicrLink to={'/admin/settings/treesize/' + me?.folderId} size="xs">
+      <MdOutlineSdStorage /> Storage Analytics
+    </PicrLink>
   );
 };
 
@@ -77,12 +122,36 @@ const serverInfoQuery = gql(/* GraphQL */ `
   query serverInfoQuery {
     serverInfo {
       version
+      latest
       databaseUrl
       dev
       usePolling
-      cacheSize
-      mediaSize
       host
     }
   }
 `);
+
+const expensiveServerFileSizeQuery = gql(/* GraphQL */ `
+  query expensiveServerFileSizeQuery {
+    serverInfo {
+      cacheSize
+      mediaSize
+    }
+  }
+`);
+
+const ServerFolderSize = () => {
+  const [result] = useQuery({ query: expensiveServerFileSizeQuery });
+  console.log(result);
+  return (
+    <>
+      <Row title="Media Size">
+        {prettyBytes(result?.data?.serverInfo.mediaSize)}
+        <TreesizeLink />
+      </Row>
+      <Row title="Cache Size">
+        {prettyBytes(result?.data?.serverInfo.cacheSize)}
+      </Row>
+    </>
+  );
+};

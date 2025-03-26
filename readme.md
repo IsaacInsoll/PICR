@@ -30,3 +30,7 @@ See [Installation Instructions](docs/install.md) for a sample `docker-compose.ym
 We'd love any help or feedback! 
 See [Development Docs](docs/development/index.md) to get started
 
+### 🙏 Special Thanks
+Thanks to: 
+- Monique for being the worlds greatest wife and putting up with all the time I spent on this 💖
+- Mason D for providing a bunch of senior software engineering advice 🧔🏻‍♂️

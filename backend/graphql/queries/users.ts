@@ -1,8 +1,6 @@
-import { contextPermissionsForFolder } from '../../auth/contextPermissionsForFolder';
-import { GraphQLError } from 'graphql/error';
-import Folder from '../../models/Folder';
+import { contextPermissions } from '../../auth/contextPermissions';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
-import User from '../../models/User';
+import UserModel from '../../db/UserModel';
 import { Op } from 'sequelize';
 import { getFolder } from '../helpers/getFolder';
 import {
@@ -12,15 +10,15 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { userType } from '../types/userType';
-import { allSubFoldersRecursive } from '../helpers/allSubFoldersRecursive';
+import { allSubfolders } from '../../helpers/allSubfolders';
 import { userToJSON } from '../helpers/userToJSON';
 import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
-  const [p, u] = await contextPermissionsForFolder(
+  const { folder, user } = await contextPermissions(
     context,
     params.folderId,
-    true,
+    'Admin',
   );
   if (p !== 'Admin') throw new GraphQLError('You must be an Admin to see this');
 
@@ -28,18 +26,24 @@ const resolver = async (_, params, context) => {
 
   const ids = [folder.id];
   if (params.includeParents) {
-    const parents = await folderAndAllParentIds(folder, u.folderId);
+    const parents = await folderAndAllParentIds(folder, user.folderId);
     ids.push(...parents);
   }
   if (params.includeChildren) {
-    const children = await allSubFoldersRecursive(folder.id);
+    const children = await allSubfolders(folder.id);
     const childIds = children.map(({ id }) => id);
     ids.push(...childIds);
   }
 
   // we don't show 'real users' just 'shared public users'
-  const data = await User.findAll({
-    where: { folderId: { [Op.or]: ids }, uuid: { [Op.not]: null } },
+  const where = { folderId: { [Op.or]: ids }, uuid: { [Op.not]: null } };
+  if (params.sortByRecent) {
+    where['lastAccess'] = { [Op.not]: null };
+  }
+  const data = await UserModel.findAll({
+    where,
+    order: params.sortByRecent ? [['lastAccess', 'DESC']] : undefined,
+    limit: params.sortByRecent ? 10 : 1000,
   });
   return data.map((pl) => {
     return { ...userToJSON(pl), folder: getFolder(pl.folderId) };
@@ -53,5 +57,6 @@ export const users = {
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     includeParents: { type: GraphQLBoolean },
     includeChildren: { type: GraphQLBoolean },
+    sortByRecent: { type: GraphQLBoolean },
   },
 };

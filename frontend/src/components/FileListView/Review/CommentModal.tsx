@@ -112,6 +112,7 @@ const AddCommentBox = ({
         value={text}
         onChange={(event) => setText(event.currentTarget.value)}
         autosize
+        autoFocus
         minRows={2}
         maxRows={4}
       />

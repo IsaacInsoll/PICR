@@ -1,10 +1,8 @@
 import { useAtom } from 'jotai/index';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
-import { ActionIcon, Avatar, Box, Button, Group, Select } from '@mantine/core';
+import { Avatar, Box, Button, Group, Select, SelectProps } from '@mantine/core';
 import {
-  TbArrowsDownUp,
   TbCalendar,
-  TbCheck,
   TbChevronDown,
   TbChevronUp,
   TbFileTypography,
@@ -13,9 +11,9 @@ import {
   TbStar,
 } from 'react-icons/tb';
 import { ReactNode } from 'react';
-import { BiComment } from 'react-icons/bi';
 import { useDisclosure } from '@mantine/hooks';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
+import { CommentIcon } from '../../PicrIcons';
 
 export const FileSortSelector = () => {
   const { canView } = useCommentPermissions();
@@ -38,7 +36,7 @@ export const FileSortSelector = () => {
         <Box style={{ flexGrow: 1 }}>{option.label}</Box>
         <Box>
           {checked ? (
-            <Avatar color="blue" radius="xs" size="xs" p="0">
+            <Avatar radius="xs" size="xs" p="0">
               {sortIcon.chevron}
             </Avatar>
           ) : null}
@@ -116,7 +114,7 @@ const sortOptions: [
   {
     value: 'RecentlyCommented',
     label: 'Commented',
-    icon: <BiComment />,
+    icon: <CommentIcon />,
     requiresComments: true,
   },
   {

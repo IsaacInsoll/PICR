@@ -16,6 +16,39 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+export type AccessLog = {
+  __typename?: 'AccessLog';
+  folder?: Maybe<Folder>;
+  folderId?: Maybe<Scalars['ID']['output']>;
+  id: Scalars['ID']['output'];
+  ipAddress?: Maybe<Scalars['String']['output']>;
+  timestamp: Scalars['DateTime']['output'];
+  type: AccessType;
+  user?: Maybe<User>;
+  userAgent?: Maybe<Scalars['String']['output']>;
+  userId?: Maybe<Scalars['ID']['output']>;
+};
+
+export enum AccessType {
+  Download = 'Download',
+  View = 'View'
+}
+
+export type Branding = {
+  __typename?: 'Branding';
+  folder?: Maybe<Folder>;
+  folderId: Scalars['ID']['output'];
+  id: Scalars['ID']['output'];
+  logoUrl?: Maybe<Scalars['String']['output']>;
+  mode?: Maybe<ThemeMode>;
+  primaryColor?: Maybe<PrimaryColor>;
+};
+
+export type ClientInfo = {
+  __typename?: 'ClientInfo';
+  avifEnabled: Scalars['Boolean']['output'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
   comment?: Maybe<Scalars['String']['output']>;
@@ -78,6 +111,7 @@ export enum FileType {
 
 export type Folder = {
   __typename?: 'Folder';
+  branding?: Maybe<Branding>;
   files: Array<FileInterface>;
   heroImage?: Maybe<Image>;
   id: Scalars['ID']['output'];
@@ -86,10 +120,12 @@ export type Folder = {
   parents: Array<Folder>;
   permissions?: Maybe<FolderPermissions>;
   subFolders: Array<Folder>;
+  totalDirectSize: Scalars['String']['output'];
   totalFiles: Scalars['Int']['output'];
   totalFolders: Scalars['Int']['output'];
   totalImages: Scalars['Int']['output'];
   totalSize: Scalars['String']['output'];
+  users?: Maybe<Array<User>>;
 };
 
 export enum FolderPermissions {
@@ -136,7 +172,9 @@ export type Mutation = {
   __typename?: 'Mutation';
   addComment: FileInterface;
   auth: Scalars['String']['output'];
+  deleteBranding: Folder;
   editAdminUser: User;
+  editBranding: Folder;
   editFolder: Folder;
   editUser: User;
   generateThumbnails: Scalars['Boolean']['output'];
@@ -159,6 +197,11 @@ export type MutationAuthArgs = {
 };
 
 
+export type MutationDeleteBrandingArgs = {
+  folderId: Scalars['ID']['input'];
+};
+
+
 export type MutationEditAdminUserArgs = {
   commentPermissions?: InputMaybe<CommentPermissions>;
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -167,6 +210,14 @@ export type MutationEditAdminUserArgs = {
   name?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationEditBrandingArgs = {
+  folderId: Scalars['ID']['input'];
+  logoUrl?: InputMaybe<Scalars['String']['input']>;
+  mode?: InputMaybe<ThemeMode>;
+  primaryColor?: InputMaybe<PrimaryColor>;
 };
 
 
@@ -196,10 +247,30 @@ export type MutationGenerateZipArgs = {
   folderId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+export enum PrimaryColor {
+  Blue = 'blue',
+  Cyan = 'cyan',
+  Dark = 'dark',
+  Grape = 'grape',
+  Gray = 'gray',
+  Green = 'green',
+  Indigo = 'indigo',
+  Lime = 'lime',
+  Orange = 'orange',
+  Pink = 'pink',
+  Red = 'red',
+  Teal = 'teal',
+  Violet = 'violet',
+  Yellow = 'yellow'
+}
+
 export type Query = {
   __typename?: 'Query';
+  accessLogs: Array<AccessLog>;
   admins: Array<User>;
   allFolders: Array<Maybe<Folder>>;
+  brandings: Array<Branding>;
+  clientInfo?: Maybe<ClientInfo>;
   comments: Array<Comment>;
   file: FileInterface;
   folder: Folder;
@@ -210,6 +281,14 @@ export type Query = {
   tasks: Array<Task>;
   user: User;
   users: Array<User>;
+};
+
+
+export type QueryAccessLogsArgs = {
+  folderId: Scalars['ID']['input'];
+  includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
+  userId?: InputMaybe<Scalars['ID']['input']>;
+  userType?: InputMaybe<UserType>;
 };
 
 
@@ -260,6 +339,7 @@ export type QueryUsersArgs = {
   folderId: Scalars['ID']['input'];
   includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
   includeParents?: InputMaybe<Scalars['Boolean']['input']>;
+  sortByRecent?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type ServerInfo = {
@@ -268,6 +348,7 @@ export type ServerInfo = {
   databaseUrl: Scalars['String']['output'];
   dev: Scalars['Boolean']['output'];
   host: Scalars['String']['output'];
+  latest: Scalars['String']['output'];
   mediaSize: Scalars['BigInt']['output'];
   usePolling: Scalars['Boolean']['output'];
   version: Scalars['String']['output'];
@@ -284,6 +365,12 @@ export type Task = {
   totalSteps?: Maybe<Scalars['Int']['output']>;
 };
 
+export enum ThemeMode {
+  Auto = 'auto',
+  Dark = 'dark',
+  Light = 'light'
+}
+
 export type User = {
   __typename?: 'User';
   commentPermissions?: Maybe<CommentPermissions>;
@@ -292,10 +379,18 @@ export type User = {
   folderId: Scalars['ID']['output'];
   gravatar?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
+  lastAccess?: Maybe<Scalars['DateTime']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;
   uuid?: Maybe<Scalars['String']['output']>;
 };
+
+export enum UserType {
+  Admin = 'Admin',
+  All = 'All',
+  Link = 'Link',
+  User = 'User'
+}
 
 export type Video = FileInterface & {
   __typename?: 'Video';

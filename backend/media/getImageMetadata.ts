@@ -1,10 +1,10 @@
-import File from '../models/File';
+import FileModel from '../db/FileModel';
 import sharp from 'sharp';
 import { MetadataSummary } from '../types/MetadataSummary';
 import { default as ex } from 'exif-reader';
 import { XMLParser } from 'fast-xml-parser';
 
-export const getImageMetadata = async (file: File) => {
+export const getImageMetadata = async (file: FileModel) => {
   try {
     const { exif, width, height, xmp } = await sharp(
       file.fullPath(),

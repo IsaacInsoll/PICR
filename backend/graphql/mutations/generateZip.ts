@@ -1,21 +1,19 @@
-import { contextPermissionsForFolder as perms } from '../../auth/contextPermissionsForFolder';
-import { doAuthError } from '../../auth/doAuthError';
-import Folder from '../../models/Folder';
+import { contextPermissions } from '../../auth/contextPermissions';
+import FolderModel from '../../db/FolderModel';
 import { hashFolderContents } from '../../helpers/zip';
 import { addToZipQueue } from '../../helpers/zipQueue';
-import {
-  GraphQLField,
-  GraphQLID,
-  GraphQLNonNull,
-  GraphQLString,
-} from 'graphql/index';
-import { GraphQLFieldResolver } from 'graphql/type';
-import { DBFolderForId } from '../../db/picrDb';
+import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql/index';
+import { createAccessLog } from '../../db/AccessLogModel';
+import { AccessType } from '../../../graphql-types';
 
 const resolver = async (_, params, context) => {
-  const [p, u] = await perms(context, params.folderId, true);
-  if (p == 'None') doAuthError("You don't have permissions for this folder");
-  const folder = await DBFolderForId(params.folderId);
+  const { user, folder } = await contextPermissions(
+    context,
+    params.folderId,
+    'View',
+  );
+  await createAccessLog(user.id, folder.id, context, AccessType.Download);
+
   const h = await hashFolderContents(folder);
   addToZipQueue(h);
   return h.hash;

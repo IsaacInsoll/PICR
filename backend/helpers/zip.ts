@@ -1,6 +1,8 @@
 import Folder from '../models/Folder';
 import File from '../models/File';
 import { AllChildFolderIds } from './folderUtils';
+import FolderModel from '../db/FolderModel';
+import FileModel from '../db/FileModel';
 import crypto from 'crypto';
 import fs from 'fs';
 import archiver from 'archiver';
@@ -8,20 +10,21 @@ import { mkdirSync } from 'node:fs';
 import { updateZipQueue } from './zipQueue';
 import { log } from '../logger';
 import { picrConfig } from '../config/picrConfig';
+import { allSubfolderIds } from './allSubfolders';
 
 export interface FolderHash {
-  folder?: Folder;
+  folder?: FolderModel;
   hash: string;
   key: string; //folderId+key
 }
 
 // Hash FolderIDs + FileHashes, used for determining 'uniqueness' for generating zip files
 export const hashFolderContents = async (
-  folder: Folder,
+  folder: FolderModel,
 ): Promise<FolderHash> => {
-  const folderIds = await AllChildFolderIds(folder);
-  const files = await File.findAll({
-    where: { folderId: folderIds },
+  const folderIds = await allSubfolderIds(folder);
+  const files = await FileModel.findAll({
+    where: { folderId: folderIds, exists: true },
     attributes: ['id', 'fileHash'],
   });
   const hash = crypto.createHash('sha256');
@@ -70,9 +73,9 @@ export const zipFolder = async (folderHash: FolderHash) => {
 
   //TODO: add empty folders
 
-  const folderIds = await AllChildFolderIds(folder);
-  const files = await File.findAll({
-    where: { folderId: folderIds },
+  const folderIds = await allSubfolderIds(folder);
+  const files = await FileModel.findAll({
+    where: { folderId: folderIds, exists: true },
     attributes: ['id', 'fileHash', 'relativePath', 'name'],
   });
   files.forEach((f) => {

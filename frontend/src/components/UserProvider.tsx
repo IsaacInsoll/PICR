@@ -7,7 +7,7 @@ export const UserProvider = () => {
   const me = useMe();
   return (
     <>
-      <Router loggedIn={!!me} />
+      <Router loggedIn={!!me?.id} />
     </>
   );
 };

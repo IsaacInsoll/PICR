@@ -115,7 +115,6 @@ const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
     variables: { query: debouncedQuery, folderId },
     pause: debouncedQuery == '',
   });
-  // if (!debouncedQuery) return;
   const folders = results.data?.searchFolders ?? [];
   const files = results.data?.searchFiles ?? [];
 
@@ -157,6 +156,7 @@ const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
       window.removeEventListener('keydown', handler);
     };
   });
+  if (!debouncedQuery) return;
 
   return (
     <Stack gap={0}>
@@ -289,11 +289,11 @@ const QuickFindFooter = ({
 
 const ScopeSelector = ({ folder }: { folder?: MinimalFolder }) => {
   const me = useMe();
+  const [selectedScope, setSelectedScope] = useAtom(scopeAtom);
 
   //if we are in root folder, no point specifying "this or all folders"
-  if (me.folderId == folder?.id) return null;
+  if (me?.folderId == folder?.id) return null;
 
-  const [selectedScope, setSelectedScope] = useAtom(scopeAtom);
   return (
     <SegmentedControl
       value={selectedScope}

@@ -3,8 +3,14 @@ import { Code, Tooltip } from '@mantine/core';
 import { TbChevronRight } from 'react-icons/tb';
 import { HomeIcon } from '../PicrIcons';
 import { PrettyFolderPath } from './PrettyFolderPath';
+import { useSetFolder } from '../hooks/useSetFolder';
+import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
+import { PicrLink } from './PicrLink';
 
 export const FolderName = ({ folder }: { folder: MinimalFolder }) => {
+  const setFolder = useSetFolder();
+  const baseURL = useBaseViewFolderURL();
+
   return (
     <Tooltip
       withArrow={true}
@@ -12,12 +18,21 @@ export const FolderName = ({ folder }: { folder: MinimalFolder }) => {
       disabled={folder.parents?.length == 0}
       label={<PrettyFolderPath folder={folder} subColor="blue.8" />}
     >
-      <Code>
-        {folder.id == 1 ? (
-          <HomeIcon opacity={0.5} style={{ paddingTop: 3, marginRight: 2 }} />
-        ) : null}
-        {folder.name}
-      </Code>
+      <PicrLink
+        to={baseURL + folder.id}
+        underline="never"
+        onClick={(e) => {
+          e.preventDefault();
+          setFolder(folder);
+        }}
+      >
+        <Code>
+          {folder.id == '1' ? (
+            <HomeIcon opacity={0.5} style={{ paddingTop: 3, marginRight: 2 }} />
+          ) : null}
+          {folder.name}
+        </Code>
+      </PicrLink>
     </Tooltip>
   );
 };

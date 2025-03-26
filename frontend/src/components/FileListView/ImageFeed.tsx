@@ -21,7 +21,7 @@ import { useOpenFileInfoModal } from '../../atoms/modalAtom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { InfoIcon } from '../../PicrIcons';
-import { PicrFolder } from '../PicrFolder';
+import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { useInView } from 'react-intersection-observer';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
 
@@ -70,25 +70,6 @@ export const ImageFeed = ({
   );
 };
 
-// const LoadMoreBox = ({ onLoadMore }: { onLoadMore: () => void }) => {
-//   const { ref, inView } = useInView({ threshold: 0 });
-//   console.log(inView ? 'inviewport' : 'not inviewport');
-//   useEffect(() => {
-//     if (inView) {
-//       console.log('loading more');
-//       onLoadMore();
-//     }
-//   }, [inView]);
-//   return (
-//     <Stack>
-//       <Box style={{ height: 1 }} ref={ref} />
-//       <Group justifyContent="center">
-//         <Loader color="blue" />
-//       </Group>
-//     </Stack>
-//   );
-// };
-
 //I've done a bunch of 'detect if image loaded' because it feels shit without it
 const FeedItem = ({
   file,
@@ -115,7 +96,7 @@ const FeedItem = ({
   const dimensions = useMemo(() => {
     return {
       width: width,
-      height: width / (file.imageRatio ?? 1),
+      height: file.imageRatio ? width / file.imageRatio : 75,
     };
   }, [width, file.imageRatio]);
 
@@ -156,6 +137,9 @@ const FeedItem = ({
             </video>
             {/*<VideoBadge file={file} size="xl" />*/}
           </Box>
+        ) : null}
+        {file.type == 'File' ? (
+          <PicrGenericFile file={file} style={{ height: 75 }} />
         ) : null}
       </Box>
       <Group

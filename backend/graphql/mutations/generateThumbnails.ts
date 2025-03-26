@@ -14,14 +14,14 @@ import { GraphQLFieldResolver } from 'graphql/type';
 import { DBFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
-  const [p, u] = await perms(context, params.folderId, true);
-  if (p == 'None') doAuthError("You don't have permissions for this folder");
-  const folder = await DBFolderForId(params.folderId);
-  // console.log(params.folderId, folder);
+  const { folder } = await contextPermissions(
+    context,
+    params.folderId,
+    'Admin',
+  );
   const folderIds = await AllChildFolderIds(folder);
-  // console.log('folderIds', folderIds);
   const where = { folderId: folderIds };
-  const ids = await File.findAll({ where, attributes: ['id'] });
+  const ids = await FileModel.findAll({ where, attributes: ['id'] });
   // console.log(ids);
   ids?.map((id) => addToQueue('generateThumbnails', { id: id.id }));
   return true;

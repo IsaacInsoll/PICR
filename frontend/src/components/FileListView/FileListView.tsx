@@ -7,11 +7,13 @@ import { useLazyLoad } from '../../hooks/useLazyLoad';
 import { MinimalFile, MinimalFolder } from '../../../types';
 import {
   ActionIcon,
+  Avatar,
+  AvatarGroup,
   Badge,
+  Box,
   Group,
   Menu,
   Rating,
-  rem,
   Stack,
   Table,
   Text,
@@ -22,12 +24,14 @@ import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
 import { SmallPreview } from './SmallPreview';
 import { pluralize } from '../../helpers/folderSubtitle';
-import { TbDots } from 'react-icons/tb';
 import { FileMenu } from './FileMenu';
 import { fileFlagStyles } from './Review/fileFlagStyles';
 import { prettyDate } from './Filtering/PrettyDate';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import { useAtomValue } from 'jotai/index';
+import { DotsIcon } from '../../PicrIcons';
+import { FolderMenu } from './FolderMenu';
+import { PicrAvatar } from '../PicrAvatar';
 
 export const FileListView = ({
   files,
@@ -173,6 +177,13 @@ const Row = ({
       ) : null}
       {!isMobile ? (
         <Table.Td onClick={onClick}>
+          {file.users ? (
+            <Avatar.Group spacing="xs" style={{ justifyContent: 'flex-end' }}>
+              {file.users.map((u) => (
+                <PicrAvatar user={u} size="sm" key={u.id} />
+              ))}
+            </Avatar.Group>
+          ) : null}
           <Text fz="sm" ta="right">
             {file.fileSize ? prettyBytes(file.fileSize) : null}
           </Text>
@@ -197,11 +208,15 @@ const Row = ({
           >
             <Menu.Target>
               <ActionIcon variant="light" color="gray">
-                <TbDots />
+                <DotsIcon />
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-              <FileMenu file={file} />
+              {isFolder ? (
+                <FolderMenu folder={file} />
+              ) : (
+                <FileMenu file={file} />
+              )}
             </Menu.Dropdown>
           </Menu>
         </Group>

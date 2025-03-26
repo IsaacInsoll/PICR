@@ -1,6 +1,13 @@
 import { Alert, AlertProps } from '@mantine/core';
 import { ReactNode } from 'react';
-import { InfoIcon, PublicLinkIcon, UserSettingsIcon } from '../PicrIcons';
+import {
+  AccessLogsIcon,
+  BrandingIcon,
+  DashboardIcon,
+  InfoIcon,
+  PublicLinkIcon,
+  UserSettingsIcon,
+} from '../PicrIcons';
 
 export const Tips = ({
   type,
@@ -13,7 +20,6 @@ export const Tips = ({
   return (
     <Alert
       variant="light"
-      color="blue"
       title=""
       icon={icon ?? <InfoIcon />}
       m="sm"
@@ -50,7 +56,38 @@ const Users: TipType = {
   ),
 };
 
+const Branding: TipType = {
+  icon: <BrandingIcon />,
+  content: (
+    <>
+      You can set up one or more 'brands' which contain a logo and color scheme.{' '}
+      Brands apply to a certain folder and all subfolders.
+      <br />
+      EG: a dark brand for fitness photos and a bright brand for wedding photos.
+    </>
+  ),
+};
+const Logs: TipType = {
+  icon: <AccessLogsIcon />,
+  content: (
+    <>
+      Picr logs each time a folder is opened by a user so you can check who is
+      using your links.
+    </>
+  ),
+};
+
+const Dashboard: TipType = {
+  icon: <DashboardIcon />,
+  content: (
+    <>PICR enables you to share your photos/videos with your clients. </>
+  ),
+};
+
 const TipList = {
   PublicLink,
   Users,
+  Branding,
+  Logs,
+  Dashboard,
 } as const;

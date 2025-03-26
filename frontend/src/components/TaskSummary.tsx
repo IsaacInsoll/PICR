@@ -73,7 +73,7 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
                   </Box>
                 ) : (
                   <Box>
-                    <Loader color="blue" size="xs" />
+                    <Loader size="xs" />
                   </Box>
                 )}
               </Group>

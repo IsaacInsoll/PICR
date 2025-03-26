@@ -2,7 +2,6 @@ import { Button, Group, Input, Paper, Tree, useTree } from '@mantine/core';
 import {
   TbChevronDown,
   TbChevronUp,
-  TbFolder,
   TbFolderOpen,
   TbFolders,
 } from 'react-icons/tb';
@@ -13,6 +12,7 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import { MinimalFolder } from '../../types';
 import { LoadingIndicator } from './LoadingIndicator';
 import { values } from 'lodash';
+import { FolderIcon } from '../PicrIcons';
 
 const prettyFolderPath = (folder: MinimalFolder) => {
   const chev = ' › ';
@@ -149,7 +149,7 @@ const FolderTreeView = ({
               ) : hasChildren ? (
                 <TbFolders opacity={0.66} />
               ) : (
-                <TbFolder opacity={0.33} />
+                <FolderIcon opacity={0.33} />
               )}
               <span>{node.label}</span>
             </Group>

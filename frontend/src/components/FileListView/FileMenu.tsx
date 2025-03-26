@@ -7,9 +7,8 @@ import {
 } from '../../atoms/modalAtom';
 import { Group, Menu, Text } from '@mantine/core';
 import { TbCloudDownload, TbFile } from 'react-icons/tb';
-import { BiComment, BiCommentDetail } from 'react-icons/bi';
 import { imageURL } from '../../helpers/imageURL';
-import { InfoIcon } from '../../PicrIcons';
+import { CommentIcon, CommentsIcon, InfoIcon } from '../../PicrIcons';
 
 export const FileMenu = ({ file }: { file: MinimalFile }) => {
   const setFolder = useSetFolder();
@@ -39,7 +38,7 @@ export const FileMenu = ({ file }: { file: MinimalFile }) => {
       {canView ? (
         <Menu.Item
           leftSection={
-            file.totalComments == 0 ? <BiComment /> : <BiCommentDetail />
+            file.totalComments == 0 ? <CommentIcon /> : <CommentsIcon />
           }
           key={3}
           onClick={() => openComment(file.id)}

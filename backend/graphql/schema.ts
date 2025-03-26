@@ -30,15 +30,28 @@ import { serverInfo } from './queries/serverInfoQuery';
 import { searchFolders } from './queries/searchFolders';
 import { searchFiles } from './queries/searchFiles';
 import { editFolder } from './mutations/editFolder';
+import { brandingType } from './types/brandingType';
+import { brandings } from './queries/brandings';
+import { editBranding } from './mutations/editBranding';
+import { deleteBranding } from './mutations/deleteBranding';
+import { accessLogs } from './queries/accessLogs';
+import { accessLogType } from './types/accessLogType';
+import { userTypeEnum } from './enums/userTypeEnum';
+import { accessTypeEnum } from './enums/accessTypeEnum';
+import { clientInfo } from './queries/clientInfoQuery';
+import { clientInfoType } from './types/clientInfoType';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
     /* General Purpose */
     admins,
     allFolders,
+    brandings,
+    clientInfo,
     comments,
     file,
     /* Admin Only */
+    accessLogs,
     folder,
     me,
     searchFiles,
@@ -61,10 +74,16 @@ const mutations = new GraphQLObjectType({
     generateThumbnails,
     generateZip,
     editFolder,
+    editBranding,
+    deleteBranding,
   }),
 });
 
 const types = [
+  accessTypeEnum,
+  accessLogType,
+  brandingType,
+  clientInfoType,
   commentType,
   fileInterface,
   fileType,
@@ -77,6 +96,7 @@ const types = [
   userType,
   videoFileType,
   videoMetadataSummaryType,
+  userTypeEnum,
 ];
 
 export const schema = new GraphQLSchema({

@@ -5,13 +5,15 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import Folder from './Folder';
-import { CommentPermissions, FileType } from '../../graphql-types';
+import FolderModel from './FolderModel';
+import { CommentPermissions, UserType } from '../../graphql-types';
+import { sep } from 'path';
+import { userTypeEnum } from '../graphql/enums/userTypeEnum';
 
 // Either a 'real user' with a hashedPassword or a 'public link' user with a UUID
 
-@Table
-export default class User extends Model {
+@Table({ tableName: 'Users' })
+export default class UserModel extends Model {
   @Column
   declare name: string;
 
@@ -29,10 +31,21 @@ export default class User extends Model {
   declare uuid: string; //public hash
 
   @Column({ type: DataType.ENUM(...Object.values(CommentPermissions)) })
-  declare commentPermissions: CommentPermissions; //dodgy JSON string of type `MetadataSummary.ts`
+  declare commentPermissions: CommentPermissions;
+
+  @Column({ type: DataType.ENUM(...Object.values(UserType)) })
+  declare userType: UserType;
+
+  @Column
+  declare lastAccess: Date;
 
   // RELATIONSHIPS
-  @ForeignKey(() => Folder)
+  @ForeignKey(() => FolderModel)
   @Column
   folderId: number;
+
+  updateLastAccess() {
+    this.lastAccess = new Date();
+    this.save();
+  }
 }

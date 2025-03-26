@@ -1,6 +1,5 @@
 import { MinimalFolder } from '../../../types';
 import { FolderLink } from '../FolderLink';
-import { Helmet } from 'react-helmet-async';
 import { ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { placeholderFolder } from './PlaceholderFolder';
@@ -46,7 +45,7 @@ export const PlaceholderFolderHeader = () => {
       <LoggedInHeader folder={folder} />
       <HeaderWrapper
         title={folder?.name ?? 'Loading'}
-        subtitle={<Loader color="blue" type="dots" />}
+        subtitle={<Loader type="dots" />}
         parent={folder?.parents}
       />
       <Page>

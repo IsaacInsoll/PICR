@@ -9,6 +9,13 @@ export const viewFolderQuery = gql(/*GraphQL*/ `
             }
             subFolders {
                 ...MinimumFolderFragment
+                users {
+                    id
+                    name
+                    enabled
+                    commentPermissions
+                    gravatar
+                }
             }
         }
     }

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import Folder from '../models/Folder';
+import FolderModel from '../db/FolderModel';
 import { zipPath } from '../helpers/zip';
 import { existsSync } from 'node:fs';
 import { zipInProgress } from '../helpers/zipQueue';

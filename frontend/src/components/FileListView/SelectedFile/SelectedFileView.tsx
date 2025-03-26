@@ -28,7 +28,7 @@ export const SelectedFileView = ({
   const selectedImageIndex = files.findIndex(({ id }) => id === selectedFileId);
   const selectedImage = files.find(({ id }) => id === selectedFileId);
   const ref = useRef<ControllerRef>(null);
-  const { fileId, fileView } = useParams();
+  const { fileId } = useParams();
   const portal = useAtomValue(lightboxRefAtom);
 
   const setControllerRef = useSetAtom(lightboxControllerRefAtom);
@@ -71,7 +71,7 @@ export const SelectedFileView = ({
           const f = files[index];
           // don't change URL if we are already on that URL (IE: first opening gallery)
           if (f?.id && f.id != fileId) {
-            setFolder({ id: folderId }, f);
+            setFolder({ id: folderId }, f, { replace: true });
           }
         },
       }}

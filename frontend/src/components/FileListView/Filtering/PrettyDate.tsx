@@ -1,5 +1,7 @@
 import { tz } from 'moment-timezone';
 import moment from 'moment';
+import { Text, Tooltip } from '@mantine/core';
+import { ReactNode } from 'react';
 
 export const prettyDate = (dateString: string) => {
   if (!dateString) return '';
@@ -13,7 +15,12 @@ export const prettyDateNoTZ = (dateString: string): string => {
   return tz(d, 'YYYY-MM-DDTHH:mm:ss[Z]').format('MMMM Do YYYY, h:mm:ss a');
 };
 
-export const fromNow = (dateString: string): string => {
-  const d = new Date(dateString);
-  return moment(d).fromNow();
+export const fromNow = (dateString: string): ReactNode => {
+  const d = moment(new Date(dateString));
+  const ago = d.fromNow();
+  return (
+    <Tooltip label={d.toString()}>
+      <Text size="sm">{ago}</Text>
+    </Tooltip>
+  );
 };
