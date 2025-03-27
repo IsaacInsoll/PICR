@@ -1,5 +1,5 @@
 import { allSubfolders } from '../../helpers/allSubfolders';
-import FileModel from '../../db/FileModel';
+import FileModel from '../../db/sequelize/FileModel';
 import { sortBy } from 'lodash';
 import { pluralize } from '../../../frontend/src/helpers/folderSubtitle';
 

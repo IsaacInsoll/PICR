@@ -1,4 +1,4 @@
-import FolderModel from '../db/FolderModel';
+import FolderModel from '../db/sequelize/FolderModel';
 
 export const folderAndAllParentIds = async (
   folder: FolderModel,

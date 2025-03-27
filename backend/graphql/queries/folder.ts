@@ -1,5 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import { createAccessLog } from '../../db/AccessLogModel';
+import { createAccessLog } from '../../db/sequelize/AccessLogModel';
 import { AccessType, Folder } from '../../../graphql-types';
 import { GraphQLFieldResolver } from 'graphql/type';
 import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';

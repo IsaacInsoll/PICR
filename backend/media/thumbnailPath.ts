@@ -1,4 +1,4 @@
-import FileModel from '../db/FileModel';
+import FileModel from '../db/sequelize/FileModel';
 import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize';
 import { basename, dirname, extname } from 'path';
 import { relativePath } from '../filesystem/fileManager';

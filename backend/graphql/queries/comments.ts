@@ -1,8 +1,8 @@
-import FileModel from '../../db/FileModel';
+import FileModel from '../../db/sequelize/FileModel';
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { commentType } from '../types/commentType';
-import CommentModel from '../../db/CommentModel';
+import CommentModel from '../../db/sequelize/CommentModel';
 import { GraphQLError } from 'graphql/error';
 import { subFilesMap } from '../helpers/subFiles';
 import { Order } from 'sequelize';

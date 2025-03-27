@@ -1,5 +1,5 @@
 import { FolderHash, zipFolder, zipPath } from './zip';
-import FolderModel from '../db/FolderModel';
+import FolderModel from '../db/sequelize/FolderModel';
 import { existsSync } from 'node:fs';
 import { Task } from '../../graphql-types';
 

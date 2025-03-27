@@ -1,4 +1,4 @@
-import FileModel from '../db/FileModel';
+import FileModel from '../db/sequelize/FileModel';
 import { ffprobe, FfprobeData, setFfprobePath } from 'fluent-ffmpeg';
 import util from 'node:util';
 import { VideoMetadata } from '../types/MetadataSummary';

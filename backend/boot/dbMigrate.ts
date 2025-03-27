@@ -1,10 +1,10 @@
-import { getServerOptions } from '../db/ServerOptionsModel';
+import { getServerOptions } from '../db/sequelize/ServerOptionsModel';
 import { lt, valid } from 'semver';
 import { Sequelize } from 'sequelize-typescript';
-import FileModel from '../db/FileModel';
-import AccessLogModel from '../db/AccessLogModel';
+import FileModel from '../db/sequelize/FileModel';
+import AccessLogModel from '../db/sequelize/AccessLogModel';
 import { AccessType, UserType } from '../../graphql-types';
-import UserModel from '../db/UserModel';
+import UserModel from '../db/sequelize/UserModel';
 
 export const dbMigrate = async (config, sequelize: Sequelize) => {
   const opts = await getServerOptions();

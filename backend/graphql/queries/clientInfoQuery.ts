@@ -1,6 +1,6 @@
 import { getUserFromToken } from '../../auth/jwt-auth';
 import { GraphQLError } from 'graphql/error';
-import { getServerOptions } from '../../db/ServerOptionsModel';
+import { getServerOptions } from '../../db/sequelize/ServerOptionsModel';
 import { clientInfoType } from '../types/clientInfoType';
 
 const resolver = async (_, params, context, schema) => {

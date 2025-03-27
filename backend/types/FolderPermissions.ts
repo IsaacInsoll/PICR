@@ -1,5 +1,5 @@
-import UserModel from '../db/UserModel';
-import FolderModel from '../db/FolderModel';
+import UserModel from '../db/sequelize/UserModel';
+import FolderModel from '../db/sequelize/FolderModel';
 
 export type FolderPermissions = 'View' | 'Admin' | 'None';
 

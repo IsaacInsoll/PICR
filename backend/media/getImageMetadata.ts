@@ -1,4 +1,4 @@
-import FileModel from '../db/FileModel';
+import FileModel from '../db/sequelize/FileModel';
 import sharp from 'sharp';
 import { MetadataSummary } from '../types/MetadataSummary';
 import { default as ex } from 'exif-reader';

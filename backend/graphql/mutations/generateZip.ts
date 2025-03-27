@@ -1,9 +1,9 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import FolderModel from '../../db/FolderModel';
+import FolderModel from '../../db/sequelize/FolderModel';
 import { hashFolderContents } from '../../helpers/zip';
 import { addToZipQueue } from '../../helpers/zipQueue';
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql/index';
-import { createAccessLog } from '../../db/AccessLogModel';
+import { createAccessLog } from '../../db/sequelize/AccessLogModel';
 import { AccessType } from '../../../graphql-types';
 
 const resolver = async (_, params, context) => {

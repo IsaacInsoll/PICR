@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import fs from 'fs';
-import FileModel from '../db/FileModel';
+import FileModel from '../db/sequelize/FileModel';
 import { sep } from 'path';
 
 export const fileHash = (filePath: string): string => {

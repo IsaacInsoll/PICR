@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { CustomJwtPayload } from '../types/CustomJwtPayload';
-import UserModel from '../db/UserModel';
+import UserModel from '../db/sequelize/UserModel';
 import { picrConfig } from '../config/picrConfig';
 
 export function generateAccessToken(obj) {

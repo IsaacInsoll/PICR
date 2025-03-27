@@ -1,6 +1,6 @@
 import { basename, dirname, extname } from 'path';
 import { folderList, relativePath } from '../fileManager';
-import FileModel from '../../db/FileModel';
+import FileModel from '../../db/sequelize/FileModel';
 import { log } from '../../logger';
 import { fastHash } from '../fileHash';
 import fs from 'fs';

@@ -1,6 +1,6 @@
 import { getUserFromToken } from '../../auth/jwt-auth';
 import { userType } from '../types/userType';
-import FolderModel from '../../db/FolderModel';
+import FolderModel from '../../db/sequelize/FolderModel';
 import { userToJSON } from '../helpers/userToJSON';
 import { getUserFromUUID } from '../../auth/getUserFromUUID';
 

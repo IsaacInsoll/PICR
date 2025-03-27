@@ -1,4 +1,4 @@
-import FileModel from '../db/FileModel';
+import FileModel from '../db/sequelize/FileModel';
 import ffmpeg, { FfmpegCommand } from 'fluent-ffmpeg';
 
 export const ffmpegForFile = (file: FileModel): FfmpegCommand => {

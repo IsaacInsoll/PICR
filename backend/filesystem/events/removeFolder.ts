@@ -1,5 +1,5 @@
 import { delay } from '../../helpers/delay';
-import FolderModel from '../../db/FolderModel';
+import FolderModel from '../../db/sequelize/FolderModel';
 import { folderList, relativePath } from '../fileManager';
 import { literal, Op } from 'sequelize';
 import { log } from '../../logger';

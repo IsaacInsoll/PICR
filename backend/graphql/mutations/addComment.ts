@@ -1,8 +1,8 @@
 import { GraphQLID, GraphQLNonNull } from 'graphql/type';
 import { contextPermissions } from '../../auth/contextPermissions';
 import { doAuthError } from '../../auth/doAuthError';
-import FileModel from '../../db/FileModel';
-import { CommentFor } from '../../db/CommentModel';
+import FileModel from '../../db/sequelize/FileModel';
+import { CommentFor } from '../../db/sequelize/CommentModel';
 import { fileToJSON } from '../helpers/fileToJSON';
 import { GraphQLInt, GraphQLString } from 'graphql';
 import { fileFlagEnum } from '../enums/fileFlagEnum';

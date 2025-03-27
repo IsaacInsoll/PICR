@@ -1,5 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import FileModel from '../../db/FileModel';
+import FileModel from '../../db/sequelize/FileModel';
 import { addToQueue } from '../../filesystem/fileQueue';
 import { GraphQLBoolean, GraphQLID, GraphQLNonNull } from 'graphql/index';
 import { allSubfolderIds } from '../../helpers/allSubfolders';

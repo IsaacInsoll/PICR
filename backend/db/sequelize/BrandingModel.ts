@@ -6,7 +6,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import FolderModel from './FolderModel';
-import { PrimaryColor, ThemeMode } from '../../graphql-types';
+import { PrimaryColor, ThemeMode } from '../../../graphql-types';
 
 @Table({ tableName: 'Brandings' })
 export default class BrandingModel extends Model {

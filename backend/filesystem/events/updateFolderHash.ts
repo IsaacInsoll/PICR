@@ -1,5 +1,5 @@
 // We can't detect folder renames, so lets compare hash of folder contents to work out if it's a rename?
-import FolderModel from '../../db/FolderModel';
+import FolderModel from '../../db/sequelize/FolderModel';
 import { readdirSync } from 'node:fs';
 import { fullPath } from '../fileManager';
 import crypto from 'crypto';

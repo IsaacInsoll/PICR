@@ -4,10 +4,10 @@ import {
   ContextualPermissions,
   FolderPermissions,
 } from '../types/FolderPermissions';
-import FolderModel from '../db/FolderModel';
+import FolderModel from '../db/sequelize/FolderModel';
 import { doAuthError } from './doAuthError';
 import { GraphQLError } from 'graphql/error';
-import UserModel from '../db/UserModel';
+import UserModel from '../db/sequelize/UserModel';
 import { getUserFromUUID } from './getUserFromUUID';
 import { folderIsUnderFolderId } from '../helpers/folderIsUnderFolderId';
 

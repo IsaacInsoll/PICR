@@ -1,4 +1,4 @@
-import FileModel from '../../db/FileModel';
+import FileModel from '../../db/sequelize/FileModel';
 
 import { fileToJSON } from './fileToJSON';
 import { FileInterface } from '../../../graphql-types';

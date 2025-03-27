@@ -7,8 +7,8 @@ import {
   GraphQLString,
 } from 'graphql';
 import { folderPermissionsType } from './folderPermissionsType';
-import FolderModel from '../../db/FolderModel';
-import FileModel from '../../db/FileModel';
+import FolderModel from '../../db/sequelize/FolderModel';
+import FileModel from '../../db/sequelize/FileModel';
 import { fileInterface } from '../interfaces/fileInterface';
 import { imageFileType } from './imageFileType';
 import { brandingType } from './brandingType';
@@ -19,7 +19,7 @@ import { subFiles } from '../helpers/subFiles';
 import { subFolders } from '../helpers/subFolders';
 import { allSubfolderIds } from '../../helpers/allSubfolders';
 import { userType } from './userType';
-import UserModel from '../../db/UserModel';
+import UserModel from '../../db/sequelize/UserModel';
 import { userToJSON } from '../helpers/userToJSON';
 import { getFolder } from '../helpers/getFolder';
 import { contextPermissions } from '../../auth/contextPermissions';

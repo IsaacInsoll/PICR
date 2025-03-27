@@ -1,5 +1,5 @@
-import FolderModel from '../../db/FolderModel';
-import FileModel from '../../db/FileModel';
+import FolderModel from '../../db/sequelize/FolderModel';
+import FileModel from '../../db/sequelize/FileModel';
 import { Op } from 'sequelize';
 import { allSubfolders } from '../../helpers/allSubfolders';
 

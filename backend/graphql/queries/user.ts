@@ -1,6 +1,6 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
-import UserModel from '../../db/UserModel';
+import UserModel from '../../db/sequelize/UserModel';
 import { GraphQLID, GraphQLNonNull } from 'graphql';
 import { userType } from '../types/userType';
 import { userToJSON } from '../helpers/userToJSON';
