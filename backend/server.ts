@@ -9,6 +9,10 @@ import { dbMigrate } from './boot/dbMigrate';
 import { log } from './logger';
 import { picrConfig } from './config/picrConfig';
 
+//TODO: //picrConfig.debugSql prop
+//TODO: sequelise had "pool=50" (default of 5), can't remember why, see ea9feae4
+export let db: NodePgDatabase<typeof schema>;
+
 export const server = async () => {
   const sequelize = new Sequelize(picrConfig.databaseUrl, {
     dialect: 'postgres',
