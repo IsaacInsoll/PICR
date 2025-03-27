@@ -1,4 +1,4 @@
-import { Alert, Box, Button } from '@mantine/core';
+import { Alert, Box, Button, Code, Text } from '@mantine/core';
 import { useQuery } from 'urql';
 import { Suspense, useState } from 'react';
 import QueryFeedback from '../../components/QueryFeedback';
@@ -43,6 +43,9 @@ export const ManageBrandings = () => {
           onMouseover={(row) => (mouseover ? setThemeMode(row) : null)}
         />
       ) : undefined}
+      <Text pt="md" fs="italic" c="dimmed">
+        Manage a folder to create a new Branding
+      </Text>
       {/*<Box pt="md">*/}
       {/*  <Button*/}
       {/*    onClick={() => setBranding({ ...defaultBranding })}*/}

@@ -1,9 +1,11 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLNonNull } from 'graphql';
-import { brandingForFolderId } from '../../db/BrandingModel';
 import { getFolder } from '../helpers/getFolder';
 import { folderType } from '../types/folderType';
 import { GraphQLError } from 'graphql/error';
+import { brandingForFolderId, db } from '../../db/picrDb';
+import { dbBranding } from '../../db/models';
+import { eq } from 'drizzle-orm';
 
 const resolver = async (_, params, context) => {
   await contextPermissions(context, params.folderId, 'Admin');
@@ -14,7 +16,7 @@ const resolver = async (_, params, context) => {
     throw new GraphQLError('No branding found for folder: ' + params.folderId);
   }
 
-  await obj.destroy();
+  await db.delete(dbBranding).where(eq(dbBranding.folderId, params.folderId));
   return await getFolder(params.folderId);
 };
 

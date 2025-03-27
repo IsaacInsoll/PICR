@@ -1,4 +1,6 @@
 import { picrConfig } from '../config/picrConfig';
+import { sep } from 'path';
+import { FileFields } from '../db/picrDb';
 
 // BASIC PATH FUNCTIONS
 export const relativePath = (path: string) =>
@@ -10,3 +12,12 @@ export const fullPath = (relativePath: string) => {
 export const pathSplit = (path: string) => relativePath(path).split('/');
 
 export const folderList = {}; //relativePath to ID mapping
+
+export const fullPathForFile = (f: FileFields) => {
+  return fullPath(f.relativePath) + sep + f.name;
+};
+
+//Gives path relative to another path, useful to remove 'ZIP root folder' when zipping
+export const fullPathMinus = (f: FileFields, path: string) => {
+  return f.relativePath.replace(path, '') + sep + f.name;
+};

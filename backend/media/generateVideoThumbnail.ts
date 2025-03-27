@@ -1,4 +1,3 @@
-import FileModel from '../db/FileModel';
 import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize';
 import { thumbnailPath } from './thumbnailPath';
 import { ffmpegForFile } from './ffmpegForFile';
@@ -8,6 +7,8 @@ import { existsSync } from 'node:fs';
 import { log } from '../logger';
 import joinImages from 'join-images';
 import { range } from 'lodash';
+import { fullPathForFile } from '../filesystem/fileManager';
+import { FileFields } from '../db/picrDb';
 
 const numberOfVideoSnapshots = 10;
 
@@ -16,7 +17,7 @@ const numberOfVideoSnapshots = 10;
 const videoThumbnailQueue: { [key: string]: Promise<void> } = {};
 
 const processVideoThumbnail = async (
-  file: FileModel,
+  file: FileFields,
   size: ThumbnailSize,
 ): Promise<void> => {
   // lets only do medium thumbnails as large can just be 'embedded video' and small is probably useless?
@@ -24,7 +25,9 @@ const processVideoThumbnail = async (
 
   const { Duration } = JSON.parse(file.metadata) as VideoMetadata;
   if (Duration <= 0 || !file.imageRatio || file.imageRatio == 0) {
-    console.log('Error generating video thumbnails for: ' + file.fullPath());
+    console.log(
+      'Error generating video thumbnails for: ' + fullPathForFile(file),
+    );
     return;
   }
 
@@ -74,7 +77,7 @@ const processVideoThumbnail = async (
   });
 };
 
-const mergeImages = async (file: FileModel, size: ThumbnailSize) => {
+const mergeImages = async (file: FileFields, size: ThumbnailSize) => {
   const outFile = thumbnailPath(file, size);
 
   const files = range(1, 11).map((r) => `${outFile}/${size}_${r}.jpg`);
@@ -84,7 +87,7 @@ const mergeImages = async (file: FileModel, size: ThumbnailSize) => {
 };
 
 export const generateVideoThumbnail = async (
-  file: FileModel,
+  file: FileFields,
   size: ThumbnailSize,
 ): Promise<void> => {
   const pr = awaitVideoThumbnailGeneration(file, size);
@@ -101,7 +104,7 @@ export const generateVideoThumbnail = async (
 };
 
 export const awaitVideoThumbnailGeneration = (
-  file: FileModel,
+  file: FileFields,
   size: ThumbnailSize,
 ): Promise<void> | undefined => {
   const key = file.id + '-' + size;

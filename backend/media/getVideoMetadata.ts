@@ -1,16 +1,18 @@
-import FileModel from '../db/FileModel';
 import { ffprobe, FfprobeData, setFfprobePath } from 'fluent-ffmpeg';
 import util from 'node:util';
 import { VideoMetadata } from '../types/MetadataSummary';
+import { fullPathForFile } from '../filesystem/fileManager';
+import { FileFields } from '../db/picrDb';
 
-export const getVideoMetadata = async (file: FileModel) => {
+export const getVideoMetadata = async (file: FileFields) => {
   setFfprobePath('node_modules/ffprobe-static/bin/linux/x64/ffprobe');
 
   //ffprobe is 'traditional callback' style so lets promise-ify it
   const ffprobePromise = util.promisify(ffprobe);
 
   try {
-    const metadata = (await ffprobePromise(file.fullPath())) as FfprobeData;
+    const fullPath = fullPathForFile(file);
+    const metadata = (await ffprobePromise(fullPath)) as FfprobeData;
 
     const m: VideoMetadata = {};
 

@@ -1,7 +1,7 @@
-import FolderModel from '../db/FolderModel';
+import { dbFolderForId, FolderFields } from '../db/picrDb';
 
 export const folderIsUnderFolderId = async (
-  child: FolderModel,
+  child: FolderFields,
   parentId: number,
 ): Promise<boolean> => {
   if (!child || !parentId) return false;
@@ -9,7 +9,7 @@ export const folderIsUnderFolderId = async (
     return true;
   }
   if (!child.parentId) return false;
-  const childParent = await FolderModel.findByPk(child.parentId);
+  const childParent = await dbFolderForId(child.parentId);
   if (!childParent) {
     return false;
   }

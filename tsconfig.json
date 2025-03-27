@@ -6,11 +6,13 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "lib": [
       "ES2021.String"
-    ]
+    ],
+    "strict": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": ["backend/**/*.ts"],
   "exclude": ["node_modules"]

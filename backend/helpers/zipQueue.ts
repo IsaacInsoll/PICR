@@ -1,10 +1,10 @@
 import { FolderHash, zipFolder, zipPath } from './zip';
-import FolderModel from '../db/FolderModel';
 import { existsSync } from 'node:fs';
 import { Task } from '../../graphql-types';
+import { FolderFields } from '../db/picrDb';
 
 interface ZipQueueItem {
-  folder: FolderModel;
+  folder: FolderFields;
   status: 'Queued' | 'In Progress' | 'Complete' | 'Error';
   hash?: string;
   //only relevant if status=inprogress

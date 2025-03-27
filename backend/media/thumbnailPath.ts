@@ -1,15 +1,15 @@
-import FileModel from '../db/FileModel';
 import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize';
 import { basename, dirname, extname } from 'path';
-import { relativePath } from '../filesystem/fileManager';
+import { fullPathForFile, relativePath } from '../filesystem/fileManager';
 import { picrConfig } from '../config/picrConfig';
+import { FileFields } from '../db/picrDb';
 
 export const thumbnailPath = (
-  file: FileModel,
+  file: FileFields,
   size: ThumbnailSize,
   extension?: string,
 ): string => {
-  const fp = file.fullPath();
+  const fp = fullPathForFile(file);
   const ext = extension ?? extname(fp); // .txt
   const fileName = basename(fp); // notes.txt
   const p = dirname(fp);

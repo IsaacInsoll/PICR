@@ -1,13 +1,13 @@
 import { requireFullAdmin } from './admins';
 import { brandingType } from '../types/brandingType';
 import { GraphQLList, GraphQLNonNull } from 'graphql';
-import BrandingModel from '../../db/BrandingModel';
 import { addFolderRelationship } from '../helpers/addFolderRelationship';
+import { db } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
   await requireFullAdmin(context);
-  const list = await BrandingModel.findAll();
-  return addFolderRelationship(list.map((b) => b.toJSON()));
+  const list = await db.query.dbBranding.findMany();
+  return addFolderRelationship(list);
 };
 
 export const brandings = {

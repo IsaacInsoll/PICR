@@ -1,13 +1,14 @@
-import FileModel from '../db/FileModel';
 import sharp from 'sharp';
 import { MetadataSummary } from '../types/MetadataSummary';
 import { default as ex } from 'exif-reader';
 import { XMLParser } from 'fast-xml-parser';
+import { fullPathForFile } from '../filesystem/fileManager';
+import { FileFields } from '../db/picrDb';
 
-export const getImageMetadata = async (file: FileModel) => {
+export const getImageMetadata = async (file: FileFields) => {
   try {
     const { exif, width, height, xmp } = await sharp(
-      file.fullPath(),
+      fullPathForFile(file),
     ).metadata();
 
     const x = ex(exif);
@@ -27,7 +28,7 @@ export const getImageMetadata = async (file: FileModel) => {
     };
     return result;
   } catch (e) {
-    console.log('Error getting metadata for file: ' + file.fullPath());
+    console.log('Error getting metadata for file: ' + fullPathForFile(file));
     console.log(e);
     return null;
   }

@@ -1,26 +1,29 @@
 import pkg from '../package.json';
 import { fileWatcher } from './filesystem/fileWatcher';
-import { Sequelize } from 'sequelize-typescript';
-import pg from 'pg';
 import { setupRootFolder } from './filesystem/events/addFolder';
 import { envPassword } from './boot/envPassword';
 import { expressServer } from './express/express';
 import { dbMigrate } from './boot/dbMigrate';
 import { log } from './logger';
 import { picrConfig } from './config/picrConfig';
+import { initDb } from './db/picrDb';
+
+//TODO: //picrConfig.debugSql prop
+//TODO: sequelise had "pool=50" (default of 5), can't remember why, see ea9feae4
 
 export const server = async () => {
-  const sequelize = new Sequelize(picrConfig.databaseUrl, {
-    dialect: 'postgres',
-    dialectModule: pg,
-    logging: picrConfig.debugSql,
-    models: [__dirname + '/db'],
-    pool: { max: 50 }, //default max is 5, postgres default limit is 100
-  });
+  initDb();
+
+  // const sequelize = new Sequelize(picrConfig.databaseUrl, {
+  //   dialect: 'postgres',
+  //   dialectModule: pg,
+  //   logging: picrConfig.debugSql,
+  //   models: [__dirname + '/db/sequelize'],
+  //   pool: { max: 50 }, //default max is 5, postgres default limit is 100
+  // });
 
   try {
-    await sequelize.sync({ alter: true }); // build DB
-    await dbMigrate(picrConfig, sequelize);
+    await dbMigrate(picrConfig);
   } catch (e) {
     console.error(
       `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\`. 
@@ -29,6 +32,7 @@ export const server = async () => {
     console.log(e);
     process.exit();
   }
+
   await envPassword();
   await setupRootFolder();
   const appName = pkg.name;
@@ -43,9 +47,9 @@ export const server = async () => {
 
   //Close all the stuff
   process.on('exit', function () {
-    sequelize.close().then(() => {
-      console.log(`💀 ${appName} Closed`);
-    });
+    // sequelize.close().then(() => {
+    console.log(`💀 ${appName} Closed`);
+    // });
   });
 
   // This is CTRL+C While it's running, trigger a nice shutdown

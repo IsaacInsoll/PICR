@@ -1,7 +1,9 @@
-import UserModel from '../../db/UserModel';
 import { userToJSON } from './userToJSON';
+import { db } from '../../db/picrDb';
+import { dbUser } from '../../db/models';
+import { inArray } from 'drizzle-orm';
 
-type UserRelationship = { userId: string }[];
+type UserRelationship = { userId: string | number | null }[];
 
 // Takes a list of objects with `userId` relationship and adds *BASIC* user details to each object
 export const addUserRelationship = async (
@@ -10,8 +12,9 @@ export const addUserRelationship = async (
   const ids = list.map((b) => b.userId).filter((v, i, a) => a.indexOf(v) === i);
   if (ids.length == 0) return list;
 
-  const users = await UserModel.findAll({ where: { id: ids } });
-  console.log('second map');
+  const users = await db.query.dbUser.findMany({
+    where: inArray(dbUser.id, ids),
+  });
   return list.map((obj) => {
     const user = userToJSON(users.find((f) => f.id == obj.userId));
     const userLimitedDetails = {

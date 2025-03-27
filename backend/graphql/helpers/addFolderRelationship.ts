@@ -1,4 +1,6 @@
-import FolderModel from '../../db/FolderModel';
+import { db } from '../../db/picrDb';
+import { inArray } from 'drizzle-orm';
+import { dbFolder } from '../../db/models';
 
 type FolderRelationship = { folderId: string }[];
 
@@ -12,7 +14,10 @@ export const addFolderRelationship = async (
 
   if (ids.length == 0) return list;
 
-  const folders = await FolderModel.findAll({ where: { id: ids } });
+  const folders = await db.query.dbFolder.findMany({
+    where: inArray(dbFolder.id, ids),
+  });
+
   return list.map((obj) => {
     const folder = folders.find((f) => f.id == obj.folderId)?.toJSON();
     return { ...obj, folder };
