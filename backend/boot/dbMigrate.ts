@@ -1,10 +1,11 @@
-import { getServerOptions } from '../db/sequelize/ServerOptionsModel';
 import { lt, valid } from 'semver';
 import { Sequelize } from 'sequelize-typescript';
 import FileModel from '../db/sequelize/FileModel';
 import AccessLogModel from '../db/sequelize/AccessLogModel';
 import { AccessType, UserType } from '../../graphql-types';
 import UserModel from '../db/sequelize/UserModel';
+import { db, getServerOptions, setServerOptions } from '../db/picrDb';
+import { dbServerOptions } from '../db/models';
 
 export const dbMigrate = async (config, sequelize: Sequelize) => {
   const opts = await getServerOptions();
@@ -49,6 +50,6 @@ export const dbMigrate = async (config, sequelize: Sequelize) => {
       }
     }
   }
-  opts.lastBootedVersion = config.version;
-  await opts.save();
+
+  await setServerOptions({ lastBootedVersion: config.version });
 };

@@ -11,7 +11,7 @@ import {
   awaitVideoThumbnailGeneration,
   generateVideoThumbnail,
 } from '../media/generateVideoThumbnail';
-import { getServerOptions } from '../db/sequelize/ServerOptionsModel';
+import { getServerOptions } from '../db/picrDb';
 
 export const imageRequest = async (
   req: Request<{

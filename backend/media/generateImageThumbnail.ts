@@ -11,7 +11,7 @@ import {
 import { log } from '../logger';
 import { thumbnailPath } from './thumbnailPath';
 import { generateVideoThumbnail } from './generateVideoThumbnail';
-import { getServerOptions } from '../db/sequelize/ServerOptionsModel';
+import { getServerOptions } from '../db/picrDb';
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
 export const generateAllThumbs = async (file: FileModel) => {
