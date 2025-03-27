@@ -1,5 +1,5 @@
-import FileModel from '../../db/FileModel';
+import { FileFields } from '../../db/picrDb';
 
-export const fileToJSON = (f: FileModel) => {
-  return { ...f.toJSON(), metadata: JSON.parse(f.metadata) };
+export const fileToJSON = (f: FileFields) => {
+  return { ...f, metadata: f.metadata ? JSON.parse(f.metadata) : undefined };
 };

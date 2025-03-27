@@ -1,7 +1,7 @@
 import { getUserFromToken } from '../../auth/jwt-auth';
 import { GraphQLError } from 'graphql/error';
-import { getServerOptions } from '../../db/ServerOptionsModel';
 import { clientInfoType } from '../types/clientInfoType';
+import { getServerOptions } from '../../db/picrDb';
 
 const resolver = async (_, params, context, schema) => {
   const user = await getUserFromToken(context);

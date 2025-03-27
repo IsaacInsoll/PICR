@@ -1,10 +1,10 @@
 import { FolderHash, zipFolder, zipPath } from './zip';
-import FolderModel from '../db/FolderModel';
 import { existsSync } from 'node:fs';
 import { Task } from '../../graphql-types';
+import { FolderFields } from '../db/picrDb';
 
 interface ZipQueueItem {
-  folder: FolderModel;
+  folder: FolderFields;
   status: 'Queued' | 'In Progress' | 'Complete' | 'Error';
   hash?: string;
   //only relevant if status=inprogress
@@ -47,7 +47,7 @@ export const updateZipQueue = (
   zipQueue[folderHash.key] = { ...zipQueue[folderHash.key], ...item };
 };
 
-export const queueZipTaskStatus = (folderIds: string[] | null): Task[] => {
+export const queueZipTaskStatus = (folderIds: number[] | null): Task[] => {
   const list: Task[] = [];
   Object.keys(zipQueue).map((k) => {
     const q = zipQueue[k];

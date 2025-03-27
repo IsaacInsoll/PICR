@@ -5,6 +5,8 @@ import { imageURL } from '../../frontend/src/helpers/imageURL';
 import { Request, Response } from 'express';
 import { joinTitles } from '../helpers/joinTitle';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder';
+import { MinimalFile } from '../../frontend/types';
+import { FileFields } from '../db/picrDb';
 
 interface ITemplateFields {
   title: string;
@@ -37,7 +39,9 @@ export const picrTemplate = async (req: Request, res: Response) => {
           ...fields,
           title: joinTitles([folder.name, fields.title]),
           description: summary,
-          image: thumb ? imageURL(thumb, 'md') : fields.image,
+          image: thumb
+            ? imageURL(fileFieldsToMinimalFile(thumb), 'md')
+            : fields.image,
         };
       }
     }
@@ -54,4 +58,16 @@ const fieldDefaults: ITemplateFields = {
   title: 'PICR',
   description: 'PICR File Sharing',
   image: '',
+};
+
+const fileFieldsToMinimalFile = (
+  f: FileFields,
+): Pick<MinimalFile, 'id' | 'fileHash' | 'name' | 'type'> => {
+  return {
+    id: f.id.toString(),
+    fileHash: f.fileHash ?? undefined,
+    name: f.name,
+    // @ts-ignore
+    type: f.type,
+  };
 };

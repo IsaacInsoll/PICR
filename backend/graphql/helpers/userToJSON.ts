@@ -1,9 +1,9 @@
-import UserModel from '../../db/UserModel';
 import gravatar from 'gravatar';
+import { UserFields } from '../../db/picrDb';
 
-export const userToJSON = (u: UserModel) => {
+export const userToJSON = (u: UserFields) => {
   const g = u.username?.includes('@')
     ? gravatar.url(u.username, { d: '404' })
     : null;
-  return { ...u.toJSON(), gravatar: g };
+  return { ...u, gravatar: g };
 };

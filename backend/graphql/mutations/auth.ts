@@ -1,17 +1,20 @@
-import UserModel from '../../db/UserModel';
 import { hashPassword } from '../../helpers/hashPassword';
 import { generateAccessToken } from '../../auth/jwt-auth';
 import { GraphQLNonNull, GraphQLString } from 'graphql';
+import { db } from '../../db/picrDb';
+import { and, eq } from 'drizzle-orm';
+import { dbUser } from '../../db/models';
 
 const resolver = async (_, params, context) => {
   const p = params.password;
   if (!p || p === '') return '';
-  const user = await UserModel.findOne({
-    where: {
-      username: params.user,
-      hashedPassword: hashPassword(p),
-      enabled: true,
-    },
+
+  const user = await db.query.dbUser.findFirst({
+    where: and(
+      eq(dbUser.username, params.user),
+      eq(dbUser.hashedPassword, hashPassword(p)),
+      eq(dbUser.enabled, true),
+    ),
   });
   if (!user) return '';
   return generateAccessToken({

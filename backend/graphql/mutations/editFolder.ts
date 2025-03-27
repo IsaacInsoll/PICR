@@ -1,8 +1,10 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { doAuthError } from '../../auth/doAuthError';
-import FileModel from '../../db/FileModel';
 import { GraphQLID, GraphQLNonNull } from 'graphql/index';
 import { folderType } from '../types/folderType';
+import { db, dbFileForId } from '../../db/picrDb';
+import { dbFolder } from '../../db/models';
+import { eq } from 'drizzle-orm';
 
 const resolver = async (_, params, context) => {
   const { folder } = await contextPermissions(
@@ -11,14 +13,19 @@ const resolver = async (_, params, context) => {
     'Admin',
   );
 
-  const heroImage = await FileModel.findByPk(params.heroImageId);
-  if (!heroImage) doAuthError('Invalid hero image ID');
+  const heroImage = await dbFileForId(params.heroImageId);
+  if (!heroImage) {
+    doAuthError('Invalid hero image ID');
+    return;
+  }
   if (heroImage.type != 'Image') doAuthError('Not an image');
-  if (heroImage.folderId != folder.id) doAuthError('Not in this folder');
+  if (heroImage.folderId != folder!.id) doAuthError('Not in this folder');
 
-  folder.heroImageId = heroImage.id;
-  await folder.save();
-  return { ...folder.toJSON(), heroImage };
+  db.update(dbFolder)
+    .set({ heroImageId: heroImage.id, updatedAt: new Date() })
+    .where(eq(dbFolder.id, folder!.id));
+
+  return { ...folder, heroImage };
 };
 
 export const editFolder = {

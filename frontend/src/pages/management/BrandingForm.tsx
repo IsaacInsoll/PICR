@@ -116,7 +116,7 @@ const ColorSelector = ({
       </Group>
       <Group gap={0}>
         {Array.from({ length: 10 }, (x, i) => {
-          console.log(theme.colors[color]);
+          // console.log(theme.colors[color]);
           return (
             <Box
               key={i}

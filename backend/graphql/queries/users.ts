@@ -1,7 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
-import UserModel from '../../db/UserModel';
-import { Op } from 'sequelize';
 import { getFolder } from '../helpers/getFolder';
 import {
   GraphQLBoolean,
@@ -12,6 +10,9 @@ import {
 import { userType } from '../types/userType';
 import { allSubfolders } from '../../helpers/allSubfolders';
 import { userToJSON } from '../helpers/userToJSON';
+import { db } from '../../db/picrDb';
+import { and, desc, inArray, isNotNull } from 'drizzle-orm';
+import { dbUser } from '../../db/models';
 
 const resolver = async (_, params, context) => {
   const { folder, user } = await contextPermissions(
@@ -25,22 +26,23 @@ const resolver = async (_, params, context) => {
     const parents = await folderAndAllParentIds(folder, user.folderId);
     ids.push(...parents);
   }
+
   if (params.includeChildren) {
     const children = await allSubfolders(folder.id);
     const childIds = children.map(({ id }) => id);
     ids.push(...childIds);
   }
 
-  // we don't show 'real users' just 'shared public users'
-  const where = { folderId: { [Op.or]: ids }, uuid: { [Op.not]: null } };
-  if (params.sortByRecent) {
-    where['lastAccess'] = { [Op.not]: null };
-  }
-  const data = await UserModel.findAll({
-    where,
-    order: params.sortByRecent ? [['lastAccess', 'DESC']] : undefined,
+  const where = and(inArray(dbUser.folderId, ids), isNotNull(dbUser.uuid));
+
+  const data = await db.query.dbUser.findMany({
+    where: !params.sortByRecent
+      ? where
+      : and(where, isNotNull(dbUser.lastAccess)),
+    orderBy: params.sortByRecent ? [desc(dbUser.lastAccess)] : undefined,
     limit: params.sortByRecent ? 10 : 1000,
   });
+
   return data.map((pl) => {
     return { ...userToJSON(pl), folder: getFolder(pl.folderId) };
   });

@@ -1,7 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import UserModel from '../../db/UserModel';
 import { GraphQLError } from 'graphql/error';
-import FolderModel from '../../db/FolderModel';
 import { hashPassword } from '../../helpers/hashPassword';
 
 import { getFolder } from '../helpers/getFolder';
@@ -12,13 +10,16 @@ import {
   GraphQLString,
 } from 'graphql';
 import { userType } from '../types/userType';
-import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
-import { Op } from 'sequelize';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
+import { db, dbFolderForId, dbUserForId, UserFields } from '../../db/picrDb';
+import { and, eq, isNotNull } from 'drizzle-orm';
+import { dbUser } from '../../db/models';
+import { UserType } from '../../../graphql-types';
+import { commentPermissionsEnum } from '../types/enums';
 
 const resolver = async (_, params, context) => {
   const { user } = await contextPermissions(context, params.folderId, 'Admin');
-  let adminUser: UserModel | null = null;
+  let adminUser: UserFields | undefined = undefined;
 
   const pass = params.password;
   const username = params.username;
@@ -27,12 +28,10 @@ const resolver = async (_, params, context) => {
   }
 
   if (username) {
-    const existingUsername = await UserModel.findOne({
-      where: {
-        username: username,
-        uuid: { [Op.ne]: null },
-      },
+    const existingUsername = await db.query.dbUser.findFirst({
+      where: and(eq(dbUser.username, username), isNotNull(dbUser.uuid)),
     });
+
     if (existingUsername) {
       if (existingUsername.id != params.id || !params.id) {
         throw new GraphQLError(`Username "${username} already exists`);
@@ -41,10 +40,12 @@ const resolver = async (_, params, context) => {
   }
 
   if (params.id) {
-    adminUser = await UserModel.findByPk(params.id);
+    adminUser = await dbUserForId(params.id);
     if (!adminUser)
       throw new GraphQLError('No user found for ID: ' + params.id);
-    const userFolder = await FolderModel.findByPk(adminUser.folderId);
+    const userFolder = await dbFolderForId(adminUser.folderId);
+    if (!userFolder)
+      throw new GraphQLError('User has invalid folder: ' + adminUser.folderId);
     if (!(await folderIsUnderFolderId(userFolder, user.folderId))) {
       throw new GraphQLError(
         'You cant edit this user as they are above your level of access',
@@ -52,24 +53,37 @@ const resolver = async (_, params, context) => {
     }
   } else {
     if (pass && username) {
-      adminUser = new UserModel();
+      // @ts-ignore required fields added below
+      adminUser = {};
     } else {
       throw new GraphQLError(
         'Cannot create new user without username and password',
       );
     }
   }
+
+  if (!adminUser) return; // just to fix the "adminUser might be undefined" error below in typescript, not needed
+
   adminUser.folderId = params.folderId;
   adminUser.name = params.name;
 
   adminUser.username = params.username;
   adminUser.enabled = params.enabled;
   adminUser.commentPermissions = params.commentPermissions;
+  adminUser.updatedAt = new Date();
   if (pass) adminUser.hashedPassword = hashPassword(pass);
 
-  await adminUser.save();
+  if (adminUser.id) {
+    await db.update(dbUser).set(adminUser).where(eq(dbUser.id, adminUser.id));
+  } else {
+    await db.insert(dbUser).values({
+      ...adminUser,
+      createdAt: new Date(),
+      userType: UserType.Admin,
+    });
+  }
 
-  return { ...adminUser.toJSON(), folder: getFolder(adminUser.folderId) };
+  return { ...adminUser, folder: getFolder(adminUser.folderId) };
 };
 
 export const editAdminUser = {

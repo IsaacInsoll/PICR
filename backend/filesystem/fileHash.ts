@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
-import FileModel from '../db/FileModel';
 import { sep } from 'path';
+import { FileFields } from '../db/picrDb';
 
 export const fileHash = (filePath: string): string => {
   const fileBuffer = fs.readFileSync(filePath);
@@ -21,7 +21,7 @@ export const fileHash2 = (filePath: string): Promise<string> => {
 };
 
 // hashing file contents takes too long, especially on larger files, and isn't really needed so lets do a fast alternative
-export const fastHash = (file: FileModel, stats: fs.Stats): string => {
+export const fastHash = (file: FileFields, stats: fs.Stats): string => {
   const hashSum = crypto.createHash('sha256');
   hashSum.update(
     file.relativePath +

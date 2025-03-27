@@ -1,12 +1,12 @@
-import FileModel from '../../db/FileModel';
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { commentType } from '../types/commentType';
-import CommentModel from '../../db/CommentModel';
 import { GraphQLError } from 'graphql/error';
 import { subFilesMap } from '../helpers/subFiles';
-import { Order } from 'sequelize';
 import { addUserRelationship } from '../helpers/addUserRelationship';
+import { db, dbFileForId } from '../../db/picrDb';
+import { dbComment } from '../../db/models';
+import { desc, eq } from 'drizzle-orm';
 
 const resolver = async (_, params, context) => {
   //TODO: maybe support subfolders?
@@ -15,21 +15,22 @@ const resolver = async (_, params, context) => {
     throw new GraphQLError('Must specify either fileId or folderId');
   }
   //presume file, otherwise try folder
-  const order: Order = [['createdAt', 'DESC']];
 
   if (params.fileId) {
-    const file = await FileModel.findByPk(params.fileId);
-    await contextPermissions(context, file.folderId, 'View');
-    const list = await CommentModel.findAll({
-      where: { fileId: file.id },
-      order,
+    const file = await dbFileForId(params.fileId);
+    await contextPermissions(context, file?.folderId, 'View');
+
+    const list = await db.query.dbComment.findMany({
+      where: eq(dbComment.fileId, file!.id),
+      orderBy: desc(dbComment.createdAt),
     });
+
     return addUserRelationship(
       list.map((x) => {
         return {
-          ...x.toJSON(),
+          ...x,
           timestamp: x.createdAt,
-          file: file.toJSON(),
+          file: file,
         };
       }),
     );
@@ -37,13 +38,18 @@ const resolver = async (_, params, context) => {
     const folderId = params.folderId;
     await contextPermissions(context, folderId, 'View');
     const files = await subFilesMap(folderId);
-    const list = await CommentModel.findAll({ where: { folderId }, order });
+
+    const list = await db.query.dbComment.findMany({
+      where: eq(dbComment.folderId, folderId),
+      orderBy: desc(dbComment.createdAt),
+    });
+
     return addUserRelationship(
       list.map((x) => {
         return {
-          ...x.toJSON(),
+          ...x,
           timestamp: x.createdAt,
-          file: files[x.fileId],
+          file: x.fileId ? files[x.fileId] : undefined,
         };
       }),
     );

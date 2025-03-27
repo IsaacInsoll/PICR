@@ -1,54 +1,140 @@
-import { getServerOptions } from '../db/ServerOptionsModel';
 import { lt, valid } from 'semver';
-import { Sequelize } from 'sequelize-typescript';
-import FileModel from '../db/FileModel';
-import AccessLogModel from '../db/AccessLogModel';
-import { AccessType, UserType } from '../../graphql-types';
-import UserModel from '../db/UserModel';
+import { db, getServerOptions, setServerOptions } from '../db/picrDb';
+import { and, count, eq, inArray, isNotNull, sql } from 'drizzle-orm';
+import {
+  dbAccessLog,
+  dbBranding,
+  dbComment,
+  dbFile,
+  dbFolder,
+  dbUser,
+} from '../db/models';
+import { IPicrConfiguration } from '../config/IPicrConfiguration';
+import { dirname } from 'path';
 
-export const dbMigrate = async (config, sequelize: Sequelize) => {
+// This does the "picr" side of migrations, for the DB side see schemaMigration.ts
+export const dbMigrate = async (config: IPicrConfiguration) => {
   const opts = await getServerOptions();
 
-  const q = sequelize.getQueryInterface();
-  console.log('last booted', opts.lastBootedVersion);
+  if (config.dev) await removeDuplicates();
 
   if (valid(opts.lastBootedVersion)) {
-    if (lt(opts.lastBootedVersion, '0.2.5')) {
+    if (lt(opts.lastBootedVersion!, '0.7.0')) {
       // config.updateMetadata = true;
-      console.log('🖲️ Migrating 0.2.4 ▶️ 0.2.5');
-      // console.log(await q.describeTable('File'));
-      // q.addColumn('File', 'flag', {
-      //   type: DataType.ENUM(...Object.values(FileFlag)),
-      // });
-
-      await FileModel.update(
-        { totalComments: 0 },
-        { where: { totalComments: null } },
-      );
-    }
-    if (lt(opts.lastBootedVersion, '0.5.6')) {
-      console.log('🖲️ Migrating 0.5.5 ▶️ 0.5.6');
-      AccessLogModel.update(
-        { type: AccessType.View },
-        { where: { type: null } },
-      );
-    }
-    if (lt(opts.lastBootedVersion, '0.5.8')) {
-      console.log('🖲️ Migrating 0.5.7 ▶️ 0.5.8');
-      const users = await UserModel.findAll();
-      for (const user of users) {
-        const lastAccess = await AccessLogModel.findOne({
-          where: { userId: user.id },
-          order: [['createdAt', 'DESC']],
-        });
-        if (lastAccess) {
-          user.lastAccess = lastAccess.createdAt;
-        }
-        user.userType = user.uuid ? UserType.Link : UserType.Admin;
-        await user.save();
-      }
+      await removeDuplicates();
     }
   }
-  opts.lastBootedVersion = config.version;
-  await opts.save();
+
+  await setServerOptions({ lastBootedVersion: config.version });
+};
+
+const removeDuplicates = async () => {
+  console.log('🔂 PICR Migration: cleanup duplicate file and folder entries');
+  // NOTE: this runs before FileWatcher has started
+
+  const duplicateFolders = await db
+    .select({ count: count(), relativePath: dbFolder.relativePath })
+    .from(dbFolder)
+    .groupBy(dbFolder.relativePath)
+    .having(sql`count(*) > 1`);
+
+  await Promise.all(
+    duplicateFolders.map(({ relativePath }) =>
+      processDuplicateFolder(relativePath!),
+    ),
+  );
+
+  //TODO: fix the parentId on each folder (EG: sub-sub-folder has parentId of 1 due to bugs)
+  // definitely a 'real issue' not just dev environment shenanigans
+
+  const folders = await db.query.dbFolder.findMany({
+    where: isNotNull(dbFolder.parentId),
+    columns: { id: true, relativePath: true },
+  });
+
+  const fMap = { '.': 1 };
+  folders.forEach(({ id, relativePath }) => (fMap[relativePath!] = id));
+
+  folders.forEach((f) => {
+    const parentPath = dirname(f.relativePath!);
+    //TODO: set f.id to have parentId of fMap[parentPath]`
+    db.update(dbFolder)
+      .set({ parentId: fMap[parentPath] })
+      .where(eq(dbFolder.id, f.id));
+  });
+
+  const duplicateFiles = await db
+    .select({
+      count: count(),
+      relativePath: dbFile.relativePath,
+      name: dbFile.name,
+    })
+    .from(dbFile)
+    .groupBy(dbFile.relativePath, dbFile.name)
+    .having(sql`count(*) > 1`);
+
+  await Promise.all(
+    duplicateFiles.map(({ relativePath, name }) =>
+      processDuplicateFile(relativePath!, name!),
+    ),
+  );
+
+  console.log('🔂 PICR Migration complete');
+  // process.exit();
+};
+
+const processDuplicateFolder = async (relativePath: string) => {
+  const matching = await db.query.dbFolder.findMany({
+    where: eq(dbFolder.relativePath, relativePath),
+  });
+  const firstId = matching.shift()?.id;
+  const otherIds = matching.map((id) => id.id);
+
+  console.log('Removing dupes for ' + relativePath, firstId, otherIds);
+
+  await db
+    .update(dbAccessLog)
+    .set({ folderId: firstId })
+    .where(inArray(dbAccessLog.folderId, otherIds));
+  await db
+    .update(dbBranding)
+    .set({ folderId: firstId })
+    .where(inArray(dbBranding.folderId, otherIds));
+  await db
+    .update(dbComment)
+    .set({ folderId: firstId })
+    .where(inArray(dbComment.folderId, otherIds));
+  await db
+    .update(dbFile)
+    .set({ folderId: firstId })
+    .where(inArray(dbFile.folderId, otherIds));
+  await db
+    .update(dbUser)
+    .set({ folderId: firstId })
+    .where(inArray(dbUser.folderId, otherIds));
+  await db
+    .update(dbFolder)
+    .set({ parentId: firstId })
+    .where(inArray(dbFolder.parentId, otherIds));
+  await db.delete(dbFolder).where(inArray(dbFolder.id, otherIds));
+};
+
+const processDuplicateFile = async (relativePath: string, name: string) => {
+  //NOTE: doesn't merge things like TotalComments count
+  const matching = await db.query.dbFile.findMany({
+    where: and(eq(dbFile.relativePath, relativePath), eq(dbFile.name, name)),
+  });
+  const firstId = matching.shift()?.id;
+  const otherIds = matching.map((id) => id.id);
+
+  await db
+    .update(dbComment)
+    .set({ fileId: firstId })
+    .where(inArray(dbComment.fileId, otherIds));
+
+  await db
+    .update(dbFolder)
+    .set({ heroImageId: firstId })
+    .where(inArray(dbFolder.heroImageId, otherIds));
+  await db.delete(dbFile).where(inArray(dbFile.id, otherIds));
 };

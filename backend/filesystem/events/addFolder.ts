@@ -1,50 +1,89 @@
 import { folderList, pathSplit, relativePath } from '../fileManager';
-import FolderModel from '../../db/FolderModel';
 import { updateFolderHash } from './updateFolderHash';
 import { log } from '../../logger';
 import { sep } from 'path';
+import { db, FolderFields } from '../../db/picrDb';
+import { and, eq, isNull } from 'drizzle-orm';
+import { dbFolder } from '../../db/models';
 
-let rootFolder: FolderModel | null = null;
+let rootFolder: FolderFields | undefined = undefined;
 
 export const setupRootFolder = async () => {
-  // const totalFolders = await Folder.count();
-  const [root] = await FolderModel.findOrCreate({
-    where: { parentId: null },
-    defaults: { name: 'Home', exists: true },
+  let root = await db.query.dbFolder.findFirst({
+    where: isNull(dbFolder.parentId),
   });
+
+  if (!root) {
+    root = await db
+      .insert(dbFolder)
+      .values({
+        name: 'Home',
+        exists: true,
+        parentId: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning()
+      .then((f) => f[0]);
+  }
+
   rootFolder = root;
   return root;
 };
 
 export const addFolder = async (path: string) => {
   const relative = relativePath(path);
-  const root = rootFolder;
+  const root = rootFolder!;
   if (relative === '') return root;
 
   let f = root.id;
   const ps = pathSplit(path);
   for (let i = 0; i < ps.length; i++) {
     const p = ps.slice(0, i + 1).join(sep);
-    const [newFolder, created] = await FolderModel.findOrCreate({
-      where: {
-        name: ps[i],
-        parentId: f,
-        relativePath: p,
-      },
-      defaults: {
-        exists: true,
-      },
+
+    if (folderList[p]) {
+      f = folderList[p];
+      continue;
+    } // already in folder cache
+
+    const props = {
+      name: ps[i],
+      parentId: f,
+      relativePath: p,
+    };
+
+    let newFolder = await db.query.dbFolder.findFirst({
+      where: and(
+        eq(dbFolder.name, props.name),
+        eq(dbFolder.parentId, props.parentId),
+        eq(dbFolder.relativePath, props.relativePath),
+      ),
     });
-    if (created) {
-      // console.log('created newFolder: ', p, ' based on ', path);
-    } else if (!newFolder.exists) {
-      // console.log('setting exists for Folder: ', p);
-      newFolder.exists = true;
-      await newFolder.save();
+
+    if (newFolder && !newFolder.exists) {
+      await db
+        .update(dbFolder)
+        .set({ exists: true, updatedAt: new Date() })
+        .where(eq(dbFolder.id, newFolder.id));
     }
-    folderList[p] = newFolder.id; // for caching
-    updateFolderHash(newFolder);
-    f = newFolder.id;
+
+    if (!newFolder) {
+      log('info', `📁➕ ${relativePath(path)} IS NEW, CREATING`);
+      newFolder = await db
+        .insert(dbFolder)
+        .values({
+          ...props,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          exists: true,
+        })
+        .returning()
+        .then((f) => f[0]);
+    }
+
+    folderList[p] = newFolder!.id; // for caching
+    updateFolderHash(newFolder!);
+    f = newFolder!.id;
     log('info', `📁➕ ${relativePath(path)}`);
   }
   // console.log('finished addFolder: ' + path);

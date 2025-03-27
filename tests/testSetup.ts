@@ -3,6 +3,8 @@ import { existsSync, mkdirSync, rmSync } from 'node:fs';
 import decompress from 'decompress';
 import path from 'path';
 import { buildOne, downMany, upMany } from 'docker-compose';
+import { Readable } from 'node:stream';
+import fs from 'fs';
 
 // note: service[0] is built, rest are just started
 const services = ['test-picr', 'test-db'];
@@ -49,9 +51,9 @@ export async function teardown() {
 //   }
 // }
 
-// const download = async (url, path) =>
-//   Readable.fromWeb((await fetch(url)).body).pipe(fs.createWriteStream(path));
-//
+const download = async (url, path) =>
+  Readable.fromWeb((await fetch(url)).body).pipe(fs.createWriteStream(path));
+
 // const setupTestEnv = () => {
 //   const testConfig: IPicrConfiguration = {
 //     tokenSecret: 'TEST ENVIRONMENT',

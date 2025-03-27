@@ -1,8 +1,10 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import FileModel from '../../db/FileModel';
 import { addToQueue } from '../../filesystem/fileQueue';
 import { GraphQLBoolean, GraphQLID, GraphQLNonNull } from 'graphql/index';
 import { allSubfolderIds } from '../../helpers/allSubfolders';
+import { and, asc, eq, inArray } from 'drizzle-orm';
+import { dbFile } from '../../db/models';
+import { db } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
   const { folder } = await contextPermissions(
@@ -10,10 +12,15 @@ const resolver = async (_, params, context) => {
     params.folderId,
     'Admin',
   );
-  const folderIds = await allSubfolderIds(folder);
-  const where = { folderId: folderIds };
-  const ids = await FileModel.findAll({ where, attributes: ['id'] });
-  ids?.map((id) => addToQueue('generateThumbnails', { id: id.id }));
+  const folderIds = await allSubfolderIds(folder!);
+
+  const files = await db.query.dbFile.findMany({
+    columns: { id: true },
+    where: and(inArray(dbFile.folderId, folderIds), eq(dbFile.exists, true)),
+    orderBy: asc(dbFile.name),
+  }); //.then(x=>x.map(f=>f.id));
+
+  files?.map((f) => addToQueue('generateThumbnails', { id: f.id }));
   return true;
 };
 

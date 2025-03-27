@@ -1,6 +1,5 @@
 import { basename, dirname, extname } from 'path';
 import { folderList, relativePath } from '../fileManager';
-import FileModel from '../../db/FileModel';
 import { log } from '../../logger';
 import { fastHash } from '../fileHash';
 import fs from 'fs';
@@ -11,6 +10,9 @@ import { getVideoMetadata } from '../../media/getVideoMetadata';
 import { generateAllThumbs } from '../../media/generateImageThumbnail';
 import { encodeImageToBlurhash } from '../../media/blurHash';
 import { picrConfig } from '../../config/picrConfig';
+import { and, eq } from 'drizzle-orm';
+import { db } from '../../db/picrDb';
+import { dbFile } from '../../db/models';
 
 export const addFile = async (filePath: string, generateThumbs: boolean) => {
   const type = validExtension(filePath);
@@ -28,17 +30,38 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
     folderId: folderId,
     relativePath: relativePath(dirname(filePath)),
   };
-  // console.log(props);
-  const [file, created] = await FileModel.findOrCreate({
-    where: props,
-    defaults: {
-      type: type,
-      fileSize: stats.size,
-      fileLastModified: stats.mtime,
-      exists: false, //set as `true` once we have all the hash/metadata
-      totalComments: 0,
-    },
+
+  let file = await db.query.dbFile.findFirst({
+    where: and(
+      eq(dbFile.name, props.name),
+      eq(dbFile.folderId, props.folderId),
+      eq(dbFile.relativePath, props.relativePath),
+    ),
   });
+
+  const created = !file;
+
+  if (created) {
+    file = await db
+      .insert(dbFile)
+      .values({
+        ...props,
+        type: type,
+        fileSize: stats.size,
+        fileLastModified: stats.mtime,
+        exists: false, //set as `true` once we have all the hash/metadata
+        totalComments: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        fileHash: '',
+        rating: 0,
+      })
+      .returning()
+      .then((f) => f[0]);
+  }
+
+  if (!file) return; // not needed, just for typescript to know it's not null at this point
+
   const modified =
     !created && file.fileLastModified.getTime() != stats.mtime.getTime();
   if (created || !file.fileHash || modified) {
@@ -64,8 +87,11 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
     if (type == 'Video') {
       const meta = await getVideoMetadata(file);
       file.metadata = JSON.stringify(meta);
-      file.duration = meta.Duration;
-      file.imageRatio = meta.Height > 0 ? meta.Width / meta.Height : 0;
+      file.duration = meta.Duration ?? null;
+      file.imageRatio =
+        meta.Height && meta.Width && meta.Height > 0
+          ? meta.Width / meta.Height
+          : 0;
     }
   } else if (picrConfig.updateMetadata) {
     log('info', '🔄️ update metadata: ' + file.id);
@@ -81,7 +107,10 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
     }
   }
   file.exists = true;
-  await file.save();
+  await db
+    .update(dbFile)
+    .set({ ...file, updatedAt: new Date() })
+    .where(eq(dbFile.id, file.id));
   // console.log(file);
   log(
     'info',

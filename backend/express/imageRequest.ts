@@ -1,6 +1,5 @@
 import { Request } from 'express';
 import { AllSize, allSizes } from '../../frontend/src/helpers/thumbnailSize';
-import FileModel from '../db/FileModel';
 import { extname } from 'path';
 import {
   fullPathFor,
@@ -11,22 +10,31 @@ import {
   awaitVideoThumbnailGeneration,
   generateVideoThumbnail,
 } from '../media/generateVideoThumbnail';
-import { getServerOptions } from '../db/ServerOptionsModel';
+import { db, getServerOptions } from '../db/picrDb';
+import { dbFile } from '../db/models';
+import { and, eq } from 'drizzle-orm';
 
 export const imageRequest = async (
   req: Request<{
-    id: string;
+    id: number;
     size: AllSize;
     hash: string;
-    filename?: string;
+    filename: string;
   }>,
   res,
 ) => {
   const { id, size, hash, filename } = req.params;
-  const file = await FileModel.findOne({
-    where: { id, fileHash: hash, exists: true },
+  const file = await db.query.dbFile.findFirst({
+    where: and(
+      eq(dbFile.id, id),
+      eq(dbFile.fileHash, hash),
+      eq(dbFile.exists, true),
+    ),
   });
-  if (!file) res.sendStatus(404);
+  if (!file) {
+    res.sendStatus(404);
+    return;
+  }
   if (file.type == 'File') res.sendStatus(404);
   if (!allSizes.includes(size)) res.sendStatus(400);
   const extension = extname(filename).toLowerCase(); //extension ignored for original file, only used for thumbs

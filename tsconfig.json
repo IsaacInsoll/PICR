@@ -5,12 +5,16 @@
     "outDir": "dist",
     "sourceMap": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "lib": [
       "ES2021.String"
-    ]
+    ],
+    "strictNullChecks": true
+    // This was handy but didn't seem to work property in node (couldn't find references)
+//    "paths": {
+//      "@/*": ["./*"]
+//    }
   },
   "include": ["backend/**/*.ts"],
   "exclude": ["node_modules"]

@@ -1,32 +1,39 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import FolderModel from '../../db/FolderModel';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
 import { GraphQLString } from 'graphql';
-import { Op } from 'sequelize';
-import FileModel from '../../db/FileModel';
 import { fileType } from '../types/fileType';
 import { allSubfolderIds, allSubfolders } from '../../helpers/allSubfolders';
+import { and, asc, eq, ilike, inArray } from 'drizzle-orm';
+import { dbFile } from '../../db/models';
+import { db, dbFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
-  await contextPermissions(context, params.folderId ?? 1, 'View');
-
-  const f = await FolderModel.findByPk(params.folderId);
+  const { folder } = await contextPermissions(
+    context,
+    params.folderId ?? 1,
+    'View',
+  );
+  const f = folder!;
   const folderIds = await allSubfolderIds(f);
 
   const lower = params.query.toLowerCase().split(' ');
-  const lowerMap = lower.map((l) => ({ [Op.iLike]: `%${l}%` }));
-  const files = await FileModel.findAll({
-    where: {
-      folderId: folderIds,
-      exists: true,
-      name: { [Op.and]: lowerMap },
-    },
+
+  const where = and(
+    inArray(dbFile.folderId, folderIds),
+    eq(dbFile.exists, true),
+    ...lower.map((l) => ilike(dbFile.name, `%${l}%`)),
+  );
+
+  const files = await db.query.dbFile.findMany({
+    where: where,
     limit: 100,
+    orderBy: asc(dbFile.name),
   });
+
   const folders = await allSubfolders(f.id);
   return files.map((file) => {
     return {
-      ...file.toJSON(),
+      ...file,
       folder: folders.find(({ id }) => id == file.folderId),
     };
   });

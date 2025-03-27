@@ -1,26 +1,19 @@
 import pkg from '../package.json';
 import { fileWatcher } from './filesystem/fileWatcher';
-import { Sequelize } from 'sequelize-typescript';
-import pg from 'pg';
 import { setupRootFolder } from './filesystem/events/addFolder';
 import { envPassword } from './boot/envPassword';
 import { expressServer } from './express/express';
 import { dbMigrate } from './boot/dbMigrate';
 import { log } from './logger';
 import { picrConfig } from './config/picrConfig';
+import { initDb } from './db/picrDb';
+import { schemaMigration } from './db/schemaMigration';
 
 export const server = async () => {
-  const sequelize = new Sequelize(picrConfig.databaseUrl, {
-    dialect: 'postgres',
-    dialectModule: pg,
-    logging: picrConfig.debugSql,
-    models: [__dirname + '/db'],
-    pool: { max: 50 }, //default max is 5, postgres default limit is 100
-  });
-
   try {
-    await sequelize.sync({ alter: true }); // build DB
-    await dbMigrate(picrConfig, sequelize);
+    await schemaMigration();
+    initDb();
+    await dbMigrate(picrConfig);
   } catch (e) {
     console.error(
       `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\`. 
@@ -29,8 +22,9 @@ export const server = async () => {
     console.log(e);
     process.exit();
   }
-  await envPassword();
+
   await setupRootFolder();
+  await envPassword();
   const appName = pkg.name;
   const express = expressServer();
   express.listen(picrConfig.port, () => {
@@ -43,9 +37,9 @@ export const server = async () => {
 
   //Close all the stuff
   process.on('exit', function () {
-    sequelize.close().then(() => {
-      console.log(`💀 ${appName} Closed`);
-    });
+    // sequelize.close().then(() => {
+    console.log(`💀 ${appName} Closed`);
+    // });
   });
 
   // This is CTRL+C While it's running, trigger a nice shutdown

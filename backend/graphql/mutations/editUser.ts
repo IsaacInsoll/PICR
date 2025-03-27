@@ -6,23 +6,26 @@ import {
   GraphQLID,
   GraphQLNonNull,
   GraphQLString,
-} from 'graphql/index';
+} from 'graphql';
 import { userType } from '../types/userType';
-import UserModel from '../../db/UserModel';
-import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
-import FolderModel from '../../db/FolderModel';
-import { Op } from 'sequelize';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
 import { badChars } from '../helpers/badChars';
+import { db, dbFolderForId, dbUserForId, UserFields } from '../../db/picrDb';
+import { and, eq, ne } from 'drizzle-orm';
+import { dbUser } from '../../db/models';
+import { UserType } from '../../../graphql-types';
+import { commentPermissionsEnum } from '../types/enums';
 
 const resolver = async (_, params, context) => {
   await contextPermissions(context, params.folderId, 'Admin');
 
-  let user: UserModel | null = null;
+  let user: UserFields | undefined = undefined;
   if (params.id) {
-    user = await UserModel.findByPk(params.id);
+    user = await dbUserForId(params.id);
     if (!user) throw new GraphQLError('No user found for ID: ' + params.id);
-    const userFolder = await FolderModel.findByPk(user.folderId);
+    const userFolder = await dbFolderForId(user.folderId);
+    if (!userFolder)
+      throw new GraphQLError('User has invalid folder: ' + user.folderId);
     const folderAllowed = await folderIsUnderFolderId(
       userFolder,
       params.folderId,
@@ -33,14 +36,15 @@ const resolver = async (_, params, context) => {
         "You don't have access to edit users in folder " + userFolder.id,
       );
   } else {
-    user = new UserModel();
+    // @ts-ignore required fields added below
+    user = {};
   }
 
-  const existingUuid = await UserModel.findAll({
-    where: { uuid: params.uuid, [Op.not]: { id: user.id } },
+  const existingUuid = await db.query.dbUser.findFirst({
+    where: and(eq(dbUser.uuid, params.uuid), ne(dbUser.id, user?.id ?? 0)),
   });
 
-  if (existingUuid.length > 0) {
+  if (existingUuid) {
     throw new GraphQLError('Public Link Address already used');
   }
 
@@ -55,15 +59,27 @@ const resolver = async (_, params, context) => {
     );
   }
 
+  if (!user) return; // just to fix the "adminUser might be undefined" error below in typescript, not needed
+
   user.folderId = params.folderId;
   user.name = params.name;
   user.username = params.username;
   user.uuid = params.uuid;
   user.enabled = params.enabled;
   user.commentPermissions = params.commentPermissions;
-  await user.save();
+  user.updatedAt = new Date();
 
-  return { ...user.toJSON(), folder: getFolder(user.folderId) };
+  if (user.id) {
+    await db.update(dbUser).set(user).where(eq(dbUser.id, user.id));
+  } else {
+    await db.insert(dbUser).values({
+      ...user,
+      createdAt: new Date(),
+      userType: UserType.Link,
+    });
+  }
+
+  return { ...user, folder: getFolder(user.folderId) };
 };
 
 export const editUser = {

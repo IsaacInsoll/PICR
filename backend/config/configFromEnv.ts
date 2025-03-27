@@ -17,7 +17,9 @@ export const configFromEnv = () => {
     consoleLogging: process.env.CONSOLE_LOGGING == 'true',
     usePolling: process.env.USE_POLLING == 'true',
     port: !isNaN(port) ? port : 6900,
-    pollingInterval: parseInt(process.env.POLLING_INTERVAL) ?? 20,
+    pollingInterval: process.env.POLLING_INTERVAL
+      ? (parseInt(process.env.POLLING_INTERVAL) ?? 20)
+      : 20,
     dev: process.env.NODE_ENV === 'development',
     version: getVersion(),
     updateMetadata: false, //re-read metadata, set by dbMigrate
@@ -33,11 +35,11 @@ TOKEN_SECRET=${secret}`);
     process.exit();
   }
 
-  if (c.dev) {
-    log('info', '#️⃣ Version: ' + (c.dev ? '[DEV] ' : '') + c.version, true);
-    console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
-    console.log(c);
-  }
+  log('info', '#️⃣  Version: ' + (c.dev ? '[DEV] ' : '') + c.version, true);
+  // if (c.dev) {
+  //   console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
+  //   console.log(c);
+  // }
 
   if (c.consoleLogging) {
     addDevLogger();

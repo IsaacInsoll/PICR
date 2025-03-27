@@ -1,44 +1,43 @@
 import { GraphQLID, GraphQLNonNull } from 'graphql/type';
 import { contextPermissions } from '../../auth/contextPermissions';
 import { doAuthError } from '../../auth/doAuthError';
-import FileModel from '../../db/FileModel';
-import { CommentFor } from '../../db/CommentModel';
 import { fileToJSON } from '../helpers/fileToJSON';
 import { GraphQLInt, GraphQLString } from 'graphql';
-import { fileFlagEnum } from '../enums/fileFlagEnum';
 import { fileInterface } from '../interfaces/fileInterface';
 import { GraphQLError } from 'graphql/error';
+import { addCommentDB, db, dbFileForId } from '../../db/picrDb';
+import { dbFile } from '../../db/models';
+import { eq } from 'drizzle-orm';
+import { fileFlagEnum } from '../types/enums';
 
 const resolver = async (_, params, context) => {
-  const file = await FileModel.findByPk(params.id);
-  const { user } = await contextPermissions(context, file.folderId, 'View');
-  if (!file.exists) throw new GraphQLError('File not found');
+  const file = await dbFileForId(params.id);
+  const { user } = await contextPermissions(context, file?.folderId, 'View');
+  if (!file?.exists) throw new GraphQLError('File not found');
 
-  if (user.commentPermissions != 'edit') doAuthError('Not allowed to comment');
+  if (user?.commentPermissions != 'edit') doAuthError('Not allowed to comment');
+  if (!user) return; // not needed, just for typescript to know it's not null at this point
 
   //TODO: set rating, flag
   if (params.rating != null) {
     file.rating = params.rating;
-    await CommentFor(file, user, { rating: params.rating });
+    await addCommentDB(file, user, { rating: params.rating });
   }
   if (params.flag) {
     file.flag = params.flag == 'none' ? null : params.flag;
-    await CommentFor(file, user, { flag: params.flag });
+    await addCommentDB(file, user, { flag: params.flag });
   }
 
   if (params.comment) {
-    const realComment = await CommentFor(file, user);
-    // no point sanitizing as it gets escaped on the front end anyway, and un-escaping is a PITA
-    // realComment.comment = sanitizeHtml(params.comment);
-    realComment.comment = params.comment;
-    // if (params.nickName) realComment.nickName = params.nickName;
-    await realComment.save();
+    await addCommentDB(file, user, undefined, params.comment);
     file.totalComments = file.totalComments + 1;
   }
 
   file.latestComment = new Date();
-  await file.save();
-
+  await db
+    .update(dbFile)
+    .set({ ...file })
+    .where(eq(dbFile.id, file.id));
   return fileToJSON(file);
 };
 

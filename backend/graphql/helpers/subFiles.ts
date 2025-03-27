@@ -1,27 +1,12 @@
-import FileModel from '../../db/FileModel';
-
-import { fileToJSON } from './fileToJSON';
 import { FileInterface } from '../../../graphql-types';
+import { FileFields, getFilesForFolder } from '../../db/picrDb';
 
-export const subFiles = async (folderId: string | number) => {
-  const files = await FileModel.findAll({
-    where: { folderId, exists: true },
-    order: [['name', 'ASC']],
-  });
-  return files.map((f) => {
-    // this was just f.toJSON but all metadata is a single field in the DB currently coz it's 'modular' not 'dodgy'
-    return fileToJSON(f);
-  });
-};
+export const subFilesMap = async (folderId: number) => {
+  const files = await getFilesForFolder(folderId);
 
-export const subFilesMap = async (folderId: string | number) => {
-  const files = await FileModel.findAll({
-    where: { folderId, exists: true },
-    order: [['name', 'ASC']],
-  });
-  const obj: { [key: string]: FileInterface } = {};
+  const obj: { [key: string]: FileFields } = {};
   files.forEach((f) => {
-    obj[f.id] = f.toJSON();
+    obj[f.id] = f;
   });
   return obj;
 };

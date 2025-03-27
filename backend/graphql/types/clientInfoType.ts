@@ -1,10 +1,4 @@
-import {
-  GraphQLBoolean,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-} from 'graphql';
-import { GraphQLBigInt } from 'graphql-scalars';
+import { GraphQLBoolean, GraphQLNonNull, GraphQLObjectType } from 'graphql';
 
 export const clientInfoType = new GraphQLObjectType({
   name: 'ClientInfo',

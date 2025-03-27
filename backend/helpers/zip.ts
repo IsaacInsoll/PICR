@@ -1,5 +1,3 @@
-import FolderModel from '../db/FolderModel';
-import FileModel from '../db/FileModel';
 import crypto from 'crypto';
 import fs from 'fs';
 import archiver from 'archiver';
@@ -8,22 +6,28 @@ import { updateZipQueue } from './zipQueue';
 import { log } from '../logger';
 import { picrConfig } from '../config/picrConfig';
 import { allSubfolderIds } from './allSubfolders';
+import { fullPathForFile, fullPathMinus } from '../filesystem/fileManager';
+import { and, eq, inArray } from 'drizzle-orm';
+import { dbFile } from '../db/models';
+import { db, FolderFields } from '../db/picrDb';
 
 export interface FolderHash {
-  folder?: FolderModel;
+  folder: FolderFields;
   hash: string;
   key: string; //folderId+key
 }
 
 // Hash FolderIDs + FileHashes, used for determining 'uniqueness' for generating zip files
 export const hashFolderContents = async (
-  folder: FolderModel,
+  folder: FolderFields,
 ): Promise<FolderHash> => {
   const folderIds = await allSubfolderIds(folder);
-  const files = await FileModel.findAll({
-    where: { folderId: folderIds, exists: true },
-    attributes: ['id', 'fileHash'],
+
+  const files = await db.query.dbFile.findMany({
+    columns: { id: true, fileHash: true },
+    where: and(inArray(dbFile.folderId, folderIds), eq(dbFile.exists, true)),
   });
+
   const hash = crypto.createHash('sha256');
   hash.update(files.map((f) => f.fileHash).join(',') + folderIds.join(','));
   const h = hash.digest('hex');
@@ -71,13 +75,15 @@ export const zipFolder = async (folderHash: FolderHash) => {
   //TODO: add empty folders
 
   const folderIds = await allSubfolderIds(folder);
-  const files = await FileModel.findAll({
-    where: { folderId: folderIds, exists: true },
-    attributes: ['id', 'fileHash', 'relativePath', 'name'],
+
+  const files = await db.query.dbFile.findMany({
+    columns: { id: true, fileHash: true, relativePath: true, name: true },
+    where: and(inArray(dbFile.folderId, folderIds), eq(dbFile.exists, true)),
   });
+
   files.forEach((f) => {
-    const name = f.fullPathMinus(folder.relativePath); // f.relativePath + sep + f.name,
-    archive.file(f.fullPath(), { name });
+    const name = fullPathMinus(f, folder.relativePath ?? ''); // f.relativePath + sep + f.name,
+    archive.file(fullPathForFile(f), { name });
   });
 
   await archive.finalize();

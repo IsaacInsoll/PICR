@@ -1,15 +1,15 @@
-import FileModel from '../../db/FileModel';
 import { contextPermissions } from '../../auth/contextPermissions';
 
 import { fileToJSON } from '../helpers/fileToJSON';
 import { GraphQLID, GraphQLNonNull } from 'graphql';
 import { fileInterface } from '../interfaces/fileInterface';
 import { GraphQLError } from 'graphql/error';
+import { dbFileForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
-  const file = await FileModel.findByPk(params.id);
-  await contextPermissions(context, file.folderId, 'View');
-  if (!file.exists) throw new GraphQLError('File not found');
+  const file = await dbFileForId(params.id);
+  await contextPermissions(context, file?.folderId, 'View');
+  if (!file?.exists) throw new GraphQLError('File not found');
   return fileToJSON(file);
 };
 

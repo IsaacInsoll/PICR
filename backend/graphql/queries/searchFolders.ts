@@ -1,10 +1,11 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import FolderModel from '../../db/FolderModel';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
 import { GraphQLString } from 'graphql';
-import { Op } from 'sequelize';
 import { folderType } from '../types/folderType';
 import { allSubfolderIds } from '../../helpers/allSubfolders';
+import { and, eq, ilike, inArray } from 'drizzle-orm';
+import { db } from '../../db/picrDb';
+import { dbFile, dbFolder } from '../../db/models';
 
 const resolver = async (_, params, context) => {
   const { folder } = await contextPermissions(
@@ -13,18 +14,19 @@ const resolver = async (_, params, context) => {
     'View',
   );
 
-  const folderIds = await allSubfolderIds(folder);
+  const folderIds = await allSubfolderIds(folder!);
 
   const lower = params.query.toLowerCase().split(' ');
-  const lowerMap = lower.map((l) => ({ [Op.iLike]: `%${l}%` }));
-  const folders = await FolderModel.findAll({
-    where: {
-      parentId: folderIds,
-      exists: true,
-      relativePath: { [Op.and]: lowerMap },
-    },
+
+  const folders = await db.query.dbFolder.findMany({
+    where: and(
+      inArray(dbFolder.parentId, folderIds),
+      eq(dbFolder.exists, true),
+      ...lower.map((l) => ilike(dbFile.name, `%${l}%`)),
+    ),
     limit: 100,
   });
+
   return folders;
 };
 

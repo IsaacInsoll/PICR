@@ -2,10 +2,10 @@ import chokidar from 'chokidar';
 import { relativePath } from './fileManager';
 import { addToQueue, initComplete } from './fileQueue';
 import { log } from '../logger';
-import FileModel from '../db/FileModel';
-import FolderModel from '../db/FolderModel';
-import { Op } from 'sequelize';
 import { picrConfig } from '../config/picrConfig';
+import { db } from '../db/picrDb';
+import { dbFile, dbFolder } from '../db/models';
+import { isNotNull } from 'drizzle-orm';
 
 export const fileWatcher = async (config) => {
   log(
@@ -18,13 +18,13 @@ export const fileWatcher = async (config) => {
   const intervalMultiplier = config.pollingInterval; // multiply default interval values by this
 
   //update all files to 'not exist' then set as exist when we find them
-  await FileModel.update({ exists: false }, { where: {} });
-  await FolderModel.update(
-    { exists: false },
-    { where: { parentId: { [Op.ne]: null } } }, //don't set Home (root) to not exist
-  );
+  await db.update(dbFile).set({ exists: false });
+  await db
+    .update(dbFolder)
+    .set({ exists: false })
+    .where(isNotNull(dbFolder.parentId)); //don't set Home (root) to not exist
 
-  const watcher = chokidar.watch(picrConfig.mediaPath, {
+  const watcher = chokidar.watch(picrConfig.mediaPath!, {
     ignored: ignored,
     persistent: true,
     awaitWriteFinish: true,
@@ -43,11 +43,11 @@ export const fileWatcher = async (config) => {
     .on('error', (error) => console.log('⚠️ Error happened: ' + error))
     .on('addDir', (path) => {
       log('info', `📁➕ ${relativePath(path)}`);
-      addToQueue('addDir', { path }, true);
+      addToQueue('addDir', { path });
     })
     .on('unlinkDir', (path) => {
       log('info', `📁➖ ${relativePath(path)}`);
-      addToQueue('unlinkDir', { path }, true);
+      addToQueue('unlinkDir', { path });
     })
     .on('ready', () => {
       addToQueue('initComplete', {});

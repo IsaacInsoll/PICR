@@ -1,10 +1,9 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import FolderModel from '../../db/FolderModel';
 import { hashFolderContents } from '../../helpers/zip';
 import { addToZipQueue } from '../../helpers/zipQueue';
-import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql/index';
-import { createAccessLog } from '../../db/AccessLogModel';
+import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
 import { AccessType } from '../../../graphql-types';
+import { createAccessLog } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
   const { user, folder } = await contextPermissions(
