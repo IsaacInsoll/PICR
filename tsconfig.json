@@ -10,7 +10,8 @@
     "emitDecoratorMetadata": true,
     "lib": [
       "ES2021.String"
-    ]
+    ]    ,
+    "strict": true
   },
   "include": ["backend/**/*.ts"],
   "exclude": ["node_modules"]
