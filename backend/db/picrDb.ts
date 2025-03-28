@@ -1,9 +1,17 @@
 // This is just convenience functions and types because sometimes Drizzle is a bit too low level
 
-import { dbBranding, dbFile, dbFolder, dbServerOptions } from './models';
-import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from './models';
-import { eq } from 'drizzle-orm';
+import {
+  dbAccessLog,
+  dbBranding,
+  dbFile,
+  dbFolder,
+  dbServerOptions,
+} from './models';
+import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { and, desc, eq, gte, inArray } from 'drizzle-orm';
+import { IncomingCustomHeaders } from '../types/incomingCustomHeaders';
+import { AccessType } from '../../graphql-types';
 
 export let db: NodePgDatabase<typeof schema>;
 
@@ -51,7 +59,7 @@ export const getServerOptions = async () => {
 };
 
 export const setServerOptions = async (
-  opts: typeof dbServerOptions.$inferInsert,
+  opts: Partial<typeof dbServerOptions.$inferInsert>,
 ) => {
   return db.update(dbServerOptions).set({ ...opts, updatedAt: new Date() });
 };
@@ -61,4 +69,59 @@ export const brandingForFolderId = async (folderId: number) => {
   return db.query.dbBranding.findFirst({
     where: eq(dbBranding.folderId, folderId),
   });
+};
+
+export const createAccessLog = async (
+  userId: number,
+  folderId: number,
+  context: IncomingCustomHeaders,
+  type: AccessType,
+) => {
+  //Check if sessionId/ipAddress/user already accessed this in last hour and don't create if so
+
+  const props = {
+    userId: userId,
+    folderId: folderId,
+    type: type,
+    ipAddress: context.ipAddress!,
+    sessionId: context.sessionId!,
+    userAgent: context.userAgent!,
+  };
+
+  const recent = await db.query.dbAccessLog.findFirst({
+    where: and(
+      eq(dbAccessLog.userId, props.userId),
+      eq(dbAccessLog.folderId, props.folderId),
+      eq(dbAccessLog.type, props.type),
+      eq(dbAccessLog.ipAddress, props.ipAddress),
+      eq(dbAccessLog.sessionId, props.sessionId),
+      eq(dbAccessLog.userAgent, props.userAgent),
+      gte(dbAccessLog.createdAt, new Date(Date.now() - 3600 * 1000)),
+    ),
+  });
+
+  console.log('recent log exists?', !!recent);
+
+  if (recent) return;
+
+  await db
+    .insert(dbAccessLog)
+    .values({ ...props, createdAt: new Date(), updatedAt: new Date() });
+};
+
+export const getAccessLogs = async (
+  folderIds: number[],
+  userId: number | number[],
+) => {
+  const data = await db.query.dbAccessLog.findMany({
+    where: and(
+      inArray(dbAccessLog.folderId, folderIds),
+      !Array.isArray(userId)
+        ? eq(dbAccessLog.userId, userId)
+        : inArray(dbAccessLog.userId, userId),
+    ),
+    orderBy: [desc(dbAccessLog.createdAt)],
+    limit: 100,
+  });
+  return data;
 };

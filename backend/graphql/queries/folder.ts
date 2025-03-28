@@ -1,11 +1,11 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import { createAccessLog } from '../../db/sequelize/AccessLogModel';
 import { AccessType, Folder } from '../../../graphql-types';
 import { GraphQLFieldResolver } from 'graphql/type';
 import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
 import { getFolder } from '../helpers/getFolder';
 import { GraphQLID, GraphQLNonNull } from 'graphql';
 import { folderType } from '../types/folderType';
+import { createAccessLog } from '../../db/picrDb';
 
 const folderResolver: GraphQLFieldResolver<
   Folder,

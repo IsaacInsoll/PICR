@@ -7,13 +7,11 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { allSubfolders } from '../../helpers/allSubfolders';
-import AccessLogModel, {
-  getAccessLogs,
-} from '../../db/sequelize/AccessLogModel';
 import { accessLogType } from '../types/accessLogType';
 import { userTypeEnum } from '../enums/userTypeEnum';
 import { addFolderRelationship } from '../helpers/addFolderRelationship';
 import UserModel from '../../db/sequelize/UserModel';
+import { getAccessLogs } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
   const { folder } = await contextPermissions(
@@ -45,7 +43,7 @@ const resolver = async (_, params, context) => {
 
   return addFolderRelationship(
     data.map((al) => {
-      return { ...al.toJSON(), timestamp: al.createdAt };
+      return { ...al, timestamp: al.createdAt };
     }),
   );
 };
