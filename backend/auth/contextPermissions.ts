@@ -7,9 +7,9 @@ import {
 import FolderModel from '../db/sequelize/FolderModel';
 import { doAuthError } from './doAuthError';
 import { GraphQLError } from 'graphql/error';
-import UserModel from '../db/sequelize/UserModel';
 import { getUserFromUUID } from './getUserFromUUID';
 import { folderIsUnderFolderId } from '../helpers/folderIsUnderFolderId';
+import { dbUserForId } from '../db/picrDb';
 
 // Will return `folder` only if you have access to it.
 // Will throw error if you don't have at least `requires` permissions
@@ -40,7 +40,7 @@ export const contextPermissions = async (
         throw new GraphQLError('No admin permissions for ' + folder.name);
       return {
         permissions: 'View',
-        user: await UserModel.findByPk(publicUser.id),
+        user: await dbUserForId(publicUser.id),
         folder,
       };
     }

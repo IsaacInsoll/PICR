@@ -4,10 +4,7 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'path';
 import FileModel from '../db/sequelize/FileModel';
 import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions';
-import {
-  AllSize,
-  ThumbnailSize,
-} from '../../frontend/src/helpers/thumbnailSize';
+import { AllSize, ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize';
 import { log } from '../logger';
 import { thumbnailPath } from './thumbnailPath';
 import { generateVideoThumbnail } from './generateVideoThumbnail';

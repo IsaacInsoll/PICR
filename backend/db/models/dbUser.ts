@@ -9,7 +9,6 @@ import { baseColumns } from '../column.helpers';
 import { commentPermissionsEnum, userTypeEnum } from './enums';
 import { relations } from 'drizzle-orm';
 import { dbFolder } from './dbFolder';
-import { dbFile } from './dbFile';
 
 export const dbUser = pgTable('Users', {
   ...baseColumns,

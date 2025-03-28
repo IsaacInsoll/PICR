@@ -19,10 +19,11 @@ import { subFiles } from '../helpers/subFiles';
 import { subFolders } from '../helpers/subFolders';
 import { allSubfolderIds } from '../../helpers/allSubfolders';
 import { userType } from './userType';
-import UserModel from '../../db/sequelize/UserModel';
 import { userToJSON } from '../helpers/userToJSON';
-import { getFolder } from '../helpers/getFolder';
 import { contextPermissions } from '../../auth/contextPermissions';
+import { db } from '../../db/picrDb';
+import { eq } from 'drizzle-orm';
+import { dbUser } from '../../db/models';
 
 export const folderType = new GraphQLObjectType({
   name: 'Folder',
@@ -107,11 +108,10 @@ export const folderType = new GraphQLObjectType({
         const { permissions } = await contextPermissions(context, f.id);
         if (permissions != 'Admin') return null;
 
-        const users = await UserModel.findAll({
-          where: { folderId: f.id },
-          // order: params.sortByRecent ? [['lastAccess', 'DESC']] : undefined,
-          // limit: params.sortByRecent ? 10 : 1000,
+        const users = await db.query.dbUser.findMany({
+          where: eq(dbUser.folderId, f.id),
         });
+
         return users.map((pl) => {
           return { ...userToJSON(pl) };
         });

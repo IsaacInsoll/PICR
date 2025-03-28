@@ -1,5 +1,7 @@
-import UserModel from '../../db/sequelize/UserModel';
 import { userToJSON } from './userToJSON';
+import { db } from '../../db/picrDb';
+import { dbUser } from '../../db/models';
+import { inArray } from 'drizzle-orm';
 
 type UserRelationship = { userId: string | number | null }[];
 
@@ -10,8 +12,9 @@ export const addUserRelationship = async (
   const ids = list.map((b) => b.userId).filter((v, i, a) => a.indexOf(v) === i);
   if (ids.length == 0) return list;
 
-  const users = await UserModel.findAll({ where: { id: ids } });
-  console.log('second map');
+  const users = await db.query.dbUser.findMany({
+    where: inArray(dbUser.id, ids),
+  });
   return list.map((obj) => {
     const user = userToJSON(users.find((f) => f.id == obj.userId));
     const userLimitedDetails = {

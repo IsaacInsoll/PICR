@@ -42,7 +42,6 @@ interface FolderStat {
 
 export const folderStatsSummaryText = async (folderId: number) => {
   const stats = await folderStats(folderId);
-  console.log(stats);
   let str = stats
     .filter(({ type, total }) => type != 'Folder' && total > 0)
     .map(({ type, total }) => pluralize(total, type))

@@ -1,6 +1,4 @@
-import { getServerOptions } from './sequelize/ServerOptionsModel';
-import { brandingForFolderId } from './sequelize/BrandingModel';
-import { brandingForFolderId2, db } from './picrDb';
+import { db } from './picrDb';
 
 export const dbTest = async () => {
   return;

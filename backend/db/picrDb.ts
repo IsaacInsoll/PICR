@@ -1,13 +1,19 @@
 // This is just convenience functions and types because sometimes Drizzle is a bit too low level
 
 import * as schema from './models';
-import { dbAccessLog, dbBranding, dbComment, dbServerOptions } from './models';
+import {
+  dbAccessLog,
+  dbBranding,
+  dbComment,
+  dbFolder,
+  dbServerOptions,
+  dbUser,
+} from './models';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { and, desc, eq, gte, inArray } from 'drizzle-orm';
 import { IncomingCustomHeaders } from '../types/incomingCustomHeaders';
 import { AccessType } from '../../graphql-types';
 import FileModel from './sequelize/FileModel';
-import UserModel from './sequelize/UserModel';
 
 export let db: NodePgDatabase<typeof schema>;
 
@@ -17,17 +23,26 @@ export const initDb = () => {
 };
 
 export type ServerOptionsFields = typeof dbServerOptions.$inferSelect;
+export type UserFields = typeof dbUser.$inferSelect;
+export type FolderFields = typeof dbFolder.$inferSelect;
 export type CommentFields = typeof dbComment.$inferSelect;
-//
-// //untested
-// export const DBFolderForId = async (
-//   id: string | number | undefined,
-// ): Promise<DBFolder | undefined> => {
-//   if (!id) return undefined;
-//   return db.query.dbFolder.findFirst({
-//     where: (f, { eq }) => eq(f.id, id) && eq(f.exists, true),
-//   });
-// };
+
+export const dbFolderForId = async (
+  id: string | number | undefined,
+): Promise<FolderFields | undefined> => {
+  if (!id) return undefined;
+  return db.query.dbFolder.findFirst({
+    where: and(eq(dbFolder.id, id), eq(dbFolder.exists, true)),
+  });
+};
+
+export const dbUserForId = async (
+  id: string | number | undefined,
+): Promise<UserFields | undefined> => {
+  if (!id) return undefined;
+  return db.query.dbUser.findFirst({ where: eq(dbFolder.id, id) });
+};
+
 //
 // //untested
 // export const DBFileForId = async (
@@ -101,8 +116,6 @@ export const createAccessLog = async (
     ),
   });
 
-  console.log('recent log exists?', !!recent);
-
   if (recent) return;
 
   await db
@@ -129,7 +142,7 @@ export const getAccessLogs = async (
 
 export const addCommentDB = async (
   file: FileModel,
-  user: UserModel,
+  user: UserFields,
   systemGenerated?: object,
   userComment?: string,
 ) => {
@@ -150,4 +163,11 @@ export const addCommentDB = async (
   }
 
   return db.insert(dbComment).values(props).returning();
+};
+
+export const updateUserLastAccess = async (userId: number) => {
+  return db
+    .update(dbUser)
+    .set({ lastAccess: new Date() })
+    .where(eq(dbUser.id, userId));
 };

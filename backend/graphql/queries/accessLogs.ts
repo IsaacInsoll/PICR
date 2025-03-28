@@ -1,5 +1,4 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import { Op } from 'sequelize';
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -10,8 +9,9 @@ import { allSubfolders } from '../../helpers/allSubfolders';
 import { accessLogType } from '../types/accessLogType';
 import { userTypeEnum } from '../enums/userTypeEnum';
 import { addFolderRelationship } from '../helpers/addFolderRelationship';
-import UserModel from '../../db/sequelize/UserModel';
-import { getAccessLogs } from '../../db/picrDb';
+import { db, getAccessLogs } from '../../db/picrDb';
+import { isNotNull } from 'drizzle-orm';
+import { dbUser } from '../../db/models';
 
 const resolver = async (_, params, context) => {
   const { folder } = await contextPermissions(
@@ -19,7 +19,6 @@ const resolver = async (_, params, context) => {
     params.folderId,
     'Admin',
   );
-
   const ids = [folder.id];
 
   if (params.includeChildren) {
@@ -30,16 +29,14 @@ const resolver = async (_, params, context) => {
 
   //TODO: property filter by UserType, currently we force filter for Links which is fine for now
   // if(params.userType == UserType.Link) {
-  //
-  // }
 
-  const userIds = (
-    await UserModel.findAll({
-      where: { uuid: { [Op.ne]: null } },
-    })
-  ).map((u) => u.id);
+  const linkUsers = await db.query.dbUser.findMany({
+    where: isNotNull(dbUser.uuid),
+  });
 
-  const data = await getAccessLogs(ids, params.userId ?? userIds);
+  const linkUserIds = linkUsers.map((u) => u.id);
+
+  const data = await getAccessLogs(ids, params.userId ?? linkUserIds);
 
   return addFolderRelationship(
     data.map((al) => {
