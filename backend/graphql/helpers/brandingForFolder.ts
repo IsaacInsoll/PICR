@@ -4,7 +4,7 @@ import {
   PrimaryColor,
   ThemeMode,
 } from '../../../graphql-types';
-import { brandingForFolderId } from '../../db/sequelize/BrandingModel';
+import { brandingForFolderId } from '../../db/picrDb';
 
 export const brandingForFolder = async (
   folder: FolderModel,
@@ -14,7 +14,7 @@ export const brandingForFolder = async (
     const branding = await brandingForFolderId(f.id);
     if (branding) {
       // @ts-ignore unreasonable to expect parent/child folders on this query
-      return { ...branding.toJSON(), folder: f };
+      return { ...branding, folder: f };
     } else {
       f = await FolderModel.findByPk(f.parentId);
     }

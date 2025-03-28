@@ -53,7 +53,7 @@
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/client-preset": "^4.2.4",
     "@graphql-codegen/introspection": "^4.0.3",
-    "@release-it/bumper": "^6.0.1",
+    "@release-it/bumper": "^7.0.2",
     "@types/archiver": "^6.0.2",
     "@types/express": "^5.0",
     "@types/fluent-ffmpeg": "^2.1.24",
@@ -80,7 +80,7 @@
     "prettier": "^3",
     "release-it": "^18.1.2",
     "tsx": "^4.19.3",
-    "typescript": "^5.6.0-beta",
+    "typescript": "^5.8.2",
     "vitest": "^3.0.7"
   },
   "release-it": {

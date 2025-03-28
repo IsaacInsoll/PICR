@@ -37,7 +37,7 @@ export const server = async () => {
     process.exit();
   }
 
-  // if (picrConfig.dev) await dbTest();
+  if (picrConfig.dev) await dbTest();
 
   await envPassword();
   await setupRootFolder();
