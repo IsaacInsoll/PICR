@@ -1,7 +1,7 @@
 import UserModel from '../../db/sequelize/UserModel';
 import { userToJSON } from './userToJSON';
 
-type UserRelationship = { userId: string }[];
+type UserRelationship = { userId: string | number | null }[];
 
 // Takes a list of objects with `userId` relationship and adds *BASIC* user details to each object
 export const addUserRelationship = async (

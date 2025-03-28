@@ -1,17 +1,13 @@
 // This is just convenience functions and types because sometimes Drizzle is a bit too low level
 
 import * as schema from './models';
-import {
-  dbAccessLog,
-  dbBranding,
-  dbFile,
-  dbFolder,
-  dbServerOptions,
-} from './models';
+import { dbAccessLog, dbBranding, dbComment, dbServerOptions } from './models';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { and, desc, eq, gte, inArray } from 'drizzle-orm';
 import { IncomingCustomHeaders } from '../types/incomingCustomHeaders';
 import { AccessType } from '../../graphql-types';
+import FileModel from './sequelize/FileModel';
+import UserModel from './sequelize/UserModel';
 
 export let db: NodePgDatabase<typeof schema>;
 
@@ -20,8 +16,8 @@ export const initDb = () => {
   // console.log('🚀 Connected to Database');
 };
 
-export type DBFolder = typeof dbFolder.$inferSelect;
-export type DBFile = typeof dbFile.$inferSelect;
+export type ServerOptionsFields = typeof dbServerOptions.$inferSelect;
+export type CommentFields = typeof dbComment.$inferSelect;
 //
 // //untested
 // export const DBFolderForId = async (
@@ -45,17 +41,22 @@ export type DBFile = typeof dbFile.$inferSelect;
 
 // TODO: better organisation of these functions
 
-export const getServerOptions = async () => {
+export const getServerOptions = async (): Promise<ServerOptionsFields> => {
   const opts = await db.query.dbServerOptions.findFirst({
     where: ({ id }, { eq }) => eq(id, 1),
   });
   if (!opts) {
     return db
       .insert(dbServerOptions)
-      .values({ id: 1, updatedAt: new Date() })
+      .values({
+        id: 1,
+        updatedAt: new Date(),
+        createdAt: new Date(),
+        avifEnabled: false,
+      })
       .returning();
   }
-  return opts!;
+  return opts;
 };
 
 export const setServerOptions = async (
@@ -124,4 +125,29 @@ export const getAccessLogs = async (
     limit: 100,
   });
   return data;
+};
+
+export const addCommentDB = async (
+  file: FileModel,
+  user: UserModel,
+  systemGenerated?: object,
+  userComment?: string,
+) => {
+  const props: typeof dbComment.$inferInsert = {
+    folderId: file.folderId,
+    fileId: file.id,
+    userId: user.id,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  if (systemGenerated) {
+    props.systemGenerated = true;
+    props.comment = JSON.stringify(systemGenerated);
+  } else {
+    props.systemGenerated = false;
+    props.comment = userComment;
+  }
+
+  return db.insert(dbComment).values(props).returning();
 };
