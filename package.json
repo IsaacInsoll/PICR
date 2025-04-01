@@ -9,7 +9,7 @@
     "start:client": "cd frontend && npm start",
     "start:db": "docker compose up -d",
     "start": "concurrently npm:start:*",
-    "build": "tsc",
+    "build": "rm -rf ./dist && tsc",
     "run": " node dist/backend/app.js",
     "gql": "graphql-codegen --config codegen.ts",
     "release": "dotenv -- release-it --only-version",
