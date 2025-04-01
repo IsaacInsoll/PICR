@@ -12,7 +12,7 @@ const resolver = async (_, params, context) => {
     params.folderId,
     'Admin',
   );
-  const folderIds = await allSubfolderIds(folder);
+  const folderIds = await allSubfolderIds(folder!);
 
   const files = await db.query.dbFile.findMany({
     columns: { id: true },

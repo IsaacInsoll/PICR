@@ -15,7 +15,7 @@ export const removeFolder = async (path: string) => {
   if (!folder) return;
   const newFolder = await db.query.dbFolder.findFirst({
     where: and(
-      eq(dbFolder.folderHash, folder.folderHash),
+      eq(dbFolder.folderHash, folder.folderHash!),
       gte(dbFolder.createdAt, new Date(Date.now() - 5000)),
     ),
   });

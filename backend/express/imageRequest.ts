@@ -16,10 +16,10 @@ import { and, eq } from 'drizzle-orm';
 
 export const imageRequest = async (
   req: Request<{
-    id: string;
+    id: number;
     size: AllSize;
     hash: string;
-    filename?: string;
+    filename: string;
   }>,
   res,
 ) => {
@@ -31,7 +31,10 @@ export const imageRequest = async (
       eq(dbFile.exists, true),
     ),
   });
-  if (!file) res.sendStatus(404);
+  if (!file) {
+    res.sendStatus(404);
+    return;
+  }
   if (file.type == 'File') res.sendStatus(404);
   if (!allSizes.includes(size)) res.sendStatus(400);
   const extension = extname(filename).toLowerCase(); //extension ignored for original file, only used for thumbs

@@ -44,6 +44,8 @@ const resolver = async (_, params, context) => {
     if (!adminUser)
       throw new GraphQLError('No user found for ID: ' + params.id);
     const userFolder = await dbFolderForId(adminUser.folderId);
+    if (!userFolder)
+      throw new GraphQLError('User has invalid folder: ' + adminUser.folderId);
     if (!(await folderIsUnderFolderId(userFolder, user.folderId))) {
       throw new GraphQLError(
         'You cant edit this user as they are above your level of access',
@@ -51,6 +53,7 @@ const resolver = async (_, params, context) => {
     }
   } else {
     if (pass && username) {
+      // @ts-ignore required fields added below
       adminUser = {};
     } else {
       throw new GraphQLError(
@@ -58,6 +61,9 @@ const resolver = async (_, params, context) => {
       );
     }
   }
+
+  if (!adminUser) return; // just to fix the "adminUser might be undefined" error below in typescript, not needed
+
   adminUser.folderId = params.folderId;
   adminUser.name = params.name;
 

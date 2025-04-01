@@ -23,8 +23,8 @@ export const server = async () => {
     process.exit();
   }
 
-  await envPassword();
   await setupRootFolder();
+  await envPassword();
   const appName = pkg.name;
   const express = expressServer();
   express.listen(picrConfig.port, () => {

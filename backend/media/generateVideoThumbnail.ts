@@ -22,9 +22,9 @@ const processVideoThumbnail = async (
 ): Promise<void> => {
   // lets only do medium thumbnails as large can just be 'embedded video' and small is probably useless?
   if (size != 'md') return;
-
+  if (!file.metadata) return;
   const { Duration } = JSON.parse(file.metadata) as VideoMetadata;
-  if (Duration <= 0 || !file.imageRatio || file.imageRatio == 0) {
+  if (!Duration || Duration <= 0 || !file.imageRatio || file.imageRatio == 0) {
     console.log(
       'Error generating video thumbnails for: ' + fullPathForFile(file),
     );
@@ -50,20 +50,20 @@ const processVideoThumbnail = async (
       ffmpegForFile(file)
         .on('end', (outFile) => {
           // console.log('⏸️ Screenshots done for ' + file.name + ' ' + size);
-          mergeImages(file, size).then(() => resolve(null));
+          mergeImages(file, size).then(() => resolve());
         })
         .on('error', (e) => {
           console.log(
             'Error generating video thumbnails for ' + file.name + ' ' + size,
           );
           console.log(e);
-          resolve(null);
+          resolve();
         })
         .takeScreenshots({
           filename: size + '.jpg',
           timemarks,
           folder: outFile,
-          size: px + 'x' + Math.round(px / file.imageRatio), //size eg: '150x100',
+          size: px + 'x' + Math.round(px / file.imageRatio!), //size eg: '150x100',
         });
     } catch (e) {
       console.log(

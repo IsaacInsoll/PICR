@@ -33,7 +33,7 @@ export const setupRootFolder = async () => {
 
 export const addFolder = async (path: string) => {
   const relative = relativePath(path);
-  const root = rootFolder;
+  const root = rootFolder!;
   if (relative === '') return root;
 
   let f = root.id;
@@ -65,14 +65,19 @@ export const addFolder = async (path: string) => {
     if (!newFolder) {
       newFolder = await db
         .insert(dbFolder)
-        .values({ ...props, createdAt: new Date(), updatedAt: new Date() })
+        .values({
+          ...props,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          exists: true,
+        })
         .returning()
         .then((f) => f[0]);
     }
 
-    folderList[p] = newFolder.id; // for caching
-    updateFolderHash(newFolder);
-    f = newFolder.id;
+    folderList[p] = newFolder!.id; // for caching
+    updateFolderHash(newFolder!);
+    f = newFolder!.id;
     log('info', `📁➕ ${relativePath(path)}`);
   }
   // console.log('finished addFolder: ' + path);

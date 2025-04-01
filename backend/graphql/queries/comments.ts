@@ -18,10 +18,10 @@ const resolver = async (_, params, context) => {
 
   if (params.fileId) {
     const file = await dbFileForId(params.fileId);
-    await contextPermissions(context, file.folderId, 'View');
+    await contextPermissions(context, file?.folderId, 'View');
 
     const list = await db.query.dbComment.findMany({
-      where: eq(dbComment.fileId, file?.id),
+      where: eq(dbComment.fileId, file!.id),
       orderBy: desc(dbComment.createdAt),
     });
 
@@ -30,7 +30,7 @@ const resolver = async (_, params, context) => {
         return {
           ...x,
           timestamp: x.createdAt,
-          file: file.toJSON(),
+          file: file,
         };
       }),
     );
@@ -49,7 +49,7 @@ const resolver = async (_, params, context) => {
         return {
           ...x,
           timestamp: x.createdAt,
-          file: files[x.fileId],
+          file: x.fileId ? files[x.fileId] : undefined,
         };
       }),
     );

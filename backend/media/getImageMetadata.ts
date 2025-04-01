@@ -11,6 +11,7 @@ export const getImageMetadata = async (file: FileFields) => {
       fullPathForFile(file),
     ).metadata();
 
+    if(!exif) return null;
     const x = ex(exif);
     // const et = x?.Photo?.ExposureTime;
     const result: MetadataSummary = {
@@ -41,7 +42,8 @@ const xmlParser = new XMLParser({
 });
 
 // Get Lightroom rating (EG: '3 stars' from raw XMP Buffer)
-const getImageRating = (xmp: Buffer): number => {
+const getImageRating = (xmp: Buffer|undefined): number => {
+  if(!xmp) return 0;
   try {
     const xml = xmlParser.parse(xmp.toString());
     const rating = parseInt(

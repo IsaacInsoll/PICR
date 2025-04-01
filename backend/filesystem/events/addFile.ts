@@ -54,10 +54,13 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
         createdAt: new Date(),
         updatedAt: new Date(),
         fileHash: '',
+        rating: 0,
       })
       .returning()
       .then((f) => f[0]);
   }
+
+  if (!file) return; // not needed, just for typescript to know it's not null at this point
 
   const modified =
     !created && file.fileLastModified.getTime() != stats.mtime.getTime();
@@ -84,8 +87,11 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
     if (type == 'Video') {
       const meta = await getVideoMetadata(file);
       file.metadata = JSON.stringify(meta);
-      file.duration = meta.Duration;
-      file.imageRatio = meta.Height > 0 ? meta.Width / meta.Height : 0;
+      file.duration = meta.Duration ?? null;
+      file.imageRatio =
+        meta.Height && meta.Width && meta.Height > 0
+          ? meta.Width / meta.Height
+          : 0;
     }
   } else if (picrConfig.updateMetadata) {
     log('info', '🔄️ update metadata: ' + file.id);

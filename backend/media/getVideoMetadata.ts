@@ -31,7 +31,7 @@ export const getVideoMetadata = async (file: FileFields) => {
       m.VideoCodecDescription = video.codec_long_name;
       m.Width = video.width;
       m.Height = video.height;
-      m.Framerate = eval(video.avg_frame_rate) ?? 0; // TODO: convert "25/1" to
+      m.Framerate = video.avg_frame_rate ? eval(video.avg_frame_rate) ?? 0 : 0; // TODO: convert "25/1" to
     }
 
     const audio = streams.find(({ codec_type }) => codec_type == 'audio');

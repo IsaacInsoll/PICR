@@ -5,7 +5,7 @@ export const parentFolders = async (
   folder: FolderFields,
   context,
 ): Promise<FolderFields[]> => {
-  let current = folder;
+  let current: FolderFields | undefined = folder;
   const parents: FolderFields[] = [];
   while (current.parentId) {
     current = await dbFolderForId(current.parentId);

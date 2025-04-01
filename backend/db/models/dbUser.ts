@@ -12,13 +12,15 @@ import { dbFolder } from './dbFolder';
 
 export const dbUser = pgTable('Users', {
   ...baseColumns,
-  name: varchar('name', { length: 255 }),
-  enabled: boolean('enabled'),
-  commentPermissions: commentPermissionsEnum(),
-  folderId: integer('folderId').references(() => dbFolder.id),
+  name: varchar('name', { length: 255 }).notNull(),
+  enabled: boolean('enabled').notNull(),
+  commentPermissions: commentPermissionsEnum().notNull(),
+  folderId: integer('folderId')
+    .notNull()
+    .references(() => dbFolder.id),
 
   lastAccess: timestamp({ withTimezone: true }),
-  userType: userTypeEnum(),
+  userType: userTypeEnum().notNull(),
 
   // IF REAL USER
   hashedPassword: varchar('hashedPassword', { length: 255 }),

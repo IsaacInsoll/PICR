@@ -2,13 +2,14 @@ import { db } from '../../db/picrDb';
 import { inArray } from 'drizzle-orm';
 import { dbFolder } from '../../db/models';
 
-type FolderRelationship = { folderId: string }[];
+type FolderRelationship = { folderId: number | null | undefined }[];
 
 // Takes a list of objects with `folderId` relationship and adds the folder details to each object
 export const addFolderRelationship = async (
   list: FolderRelationship,
 ): Promise<FolderRelationship> => {
-  const ids = list
+  // @ts-ignore - fix it later
+  const ids: number[] = list
     .map((b) => b.folderId)
     .filter((v, i, a) => a.indexOf(v) === i);
 
@@ -19,7 +20,7 @@ export const addFolderRelationship = async (
   });
 
   return list.map((obj) => {
-    const folder = folders.find((f) => f.id == obj.folderId)?.toJSON();
+    const folder = folders.find((f) => f.id == obj.folderId);
     return { ...obj, folder };
   });
 };

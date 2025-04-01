@@ -12,7 +12,7 @@ import { dbFile } from '../db/models';
 import { db, FolderFields } from '../db/picrDb';
 
 export interface FolderHash {
-  folder?: FolderFields;
+  folder: FolderFields;
   hash: string;
   key: string; //folderId+key
 }
@@ -75,12 +75,14 @@ export const zipFolder = async (folderHash: FolderHash) => {
   //TODO: add empty folders
 
   const folderIds = await allSubfolderIds(folder);
-  const files = await FileModel.findAll({
-    where: { folderId: folderIds, exists: true },
-    attributes: ['id', 'fileHash', 'relativePath', 'name'],
+
+  const files = await db.query.dbFile.findMany({
+    columns: { id: true, fileHash: true, relativePath: true, name: true },
+    where: and(inArray(dbFile.folderId, folderIds), eq(dbFile.exists, true)),
   });
+
   files.forEach((f) => {
-    const name = fullPathMinus(f, folder.relativePath); // f.relativePath + sep + f.name,
+    const name = fullPathMinus(f, folder.relativePath ?? ''); // f.relativePath + sep + f.name,
     archive.file(fullPathForFile(f), { name });
   });
 

@@ -4,9 +4,9 @@ import { and, asc, eq, like, or } from 'drizzle-orm';
 
 // Recursively find all subfolders
 // NOTE: no permissions done here, if you can see parent you can see the children
-export const allSubfolders = async (folderId: number | string) => {
+export const allSubfolders = async (folderId: number) => {
   const f = await dbFolderForId(folderId);
-  if (!f.relativePath) {
+  if (!f?.relativePath) {
     //root folder
     return db.query.dbFolder.findMany({
       where: eq(dbFolder.exists, true),
@@ -28,7 +28,7 @@ export const allSubfolders = async (folderId: number | string) => {
 // Recursively find all subfolder ids
 export const allSubfolderIds = async (
   folder: FolderFields,
-): Promise<string[]> => {
+): Promise<number[]> => {
   const folders = await allSubfolders(folder.id);
   return folders.map((f) => f.id);
 };

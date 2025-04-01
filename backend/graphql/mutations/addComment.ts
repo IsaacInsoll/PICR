@@ -12,10 +12,11 @@ import { fileFlagEnum } from '../types/enums';
 
 const resolver = async (_, params, context) => {
   const file = await dbFileForId(params.id);
-  const { user } = await contextPermissions(context, file.folderId, 'View');
-  if (!file.exists) throw new GraphQLError('File not found');
+  const { user } = await contextPermissions(context, file?.folderId, 'View');
+  if (!file?.exists) throw new GraphQLError('File not found');
 
-  if (user.commentPermissions != 'edit') doAuthError('Not allowed to comment');
+  if (user?.commentPermissions != 'edit') doAuthError('Not allowed to comment');
+  if (!user) return; // not needed, just for typescript to know it's not null at this point
 
   //TODO: set rating, flag
   if (params.rating != null) {
@@ -28,7 +29,7 @@ const resolver = async (_, params, context) => {
   }
 
   if (params.comment) {
-    await addCommentDB(file, user, null, params.comment);
+    await addCommentDB(file, user, undefined, params.comment);
     file.totalComments = file.totalComments + 1;
   }
 

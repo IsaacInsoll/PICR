@@ -12,14 +12,14 @@ import {
 export const brandingForFolder = async (
   folder: FolderFields,
 ): Promise<BrandingType> => {
-  let f = folder;
+  let f: FolderFields | undefined = folder;
   while (f) {
     const branding = await brandingForFolderId(f.id);
     if (branding) {
       // @ts-ignore unreasonable to expect parent/child folders on this query
       return { ...branding, folder: f };
     } else {
-      f = await dbFolderForId(f.parentId);
+      f = await dbFolderForId(f.parentId ?? undefined);
     }
   }
   return {

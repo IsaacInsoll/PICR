@@ -14,7 +14,7 @@ const resolver = async (_, params, context) => {
     'View',
   );
 
-  const folderIds = await allSubfolderIds(folder);
+  const folderIds = await allSubfolderIds(folder!);
 
   const lower = params.query.toLowerCase().split(' ');
 

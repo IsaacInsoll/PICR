@@ -24,7 +24,7 @@ export const fileWatcher = async (config) => {
     .set({ exists: false })
     .where(isNotNull(dbFolder.parentId)); //don't set Home (root) to not exist
 
-  const watcher = chokidar.watch(picrConfig.mediaPath, {
+  const watcher = chokidar.watch(picrConfig.mediaPath!, {
     ignored: ignored,
     persistent: true,
     awaitWriteFinish: true,

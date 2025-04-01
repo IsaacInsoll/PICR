@@ -4,6 +4,6 @@ export type FolderPermissions = 'View' | 'Admin' | 'None';
 
 export interface ContextualPermissions {
   permissions: FolderPermissions;
-  user: UserFields | null;
-  folder?: FolderFields | null;
+  user: UserFields;
+  folder: FolderFields;
 }

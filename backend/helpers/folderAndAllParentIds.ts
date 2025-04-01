@@ -3,15 +3,15 @@ import { dbFolderForId, FolderFields } from '../db/picrDb';
 export const folderAndAllParentIds = async (
   folder: FolderFields,
   rootId?: number,
-): Promise<string[]> => {
-  let f = folder;
+): Promise<number[]> => {
+  let f: FolderFields | undefined = folder;
   const ids = [f.id];
 
   if (rootId && f.id == rootId) {
     return ids;
   }
 
-  while (f.parentId) {
+  while (f?.parentId) {
     ids.push(f.parentId);
     if (rootId && f.parentId == rootId) {
       return ids;

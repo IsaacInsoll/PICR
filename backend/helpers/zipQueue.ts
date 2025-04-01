@@ -47,7 +47,7 @@ export const updateZipQueue = (
   zipQueue[folderHash.key] = { ...zipQueue[folderHash.key], ...item };
 };
 
-export const queueZipTaskStatus = (folderIds: string[] | null): Task[] => {
+export const queueZipTaskStatus = (folderIds: number[] | null): Task[] => {
   const list: Task[] = [];
   Object.keys(zipQueue).map((k) => {
     const q = zipQueue[k];

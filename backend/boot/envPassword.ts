@@ -18,6 +18,7 @@ export const envPassword = async () => {
         commentPermissions: 'edit',
         createdAt: new Date(),
         updatedAt: new Date(),
+        userType: 'Admin',
       })
       .then(() =>
         console.log(

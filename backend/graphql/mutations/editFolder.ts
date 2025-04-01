@@ -14,13 +14,16 @@ const resolver = async (_, params, context) => {
   );
 
   const heroImage = await dbFileForId(params.heroImageId);
-  if (!heroImage) doAuthError('Invalid hero image ID');
+  if (!heroImage) {
+    doAuthError('Invalid hero image ID');
+    return;
+  }
   if (heroImage.type != 'Image') doAuthError('Not an image');
-  if (heroImage.folderId != folder.id) doAuthError('Not in this folder');
+  if (heroImage.folderId != folder!.id) doAuthError('Not in this folder');
 
   db.update(dbFolder)
     .set({ heroImageId: heroImage.id, updatedAt: new Date() })
-    .where(eq(dbFolder.id, folder.id));
+    .where(eq(dbFolder.id, folder!.id));
 
   return { ...folder, heroImage };
 };

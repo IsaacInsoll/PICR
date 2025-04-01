@@ -4,7 +4,7 @@ import { picrConfig } from '../config/picrConfig';
 import { dbUserForId, UserFields } from '../db/picrDb';
 
 export function generateAccessToken(obj) {
-  const response = jwt.sign(obj, picrConfig.tokenSecret, {
+  const response = jwt.sign(obj, picrConfig.tokenSecret!, {
     expiresIn: '28 days',
   }); // 24 hours
   // console.log('JWT TOKEN', obj, response);
@@ -20,7 +20,9 @@ export async function getUserFromToken(
 
   try {
     const decoded = jwt.verify(token, secret) as CustomJwtPayload;
-    const user = await dbUserForId(decoded.userId);
+    if (!decoded.userId) return undefined;
+    const userId = parseInt(decoded.userId);
+    const user = await dbUserForId(userId);
     if (user && user.hashedPassword == decoded.hashedPassword && user.enabled)
       return user;
     return undefined;

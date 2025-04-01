@@ -17,7 +17,9 @@ export const configFromEnv = () => {
     consoleLogging: process.env.CONSOLE_LOGGING == 'true',
     usePolling: process.env.USE_POLLING == 'true',
     port: !isNaN(port) ? port : 6900,
-    pollingInterval: parseInt(process.env.POLLING_INTERVAL) ?? 20,
+    pollingInterval: process.env.POLLING_INTERVAL
+      ? (parseInt(process.env.POLLING_INTERVAL) ?? 20)
+      : 20,
     dev: process.env.NODE_ENV === 'development',
     version: getVersion(),
     updateMetadata: false, //re-read metadata, set by dbMigrate

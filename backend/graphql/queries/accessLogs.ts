@@ -19,10 +19,10 @@ const resolver = async (_, params, context) => {
     params.folderId,
     'Admin',
   );
-  const ids = [folder.id];
+  const ids = [folder!.id];
 
   if (params.includeChildren) {
-    const children = await allSubfolders(folder.id);
+    const children = await allSubfolders(folder!.id);
     const childIds = children.map(({ id }) => id);
     ids.push(...childIds);
   }

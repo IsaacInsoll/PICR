@@ -39,7 +39,7 @@ export const heroImageForFolder = async (f: FolderFields) => {
   return allImages;
 };
 
-const heroImageForSubFolder = async (parentIds: string[]) => {
+const heroImageForSubFolder = async (parentIds: number[]) => {
   const subFolder = await db.query.dbFolder.findFirst({
     where: and(
       inArray(dbFolder.parentId, parentIds),
@@ -47,6 +47,7 @@ const heroImageForSubFolder = async (parentIds: string[]) => {
       ne(dbFolder.heroImageId, 0),
     ),
   });
+  if (!subFolder) return undefined;
 
   const subHeroImage = subFolder
     ? await dbFileForId(subFolder.heroImageId)
@@ -54,7 +55,7 @@ const heroImageForSubFolder = async (parentIds: string[]) => {
   if (
     subHeroImage &&
     subHeroImage.exists &&
-    subHeroImage.folderId == subFolder.id
+    subHeroImage.folderId == subFolder?.id
   ) {
     return subHeroImage;
   }

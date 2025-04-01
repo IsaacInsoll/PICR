@@ -1,5 +1,4 @@
 import { defineConfig } from 'vitest/config';
-import { async } from './tests/testSetup';
 
 export default defineConfig({
   test: {

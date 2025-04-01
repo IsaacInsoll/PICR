@@ -34,7 +34,7 @@ export type FolderFields = typeof dbFolder.$inferSelect;
 export type CommentFields = typeof dbComment.$inferSelect;
 
 export const dbFolderForId = async (
-  id: string | number | undefined,
+  id: number | undefined,
 ): Promise<FolderFields | undefined> => {
   if (!id) return undefined;
   return db.query.dbFolder.findFirst({
@@ -42,7 +42,7 @@ export const dbFolderForId = async (
   });
 };
 export const dbFileForId = async (
-  id: string | number | undefined,
+  id: number | undefined | null,
 ): Promise<FileFields | undefined> => {
   if (!id) return undefined;
   return db.query.dbFile.findFirst({
@@ -51,7 +51,7 @@ export const dbFileForId = async (
 };
 
 export const dbUserForId = async (
-  id: string | number | undefined,
+  id: number | undefined,
 ): Promise<UserFields | undefined> => {
   if (!id) return undefined;
   return db.query.dbUser.findFirst({ where: eq(dbFolder.id, id) });

@@ -8,7 +8,7 @@ import { dbFolder } from '../../db/models';
 import { eq } from 'drizzle-orm';
 
 export const updateFolderHash = (folder: FolderFields) => {
-  const fileNames = readdirSync(fullPath(folder.relativePath)).join('#');
+  const fileNames = readdirSync(fullPath(folder.relativePath!)).join('#');
   const hash = crypto.createHash('md5').update(fileNames).digest('hex');
   if (folder.folderHash != hash) {
     log(

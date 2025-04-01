@@ -9,7 +9,7 @@ export const getUserFromUUID = async (
   const hasUUID = !!context.uuid && context.uuid !== '';
   if (hasUUID) {
     const user = await db.query.dbUser.findFirst({
-      where: eq(dbUser.uuid, context.uuid),
+      where: eq(dbUser.uuid, context.uuid!),
     });
     //todo: check expiry dates etc
     if (user && user.enabled) {

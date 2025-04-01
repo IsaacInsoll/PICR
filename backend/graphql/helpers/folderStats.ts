@@ -48,7 +48,7 @@ export const folderStats = async (folderId: number): Promise<FolderStat[]> => {
     { type: 'Video', total: video[0].count },
     { type: 'File', total: file[0].count },
   ];
-  // can't await inside an interator so top level it is
+  // can't await inside an iterator so top level it is
 
   // Object.values(FileType).forEach((t) => {
   //   result[t] = await File.count({ where: { folderId: childIds, type: t } });
@@ -68,7 +68,8 @@ export const folderStatsSummaryText = async (folderId: number) => {
     .map(({ type, total }) => pluralize(total, type))
     .join(', ');
 
-  const folder = stats.find(({ type }) => type == 'Folder').total;
-  if (folder > 1) str += (str != '' ? ' in ' : '') + `${folder} folders`;
+  const folder = stats.find(({ type }) => type == 'Folder')?.total;
+  if (folder && folder > 1)
+    str += (str != '' ? ' in ' : '') + `${folder} folders`;
   return str;
 };

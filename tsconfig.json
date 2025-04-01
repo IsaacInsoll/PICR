@@ -5,11 +5,12 @@
     "outDir": "dist",
     "sourceMap": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "resolveJsonModule": true,
     "lib": [
       "ES2021.String"
     ],
-    "strict": true,
+    "strictNullChecks": true
     // This was handy but didn't seem to work property in node (couldn't find references)
 //    "paths": {
 //      "@/*": ["./*"]

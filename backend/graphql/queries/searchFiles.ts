@@ -8,9 +8,12 @@ import { dbFile } from '../../db/models';
 import { db, dbFolderForId } from '../../db/picrDb';
 
 const resolver = async (_, params, context) => {
-  await contextPermissions(context, params.folderId ?? 1, 'View');
-
-  const f = await dbFolderForId(params.folderId);
+  const { folder } = await contextPermissions(
+    context,
+    params.folderId ?? 1,
+    'View',
+  );
+  const f = folder!;
   const folderIds = await allSubfolderIds(f);
 
   const lower = params.query.toLowerCase().split(' ');
