@@ -1,6 +1,7 @@
 import { lt, valid } from 'semver';
 import { getServerOptions, setServerOptions } from '../db/picrDb';
 
+// This does the "picr" side of migrations, for the DB side see schemaMigration.ts
 export const dbMigrate = async (config) => {
   const opts = await getServerOptions();
 

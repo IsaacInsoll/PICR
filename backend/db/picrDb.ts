@@ -13,21 +13,13 @@ import {
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { and, asc, desc, eq, gte, inArray } from 'drizzle-orm';
 import { IncomingCustomHeaders } from '../types/incomingCustomHeaders';
-import { AccessType } from '@/graphql-types';
+import { AccessType } from '../../graphql-types';
 import { fileToJSON } from '../graphql/helpers/fileToJSON';
 import { picrConfig } from '../config/picrConfig';
 
 export let db: NodePgDatabase<typeof schema>;
 
 export const initDb = () => {
-  //previous ORM was new Sequelize(picrConfig.databaseUrl, {
-  //   //   dialect: 'postgres',
-  //   //   dialectModule: pg,
-  //   //   logging: picrConfig.debugSql,
-  //   //   models: [__dirname + '/db/sequelize'],
-  //   //   pool: { max: 50 }, //default max is 5, postgres default limit is 100
-  //   // });
-  //TODO: work out the `pool` config
   db = drizzle(process.env.DATABASE_URL!, {
     schema,
     logger: picrConfig.debugSql,

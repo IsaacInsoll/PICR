@@ -7,22 +7,12 @@ import { dbMigrate } from './boot/dbMigrate';
 import { log } from './logger';
 import { picrConfig } from './config/picrConfig';
 import { initDb } from './db/picrDb';
-
-//TODO: //picrConfig.debugSql prop
-//TODO: sequelise had "pool=50" (default of 5), can't remember why, see ea9feae4
+import { schemaMigration } from './db/schemaMigration';
 
 export const server = async () => {
-  initDb();
-
-  // const sequelize = new Sequelize(picrConfig.databaseUrl, {
-  //   dialect: 'postgres',
-  //   dialectModule: pg,
-  //   logging: picrConfig.debugSql,
-  //   models: [__dirname + '/db/sequelize'],
-  //   pool: { max: 50 }, //default max is 5, postgres default limit is 100
-  // });
-
   try {
+    await schemaMigration();
+    initDb();
     await dbMigrate(picrConfig);
   } catch (e) {
     console.error(
