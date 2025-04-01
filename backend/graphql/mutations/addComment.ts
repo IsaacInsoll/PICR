@@ -3,12 +3,12 @@ import { contextPermissions } from '../../auth/contextPermissions';
 import { doAuthError } from '../../auth/doAuthError';
 import { fileToJSON } from '../helpers/fileToJSON';
 import { GraphQLInt, GraphQLString } from 'graphql';
-import { fileFlagEnum } from '../enums/fileFlagEnum';
 import { fileInterface } from '../interfaces/fileInterface';
 import { GraphQLError } from 'graphql/error';
 import { addCommentDB, db, dbFileForId } from '../../db/picrDb';
 import { dbFile } from '../../db/models';
 import { eq } from 'drizzle-orm';
+import { fileFlagEnum } from '../types/enums';
 
 const resolver = async (_, params, context) => {
   const file = await dbFileForId(params.id);

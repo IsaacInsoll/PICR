@@ -36,10 +36,9 @@ import { editBranding } from './mutations/editBranding';
 import { deleteBranding } from './mutations/deleteBranding';
 import { accessLogs } from './queries/accessLogs';
 import { accessLogType } from './types/accessLogType';
-import { userTypeEnum } from './enums/userTypeEnum';
-import { accessTypeEnum } from './enums/accessTypeEnum';
 import { clientInfo } from './queries/clientInfoQuery';
 import { clientInfoType } from './types/clientInfoType';
+import { accessTypeEnum, userTypeEnum } from './types/enums';
 
 const queries = new GraphQLObjectType({
   fields: () => ({

@@ -7,7 +7,8 @@ import {
 import { folderType } from './folderType';
 import { GraphQLDateTime } from 'graphql-scalars';
 import { userType } from './userType';
-import { accessTypeEnum } from '../enums/accessTypeEnum';
+
+import { accessTypeEnum } from './enums';
 
 export const accessLogType = new GraphQLObjectType({
   name: 'AccessLog',

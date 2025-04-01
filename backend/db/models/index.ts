@@ -7,3 +7,4 @@ export * from './dbFolder';
 export * from './dbServerOptions';
 export * from './dbUser';
 export * from './dbBranding';
+export { enumToGQL } from '../../graphql/helpers/enumToGQL';

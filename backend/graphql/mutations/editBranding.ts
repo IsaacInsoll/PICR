@@ -1,11 +1,11 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql/index';
 import { getFolder } from '../helpers/getFolder';
-import { primaryColorEnum, themeModeEnum } from '../enums/themeModeEnum';
 import { folderType } from '../types/folderType';
 import { db } from '../../db/picrDb';
 import { eq } from 'drizzle-orm';
 import { dbBranding } from '../../db/models';
+import { primaryColorEnum, themeModeEnum } from '../types/enums';
 
 const resolver = async (_, params, context) => {
   await contextPermissions(context, params.folderId, 'Admin');

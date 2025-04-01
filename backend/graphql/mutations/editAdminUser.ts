@@ -10,12 +10,12 @@ import {
   GraphQLString,
 } from 'graphql';
 import { userType } from '../types/userType';
-import { commentPermissionsEnum } from '../enums/commentPermissionsEnum';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
 import { db, dbFolderForId, dbUserForId, UserFields } from '../../db/picrDb';
 import { and, eq, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
 import { UserType } from '../../../graphql-types';
+import { commentPermissionsEnum } from '../types/enums';
 
 const resolver = async (_, params, context) => {
   const { user } = await contextPermissions(context, params.folderId, 'Admin');

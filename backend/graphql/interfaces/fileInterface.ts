@@ -5,10 +5,9 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql/index';
-import { fileTypeEnum } from '../enums/fileTypeEnum';
-import { fileFlagEnum } from '../enums/fileFlagEnum';
 import { GraphQLBigInt, GraphQLDateTime } from 'graphql-scalars';
 import { folderType } from '../types/folderType';
+import { fileFlagEnum, fileTypeEnum } from '../types/enums';
 
 export const fileInterfaceFields = () => ({
   id: { type: new GraphQLNonNull(GraphQLID) },
