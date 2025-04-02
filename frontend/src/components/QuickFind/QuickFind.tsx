@@ -22,8 +22,8 @@ import { PrettyFolderPath } from '../PrettyFolderPath';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { InfoIcon } from '../../PicrIcons';
 import { Joiner } from '../FolderName';
-import { searchQuery } from '../searchQuery';
 import { useQuickFind } from './useQuickFind';
+import { searchQuery } from '../../urql/queries/searchQuery';
 
 type Scope = 'all' | 'current';
 type ScopeType = 'all' | 'file' | 'folder';

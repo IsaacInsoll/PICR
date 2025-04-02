@@ -1,10 +1,10 @@
-import { gql } from '../helpers/gql';
 import { useAtomValue } from 'jotai/index';
 import { authKeyAtom } from '../atoms/authAtom';
 import { useQuery } from 'urql';
 import { User } from '../../../graphql-types';
 
 import { getUUID } from '../helpers/getUUID';
+import { meQuery } from '../urql/queries/meQuery';
 
 export const useMe = ():
   | (Pick<User, 'id' | 'name' | 'folderId' | 'commentPermissions'> & {
@@ -26,25 +26,6 @@ export const useMe = ():
     clientInfo: data.clientInfo,
   };
 };
-
-export const meQuery = gql(/* GraphQL */ `
-  query MeQuery {
-    me {
-      id
-      name
-      folderId
-      uuid
-      commentPermissions
-      folder {
-        id
-        name
-      }
-    }
-    clientInfo {
-      avifEnabled
-    }
-  }
-`);
 
 export const useAvifEnabled = () => {
   const me = useMe();

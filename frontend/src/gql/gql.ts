@@ -16,15 +16,11 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 const documents = {
     "\n  mutation editFolder($folderId: ID!, $heroImageId: ID!) {\n    editFolder(folderId: $folderId, heroImageId: $heroImageId) {\n      ...FolderFragment\n      ...HeroImageFragment\n    }\n  }\n": types.EditFolderDocument,
     "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n": types.AddCommentDocument,
-    "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n": types.SearchQueryDocument,
-    "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      uuid\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n    clientInfo {\n      avifEnabled\n    }\n  }\n": types.MeQueryDocument,
     "\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      id\n      name\n      folderId\n      lastAccess\n      gravatar\n      folder {\n        id\n        name\n        parents {\n          id\n          name\n        }\n      }\n    }\n  }\n": types.RecentUsersQueryDocument,
     "\n        query generateThumbnailsStats($folderId: ID!) {\n            folder(id: $folderId) {\n                ...FolderFragment\n                totalImages\n            }\n        }\n    ": types.GenerateThumbnailsStatsDocument,
     "\n  query AccessLogsQuery(\n    $folderId: ID!\n    $userId: ID\n    $includeChildren: Boolean\n    $userType: UserType\n  ) {\n    accessLogs(\n      folderId: $folderId\n      userId: $userId\n      includeChildren: $includeChildren\n      userType: $userType\n    ) {\n      id\n      timestamp\n      type\n      userId\n      folderId\n      ipAddress\n      userAgent\n      folder {\n        ...FolderFragment\n      }\n    }\n  }\n": types.AccessLogsQueryDocument,
     "\n  mutation EditBrandingMutation(\n    $folderId: ID!\n    $mode: ThemeMode\n    $primaryColor: PrimaryColor\n    $logoUrl: String\n  ) {\n    editBranding(\n      folderId: $folderId\n      mode: $mode\n      primaryColor: $primaryColor\n      logoUrl: $logoUrl\n    ) {\n      ...FolderFragment\n    }\n  }\n": types.EditBrandingMutationDocument,
     "\n  mutation DeleteBrandingMutation($folderId: ID!) {\n    deleteBranding(folderId: $folderId) {\n      ...FolderFragment\n    }\n  }\n": types.DeleteBrandingMutationDocument,
-    "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n    }\n  }\n": types.ServerInfoQueryDocument,
-    "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n": types.ExpensiveServerFileSizeQueryDocument,
     "\n  query TreeSizeQuery($folderId: ID!) {\n    folder(id: $folderId) {\n      parents {\n        id\n        name\n      }\n      ...TreeSizeFragment\n      files {\n        id\n        name\n        type\n        fileSize\n      }\n      subFolders {\n        ...TreeSizeFragment\n        subFolders {\n          ...TreeSizeFragment\n        }\n      }\n    }\n  }\n": types.TreeSizeQueryDocument,
     "\n  fragment TreeSizeFragment on Folder {\n    id\n    name\n    totalFiles\n    totalFolders\n    totalSize\n    totalDirectSize\n  }\n": types.TreeSizeFragmentFragmentDoc,
     "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    flag\n    rating\n    totalComments\n    latestComment\n    folderId\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
@@ -34,14 +30,18 @@ const documents = {
     "\n  fragment MinimumFolderFragment on Folder {\n    id\n    __typename\n    name\n    parentId\n    ...HeroImageFragment\n  }\n": types.MinimumFolderFragmentFragmentDoc,
     "\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    commentPermissions\n    gravatar\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n": types.UserFragmentFragmentDoc,
     "\n  fragment VideoMetadataFragment on Video {\n    ... on Video {\n      metadata {\n        Bitrate\n        Duration\n        Format\n        VideoCodec\n        VideoCodecDescription\n        Width\n        Height\n        Framerate\n        AudioCodec\n        AudioCodecDescription\n      }\n    }\n  }\n": types.VideoMetadataFragmentFragmentDoc,
-    "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
-    "\n  mutation EditUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      username: $username\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n": types.EditUserMutationDocument,
     "\n  mutation EditAdminUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $password: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editAdminUser(\n      id: $id\n      name: $name\n      username: $username\n      password: $password\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n": types.EditAdminUserMutationDocument,
+    "\n  mutation EditUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      username: $username\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n": types.EditUserMutationDocument,
     "\n    mutation generateThumbnailsQuery($folderId: ID!) {\n        generateThumbnails(folderId: $folderId)\n    }": types.GenerateThumbnailsQueryDocument,
     "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n": types.GenerateZipDocument,
+    "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
     "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      userId\n      file {\n        ...FileFragment\n      }\n      user {\n        id\n        gravatar\n        name\n      }\n    }\n  }\n": types.CommentHistoryQueryDocument,
     "\n    query ManageFolderQuery($folderId: ID!, $includeParents: Boolean!, $includeChildren: Boolean!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n        }\n        users(folderId:$folderId, includeParents: $includeParents, includeChildren: $includeChildren) {\n           ...UserFragment\n           folderId\n            folder {\n                ...FolderFragment\n            }\n        }\n    }\n": types.ManageFolderQueryDocument,
+    "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      uuid\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n    clientInfo {\n      avifEnabled\n    }\n  }\n": types.MeQueryDocument,
     "\n  query readAllFoldersQuery($id: ID!) {\n    allFolders(id: $id) {\n      ...FolderFragment\n    }\n  }\n": types.ReadAllFoldersQueryDocument,
+    "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n": types.SearchQueryDocument,
+    "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n    }\n  }\n": types.ServerInfoQueryDocument,
+    "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n": types.ExpensiveServerFileSizeQueryDocument,
     "\n  query TaskQuery($folderId: ID!) {\n    tasks(folderId: $folderId) {\n      id\n      name\n      step\n      totalSteps\n      status\n    }\n  }\n": types.TaskQueryDocument,
     "\n    query ViewAdminsQuery {\n        admins {\n            ...UserFragment\n        }\n    }\n": types.ViewAdminsQueryDocument,
     "\n    query ViewBrandingsQuery {\n        brandings {\n            id\n            logoUrl\n            primaryColor\n            mode\n            folderId\n            folder {\n               ...MinimumFolderFragment\n            }\n        }\n    }\n": types.ViewBrandingsQueryDocument,
@@ -75,14 +75,6 @@ export function graphql(source: "\n  mutation addComment(\n    $id: ID!\n    $ra
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      uuid\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n    clientInfo {\n      avifEnabled\n    }\n  }\n"): (typeof documents)["\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      uuid\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n    clientInfo {\n      avifEnabled\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
 export function graphql(source: "\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      id\n      name\n      folderId\n      lastAccess\n      gravatar\n      folder {\n        id\n        name\n        parents {\n          id\n          name\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      id\n      name\n      folderId\n      lastAccess\n      gravatar\n      folder {\n        id\n        name\n        parents {\n          id\n          name\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -100,14 +92,6 @@ export function graphql(source: "\n  mutation EditBrandingMutation(\n    $folder
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation DeleteBrandingMutation($folderId: ID!) {\n    deleteBranding(folderId: $folderId) {\n      ...FolderFragment\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteBrandingMutation($folderId: ID!) {\n    deleteBranding(folderId: $folderId) {\n      ...FolderFragment\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n    }\n  }\n"): (typeof documents)["\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n"): (typeof documents)["\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -147,15 +131,11 @@ export function graphql(source: "\n  fragment VideoMetadataFragment on Video {\n
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"): (typeof documents)["\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"];
+export function graphql(source: "\n  mutation EditAdminUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $password: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editAdminUser(\n      id: $id\n      name: $name\n      username: $username\n      password: $password\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n"): (typeof documents)["\n  mutation EditAdminUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $password: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editAdminUser(\n      id: $id\n      name: $name\n      username: $username\n      password: $password\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation EditUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      username: $username\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n"): (typeof documents)["\n  mutation EditUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      username: $username\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation EditAdminUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $password: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editAdminUser(\n      id: $id\n      name: $name\n      username: $username\n      password: $password\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n"): (typeof documents)["\n  mutation EditAdminUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $password: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editAdminUser(\n      id: $id\n      name: $name\n      username: $username\n      password: $password\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -167,6 +147,10 @@ export function graphql(source: "\n  mutation GenerateZip($folderId: ID!) {\n   
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"): (typeof documents)["\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      userId\n      file {\n        ...FileFragment\n      }\n      user {\n        id\n        gravatar\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      userId\n      file {\n        ...FileFragment\n      }\n      user {\n        id\n        gravatar\n        name\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -175,7 +159,23 @@ export function graphql(source: "\n    query ManageFolderQuery($folderId: ID!, $
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      uuid\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n    clientInfo {\n      avifEnabled\n    }\n  }\n"): (typeof documents)["\n  query MeQuery {\n    me {\n      id\n      name\n      folderId\n      uuid\n      commentPermissions\n      folder {\n        id\n        name\n      }\n    }\n    clientInfo {\n      avifEnabled\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query readAllFoldersQuery($id: ID!) {\n    allFolders(id: $id) {\n      ...FolderFragment\n    }\n  }\n"): (typeof documents)["\n  query readAllFoldersQuery($id: ID!) {\n    allFolders(id: $id) {\n      ...FolderFragment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n    }\n  }\n"): (typeof documents)["\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n"): (typeof documents)["\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

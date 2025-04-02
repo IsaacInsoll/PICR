@@ -1,7 +1,8 @@
-import { loginMutation } from './src/urql/mutations/LoginMutation';
+import { loginMutation } from './src/urql/mutations/loginMutation';
 import { ICredentials } from '../backend/auth/defaultCredentials';
 import { Client, fetchExchange } from 'urql';
-import { testUrl } from '../tests/testSetup';
+
+import { testUrl } from '../tests/testVariables';
 
 // This uses the URQL Client so it needs to be in frontend as thats where package is installed
 export const createTestGraphqlClient = async (headers: HeadersInit) => {
