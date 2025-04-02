@@ -2,31 +2,41 @@ import type { GlobalSetupContext } from 'vitest/node';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
 import decompress from 'decompress';
 import path from 'path';
-import { buildOne, downMany, upMany } from 'docker-compose';
+import {
+  buildOne,
+  downMany,
+  IDockerComposeOptions,
+  upMany,
+} from 'docker-compose';
 import { Readable } from 'node:stream';
 import fs from 'fs';
+
+// WE RUN TESTS IN DOCKER AS THERE HAVE BEEN MULTIPLE "WORKED IN DEV BUT NOT IN DOCKER" ISSUES WE WANT TO CATCH
+// AND DOCKER IS OUR ONLY SUPPORTED PRODUCTION ENVIRONMENT
 
 // note: service[0] is built, rest are just started
 const services = ['test-picr', 'test-db'];
 
-const composeOpts = { cwd: path.join(__dirname), log: true };
-
+const composeOpts: IDockerComposeOptions = {
+  cwd: path.join(__dirname, '..'),
+  log: false,
+};
 export async function setup({ provide }: GlobalSetupContext) {
   // provide('wsPort', 3000)
+  console.log('🧪 Test Setup Starting');
   const sampleFiles = 'https://photosummaryapp.com/picr-demo-data.zip';
   const samplePath = 'tests/env/sample.zip';
-  const media = 'tests/env/media';
-  const cache = 'tests/env/cache';
+  const media = './tests/env/media';
+  const cache = './tests/env/cache';
   if (!existsSync(samplePath)) {
-    console.log('Sample files not found, downloading from ' + sampleFiles);
+    console.log('⬇️ Sample files not found, downloading from ' + sampleFiles);
     await download(sampleFiles, samplePath);
   }
   rmSync(media, { recursive: true, force: true });
   rmSync(cache, { recursive: true, force: true });
   mkdirSync(media);
   mkdirSync(cache);
-  await decompress(samplePath, media);
-
+  await decompress(samplePath, media, { strip: 1 });
   await buildOne(services[0], composeOpts);
   await upMany(services, composeOpts);
 
@@ -37,12 +47,13 @@ export async function setup({ provide }: GlobalSetupContext) {
   // console.log(picrConfig); #seems fine :)
   //server(); # Errors on this line because of sequelize-typescript missing decorators or something?
 
-  console.log('Test Setup Complete');
+  console.log('🧪 Test Setup Complete');
 }
 
 export async function teardown() {
+  console.log('🧪 Test Teardown Starting');
   await downMany(services, composeOpts);
-  console.log('Test Teardown Complete');
+  console.log('🧪 Test Teardown Complete');
 }
 
 // declare module 'vitest' {
