@@ -19,7 +19,7 @@ export async function schemaMigration() {
       // migrationsSchema: 'public',
       // migrationsTable: 'migrations',
     });
-    console.log('🗃️ ✅ Migrations Complete');
+    console.log('🗃️  Migrations Complete');
   } catch (e) {
     if (e.code === 'ECONNREFUSED') {
       console.error(

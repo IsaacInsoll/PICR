@@ -35,11 +35,11 @@ TOKEN_SECRET=${secret}`);
     process.exit();
   }
 
-  if (c.dev) {
-    log('info', '#️⃣ Version: ' + (c.dev ? '[DEV] ' : '') + c.version, true);
-    console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
-    console.log(c);
-  }
+  log('info', '#️⃣  Version: ' + (c.dev ? '[DEV] ' : '') + c.version, true);
+  // if (c.dev) {
+  //   console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
+  //   console.log(c);
+  // }
 
   if (c.consoleLogging) {
     addDevLogger();
