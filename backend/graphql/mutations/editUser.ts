@@ -15,6 +15,7 @@ import { and, eq, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
 import { UserType } from '../../../graphql-types';
 import { commentPermissionsEnum } from '../types/enums';
+import { userToJSON } from '../helpers/userToJSON';
 
 const resolver = async (_, params, context) => {
   await contextPermissions(context, params.folderId, 'Admin');
@@ -71,15 +72,19 @@ const resolver = async (_, params, context) => {
 
   if (user.id) {
     await db.update(dbUser).set(user).where(eq(dbUser.id, user.id));
+    return { ...userToJSON(user), folder: getFolder(user.folderId) };
   } else {
-    await db.insert(dbUser).values({
-      ...user,
-      createdAt: new Date(),
-      userType: UserType.Link,
-    });
-  }
+    const newUser = await db
+      .insert(dbUser)
+      .values({
+        ...user,
+        createdAt: new Date(),
+        userType: UserType.Link,
+      })
+      .returning();
 
-  return { ...user, folder: getFolder(user.folderId) };
+    return { ...userToJSON(newUser[0]), folder: getFolder(user.folderId) };
+  }
 };
 
 export const editUser = {

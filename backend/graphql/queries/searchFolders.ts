@@ -1,5 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
-import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
+import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { GraphQLString } from 'graphql';
 import { folderType } from '../types/folderType';
 import { allSubfolderIds } from '../../helpers/allSubfolders';

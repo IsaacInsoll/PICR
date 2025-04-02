@@ -1,7 +1,6 @@
 import { MinimalFolder } from '../../../types';
 import { useState } from 'react';
 import { useMutation } from 'urql';
-import { editAdminUserMutation } from '../../urql/mutations/editUserMutation';
 import {
   Button,
   Checkbox,
@@ -21,6 +20,7 @@ import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { EmailIcon } from '../../PicrIcons';
+import { editAdminUserMutation } from '../../urql/mutations/editAdminUserMutation';
 
 export const ManageUser = ({
   id,

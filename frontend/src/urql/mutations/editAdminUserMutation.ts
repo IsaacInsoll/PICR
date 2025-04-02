@@ -1,20 +1,20 @@
 import { gql } from '../../helpers/gql';
 
-export const editUserMutation = gql(/* GraphQL */ `
-  mutation EditUserMutation(
+export const editAdminUserMutation = gql(/* GraphQL */ `
+  mutation EditAdminUserMutation(
     $id: ID
     $name: String
     $username: String
-    $uuid: String
+    $password: String
     $enabled: Boolean
     $folderId: ID
     $commentPermissions: CommentPermissions
   ) {
-    editUser(
+    editAdminUser(
       id: $id
       name: $name
       username: $username
-      uuid: $uuid
+      password: $password
       enabled: $enabled
       folderId: $folderId
       commentPermissions: $commentPermissions

@@ -13,6 +13,7 @@
     "server": " node dist/backend/app.js",
     "gql": "graphql-codegen --config codegen.ts",
     "release": "dotenv -- release-it --only-version",
+    "release-message": "dotenv -- release-it",
     "test": "npm run build && vitest run",
     "test-only": "vitest run"
   },
@@ -52,6 +53,7 @@
     "@graphql-codegen/introspection": "^4.0.3",
     "@release-it/bumper": "^7.0.2",
     "@types/archiver": "^6.0.2",
+    "@types/decompress": "^4.2.7",
     "@types/express": "^5.0",
     "@types/fluent-ffmpeg": "^2.1.24",
     "@types/gravatar": "^1.8.6",
@@ -79,7 +81,7 @@
     "release-it": "^18.1.2",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
-    "vitest": "^3.0.7"
+    "vitest": "^3.1.1"
   },
   "release-it": {
     "npm": {

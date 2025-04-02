@@ -1,4 +1,3 @@
-import { gql } from '../../helpers/gql';
 import { useQuery } from 'urql';
 import { Anchor, Code, Group, Table } from '@mantine/core';
 import { FaGithub } from 'react-icons/fa6';
@@ -8,6 +7,10 @@ import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { useAvifEnabled, useMe } from '../../hooks/useMe';
 import { MdOutlineSdStorage } from 'react-icons/md';
 import { PicrLink } from '../../components/PicrLink';
+import {
+  expensiveServerFileSizeQuery,
+  serverInfoQuery,
+} from '../../urql/queries/serverInfoQuery';
 
 export const ServerInfo = () => {
   const [result] = useQuery({ query: serverInfoQuery });
@@ -117,28 +120,6 @@ const TableHeader = () => {
     </Table.Thead>
   );
 };
-
-const serverInfoQuery = gql(/* GraphQL */ `
-  query serverInfoQuery {
-    serverInfo {
-      version
-      latest
-      databaseUrl
-      dev
-      usePolling
-      host
-    }
-  }
-`);
-
-const expensiveServerFileSizeQuery = gql(/* GraphQL */ `
-  query expensiveServerFileSizeQuery {
-    serverInfo {
-      cacheSize
-      mediaSize
-    }
-  }
-`);
 
 const ServerFolderSize = () => {
   const [result] = useQuery({ query: expensiveServerFileSizeQuery });
