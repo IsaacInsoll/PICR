@@ -10,7 +10,7 @@
     "start:db": "docker compose up -d",
     "start": "concurrently -c \"gray,blue,magenta,cyan\" npm:start:*",
     "build": "rm -rf ./dist && tsc",
-    "run": " node dist/backend/app.js",
+    "server": " node dist/backend/app.js",
     "gql": "graphql-codegen --config codegen.ts",
     "release": "dotenv -- release-it --only-version",
     "test": "npm run build && vitest run",

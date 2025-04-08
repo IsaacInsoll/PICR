@@ -43,11 +43,11 @@ export const fileWatcher = async (config) => {
     .on('error', (error) => console.log('⚠️ Error happened: ' + error))
     .on('addDir', (path) => {
       log('info', `📁➕ ${relativePath(path)}`);
-      addToQueue('addDir', { path }, true);
+      addToQueue('addDir', { path });
     })
     .on('unlinkDir', (path) => {
       log('info', `📁➖ ${relativePath(path)}`);
-      addToQueue('unlinkDir', { path }, true);
+      addToQueue('unlinkDir', { path });
     })
     .on('ready', () => {
       addToQueue('initComplete', {});

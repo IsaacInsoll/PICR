@@ -41,6 +41,11 @@ export const addFolder = async (path: string) => {
   for (let i = 0; i < ps.length; i++) {
     const p = ps.slice(0, i + 1).join(sep);
 
+    if (folderList[p]) {
+      f = folderList[p];
+      continue;
+    } // already in folder cache
+
     const props = {
       name: ps[i],
       parentId: f,
@@ -63,6 +68,7 @@ export const addFolder = async (path: string) => {
     }
 
     if (!newFolder) {
+      log('info', `📁➕ ${relativePath(path)} IS NEW, CREATING`);
       newFolder = await db
         .insert(dbFolder)
         .values({
