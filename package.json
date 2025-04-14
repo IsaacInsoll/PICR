@@ -13,7 +13,6 @@
     "server": " node dist/backend/app.js",
     "gql": "graphql-codegen --config codegen.ts",
     "release": "dotenv -- release-it --only-version",
-    "release-message": "dotenv -- release-it",
     "test": "npm run build && vitest run",
     "test-only": "vitest run"
   },

@@ -4,9 +4,12 @@ import { Pool } from 'pg';
 import { picrConfig } from '../config/picrConfig';
 
 // This handles SQL/ORM DB changes, see dbMigrate.ts for "picr" DB changes
+// Pro Tip: if this is failing, run `npx drizzle-kit migrate` to do the same thing as this, but with epic debug output
+
 export async function schemaMigration() {
   // console.log('🗃️  Migrations Starting');
   // This is same as picrDB but with a max: 1 because drizzle says to do that for migrations
+
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL!,
     max: 1,
