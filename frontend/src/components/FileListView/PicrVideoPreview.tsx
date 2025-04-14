@@ -4,7 +4,7 @@ import { Box, Image, LoadingOverlay } from '@mantine/core';
 import { VideoBadge } from './VideoBadge';
 import { VideoProgressIndicator } from './VideoProgressIndicator';
 import { ThumbnailImageComponentImageProps } from 'react-grid-gallery';
-import { CSSProperties, useState } from 'react';
+import { CSSProperties, useEffect, useState } from 'react';
 import { imageURL } from '../../helpers/imageURL';
 
 // Video 'scrubber' image preview. Requires either a `style` prop for dimensions or will work it out based on container width
@@ -18,16 +18,23 @@ export const PicrVideoPreview = ({
   imageProps?: ThumbnailImageComponentImageProps;
 }) => {
   const [loaded, setLoaded] = useState(false);
-  const { x, ...mouse } = useMouse({ resetOnExit: true });
+  const { x: mouseX, ...mouse } = useMouse({ resetOnExit: true });
   const element = useElementSize();
+  const second = useSecond();
 
   //Get 'styled' width, otherwise determine based on width of Box
   const w = style?.width ?? element.width;
   const h = style?.height ?? element.width / (file.imageRatio ?? 1);
 
   let frame = 0; // not mouseover
-  if (w && x) {
-    frame = Math.max(1, Math.round((x / w) * 10)); // 1-10
+  if (w && mouseX) {
+    //mouse hovering
+    frame = Math.max(1, Math.round((mouseX / w) * 10)); // 1-10
+  }
+
+  if (w && !mouseX) {
+    //mouse not hovering
+    frame = second;
   }
 
   const finalStyle = { ...style, height: undefined, position: 'absolute' };
@@ -64,4 +71,16 @@ export const PicrVideoPreview = ({
       {frame > 0 ? <VideoProgressIndicator frame={frame} /> : null}
     </Box>
   );
+};
+
+// Returns number between 1 and 10, increments by 1 every second
+const useSecond = () => {
+  const [second, setSecond] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSecond((second) => (second >= 10 ? 1 : second + 1));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [second]);
+  return second;
 };
