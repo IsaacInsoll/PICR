@@ -16,8 +16,6 @@ import { dirname } from 'path';
 export const dbMigrate = async (config: IPicrConfiguration) => {
   const opts = await getServerOptions();
 
-  if (config.dev) await removeDuplicates();
-
   if (valid(opts.lastBootedVersion)) {
     if (lt(opts.lastBootedVersion!, '0.7.0')) {
       // config.updateMetadata = true;

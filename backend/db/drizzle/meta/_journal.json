@@ -15,6 +15,13 @@
       "when": 1743502890439,
       "tag": "0001_gorgeous_adam_destine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1745041714759,
+      "tag": "0002_folder-modified",
+      "breakpoints": true
     }
   ]
 }

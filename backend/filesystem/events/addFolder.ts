@@ -5,6 +5,8 @@ import { sep } from 'path';
 import { db, FolderFields } from '../../db/picrDb';
 import { and, eq, isNull } from 'drizzle-orm';
 import { dbFolder } from '../../db/models';
+import { statSync } from 'node:fs';
+import { picrConfig } from '../../config/picrConfig';
 
 let rootFolder: FolderFields | undefined = undefined;
 
@@ -12,6 +14,8 @@ export const setupRootFolder = async () => {
   let root = await db.query.dbFolder.findFirst({
     where: isNull(dbFolder.parentId),
   });
+
+  const stats = statSync(picrConfig.mediaPath);
 
   if (!root) {
     root = await db
@@ -22,6 +26,7 @@ export const setupRootFolder = async () => {
         parentId: null,
         createdAt: new Date(),
         updatedAt: new Date(),
+        folderLastModified: stats.mtime,
       })
       .returning()
       .then((f) => f[0]);
@@ -35,6 +40,8 @@ export const addFolder = async (path: string) => {
   const relative = relativePath(path);
   const root = rootFolder!;
   if (relative === '') return root;
+
+  const stats = statSync(path);
 
   let f = root.id;
   const ps = pathSplit(path);
@@ -63,7 +70,7 @@ export const addFolder = async (path: string) => {
     if (newFolder && !newFolder.exists) {
       await db
         .update(dbFolder)
-        .set({ exists: true, updatedAt: new Date() })
+        .set({ exists: true, folderLastModified: stats.mtime }) // I'm intentionally not updating `lastUpdated` here (, updatedAt: new Date())
         .where(eq(dbFolder.id, newFolder.id));
     }
 
@@ -76,6 +83,7 @@ export const addFolder = async (path: string) => {
           createdAt: new Date(),
           updatedAt: new Date(),
           exists: true,
+          folderLastModified: stats.mtime,
         })
         .returning()
         .then((f) => f[0]);

@@ -6,16 +6,16 @@
 - [Troubleshooting](troubleshooting.md) might help if you get stuck.
 
 ## CLI Commands
-| Command                        | Description                                  | When to use                                                                                            |
-|--------------------------------|----------------------------------------------|--------------------------------------------------------------------------------------------------------|
-| `npm start`                    | Run Server + Frontend in Dev Mode            | When doing any dev and wanting instant reloads on changes of server or client files                    |
-| `cd frontend && npm run build` | Build frontend                               | Update front end build (before doing backend build)                                                    |
-| `npx drizzle-kit push`         | Validate DB Schema                           | Run when db schema modified'                                                                           |
-| `npm run build`                | Build Server (including client)              | Before making docker image                                                                             |
-| `npm run gql`                  | Build GQL files                              | Run after updating any GQL on server to "see" new stuff, <br/>or after updating a query on client side |
-| `npm run test`                 | Build server, create docker image, run tests | Check that you haven't broken anything on the backend before a commit or release                       |
-| `npm run test-only`            | Create docker image, run tests               | Same as above, but doesn't do `npm run build` first so it's faster if you have already built           |
-| `npm run release`              | Tag new version, build+push docker images    | Run when we have something 'release worthy'                                                            |
+| Command                       | Description                                      | When to use                                                                                            |
+|-------------------------------|--------------------------------------------------|--------------------------------------------------------------------------------------------------------|
+| `npm start`                   | Run Server + Frontend in Dev Mode                | When doing any dev and wanting instant reloads on changes of server or client files                    |
+| `cd frontend && npm run build` | Build frontend                                   | Update front end build (before doing backend build)                                                    |
+| `npx drizzle-kit generate`    | generate migration files (optional `--name=xyz`) | Run when db schema modified'                                                                           |
+| `npm run build`               | Build Server (including client)                  | Before making docker image                                                                             |
+| `npm run gql`                 | Build GQL files                                  | Run after updating any GQL on server to "see" new stuff, <br/>or after updating a query on client side |
+| `npm run test`                | Build server, create docker image, run tests     | Check that you haven't broken anything on the backend before a commit or release                       |
+| `npm run test-only`           | Create docker image, run tests                   | Same as above, but doesn't do `npm run build` first so it's faster if you have already built           |
+| `npm run release`             | Tag new version, build+push docker images        | Run when we have something 'release worthy'                                                            |
 
 ## Dev Server
 Two ports are exposed during development:

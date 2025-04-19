@@ -13,6 +13,7 @@ import { picrConfig } from '../../config/picrConfig';
 import { and, eq } from 'drizzle-orm';
 import { db } from '../../db/picrDb';
 import { dbFile } from '../../db/models';
+import { statSync } from 'node:fs';
 
 export const addFile = async (filePath: string, generateThumbs: boolean) => {
   const type = validExtension(filePath);
@@ -23,7 +24,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
   // console.log(`${basename(filePath)} of type ${type} in ${dirname(filePath)}`);
   const folderId = await findFolderId(dirname(filePath));
 
-  const stats = fs.statSync(filePath);
+  const stats = statSync(filePath);
 
   const props = {
     name: basename(filePath),
