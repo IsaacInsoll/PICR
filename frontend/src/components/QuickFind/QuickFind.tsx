@@ -99,13 +99,19 @@ export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
   );
 };
 
-const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
+const Results = ({
+  folder,
+  close,
+}: {
+  folder?: MinimalFolder;
+  close: () => void;
+}) => {
   const setFolder = useSetFolder();
   const me = useMe();
   const query = useAtomValue(queryAtom);
   const scope = useAtomValue(scopeAtom);
   const type = useAtomValue(scopeTypeAtom);
-  const folderId = scope == 'all' || !folder?.id ? me.folderId : folder.id;
+  const folderId = scope == 'all' || !folder?.id ? me?.folderId : folder.id;
   const [debouncedQuery] = useDebouncedValue(query, 200);
   const [index, setIndex] = useState<number | null>(null);
 
@@ -113,8 +119,10 @@ const Results = ({ folder, close }: { folder?: MinimalFolder }) => {
   const [results] = useQuery({
     query: searchQuery,
     variables: { query: debouncedQuery, folderId },
-    pause: debouncedQuery == '',
+    pause: debouncedQuery == '' || !folderId,
   });
+
+  if (!folderId) return;
   const folders = results.data?.searchFolders ?? [];
   const files = results.data?.searchFiles ?? [];
 
