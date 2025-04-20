@@ -69,6 +69,7 @@ const resolver = async (_, params, context) => {
 
   adminUser.username = params.username;
   adminUser.enabled = params.enabled;
+  adminUser.ntfy = params.ntfy;
   adminUser.commentPermissions = params.commentPermissions;
   adminUser.updatedAt = new Date();
   if (pass) adminUser.hashedPassword = hashPassword(pass);
@@ -97,5 +98,6 @@ export const editAdminUser = {
     password: { type: GraphQLString },
     enabled: { type: GraphQLBoolean },
     commentPermissions: { type: commentPermissionsEnum },
+    ntfy: { type: GraphQLString },
   },
 };

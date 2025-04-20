@@ -208,6 +208,7 @@ export type MutationEditAdminUserArgs = {
   folderId?: InputMaybe<Scalars['ID']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  ntfy?: InputMaybe<Scalars['String']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
 };
@@ -381,6 +382,7 @@ export type User = {
   id?: Maybe<Scalars['ID']['output']>;
   lastAccess?: Maybe<Scalars['DateTime']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  ntfy?: Maybe<Scalars['String']['output']>;
   username?: Maybe<Scalars['String']['output']>;
   uuid?: Maybe<Scalars['String']['output']>;
 };

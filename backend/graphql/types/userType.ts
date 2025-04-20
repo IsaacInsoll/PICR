@@ -21,6 +21,7 @@ export const userType = new GraphQLObjectType({
     folder: { type: folderType },
     commentPermissions: { type: commentPermissionsEnum },
     gravatar: { type: GraphQLString },
+    ntfy: { type: GraphQLString },
     lastAccess: { type: GraphQLDateTime },
   }),
 });

@@ -20,9 +20,9 @@ export const sendNtfyNotification = async (
 };
 
 const ntfyEmoji: { [key in NotificationType]: string } = {
-  View: 'eyes',
-  Download: 'star',
-  // | 'triangular_flag_on_post'
-  // | 'left_speech_bubble'
-  // | 'card_file_box';
+  viewed: 'eyes',
+  downloaded: 'card_file_box',
+  rated: 'star',
+  flagged: 'triangular_flag_on_post',
+  commented: 'left_speech_bubble',
 };

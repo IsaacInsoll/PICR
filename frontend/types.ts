@@ -35,6 +35,7 @@ export interface MinimalSharedFolder {
   gravatar?: string;
   commentPermissions?: CommentPermissions;
   uuid?: string;
+  ntfy?: string;
   enabled?: boolean;
   folder?: MinimalFolder | null;
 }

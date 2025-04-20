@@ -9,10 +9,15 @@ import { addCommentDB, db, dbFileForId } from '../../db/picrDb';
 import { dbFile } from '../../db/models';
 import { eq } from 'drizzle-orm';
 import { fileFlagEnum } from '../types/enums';
+import { sendCommentAddedNotification } from '../../notifications/notifications';
 
 const resolver = async (_, params, context) => {
   const file = await dbFileForId(params.id);
-  const { user } = await contextPermissions(context, file?.folderId, 'View');
+  const { user, folder } = await contextPermissions(
+    context,
+    file?.folderId,
+    'View',
+  );
   if (!file?.exists) throw new GraphQLError('File not found');
 
   if (user?.commentPermissions != 'edit') doAuthError('Not allowed to comment');
@@ -22,15 +27,40 @@ const resolver = async (_, params, context) => {
   if (params.rating != null) {
     file.rating = params.rating;
     await addCommentDB(file, user, { rating: params.rating });
+    await sendCommentAddedNotification(
+      folder,
+      file,
+      user,
+      'rated',
+      params.rating + ' stars',
+    );
   }
   if (params.flag) {
     file.flag = params.flag == 'none' ? null : params.flag;
     await addCommentDB(file, user, { flag: params.flag });
+    await sendCommentAddedNotification(
+      folder,
+      file,
+      user,
+      'flagged',
+      params.flag,
+    );
   }
 
   if (params.comment) {
     await addCommentDB(file, user, undefined, params.comment);
     file.totalComments = file.totalComments + 1;
+    const short =
+      params.comment.length > 20
+        ? params.comment.substring(0, 20) + '...'
+        : params.comment;
+    await sendCommentAddedNotification(
+      folder,
+      file,
+      user,
+      'commented',
+      `"${short}"`,
+    );
   }
 
   file.latestComment = new Date();

@@ -156,7 +156,7 @@ type Mutation {
   addComment(comment: String, flag: FileFlag, id: ID!, nickName: String, rating: Int): FileInterface!
   auth(password: String!, user: String!): String!
   deleteBranding(folderId: ID!): Folder!
-  editAdminUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, password: String, username: String): User!
+  editAdminUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, ntfy: String, password: String, username: String): User!
   editBranding(folderId: ID!, logoUrl: String, mode: ThemeMode, primaryColor: PrimaryColor): Folder!
   editFolder(folderId: ID!, heroImageId: ID): Folder!
   editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, username: String, uuid: String): User!
@@ -235,6 +235,7 @@ type User {
   id: ID
   lastAccess: DateTime
   name: String
+  ntfy: String
   username: String
   uuid: String
 }

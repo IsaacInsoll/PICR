@@ -11,6 +11,7 @@ import {
   TbLayoutDashboard,
   TbLink,
   TbLogout,
+  TbNotification,
   TbSearch,
   TbSpy,
   TbThumbDown,
@@ -66,4 +67,8 @@ export const CommentsIcon = (props: IconBaseProps) => (
 );
 export const DashboardIcon = (props: IconBaseProps) => (
   <TbLayoutDashboard {...props} />
+);
+
+export const NotificationIcon = (props: IconBaseProps) => (
+  <TbNotification {...props} />
 );

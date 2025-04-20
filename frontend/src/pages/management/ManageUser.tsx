@@ -19,7 +19,7 @@ import {
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { ErrorAlert } from '../../components/ErrorAlert';
-import { EmailIcon } from '../../PicrIcons';
+import { EmailIcon, NotificationIcon } from '../../PicrIcons';
 import { editAdminUserMutation } from '../../urql/mutations/editAdminUserMutation';
 
 export const ManageUser = ({
@@ -35,6 +35,7 @@ export const ManageUser = ({
   const [name, setName] = useState(user?.name ?? '');
   const [username, setUsername] = useState(user?.username);
   const [password, setPassword] = useState<string | null>(null);
+  const [ntfy, setNtfy] = useState<string | null>(user?.ntfy);
   const [enabled, setEnabled] = useState(user?.enabled ?? true);
   const [commentPermissions, setCommentPermissions] =
     useState<CommentPermissions>(
@@ -58,6 +59,7 @@ export const ManageUser = ({
       enabled,
       folderId: folder?.id,
       commentPermissions,
+      ntfy,
     };
     mutate(data).then(({ data, error }) => {
       if (error) {
@@ -100,12 +102,21 @@ export const ManageUser = ({
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        <FolderSelector folder={folder} setFolder={setFolder} />
+
         <CommentPermissionsSelector
           value={commentPermissions}
           onChange={setCommentPermissions}
         />
 
-        <FolderSelector folder={folder} setFolder={setFolder} />
+        <TextInput
+          leftSection={<NotificationIcon />}
+          placeholder="EG: https://ntfy.sh/xyz"
+          value={ntfy}
+          label="NTFY Notifications URL"
+          description="Get notifications on your phone"
+          onChange={(e) => setNtfy(e.target.value)}
+        />
 
         <Checkbox
           checked={enabled}
