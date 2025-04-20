@@ -17,7 +17,7 @@ const folderResolver: GraphQLFieldResolver<
     'View',
   );
   const data = { ...folder, permissions };
-  await createAccessLog(user.id, folder.id, context, AccessType.View);
+  await createAccessLog(user, folder, context, AccessType.View);
   // @ts-ignore folder.id types incompatible
   return data;
 };

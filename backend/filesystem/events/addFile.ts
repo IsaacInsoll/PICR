@@ -21,6 +21,8 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
     log('info', `🤷‍♂️ Ignoring ${filePath} as it's not a supported file format`);
     return;
   }
+  //todo: if generateThumbs then maybe we need to update folder last modified?
+
   // console.log(`${basename(filePath)} of type ${type} in ${dirname(filePath)}`);
   const folderId = await findFolderId(dirname(filePath));
 

@@ -55,7 +55,7 @@ export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
     return () => {
       window.removeEventListener('keydown', handler);
     };
-  }, [opened]);
+  }, [opened, toggle]);
 
   // "select all" the textbox when opened (IE: existing query)
   useEffect(() => {

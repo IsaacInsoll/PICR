@@ -11,7 +11,7 @@ const resolver = async (_, params, context) => {
     params.folderId,
     'View',
   );
-  await createAccessLog(user.id, folder.id, context, AccessType.Download);
+  await createAccessLog(user, folder, context, AccessType.Download);
 
   const h = await hashFolderContents(folder);
   addToZipQueue(h);
