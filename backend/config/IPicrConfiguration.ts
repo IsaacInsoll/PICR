@@ -1,4 +1,5 @@
 export interface IPicrConfiguration {
+  baseUrl: string; // eg: https://picr.mydomain.com/
   tokenSecret?: string;
   databaseUrl?: string;
   debugSql?: boolean;

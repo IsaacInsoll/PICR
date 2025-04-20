@@ -11,6 +11,7 @@ export const configFromEnv = () => {
   const port = Number(process.env.PORT);
 
   const c: IPicrConfiguration = {
+    baseUrl: process.env.BASE_URL ?? '',
     tokenSecret: process.env.TOKEN_SECRET,
     databaseUrl: process.env.DATABASE_URL,
     debugSql: process.env.DEBUG_SQL == 'true',
@@ -33,6 +34,12 @@ export const configFromEnv = () => {
 Heres one we just created for you:
 TOKEN_SECRET=${secret}`);
     process.exit();
+  }
+
+  if (c.baseUrl == '') {
+    console.log(
+      '⚠️ WARNING: You have not set a BASE_URL in your environment. \nMost things will still work but you should do this \n',
+    );
   }
 
   log('info', '#️⃣  Version: ' + (c.dev ? '[DEV] ' : '') + c.version, true);

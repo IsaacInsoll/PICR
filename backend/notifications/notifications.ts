@@ -3,6 +3,7 @@ import { AccessType } from '../../graphql-types';
 import { folderAndAllParentIds } from '../helpers/folderAndAllParentIds';
 import { usersForFolders } from '../helpers/usersForFolders';
 import { sendNtfyNotification } from './sendNtfyNotification';
+import { urlForImage, userUrlForFile, userUrlForFolder } from '../helpers/url';
 
 export type NotificationType =
   | 'downloaded'
@@ -32,6 +33,7 @@ export const sendFolderViewedNotification = async (
   await sendNotification(folder, {
     message: `${user.name} ${type} ${folder.name}`,
     type: type == 'View' ? 'viewed' : 'downloaded',
+    url: userUrlForFolder(folder.id),
   });
 };
 
@@ -46,6 +48,8 @@ export const sendCommentAddedNotification = async (
     message: `${user.name} ${type} ${value} on ${file.name} in ${folder.name}`,
     type,
     userId: user.id,
+    url: userUrlForFile(file),
+    imageUrl: urlForImage(file, 'sm'),
   });
 };
 

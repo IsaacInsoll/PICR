@@ -4,18 +4,22 @@ export const sendNtfyNotification = async (
   topic: string,
   payload: NotificationPayload,
 ) => {
-  const { message, type } = payload;
+  const { message, type, url } = payload;
+
+  const headers = {
+    Title: 'PICR',
+    Tags: ntfyEmoji[type],
+    // 'Priority': '5'
+    // TODO: action buttons?
+  };
+  if (url) headers['Click'] = url;
+
+  //not sure how to do thumbnail (Attach) field as the docs indicate that might download the file rather than just present it?
 
   await fetch(topic, {
     method: 'POST',
     body: message,
-    headers: {
-      Title: 'PICR',
-      Tags: ntfyEmoji[type],
-      // 'Priority': '5'
-      //'Click': 'https://www.reddit.com/message/messages'
-      // TODO: action buttons?
-    },
+    headers,
   });
 };
 
