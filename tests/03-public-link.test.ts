@@ -25,6 +25,8 @@ test('Public Link', async () => {
     ...testPublicLink,
     id: '2',
     gravatar: gravatarTest.result,
+    folder: undefined,
+    ntfy: null,
   });
 
   const folder = user.folder;

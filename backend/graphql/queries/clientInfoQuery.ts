@@ -4,6 +4,7 @@ import { clientInfoType } from '../types/clientInfoType';
 import { getServerOptions } from '../../db/picrDb';
 
 const resolver = async (_, params, context, schema) => {
+  //TODO: fix this doesn't work when accessing as public user
   const user = await getUserFromToken(context);
   if (!user) throw new GraphQLError('No permissions');
   const opts = await getServerOptions();
