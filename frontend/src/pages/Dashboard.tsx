@@ -25,7 +25,7 @@ import { Tips } from '../components/Tips';
 import { FolderLink } from '../components/FolderLink';
 import { FolderName } from '../components/FolderName';
 import {
-  fromNow,
+  DateDisplay,
   prettyDate,
 } from '../components/FileListView/Filtering/PrettyDate';
 import { PicrAvatar } from '../components/PicrAvatar';
@@ -115,7 +115,9 @@ const RecentUsers = () => {
       <Table.Tbody>
         {result.data?.users.map((user) => (
           <Table.Tr key={user.id}>
-            <Table.Td>{fromNow(user.lastAccess)}</Table.Td>
+            <Table.Td>
+              <DateDisplay dateString={user.lastAccess} />
+            </Table.Td>
             <Table.Td>
               <Group>
                 <PicrAvatar user={user} size="sm" />

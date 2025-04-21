@@ -7,7 +7,7 @@ import { MantineSize, Rating } from '@mantine/core';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { FileFlagBadge } from './Review/FileFlagBadge';
 import { FileMenu } from './FileMenu';
-import { fromNow } from './Filtering/PrettyDate';
+import { DateDisplay } from './Filtering/PrettyDate';
 import { useIsMobile, useIsSmallScreen } from '../../hooks/useIsMobile';
 import { FolderMenu } from './FolderMenu';
 import { useSetFolder } from '../../hooks/useSetFolder';
@@ -102,8 +102,7 @@ const columns: (PicrColumns<MinimalFile> & {
     header: 'Latest Action',
     size: 10,
     Cell: ({ cell }) => {
-      const latest = cell.getValue();
-      return latest ? fromNow(latest) : '';
+      return <DateDisplay dateString={cell.getValue()} />;
     },
     isComment: true,
     visibleFor: 'sm',

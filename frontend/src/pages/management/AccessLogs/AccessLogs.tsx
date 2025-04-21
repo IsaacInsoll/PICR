@@ -2,7 +2,7 @@ import { gql } from '../../../helpers/gql';
 import { useQuery } from 'urql';
 import { PicrColumns, PicrDataGrid } from '../../../components/PicrDataGrid';
 import { AccessLog, UserType } from '../../../../../graphql-types';
-import { fromNow } from '../../../components/FileListView/Filtering/PrettyDate';
+import { DateDisplay } from '../../../components/FileListView/Filtering/PrettyDate';
 import { LazyPicrAvatar } from '../../../components/LazyPicrAvatar';
 import { UAParser } from 'ua-parser-js';
 import { Badge, BadgeProps, Code, Group, Stack } from '@mantine/core';
@@ -100,8 +100,7 @@ const accessLogColumns: PicrColumns<AccessLog>[] = [
     accessorKey: 'timestamp',
     header: 'Time',
     Cell: ({ cell }) => {
-      const latest: string = cell.getValue();
-      return latest ? fromNow(latest) : '';
+      return <DateDisplay dateString={cell.getValue()} />;
     },
   },
   {
