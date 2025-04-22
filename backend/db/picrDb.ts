@@ -123,13 +123,11 @@ export const createAccessLog = async (
 
   if (recent) return;
 
-  await db
-    .insert(dbAccessLog)
-    .values({ ...props, createdAt: new Date(), updatedAt: new Date() });
-
+  //intentionally check for a recent session before writing this one
   // we don't want to send a notification for every folder view as that means navigating folders would cause lots of notifications
   // so ignore folderId, sessionId and userAgent
   // EG: view on desktop, then view on mobile while still at home, browsing different folders = same IP and User so no dupe notifications within the hour
+
   const recentSession = await db.query.dbAccessLog.findFirst({
     where: and(
       eq(dbAccessLog.userId, props.userId),
@@ -138,6 +136,11 @@ export const createAccessLog = async (
       gte(dbAccessLog.createdAt, new Date(Date.now() - 3600 * 1000)),
     ),
   });
+
+  await db
+    .insert(dbAccessLog)
+    .values({ ...props, createdAt: new Date(), updatedAt: new Date() });
+
   if (type == 'View' && recentSession) return;
   await sendFolderViewedNotification(folder, user, type);
 };
