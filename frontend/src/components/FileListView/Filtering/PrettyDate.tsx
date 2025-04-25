@@ -32,7 +32,7 @@ export const DateDisplay = ({
 
   return (
     <Tooltip label={isRelative ? full : ago}>
-      <Text size="sm" onClick={() => setIsRelative(!isRelative)}>
+      <Text size="sm" c="dimmed" onClick={() => setIsRelative(!isRelative)}>
         {isRelative ? ago : full}
       </Text>
     </Tooltip>

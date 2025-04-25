@@ -10,7 +10,6 @@ import { useQuickFind } from '../QuickFind/useQuickFind';
 import { useNavigate } from 'react-router';
 import {
   DashboardIcon,
-  FolderIcon,
   HomeIcon,
   LogOutIcon,
   SearchIcon,
@@ -18,11 +17,9 @@ import {
 } from '../../PicrIcons';
 import { useSetAtom } from 'jotai/index';
 import { authKeyAtom } from '../../atoms/authAtom';
-import { TbFolderStar } from 'react-icons/tb';
 import { MinimalFolder } from '../../../types';
-import { useBaseViewFolderURL } from '../../hooks/useBaseViewFolderURL';
-import { useCallback } from 'react';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { ManageFolderButton } from '../ManageFolderButton';
 
 export const LoggedInHeader = ({
   folder,
@@ -109,35 +106,6 @@ const LeftSide = ({
         ) : null}
       </Group>
     </Box>
-  );
-};
-
-const ManageFolderButton = ({
-  folder,
-  managing,
-}: {
-  folder: MinimalFolder;
-  managing: boolean;
-}) => {
-  const navigate = useNavigate();
-  const baseUrl = useBaseViewFolderURL();
-  // const setFolder = useSetFolder();
-
-  const toggleManaging = useCallback(() => {
-    navigate(baseUrl + folder.id + (managing ? '' : '/manage/links'));
-  }, [navigate, baseUrl, folder.id, managing]);
-
-  const icon = managing ? <FolderIcon /> : <TbFolderStar />;
-
-  return (
-    <Button
-      variant="outline"
-      onClick={toggleManaging}
-      leftSection={icon}
-      size="xs"
-    >
-      {managing ? 'View' : 'Manage'} folder
-    </Button>
   );
 };
 
