@@ -7,6 +7,7 @@ Picr is a self-hosted online image sharing tool for photographers to share photo
 
 - 👩🏻‍💻 [GitHub](https://github.com/isaacinsoll/picr)
 - 🐳 [Docker Hub](https://hub.docker.com/repository/docker/isaacinsoll/picr/general)
+- 🔖 [Releases / Changelog](https://github.com/IsaacInsoll/PICR/releases)
 
 ## Features
 

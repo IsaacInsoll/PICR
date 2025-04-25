@@ -6,8 +6,9 @@ import { picrConfig } from '../config/picrConfig';
 import { db } from '../db/picrDb';
 import { dbFile, dbFolder } from '../db/models';
 import { isNotNull } from 'drizzle-orm';
+import { IPicrConfiguration } from '../config/IPicrConfiguration';
 
-export const fileWatcher = async (config) => {
+export const fileWatcher = async (config: IPicrConfiguration) => {
   log(
     'info',
     '👀 Now watching: ' +
