@@ -5,9 +5,9 @@ import { ActionIcon, Box, Button, Group, Menu, Text } from '@mantine/core';
 import classes from './LoggedInHeader.module.css';
 import { PicrLogo } from '../../pages/LoginForm';
 import { PicrAvatar } from '../PicrAvatar';
-import { useSetFolder } from '../../hooks/useSetFolder';
+import { useFolderLink, useSetFolder } from '../../hooks/useSetFolder';
 import { useQuickFind } from '../QuickFind/useQuickFind';
-import { useNavigate } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 import {
   DashboardIcon,
   HomeIcon,
@@ -20,6 +20,8 @@ import { authKeyAtom } from '../../atoms/authAtom';
 import { MinimalFolder } from '../../../types';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { ManageFolderButton } from '../ManageFolderButton';
+import { PicrMenuItem } from '../PicrLink';
+import { placeholderFolder } from '../FolderHeader/PlaceholderFolder';
 
 export const LoggedInHeader = ({
   folder,
@@ -70,7 +72,7 @@ const LeftSide = ({
   managing?: boolean;
 }) => {
   const isMobile = useIsMobile();
-  const setFolder = useSetFolder();
+  const homeFolderLink = useFolderLink(me.folder);
   const [, setOpened] = useQuickFind();
   return (
     <Box style={{ flexGrow: 1 }}>
@@ -80,9 +82,7 @@ const LeftSide = ({
         ) : null}
         {!folder || !isMobile ? (
           <Button
-            onClick={() => {
-              setFolder(me.folder);
-            }}
+            {...homeFolderLink}
             leftSection={<PicrLogo style={{ maxWidth: 16 }} />}
             variant="subtle"
             color="gray"
@@ -110,11 +110,10 @@ const LeftSide = ({
 };
 
 const RightSide = ({ me }) => {
-  const navigate = useNavigate();
-  const setFolder = useSetFolder();
+  const homeFolderLink = useFolderLink(me.folder);
   const [, setOpened] = useQuickFind();
-
   const logOut = useLogout();
+
   return (
     <Menu
       shadow="md"
@@ -136,28 +135,19 @@ const RightSide = ({ me }) => {
 
       <Menu.Dropdown>
         <Menu.Label>Files & Folders</Menu.Label>
-        <Menu.Item
-          leftSection={<DashboardIcon />}
-          onClick={() => navigate('/')}
-        >
+        <PicrMenuItem leftSection={<DashboardIcon />} to="/">
           Dashboard
-        </Menu.Item>
-        <Menu.Item
-          leftSection={<HomeIcon />}
-          onClick={() => setFolder(me.folder)}
-        >
+        </PicrMenuItem>
+        <PicrMenuItem leftSection={<HomeIcon />} {...homeFolderLink}>
           {me.folder?.name ?? 'Home'}
-        </Menu.Item>
+        </PicrMenuItem>
         <Menu.Item leftSection={<SearchIcon />} onClick={() => setOpened(true)}>
           Search
         </Menu.Item>
         <Menu.Label>PICR</Menu.Label>
-        <Menu.Item
-          leftSection={<UserSettingsIcon />}
-          onClick={() => navigate('/admin/settings')}
-        >
+        <PicrMenuItem leftSection={<UserSettingsIcon />} to="/admin/settings">
           Settings
-        </Menu.Item>
+        </PicrMenuItem>
         <Menu.Item leftSection={<LogOutIcon />} onClick={logOut}>
           Log out
         </Menu.Item>
@@ -169,7 +159,6 @@ const RightSide = ({ me }) => {
 const useLogout = () => {
   const setAuthKey = useSetAtom(authKeyAtom);
   return () => {
-    console.log('logging out');
     setAuthKey('');
     window.location.reload();
   };

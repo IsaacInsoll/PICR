@@ -28,7 +28,10 @@ import { EmptyPlaceholder } from './EmptyPlaceholder';
 import { TbUnlink } from 'react-icons/tb';
 import { readAllFoldersQuery } from '../urql/queries/readAllFoldersQuery';
 import { FoldersSortType } from '../gql/graphql';
-import { ManageFolderButton } from '../components/ManageFolderButton';
+import {
+  ManageFolderButton,
+  ManageFolderIconButton,
+} from '../components/ManageFolderButton';
 
 export const Dashboard = () => {
   const me = useMe();
@@ -186,9 +189,9 @@ const RecentlyModifiedFolders = () => {
             </Table.Td>
             <Table.Td>
               <FolderName folder={f} />
-            </Table.Td>{' '}
-            <Table.Td>
-              <ManageFolderButton folder={f} managing={false} />
+            </Table.Td>
+            <Table.Td align="right">
+              <ManageFolderIconButton folder={f} />
             </Table.Td>
           </Table.Tr>
         ))}

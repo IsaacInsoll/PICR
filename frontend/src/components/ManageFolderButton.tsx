@@ -1,10 +1,9 @@
 import { MinimalFolder } from '../../types';
-import { NavLink, useNavigate } from 'react-router';
+import { NavLink } from 'react-router';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
-import { useCallback } from 'react';
 import { FolderIcon } from '../PicrIcons';
 import { TbFolderStar } from 'react-icons/tb';
-import { Button } from '@mantine/core';
+import { ActionIcon, Button } from '@mantine/core';
 import { useSetAtom } from 'jotai';
 import { placeholderFolder } from './FolderHeader/PlaceholderFolder';
 
@@ -32,5 +31,28 @@ export const ManageFolderButton = ({
     >
       {managing ? 'View' : 'Manage'} folder
     </Button>
+  );
+};
+
+export const ManageFolderIconButton = ({
+  folder,
+}: {
+  folder: MinimalFolder;
+}) => {
+  const baseUrl = useBaseViewFolderURL();
+  const setPlaceholderFolder = useSetAtom(placeholderFolder);
+  const onClick = () => {
+    setPlaceholderFolder({ ...folder });
+  };
+  return (
+    <ActionIcon
+      component={NavLink}
+      to={baseUrl + folder.id + '/manage/links'}
+      onClick={onClick}
+      variant="outline"
+      // size="xs"
+    >
+      <TbFolderStar />
+    </ActionIcon>
   );
 };
