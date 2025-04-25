@@ -99,6 +99,7 @@ enum FileType {
 type Folder {
   branding: Branding
   files: [FileInterface!]!
+  folderLastModified: DateTime!
   heroImage: Image
   id: ID!
   name: String!
@@ -118,6 +119,11 @@ enum FolderPermissions {
   Admin
   None
   View
+}
+
+enum FoldersSortType {
+  folderLastModified
+  name
 }
 
 type Image implements FileInterface {
@@ -184,7 +190,7 @@ enum PrimaryColor {
 type Query {
   accessLogs(folderId: ID!, includeChildren: Boolean, userId: ID, userType: UserType): [AccessLog!]!
   admins: [User!]!
-  allFolders(id: ID!): [Folder]!
+  allFolders(id: ID!, limit: Int, sort: FoldersSortType): [Folder]!
   brandings: [Branding!]!
   clientInfo: ClientInfo
   comments(fileId: ID, folderId: ID): [Comment!]!

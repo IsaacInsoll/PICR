@@ -1,15 +1,27 @@
 import { db, dbFolderForId, FolderFields } from '../db/picrDb';
 import { dbFolder } from '../db/models';
-import { and, asc, eq, like, or } from 'drizzle-orm';
+import { and, asc, desc, eq, like, or } from 'drizzle-orm';
+import { FoldersSortType } from '../../graphql-types';
 
 // Recursively find all subfolders
 // NOTE: no permissions done here, if you can see parent you can see the children
-export const allSubfolders = async (folderId: number) => {
+export const allSubfolders = async (
+  folderId: number,
+  sort?: FoldersSortType,
+  limit?: number,
+) => {
+  const orderBy =
+    sort == FoldersSortType.FolderLastModified
+      ? desc(dbFolder.folderLastModified)
+      : asc(dbFolder.name);
+
   const f = await dbFolderForId(folderId);
   if (!f?.relativePath) {
     //root folder
     return db.query.dbFolder.findMany({
       where: eq(dbFolder.exists, true),
+      orderBy,
+      limit,
     });
   }
 
@@ -21,7 +33,8 @@ export const allSubfolders = async (folderId: number) => {
         like(dbFolder.relativePath, f.relativePath + '/%'),
       ),
     ),
-    orderBy: asc(dbFolder.name),
+    orderBy,
+    limit,
   });
 };
 

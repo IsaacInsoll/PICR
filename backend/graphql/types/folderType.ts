@@ -21,12 +21,14 @@ import { contextPermissions } from '../../auth/contextPermissions';
 import { db, FolderFields, getFilesForFolder } from '../../db/picrDb';
 import { and, count, eq, inArray, sum } from 'drizzle-orm';
 import { dbFile, dbUser } from '../../db/models';
+import { GraphQLDateTime } from 'graphql-scalars';
 
 export const folderType = new GraphQLObjectType({
   name: 'Folder',
   fields: () => ({
     id: { type: new GraphQLNonNull(GraphQLID) },
     name: { type: new GraphQLNonNull(GraphQLString) },
+    folderLastModified: { type: new GraphQLNonNull(GraphQLDateTime) },
     parentId: { type: GraphQLID },
     subFolders: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),

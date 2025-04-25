@@ -113,6 +113,7 @@ export type Folder = {
   __typename?: 'Folder';
   branding?: Maybe<Branding>;
   files: Array<FileInterface>;
+  folderLastModified: Scalars['DateTime']['output'];
   heroImage?: Maybe<Image>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -132,6 +133,11 @@ export enum FolderPermissions {
   Admin = 'Admin',
   None = 'None',
   View = 'View'
+}
+
+export enum FoldersSortType {
+  FolderLastModified = 'folderLastModified',
+  Name = 'name'
 }
 
 export type Image = FileInterface & {
@@ -295,6 +301,8 @@ export type QueryAccessLogsArgs = {
 
 export type QueryAllFoldersArgs = {
   id: Scalars['ID']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<FoldersSortType>;
 };
 
 

@@ -1,7 +1,7 @@
 import { useQuery } from 'urql';
 import { useEffect } from 'react';
 import { linksToDownloadAtom } from './DownloadZipButton';
-import { useAtom } from 'jotai/index';
+import { useAtom } from 'jotai';
 import {
   Box,
   Group,

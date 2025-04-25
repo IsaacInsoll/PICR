@@ -9,30 +9,25 @@ import {
   Divider,
   Grid,
   Group,
-  Paper,
   Stack,
-  Title,
-  Text,
   Table,
-  Button,
+  Text,
+  Title,
 } from '@mantine/core';
 import { ReactNode, Suspense } from 'react';
-import { AccessLogsIcon, FileIcon, FolderIcon } from '../PicrIcons';
+import { AccessLogsIcon, FolderIcon } from '../PicrIcons';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { gql } from '../helpers/gql';
 import { useQuery } from 'urql';
-import { Tips } from '../components/Tips';
-import { FolderLink } from '../components/FolderLink';
 import { FolderName } from '../components/FolderName';
-import {
-  DateDisplay,
-  prettyDate,
-} from '../components/FileListView/Filtering/PrettyDate';
+import { DateDisplay } from '../components/FileListView/Filtering/PrettyDate';
 import { PicrAvatar } from '../components/PicrAvatar';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { PicrLink } from '../components/PicrLink';
 import { EmptyPlaceholder } from './EmptyPlaceholder';
 import { TbUnlink } from 'react-icons/tb';
+import { readAllFoldersQuery } from '../urql/queries/readAllFoldersQuery';
+import { FoldersSortType } from '../gql/graphql';
 
 export const Dashboard = () => {
   const me = useMe();
@@ -65,9 +60,9 @@ const Body = () => {
         {/*<BodyComponent title="Recent Viewed Folders" icon={<FolderIcon />}>*/}
         {/*  Folders I personally recently viewed*/}
         {/*</BodyComponent>*/}
-        {/*<BodyComponent title="Recent Folders Created" icon={<FolderIcon />}>*/}
-        {/*  Folders recently created*/}
-        {/*</BodyComponent>*/}
+        <BodyComponent title="Recently Modified Folders" icon={<FolderIcon />}>
+          <RecentlyModifiedFolders />
+        </BodyComponent>
         {/*<BodyComponent title="Recent Files Created" icon={<FileIcon />}>*/}
         {/*  Files recently created or modified???*/}
         {/*</BodyComponent>*/}
@@ -165,5 +160,35 @@ const BodyComponent = ({
         <Suspense fallback={<LoadingIndicator />}>{children}</Suspense>
       </Box>
     </Stack>
+  );
+};
+
+const RecentlyModifiedFolders = () => {
+  const me = useMe();
+
+  const [result] = useQuery({
+    query: readAllFoldersQuery,
+    variables: {
+      id: me?.folderId,
+      limit: 10,
+      sort: FoldersSortType.FolderLastModified,
+    },
+  });
+
+  return (
+    <Table width="100%">
+      <Table.Tbody>
+        {result.data?.allFolders.map((f) => (
+          <Table.Tr key={f.id}>
+            <Table.Td>
+              <DateDisplay dateString={f?.folderLastModified} />
+            </Table.Td>
+            <Table.Td>
+              <FolderName folder={f} />
+            </Table.Td>
+          </Table.Tr>
+        ))}
+      </Table.Tbody>
+    </Table>
   );
 };
