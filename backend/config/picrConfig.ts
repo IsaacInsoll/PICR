@@ -6,4 +6,5 @@ export const picrConfig: IPicrConfiguration = {
   cachePath: '',
   mediaPath: '',
   updateMetadata: false,
+  pollingInterval: 20, //sensible default
 };

@@ -6,7 +6,7 @@ export interface IPicrConfiguration {
   consoleLogging?: boolean;
   usePolling?: boolean;
   port?: number;
-  pollingInterval?: number;
+  pollingInterval: number;
   dev?: boolean;
   version?: string;
   updateMetadata: boolean;

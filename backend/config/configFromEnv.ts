@@ -48,8 +48,6 @@ export const configFromEnv = () => {
   for (const [key, value] of Object.entries(c)) {
     picrConfig[key] = value;
   }
-  // TODO: DONT COMMIT
-  console.log(picrConfig);
 };
 
 export const getVersion = () => {
