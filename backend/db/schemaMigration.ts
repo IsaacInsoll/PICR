@@ -19,8 +19,6 @@ export async function schemaMigration() {
   try {
     await migrate(migrationClient, {
       migrationsFolder: './backend/db/drizzle',
-      // migrationsSchema: 'public',
-      // migrationsTable: 'migrations',
     });
     console.log('🗃️  Migrations Complete');
   } catch (e) {

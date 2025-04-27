@@ -114,7 +114,7 @@
     "plugins": {
       "@release-it/bumper": {
         "out": {
-          "file": "dist/version.txt",
+          "file": "./version.txt",
           "type": "text/plain",
           "consumeWholeFile": true
         }

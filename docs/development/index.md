@@ -5,17 +5,25 @@
 - [Testing](testing.md) how to create/run tests using vitest.
 - [Troubleshooting](troubleshooting.md) might help if you get stuck.
 
-## CLI Commands
-| Command                       | Description                                      | When to use                                                                                            |
-|-------------------------------|--------------------------------------------------|--------------------------------------------------------------------------------------------------------|
-| `npm start`                   | Run Server + Frontend in Dev Mode                | When doing any dev and wanting instant reloads on changes of server or client files                    |
-| `cd frontend && npm run build` | Build frontend                                   | Update front end build (before doing backend build)                                                    |
-| `npx drizzle-kit generate`    | generate migration files (optional `--name=xyz`) | Run when db schema modified'                                                                           |
-| `npm run build`               | Build Server (including client)                  | Before making docker image                                                                             |
-| `npm run gql`                 | Build GQL files                                  | Run after updating any GQL on server to "see" new stuff, <br/>or after updating a query on client side |
-| `npm run test`                | Build server, create docker image, run tests     | Check that you haven't broken anything on the backend before a commit or release                       |
-| `npm run test-only`           | Create docker image, run tests                   | Same as above, but doesn't do `npm run build` first so it's faster if you have already built           |
-| `npm run release`             | Tag new version, build+push docker images        | Run when we have something 'release worthy'                                                            |
+## Development CLI Commands
+| Command                    | Description                                            | When to use                                                                                            |
+|----------------------------|--------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
+| `npm start`                | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. Uses nodemon/vite to reload on changes                                    |
+| `npm run gql`              | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br/>or after updating a query on client side |
+| `npx drizzle-kit generate` | generate migration files (optional `--name=xyz`)       | Run when db schema modified and you want to commit changes                                             |
+
+
+## Release / Testing Commands
+| Command                            | Description                                  | When to use                                                                                  |
+|------------------------------------|----------------------------------------------|----------------------------------------------------------------------------------------------|
+| `npm run build`                    | Build Server (TSC)                           | Done before creating docker image. Also finds any typescript issues preventing deploy.       |
+| `cd frontend && npm run build`     | Build frontend                               | Update front end build (do this before doing backend build)                                  |
+| `npm run test`                     | Build server, create docker image, run tests | Check that you haven't broken anything on the backend before a commit or release             |
+| `npm run test-only`                | Create docker image, run tests               | Same as above, but doesn't do `npm run build` first so it's faster if you have already built |
+| `npm run release`                  | Tag new version, build+push docker images    | Run when we have something 'release worthy'                                                  |
+| `docker compose --profile test up` | Build and run test images                    | Run when all tests are failing to see output of test docker image (EG: picr startup errors)  |
+
+
 
 ## Dev Server
 Two ports are exposed during development:

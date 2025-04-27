@@ -51,7 +51,7 @@ export const configFromEnv = () => {
 };
 
 export const getVersion = () => {
-  const p = 'dist/version.txt';
+  const p = './version.txt';
   if (existsSync(p)) {
     return readFileSync(p, 'utf8').trim();
   } else {
