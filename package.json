@@ -22,7 +22,6 @@
     "archiver": "^7.0.1",
     "blurhash": "^2.0.5",
     "chokidar": "^3.6.0",
-    "concurrently": "^8.2.2",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.41.0",
     "exif-reader": "^2.0.1",
@@ -48,8 +47,8 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^5.0.3",
-    "@graphql-codegen/client-preset": "^4.2.4",
+    "@graphql-codegen/cli": "^5.0.5",
+    "@graphql-codegen/client-preset": "^4.8.0",
     "@graphql-codegen/introspection": "^4.0.3",
     "@release-it/bumper": "^7.0.2",
     "@types/archiver": "^6.0.2",
@@ -67,6 +66,7 @@
     "@types/validator": "^13.11.9",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
+    "concurrently": "^9.1.2",
     "decompress": "^4.2.1",
     "docker-compose": "^1.1.0",
     "dotenv-cli": "^7.4.2",
