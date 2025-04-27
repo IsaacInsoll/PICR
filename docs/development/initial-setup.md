@@ -47,6 +47,7 @@ services:
       - DATABASE_URL=postgres://user:pass@test-db/picr
       - USE_POLLING=true
       - POLLING_INTERVAL=100
+      - BASE_URL=http://localhost:6901/
   test-db:
     container_name: test-db
     profiles: [test]
