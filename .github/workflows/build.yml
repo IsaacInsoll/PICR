@@ -36,5 +36,9 @@ jobs:
       name: "💄 [frontend] Install Dependencies"
     - run: cd frontend && npm run build
       name: "💄 [frontend] Build (vite)"
+    - uses: valitydev/action-download-file@v1
+      with:
+        url: https://photosummaryapp.com/picr-demo-data.zip
+        target-path: ./tests/env/sample.zip
     - run: npm run test-only
       name: "✅ [backend] run tests (vitest)"
