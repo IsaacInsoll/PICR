@@ -38,7 +38,7 @@ jobs:
       run: cd frontend && npm run build
 
 # TESTS
-    - run: mkdir -p ./tests/env && wget https://photosummaryapp.com/picr-demo-data.zip --output-document=./tests/env/sample.zip
+    - run: mkdir -p ./tests/env && wget --no-verbose https://photosummaryapp.com/picr-demo-data.zip --output-document=./tests/env/sample.zip
       name: "✅  [tests] download sample files"
     - run: npm run test
       name: "✅ [test] run backend tests (vitest)"
