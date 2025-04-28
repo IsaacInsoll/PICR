@@ -25,7 +25,7 @@ export default defineConfig({
     }),
   ],
   build: {
-    outDir: '../public',
+    outDir: '../dist/public',
     emptyOutDir: true,
   },
   esbuild: { minifyIdentifiers: false }, //keep function names for easier debugging on production
