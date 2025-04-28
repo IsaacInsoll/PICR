@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
 
-# WIP: i presume this will be "local build" and we will have a github action that will do this same thing but in CI?
-# we do want a local version of this for building local container for testing before doing releases?
+# Github Actions (CI) will do all this automatically so we use this for testing locally
 
 rm -rf ./dist
 mkdir ./dist
-cd frontend && npm run build && cd ..
-npm run build
-cp package*.json ./dist/
-cp version.txt ./dist/
-
-mkdir -p ./dist/backend/db/drizzle
-cp -r ./backend/db/drizzle ./dist/backend/db
+npm install && npm run build
+cd frontend && npm install && npm run build && cd ..
+./copy-backend-files.sh
 
 #zip -r dist.zip dist

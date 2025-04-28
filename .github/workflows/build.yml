@@ -22,23 +22,23 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-      name: "🗃️ [backend] Install Dependencies"
-    - run: npm run build
-      name: "🗃️ [backend] Build (TSC)"
+
+# BACKEND
+    - name: "🗃️ [backend] Install Dependencies"
+      run: npm ci
+    - name: "🗃️ [backend] Build (TSC)"
+      run: npm run build
     - name: " [backend] copy extra resources"
-      run: |
-        cp package*.json ./dist/
-        cp version.txt ./dist/
-        mkdir -p ./dist/backend/db/drizzle
-        cp -r ./backend/db/drizzle ./dist/backend/db
-    - run: cd frontend && npm ci
-      name: "💄 [frontend] Install Dependencies"
-    - run: cd frontend && npm run build
-      name: "💄 [frontend] Build (vite)"
-    - uses: valitydev/action-download-file@v1
-      with:
-        url: https://photosummaryapp.com/picr-demo-data.zip
-        target-path: ./tests/env/sample.zip
+      run:  bash ./copy-backend-files.sh
+
+# FRONTEND
+    - name: "💄 [frontend] Install Dependencies"
+      run: cd frontend && npm ci
+    - name: "💄 [frontend] Build (vite)"
+      run: cd frontend && npm run build
+
+# TESTS
+    - run: wget https://photosummaryapp.com/picr-demo-data.zip --output-document=./tests/env/sample.zip
+      name: "✅  [tests] download sample files"
     - run: npm run test-only
-      name: "✅ [backend] run tests (vitest)"
+      name: "✅ [test] run backend tests (vitest)"
