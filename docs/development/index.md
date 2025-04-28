@@ -14,14 +14,13 @@
 
 
 ## Release / Testing Commands
-| Command                            | Description                                  | When to use                                                                                  |
-|------------------------------------|----------------------------------------------|----------------------------------------------------------------------------------------------|
-| `npm run build`                    | Build Server (TSC)                           | Done before creating docker image. Also finds any typescript issues preventing deploy.       |
-| `cd frontend && npm run build`     | Build frontend                               | Update front end build (do this before doing backend build)                                  |
-| `npm run test`                     | Build server, create docker image, run tests | Check that you haven't broken anything on the backend before a commit or release             |
-| `npm run test-only`                | Create docker image, run tests               | Same as above, but doesn't do `npm run build` first so it's faster if you have already built |
-| `npm run release`                  | Tag new version, build+push docker images    | Run when we have something 'release worthy'                                                  |
-| `docker compose --profile test up` | Build and run test images                    | Run when all tests are failing to see output of test docker image (EG: picr startup errors)  |
+| Command                            | Description                               | When to use                                                                                 |
+|------------------------------------|-------------------------------------------|---------------------------------------------------------------------------------------------|
+| `npm run build`                    | Build Server (TSC)                        | Done before creating docker image. Also finds any typescript issues preventing deploy.      |
+| `cd frontend && npm run build`     | Build frontend                            | Update front end build (do this before doing backend build)                                 |
+| `npm run test`                     | Create docker image, run tests            | Runs tests, you should `npm run build` first                                                |
+| `npm run release`                  | Tag new version, build+push docker images | Run when we have something 'release worthy'                                                 |
+| `docker compose --profile test up` | Build and run test images                 | Run when all tests are failing to see output of test docker image (EG: picr startup errors) |
 
 
 

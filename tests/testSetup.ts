@@ -18,7 +18,7 @@ import https from 'https';
 const services = ['test-picr', 'test-db'];
 
 const composeOpts: IDockerComposeOptions = {
-  cwd: path.join(__dirname, '..'),
+  cwd: __dirname,
   log: false,
 };
 export async function setup({ provide }: GlobalSetupContext) {

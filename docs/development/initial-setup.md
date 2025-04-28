@@ -28,39 +28,6 @@ services:
       - "5432:5432"
     volumes:
       - picr-db-data:/var/lib/postgresql/data
-
-#  if you want to run tests, add the below
-
-  test-picr:
-    container_name: test-picr
-    profiles: [test]
-    build: .
-    volumes:
-      - ./tests/env/media:/home/node/app/media:ro
-      - ./tests/env/cache:/home/node/app/cache
-    depends_on:
-      - test-db
-    ports:
-      - "6901:6900"
-    environment:
-      - TOKEN_SECRET=xxx
-      - DATABASE_URL=postgres://user:pass@test-db/picr
-      - USE_POLLING=true
-      - POLLING_INTERVAL=100
-      - BASE_URL=http://localhost:6901/
-  test-db:
-    container_name: test-db
-    profiles: [test]
-    image: postgres:16
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: picr
-    volumes:
-      - type: tmpfs
-        target: /var/lib/postgresql/data
-        
-# end "test" section, you need the below either way
 volumes:
   picr-db-data:
 ```
