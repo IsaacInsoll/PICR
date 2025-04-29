@@ -30,8 +30,12 @@ const getLatestBuild = async () => {
   const req = await fetch('https://api.github.com/repos/isaacinsoll/picr/tags');
   const json = (await req.json()) as { name: string }[];
   // this is a list of releases, the latest is tagged `latest`, the second one is the same build but with a version number
-  const version = json.find(({ name }) => name != 'latest');
-  return version?.name ?? '';
+  if (Array.isArray(json)) {
+    const version = json.find(({ name }) => name != 'latest');
+    return version?.name ?? '';
+  } else {
+    return json; // this should probably just return empty string, but i want to see what it is
+  }
 };
 
 // This can be slow if it's a large folder
