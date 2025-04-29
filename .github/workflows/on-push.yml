@@ -1,0 +1,19 @@
+name: PICR on push
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+#  test:
+#    needs: build
+#    runs-on: ubuntu-latest
+#    steps:
+#      - run: mkdir -p ./tests/env && wget --no-verbose https://photosummaryapp.com/picr-demo-data.zip --output-document=./tests/env/sample.zip
+#        name: "✅  [tests] download sample files"
+#      - run: npm run test
+#        name: "✅ [test] run backend tests (vitest)"

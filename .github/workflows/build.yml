@@ -2,18 +2,15 @@
 name: PICR Build
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  workflow_call:
 
 jobs:
   build:
+    name: PICR Build
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [23.5]
-
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
@@ -21,7 +18,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-
 # BACKEND
     - name: "🗃️ [backend] Install Dependencies"
       run: npm ci
@@ -37,7 +33,15 @@ jobs:
       run: cd frontend && npm run build
 
 # TESTS
-    - run: mkdir -p ./tests/env && wget --no-verbose https://photosummaryapp.com/picr-demo-data.zip --output-document=./tests/env/sample.zip
-      name: "✅  [tests] download sample files"
-    - run: npm run test
-      name: "✅ [test] run backend tests (vitest)"
+    - name: "🧪  [tests] download sample files"
+      run: mkdir -p ./tests/env && wget --no-verbose https://photosummaryapp.com/picr-demo-data.zip --output-document=./tests/env/sample.zip
+    - name: "🧪 [test] run backend tests (vitest)"
+      run: npm run test
+
+# ARTIFACT
+    - uses: actions/upload-artifact@v4
+      name: "🗜️ Generate Build Artifacts"
+      with:
+        name: picr-build-${{ github.sha }}
+        path: ./dist/
+        if-no-files-found: error
