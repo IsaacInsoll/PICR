@@ -13,7 +13,8 @@
     "server": " node dist/server/backend/app.js",
     "gql": "graphql-codegen --config codegen.ts",
     "release": "dotenv -- release-it --only-version",
-    "test": "vitest run"
+    "test": "vitest run",
+    "workflow": "act push --artifact-server-path $PWD/.artifacts"
   },
   "author": "Isaac Insoll",
   "license": "ISC",
@@ -88,9 +89,7 @@
     },
     "hooks": {
       "before:init": [
-        "cd frontend && npm run build",
-        "npm run build",
-        "npm run test"
+        "npm run workflow"
       ]
     },
     "git": {

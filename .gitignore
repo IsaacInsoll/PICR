@@ -140,3 +140,5 @@ media/*
 /cache/
 
 /tests/env/*
+
+.artifacts/*
