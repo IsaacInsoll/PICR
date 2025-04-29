@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         node-version: [23.5]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v4
@@ -28,7 +27,7 @@ jobs:
       run: npm ci
     - name: "🗃️ [backend] Build (TSC)"
       run: npm run build
-    - name: " [backend] copy extra resources"
+    - name: "🗃️  [backend] copy extra resources"
       run:  bash ./copy-backend-files.sh
 
 # FRONTEND

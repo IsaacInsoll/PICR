@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { AllSize, allSizes } from '../../frontend/src/helpers/thumbnailSize';
 import { extname } from 'path';
 import {
@@ -21,7 +21,7 @@ export const imageRequest = async (
     hash: string;
     filename: string;
   }>,
-  res,
+  res: Response,
 ) => {
   const { id, size, hash, filename } = req.params;
   const file = await db.query.dbFile.findFirst({

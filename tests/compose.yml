@@ -5,7 +5,8 @@ services:
     build: ..
     volumes:
       - ./env/media:/home/node/app/media:ro
-      - ./env/cache:/home/node/app/cache
+    # intentionally leaving the cache inside the container as we can't write to the host when running in docker ?
+#      - ./env/cache:/home/node/app/cache
     depends_on:
       - test-db
     ports:
