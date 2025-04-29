@@ -5,6 +5,7 @@ name: PICR Docker Build and Push
 # I didn't bother as we just use docker hub :)
 on:
   release:
+    types: [published]
 
 jobs:
   build:
@@ -44,4 +45,4 @@ jobs:
           context: .
           push: true
 #          tags: isaacinsoll/picr:latest,isaacinsoll/picr:${{ github.ref_name }},ghcr.io/isaacinsoll/picr:latest,ghcr.io/isaacinsoll/picr:${{ github.ref_name }}
-          tags: isaacinsoll/picr:latest,isaacinsoll/picr:${{ github.ref_name }}
+          tags:isaacinsoll/picr:${{ github.ref_name }},isaacinsoll/picr:latest
