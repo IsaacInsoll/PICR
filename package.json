@@ -1,6 +1,6 @@
 {
   "name": "picr",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "description": "",
   "main": "backend/app.ts",
   "scripts": {
