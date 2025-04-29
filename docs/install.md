@@ -26,9 +26,9 @@ services:
       - "6900:6900" # presumably reverse proxy will handle HTTPS
     environment:
       - BASE_URL=https://clients.mydomain.com/ #change this to your URL
-      - TOKEN_SECRET= # leave this out and on first build it will give you a very secret random string to put in here
       - DATABASE_URL=postgres://user:pass@db/picr
       - USE_POLLING=true # recommended if you have > 10,000 files
+      #- TOKEN_SECRET=<leave this out and on first build it will give you a very secret random string to put in here>
   db:
     image: postgres:17
     container_name: picr-db
