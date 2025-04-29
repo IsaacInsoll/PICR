@@ -1,0 +1,47 @@
+name: PICR Docker Build and Push
+
+# failed on pushing to ghcr.io
+# presumably just do this https://github.com/docker/login-action#github-container-registry
+# I didn't bother as we just use docker hub :)
+on:
+  release:
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+  docker_build:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: picr-build-${{ github.sha }}
+          path: ./dist
+#      -
+#        name: Debug download
+#        run: pwd && ls -la && ls -la ./dist
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+#          tags: isaacinsoll/picr:latest,isaacinsoll/picr:${{ github.ref_name }},ghcr.io/isaacinsoll/picr:latest,ghcr.io/isaacinsoll/picr:${{ github.ref_name }}
+          tags: isaacinsoll/picr:latest,isaacinsoll/picr:${{ github.ref_name }}
