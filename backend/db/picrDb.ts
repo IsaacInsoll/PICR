@@ -17,6 +17,7 @@ import { AccessType } from '../../graphql-types';
 import { fileToJSON } from '../graphql/helpers/fileToJSON';
 import { picrConfig } from '../config/picrConfig';
 import { sendFolderViewedNotification } from '../notifications/notifications';
+import { PicrRequestContext } from '../types/PicrRequestContext';
 
 export let db: NodePgDatabase<typeof schema>;
 
@@ -95,18 +96,20 @@ export const brandingForFolderId = async (folderId: number) => {
 export const createAccessLog = async (
   user: UserFields,
   folder: FolderFields,
-  context: IncomingCustomHeaders,
+  context: PicrRequestContext,
   type: AccessType,
 ) => {
   //Check if sessionId/ipAddress/user already accessed this in last hour and don't create if so
+
+  const h = context.headers;
 
   const props = {
     userId: user.id,
     folderId: folder.id,
     type: type,
-    ipAddress: context.ipAddress!,
-    sessionId: context.sessionId!,
-    userAgent: context.userAgent!,
+    ipAddress: h.ipAddress!,
+    sessionId: h.sessionId!,
+    userAgent: h.userAgent!,
   };
 
   const recent = await db.query.dbAccessLog.findFirst({

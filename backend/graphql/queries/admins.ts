@@ -6,8 +6,9 @@ import { userToJSON } from '../helpers/userToJSON';
 import { db, dbFolderForId } from '../../db/picrDb';
 import { dbUser } from '../../db/models';
 import { isNull } from 'drizzle-orm';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   await requireFullAdmin(context);
   const data = await db.query.dbUser.findMany({
     where: isNull(dbUser.uuid),

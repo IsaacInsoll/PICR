@@ -4,8 +4,9 @@ import { addToZipQueue } from '../../helpers/zipQueue';
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
 import { AccessType } from '../../../graphql-types';
 import { createAccessLog } from '../../db/picrDb';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const { user, folder } = await contextPermissions(
     context,
     params.folderId,

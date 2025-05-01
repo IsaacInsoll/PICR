@@ -6,8 +6,9 @@ import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { taskType } from '../types/taskType';
 import { allSubfolderIds } from '../../helpers/allSubfolders';
 import { dbFolderForId } from '../../db/picrDb';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const { user, folder } = await contextPermissions(
     context,
     params.folderId ?? 1,

@@ -4,8 +4,9 @@ import { GraphQLNonNull, GraphQLString } from 'graphql';
 import { db } from '../../db/picrDb';
 import { and, eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const p = params.password;
   if (!p || p === '') return '';
 

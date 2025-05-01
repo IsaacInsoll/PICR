@@ -13,8 +13,9 @@ import { userToJSON } from '../helpers/userToJSON';
 import { db, dbFolderForId } from '../../db/picrDb';
 import { and, desc, inArray, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const { folder, user } = await contextPermissions(
     context,
     params.folderId,

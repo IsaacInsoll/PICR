@@ -7,6 +7,7 @@ import { joinTitles } from '../helpers/joinTitle';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder';
 import { MinimalFile } from '../../frontend/types';
 import { FileFields } from '../db/picrDb';
+import { getUserFromUUID } from '../auth/getUserFromUUID';
 
 interface ITemplateFields {
   title: string;
@@ -28,8 +29,10 @@ export const picrTemplate = async (req: Request, res: Response) => {
   if (sub[1] == 's' && sub.length >= 3) {
     const folderId = parseInt(sub[3]);
     if (!isNaN(folderId)) {
+      const user = await getUserFromUUID({ uuid: sub[2], auth: '' });
+
       const { permissions, folder } = await contextPermissions(
-        { uuid: sub[2], auth: '' },
+        { user, headers: {} },
         folderId,
       );
       if (permissions != 'None' && folder) {

@@ -5,8 +5,9 @@ import { GraphQLID, GraphQLNonNull } from 'graphql';
 import { fileInterface } from '../interfaces/fileInterface';
 import { GraphQLError } from 'graphql/error';
 import { dbFileForId } from '../../db/picrDb';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const file = await dbFileForId(params.id);
   await contextPermissions(context, file?.folderId, 'View');
   if (!file?.exists) throw new GraphQLError('File not found');

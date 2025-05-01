@@ -5,8 +5,9 @@ import { GraphQLError } from 'graphql/error';
 import { brandingForFolderId, db, dbFolderForId } from '../../db/picrDb';
 import { dbBranding } from '../../db/models';
 import { eq } from 'drizzle-orm';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   await contextPermissions(context, params.folderId, 'Admin');
 
   const obj = await brandingForFolderId(params.folderId);

@@ -12,8 +12,9 @@ import { db, getAccessLogs } from '../../db/picrDb';
 import { isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
 import { userTypeEnum } from '../types/enums';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const { folder } = await contextPermissions(
     context,
     params.folderId,

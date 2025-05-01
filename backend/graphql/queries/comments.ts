@@ -7,8 +7,9 @@ import { addUserRelationship } from '../helpers/addUserRelationship';
 import { db, dbFileForId } from '../../db/picrDb';
 import { dbComment } from '../../db/models';
 import { desc, eq } from 'drizzle-orm';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   //TODO: maybe support subfolders?
   //TODO: pagination?
   if (!params.fileId && !params.folderId) {

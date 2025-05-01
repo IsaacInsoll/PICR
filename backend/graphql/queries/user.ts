@@ -6,8 +6,9 @@ import { userToJSON } from '../helpers/userToJSON';
 import { db } from '../../db/picrDb';
 import { dbUser } from '../../db/models';
 import { eq } from 'drizzle-orm';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const user = await db.query.dbUser.findFirst({
     where: eq(dbUser.id, params.id),
   });

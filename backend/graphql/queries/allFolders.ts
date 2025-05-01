@@ -11,8 +11,9 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { folderType } from '../types/folderType';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver: GraphQLFieldResolver<Folder, IncomingCustomHeaders> = async (
+const resolver: GraphQLFieldResolver<Folder, PicrRequestContext> = async (
   _,
   params,
   context,

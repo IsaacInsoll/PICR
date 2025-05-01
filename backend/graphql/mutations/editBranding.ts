@@ -6,8 +6,9 @@ import { db, dbFolderForId } from '../../db/picrDb';
 import { eq } from 'drizzle-orm';
 import { dbBranding } from '../../db/models';
 import { primaryColorEnum, themeModeEnum } from '../types/enums';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   await contextPermissions(context, params.folderId, 'Admin');
 
   const props = {

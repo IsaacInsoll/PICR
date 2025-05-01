@@ -16,8 +16,9 @@ import { dbUser } from '../../db/models';
 import { UserType } from '../../../graphql-types';
 import { commentPermissionsEnum } from '../types/enums';
 import { userToJSON } from '../helpers/userToJSON';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   await contextPermissions(context, params.folderId, 'Admin');
 
   let user: UserFields | undefined = undefined;

@@ -16,8 +16,9 @@ import { and, eq, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
 import { UserType } from '../../../graphql-types';
 import { commentPermissionsEnum } from '../types/enums';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const { user } = await contextPermissions(context, params.folderId, 'Admin');
   let adminUser: UserFields | undefined = undefined;
 
