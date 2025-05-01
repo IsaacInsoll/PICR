@@ -1,6 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
-import { getFolder } from '../helpers/getFolder';
 import {
   GraphQLBoolean,
   GraphQLID,

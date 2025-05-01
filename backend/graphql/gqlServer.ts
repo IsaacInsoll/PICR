@@ -4,6 +4,7 @@ import { IncomingCustomHeaders } from '../types/incomingCustomHeaders';
 import { getUserFromToken } from '../auth/jwt-auth';
 import { PicrRequestContext } from '../types/PicrRequestContext';
 import { getUserFromUUID } from '../auth/getUserFromUUID';
+import { dbFolderForId } from '../db/picrDb';
 
 export const gqlServer = createHandler({
   schema: schema,
@@ -25,7 +26,8 @@ export const gqlServer = createHandler({
     };
 
     const user = (await getUserFromToken(h)) ?? (await getUserFromUUID(h));
+    const userHomeFolder = await dbFolderForId(user?.folderId);
 
-    return { headers: h, user };
+    return { headers: h, user, userHomeFolder };
   },
 });

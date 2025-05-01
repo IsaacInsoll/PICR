@@ -1,6 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql/index';
-import { getFolder } from '../helpers/getFolder';
 import { folderType } from '../types/folderType';
 import { db, dbFolderForId } from '../../db/picrDb';
 import { eq } from 'drizzle-orm';

@@ -2,7 +2,6 @@ import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
 import { hashPassword } from '../../helpers/hashPassword';
 
-import { getFolder } from '../helpers/getFolder';
 import {
   GraphQLBoolean,
   GraphQLID,

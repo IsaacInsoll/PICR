@@ -4,7 +4,7 @@ import {
 } from '../types/FolderPermissions';
 import { doAuthError } from './doAuthError';
 import { GraphQLError } from 'graphql/error';
-import { folderIsUnderFolderId } from '../helpers/folderIsUnderFolderId';
+import { folderIsUnderFolder } from '../helpers/folderIsUnderFolderId';
 import { dbFolderForId } from '../db/picrDb';
 import { PicrRequestContext } from '../types/PicrRequestContext';
 
@@ -22,27 +22,27 @@ export async function contextPermissions(
   folderId: fid,
 ): Promise<Partial<ContextualPermissions>>;
 export async function contextPermissions(
-  context: Pick<PicrRequestContext, 'user'>,
+  context: Pick<PicrRequestContext, 'user' | 'userHomeFolder'>,
   folderId: fid,
   requires?: FolderPermissions,
 ): Promise<Partial<ContextualPermissions>> {
+  const { user, userHomeFolder } = context;
   // Check valid folderId
   if (!folderId) {
     if (requires) throw new GraphQLError('Not Found');
-    return { permissions: 'None', user: undefined };
+    return { permissions: 'None', user };
   }
 
   const folder = await dbFolderForId(folderId);
-  const user = context.user;
 
   if (user && user.userType != 'Link' && folder && folder.exists) {
-    if (await folderIsUnderFolderId(folder, user.folderId)) {
+    if (folderIsUnderFolder(folder, userHomeFolder)) {
       return { permissions: 'Admin', user, folder };
     }
   }
 
   if (user && user.userType == 'Link' && folder && folder.exists) {
-    if (await folderIsUnderFolderId(folder, user.folderId)) {
+    if (folderIsUnderFolder(folder, userHomeFolder)) {
       if (requires == 'Admin')
         throw new GraphQLError('No admin permissions for ' + folder.name);
       return {

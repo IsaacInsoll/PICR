@@ -1,6 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
-import { getFolder } from '../helpers/getFolder';
 import {
   GraphQLBoolean,
   GraphQLID,

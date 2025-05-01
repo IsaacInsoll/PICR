@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 import { joinTitles } from '../helpers/joinTitle';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder';
 import { MinimalFile } from '../../frontend/types';
-import { FileFields } from '../db/picrDb';
+import { dbFolderForId, FileFields } from '../db/picrDb';
 import { getUserFromUUID } from '../auth/getUserFromUUID';
 
 interface ITemplateFields {
@@ -29,10 +29,12 @@ export const picrTemplate = async (req: Request, res: Response) => {
   if (sub[1] == 's' && sub.length >= 3) {
     const folderId = parseInt(sub[3]);
     if (!isNaN(folderId)) {
+      // the following two lines are copy-pasta'd from gqlServer.ts, consider refactoring or less dodgy hacks here
       const user = await getUserFromUUID({ uuid: sub[2], auth: '' });
+      const userHomeFolder = await dbFolderForId(user?.folderId);
 
       const { permissions, folder } = await contextPermissions(
-        { user, headers: {} },
+        { user, userHomeFolder, headers: {} },
         folderId,
       );
       if (permissions != 'None' && folder) {
