@@ -17,7 +17,7 @@ const resolver = async (_, params, context, schema) => {
     //these are functions because they can be potentially SUPER EXPENSIVE
     cacheSize: () => folderSize(picrConfig.cachePath),
     mediaSize: () => folderSize(picrConfig.mediaPath),
-    host: context.host,
+    host: picrConfig.baseUrl,
   };
 };
 

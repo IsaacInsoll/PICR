@@ -21,11 +21,12 @@ const resolver = async (_, params, context) => {
   if (heroImage.type != 'Image') doAuthError('Not an image');
   if (heroImage.folderId != folder!.id) doAuthError('Not in this folder');
 
-  db.update(dbFolder)
+  await db
+    .update(dbFolder)
     .set({ heroImageId: heroImage.id, updatedAt: new Date() })
     .where(eq(dbFolder.id, folder!.id));
 
-  return { ...folder, heroImage };
+  return { ...folder, heroImage, heroImageId: heroImage.id };
 };
 
 export const editFolder = {
