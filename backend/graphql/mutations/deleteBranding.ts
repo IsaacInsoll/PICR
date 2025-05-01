@@ -1,9 +1,8 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLNonNull } from 'graphql';
-import { getFolder } from '../helpers/getFolder';
 import { folderType } from '../types/folderType';
 import { GraphQLError } from 'graphql/error';
-import { brandingForFolderId, db } from '../../db/picrDb';
+import { brandingForFolderId, db, dbFolderForId } from '../../db/picrDb';
 import { dbBranding } from '../../db/models';
 import { eq } from 'drizzle-orm';
 
@@ -17,7 +16,7 @@ const resolver = async (_, params, context) => {
   }
 
   await db.delete(dbBranding).where(eq(dbBranding.folderId, params.folderId));
-  return await getFolder(params.folderId);
+  return await dbFolderForId(params.folderId);
 };
 
 export const deleteBranding = {

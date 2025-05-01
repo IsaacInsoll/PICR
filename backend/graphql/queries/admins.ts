@@ -3,7 +3,7 @@ import { getFolder } from '../helpers/getFolder';
 import { GraphQLList, GraphQLNonNull } from 'graphql';
 import { userType } from '../types/userType';
 import { userToJSON } from '../helpers/userToJSON';
-import { db } from '../../db/picrDb';
+import { db, dbFolderForId } from '../../db/picrDb';
 import { dbUser } from '../../db/models';
 import { isNull } from 'drizzle-orm';
 
@@ -13,7 +13,7 @@ const resolver = async (_, params, context) => {
     where: isNull(dbUser.uuid),
   });
   return data.map((u) => {
-    return { ...userToJSON(u), folder: getFolder(u.folderId) };
+    return { ...userToJSON(u), folder: dbFolderForId(u.folderId) };
   });
 };
 

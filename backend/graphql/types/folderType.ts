@@ -123,6 +123,7 @@ export const folderType = new GraphQLObjectType({
     users: {
       type: new GraphQLList(new GraphQLNonNull(userType)),
       resolve: async (f: FolderFields, params, context) => {
+        //TODO: handle this better: viewing a folder with a lot of subfolders calls this query a bunch of times and slows shit down
         const { permissions } = await contextPermissions(context, f.id);
         if (permissions != 'Admin') return null;
 

@@ -2,7 +2,7 @@ import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql/index';
 import { getFolder } from '../helpers/getFolder';
 import { folderType } from '../types/folderType';
-import { db } from '../../db/picrDb';
+import { db, dbFolderForId } from '../../db/picrDb';
 import { eq } from 'drizzle-orm';
 import { dbBranding } from '../../db/models';
 import { primaryColorEnum, themeModeEnum } from '../types/enums';
@@ -30,7 +30,7 @@ const resolver = async (_, params, context) => {
     await db.insert(dbBranding).values({ ...props, createdAt: new Date() });
   }
 
-  return await getFolder(params.folderId);
+  return await dbFolderForId(params.folderId);
 };
 
 export const editBranding = {

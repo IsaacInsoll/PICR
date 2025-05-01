@@ -84,7 +84,7 @@ const resolver = async (_, params, context) => {
     });
   }
 
-  return { ...adminUser, folder: getFolder(adminUser.folderId) };
+  return { ...adminUser, folder: dbFolderForId(adminUser.folderId) };
 };
 
 export const editAdminUser = {

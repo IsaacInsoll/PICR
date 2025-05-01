@@ -6,8 +6,9 @@ import { expressServer } from './express/express';
 import { dbMigrate } from './boot/dbMigrate';
 import { log } from './logger';
 import { picrConfig } from './config/picrConfig';
-import { initDb } from './db/picrDb';
+import { dbFolderForId, initDb } from './db/picrDb';
 import { schemaMigration } from './db/schemaMigration';
+import { folderIsUnderFolderId } from './helpers/folderIsUnderFolderId';
 
 export const server = async () => {
   try {

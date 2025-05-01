@@ -72,7 +72,7 @@ const resolver = async (_, params, context) => {
 
   if (user.id) {
     await db.update(dbUser).set(user).where(eq(dbUser.id, user.id));
-    return { ...userToJSON(user), folder: getFolder(user.folderId) };
+    return { ...userToJSON(user), folder: dbFolderForId(user.folderId) };
   } else {
     const newUser = await db
       .insert(dbUser)
@@ -83,7 +83,7 @@ const resolver = async (_, params, context) => {
       })
       .returning();
 
-    return { ...userToJSON(newUser[0]), folder: getFolder(user.folderId) };
+    return { ...userToJSON(newUser[0]), folder: dbFolderForId(user.folderId) };
   }
 };
 

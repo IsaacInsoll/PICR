@@ -10,7 +10,7 @@ import {
 import { userType } from '../types/userType';
 import { allSubfolders } from '../../helpers/allSubfolders';
 import { userToJSON } from '../helpers/userToJSON';
-import { db } from '../../db/picrDb';
+import { db, dbFolderForId } from '../../db/picrDb';
 import { and, desc, inArray, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
 
@@ -44,7 +44,7 @@ const resolver = async (_, params, context) => {
   });
 
   return data.map((pl) => {
-    return { ...userToJSON(pl), folder: getFolder(pl.folderId) };
+    return { ...userToJSON(pl), folder: dbFolderForId(pl.folderId) };
   });
 };
 
