@@ -27,7 +27,7 @@ export const useMe = ():
     ...extraUserProps(data?.me),
     clientInfo: data.clientInfo,
   };
-  console.log(me);
+  // console.log(me);
   return me;
 };
 

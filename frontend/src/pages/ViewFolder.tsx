@@ -52,7 +52,7 @@ export const ViewFolder = () => {
   );
 };
 
-export const ViewFolderBody = () => {
+const ViewFolderBody = () => {
   const navigate = useNavigate();
   const { folderId, fileId } = useParams<FolderRouteParams>();
   const baseUrl = useBaseViewFolderURL();

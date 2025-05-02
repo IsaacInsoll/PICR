@@ -3,11 +3,17 @@ import { db, dbFileForId, FolderFields } from '../../db/picrDb';
 import { and, asc, eq, inArray, ne } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../../db/models';
 
+import { setHeroImage } from '../mutations/setHeroImage';
+
 export const heroImageForFolder = async (f: FolderFields) => {
   // 1. Hero Image set for current folder
   const heroImage =
     f.heroImageId != 0 ? await dbFileForId(f.heroImageId) : undefined;
-  if (heroImage && heroImage.exists && heroImage.folderId == f.id) {
+  if (
+    heroImage &&
+    heroImage.exists &&
+    heroImage.relativePath.startsWith(f.relativePath ?? '')
+  ) {
     return heroImage;
   }
   // 2. First image in this folder
@@ -19,10 +25,16 @@ export const heroImageForFolder = async (f: FolderFields) => {
     ),
     orderBy: asc(dbFile.name),
   });
-  if (first) return first;
+  if (first) {
+    await setHeroImage(first.id, f.id);
+    return first;
+  }
   // 3. Hero image in subfolder
   const subFolder = await heroImageForSubFolder([f.id]);
-  if (subFolder) return subFolder;
+  if (subFolder) {
+    await setHeroImage(subFolder.id, f.id);
+    return subFolder;
+  }
   // 4. First image in any subfolder
   const allSubFolders = await allSubfolders(f.id);
   const subFolderIds = allSubFolders.map((f) => f.id);
