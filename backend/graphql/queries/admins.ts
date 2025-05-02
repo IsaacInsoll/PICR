@@ -4,13 +4,13 @@ import { userType } from '../types/userType';
 import { userToJSON } from '../helpers/userToJSON';
 import { db, dbFolderForId } from '../../db/picrDb';
 import { dbUser } from '../../db/models';
-import { isNull } from 'drizzle-orm';
+import { ne } from 'drizzle-orm';
 import { PicrRequestContext } from '../../types/PicrRequestContext';
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   await requireFullAdmin(context);
   const data = await db.query.dbUser.findMany({
-    where: isNull(dbUser.uuid),
+    where: ne(dbUser.userType, 'Link'),
   });
   return data.map((u) => {
     return { ...userToJSON(u), folder: dbFolderForId(u.folderId) };

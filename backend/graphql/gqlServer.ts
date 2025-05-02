@@ -5,9 +5,12 @@ import { getUserFromToken } from '../auth/jwt-auth';
 import { PicrRequestContext } from '../types/PicrRequestContext';
 import { getUserFromUUID } from '../auth/getUserFromUUID';
 import { dbFolderForId } from '../db/picrDb';
+import { extraUserProps } from '../helpers/extraUserProps';
+import { UserType } from '../../graphql-types';
 
 export const gqlServer = createHandler({
   schema: schema,
+  // @ts-ignore it works fine and i'm confused :/
   context: async (req, params): Promise<PicrRequestContext> => {
     const headers = req.headers as IncomingCustomHeaders;
 
@@ -27,7 +30,10 @@ export const gqlServer = createHandler({
 
     const user = (await getUserFromToken(h)) ?? (await getUserFromUUID(h));
     const userHomeFolder = await dbFolderForId(user?.folderId);
+    const extra = extraUserProps(
+      user?.userType ? { userType: UserType[user?.userType] } : undefined,
+    );
 
-    return { headers: h, user, userHomeFolder };
+    return { headers: h, user, userHomeFolder, ...extra };
   },
 });

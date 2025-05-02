@@ -1,17 +1,20 @@
-import { useAtomValue } from 'jotai/index';
+import { useAtomValue } from 'jotai';
 import { authKeyAtom } from '../atoms/authAtom';
 import { useQuery } from 'urql';
 import { User } from '../../../graphql-types';
 
 import { getUUID } from '../helpers/getUUID';
 import { meQuery } from '../urql/queries/meQuery';
+import {
+  extraUserProps,
+  ExtraUserProps,
+} from '../../../backend/helpers/extraUserProps';
 
 export const useMe = ():
-  | (Pick<User, 'id' | 'name' | 'folderId' | 'commentPermissions'> & {
-      isUser: boolean;
-      isPublicLink: boolean;
-      clientInfo: { avifEnabled?: boolean };
-    })
+  | (Pick<User, 'id' | 'name' | 'folderId' | 'commentPermissions'> &
+      ExtraUserProps & {
+        clientInfo: { avifEnabled?: boolean };
+      })
   | null => {
   // console.log('useMe()');
   const token = useAtomValue(authKeyAtom);
@@ -19,12 +22,13 @@ export const useMe = ():
   const [result] = useQuery({ query: meQuery, pause: !token && !uuid });
   const data = result.data;
   if (!data) return null;
-  return {
+  const me = {
     ...data.me,
-    isUser: data.me?.id && !data.me?.uuid,
-    isPublicLink: !!data.me?.uuid,
+    ...extraUserProps(data?.me),
     clientInfo: data.clientInfo,
   };
+  console.log(me);
+  return me;
 };
 
 export const useAvifEnabled = () => {

@@ -9,7 +9,7 @@ import { allSubfolders } from '../../helpers/allSubfolders';
 import { accessLogType } from '../types/accessLogType';
 import { addFolderRelationship } from '../helpers/addFolderRelationship';
 import { db, getAccessLogs } from '../../db/picrDb';
-import { isNotNull } from 'drizzle-orm';
+import { eq, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
 import { userTypeEnum } from '../types/enums';
 import { PicrRequestContext } from '../../types/PicrRequestContext';
@@ -32,7 +32,7 @@ const resolver = async (_, params, context: PicrRequestContext) => {
   // if(params.userType == UserType.Link) {
 
   const linkUsers = await db.query.dbUser.findMany({
-    where: isNotNull(dbUser.uuid),
+    where: eq(dbUser.userType, 'Link'),
   });
 
   const linkUserIds = linkUsers.map((u) => u.id);

@@ -10,7 +10,7 @@ import { userType } from '../types/userType';
 import { allSubfolders } from '../../helpers/allSubfolders';
 import { userToJSON } from '../helpers/userToJSON';
 import { db, dbFolderForId } from '../../db/picrDb';
-import { and, desc, inArray, isNotNull } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
 import { PicrRequestContext } from '../../types/PicrRequestContext';
 
@@ -33,7 +33,7 @@ const resolver = async (_, params, context: PicrRequestContext) => {
     ids.push(...childIds);
   }
 
-  const where = and(inArray(dbUser.folderId, ids), isNotNull(dbUser.uuid));
+  const where = and(inArray(dbUser.folderId, ids), eq(dbUser.userType, 'Link'));
 
   const data = await db.query.dbUser.findMany({
     where: !params.sortByRecent

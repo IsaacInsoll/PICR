@@ -11,7 +11,7 @@ import {
 import { userType } from '../types/userType';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
 import { db, dbFolderForId, dbUserForId, UserFields } from '../../db/picrDb';
-import { and, eq, isNotNull } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
 import { UserType } from '../../../graphql-types';
 import { commentPermissionsEnum } from '../types/enums';
@@ -29,7 +29,7 @@ const resolver = async (_, params, context: PicrRequestContext) => {
 
   if (username) {
     const existingUsername = await db.query.dbUser.findFirst({
-      where: and(eq(dbUser.username, username), isNotNull(dbUser.uuid)),
+      where: and(eq(dbUser.username, username), ne(dbUser.userType, 'Link')),
     });
 
     if (existingUsername) {

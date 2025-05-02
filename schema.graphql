@@ -242,6 +242,7 @@ type User {
   lastAccess: DateTime
   name: String
   ntfy: String
+  userType: UserType
   username: String
   uuid: String
 }
