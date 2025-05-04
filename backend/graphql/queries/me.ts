@@ -1,21 +1,15 @@
-import { getUserFromToken } from '../../auth/jwt-auth';
 import { userType } from '../types/userType';
 import { userToJSON } from '../helpers/userToJSON';
-import { getUserFromUUID } from '../../auth/getUserFromUUID';
 import { dbFolderForId, updateUserLastAccess } from '../../db/picrDb';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
-  const user = await getUserFromToken(context);
+const resolver = async (_, params, context: PicrRequestContext) => {
+  const user = context.user;
   if (user) {
     const folder = await dbFolderForId(user.folderId);
     await updateUserLastAccess(user.id);
     return { ...userToJSON(user), folder: folder };
   }
-  const publicUser = await getUserFromUUID(context);
-  if (!publicUser) return null;
-  await updateUserLastAccess(publicUser.id);
-  // don't expose many public user details
-  return { ...userToJSON(publicUser) };
 };
 
 export const me = {

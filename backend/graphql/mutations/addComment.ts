@@ -10,8 +10,9 @@ import { dbFile } from '../../db/models';
 import { eq } from 'drizzle-orm';
 import { fileFlagEnum } from '../types/enums';
 import { sendCommentAddedNotification } from '../../notifications/notifications';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const file = await dbFileForId(params.id);
   const { user, folder } = await contextPermissions(
     context,

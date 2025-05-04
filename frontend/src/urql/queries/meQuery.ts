@@ -4,6 +4,7 @@ export const meQuery = gql(/* GraphQL */ `
   query MeQuery {
     me {
       id
+      userType
       name
       folderId
       uuid

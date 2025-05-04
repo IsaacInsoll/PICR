@@ -2,15 +2,17 @@ import { contextPermissions } from '../../auth/contextPermissions';
 import { AccessType, Folder } from '../../../graphql-types';
 import { GraphQLFieldResolver } from 'graphql/type';
 import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
-import { getFolder } from '../helpers/getFolder';
 import { GraphQLID, GraphQLNonNull } from 'graphql';
 import { folderType } from '../types/folderType';
 import { createAccessLog } from '../../db/picrDb';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const folderResolver: GraphQLFieldResolver<
-  Folder,
-  IncomingCustomHeaders
-> = async (_, params, context, info): Promise<Partial<Folder>> => {
+const folderResolver: GraphQLFieldResolver<Folder, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+  info,
+): Promise<Partial<Folder>> => {
   const { permissions, user, folder } = await contextPermissions(
     context,
     params.id,

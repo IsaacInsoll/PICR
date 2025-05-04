@@ -391,6 +391,7 @@ export type User = {
   lastAccess?: Maybe<Scalars['DateTime']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   ntfy?: Maybe<Scalars['String']['output']>;
+  userType?: Maybe<UserType>;
   username?: Maybe<Scalars['String']['output']>;
   uuid?: Maybe<Scalars['String']['output']>;
 };

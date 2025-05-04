@@ -1,6 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
-import { getFolder } from '../helpers/getFolder';
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -10,11 +9,12 @@ import {
 import { userType } from '../types/userType';
 import { allSubfolders } from '../../helpers/allSubfolders';
 import { userToJSON } from '../helpers/userToJSON';
-import { db } from '../../db/picrDb';
-import { and, desc, inArray, isNotNull } from 'drizzle-orm';
+import { db, dbFolderForId } from '../../db/picrDb';
+import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const { folder, user } = await contextPermissions(
     context,
     params.folderId,
@@ -33,7 +33,7 @@ const resolver = async (_, params, context) => {
     ids.push(...childIds);
   }
 
-  const where = and(inArray(dbUser.folderId, ids), isNotNull(dbUser.uuid));
+  const where = and(inArray(dbUser.folderId, ids), eq(dbUser.userType, 'Link'));
 
   const data = await db.query.dbUser.findMany({
     where: !params.sortByRecent
@@ -44,7 +44,7 @@ const resolver = async (_, params, context) => {
   });
 
   return data.map((pl) => {
-    return { ...userToJSON(pl), folder: getFolder(pl.folderId) };
+    return { ...userToJSON(pl), folder: dbFolderForId(pl.folderId) };
   });
 };
 

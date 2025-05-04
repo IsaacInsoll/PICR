@@ -1,12 +1,12 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { doAuthError } from '../../auth/doAuthError';
-import { GraphQLID, GraphQLNonNull } from 'graphql/index';
+import { GraphQLID, GraphQLNonNull } from 'graphql';
 import { folderType } from '../types/folderType';
-import { db, dbFileForId } from '../../db/picrDb';
-import { dbFolder } from '../../db/models';
-import { eq } from 'drizzle-orm';
+import { dbFileForId } from '../../db/picrDb';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { setHeroImage } from './setHeroImage';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const { folder } = await contextPermissions(
     context,
     params.folderId,
@@ -21,10 +21,7 @@ const resolver = async (_, params, context) => {
   if (heroImage.type != 'Image') doAuthError('Not an image');
   if (heroImage.folderId != folder!.id) doAuthError('Not in this folder');
 
-  await db
-    .update(dbFolder)
-    .set({ heroImageId: heroImage.id, updatedAt: new Date() })
-    .where(eq(dbFolder.id, folder!.id));
+  await setHeroImage(heroImage.id, folder!.id);
 
   return { ...folder, heroImage, heroImageId: heroImage.id };
 };

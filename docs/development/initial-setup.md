@@ -40,7 +40,7 @@ Run a `docker compose up` to make sure it works correctly
 Copy this, make changes as necessary
 ```dotenv
 BASEURL=http://localhost:6969
-DEBUG_SQL=false
+#DEBUG_SQL=true
 CONSOLE_LOGGING=true
 USE_POLLING=true
 TOKEN_SECRET=<some-long-string>

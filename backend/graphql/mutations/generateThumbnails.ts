@@ -5,8 +5,9 @@ import { allSubfolderIds } from '../../helpers/allSubfolders';
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import { dbFile } from '../../db/models';
 import { db } from '../../db/picrDb';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const { folder } = await contextPermissions(
     context,
     params.folderId,

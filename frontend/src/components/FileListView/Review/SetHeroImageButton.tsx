@@ -7,17 +7,16 @@ import { useMutation } from 'urql';
 import { useId, useState } from 'react';
 import { useReward } from 'react-rewards';
 import { confettiOptions } from './ConfettiOptions';
-import { useIsMobile } from '../../../hooks/useIsMobile';
 
 export const SetHeroImageButton = ({ file }: { file: MinimalFile }) => {
-  const { isUser } = useMe();
+  const me = useMe();
   const [, mutate] = useMutation(editFolderMutation);
   const [loading, setLoading] = useState(false);
 
   const id = useId();
   const { reward } = useReward(id, 'confetti', confettiOptions);
 
-  if (!isUser || !file || !file.type == 'Image') return null;
+  if (!me?.isUser || !file || !file.type == 'Image') return null;
   //TODO: look different if we are looking at the current hero image :)
   const onClick = () => {
     if (file.isHeroImage) return;

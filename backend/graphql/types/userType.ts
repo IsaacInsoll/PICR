@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import { folderType } from './folderType';
 import { GraphQLDateTime } from 'graphql-scalars';
-import { commentPermissionsEnum } from './enums';
+import { commentPermissionsEnum, userTypeEnum } from './enums';
 
 export const userType = new GraphQLObjectType({
   name: 'User',
@@ -23,5 +23,6 @@ export const userType = new GraphQLObjectType({
     gravatar: { type: GraphQLString },
     ntfy: { type: GraphQLString },
     lastAccess: { type: GraphQLDateTime },
+    userType: { type: userTypeEnum },
   }),
 });

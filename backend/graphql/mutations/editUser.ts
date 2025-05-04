@@ -1,6 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
-import { getFolder } from '../helpers/getFolder';
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -16,8 +15,9 @@ import { dbUser } from '../../db/models';
 import { UserType } from '../../../graphql-types';
 import { commentPermissionsEnum } from '../types/enums';
 import { userToJSON } from '../helpers/userToJSON';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   await contextPermissions(context, params.folderId, 'Admin');
 
   let user: UserFields | undefined = undefined;
@@ -72,7 +72,7 @@ const resolver = async (_, params, context) => {
 
   if (user.id) {
     await db.update(dbUser).set(user).where(eq(dbUser.id, user.id));
-    return { ...userToJSON(user), folder: getFolder(user.folderId) };
+    return { ...userToJSON(user), folder: dbFolderForId(user.folderId) };
   } else {
     const newUser = await db
       .insert(dbUser)
@@ -83,7 +83,7 @@ const resolver = async (_, params, context) => {
       })
       .returning();
 
-    return { ...userToJSON(newUser[0]), folder: getFolder(user.folderId) };
+    return { ...userToJSON(newUser[0]), folder: dbFolderForId(user.folderId) };
   }
 };
 

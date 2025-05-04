@@ -2,7 +2,6 @@ import { contextPermissions } from '../../auth/contextPermissions';
 import { GraphQLError } from 'graphql/error';
 import { hashPassword } from '../../helpers/hashPassword';
 
-import { getFolder } from '../helpers/getFolder';
 import {
   GraphQLBoolean,
   GraphQLID,
@@ -12,12 +11,13 @@ import {
 import { userType } from '../types/userType';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
 import { db, dbFolderForId, dbUserForId, UserFields } from '../../db/picrDb';
-import { and, eq, isNotNull } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models';
 import { UserType } from '../../../graphql-types';
 import { commentPermissionsEnum } from '../types/enums';
+import { PicrRequestContext } from '../../types/PicrRequestContext';
 
-const resolver = async (_, params, context) => {
+const resolver = async (_, params, context: PicrRequestContext) => {
   const { user } = await contextPermissions(context, params.folderId, 'Admin');
   let adminUser: UserFields | undefined = undefined;
 
@@ -29,7 +29,7 @@ const resolver = async (_, params, context) => {
 
   if (username) {
     const existingUsername = await db.query.dbUser.findFirst({
-      where: and(eq(dbUser.username, username), isNotNull(dbUser.uuid)),
+      where: and(eq(dbUser.username, username), ne(dbUser.userType, 'Link')),
     });
 
     if (existingUsername) {
@@ -84,7 +84,7 @@ const resolver = async (_, params, context) => {
     });
   }
 
-  return { ...adminUser, folder: getFolder(adminUser.folderId) };
+  return { ...adminUser, folder: dbFolderForId(adminUser.folderId) };
 };
 
 export const editAdminUser = {

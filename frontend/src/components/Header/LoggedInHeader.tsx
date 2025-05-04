@@ -41,7 +41,7 @@ export const LoggedInHeader = ({
             <RightSide me={me} />
           </Group>
         ) : null}
-        {me?.isPublicLink ? <PublicUser me={me} folder={folder} /> : null}
+        {me?.isLink ? <PublicUser me={me} folder={folder} /> : null}
       </Page>
     </header>
   );
