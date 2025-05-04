@@ -8,16 +8,18 @@ import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder';
 import { MinimalFile } from '../../frontend/types';
 import { dbFolderForId, FileFields } from '../db/picrDb';
 import { getUserFromUUID } from '../auth/getUserFromUUID';
+import { picrConfig } from '../config/picrConfig';
 
 interface ITemplateFields {
   title: string;
   description: string;
   image: string;
+  url: string;
 }
 
 // Build basic template, mainly so there are metadata fields if sharing this link online so you get a 'rich link'
 export const picrTemplate = async (req: Request, res: Response) => {
-  let fields: ITemplateFields = fieldDefaults;
+  let fields: ITemplateFields = { ...fieldDefaults, url: picrConfig.baseUrl };
 
   //FB messenger was adding `%E2%81%A9` to outgoing links so we need to strip that. - observed december 25th, 2024
   if (req.path.endsWith('%E2%81%A9')) {
@@ -45,7 +47,8 @@ export const picrTemplate = async (req: Request, res: Response) => {
           title: joinTitles([folder.name, fields.title]),
           description: summary,
           image: thumb
-            ? imageURL(fileFieldsToMinimalFile(thumb), 'md')
+            ? fields.url.slice(0, -1) +
+              imageURL(fileFieldsToMinimalFile(thumb), 'md')
             : fields.image,
         };
       }
@@ -63,6 +66,7 @@ const fieldDefaults: ITemplateFields = {
   title: 'PICR',
   description: 'PICR File Sharing',
   image: '',
+  url: '',
 };
 
 const fileFieldsToMinimalFile = (

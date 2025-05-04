@@ -11,6 +11,7 @@ import {
   gravatarTest,
   photoFolderId,
   testPublicLink,
+  testUrl,
   videoFolderId,
 } from './testVariables';
 import { viewFolderQuery } from '../frontend/src/urql/queries/viewFolderQuery';
@@ -91,6 +92,33 @@ test("Public Link can't access other folders", async () => {
     .toPromise();
   expect(otherResult.error).toBeDefined();
   expect(otherResult.data?.folder).toBeUndefined();
+});
+
+test('Open Graph: social media friendly links', async () => {
+  const url = testUrl + `s/${testPublicLink.uuid}/${testPublicLink.folderId}`; // defined in useBaseViewFolderURL.ts
+  const response = await fetch(url);
+  const text = await response.text();
+  expect(text).toContain('<title>Dog Photos » PICR</title>');
+  expect(text).toContain('<div id="root"></div>');
+
+  expect(text).toContain(
+    '<meta property="og:title" content="Dog Photos » PICR" />',
+  );
+
+  expect(text).toContain('<meta property="og:type" content="website" />');
+  expect(text).toContain(
+    '<meta property="og:description" content="10 Images" />',
+  );
+
+  // expect some http/https URL ending with a slash
+  expect(text).toMatch(
+    /<meta property="og:url" content="https?:\/\/(.){5,}\/" \/>/gm,
+  );
+
+  // the hash changes so lets accept any 64 characters :)
+  expect(text).toMatch(
+    /<meta property="og:image" content="https?:\/\/(.){5,}\/image\/2\/md\/(.){64}\/XH2A2139.jpg" \/>/gm,
+  ); //TODO: full URL
 });
 
 //TODO: can view comments
