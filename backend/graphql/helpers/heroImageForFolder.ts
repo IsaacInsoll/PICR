@@ -48,7 +48,10 @@ export const heroImageForFolder = async (f: FolderFields) => {
     ),
     orderBy: asc(dbFile.name),
   });
-  return allImages;
+  if (allImages) {
+    await setHeroImage(allImages.id, f.id);
+    return allImages;
+  }
 };
 
 const heroImageForSubFolder = async (parentIds: number[]) => {
