@@ -19,7 +19,12 @@ interface ITemplateFields {
 
 // Build basic template, mainly so there are metadata fields if sharing this link online so you get a 'rich link'
 export const picrTemplate = async (req: Request, res: Response) => {
-  let fields: ITemplateFields = { ...fieldDefaults, url: picrConfig.baseUrl };
+  const strippedBase = picrConfig.baseUrl.slice(0, -1);
+  let fields: ITemplateFields = {
+    ...fieldDefaults,
+    url: strippedBase + req.path,
+  };
+  //todo: remainder of url
 
   //FB messenger was adding `%E2%81%A9` to outgoing links so we need to strip that. - observed december 25th, 2024
   if (req.path.endsWith('%E2%81%A9')) {
@@ -47,8 +52,7 @@ export const picrTemplate = async (req: Request, res: Response) => {
           title: joinTitles([folder.name, fields.title]),
           description: summary,
           image: thumb
-            ? fields.url.slice(0, -1) +
-              imageURL(fileFieldsToMinimalFile(thumb), 'md')
+            ? strippedBase + imageURL(fileFieldsToMinimalFile(thumb), 'md')
             : fields.image,
         };
       }
