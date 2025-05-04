@@ -43,6 +43,16 @@ test('Create Public Link', async () => {
   expect(folder?.parents[0].id).toBe('1');
 });
 
+test('Querying folder without UUID / Authorisation should fail', async () => {
+  const client = await createTestGraphqlClient({});
+  const result = await client
+    .query(viewFolderQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+
+  expect(result.error).toBeDefined();
+  expect(result.data?.folder).toBeUndefined();
+});
+
 test('Public Link can access folder', async () => {
   const headers = await getLinkHeader(testPublicLink.uuid);
   const client = await createTestGraphqlClient(headers);
@@ -53,7 +63,6 @@ test('Public Link can access folder', async () => {
   expect(result.error).toBeUndefined();
   expect(result.data?.folder).toBeDefined();
   const folder = result.data!.folder;
-  console.log(folder);
 
   expect(folder.id).toBe(testPublicLink.folderId);
   // expect(folder.name).toBe('Home');
@@ -82,7 +91,7 @@ test("Public Link can't access other folders", async () => {
   const client = await createTestGraphqlClient(headers);
 
   const homeResult = await client
-    .query(viewFolderQuery, { folderId: 1 })
+    .query(viewFolderQuery, { folderId: '1' })
     .toPromise();
   expect(homeResult.error).toBeDefined();
   expect(homeResult.data?.folder).toBeUndefined();
