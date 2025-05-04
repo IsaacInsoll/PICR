@@ -23,3 +23,7 @@ export const getUserHeader = async (credentials: ICredentials) => {
     throw new Error('Authentication failed');
   return { authorization: `Bearer ${result.data.auth}` };
 };
+
+export const getLinkHeader = async (uuid: string) => {
+  return { uuid };
+};
