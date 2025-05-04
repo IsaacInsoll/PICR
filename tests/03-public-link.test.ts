@@ -121,7 +121,7 @@ test('Open Graph: social media friendly links', async () => {
 
   // expect some http/https URL ending with a slash
   expect(text).toMatch(
-    /<meta property="og:url" content="https?:\/\/(.){5,}\/" \/>/gm,
+    /<meta property="og:url" content="https?:\/\/(.){5,}\/(.){5,}" \/>/gm,
   );
 
   // the hash changes so lets accept any 64 characters :)
