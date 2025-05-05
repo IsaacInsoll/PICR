@@ -1,14 +1,26 @@
-import { allSubfolders } from '../../helpers/allSubfolders';
-import { db, dbFileForId, FolderFields } from '../../db/picrDb';
+import { allSubfolderIds } from '../../helpers/allSubfolders';
+import { db, dbFileForId, FileFields, FolderFields } from '../../db/picrDb';
 import { and, asc, eq, inArray, ne } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../../db/models';
 
 import { setHeroImage } from '../mutations/setHeroImage';
 
-export const heroImageForFolder = async (f: FolderFields) => {
+export const heroImageForFolder = async (
+  f: FolderFields & { heroImage?: FileFields },
+) => {
+  // 0. Hero Image already in the query (eg: subFolders with a join)
+  if (
+    f.heroImage &&
+    f.heroImage.exists &&
+    f.heroImage.relativePath.startsWith(f.relativePath ?? '')
+  ) {
+    return f.heroImage;
+  }
   // 1. Hero Image set for current folder
   const heroImage =
-    f.heroImageId != 0 ? await dbFileForId(f.heroImageId) : undefined;
+    f.heroImageId && f.heroImageId != 0
+      ? await dbFileForId(f.heroImageId)
+      : undefined;
   if (
     heroImage &&
     heroImage.exists &&
@@ -35,11 +47,16 @@ export const heroImageForFolder = async (f: FolderFields) => {
     await setHeroImage(subFolder.id, f.id);
     return subFolder;
   }
+
   // 4. First image in any subfolder
-  const allSubFolders = await allSubfolders(f.id);
-  const subFolderIds = allSubFolders.map((f) => f.id);
+  const subFolderIds = await allSubfolderIds(f);
   const s = await heroImageForSubFolder(subFolderIds);
-  if (s) return s;
+  if (s) {
+    await setHeroImage(s.id, f.id);
+    return s;
+  }
+
+  // 5. All subfolders
   const allImages = await db.query.dbFile.findFirst({
     where: and(
       inArray(dbFile.folderId, subFolderIds),
@@ -61,17 +78,8 @@ const heroImageForSubFolder = async (parentIds: number[]) => {
       eq(dbFolder.exists, true),
       ne(dbFolder.heroImageId, 0),
     ),
+    with: { heroImage: true },
   });
-  if (!subFolder) return undefined;
-
-  const subHeroImage = subFolder
-    ? await dbFileForId(subFolder.heroImageId)
-    : undefined;
-  if (
-    subHeroImage &&
-    subHeroImage.exists &&
-    subHeroImage.folderId == subFolder?.id
-  ) {
-    return subHeroImage;
-  }
+  if (!subFolder || !!subFolder.heroImage?.exists) return undefined;
+  return subFolder.heroImage;
 };

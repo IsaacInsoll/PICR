@@ -19,7 +19,8 @@ export const SetHeroImageButton = ({ file }: { file: MinimalFile }) => {
   if (!me?.isUser || !file || !file.type == 'Image') return null;
   //TODO: look different if we are looking at the current hero image :)
   const onClick = () => {
-    if (file.isHeroImage) return;
+    // 2025: i've commented out the next line as it's already the hero image for this folder but you might want to set it again to cascade parents
+    // if (file.isHeroImage) return;
     setLoading(true);
     mutate({
       folderId: file.folderId,
