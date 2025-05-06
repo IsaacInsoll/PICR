@@ -4,5 +4,6 @@ import { baseColumns } from '../column.helpers';
 export const dbServerOptions = pgTable('ServerOptions', {
   ...baseColumns,
   lastBootedVersion: varchar('lastBootedVersion', { length: 255 }),
+  tokenSecret: varchar('tokenSecret', { length: 255 }),
   avifEnabled: boolean('avifEnabled'),
 });

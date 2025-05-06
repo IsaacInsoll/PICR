@@ -49,11 +49,9 @@ export const envSchema = z.object({
   TOKEN_SECRET: z
     .string({
       description: 'TOKEN_SECRET',
-      required_error:
-        "ERROR: You haven't specified a TOKEN_SECRET in .ENV\n\tHeres one we just created for you:\n\n\t" +
-        randomBytes(64).toString('hex'),
     })
-    .min(64),
+    .min(64)
+    .optional(),
 
   DEBUG_SQL: castStringToBool,
   CONSOLE_LOGGING: castStringToBool,

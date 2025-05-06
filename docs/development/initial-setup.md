@@ -43,7 +43,6 @@ BASEURL=http://localhost:6969
 #DEBUG_SQL=true
 CONSOLE_LOGGING=true
 USE_POLLING=true
-TOKEN_SECRET=<some-long-string>
 DATABASE_URL=postgres://user:pass@localhost/picr
 POLLING_INTERVAL=20
 NODE_ENV=development

@@ -11,10 +11,25 @@ import {
 } from '../db/models';
 import { IPicrConfiguration } from '../config/IPicrConfiguration';
 import { dirname } from 'path';
+import { randomBytes } from 'node:crypto';
 
 // This does the "picr" side of migrations, for the DB side see schemaMigration.ts
 export const dbMigrate = async (config: IPicrConfiguration) => {
   const opts = await getServerOptions();
+
+  if (!opts.tokenSecret) {
+    if (config.tokenSecret) {
+      console.log(
+        " ℹ️ Updating token secret in database. You don't need it in .ENV anymore\n",
+      );
+      await setServerOptions({ tokenSecret: config.tokenSecret });
+    } else {
+      config.tokenSecret = randomBytes(64).toString('hex');
+      await setServerOptions({ tokenSecret: config.tokenSecret });
+    }
+  } else {
+    config.tokenSecret = opts.tokenSecret;
+  }
 
   if (valid(opts.lastBootedVersion)) {
     if (lt(opts.lastBootedVersion!, '0.7.0')) {

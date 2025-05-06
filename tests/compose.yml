@@ -12,7 +12,6 @@ services:
     ports:
       - "6901:6900"
     environment:
-      - TOKEN_SECRET=15bba1733b6684f53275e7c6ba6cf2efd68b697a9da6d6954c92c72dfd471585857bed975306f3f00172fffec0027b50e0f2d37e8d0a2f00af3c7e36aa710504
       - DATABASE_URL=postgres://user:pass@test-db/picr
       - USE_POLLING=true
       - POLLING_INTERVAL=100

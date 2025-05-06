@@ -28,7 +28,6 @@ services:
       - BASE_URL=https://clients.mydomain.com/ #change this to your URL
       - DATABASE_URL=postgres://user:pass@db/picr
       - USE_POLLING=true # recommended if you have > 10,000 files
-      #- TOKEN_SECRET=<leave this out and on first build it will give you a very secret random string to put in here>
   db:
     image: postgres:17
     container_name: picr-db
@@ -58,8 +57,6 @@ There are lots of environment variables you can use, but only a few are needed:
 PICR will actually respond on all domains that point to it, but this is the domain used when sending out external links. 
 
 - `DATABASE_URL` You can leave the defaults here, which match the `db` container listed lower in the docker file. 
-
-- `TOKEN_SECRET` this should be a long random string. Try and run PICR without it and it will randomly generate a long string for you to use. 
 
 - `USE_POLLING` this means files aren't detected "instantly" and will take 20 seconds to be discovered. This has been found to be useful when you have a large number of files.
 
