@@ -1,9 +1,9 @@
 import { integer, pgTable, varchar } from 'drizzle-orm/pg-core';
-import { dbUser } from './dbUser';
-import { dbFolder } from './dbFolder';
+import { dbUser } from "./dbUser.js";
+import { dbFolder } from "./dbFolder.js";
 import { relations } from 'drizzle-orm';
-import { baseColumns } from '../column.helpers';
-import { accessTypeEnum } from './enums';
+import { baseColumns } from "../column.helpers.js";
+import { accessTypeEnum } from "./enums.js";
 
 export const dbAccessLog = pgTable('AccessLogs', {
   ...baseColumns,

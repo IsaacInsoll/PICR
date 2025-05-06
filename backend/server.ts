@@ -1,14 +1,13 @@
-import pkg from '../package.json';
-import { fileWatcher } from './filesystem/fileWatcher';
-import { setupRootFolder } from './filesystem/events/addFolder';
-import { envPassword } from './boot/envPassword';
-import { expressServer } from './express/express';
-import { dbMigrate } from './boot/dbMigrate';
-import { log } from './logger';
-import { picrConfig } from './config/picrConfig';
-import { dbFolderForId, initDb } from './db/picrDb';
-import { schemaMigration } from './db/schemaMigration';
-import { folderIsUnderFolderId } from './helpers/folderIsUnderFolderId';
+import pkg from '../package.json' with { type: 'json' };
+import { fileWatcher } from './filesystem/fileWatcher.js';
+import { setupRootFolder } from './filesystem/events/addFolder.js';
+import { envPassword } from './boot/envPassword.js';
+import { expressServer } from './express/express.js';
+import { dbMigrate } from './boot/dbMigrate.js';
+import { log } from './logger.js';
+import { picrConfig } from './config/picrConfig.js';
+import { initDb } from './db/picrDb.js';
+import { schemaMigration } from './db/schemaMigration.js';
 
 export const server = async () => {
   try {

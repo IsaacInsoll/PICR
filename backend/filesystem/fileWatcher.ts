@@ -1,12 +1,12 @@
 import chokidar from 'chokidar';
-import { relativePath } from './fileManager';
-import { addToQueue, initComplete } from './fileQueue';
-import { log } from '../logger';
-import { picrConfig } from '../config/picrConfig';
-import { db } from '../db/picrDb';
-import { dbFile, dbFolder } from '../db/models';
+import { relativePath } from './fileManager.js';
+import { addToQueue, initComplete } from './fileQueue.js';
+import { log } from '../logger.js';
+import { picrConfig } from '../config/picrConfig.js';
+import { db } from '../db/picrDb.js';
+import { dbFile, dbFolder } from '../db/models/index.js';
 import { isNotNull } from 'drizzle-orm';
-import { IPicrConfiguration } from '../config/IPicrConfiguration';
+import { IPicrConfiguration } from '../config/IPicrConfiguration.js';
 
 export const fileWatcher = async (config: IPicrConfiguration) => {
   log(

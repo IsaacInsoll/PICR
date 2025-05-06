@@ -1,5 +1,5 @@
 import { createLogger, format, transports } from 'winston';
-import { picrConfig } from './config/picrConfig';
+import { picrConfig } from "./config/picrConfig.js";
 
 export const logger = createLogger({
   level: 'info',

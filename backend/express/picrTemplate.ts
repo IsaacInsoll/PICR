@@ -1,14 +1,14 @@
 import { readFileSync } from 'node:fs';
-import { contextPermissions } from '../auth/contextPermissions';
-import { folderStatsSummaryText } from '../graphql/helpers/folderStats';
-import { imageURL } from '../../frontend/src/helpers/imageURL';
+import { contextPermissions } from "../auth/contextPermissions.js";
+import { folderStatsSummaryText } from "../graphql/helpers/folderStats.js";
+import { imageURL } from "../../frontend/src/helpers/imageURL.js";
 import { Request, Response } from 'express';
-import { joinTitles } from '../helpers/joinTitle';
-import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder';
-import { MinimalFile } from '../../frontend/types';
-import { dbFolderForId, FileFields } from '../db/picrDb';
-import { getUserFromUUID } from '../auth/getUserFromUUID';
-import { picrConfig } from '../config/picrConfig';
+import { joinTitles } from "../helpers/joinTitle.js";
+import { heroImageForFolder } from "../graphql/helpers/heroImageForFolder.js";
+import { MinimalFile } from "../../frontend/types.js";
+import { dbFolderForId, FileFields } from "../db/picrDb.js";
+import { getUserFromUUID } from "../auth/getUserFromUUID.js";
+import { picrConfig } from "../config/picrConfig.js";
 
 interface ITemplateFields {
   title: string;

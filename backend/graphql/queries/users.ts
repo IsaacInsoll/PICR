@@ -1,18 +1,18 @@
-import { contextPermissions } from '../../auth/contextPermissions';
-import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds';
+import { contextPermissions } from '../../auth/contextPermissions.js';
+import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds.js';
 import {
   GraphQLBoolean,
   GraphQLID,
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import { userType } from '../types/userType';
-import { allSubfolders } from '../../helpers/allSubfolders';
-import { userToJSON } from '../helpers/userToJSON';
-import { db, dbFolderForId } from '../../db/picrDb';
+import { userType } from '../types/userType.js';
+import { allSubfolders } from '../../helpers/allSubfolders.js';
+import { userToJSON } from '../helpers/userToJSON.js';
+import { db, dbFolderForId } from '../../db/picrDb.js';
 import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm';
-import { dbUser } from '../../db/models';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { dbUser } from '../../db/models/index.js';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   const { folder, user } = await contextPermissions(

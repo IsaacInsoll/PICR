@@ -1,6 +1,9 @@
 import { lt, valid } from 'semver';
-import { db, getServerOptions, setServerOptions } from '../db/picrDb';
+import { db, getServerOptions, setServerOptions } from '../db/picrDb.js';
 import { and, count, eq, inArray, isNotNull, sql } from 'drizzle-orm';
+import { IPicrConfiguration } from '../config/IPicrConfiguration.js';
+import { dirname } from 'path';
+import { randomBytes } from 'node:crypto';
 import {
   dbAccessLog,
   dbBranding,
@@ -8,10 +11,7 @@ import {
   dbFile,
   dbFolder,
   dbUser,
-} from '../db/models';
-import { IPicrConfiguration } from '../config/IPicrConfiguration';
-import { dirname } from 'path';
-import { randomBytes } from 'node:crypto';
+} from '../db/models/index.js';
 
 // This does the "picr" side of migrations, for the DB side see schemaMigration.ts
 export const dbMigrate = async (config: IPicrConfiguration) => {

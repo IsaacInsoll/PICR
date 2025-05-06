@@ -1,5 +1,5 @@
-import { IPicrConfiguration } from './IPicrConfiguration';
-import { testUrl } from '../../tests/testVariables';
+import { IPicrConfiguration } from "./IPicrConfiguration.js";
+import { testUrl } from "../../tests/testVariables.js";
 
 export const picrConfig: IPicrConfiguration = {
   baseUrl: '',

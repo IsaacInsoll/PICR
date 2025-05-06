@@ -2,7 +2,9 @@
   "name": "picr",
   "version": "0.7.10",
   "description": "",
-  "main": "backend/app.ts",
+  "exports": "./backend/app.ts",
+  "type": "module",
+
   "scripts": {
     "start:server-ts": "tsc -w",
     "start:server": "nodemon --delay 0.5 --watch .env --watch dist/server dist/server/backend/app.js",
@@ -24,7 +26,7 @@
     "chokidar": "^3.6.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.41.0",
-    "exif-reader": "^2.0.1",
+    "exif-reader": "^2.0.2",
     "express": "^5.0.1",
     "fast-folder-size": "^2.3.0",
     "fast-xml-parser": "^4.5.0",

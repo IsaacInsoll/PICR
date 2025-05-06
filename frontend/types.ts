@@ -4,7 +4,7 @@ import {
   FileType,
   ImageMetadataSummary,
   VideoMetadataSummary,
-} from '../graphql-types';
+} from '../graphql-types.js';
 
 export interface MinimalFolder {
   id: string;

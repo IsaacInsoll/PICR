@@ -1,11 +1,11 @@
-import { contextPermissions } from '../../auth/contextPermissions';
-import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql/index';
-import { folderType } from '../types/folderType';
-import { db, dbFolderForId } from '../../db/picrDb';
+import { contextPermissions } from '../../auth/contextPermissions.js';
+import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
+import { folderType } from '../types/folderType.js';
+import { db, dbFolderForId } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
-import { dbBranding } from '../../db/models';
-import { primaryColorEnum, themeModeEnum } from '../types/enums';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { dbBranding } from '../../db/models/index.js';
+import { primaryColorEnum, themeModeEnum } from '../types/enums.js';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   await contextPermissions(context, params.folderId, 'Admin');

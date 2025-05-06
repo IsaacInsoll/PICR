@@ -1,8 +1,8 @@
 import express from 'express';
-import { gqlServer } from '../graphql/gqlServer';
-import { imageRequest } from './imageRequest';
-import { zipRequest } from './zipRequest';
-import { picrTemplate } from './picrTemplate';
+import { gqlServer } from "../graphql/gqlServer.js";
+import { imageRequest } from "./imageRequest.js";
+import { zipRequest } from "./zipRequest.js";
+import { picrTemplate } from "./picrTemplate.js";
 
 export const expressServer = () => {
   const exp = express();

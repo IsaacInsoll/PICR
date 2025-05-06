@@ -1,12 +1,12 @@
-import { queueTaskStatus } from '../../filesystem/fileQueue';
-import { Task } from '../../../frontend/src/gql/graphql';
-import { queueZipTaskStatus } from '../../helpers/zipQueue';
-import { contextPermissions } from '../../auth/contextPermissions';
+import { queueTaskStatus } from "../../filesystem/fileQueue.js";
+import { Task } from "../../../frontend/src/gql/graphql.js";
+import { queueZipTaskStatus } from "../../helpers/zipQueue.js";
+import { contextPermissions } from "../../auth/contextPermissions.js";
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
-import { taskType } from '../types/taskType';
-import { allSubfolderIds } from '../../helpers/allSubfolders';
-import { dbFolderForId } from '../../db/picrDb';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { taskType } from "../types/taskType.js";
+import { allSubfolderIds } from "../../helpers/allSubfolders.js";
+import { dbFolderForId } from "../../db/picrDb.js";
+import { PicrRequestContext } from "../../types/PicrRequestContext.js";
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   const { user, folder } = await contextPermissions(

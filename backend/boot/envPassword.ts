@@ -1,7 +1,7 @@
-import { hashPassword } from '../helpers/hashPassword';
-import { defaultCredentials } from '../auth/defaultCredentials';
-import { db } from '../db/picrDb';
-import { dbUser } from '../db/models';
+import { hashPassword } from '../helpers/hashPassword.js';
+import { defaultCredentials } from '../auth/defaultCredentials.js';
+import { db } from '../db/picrDb.js';
+import { dbUser } from '../db/models/index.js';
 
 export const envPassword = async () => {
   const totalUsers = await db.$count(dbUser);

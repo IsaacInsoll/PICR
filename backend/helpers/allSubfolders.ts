@@ -1,7 +1,7 @@
-import { db, dbFolderForId, FolderFields } from '../db/picrDb';
-import { dbFolder } from '../db/models';
+import { db, dbFolderForId, FolderFields } from '../db/picrDb.js';
+import { dbFolder } from '../db/models/index.js';
 import { and, asc, desc, eq, like, or } from 'drizzle-orm';
-import { FoldersSortType } from '../../graphql-types';
+import { FoldersSortType } from '../../graphql-types.js';
 
 // Recursively find all subfolders
 // NOTE: no permissions done here, if you can see parent you can see the children

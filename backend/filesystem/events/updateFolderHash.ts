@@ -1,10 +1,10 @@
 // We can't detect folder renames, so lets compare hash of folder contents to work out if it's a rename?
 import { readdirSync } from 'node:fs';
-import { fullPath } from '../fileManager';
+import { fullPath } from '../fileManager.js';
 import crypto from 'crypto';
-import { log } from '../../logger';
-import { db, FolderFields } from '../../db/picrDb';
-import { dbFolder } from '../../db/models';
+import { log } from '../../logger.js';
+import { db, FolderFields } from '../../db/picrDb.js';
+import { dbFolder } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
 
 export const updateFolderHash = (folder: FolderFields) => {

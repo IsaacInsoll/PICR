@@ -1,6 +1,6 @@
 // This is just convenience functions and types because sometimes Drizzle is a bit too low level
 
-import * as schema from './models';
+import * as schema from './models/index.js';
 import {
   dbAccessLog,
   dbBranding,
@@ -9,15 +9,14 @@ import {
   dbFolder,
   dbServerOptions,
   dbUser,
-} from './models';
+} from './models/index.js';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { and, asc, desc, eq, gte, inArray } from 'drizzle-orm';
-import { IncomingCustomHeaders } from '../types/incomingCustomHeaders';
-import { AccessType } from '../../graphql-types';
-import { fileToJSON } from '../graphql/helpers/fileToJSON';
-import { picrConfig } from '../config/picrConfig';
-import { sendFolderViewedNotification } from '../notifications/notifications';
-import { PicrRequestContext } from '../types/PicrRequestContext';
+import { AccessType } from '../../graphql-types.js';
+import { fileToJSON } from '../graphql/helpers/fileToJSON.js';
+import { picrConfig } from '../config/picrConfig.js';
+import { sendFolderViewedNotification } from '../notifications/notifications.js';
+import { PicrRequestContext } from '../types/PicrRequestContext.js';
 
 export let db: NodePgDatabase<typeof schema>;
 

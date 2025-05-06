@@ -1,9 +1,9 @@
-import { allSubfolderIds } from '../../helpers/allSubfolders';
-import { db, dbFileForId, FileFields, FolderFields } from '../../db/picrDb';
+import { allSubfolderIds } from '../../helpers/allSubfolders.js';
+import { db, dbFileForId, FileFields, FolderFields } from '../../db/picrDb.js';
 import { and, asc, eq, inArray, ne } from 'drizzle-orm';
-import { dbFile, dbFolder } from '../../db/models';
+import { dbFile, dbFolder } from '../../db/models/index.js';
 
-import { setHeroImage } from '../mutations/setHeroImage';
+import { setHeroImage } from '../mutations/setHeroImage.js';
 
 export const heroImageForFolder = async (
   f: FolderFields & { heroImage?: FileFields },

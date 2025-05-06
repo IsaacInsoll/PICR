@@ -15,7 +15,7 @@ import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
 import { Suspense, useEffect, useRef } from 'react';
 import { PicrErrorBoundary } from './components/PicrErrorBoundary';
-import { useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai';
 import { lightboxRefAtom } from './atoms/lightboxRefAtom';
 
 const App = () => {

@@ -1,5 +1,5 @@
 import { boolean, pgTable, varchar } from 'drizzle-orm/pg-core';
-import { baseColumns } from '../column.helpers';
+import { baseColumns } from "../column.helpers.js";
 
 export const dbServerOptions = pgTable('ServerOptions', {
   ...baseColumns,

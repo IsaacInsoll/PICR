@@ -1,12 +1,12 @@
 import {
   ContextualPermissions,
   FolderPermissions,
-} from '../types/FolderPermissions';
-import { doAuthError } from './doAuthError';
-import { GraphQLError } from 'graphql/error';
-import { folderIsUnderFolder } from '../helpers/folderIsUnderFolderId';
-import { dbFolderForId } from '../db/picrDb';
-import { PicrRequestContext } from '../types/PicrRequestContext';
+} from '../types/FolderPermissions.js';
+import { doAuthError } from './doAuthError.js';
+import { GraphQLError } from 'graphql/error/index.js';
+import { folderIsUnderFolder } from '../helpers/folderIsUnderFolderId.js';
+import { dbFolderForId } from '../db/picrDb.js';
+import { PicrRequestContext } from '../types/PicrRequestContext.js';
 
 type fid = number | null | undefined;
 

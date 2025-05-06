@@ -1,9 +1,9 @@
-import { delay } from '../../helpers/delay';
-import { folderList, relativePath } from '../fileManager';
-import { log } from '../../logger';
-import { db } from '../../db/picrDb';
+import { delay } from '../../helpers/delay.js';
+import { folderList, relativePath } from '../fileManager.js';
+import { log } from '../../logger.js';
+import { db } from '../../db/picrDb.js';
 import { and, eq, gte } from 'drizzle-orm';
-import { dbFolder } from '../../db/models';
+import { dbFolder } from '../../db/models/index.js';
 
 export const removeFolder = async (path: string) => {
   // wait 1 sec, then see if a 'matching' folder was added in last 5 seconds, due to fileWatcher not detecting renames

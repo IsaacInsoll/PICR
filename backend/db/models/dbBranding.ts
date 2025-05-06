@@ -1,8 +1,8 @@
 import { integer, pgTable, varchar } from 'drizzle-orm/pg-core';
-import { baseColumns } from '../column.helpers';
+import { baseColumns } from "../column.helpers.js";
 import { relations } from 'drizzle-orm';
-import { primaryColorEnum, themeModeEnum } from './enums';
-import { dbFolder } from './dbFolder';
+import { primaryColorEnum, themeModeEnum } from "./enums.js";
+import { dbFolder } from "./dbFolder.js";
 
 export const dbBranding = pgTable('Brandings', {
   ...baseColumns,

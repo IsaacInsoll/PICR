@@ -1,8 +1,8 @@
 import { boolean, integer, pgTable, text, varchar } from 'drizzle-orm/pg-core';
-import { dbFile } from './dbFile';
-import { dbUser } from './dbUser';
-import { baseColumns } from '../column.helpers';
-import { dbFolder } from './dbFolder';
+import { dbFile } from "./dbFile.js";
+import { dbUser } from "./dbUser.js";
+import { baseColumns } from "../column.helpers.js";
+import { dbFolder } from "./dbFolder.js";
 import { relations } from 'drizzle-orm';
 
 export const dbComment = pgTable('Comments', {

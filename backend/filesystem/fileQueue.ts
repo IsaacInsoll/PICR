@@ -1,10 +1,10 @@
-import { addFile } from './events/addFile';
-import { addFolder } from './events/addFolder';
-import { removeFolder } from './events/removeFolder';
-import { Task } from '../../graphql-types';
-import { generateAllThumbs } from '../media/generateImageThumbnail';
-import { log } from '../logger';
-import { dbFileForId } from '../db/picrDb';
+import { addFile } from "./events/addFile.js";
+import { addFolder } from "./events/addFolder.js";
+import { removeFolder } from "./events/removeFolder.js";
+import { Task } from "../../graphql-types.js";
+import { generateAllThumbs } from "../media/generateImageThumbnail.js";
+import { log } from "../logger.js";
+import { dbFileForId } from "../db/picrDb.js";
 
 type QueueAction =
   | 'addDir'

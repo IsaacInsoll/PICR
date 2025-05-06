@@ -1,7 +1,7 @@
-import { FolderHash, zipFolder, zipPath } from './zip';
+import { FolderHash, zipFolder, zipPath } from "./zip.js";
 import { existsSync } from 'node:fs';
-import { Task } from '../../graphql-types';
-import { FolderFields } from '../db/picrDb';
+import { Task } from "../../graphql-types.js";
+import { FolderFields } from "../db/picrDb.js";
 
 interface ZipQueueItem {
   folder: FolderFields;

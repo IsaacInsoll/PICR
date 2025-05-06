@@ -1,7 +1,7 @@
-import { userType } from '../types/userType';
-import { userToJSON } from '../helpers/userToJSON';
-import { dbFolderForId, updateUserLastAccess } from '../../db/picrDb';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { userType } from "../types/userType.js";
+import { userToJSON } from "../helpers/userToJSON.js";
+import { dbFolderForId, updateUserLastAccess } from "../../db/picrDb.js";
+import { PicrRequestContext } from "../../types/PicrRequestContext.js";
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   const user = context.user;

@@ -1,6 +1,6 @@
-import { userToJSON } from './userToJSON';
-import { db } from '../../db/picrDb';
-import { dbUser } from '../../db/models';
+import { userToJSON } from './userToJSON.js';
+import { db } from '../../db/picrDb.js';
+import { dbUser } from '../../db/models/index.js';
 import { inArray } from 'drizzle-orm';
 
 type UserRelationship = { userId: number | null }[];

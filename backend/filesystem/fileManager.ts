@@ -1,6 +1,6 @@
-import { picrConfig } from '../config/picrConfig';
+import { picrConfig } from "../config/picrConfig.js";
 import { sep } from 'path';
-import { FileFields } from '../db/picrDb';
+import { FileFields } from "../db/picrDb.js";
 
 // BASIC PATH FUNCTIONS
 export const relativePath = (path: string) =>

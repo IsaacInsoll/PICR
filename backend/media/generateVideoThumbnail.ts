@@ -1,14 +1,15 @@
-import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize';
-import { thumbnailPath } from './thumbnailPath';
-import { ffmpegForFile } from './ffmpegForFile';
-import { VideoMetadata } from '../types/MetadataSummary';
-import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions';
+import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize.js';
+import { thumbnailPath } from './thumbnailPath.js';
+import { ffmpegForFile } from './ffmpegForFile.js';
+import { VideoMetadata } from '../types/MetadataSummary.js';
+import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions.js';
 import { existsSync } from 'node:fs';
-import { log } from '../logger';
-import joinImages from 'join-images';
-import { range } from 'lodash';
-import { fullPathForFile } from '../filesystem/fileManager';
-import { FileFields } from '../db/picrDb';
+import { log } from '../logger.js';
+// import joinImages from 'join-images'; TODO: find ES6 modules compatible alternative?
+import * as ji from 'join-images';
+import lodash from 'lodash';
+import { fullPathForFile } from '../filesystem/fileManager.js';
+import { FileFields } from '../db/picrDb.js';
 
 const numberOfVideoSnapshots = 10;
 
@@ -80,9 +81,9 @@ const processVideoThumbnail = async (
 const mergeImages = async (file: FileFields, size: ThumbnailSize) => {
   const outFile = thumbnailPath(file, size);
 
-  const files = range(1, 11).map((r) => `${outFile}/${size}_${r}.jpg`);
+  const files = lodash.range(1, 11).map((r) => `${outFile}/${size}_${r}.jpg`);
   console.log(files);
-  const img = await joinImages(files, { direction: 'vertical' });
+  const img = await ji.joinImages(files, { direction: 'vertical' });
   await img.toFile(outFile + '/joined.jpg');
 };
 

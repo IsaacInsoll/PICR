@@ -1,8 +1,8 @@
-import { GraphQLFieldResolver } from 'graphql/type';
-import { Folder as GqlFolder, Folder } from '../../../graphql-types';
-import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
-import { contextPermissions } from '../../auth/contextPermissions';
-import { allSubfolders } from '../../helpers/allSubfolders';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import { Folder as GqlFolder, Folder } from '../../../graphql-types.js';
+import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders.js';
+import { contextPermissions } from '../../auth/contextPermissions.js';
+import { allSubfolders } from '../../helpers/allSubfolders.js';
 import {
   GraphQLEnumType,
   GraphQLID,
@@ -10,8 +10,8 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import { folderType } from '../types/folderType';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { folderType } from '../types/folderType.js';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver: GraphQLFieldResolver<Folder, PicrRequestContext> = async (
   _,

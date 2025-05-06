@@ -1,10 +1,10 @@
-import { contextPermissions } from '../../auth/contextPermissions';
-import { hashFolderContents } from '../../helpers/zip';
-import { addToZipQueue } from '../../helpers/zipQueue';
+import { contextPermissions } from "../../auth/contextPermissions.js";
+import { hashFolderContents } from "../../helpers/zip.js";
+import { addToZipQueue } from "../../helpers/zipQueue.js";
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
-import { AccessType } from '../../../graphql-types';
-import { createAccessLog } from '../../db/picrDb';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { AccessType } from "../../../graphql-types.js";
+import { createAccessLog } from "../../db/picrDb.js";
+import { PicrRequestContext } from "../../types/PicrRequestContext.js";
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   const { user, folder } = await contextPermissions(

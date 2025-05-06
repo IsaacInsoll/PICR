@@ -1,4 +1,4 @@
-import { FolderFields, UserFields } from '../db/picrDb';
+import { FolderFields, UserFields } from "../db/picrDb.js";
 
 export type FolderPermissions = 'View' | 'Admin' | 'None';
 

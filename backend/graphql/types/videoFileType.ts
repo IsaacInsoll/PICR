@@ -1,9 +1,9 @@
-import { GraphQLFloat, GraphQLObjectType } from 'graphql/index';
+import { GraphQLFloat, GraphQLObjectType } from 'graphql';
 import {
   fileInterface,
   fileInterfaceFields,
-} from '../interfaces/fileInterface';
-import { videoMetadataSummaryType } from './videoMetadataSummaryType';
+} from '../interfaces/fileInterface.js';
+import { videoMetadataSummaryType } from './videoMetadataSummaryType.js';
 
 export const videoFileType = new GraphQLObjectType({
   name: 'Video',

@@ -1,10 +1,10 @@
-import { hashPassword } from '../../helpers/hashPassword';
-import { generateAccessToken } from '../../auth/jwt-auth';
+import { hashPassword } from '../../helpers/hashPassword.js';
+import { generateAccessToken } from '../../auth/jwt-auth.js';
 import { GraphQLNonNull, GraphQLString } from 'graphql';
-import { db } from '../../db/picrDb';
+import { db } from '../../db/picrDb.js';
 import { and, eq } from 'drizzle-orm';
-import { dbUser } from '../../db/models';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { dbUser } from '../../db/models/index.js';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   const p = params.password;

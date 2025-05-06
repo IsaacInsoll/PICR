@@ -1,5 +1,5 @@
 import gravatar from 'gravatar';
-import { UserFields } from '../../db/picrDb';
+import { UserFields } from "../../db/picrDb.js";
 
 export const userToJSON = (u: UserFields) => {
   const g = u.username?.includes('@')

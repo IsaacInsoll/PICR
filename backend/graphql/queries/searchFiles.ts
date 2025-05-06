@@ -1,12 +1,12 @@
-import { contextPermissions } from '../../auth/contextPermissions';
-import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql/index';
+import { contextPermissions } from '../../auth/contextPermissions.js';
+import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { GraphQLString } from 'graphql';
-import { fileType } from '../types/fileType';
-import { allSubfolderIds, allSubfolders } from '../../helpers/allSubfolders';
+import { fileType } from '../types/fileType.js';
+import { allSubfolderIds, allSubfolders } from '../../helpers/allSubfolders.js';
 import { and, asc, eq, ilike, inArray } from 'drizzle-orm';
-import { dbFile } from '../../db/models';
-import { db, dbFolderForId } from '../../db/picrDb';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { dbFile } from '../../db/models/index.js';
+import { db, dbFolderForId } from '../../db/picrDb.js';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   const { folder } = await contextPermissions(

@@ -7,7 +7,7 @@ import {
   primaryColorOptions,
   themeModeOptions,
   userTypeOptions,
-} from '../../db/models';
+} from '../../db/models/index.js';
 import { GraphQLEnumType } from 'graphql';
 
 export const accessTypeEnum = new GraphQLEnumType(

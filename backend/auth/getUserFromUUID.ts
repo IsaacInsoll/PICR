@@ -1,7 +1,7 @@
-import { CustomJwtPayload } from '../types/CustomJwtPayload';
-import { db, UserFields } from '../db/picrDb';
+import { CustomJwtPayload } from '../types/CustomJwtPayload.js';
+import { db, UserFields } from '../db/picrDb.js';
 import { eq } from 'drizzle-orm';
-import { dbUser } from '../db/models';
+import { dbUser } from '../db/models/dbUser.js';
 
 export const getUserFromUUID = async (
   context: CustomJwtPayload,

@@ -1,11 +1,11 @@
-import { contextPermissions } from '../../auth/contextPermissions';
+import { contextPermissions } from '../../auth/contextPermissions.js';
 
-import { fileToJSON } from '../helpers/fileToJSON';
+import { fileToJSON } from '../helpers/fileToJSON.js';
 import { GraphQLID, GraphQLNonNull } from 'graphql';
-import { fileInterface } from '../interfaces/fileInterface';
-import { GraphQLError } from 'graphql/error';
-import { dbFileForId } from '../../db/picrDb';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { fileInterface } from '../interfaces/fileInterface.js';
+import { GraphQLError } from 'graphql/error/index.js';
+import { dbFileForId } from '../../db/picrDb.js';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   const file = await dbFileForId(params.id);

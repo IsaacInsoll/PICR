@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { CustomJwtPayload } from '../types/CustomJwtPayload';
-import { picrConfig } from '../config/picrConfig';
-import { dbUserForId, UserFields } from '../db/picrDb';
+import { CustomJwtPayload } from "../types/CustomJwtPayload.js";
+import { picrConfig } from "../config/picrConfig.js";
+import { dbUserForId, UserFields } from "../db/picrDb.js";
 
 export function generateAccessToken(obj) {
   const response = jwt.sign(obj, picrConfig.tokenSecret!, {

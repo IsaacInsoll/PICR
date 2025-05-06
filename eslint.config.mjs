@@ -1,4 +1,6 @@
-module.exports = {
+import { defineConfig } from 'eslint/config/';
+
+export default defineConfig({
   env: {
     browser: true,
     es2021: true,
@@ -35,5 +37,6 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'warn',
     'react/destructuring-assignment': ['error', 'always'],
     'react/no-unescaped-entities': 'off',
+    'eslint-plugin-import': 'error',
   },
-};
+});

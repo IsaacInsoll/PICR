@@ -8,9 +8,9 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { baseColumns } from '../column.helpers';
-import { dbFolder } from './dbFolder';
-import { fileFlagEnum, fileTypeEnum } from './enums';
+import { baseColumns } from "../column.helpers.js";
+import { dbFolder } from "./dbFolder.js";
+import { fileFlagEnum, fileTypeEnum } from "./enums.js";
 import { relations } from 'drizzle-orm';
 
 export const dbFile = pgTable('Files', {

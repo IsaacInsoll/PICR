@@ -1,6 +1,6 @@
 import { and, asc, eq } from 'drizzle-orm';
-import { dbFolder } from '../../db/models';
-import { db } from '../../db/picrDb';
+import { dbFolder } from '../../db/models/index.js';
+import { db } from '../../db/picrDb.js';
 
 // only used when querying subfolders on a folder in GQL so we can perf tune here
 export const subFolders = async (parentId: number) => {

@@ -1,13 +1,13 @@
-import { contextPermissions } from '../../auth/contextPermissions';
+import { contextPermissions } from '../../auth/contextPermissions.js';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
-import { commentType } from '../types/commentType';
-import { GraphQLError } from 'graphql/error';
-import { subFilesMap } from '../helpers/subFiles';
-import { addUserRelationship } from '../helpers/addUserRelationship';
-import { db, dbFileForId } from '../../db/picrDb';
-import { dbComment } from '../../db/models';
+import { commentType } from '../types/commentType.js';
+import { GraphQLError } from 'graphql/error/index.js';
+import { subFilesMap } from '../helpers/subFiles.js';
+import { addUserRelationship } from '../helpers/addUserRelationship.js';
+import { db, dbFileForId } from '../../db/picrDb.js';
+import { dbComment } from '../../db/models/index.js';
 import { desc, eq } from 'drizzle-orm';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   //TODO: maybe support subfolders?

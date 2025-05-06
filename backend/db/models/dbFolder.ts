@@ -5,8 +5,8 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { dbFile } from './dbFile';
-import { baseColumns } from '../column.helpers';
+import { dbFile } from "./dbFile.js";
+import { baseColumns } from "../column.helpers.js";
 import { relations } from 'drizzle-orm';
 
 export const dbFolder = pgTable('Folders', {

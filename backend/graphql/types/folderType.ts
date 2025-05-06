@@ -6,21 +6,21 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { folderPermissionsType } from './folderPermissionsType';
-import { fileInterface } from '../interfaces/fileInterface';
-import { imageFileType } from './imageFileType';
-import { brandingType } from './brandingType';
-import { parentFolders } from '../../helpers/parentFolders';
-import { brandingForFolder } from '../helpers/brandingForFolder';
-import { heroImageForFolder } from '../helpers/heroImageForFolder';
-import { subFolders } from '../helpers/subFolders';
-import { allSubfolderIds } from '../../helpers/allSubfolders';
-import { userType } from './userType';
-import { userToJSON } from '../helpers/userToJSON';
-import { contextPermissions } from '../../auth/contextPermissions';
-import { db, FolderFields, getFilesForFolder } from '../../db/picrDb';
+import { folderPermissionsType } from './folderPermissionsType.js';
+import { fileInterface } from '../interfaces/fileInterface.js';
+import { imageFileType } from './imageFileType.js';
+import { brandingType } from './brandingType.js';
+import { parentFolders } from '../../helpers/parentFolders.js';
+import { brandingForFolder } from '../helpers/brandingForFolder.js';
+import { heroImageForFolder } from '../helpers/heroImageForFolder.js';
+import { subFolders } from '../helpers/subFolders.js';
+import { allSubfolderIds } from '../../helpers/allSubfolders.js';
+import { userType } from './userType.js';
+import { userToJSON } from '../helpers/userToJSON.js';
+import { contextPermissions } from '../../auth/contextPermissions.js';
+import { db, FolderFields, getFilesForFolder } from '../../db/picrDb.js';
 import { and, count, eq, inArray, sum } from 'drizzle-orm';
-import { dbFile, dbUser } from '../../db/models';
+import { dbFile, dbUser } from '../../db/models/index.js';
 import { GraphQLDateTime } from 'graphql-scalars';
 
 export const folderType = new GraphQLObjectType({

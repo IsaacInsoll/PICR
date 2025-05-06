@@ -1,12 +1,12 @@
-import { folderList, pathSplit, relativePath } from '../fileManager';
-import { updateFolderHash } from './updateFolderHash';
-import { log } from '../../logger';
+import { folderList, pathSplit, relativePath } from '../fileManager.js';
+import { updateFolderHash } from './updateFolderHash.js';
+import { log } from '../../logger.js';
 import { sep } from 'path';
-import { db, FolderFields } from '../../db/picrDb';
+import { db, FolderFields } from '../../db/picrDb.js';
 import { and, eq, isNull } from 'drizzle-orm';
-import { dbFolder } from '../../db/models';
+import { dbFolder } from '../../db/models/index.js';
 import { statSync } from 'node:fs';
-import { picrConfig } from '../../config/picrConfig';
+import { picrConfig } from '../../config/picrConfig.js';
 
 let rootFolder: FolderFields | undefined = undefined;
 

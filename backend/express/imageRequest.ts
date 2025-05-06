@@ -1,17 +1,17 @@
 import { Request, Response } from 'express';
-import { AllSize, allSizes } from '../../frontend/src/helpers/thumbnailSize';
+import { AllSize, allSizes } from '../../frontend/src/helpers/thumbnailSize.js';
 import { extname } from 'path';
 import {
   fullPathFor,
   generateThumbnail,
-} from '../media/generateImageThumbnail';
+} from '../media/generateImageThumbnail.js';
 import { existsSync } from 'node:fs';
 import {
   awaitVideoThumbnailGeneration,
   generateVideoThumbnail,
-} from '../media/generateVideoThumbnail';
-import { db, getServerOptions } from '../db/picrDb';
-import { dbFile } from '../db/models';
+} from '../media/generateVideoThumbnail.js';
+import { db, getServerOptions } from '../db/picrDb.js';
+import { dbFile } from '../db/models/index.js';
 import { and, eq } from 'drizzle-orm';
 
 export const imageRequest = async (

@@ -1,11 +1,11 @@
-import { contextPermissions } from '../../auth/contextPermissions';
-import { AccessType, Folder } from '../../../graphql-types';
-import { GraphQLFieldResolver } from 'graphql/type';
-import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders';
+import { contextPermissions } from '../../auth/contextPermissions.js';
+import { AccessType, Folder } from '../../../graphql-types.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders.js';
 import { GraphQLID, GraphQLNonNull } from 'graphql';
-import { folderType } from '../types/folderType';
-import { createAccessLog } from '../../db/picrDb';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { folderType } from '../types/folderType.js';
+import { createAccessLog } from '../../db/picrDb.js';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const folderResolver: GraphQLFieldResolver<Folder, PicrRequestContext> = async (
   _,

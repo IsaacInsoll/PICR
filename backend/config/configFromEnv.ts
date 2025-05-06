@@ -1,10 +1,10 @@
 import { config } from 'dotenv';
 import { existsSync, readFileSync } from 'node:fs';
-import { addDevLogger, log } from '../logger';
-import { picrConfig } from './picrConfig';
-import { IPicrConfiguration } from './IPicrConfiguration';
+import { addDevLogger, log } from "../logger.js";
+import { picrConfig } from "./picrConfig.js";
+import { IPicrConfiguration } from "./IPicrConfiguration.js";
 import path from 'path';
-import { envSchema } from './envSchema';
+import { envSchema } from "./envSchema.js";
 
 export const configFromEnv = () => {
   config(); // read .ENV

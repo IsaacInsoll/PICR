@@ -1,6 +1,6 @@
-import { FolderFields, UserFields } from '../db/picrDb';
-import { IncomingCustomHeaders } from './incomingCustomHeaders';
-import { ExtraUserProps } from '../helpers/extraUserProps';
+import { FolderFields, UserFields } from "../db/picrDb.js";
+import { IncomingCustomHeaders } from "./incomingCustomHeaders.js";
+import { ExtraUserProps } from "../helpers/extraUserProps.js";
 
 export type PicrRequestContext = {
   user?: UserFields;

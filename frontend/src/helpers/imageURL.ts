@@ -1,6 +1,6 @@
-import { MinimalFile } from '../../types';
-import { AllSize, ThumbnailSize } from './thumbnailSize';
-import { thumbnailDimensions } from './thumbnailDimensions';
+import { MinimalFile } from '../../types.js';
+import { AllSize, ThumbnailSize } from './thumbnailSize.js';
+import { thumbnailDimensions } from './thumbnailDimensions.js';
 
 export const imageURL = (
   file: Partial<Pick<MinimalFile, 'id' | 'fileHash' | 'name' | 'type'>>,

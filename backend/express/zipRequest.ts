@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import { zipPath } from '../helpers/zip';
+import { zipPath } from "../helpers/zip.js";
 import { existsSync } from 'node:fs';
-import { zipInProgress } from '../helpers/zipQueue';
-import { dbFolderForId } from '../db/picrDb';
+import { zipInProgress } from "../helpers/zipQueue.js";
+import { dbFolderForId } from "../db/picrDb.js";
 
 export const zipRequest = async (
   req: Request<{ folderId: number; hash: string }>,

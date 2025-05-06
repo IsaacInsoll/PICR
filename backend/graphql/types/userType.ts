@@ -5,9 +5,9 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { folderType } from './folderType';
+import { folderType } from "./folderType.js";
 import { GraphQLDateTime } from 'graphql-scalars';
-import { commentPermissionsEnum, userTypeEnum } from './enums';
+import { commentPermissionsEnum, userTypeEnum } from "./enums.js";
 
 export const userType = new GraphQLObjectType({
   name: 'User',

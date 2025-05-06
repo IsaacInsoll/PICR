@@ -1,5 +1,5 @@
-import { db } from '../../db/picrDb';
-import { dbFolder } from '../../db/models';
+import { db } from '../../db/picrDb.js';
+import { dbFolder } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
 
 export const setHeroImage = async (heroImageId: number, folderId: number) => {

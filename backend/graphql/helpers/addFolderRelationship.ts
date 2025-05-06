@@ -1,6 +1,6 @@
-import { db } from '../../db/picrDb';
+import { db } from '../../db/picrDb.js';
 import { inArray } from 'drizzle-orm';
-import { dbFolder } from '../../db/models';
+import { dbFolder } from '../../db/models/index.js';
 
 type FolderRelationship = { folderId: number | null | undefined }[];
 

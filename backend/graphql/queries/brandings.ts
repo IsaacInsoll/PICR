@@ -1,9 +1,9 @@
-import { requireFullAdmin } from './admins';
-import { brandingType } from '../types/brandingType';
+import { requireFullAdmin } from "./admins.js";
+import { brandingType } from "../types/brandingType.js";
 import { GraphQLList, GraphQLNonNull } from 'graphql';
-import { addFolderRelationship } from '../helpers/addFolderRelationship';
-import { db } from '../../db/picrDb';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { addFolderRelationship } from "../helpers/addFolderRelationship.js";
+import { db } from "../../db/picrDb.js";
+import { PicrRequestContext } from "../../types/PicrRequestContext.js";
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   await requireFullAdmin(context);

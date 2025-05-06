@@ -1,4 +1,4 @@
-import { dbFolderForId, FolderFields } from '../db/picrDb';
+import { dbFolderForId, FolderFields } from "../db/picrDb.js";
 
 export const folderIsUnderFolderId = async (
   child: FolderFields,

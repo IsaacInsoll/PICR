@@ -1,16 +1,16 @@
-import { GraphQLID, GraphQLNonNull } from 'graphql/type';
-import { contextPermissions } from '../../auth/contextPermissions';
-import { doAuthError } from '../../auth/doAuthError';
-import { fileToJSON } from '../helpers/fileToJSON';
+import { GraphQLID, GraphQLNonNull } from 'graphql/type/index.js';
+import { contextPermissions } from '../../auth/contextPermissions.js';
+import { doAuthError } from '../../auth/doAuthError.js';
+import { fileToJSON } from '../helpers/fileToJSON.js';
 import { GraphQLInt, GraphQLString } from 'graphql';
-import { fileInterface } from '../interfaces/fileInterface';
-import { GraphQLError } from 'graphql/error';
-import { addCommentDB, db, dbFileForId } from '../../db/picrDb';
-import { dbFile } from '../../db/models';
+import { fileInterface } from '../interfaces/fileInterface.js';
+import { GraphQLError } from 'graphql/error/index.js';
+import { addCommentDB, db, dbFileForId } from '../../db/picrDb.js';
+import { dbFile } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
-import { fileFlagEnum } from '../types/enums';
-import { sendCommentAddedNotification } from '../../notifications/notifications';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { fileFlagEnum } from '../types/enums.js';
+import { sendCommentAddedNotification } from '../../notifications/notifications.js';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   const file = await dbFileForId(params.id);

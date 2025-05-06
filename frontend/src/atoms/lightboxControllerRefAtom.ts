@@ -1,4 +1,4 @@
-import { atom } from 'jotai/index';
+import { atom } from 'jotai';
 import { RefObject } from 'react';
 import { ControllerRef } from 'yet-another-react-lightbox';
 import { useAtomValue } from 'jotai';

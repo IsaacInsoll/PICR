@@ -1,18 +1,18 @@
 import { basename, dirname, extname } from 'path';
-import { folderList, relativePath } from '../fileManager';
-import { log } from '../../logger';
-import { fastHash } from '../fileHash';
+import { folderList, relativePath } from '../fileManager.js';
+import { log } from '../../logger.js';
+import { fastHash } from '../fileHash.js';
 import fs from 'fs';
-import { FileType } from '../../../graphql-types';
-import { getImageRatio } from '../../media/getImageRatio';
-import { getImageMetadata } from '../../media/getImageMetadata';
-import { getVideoMetadata } from '../../media/getVideoMetadata';
-import { generateAllThumbs } from '../../media/generateImageThumbnail';
-import { encodeImageToBlurhash } from '../../media/blurHash';
-import { picrConfig } from '../../config/picrConfig';
+import { FileType } from '../../../graphql-types.js';
+import { getImageRatio } from '../../media/getImageRatio.js';
+import { getImageMetadata } from '../../media/getImageMetadata.js';
+import { getVideoMetadata } from '../../media/getVideoMetadata.js';
+import { generateAllThumbs } from '../../media/generateImageThumbnail.js';
+import { encodeImageToBlurhash } from '../../media/blurHash.js';
+import { picrConfig } from '../../config/picrConfig.js';
 import { and, eq } from 'drizzle-orm';
-import { db } from '../../db/picrDb';
-import { dbFile } from '../../db/models';
+import { db } from '../../db/picrDb.js';
+import { dbFile } from '../../db/models/index.js';
 import { statSync } from 'node:fs';
 
 export const addFile = async (filePath: string, generateThumbs: boolean) => {

@@ -3,12 +3,12 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
-} from 'graphql/index';
+} from 'graphql';
 import {
   fileInterface,
   fileInterfaceFields,
-} from '../interfaces/fileInterface';
-import { imageMetadataSummaryType } from './imageMetadataSummaryType';
+} from '../interfaces/fileInterface.js';
+import { imageMetadataSummaryType } from './imageMetadataSummaryType.js';
 
 export const imageFileType = new GraphQLObjectType({
   name: 'Image',

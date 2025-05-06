@@ -4,11 +4,11 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { folderType } from './folderType';
+import { folderType } from "./folderType.js";
 import { GraphQLDateTime } from 'graphql-scalars';
-import { userType } from './userType';
+import { userType } from "./userType.js";
 
-import { accessTypeEnum } from './enums';
+import { accessTypeEnum } from "./enums.js";
 
 export const accessLogType = new GraphQLObjectType({
   name: 'AccessLog',

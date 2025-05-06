@@ -1,7 +1,7 @@
-import { getUserFromToken } from '../../auth/jwt-auth';
-import { GraphQLError } from 'graphql/error';
-import { clientInfoType } from '../types/clientInfoType';
-import { getServerOptions } from '../../db/picrDb';
+import { getUserFromToken } from '../../auth/jwt-auth.js';
+import { GraphQLError } from 'graphql/error/index.js';
+import { clientInfoType } from '../types/clientInfoType.js';
+import { getServerOptions } from '../../db/picrDb.js';
 
 const resolver = async (_, params, context, schema) => {
   //TODO: fix this doesn't work when accessing as public user

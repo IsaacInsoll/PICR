@@ -1,6 +1,6 @@
-import { contextPermissions } from '../../auth/contextPermissions';
-import { GraphQLError } from 'graphql/error';
-import { hashPassword } from '../../helpers/hashPassword';
+import { contextPermissions } from '../../auth/contextPermissions.js';
+import { GraphQLError } from 'graphql/error/index.js';
+import { hashPassword } from '../../helpers/hashPassword.js';
 
 import {
   GraphQLBoolean,
@@ -8,14 +8,14 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
-import { userType } from '../types/userType';
-import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId';
-import { db, dbFolderForId, dbUserForId, UserFields } from '../../db/picrDb';
+import { userType } from '../types/userType.js';
+import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId.js';
+import { db, dbFolderForId, dbUserForId, UserFields } from '../../db/picrDb.js';
 import { and, eq, ne } from 'drizzle-orm';
-import { dbUser } from '../../db/models';
-import { UserType } from '../../../graphql-types';
-import { commentPermissionsEnum } from '../types/enums';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { dbUser } from '../../db/models/index.js';
+import { UserType } from '../../../graphql-types.js';
+import { commentPermissionsEnum } from '../types/enums.js';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   const { user } = await contextPermissions(context, params.folderId, 'Admin');

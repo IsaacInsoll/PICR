@@ -1,11 +1,11 @@
-import { contextPermissions } from '../../auth/contextPermissions';
+import { contextPermissions } from '../../auth/contextPermissions.js';
 import { GraphQLList, GraphQLNonNull } from 'graphql';
-import { userType } from '../types/userType';
-import { userToJSON } from '../helpers/userToJSON';
-import { db, dbFolderForId } from '../../db/picrDb';
-import { dbUser } from '../../db/models';
+import { userType } from '../types/userType.js';
+import { userToJSON } from '../helpers/userToJSON.js';
+import { db, dbFolderForId } from '../../db/picrDb.js';
+import { dbUser } from '../../db/models/index.js';
 import { ne } from 'drizzle-orm';
-import { PicrRequestContext } from '../../types/PicrRequestContext';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver = async (_, params, context: PicrRequestContext) => {
   await requireFullAdmin(context);
