@@ -6,8 +6,13 @@ import { fileInterface } from '../interfaces/fileInterface.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { dbFileForId } from '../../db/picrDb.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+) => {
   const file = await dbFileForId(params.id);
   await contextPermissions(context, file?.folderId, 'View');
   if (!file?.exists) throw new GraphQLError('File not found');

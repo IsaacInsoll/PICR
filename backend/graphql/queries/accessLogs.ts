@@ -13,8 +13,13 @@ import { eq, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { userTypeEnum } from '../types/enums.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+) => {
   const { folder } = await contextPermissions(
     context,
     params.folderId,

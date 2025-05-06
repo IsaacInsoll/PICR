@@ -1,9 +1,12 @@
 import jwt from 'jsonwebtoken';
-import { CustomJwtPayload } from "../types/CustomJwtPayload.js";
-import { picrConfig } from "../config/picrConfig.js";
-import { dbUserForId, UserFields } from "../db/picrDb.js";
+import { CustomJwtPayload } from '../types/CustomJwtPayload.js';
+import { picrConfig } from '../config/picrConfig.js';
+import { dbUserForId, UserFields } from '../db/picrDb.js';
 
-export function generateAccessToken(obj) {
+export function generateAccessToken(obj: {
+  userId: number;
+  hashedPassword: string;
+}) {
   const response = jwt.sign(obj, picrConfig.tokenSecret!, {
     expiresIn: '28 days',
   }); // 24 hours

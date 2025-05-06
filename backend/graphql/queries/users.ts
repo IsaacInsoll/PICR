@@ -13,8 +13,14 @@ import { db, dbFolderForId } from '../../db/picrDb.js';
 import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import { ServerInfo, User } from '../../../graphql-types.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+) => {
   const { folder, user } = await contextPermissions(
     context,
     params.folderId,

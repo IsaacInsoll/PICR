@@ -1,9 +1,10 @@
-import { contextPermissions } from "../auth/contextPermissions.js";
-import { dbFolderForId, FolderFields } from "../db/picrDb.js";
+import { contextPermissions } from '../auth/contextPermissions.js';
+import { dbFolderForId, FolderFields } from '../db/picrDb.js';
+import { PicrRequestContext } from '../types/PicrRequestContext.js';
 
 export const parentFolders = async (
   folder: FolderFields,
-  context,
+  context: PicrRequestContext,
 ): Promise<FolderFields[]> => {
   let current: FolderFields | undefined = folder;
   const parents: FolderFields[] = [];

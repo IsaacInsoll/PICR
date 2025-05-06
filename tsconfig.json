@@ -11,7 +11,7 @@
     "lib": [
       "ES2021.String"
     ],
-    "strictNullChecks": true
+    "strict": true
     // This was handy but didn't seem to work property in node (couldn't find references)
 //    "paths": {
 //      "@/*": ["./*"]

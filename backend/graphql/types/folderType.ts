@@ -22,8 +22,9 @@ import { db, FolderFields, getFilesForFolder } from '../../db/picrDb.js';
 import { and, count, eq, inArray, sum } from 'drizzle-orm';
 import { dbFile, dbUser } from '../../db/models/index.js';
 import { GraphQLDateTime } from 'graphql-scalars';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
-export const folderType = new GraphQLObjectType({
+export const folderType: GraphQLObjectType<any, any> = new GraphQLObjectType({
   name: 'Folder',
   fields: () => ({
     id: { type: new GraphQLNonNull(GraphQLID) },
@@ -36,7 +37,7 @@ export const folderType = new GraphQLObjectType({
     },
     parents: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
-      resolve: (f: FolderFields, params, context) => {
+      resolve: (f: FolderFields, params, context: PicrRequestContext) => {
         return parentFolders(f, context);
       },
     },

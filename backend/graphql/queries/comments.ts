@@ -8,8 +8,13 @@ import { db, dbFileForId } from '../../db/picrDb.js';
 import { dbComment } from '../../db/models/index.js';
 import { desc, eq } from 'drizzle-orm';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+) => {
   //TODO: maybe support subfolders?
   //TODO: pagination?
   if (!params.fileId && !params.folderId) {

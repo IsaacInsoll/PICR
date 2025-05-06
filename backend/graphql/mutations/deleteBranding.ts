@@ -6,8 +6,14 @@ import { brandingForFolderId, db, dbFolderForId } from '../../db/picrDb.js';
 import { dbBranding } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import { Branding, User } from '../../../graphql-types.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context: PicrRequestContext,
+) => {
   await contextPermissions(context, params.folderId, 'Admin');
 
   const obj = await brandingForFolderId(params.folderId);

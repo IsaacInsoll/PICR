@@ -1,6 +1,6 @@
-import { picrConfig } from "../config/picrConfig.js";
+import { picrConfig } from '../config/picrConfig.js';
 import { sep } from 'path';
-import { FileFields } from "../db/picrDb.js";
+import { FileFields } from '../db/picrDb.js';
 
 // BASIC PATH FUNCTIONS
 export const relativePath = (path: string) =>
@@ -11,7 +11,7 @@ export const fullPath = (relativePath: string) => {
 };
 export const pathSplit = (path: string) => relativePath(path).split('/');
 
-export const folderList = {}; //relativePath to ID mapping
+export const folderList: { [key: string]: number | undefined } = {}; //relativePath to ID mapping
 
 export const fullPathForFile = (
   f: Pick<FileFields, 'relativePath' | 'name'>,

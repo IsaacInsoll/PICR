@@ -1,10 +1,10 @@
 import { config } from 'dotenv';
 import { existsSync, readFileSync } from 'node:fs';
-import { addDevLogger, log } from "../logger.js";
-import { picrConfig } from "./picrConfig.js";
-import { IPicrConfiguration } from "./IPicrConfiguration.js";
+import { addDevLogger, log } from '../logger.js';
+import { picrConfig } from './picrConfig.js';
+import { IPicrConfiguration } from './IPicrConfiguration.js';
 import path from 'path';
-import { envSchema } from "./envSchema.js";
+import { envSchema } from './envSchema.js';
 
 export const configFromEnv = () => {
   config(); // read .ENV
@@ -45,9 +45,7 @@ export const configFromEnv = () => {
   if (c.consoleLogging) {
     addDevLogger();
   }
-  for (const [key, value] of Object.entries(c)) {
-    picrConfig[key] = value;
-  }
+  Object.assign(picrConfig, c);
 };
 
 export const getVersion = () => {

@@ -2,8 +2,15 @@ import { serverInfoType } from '../types/serverInfoType.js';
 import { requireFullAdmin } from './admins.js';
 import fastFolderSizeSync from 'fast-folder-size/sync.js';
 import { picrConfig } from '../../config/picrConfig.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import { ServerInfo } from '../../../graphql-types.js';
+import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
-const resolver = async (_, params, context, schema) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  _params,
+  context,
+) => {
   await requireFullAdmin(context);
 
   const latest = await getLatestBuild();
@@ -34,7 +41,7 @@ const getLatestBuild = async () => {
     const version = json.find(({ name }) => name != 'latest');
     return version?.name ?? '';
   } else {
-    return json; // this should probably just return empty string, but i want to see what it is
+    return json; // this should probably just return empty string, but I want to see what it is
   }
 };
 

@@ -7,8 +7,13 @@ import { and, eq, ilike, inArray } from 'drizzle-orm';
 import { db } from '../../db/picrDb.js';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+) => {
   const { folder } = await contextPermissions(
     context,
     params.folderId ?? 1,
@@ -17,7 +22,7 @@ const resolver = async (_, params, context: PicrRequestContext) => {
 
   const folderIds = await allSubfolderIds(folder!);
 
-  const lower = params.query.toLowerCase().split(' ');
+  const lower: string[] = params.query.toLowerCase().split(' ');
 
   const folders = await db.query.dbFolder.findMany({
     where: and(

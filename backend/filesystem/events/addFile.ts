@@ -125,7 +125,7 @@ const findFolderId = async (fullPath: string) => {
   while (true) {
     if (fullPath == picrConfig.mediaPath) return 1;
     const id = folderList[relativePath(fullPath)];
-    if (id && id !== '0') return id;
+    if (id && id !== 0) return id;
     log('info', '💤 Sleeping waiting for a FolderID for a file in ' + fullPath);
     await new Promise((r) => setTimeout(r, 500));
   }

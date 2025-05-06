@@ -5,9 +5,14 @@ import { db } from '../../db/picrDb.js';
 import { and, eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
-  const p = params.password;
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+) => {
+  const p: string | undefined = params.password;
   if (!p || p === '') return '';
 
   const user = await db.query.dbUser.findFirst({
@@ -20,7 +25,7 @@ const resolver = async (_, params, context: PicrRequestContext) => {
   if (!user) return '';
   return generateAccessToken({
     userId: user.id,
-    hashedPassword: user.hashedPassword,
+    hashedPassword: user.hashedPassword!,
   });
 };
 

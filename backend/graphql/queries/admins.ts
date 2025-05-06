@@ -6,8 +6,13 @@ import { db, dbFolderForId } from '../../db/picrDb.js';
 import { dbUser } from '../../db/models/index.js';
 import { ne } from 'drizzle-orm';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+) => {
   await requireFullAdmin(context);
   const data = await db.query.dbUser.findMany({
     where: ne(dbUser.userType, 'Link'),
@@ -22,7 +27,7 @@ export const admins = {
   resolve: resolver,
 };
 
-export const requireFullAdmin = async (context) => {
+export const requireFullAdmin = async (context: PicrRequestContext) => {
   //TODO: currently hard coded to folderId 1, do this a better way in future
   await contextPermissions(context, 1, 'Admin');
 };

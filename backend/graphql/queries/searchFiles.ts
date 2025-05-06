@@ -1,14 +1,18 @@
 import { contextPermissions } from '../../auth/contextPermissions.js';
-import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
-import { GraphQLString } from 'graphql';
+import { GraphQLID, GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql';
 import { fileType } from '../types/fileType.js';
 import { allSubfolderIds, allSubfolders } from '../../helpers/allSubfolders.js';
 import { and, asc, eq, ilike, inArray } from 'drizzle-orm';
 import { dbFile } from '../../db/models/index.js';
-import { db, dbFolderForId } from '../../db/picrDb.js';
+import { db } from '../../db/picrDb.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+) => {
   const { folder } = await contextPermissions(
     context,
     params.folderId ?? 1,
@@ -17,7 +21,7 @@ const resolver = async (_, params, context: PicrRequestContext) => {
   const f = folder!;
   const folderIds = await allSubfolderIds(f);
 
-  const lower = params.query.toLowerCase().split(' ');
+  const lower: string[] = params.query.toLowerCase().split(' ');
 
   const where = and(
     inArray(dbFile.folderId, folderIds),

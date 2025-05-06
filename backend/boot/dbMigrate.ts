@@ -65,7 +65,7 @@ const removeDuplicates = async () => {
     columns: { id: true, relativePath: true },
   });
 
-  const fMap = { '.': 1 };
+  const fMap: { [key: string]: number } = { '.': 1 };
   folders.forEach(({ id, relativePath }) => (fMap[relativePath!] = id));
 
   folders.forEach((f) => {

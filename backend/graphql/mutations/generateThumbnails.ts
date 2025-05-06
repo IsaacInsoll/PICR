@@ -6,8 +6,14 @@ import { and, asc, eq, inArray } from 'drizzle-orm';
 import { dbFile } from '../../db/models/index.js';
 import { db } from '../../db/picrDb.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import { User } from '../../../graphql-types.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context: PicrRequestContext,
+) => {
   const { folder } = await contextPermissions(
     context,
     params.folderId,

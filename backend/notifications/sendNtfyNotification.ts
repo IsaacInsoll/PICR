@@ -1,4 +1,4 @@
-import { NotificationPayload, NotificationType } from "./notifications.js";
+import { NotificationPayload, NotificationType } from './notifications.js';
 
 export const sendNtfyNotification = async (
   topic: string,
@@ -6,7 +6,7 @@ export const sendNtfyNotification = async (
 ) => {
   const { message, type, url } = payload;
 
-  const headers = {
+  const headers: Record<string, string | readonly string[]> = {
     Title: 'PICR',
     Tags: ntfyEmoji[type],
     // 'Priority': '5'
@@ -14,7 +14,7 @@ export const sendNtfyNotification = async (
   };
   if (url) headers['Click'] = url;
 
-  //not sure how to do thumbnail (Attach) field as the docs indicate that might download the file rather than just present it?
+  //not sure how to do the thumbnail (Attach) field as the docs indicate that might download the file rather than just present it?
 
   await fetch(topic, {
     method: 'POST',

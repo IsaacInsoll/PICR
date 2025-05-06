@@ -8,8 +8,13 @@ import { setHeroImage } from './setHeroImage.js';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds.js';
 import { and, inArray } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+) => {
   const { folder } = await contextPermissions(
     context,
     params.folderId,

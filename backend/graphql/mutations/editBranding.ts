@@ -6,8 +6,13 @@ import { eq } from 'drizzle-orm';
 import { dbBranding } from '../../db/models/index.js';
 import { primaryColorEnum, themeModeEnum } from '../types/enums.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+) => {
   await contextPermissions(context, params.folderId, 'Admin');
 
   const props = {

@@ -21,7 +21,7 @@ export async function schemaMigration() {
       migrationsFolder: './backend/db/drizzle',
     });
     console.log('🗃️  Migrations Complete');
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ECONNREFUSED') {
       console.error(
         `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\`. 

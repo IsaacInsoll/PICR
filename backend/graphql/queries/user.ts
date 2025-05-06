@@ -7,8 +7,13 @@ import { db } from '../../db/picrDb.js';
 import { dbUser } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver = async (_, params, context: PicrRequestContext) => {
+const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+  _,
+  params,
+  context,
+) => {
   const user = await db.query.dbUser.findFirst({
     where: eq(dbUser.id, params.id),
   });
