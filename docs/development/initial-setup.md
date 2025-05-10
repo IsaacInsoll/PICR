@@ -39,7 +39,7 @@ Run a `docker compose up` to make sure it works correctly
 ### 4. .ENV File
 Copy this, make changes as necessary
 ```dotenv
-BASEURL=http://localhost:6969
+BASE_URL=http://localhost:6969/
 #DEBUG_SQL=true
 CONSOLE_LOGGING=true
 USE_POLLING=true

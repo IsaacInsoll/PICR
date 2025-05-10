@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:17
+    container_name: picr-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: picr
+    ports:
+      - "5432:5432"
+    volumes:
+      - picr-db-data:/var/lib/postgresql/data
+volumes:
+  picr-db-data:

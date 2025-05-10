@@ -130,6 +130,7 @@ dist
 .pnp.*
 
 docker-compose.yml
+#compose.yml
 
 #picr specific
 media/*
