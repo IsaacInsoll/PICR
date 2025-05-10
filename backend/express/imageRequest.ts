@@ -13,6 +13,7 @@ import {
 import { db, getServerOptions } from '../db/picrDb.js';
 import { dbFile } from '../db/models/index.js';
 import { and, eq } from 'drizzle-orm';
+import {thumbnailPath} from "../media/thumbnailPath.js";
 
 export const imageRequest = async (
   req: Request<{
@@ -48,6 +49,9 @@ export const imageRequest = async (
         // console.log('⚠️ AVIF not enabled for this server, returning original');
         return res.sendFile(fullPathFor(file, size)); //intentionally excluding extension as server doesn't support AVIF
       }
+      const tp = thumbnailPath(file, size, extension=='.avif'?'.avif':'.jpg');
+      res.sendFile(tp);
+      return;
     }
     if (file.type == 'Video') {
       await generateVideoThumbnail(file, size);
