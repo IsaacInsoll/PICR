@@ -3,9 +3,9 @@
 
 1. Install `node`, `npm`, `docker` if they aren't already installed
 2. Clone PICR repo
-3. Set up DB server (`compose.yml` below)
-4. Set up `.env` file (below)
-5. Install deps (`npm install && cd frontend && npm install && cd ..`)
+3. Database server using docker
+4. Set up `.env` file 
+5. Run build steps
 6. Create empty `cache` folder and a `media` folder with some subfolders of images (demo data below)
 7. `npm start`
 8. Visit http://localhost:6969 and use login details found in `backend/auth/defaultCredentials.ts` to log in
@@ -16,38 +16,17 @@
 - Set up _locator.js_ with instructions below so you can alt-click on front end elements and be taken to the correct file in your IDE
 
 ### 3. Database Server
-#### `compose.yml`
-```yaml
-# Dev composer file: only a database as PICR server running locally
-services:
-  db:
-    image: postgres:17
-    container_name: picr-db
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: picr
-    ports:
-      - "5432:5432"
-    volumes:
-      - picr-db-data:/var/lib/postgresql/data
-volumes:
-  picr-db-data:
-```
-Run a `docker compose up` to make sure it works correctly
+Run a `docker compose up` to start a postgres server with default login credentials
 
 ### 4. .ENV File
-Copy this, make changes as necessary
-```dotenv
-BASE_URL=http://localhost:6969/
-#DEBUG_SQL=true
-CONSOLE_LOGGING=true
-USE_POLLING=true
-DATABASE_URL=postgres://user:pass@localhost/picr
-POLLING_INTERVAL=20
-NODE_ENV=development
-GITHUB_TOKEN="f941e0..." #only needed if wanting to do releases
-```
+`cp .env.example .env`
+You may optionally add extra fields such as `GITHUB_TOKEN` but these aren't required for development. 
+
+### 5. Run build steps
+
+See [Development Guide](index.md) which covers dependencies and builds for both frontend and backend. 
+
+No need for testing or artifacts (but you are welcome to!) 
 
 ### 6. Set up folders
 - Create empty`cache` folder. These is where DB stores data and where PICR stores thumbnails/zips.  
