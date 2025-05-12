@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: picr
     ports:
-      - "5432:5432"
+      - "54321:5432"
     volumes:
       - picr-db-data:/var/lib/postgresql/data
 volumes:
