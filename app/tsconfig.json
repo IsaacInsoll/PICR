@@ -5,8 +5,10 @@
     "paths": {
       "@/*": [
         "./*"
-      ]
-    }
+      ],
+      "@frontend/*": ["../frontend/src/*"]
+    },
+
   },
   "include": [
     "**/*.ts",
