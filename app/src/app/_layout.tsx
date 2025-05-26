@@ -1,10 +1,6 @@
-import {Redirect, Stack} from 'expo-router';
-import {useMe} from "@/src/hooks/useMe";
-import Login from "@/src/app/login";
+import { Stack } from 'expo-router';
 
 export default function AppLayout() {
-
-
   // Only require authentication within the (app) group's layout as users
   // need to be able to access the (auth) group and sign in again.
   // if (!me) {

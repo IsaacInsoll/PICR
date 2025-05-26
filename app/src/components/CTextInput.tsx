@@ -16,11 +16,14 @@ export const CTextInput = ({
       // rules={{
       //   required: true,
       // }}
-      render={({ field: { onChange, onBlur, value } }) => (
+      render={({ field: { name, value, ref, onChange, onBlur, disabled } }) => (
         <TextInput
           onBlur={onBlur}
           onChangeText={onChange}
           value={value}
+          name={name}
+          ref={ref}
+          disabled={disabled}
           {...props}
         />
       )}

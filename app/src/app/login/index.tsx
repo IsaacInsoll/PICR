@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { PicrLogo } from '@/src/components/PicrLogo';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { FieldError, useForm } from 'react-hook-form';
 import { CTextInput } from '@/src/components/CTextInput';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -24,42 +24,81 @@ import { urqlClient } from '@/src/urqlClient';
 import { loginMutation } from '@frontend/urql/mutations/loginMutation';
 import { z, ZodType } from 'zod';
 import { useState } from 'react';
+import {
+  LoginDetails,
+  loginDetailsAtom,
+  setLoginDetails,
+  useSetLoginDetails,
+} from '@/src/hooks/useLoginDetails';
+import { useSetAtom } from 'jotai';
 
-type LoginFormData = {
-  server: string;
-  username: string;
-  password: string;
-};
-
-const loginFormSchema: ZodType<LoginFormData> = z.object({
+const loginFormSchema: ZodType<LoginDetails> = z.object({
   server: z.string().url(),
   username: z.string().email(),
   password: z.string().min(8),
 });
 
 export default function index() {
+  const keyboardVisible = useKeyboardVisible();
+
+  return (
+    <LinearGradient style={styles.wholePage} colors={picrColors}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
+        >
+          <View style={styles.safeArea}>
+            <PicrLogo />
+            <Text style={styles.headerText}>Login to PICR</Text>
+            <LoginForm />
+          </View>
+          {!keyboardVisible ? (
+            <View style={{ alignItems: 'center', marginBottom: 32 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  WebBrowser.openBrowserAsync(picrManualURL);
+                }}
+              >
+                <Text style={{ color: picrColors[0] }}>What is PICR?</Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
+  );
+}
+
+const LoginForm = () => {
+  const setLogin = useSetLoginDetails();
+  const router = useRouter();
+  const [step, setStep] = useState<
+    'ready' | 'loading' | 'success' | 'networkError' | 'authError'
+  >('ready');
+
   const {
     control,
     handleSubmit,
     watch,
     setValue,
     formState: { errors },
-  } = useForm<LoginFormData>({ resolver: zodResolver(loginFormSchema) });
+  } = useForm<LoginDetails>({ resolver: zodResolver(loginFormSchema) });
 
-  const keyboardVisible = useKeyboardVisible();
-  const [step, setStep] = useState<
-    'ready' | 'loading' | 'success' | 'networkError' | 'authError'
-  >('ready');
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = async (data: LoginDetails) => {
     setStep('loading');
     const { server, username, password } = data;
+
     const newClient = await urqlClient(server, {});
     const result = await newClient
       .mutation(loginMutation, { username, password })
       .toPromise();
     if (result?.data?.auth) {
       setStep('success');
-      Alert.alert('Login Success', 'we are in!');
+      // Alert.alert('Login Success', result.data.auth);
+      router.replace('/');
+      setLogin(data);
     } else {
       setStep(result.error ? 'networkError' : 'authError');
       const message = result.error
@@ -78,78 +117,63 @@ export default function index() {
   };
 
   return (
-    <LinearGradient style={styles.wholePage} colors={picrColors}>
-      <Stack.Screen options={{ headerShown: false }} />
-      <SafeAreaView style={{ flex: 1 }}>
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
-        >
-          <View style={styles.safeArea}>
-            <PicrLogo />
-            <Text style={styles.headerText}>Login to PICR</Text>
-            <Text style={styles.fieldLabel}>Server</Text>
-            <CTextInput
-              control={control}
-              name="server"
-              placeholder="https://mysite.com/"
-              autoComplete="url"
-              style={styles.textInput}
-              onEndEditing={(e) => {
-                let s = watch('server');
-                if (!s.startsWith('http')) s = 'https://' + s;
-                if (!s.endsWith('/')) s = s + '/';
-                if (s != watch('server')) {
-                  setValue('server', s);
-                }
-              }}
-            />
-            <ErrorMessage error={errors.server} />
-            <Text style={styles.fieldLabel}>Username</Text>
-            <CTextInput
-              control={control}
-              name="username"
-              placeholder="me@mysite.com"
-              autoComplete="email"
-              style={styles.textInput}
-            />
-            <ErrorMessage error={errors.username} />
-            <Text style={styles.fieldLabel}>Password</Text>
-            <CTextInput
-              control={control}
-              name="password"
-              secureTextEntry={true}
-              style={styles.textInput}
-            />
-            <ErrorMessage error={errors.password} />
-            <View style={{ marginTop: 16 }}>
-              {step == 'loading' ? (
-                <ActivityIndicator size="large" />
-              ) : (
-                <Button
-                  title="Login"
-                  onPress={handleSubmit(onSubmit)}
-                  color={Platform.OS === 'ios' ? '#ffffff' : picrColors[0]}
-                />
-              )}
-            </View>
-          </View>
-          {!keyboardVisible ? (
-            <View style={{ alignItems: 'center', marginBottom: 32 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  WebBrowser.openBrowserAsync(picrManualURL);
-                }}
-              >
-                <Text style={{ color: picrColors[0] }}>What is PICR?</Text>
-              </TouchableOpacity>
-            </View>
-          ) : null}
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </LinearGradient>
+    <>
+      <Text style={styles.fieldLabel}>Server</Text>
+      <CTextInput
+        autoCapitalize="none"
+        autoCorrect={false}
+        clearButtonMode="while-editing"
+        inputMode="url"
+        keyboardType="url"
+        control={control}
+        onBlur={() => {
+          let s = watch('server').trim();
+          if (!s.startsWith('http')) s = 'https://' + s;
+          if (!s.endsWith('/')) s = s + '/';
+          if (s != watch('server')) {
+            setValue('server', s);
+          }
+        }}
+        name="server"
+        placeholder="https://mysite.com/"
+        autoComplete="url"
+        style={styles.textInput}
+      />
+      <ErrorMessage error={errors.server} />
+      <Text style={styles.fieldLabel}>Username</Text>
+      <CTextInput
+        autoCapitalize="none"
+        control={control}
+        name="username"
+        placeholder="me@mysite.com"
+        autoComplete="email"
+        style={styles.textInput}
+      />
+      <ErrorMessage error={errors.username} />
+      <Text style={styles.fieldLabel}>Password</Text>
+      <CTextInput
+        control={control}
+        name="password"
+        secureTextEntry={true}
+        style={styles.textInput}
+        returnKeyType="go"
+        onSubmitEditing={handleSubmit(onSubmit)}
+      />
+      <ErrorMessage error={errors.password} />
+      <View style={{ marginTop: 16 }}>
+        {step == 'loading' ? (
+          <ActivityIndicator size="large" />
+        ) : (
+          <Button
+            title="Login"
+            onPress={handleSubmit(onSubmit)}
+            color={Platform.OS === 'ios' ? '#ffffff' : picrColors[0]}
+          />
+        )}
+      </View>
+    </>
   );
-}
+};
 
 const ErrorMessage = ({ error }: { error: FieldError | undefined }) => {
   if (!error) return null;
