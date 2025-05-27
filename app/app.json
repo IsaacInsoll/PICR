@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "PICR",
-    "slug": "app",
+    "slug": "picr",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/picr-logo-1024.png",
@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.isaacinsoll.picr",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -39,6 +43,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5f55a8a5-d73d-4066-8a91-5d4e211af5fb"
+      }
+    },
+    "owner": "isaacinsoll"
   }
 }

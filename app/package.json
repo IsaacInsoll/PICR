@@ -5,8 +5,8 @@
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint"
   },
@@ -44,7 +44,8 @@
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
     "urql": "^4.2.2",
-    "zod": "^3.25.28"
+    "zod": "^3.25.28",
+    "expo-dev-client": "~5.1.8"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

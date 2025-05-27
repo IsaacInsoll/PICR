@@ -37,3 +37,7 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+#build folders, isaac added these but wasn't too sure
+ios/
+android/
