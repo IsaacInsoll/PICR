@@ -4,6 +4,7 @@ import { Redirect } from 'expo-router';
 import { urqlClient } from '@/src/urqlClient';
 import { Provider } from 'urql';
 
+// Basically forces a login screen if you aren't logged in
 export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
   const me = useLoginDetails();
   if (!me) {

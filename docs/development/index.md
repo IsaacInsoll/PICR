@@ -9,9 +9,19 @@
 | Command                    | Description                                            | When to use                                                                                             |
 |----------------------------|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
 | `npm start`                | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. <br />  Uses nodemon/vite to reload on changes                             |
-| `cd app && npx expo start` | Run Expo app (iOS / android)                           | Used when developing mobile app                                                                         |
 | `npm run gql`              | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br />or after updating a query on client side |
 | `npx drizzle-kit generate` | generate migration files (optional `--name=xyz`)       | Run when db schema modified and you want to commit changes                                              |
+
+
+## App Development CLI Commands
+
+> Run from `app` folder. You can replace `ios` with `android` for all commands 
+
+| Command                                       | Description                     | When to use                                    |
+|-----------------------------------------------|---------------------------------|------------------------------------------------|
+| `npx expo start`                              | Run Expo app (iOS / android)    | Used when developing mobile app                |
+| `npx expo run:ios`                            | build and run Development Build | Used for most mobile dev                       |
+| `npx uri-scheme open picr://<some-url> --ios` | open deep link in simulator     | Used for manually testing "open in PICR" links |
 
 
 ## Build Process
