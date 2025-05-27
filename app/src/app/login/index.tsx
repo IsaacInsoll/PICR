@@ -24,13 +24,7 @@ import { urqlClient } from '@/src/urqlClient';
 import { loginMutation } from '@frontend/urql/mutations/loginMutation';
 import { z, ZodType } from 'zod';
 import { useState } from 'react';
-import {
-  LoginDetails,
-  loginDetailsAtom,
-  setLoginDetails,
-  useSetLoginDetails,
-} from '@/src/hooks/useLoginDetails';
-import { useSetAtom } from 'jotai';
+import { LoginDetails, useSetLoginDetails } from '@/src/hooks/useLoginDetails';
 
 const loginFormSchema: ZodType<LoginDetails> = z.object({
   server: z.string().url(),
@@ -90,13 +84,12 @@ const LoginForm = () => {
     setStep('loading');
     const { server, username, password } = data;
 
-    const newClient = await urqlClient(server, {});
+    const newClient = urqlClient(server, {});
     const result = await newClient
       .mutation(loginMutation, { username, password })
       .toPromise();
     if (result?.data?.auth) {
       setStep('success');
-      // Alert.alert('Login Success', result.data.auth);
       router.replace('/');
       setLogin(data);
     } else {
