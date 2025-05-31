@@ -1,0 +1,19 @@
+import { meQuery } from '@frontend/urql/queries/meQuery';
+// import { extraUserProps } from '../../../backend/helpers/extraUserProps';
+import { useQuery } from 'urql';
+import { User } from '../../../graphql-types';
+
+export const useMe = (): Pick<
+  User,
+  'id' | 'name' | 'folderId' | 'commentPermissions'
+> => {
+  const [result] = useQuery({ query: meQuery });
+  const data = result.data;
+  if (!data) return null;
+  const me = {
+    ...data.me,
+    // ...extraUserProps(data?.me),
+    clientInfo: data.clientInfo,
+  };
+  return me;
+};

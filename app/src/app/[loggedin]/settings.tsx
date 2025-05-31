@@ -1,9 +1,10 @@
-import { Button, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import { PicrBackground } from '@/src/components/PicrBackground';
 import { PicrLogo } from '@/src/components/PicrLogo';
 import { useLoginDetails, useSetLoggedOut } from '@/src/hooks/useLoginDetails';
 import { serverInfoQuery } from '@frontend/urql/queries/serverInfoQuery';
 import { useQuery } from 'urql';
+import { useMe } from '@/src/hooks/useMe';
 
 export default function Settings() {
   const logout = useSetLoggedOut();
@@ -19,23 +20,26 @@ export default function Settings() {
 
 const ServerDetails = () => {
   const [result] = useQuery({ query: serverInfoQuery });
-  const me = useLoginDetails();
-  console.log(result);
+  const login = useLoginDetails();
+  const me = useMe();
   const details = result.data?.serverInfo;
   return (
-    <View
-      style={{
-        paddingTop: 32,
-        alignItems: 'center',
-        gap: 16,
-        flexGrow: 1,
-      }}
-    >
+    <View style={styles.settingsView}>
       <PicrLogo />
-      <Text>{me?.server}</Text>
-      <Text>{me?.username}</Text>
-      <Text>Version {details?.version}</Text>
-      <Text>Latest {details?.latest}</Text>
+      <Text>{login?.server}</Text>
+      <Text>{me?.name}</Text>
+      <Text>Server Version {details?.version}</Text>
+      <Text>Latest Server Version {details?.latest}</Text>
+      <Text>TODO: app version</Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  settingsView: {
+    paddingTop: 32,
+    alignItems: 'center',
+    gap: 16,
+    flexGrow: 1,
+  },
+});
