@@ -78,11 +78,6 @@ export const LoginForm = () => {
   );
 };
 
-export const LogoutButton = () => {
-  const set = useSetAtom(authKeyAtom);
-  return <Button onClick={() => set('')}>Log out</Button>;
-};
-
 export const PicrLogo = ({ style }: { style?: MantineStyleProp }) => {
   return <Image src="/logo192.png" style={style} />;
 };

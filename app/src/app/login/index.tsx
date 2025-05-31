@@ -11,10 +11,9 @@ import {
   View,
 } from 'react-native';
 import { PicrLogo } from '@/src/components/PicrLogo';
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { FieldError, useForm } from 'react-hook-form';
 import { CTextInput } from '@/src/components/CTextInput';
-import { LinearGradient } from 'expo-linear-gradient';
 import { picrColors, picrManualURL } from '@/src/constants';
 import * as WebBrowser from 'expo-web-browser';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,6 +24,7 @@ import { loginMutation } from '@frontend/urql/mutations/loginMutation';
 import { z, ZodType } from 'zod';
 import { useState } from 'react';
 import { LoginDetails, useSetLoginDetails } from '@/src/hooks/useLoginDetails';
+import { PicrBackground } from '@/src/components/PicrBackground';
 
 const loginFormSchema: ZodType<LoginDetails> = z.object({
   server: z.string().url(),
@@ -36,8 +36,7 @@ export default function index() {
   const keyboardVisible = useKeyboardVisible();
 
   return (
-    <LinearGradient style={styles.wholePage} colors={picrColors}>
-      <Stack.Screen options={{ headerShown: false }} />
+    <PicrBackground>
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
@@ -61,7 +60,7 @@ export default function index() {
           ) : null}
         </KeyboardAvoidingView>
       </SafeAreaView>
-    </LinearGradient>
+    </PicrBackground>
   );
 }
 
@@ -88,10 +87,11 @@ const LoginForm = () => {
     const result = await newClient
       .mutation(loginMutation, { username, password })
       .toPromise();
-    if (result?.data?.auth) {
+    const token = result?.data?.auth;
+    if (token) {
       setStep('success');
       router.replace('/');
-      setLogin(data);
+      setLogin({ ...data, token });
     } else {
       setStep(result.error ? 'networkError' : 'authError');
       const message = result.error
@@ -176,7 +176,6 @@ const ErrorMessage = ({ error }: { error: FieldError | undefined }) => {
 
 const styles = StyleSheet.create({
   headerText: { color: picrColors[2], fontSize: 18 },
-  wholePage: { flex: 1, backgroundColor: 'blue' },
   safeArea: {
     justifyContent: 'center',
     alignItems: 'center',

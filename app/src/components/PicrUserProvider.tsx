@@ -12,7 +12,8 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
     return <Redirect href="/login" />;
   }
   console.log('PicrUserProvider: creating URQL client');
-  const client = urqlClient(me.server, {});
+  //TODO: get auth token and push it through here as a header, else redirect to login
+  const client = urqlClient(me.server, { authorization: `Bearer ${me.token}` });
 
   return <Provider value={client}>{children}</Provider>;
 };

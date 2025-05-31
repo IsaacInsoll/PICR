@@ -6,6 +6,7 @@ export type LoginDetails = {
   username: string;
   password: string;
   hostname?: string; //auto-calculated when login successful
+  token?: string; //auth token
 };
 
 const loginDetailsAtom = atom<LoginDetails | undefined>(undefined);
@@ -29,9 +30,11 @@ export const useSetLoginDetails = () => {
 };
 
 export const useSetLoggedOut = () => {
+  const router = useRouter();
   const setter = useSetAtom(loginDetailsAtom);
   return () => {
     setter(undefined);
+    router.replace('/login');
   };
 };
 
