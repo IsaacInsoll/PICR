@@ -17,7 +17,6 @@ import {
 import { ReactNode, Suspense } from 'react';
 import { AccessLogsIcon, FolderIcon } from '../PicrIcons';
 import { LoadingIndicator } from '../components/LoadingIndicator';
-import { gql } from '../helpers/gql';
 import { useQuery } from 'urql';
 import { FolderName } from '../components/FolderName';
 import { DateDisplay } from '../components/FileListView/Filtering/PrettyDate';
@@ -28,10 +27,8 @@ import { EmptyPlaceholder } from './EmptyPlaceholder';
 import { TbUnlink } from 'react-icons/tb';
 import { readAllFoldersQuery } from '../urql/queries/readAllFoldersQuery';
 import { FoldersSortType } from '../gql/graphql';
-import {
-  ManageFolderButton,
-  ManageFolderIconButton,
-} from '../components/ManageFolderButton';
+import { ManageFolderIconButton } from '../components/ManageFolderButton';
+import { recentUsersQuery } from '../urql/queries/recentUsersQuery';
 
 export const Dashboard = () => {
   const me = useMe();
@@ -74,26 +71,6 @@ const Body = () => {
     </>
   );
 };
-
-const recentUsersQuery = gql(/* GraphQL */ `
-  query RecentUsersQuery($folderId: ID!) {
-    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {
-      id
-      name
-      folderId
-      lastAccess
-      gravatar
-      folder {
-        id
-        name
-        parents {
-          id
-          name
-        }
-      }
-    }
-  }
-`);
 
 const RecentUsers = () => {
   const me = useMe();
