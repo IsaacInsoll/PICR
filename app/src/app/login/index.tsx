@@ -14,7 +14,7 @@ import { PicrLogo } from '@/src/components/PicrLogo';
 import { useRouter } from 'expo-router';
 import { FieldError, useForm } from 'react-hook-form';
 import { CTextInput } from '@/src/components/CTextInput';
-import { picrColors, picrManualURL } from '@/src/constants';
+import { mainFont, picrColors, picrManualURL } from '@/src/constants';
 import * as WebBrowser from 'expo-web-browser';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -25,6 +25,7 @@ import { z, ZodType } from 'zod';
 import { useState } from 'react';
 import { LoginDetails, useSetLoginDetails } from '@/src/hooks/useLoginDetails';
 import { PicrBackground } from '@/src/components/PicrBackground';
+import { Title } from '@/src/components/Title';
 
 const loginFormSchema: ZodType<LoginDetails> = z.object({
   server: z.string().url(),
@@ -44,7 +45,7 @@ export default function index() {
         >
           <View style={styles.safeArea}>
             <PicrLogo />
-            <Text style={styles.headerText}>Login to PICR</Text>
+            <Title style={{ ...styles.headerText }}>Login to PICR</Title>
             <LoginForm />
           </View>
           {!keyboardVisible ? (
@@ -175,7 +176,7 @@ const ErrorMessage = ({ error }: { error: FieldError | undefined }) => {
 };
 
 const styles = StyleSheet.create({
-  headerText: { color: picrColors[2], fontSize: 18 },
+  headerText: { color: picrColors[2] },
   safeArea: {
     justifyContent: 'center',
     alignItems: 'center',

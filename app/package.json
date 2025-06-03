@@ -11,6 +11,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@expo-google-fonts/signika": "^0.4.0",
     "@expo/vector-icons": "^14.1.0",
     "@hookform/resolvers": "^5.0.1",
     "@kolking/react-native-avatar": "^2.1.5",

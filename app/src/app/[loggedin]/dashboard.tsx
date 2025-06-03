@@ -19,11 +19,15 @@ export default function dashboard() {
       }}
     >
       {/*<Stack.Screen options={{ headerTitle: 'PICR3' }} />*/}
+      <Text style={{ fontFamily: 'Signika-Bold', fontSize: 36 }}>
+        PICR is the best
+      </Text>
+      <Text style={{ fontSize: 36, color: 'red' }}>PICR is the best</Text>
       <Text>
         Dashboard for U be logged in with folderId {me?.folderId} as{' '}
         {login?.username}
       </Text>
-      <RecentUsers />
+      {/*<RecentUsers />*/}
     </View>
   );
 }
