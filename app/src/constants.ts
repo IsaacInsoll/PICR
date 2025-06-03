@@ -1,9 +1,6 @@
-import { ColorValue } from 'react-native';
-import { Signika_300Light } from '@expo-google-fonts/signika/300Light';
-import { Signika_400Regular } from '@expo-google-fonts/signika/400Regular';
-import { Signika_500Medium } from '@expo-google-fonts/signika/500Medium';
-import { Signika_600SemiBold } from '@expo-google-fonts/signika/600SemiBold';
-import { Signika_700Bold } from '@expo-google-fonts/signika/700Bold';
+import { ColorValue, TextProps } from 'react-native';
+import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
+import { TextStyle } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
 export const picrColors: ColorValue[] = [
   '#4c669f',
@@ -20,3 +17,7 @@ export const mainFont = [
   'Signika_600SemiBold',
   'Signika_700Bold',
 ] as const;
+
+export const typographyScale = [36, 30, 24, 20, 16, 14] as const;
+
+export const finePrint: StyleProp<TextStyle> = { opacity: 0.5 } as const;

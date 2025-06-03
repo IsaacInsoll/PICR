@@ -36,6 +36,8 @@
     "expo-system-ui": "~5.0.7",
     "expo-web-browser": "~14.1.6",
     "jotai": "^2.12.4",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.6.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-hook-form": "^7.56.4",
