@@ -1,14 +1,17 @@
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
-import { Stack, useRouter } from 'expo-router';
+import { Redirect, Stack, useRouter } from 'expo-router';
 import { PicrUserProvider } from '@/src/components/PicrUserProvider';
 import { Suspense } from 'react';
 import { Text } from 'react-native';
 
 export default function index() {
+  console.log('app index.tsx');
   const router = useRouter();
   const me = useLoginDetails();
   if (me?.hostname) {
-    router.replace('/' + me?.hostname);
+    console.log('redirecting from base URL');
+    // router.replace('/' + me?.hostname);
+    return <Redirect href={'/' + me?.hostname} withAnchor />;
   }
 
   return (

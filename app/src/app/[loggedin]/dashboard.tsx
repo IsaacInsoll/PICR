@@ -7,13 +7,12 @@ import { PicrAvatar } from '@/src/components/PicrAvatar';
 import { DateDisplay } from '@/src/components/DateDisplay';
 import { useTheme } from '@/src/hooks/useTheme';
 import { PText } from '@/src/components/PText';
+import { PTitle } from '@/src/components/PTitle';
 
 export default function dashboard() {
   const me = useMe();
   const login = useLoginDetails();
   const theme = useTheme();
-  //TODO: can't do this as it's a https:// url so we need to redirect to just <servername>
-  // return <Redirect href={me?.server} />;
   return (
     <ScrollView style={{ backgroundColor: theme.backgroundColor }}>
       <View
@@ -43,6 +42,7 @@ const RecentUsers = () => {
   });
   return (
     <View style={{ gap: 8 }}>
+      <PTitle level={2}>Recent Clients</PTitle>
       {result.data?.users.map((user, index) => (
         <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
           <PicrAvatar user={user} />
