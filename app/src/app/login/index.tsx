@@ -24,7 +24,7 @@ import { loginMutation } from '@frontend/urql/mutations/loginMutation';
 import { z, ZodType } from 'zod';
 import { useState } from 'react';
 import { LoginDetails, useSetLoginDetails } from '@/src/hooks/useLoginDetails';
-import { PicrBackground } from '@/src/components/PicrBackground';
+import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
 import { PTitle } from '@/src/components/PTitle';
 
 const loginFormSchema: ZodType<LoginDetails> = z.object({
@@ -37,7 +37,7 @@ export default function index() {
   const keyboardVisible = useKeyboardVisible();
 
   return (
-    <PicrBackground>
+    <AppBrandedBackground>
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
@@ -61,7 +61,7 @@ export default function index() {
           ) : null}
         </KeyboardAvoidingView>
       </SafeAreaView>
-    </PicrBackground>
+    </AppBrandedBackground>
   );
 }
 

@@ -3,7 +3,7 @@ import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useMe } from '@/src/hooks/useMe';
 import { useQuery } from 'urql';
 import { recentUsersQuery } from '@frontend/urql/queries/recentUsersQuery';
-import { PicrAvatar } from '@/src/components/PicrAvatar';
+import { AppAvatar } from '@/src/components/AppAvatar';
 import { DateDisplay } from '@/src/components/DateDisplay';
 import { useTheme } from '@/src/hooks/useTheme';
 import { PText } from '@/src/components/PText';
@@ -45,7 +45,7 @@ const RecentUsers = () => {
       <PTitle level={2}>Recent Clients</PTitle>
       {result.data?.users.map((user, index) => (
         <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
-          <PicrAvatar user={user} />
+          <AppAvatar user={user} />
           <View style={{ justifyContent: 'center', gap: 4 }}>
             <PText>{user.name}</PText>
             <DateDisplay dateString={user.lastAccess} />

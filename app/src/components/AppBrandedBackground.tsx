@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { ReactNode } from 'react';
 
-export const PicrBackground = ({ children }: { children: ReactNode }) => {
+export const AppBrandedBackground = ({ children }: { children: ReactNode }) => {
   return (
     <LinearGradient style={styles.wholePage} colors={picrColors}>
       <Stack.Screen options={{ headerShown: false }} />

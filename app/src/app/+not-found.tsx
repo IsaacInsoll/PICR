@@ -1,6 +1,6 @@
 import { Button, SafeAreaView, Text } from 'react-native';
 import { useGlobalSearchParams, useNavigation, useRouter } from 'expo-router';
-import { PicrBackground } from '@/src/components/PicrBackground';
+import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
 import { PTitle } from '@/src/components/PTitle';
 import { usePathname } from 'expo-router/build/hooks';
 import { PText } from '@/src/components/PText';
@@ -13,7 +13,7 @@ export default function NotFound() {
 
   console.log(navigation.getState());
   return (
-    <PicrBackground>
+    <AppBrandedBackground>
       <SafeAreaView
         style={{
           flex: 1,
@@ -27,6 +27,6 @@ export default function NotFound() {
         <PText variant="dimmed">{path}</PText>
         <Button onPress={() => router.replace('/')} title="Go Home" />
       </SafeAreaView>
-    </PicrBackground>
+    </AppBrandedBackground>
   );
 }

@@ -1,5 +1,5 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { PicrBackground } from '@/src/components/PicrBackground';
+import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
 import { PicrLogo } from '@/src/components/PicrLogo';
 import { useLoginDetails, useSetLoggedOut } from '@/src/hooks/useLoginDetails';
 import { serverInfoQuery } from '@frontend/urql/queries/serverInfoQuery';
@@ -9,12 +9,12 @@ import { useMe } from '@/src/hooks/useMe';
 export default function Settings() {
   const logout = useSetLoggedOut();
   return (
-    <PicrBackground>
+    <AppBrandedBackground>
       <ServerDetails />
       <View style={{ marginBottom: 32 }}>
         <Button onPress={logout} title="Log out" />
       </View>
-    </PicrBackground>
+    </AppBrandedBackground>
   );
 }
 
