@@ -5,7 +5,7 @@ import { useTheme } from '@/src/hooks/useTheme';
 
 type TitleLevel = 1 | 2 | 3;
 
-export const Title = ({
+export const PTitle = ({
   children,
   level = 1,
   style = {},

@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import moment from 'moment';
 import { TouchableOpacity } from 'react-native';
 import { finePrint } from '@/src/constants';
-import { Text } from '@/src/components/Text';
+import { PText } from '@/src/components/PText';
 
 const dateDisplayRelativeAtom = atom(true);
 
@@ -23,7 +23,7 @@ export const DateDisplay = ({
 
   return (
     <TouchableOpacity onPress={() => setIsRelative(!isRelative)}>
-      <Text style={finePrint}>{isRelative ? ago : full}</Text>
+      <PText style={finePrint}>{isRelative ? ago : full}</PText>
     </TouchableOpacity>
   );
 };

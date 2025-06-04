@@ -6,7 +6,7 @@ import { recentUsersQuery } from '@frontend/urql/queries/recentUsersQuery';
 import { PicrAvatar } from '@/src/components/PicrAvatar';
 import { DateDisplay } from '@/src/components/DateDisplay';
 import { useTheme } from '@/src/hooks/useTheme';
-import { Text } from '@/src/components/Text';
+import { PText } from '@/src/components/PText';
 
 export default function dashboard() {
   const me = useMe();
@@ -25,10 +25,10 @@ export default function dashboard() {
       >
         {/*<Stack.Screen options={{ headerTitle: 'PICR3' }} />*/}
         {/*<Title>PICR Home</Title>*/}
-        <Text>
+        <PText>
           Dashboard for U be logged in with folderId {me?.folderId} as{' '}
           {login?.username}
-        </Text>
+        </PText>
         <RecentUsers />
       </View>
     </ScrollView>
@@ -47,7 +47,7 @@ const RecentUsers = () => {
         <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
           <PicrAvatar user={user} />
           <View style={{ justifyContent: 'center', gap: 4 }}>
-            <Text>{user.name}</Text>
+            <PText>{user.name}</PText>
             <DateDisplay dateString={user.lastAccess} />
           </View>
         </View>

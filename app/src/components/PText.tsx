@@ -2,7 +2,7 @@ import { StyleProp, Text as RNText, TextProps, TextStyle } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 
 type TextVariant = 'dimmed' | 'bold';
-export const Text = ({
+export const PText = ({
   variant,
   style,
   children,

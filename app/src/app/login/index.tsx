@@ -25,7 +25,7 @@ import { z, ZodType } from 'zod';
 import { useState } from 'react';
 import { LoginDetails, useSetLoginDetails } from '@/src/hooks/useLoginDetails';
 import { PicrBackground } from '@/src/components/PicrBackground';
-import { Title } from '@/src/components/Title';
+import { PTitle } from '@/src/components/PTitle';
 
 const loginFormSchema: ZodType<LoginDetails> = z.object({
   server: z.string().url(),
@@ -45,7 +45,7 @@ export default function index() {
         >
           <View style={styles.safeArea}>
             <PicrLogo />
-            <Title style={{ ...styles.headerText }}>Login to PICR</Title>
+            <PTitle style={{ ...styles.headerText }}>Login to PICR</PTitle>
             <LoginForm />
           </View>
           {!keyboardVisible ? (
