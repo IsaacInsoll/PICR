@@ -38,8 +38,9 @@ export const useSetLoginDetails = () => {
 export const useSetLoggedOut = () => {
   const router = useRouter();
   const setter = useSetAtom(loginDetailsAtom);
-  return () => {
+  return async () => {
     setter(undefined);
+    await SecureStore.deleteItemAsync('login');
     router.replace('/login');
   };
 };
