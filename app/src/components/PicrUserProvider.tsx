@@ -9,14 +9,16 @@ import { urqlClient } from '@/src/urqlClient';
 import { Provider } from 'urql';
 import { PText } from '@/src/components/PText';
 import { atom, useAtom } from 'jotai';
+import { usePathname } from 'expo-router/build/hooks';
 
 const initCompleteAtom = atom(false); // we only want this once system-wide, not per instance of this provider
 
 export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
-  console.log('PicrUserProvider');
   const [initComplete, setInitComplete] = useAtom(initCompleteAtom);
   const me = useLoginDetails();
   const setLogin = useSetLoginDetails();
+
+  // console.log('PicrUserProvider: ' + me?.username + ' ' + pathName);
 
   useEffect(() => {
     if (initComplete) return;

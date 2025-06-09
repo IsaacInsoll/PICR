@@ -15,7 +15,6 @@ export const PTitle = ({
   style?: TextStyle;
 }) => {
   const theme = useTheme();
-  console.log('theme is ' + theme.mode);
   return (
     <Text style={{ ...styles[level], color: theme.textColor, ...style }}>
       {children}

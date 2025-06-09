@@ -22,7 +22,7 @@ export const AppImage = ({
   const source =
     viewWidth == 0
       ? null
-      : imageURL(file, (size ?? viewWidth > 250) ? 'lg' : 'md');
+      : baseUrl + imageURL(file, (size ?? viewWidth > 250) ? 'lg' : 'md');
 
   return (
     <View
@@ -33,9 +33,13 @@ export const AppImage = ({
       style={{ backgroundColor: '#F0F' }}
     >
       <CachedImage
-        source={baseUrl + source}
+        source={source}
         style={{ width: viewWidth, height }}
         thumbnailSource={baseUrl + imageURL(file, 'sm')}
+        onError={(e) => {
+          console.log('Error getting image: ' + source);
+          console.log(e);
+        }}
       />
     </View>
   );

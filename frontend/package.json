@@ -11,7 +11,7 @@
     "@tsparticles/engine": "^3.7.1",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.7.1",
-    "@urql/exchange-graphcache": "^6.4.1",
+    "@urql/exchange-graphcache": "^7.2.3",
     "@vitejs/plugin-react": "^4.3.4",
     "blurhash": "^2.0.5",
     "eslint": "^8.57.0",

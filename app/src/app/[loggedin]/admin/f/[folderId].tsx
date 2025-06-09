@@ -1,37 +1,41 @@
 import { useMe } from '@/src/hooks/useMe';
 import { useTheme } from '@/src/hooks/useTheme';
-import {
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PText } from '@/src/components/PText';
-import { Redirect, Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
 import { usePathname } from 'expo-router/build/hooks';
 import { Suspense } from 'react';
 import { viewFolderQuery } from '@frontend/urql/queries/viewFolderQuery';
 import { useQuery } from 'urql';
-import { FlashList } from '@shopify/flash-list';
 import { File, Folder } from '@frontend/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';
-import { Ionicons } from '@expo/vector-icons';
+import { AppFolderLink } from '@/src/components/AppFolderLink';
+import { folderCache } from '@/src/helpers/folderCache';
 
-export default function f() {
+export default function FolderMasterView() {
   const me = useMe();
   const theme = useTheme();
   const x = usePathname();
   const { folderId } = useLocalSearchParams();
+  const folderName = folderCache[folderId]?.name ?? undefined;
 
   if (!folderId) {
+    console.log(
+      '[folderId.tsx] redirecting to home folder as no folder specified',
+    );
     return <Redirect href={x + '/' + me.folderId} />;
   }
 
   return (
-    <ScrollView style={{ backgroundColor: theme.backgroundColor }}>
+    <>
+      <Stack.Screen
+        options={{
+          headerTitle: folderName ?? 'Loading Folder...',
+        }}
+      />
       <View
         style={{
+          backgroundColor: theme.backgroundColor,
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
@@ -44,23 +48,26 @@ export default function f() {
         {/*  Dashboard for U be logged in with folderId {me?.folderId} as{' '}*/}
         {/*  {me?.name}*/}
         {/*</PText>*/}
-        <Suspense>
-          {folderId ? <FolderBody folderId={folderId} /> : null}
+        <Suspense fallback={<PText>Loading folder {folderId}</PText>}>
+          <FolderBody folderId={folderId} key={folderId} />
         </Suspense>
         {/*<PText variant="dimmed">{x}</PText>*/}
       </View>
-    </ScrollView>
+    </>
   );
 }
 
 const FolderBody = ({ folderId }: { folderId: string }) => {
-  const router = useRouter();
+  // return <PText>FolderBody for {folderId}</PText>;
   const [result, requery] = useQuery({
     query: viewFolderQuery,
     variables: { folderId },
   });
+
   const f = result.data?.folder;
-  if (!f) return <PText>Not Found</PText>;
+  if (!f) {
+    return <PText>Folder {folderId} Not Found</PText>;
+  }
   const items = [...f.subFolders, ...f.files];
   return (
     <>
@@ -78,41 +85,45 @@ const FolderBody = ({ folderId }: { folderId: string }) => {
         }}
       />
 
-      <FlashList
-        style={{ flex: 1, backgroundColor: '#0f0', width: '100%', flexGrow: 1 }}
+      <FlatList
+        style={{ flex: 1, width: '100%', flexGrow: 1 }}
         data={items}
-        renderItem={({ item, index }) => {
-          const isFolder = item['__typename'] == 'Folder';
-
-          return isFolder ? (
-            <FlashFolder folder={item} key={item.id} />
-          ) : (
-            <FlashFile file={item} key={item.id} />
-          );
-        }}
+        numColumns={1}
+        keyExtractor={(item) => item['__typename'] + item.id}
+        renderItem={renderItem}
       />
     </>
   );
 };
 
-const FlashFolder = ({ folder }) => {
-  const router = useRouter();
+const renderItem = ({ item, index }) => {
+  const isFolder = item['__typename'] == 'Folder';
 
+  return isFolder ? (
+    <FlashFolder folder={item} key={item.id} />
+  ) : (
+    <FlashFile file={item} key={item.id} />
+  );
+};
+
+const FlashFolder = ({ folder }) => {
   return (
-    <TouchableOpacity
-      onPress={() => {
-        router.push('./' + folder.id);
-      }}
-    >
-      <PText style={[styles.flashView, { backgroundColor: '#00f' }]}>
-        {folder.id} {folder.name}
-      </PText>
-    </TouchableOpacity>
+    <AppFolderLink folder={folder} asChild>
+      <TouchableOpacity
+      // onPress={() => {
+      //   router.navigate('./' + folder.id, { withAnchor: true });
+      // }}
+      >
+        {folder.heroImage?.id ? <AppImage file={folder.heroImage} /> : null}
+        <PText style={[styles.flashView]}>
+          {folder.id} {folder.name}
+        </PText>
+      </TouchableOpacity>
+    </AppFolderLink>
   );
 };
 
 const FlashFile = ({ file }: { file: File }) => {
-  const router = useRouter();
   const isImage = file.type == 'Image';
   return (
     <TouchableOpacity
@@ -120,8 +131,12 @@ const FlashFile = ({ file }: { file: File }) => {
     //   router.push('./' + folder.id);
     // }}
     >
-      {isImage ? <AppImage file={file} /> : null}
-      <PText style={[styles.flashView, { backgroundColor: '#00f' }]}>
+      {isImage ? (
+        <Suspense fallback={<PText>Loading image</PText>}>
+          <AppImage file={file} />
+        </Suspense>
+      ) : null}
+      <PText style={[styles.flashView]}>
         {file.id} {file.type} {file.name}
       </PText>
     </TouchableOpacity>
@@ -129,5 +144,10 @@ const FlashFile = ({ file }: { file: File }) => {
 };
 
 const styles = StyleSheet.create({
-  flashView: { minHeight: 32, alignItems: 'center', justifyContent: 'center' },
+  flashView: {
+    minHeight: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+  },
 });

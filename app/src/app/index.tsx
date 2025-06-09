@@ -6,10 +6,9 @@ import { Text } from 'react-native';
 
 export default function index() {
   console.log('app index.tsx');
-  const router = useRouter();
   const me = useLoginDetails();
   if (me?.hostname) {
-    console.log('redirecting from base URL');
+    console.log('[app/index.tsx] redirecting from base URL');
     // router.replace('/' + me?.hostname);
     return <Redirect href={'/' + me?.hostname} withAnchor />;
   }

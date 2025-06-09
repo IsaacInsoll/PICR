@@ -1,4 +1,4 @@
-import { ScrollView, View } from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useMe } from '@/src/hooks/useMe';
 import { useQuery } from 'urql';
@@ -8,38 +8,71 @@ import { DateDisplay } from '@/src/components/DateDisplay';
 import { useTheme } from '@/src/hooks/useTheme';
 import { PText } from '@/src/components/PText';
 import { PTitle } from '@/src/components/PTitle';
+import { Stack } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { AppFolderLink } from '@/src/components/AppFolderLink';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { HeaderButton, useHeaderHeight } from '@react-navigation/elements';
+
+const HomeFolderButton = () => {
+  const me = useMe();
+  const theme = useTheme();
+  return (
+    <HeaderButton>
+      <AppFolderLink folder={{ id: me.folderId }} push={true}>
+        <Ionicons name="folder-outline" size={25} color={theme.brandColor} />
+      </AppFolderLink>
+    </HeaderButton>
+  );
+};
 
 export default function dashboard() {
   const me = useMe();
   const login = useLoginDetails();
   const theme = useTheme();
+
+  const [recentUsersResult, requery] = useQuery({
+    query: recentUsersQuery,
+    variables: { folderId: me?.folderId },
+    // context: { suspense: false },
+  });
+
   return (
-    <ScrollView style={{ backgroundColor: theme.backgroundColor }}>
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
+    <>
+      <Stack.Screen
+        options={{
+          headerTitle: 'PICR',
+          headerLeft: () => <HomeFolderButton />,
         }}
+      />
+      <ScrollView
+        style={{
+          backgroundColor: theme.backgroundColor,
+        }}
+        refreshControl={
+          <RefreshControl
+            refreshing={recentUsersResult.fetching}
+            onRefresh={() => requery({ requestPolicy: 'network-only' })}
+          />
+        }
       >
-        {/*<Stack.Screen options={{ headerTitle: 'PICR3' }} />*/}
-        {/*<Title>PICR Home</Title>*/}
-        <PText>
-          Dashboard for U be logged in with folderId {me?.folderId} as{' '}
-          {login?.username}
-        </PText>
-        <RecentUsers />
-      </View>
-    </ScrollView>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          {recentUsersResult.data ? (
+            <RecentUsers result={recentUsersResult} />
+          ) : null}
+        </View>
+      </ScrollView>
+    </>
   );
 }
 
-const RecentUsers = () => {
-  const me = useMe();
-  const [result] = useQuery({
-    query: recentUsersQuery,
-    variables: { folderId: me?.folderId },
-  });
+const RecentUsers = ({ result }) => {
   return (
     <View style={{ gap: 8 }}>
       <PTitle level={2}>Recent Clients</PTitle>

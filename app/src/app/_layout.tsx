@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Slot, Stack } from 'expo-router';
 import { ThemeProvider } from '@/src/components/themeProvider';
 
 import { CacheManager } from '@georstat/react-native-image-cache';
@@ -14,13 +14,17 @@ CacheManager.config = {
   thumbnailAnimationDuration: 1000,
 };
 
+// Clear whole cache, mainly used when troubleshooting issues
+// CacheManager.clearCache().then(() => console.log('Cache Cleared!!!!!'));
+
 export default function AppLayout() {
   // This is the 'entrypoint' for the app :)
   console.log('PICR App Booting');
 
   return (
     <ThemeProvider>
-      <Stack screenOptions={{ headerShown: false }} />
+      {/*<Stack screenOptions={{ headerShown: true }} />*/}
+      <Slot />
     </ThemeProvider>
   );
 }

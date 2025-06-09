@@ -5,6 +5,7 @@ interface PicrAppTheme {
   backgroundColor: string;
   textColor: string;
   tabColor?: string;
+  brandColor: string;
 }
 
 export const useTheme = (): PicrAppTheme => {
@@ -19,6 +20,7 @@ const darkTheme: PicrAppTheme = {
   mode: 'dark',
   backgroundColor: '#111',
   textColor: '#fff',
+  brandColor: '#2F8084',
   tabColor: '#000', //android natively supports dark mode for this
 } as const;
 const lightTheme: PicrAppTheme = {
@@ -26,5 +28,6 @@ const lightTheme: PicrAppTheme = {
   mode: 'light',
   backgroundColor: '#fff',
   textColor: '#000',
+  brandColor: '#1C4B4F',
   tabColor: undefined,
 } as const;

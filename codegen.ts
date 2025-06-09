@@ -16,6 +16,9 @@ const config: CodegenConfig = {
     'frontend/public/graphql.schema.json': {
       plugins: ['introspection'],
     },
+    'app/src/graphql.schema.json': {
+      plugins: ['introspection'],
+    },
     // `schema.graphql` for phpStorm GQL plugin to auto complete queries, consider moving to top (server) folder
     './schema.graphql': {
       schema: 'http://localhost:6900/graphql',

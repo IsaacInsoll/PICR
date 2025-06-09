@@ -85,12 +85,15 @@ const LoginForm = () => {
     const { server, username, password } = data;
 
     const newClient = urqlClient(server, {});
+    // TODO: Fix this await mutation crashing on iOS 16.4
+    // No errors in console, so I just set minimum target to 17 for now :(
     const result = await newClient
       .mutation(loginMutation, { username, password })
       .toPromise();
     const token = result?.data?.auth;
     if (token) {
       setStep('success');
+      console.log('[login/index.tsx] redirecting to dashboard??');
       router.replace('/');
       setLogin({ ...data, token });
     } else {
