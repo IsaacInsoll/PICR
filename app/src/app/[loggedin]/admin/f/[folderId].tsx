@@ -11,6 +11,7 @@ import { File, Folder } from '@frontend/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';
 import { AppFolderLink } from '@/src/components/AppFolderLink';
 import { folderCache } from '@/src/helpers/folderCache';
+import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 
 export default function FolderMasterView() {
   const me = useMe();
@@ -48,7 +49,7 @@ export default function FolderMasterView() {
         {/*  Dashboard for U be logged in with folderId {me?.folderId} as{' '}*/}
         {/*  {me?.name}*/}
         {/*</PText>*/}
-        <Suspense fallback={<PText>Loading folder {folderId}</PText>}>
+        <Suspense fallback={<AppLoadingIndicator />}>
           <FolderBody folderId={folderId} key={folderId} />
         </Suspense>
         {/*<PText variant="dimmed">{x}</PText>*/}
@@ -132,7 +133,7 @@ const FlashFile = ({ file }: { file: File }) => {
     // }}
     >
       {isImage ? (
-        <Suspense fallback={<PText>Loading image</PText>}>
+        <Suspense fallback={<AppLoadingIndicator />}>
           <AppImage file={file} />
         </Suspense>
       ) : null}

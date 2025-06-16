@@ -30,7 +30,7 @@ export const AppImage = ({
         const w = e.nativeEvent.layout.width;
         if (w != viewWidth) setViewWidth(w);
       }}
-      style={{ backgroundColor: '#F0F' }}
+      style={{ height }}
     >
       <CachedImage
         source={source}
