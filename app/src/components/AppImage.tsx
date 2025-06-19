@@ -10,25 +10,28 @@ import { Image } from '../../../graphql-types';
 export const AppImage = ({
   file,
   size,
+  width,
 }: {
   file: Image;
   size?: ThumbnailSize;
+  width?: number;
 }) => {
   const baseUrl = useLoginDetails()?.server;
 
-  const [viewWidth, setViewWidth] = useState(0);
+  const [viewWidth, setViewWidth] = useState(width ?? 0);
   const height = viewWidth / (file.imageRatio ?? 1);
 
-  const source =
-    viewWidth == 0
-      ? null
-      : baseUrl + imageURL(file, (size ?? viewWidth > 250) ? 'lg' : 'md');
+  const sourceSize: ThumbnailSize = size ?? (viewWidth > 250 ? 'lg' : 'md');
+
+  const source = viewWidth == 0 ? null : baseUrl + imageURL(file, sourceSize);
+
+  console.log('width', width);
 
   return (
     <View
       onLayout={(e) => {
         const w = e.nativeEvent.layout.width;
-        if (w != viewWidth) setViewWidth(w);
+        if (!width && w != viewWidth) setViewWidth(w);
       }}
       style={{ height }}
     >

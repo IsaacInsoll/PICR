@@ -16,6 +16,8 @@ export default function TabLayout() {
           headerTitleStyle: { color: theme.textColor, fontFamily: mainFont[2] },
           headerTitleAlign: 'center', //android defaults to left
           headerTintColor: theme.brandColor,
+          headerTitle: 'PICR',
+
           // headerLargeTitle: true, //iOS only, looks cool but requires top header on all subviews
         }}
       />

@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useMe } from '@/src/hooks/useMe';
 import { useQuery } from 'urql';
@@ -12,6 +12,9 @@ import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { AppFolderLink } from '@/src/components/AppFolderLink';
 import { HeaderButton } from '@react-navigation/elements';
+import { readAllFoldersQuery } from '@frontend/urql/queries/readAllFoldersQuery';
+import { FolderFragmentFragment, FoldersSortType } from '@frontend/gql/graphql';
+import { AppImage } from '@/src/components/AppImage';
 
 const HomeFolderButton = () => {
   const me = useMe();
@@ -30,7 +33,7 @@ const HomeFolderButton = () => {
   );
 };
 
-export default function dashboard() {
+export default function AppDashboard() {
   const me = useMe();
   const login = useLoginDetails();
   const theme = useTheme();
@@ -40,6 +43,20 @@ export default function dashboard() {
     variables: { folderId: me?.folderId },
     // context: { suspense: false },
   });
+
+  const [recentFoldersResult, requery2] = useQuery({
+    query: readAllFoldersQuery,
+    variables: {
+      id: me?.folderId,
+      limit: 10,
+      sort: FoldersSortType.FolderLastModified,
+    },
+  });
+
+  const doRefresh = () => {
+    requery({ requestPolicy: 'network-only' });
+    requery2({ requestPolicy: 'network-only' });
+  };
 
   return (
     <>
@@ -56,21 +73,27 @@ export default function dashboard() {
         refreshControl={
           <RefreshControl
             refreshing={recentUsersResult.fetching}
-            onRefresh={() => requery({ requestPolicy: 'network-only' })}
+            onRefresh={doRefresh}
           />
         }
       >
-        <View
+        <SafeAreaView
           style={{
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
+            gap: 32,
+            width: '100%',
+            paddingHorizontal: 32,
           }}
         >
           {recentUsersResult.data ? (
             <RecentUsers result={recentUsersResult} />
           ) : null}
-        </View>
+          {recentFoldersResult.data ? (
+            <RecentFolders folders={recentFoldersResult.data.allFolders} />
+          ) : null}
+        </SafeAreaView>
       </ScrollView>
     </>
   );
@@ -78,9 +101,10 @@ export default function dashboard() {
 
 const RecentUsers = ({ result }) => {
   return (
-    <View style={{ gap: 8 }}>
+    <View style={{ gap: 8, width: '100%' }}>
       <PTitle level={2}>Recent Clients</PTitle>
       {result.data?.users.map((user, index) => (
+        // <AppFolderLink folder={user.folder} key={user.id}>
         <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
           <AppAvatar user={user} />
           <View style={{ justifyContent: 'center', gap: 4 }}>
@@ -88,6 +112,26 @@ const RecentUsers = ({ result }) => {
             <DateDisplay dateString={user.lastAccess} />
           </View>
         </View>
+        // </AppFolderLink>
+      ))}
+    </View>
+  );
+};
+const RecentFolders = ({ folders }: { folders: FolderFragmentFragment[] }) => {
+  return (
+    <View style={{ gap: 8, width: '100%' }}>
+      <PTitle level={2}>Recently Modified Folders</PTitle>
+      {folders.map((f, index) => (
+        <AppFolderLink folder={f} key={f.id}>
+          <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
+            {/*<AppAvatar user={f} />*/}
+            <View style={{ justifyContent: 'center', gap: 4 }}>
+              <AppImage file={f.heroImage} size="sm" width={64} />
+              <PText>{f.name}</PText>
+              {/*<DateDisplay dateString={f.lastAccess} />*/}
+            </View>
+          </View>
+        </AppFolderLink>
       ))}
     </View>
   );
