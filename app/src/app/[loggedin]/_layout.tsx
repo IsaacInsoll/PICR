@@ -1,10 +1,10 @@
 import { Stack } from 'expo-router';
 import { PicrUserProvider } from '@/src/components/PicrUserProvider';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { mainFont } from '@/src/constants';
 
 export default function TabLayout() {
-  const theme = useTheme();
+  const theme = useAppTheme();
 
   return (
     <PicrUserProvider>

@@ -25,8 +25,6 @@ export const AppImage = ({
 
   const source = viewWidth == 0 ? null : baseUrl + imageURL(file, sourceSize);
 
-  console.log('width', width);
-
   return (
     <View
       onLayout={(e) => {

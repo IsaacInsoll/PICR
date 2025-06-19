@@ -1,5 +1,5 @@
 import { useMe } from '@/src/hooks/useMe';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PText } from '@/src/components/PText';
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
@@ -15,7 +15,7 @@ import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 
 export default function FolderMasterView() {
   const me = useMe();
-  const theme = useTheme();
+  const theme = useAppTheme();
   const x = usePathname();
   const { folderId } = useLocalSearchParams();
   const skeleton = folderCache[folderId];

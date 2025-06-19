@@ -8,7 +8,7 @@ interface PicrAppTheme {
   brandColor: string;
 }
 
-export const useTheme = (): PicrAppTheme => {
+export const useAppTheme = (): PicrAppTheme => {
   let colorScheme = useColorScheme();
   const isDark = colorScheme == 'dark';
   return isDark ? darkTheme : lightTheme;

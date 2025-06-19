@@ -153,6 +153,8 @@ const LoginForm = () => {
         name="password"
         secureTextEntry={true}
         style={styles.textInput}
+        autoCapitalize={'none'}
+        autoCorrect={false}
         returnKeyType="go"
         onSubmitEditing={handleSubmit(onSubmit)}
       />

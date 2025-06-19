@@ -1,5 +1,5 @@
 import { StyleProp, Text as RNText, TextProps, TextStyle } from 'react-native';
-import { useTheme } from '../hooks/useTheme';
+import { useAppTheme } from '../hooks/useAppTheme';
 
 type TextVariant = 'dimmed' | 'bold';
 export const PText = ({
@@ -8,7 +8,7 @@ export const PText = ({
   children,
   ...props
 }: TextProps & { variant?: TextVariant }) => {
-  const theme = useTheme();
+  const theme = useAppTheme();
   const s = [
     { color: theme.textColor },
     variant ? variants[variant] : undefined,

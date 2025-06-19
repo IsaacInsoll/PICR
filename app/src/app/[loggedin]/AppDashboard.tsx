@@ -5,20 +5,21 @@ import { useQuery } from 'urql';
 import { recentUsersQuery } from '@frontend/urql/queries/recentUsersQuery';
 import { AppAvatar } from '@/src/components/AppAvatar';
 import { DateDisplay } from '@/src/components/DateDisplay';
-import { useTheme } from '@/src/hooks/useTheme';
+import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { PText } from '@/src/components/PText';
 import { PTitle } from '@/src/components/PTitle';
-import { Stack } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { AppFolderLink } from '@/src/components/AppFolderLink';
 import { HeaderButton } from '@react-navigation/elements';
 import { readAllFoldersQuery } from '@frontend/urql/queries/readAllFoldersQuery';
 import { FolderFragmentFragment, FoldersSortType } from '@frontend/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';
+import { useHostname } from '@/src/hooks/useHostname';
 
 const HomeFolderButton = () => {
   const me = useMe();
-  const theme = useTheme();
+  const theme = useAppTheme();
   return (
     <HeaderButton>
       <AppFolderLink folder={{ id: me.folderId, name: 'Home' }} asChild={true}>
@@ -32,11 +33,26 @@ const HomeFolderButton = () => {
     </HeaderButton>
   );
 };
+const SettingsButton = () => {
+  const theme = useAppTheme();
+  const hostname = useHostname();
+  return (
+    <HeaderButton>
+      <Link href={hostname + '/admin/settings'} asChild={true}>
+        <Ionicons
+          name="settings"
+          size={25}
+          color={theme.brandColor}
+          style={{ minWidth: 32 }} // we need this for Android otherwise it gets cropped to 1px wide :/
+        />
+      </Link>
+    </HeaderButton>
+  );
+};
 
 export default function AppDashboard() {
   const me = useMe();
-  const login = useLoginDetails();
-  const theme = useTheme();
+  const theme = useAppTheme();
 
   const [recentUsersResult, requery] = useQuery({
     query: recentUsersQuery,
@@ -64,6 +80,7 @@ export default function AppDashboard() {
         options={{
           headerTitle: 'PICR',
           headerLeft: () => <HomeFolderButton />,
+          headerRight: () => <SettingsButton />,
         }}
       />
       <ScrollView
