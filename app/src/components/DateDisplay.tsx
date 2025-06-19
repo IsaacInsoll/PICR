@@ -1,5 +1,4 @@
-import { useAtom } from 'jotai';
-import { atom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 import { ReactNode } from 'react';
 import moment from 'moment';
 import { TouchableOpacity } from 'react-native';

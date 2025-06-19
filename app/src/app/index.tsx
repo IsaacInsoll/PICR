@@ -1,5 +1,5 @@
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
-import { Redirect, Stack, useRouter } from 'expo-router';
+import { Redirect } from 'expo-router';
 import { PicrUserProvider } from '@/src/components/PicrUserProvider';
 import { Suspense } from 'react';
 import { Text } from 'react-native';

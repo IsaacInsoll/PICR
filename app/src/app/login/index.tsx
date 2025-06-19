@@ -14,7 +14,7 @@ import { PicrLogo } from '@/src/components/PicrLogo';
 import { useRouter } from 'expo-router';
 import { FieldError, useForm } from 'react-hook-form';
 import { CTextInput } from '@/src/components/CTextInput';
-import { mainFont, picrColors, picrManualURL } from '@/src/constants';
+import { picrColors, picrManualURL } from '@/src/constants';
 import * as WebBrowser from 'expo-web-browser';
 import { zodResolver } from '@hookform/resolvers/zod';
 

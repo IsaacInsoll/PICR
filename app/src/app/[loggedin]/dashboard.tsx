@@ -1,4 +1,4 @@
-import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
+import { RefreshControl, ScrollView, View } from 'react-native';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useMe } from '@/src/hooks/useMe';
 import { useQuery } from 'urql';
@@ -11,8 +11,7 @@ import { PTitle } from '@/src/components/PTitle';
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { AppFolderLink } from '@/src/components/AppFolderLink';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { HeaderButton, useHeaderHeight } from '@react-navigation/elements';
+import { HeaderButton } from '@react-navigation/elements';
 
 const HomeFolderButton = () => {
   const me = useMe();
@@ -24,7 +23,7 @@ const HomeFolderButton = () => {
           name="folder-outline"
           size={25}
           color={theme.brandColor}
-          style={{ minWidth: 32 }}
+          style={{ minWidth: 32 }} // we need this for Android otherwise it gets cropped to 1px wide :/
         />
       </AppFolderLink>
     </HeaderButton>

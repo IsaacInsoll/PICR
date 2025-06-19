@@ -1,4 +1,4 @@
-import { Slot, Stack, Tabs } from 'expo-router';
+import { Stack } from 'expo-router';
 import { PicrUserProvider } from '@/src/components/PicrUserProvider';
 import { useTheme } from '@/src/hooks/useTheme';
 import { mainFont } from '@/src/constants';

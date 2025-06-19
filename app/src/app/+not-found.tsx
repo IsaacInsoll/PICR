@@ -1,10 +1,5 @@
-import { Button, SafeAreaView, Text } from 'react-native';
-import {
-  Redirect,
-  useGlobalSearchParams,
-  useNavigation,
-  useRouter,
-} from 'expo-router';
+import { Button, SafeAreaView } from 'react-native';
+import { Redirect, useNavigation, useRouter } from 'expo-router';
 import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
 import { PTitle } from '@/src/components/PTitle';
 import { usePathname } from 'expo-router/build/hooks';

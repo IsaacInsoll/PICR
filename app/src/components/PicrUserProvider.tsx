@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect } from 'react';
 import {
   getLoginDetailsFromLocalDevice,
   useLoginDetails,
@@ -9,7 +9,6 @@ import { urqlClient } from '@/src/urqlClient';
 import { Provider } from 'urql';
 import { PText } from '@/src/components/PText';
 import { atom, useAtom } from 'jotai';
-import { usePathname } from 'expo-router/build/hooks';
 
 const initCompleteAtom = atom(false); // we only want this once system-wide, not per instance of this provider
 

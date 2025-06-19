@@ -1,4 +1,4 @@
-import { Platform, useColorScheme } from 'react-native';
+import { useColorScheme } from 'react-native';
 
 interface PicrAppTheme {
   mode: 'light' | 'dark';

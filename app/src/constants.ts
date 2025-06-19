@@ -1,4 +1,4 @@
-import { ColorValue, TextProps } from 'react-native';
+import { ColorValue } from 'react-native';
 import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import { TextStyle } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 

@@ -1,4 +1,4 @@
-import { Slot, Stack } from 'expo-router';
+import { Slot } from 'expo-router';
 import { ThemeProvider } from '@/src/components/themeProvider';
 
 import { CacheManager } from '@georstat/react-native-image-cache';
