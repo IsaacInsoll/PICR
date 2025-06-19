@@ -18,7 +18,7 @@ export default function FolderMasterView() {
   const theme = useTheme();
   const x = usePathname();
   const { folderId } = useLocalSearchParams();
-  const folderName = folderCache[folderId]?.name ?? undefined;
+  const skeleton = folderCache[folderId];
 
   if (!folderId) {
     console.log(
@@ -31,7 +31,7 @@ export default function FolderMasterView() {
     <>
       <Stack.Screen
         options={{
-          headerTitle: folderName ?? 'Loading Folder...',
+          headerTitle: skeleton?.name ?? 'Loading Folder...',
         }}
       />
       <View

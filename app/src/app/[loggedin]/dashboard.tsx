@@ -19,8 +19,13 @@ const HomeFolderButton = () => {
   const theme = useTheme();
   return (
     <HeaderButton>
-      <AppFolderLink folder={{ id: me.folderId }} push={true}>
-        <Ionicons name="folder-outline" size={25} color={theme.brandColor} />
+      <AppFolderLink folder={{ id: me.folderId, name: 'Home' }} asChild={true}>
+        <Ionicons
+          name="folder-outline"
+          size={25}
+          color={theme.brandColor}
+          style={{ minWidth: 32 }}
+        />
       </AppFolderLink>
     </HeaderButton>
   );
