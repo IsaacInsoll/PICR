@@ -83,7 +83,7 @@ const LeftSide = ({
         {!folder || !isMobile ? (
           <Button
             {...homeFolderLink}
-            leftSection={<PicrLogo style={{ maxWidth: 16 }} />}
+            leftSection={<PicrLogo style={{ width: 16 }} />}
             variant="subtle"
             color="gray"
             size="xs"
