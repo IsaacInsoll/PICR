@@ -16,8 +16,8 @@ import { PicrPie } from './PicrPie';
 import { MinimalFolder } from '../../../../types';
 import { useNavigate, useParams } from 'react-router';
 import { FolderSummary, treeSizeTabAtom } from './FolderSummary';
-import prettyBytes from 'pretty-bytes';
-import { useSetAtom } from 'jotai/index';
+import { prettyBytes } from '@shared/prettyBytes';
+import { useSetAtom } from 'jotai';
 
 export const TreeSize = () => {
   const { slug } = useParams();

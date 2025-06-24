@@ -68,4 +68,6 @@ For front end development you definitely want to use the 6969 address. For backe
 |------------|--------------------------------------------------|
 | `backend`  | Node server source                               |
 | `frontend` | React frontend source                            |
+| `shared`   | Client logic shared by `frontend` and `app`      |
+| `app`      | iOS/Android App (Expo / React Native)            |
 | `dist`     | *Compiled* source (frontend/backend/extra files) |

@@ -1,6 +1,6 @@
 import { MinimalFile } from '../../../types';
 import { FileListViewStyleComponentProps } from './FolderContentsView';
-import prettyBytes from 'pretty-bytes';
+import { prettyBytes } from '@shared/prettyBytes';
 import { PicrColumns, PicrDataGrid } from '../PicrDataGrid';
 import { Page } from '../Page';
 import { MantineSize, Rating } from '@mantine/core';

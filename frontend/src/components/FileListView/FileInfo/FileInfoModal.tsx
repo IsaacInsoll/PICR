@@ -1,12 +1,12 @@
 import { Box, Group, Modal, Table } from '@mantine/core';
-import prettyBytes from 'pretty-bytes';
 import { prettyDate } from '../Filtering/PrettyDate';
 import { MetadataTableRows } from './metadataTableRows';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { StatCard } from './StatCard';
-import { useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai';
 import { closeModalAtom } from '../../../atoms/modalAtom';
 import { FilePreview } from '../FilePreview';
+import { prettyBytes } from '@shared/prettyBytes';
 
 export const FileInfoModal = ({ file }) => {
   const onClose = useSetAtom(closeModalAtom);

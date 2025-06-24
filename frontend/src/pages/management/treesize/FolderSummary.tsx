@@ -9,7 +9,7 @@ import {
   Table,
   Tabs,
 } from '@mantine/core';
-import prettyBytes from 'pretty-bytes';
+import { prettyBytes } from '@shared/prettyBytes';
 import { pluralize } from '../../../helpers/folderSubtitle';
 import { chartColorFiles } from './chartColors';
 import { PieSlice } from './useTreeSize';

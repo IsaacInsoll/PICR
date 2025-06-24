@@ -1,0 +1,12 @@
+{
+  "name": "picr-shared",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "dependencies": {
+    "pretty-bytes": "^7.0.0"
+  }
+}

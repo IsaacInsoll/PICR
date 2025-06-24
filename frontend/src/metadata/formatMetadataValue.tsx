@@ -1,5 +1,5 @@
 import { prettyDateNoTZ } from '../components/FileListView/Filtering/PrettyDate';
-import prettyBytes from 'pretty-bytes';
+import { prettyBytes } from '@shared/prettyBytes';
 import {
   AnyMetadataKey,
   formattedValue,

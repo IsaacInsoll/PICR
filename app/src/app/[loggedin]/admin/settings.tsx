@@ -1,5 +1,4 @@
-import { Button, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
+import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
 import { PicrLogo } from '@/src/components/PicrLogo';
 import { useLoginDetails, useSetLoggedOut } from '@/src/hooks/useLoginDetails';
 import { serverInfoQuery } from '@frontend/urql/queries/serverInfoQuery';
@@ -10,7 +9,7 @@ import { PText } from '@/src/components/PText';
 import { PTitle } from '@/src/components/PTitle';
 import { CacheManager } from '@georstat/react-native-image-cache';
 import { useEffect, useState } from 'react';
-import prettyBytes from 'pretty-bytes';
+import { prettyBytes } from '@shared/prettyBytes';
 
 export default function Settings() {
   const logout = useSetLoggedOut();

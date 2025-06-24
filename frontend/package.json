@@ -23,7 +23,6 @@
     "mantine-react-table": "^2.0.0-beta.9",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.45",
-    "pretty-bytes": "^6.1.1",
     "react": "19.1",
     "react-blurhash": "^0.3.0",
     "react-dom": "19.1",
@@ -39,6 +38,7 @@
     "urql": "^4.0.6",
     "victory": "^37.3.5",
     "vite": "^6.3.3",
+    "vite-plugin-tsconfig-paths": "^1.4.1",
     "yet-another-react-lightbox": "^3.17.0"
   },
   "scripts": {

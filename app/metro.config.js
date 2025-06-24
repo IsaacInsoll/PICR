@@ -9,7 +9,10 @@ module.exports = {
   ...config,
   resolver: {
     ...config.resolver,
-    extraNodeModules: { '@frontend': __dirname + '/../frontend/src' },
+    extraNodeModules: {
+      '@frontend': __dirname + '/../frontend/src',
+      '@shared': __dirname + '/../shared',
+    },
   },
-  watchFolders: [__dirname + '/../frontend/src'],
+  watchFolders: [__dirname + '/../frontend/src', __dirname + '/../shared'],
 };

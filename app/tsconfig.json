@@ -6,7 +6,8 @@
       "@/*": [
         "./*"
       ],
-      "@frontend/*": ["../frontend/src/*"]
+      "@frontend/*": ["../frontend/src/*"],
+      "@shared/*": ["../shared/*"]
     },
 
   },

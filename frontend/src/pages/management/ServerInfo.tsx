@@ -2,7 +2,7 @@ import { useQuery } from 'urql';
 import { Anchor, Code, Group, Table } from '@mantine/core';
 import { FaGithub } from 'react-icons/fa6';
 import { ReactNode, Suspense } from 'react';
-import prettyBytes from 'pretty-bytes';
+import { prettyBytes } from '@shared/prettyBytes';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { useAvifEnabled, useMe } from '../../hooks/useMe';
 import { MdOutlineSdStorage } from 'react-icons/md';

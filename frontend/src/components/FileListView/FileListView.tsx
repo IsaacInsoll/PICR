@@ -19,7 +19,6 @@ import {
   Text,
 } from '@mantine/core';
 import { FileFlagBadge } from './Review/FileFlagBadge';
-import prettyBytes from 'pretty-bytes';
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
 import { SmallPreview } from './SmallPreview';
@@ -28,10 +27,11 @@ import { FileMenu } from './FileMenu';
 import { fileFlagStyles } from './Review/fileFlagStyles';
 import { prettyDate } from './Filtering/PrettyDate';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
-import { useAtomValue } from 'jotai/index';
+import { useAtomValue } from 'jotai';
 import { DotsIcon } from '../../PicrIcons';
 import { FolderMenu } from './FolderMenu';
 import { PicrAvatar } from '../PicrAvatar';
+import { prettyBytes } from '@shared/prettyBytes';
 
 export const FileListView = ({
   files,
