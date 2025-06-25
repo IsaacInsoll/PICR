@@ -1,10 +1,16 @@
-import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
+import {
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useMe } from '@/src/hooks/useMe';
 import { useQuery } from 'urql';
 import { recentUsersQuery } from '@frontend/urql/queries/recentUsersQuery';
 import { AppAvatar } from '@/src/components/AppAvatar';
-import { DateDisplay } from '@/src/components/DateDisplay';
+import { AppDateDisplay } from '@/src/components/AppDateDisplay';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { PText } from '@/src/components/PText';
 import { PTitle } from '@/src/components/PTitle';
@@ -126,7 +132,7 @@ const RecentUsers = ({ result }) => {
           <AppAvatar user={user} />
           <View style={{ justifyContent: 'center', gap: 4 }}>
             <PText>{user.name}</PText>
-            <DateDisplay dateString={user.lastAccess} />
+            <AppDateDisplay dateString={user.lastAccess} />
           </View>
         </View>
         // </AppFolderLink>
@@ -139,15 +145,17 @@ const RecentFolders = ({ folders }: { folders: FolderFragmentFragment[] }) => {
     <View style={{ gap: 8, width: '100%' }}>
       <PTitle level={2}>Recently Modified Folders</PTitle>
       {folders.map((f, index) => (
-        <AppFolderLink folder={f} key={f.id}>
-          <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
-            {/*<AppAvatar user={f} />*/}
-            <View style={{ justifyContent: 'center', gap: 4 }}>
-              <AppImage file={f.heroImage} size="sm" width={64} />
-              <PText>{f.name}</PText>
-              {/*<DateDisplay dateString={f.lastAccess} />*/}
+        <AppFolderLink folder={f} key={f.id} asChild>
+          <TouchableOpacity>
+            <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
+              {/*<AppAvatar user={f} />*/}
+              <View style={{ justifyContent: 'center', gap: 4 }}>
+                <AppImage file={f.heroImage} size="sm" width={64} />
+                <PText>{f.name}</PText>
+                {/*<DateDisplay dateString={f.lastAccess} />*/}
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         </AppFolderLink>
       ))}
     </View>

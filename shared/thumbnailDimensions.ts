@@ -1,4 +1,3 @@
-//TODO: configurable via .env?
 export const thumbnailDimensions = {
   sm: 250, // baby thumbs
   md: 500, // "250px" eg masonry view

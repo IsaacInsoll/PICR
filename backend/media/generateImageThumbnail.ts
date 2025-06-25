@@ -2,7 +2,7 @@ import sharp, { AvifOptions, JpegOptions, OutputInfo, ResizeOptions } from 'shar
 import { fullPath, fullPathForFile } from '../filesystem/fileManager.js';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'path';
-import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions.js';
+import { thumbnailDimensions } from '../../shared/thumbnailDimensions.js';
 import {
   AllSize,
   ThumbnailSize,

@@ -2,7 +2,7 @@ import { MinimalFile } from '../../../../types';
 import { Slide } from 'yet-another-react-lightbox';
 import { thumbnailSizes } from '../../../helpers/thumbnailSize';
 import { ImageSource } from 'yet-another-react-lightbox/dist/types';
-import { thumbnailDimensions } from '../../../helpers/thumbnailDimensions';
+import { thumbnailDimensions } from '@shared/thumbnailDimensions';
 import { imageURL } from '../../../helpers/imageURL';
 
 export const filesForLightbox = (files: MinimalFile[]): Slide[] => {

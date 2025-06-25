@@ -4,8 +4,8 @@ import { Text, Tooltip } from '@mantine/core';
 import { ReactNode } from 'react';
 
 import { atom, useAtom } from 'jotai';
+import { dateDisplayRelativeAtom } from '@shared/uiAtoms';
 
-const dateDisplayRelativeAtom = atom(true);
 
 export const prettyDate = (dateString: string) => {
   if (!dateString) return '';

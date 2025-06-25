@@ -1,13 +1,12 @@
-import { atom, useAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import { ReactNode } from 'react';
 import moment from 'moment';
 import { TouchableOpacity } from 'react-native';
 import { finePrint } from '@/src/constants';
 import { PText } from '@/src/components/PText';
+import { dateDisplayRelativeAtom } from '@shared/uiAtoms';
 
-const dateDisplayRelativeAtom = atom(true);
-
-export const DateDisplay = ({
+export const AppDateDisplay = ({
   dateString,
 }: {
   dateString?: string;

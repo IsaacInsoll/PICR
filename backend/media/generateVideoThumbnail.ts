@@ -2,7 +2,7 @@ import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize.js';
 import { thumbnailPath } from './thumbnailPath.js';
 import { ffmpegForFile } from './ffmpegForFile.js';
 import { VideoMetadata } from '../types/MetadataSummary.js';
-import { thumbnailDimensions } from '../../frontend/src/helpers/thumbnailDimensions.js';
+import { thumbnailDimensions } from '../../shared/thumbnailDimensions.js';
 import { existsSync } from 'node:fs';
 import { log } from '../logger.js';
 // import joinImages from 'join-images'; TODO: find ES6 modules compatible alternative?
