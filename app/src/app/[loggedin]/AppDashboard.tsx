@@ -22,6 +22,7 @@ import { readAllFoldersQuery } from '@frontend/urql/queries/readAllFoldersQuery'
 import { FolderFragmentFragment, FoldersSortType } from '@frontend/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';
 import { useHostname } from '@/src/hooks/useHostname';
+import { navBarIconProps } from '@/src/constants';
 
 const HomeFolderButton = () => {
   const me = useMe();
@@ -33,7 +34,7 @@ const HomeFolderButton = () => {
           name="folder-outline"
           size={25}
           color={theme.brandColor}
-          style={{ minWidth: 32 }} // we need this for Android otherwise it gets cropped to 1px wide :/
+          style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
         />
       </AppFolderLink>
     </HeaderButton>
@@ -49,7 +50,7 @@ const SettingsButton = () => {
           name="settings"
           size={25}
           color={theme.brandColor}
-          style={{ minWidth: 32 }} // we need this for Android otherwise it gets cropped to 1px wide :/
+          style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
         />
       </Link>
     </HeaderButton>

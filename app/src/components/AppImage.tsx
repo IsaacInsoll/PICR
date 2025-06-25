@@ -18,24 +18,28 @@ export const AppImage = ({
 }) => {
   const baseUrl = useLoginDetails()?.server;
 
-  const [viewWidth, setViewWidth] = useState(width ?? 0);
-  const height = viewWidth / (file.imageRatio ?? 1);
+  const [viewWidth, setViewWidth] = useState(0);
+  const w = width ?? viewWidth;
+  const height = w / (file.imageRatio ?? 1);
 
-  const sourceSize: ThumbnailSize = size ?? (viewWidth > 250 ? 'lg' : 'md');
+  const sourceSize: ThumbnailSize = size ?? (w > 250 ? 'lg' : 'md');
 
-  const source = viewWidth == 0 ? null : baseUrl + imageURL(file, sourceSize);
+  const source = w == 0 ? null : baseUrl + imageURL(file, sourceSize);
+
+  console.log(width, viewWidth, height, file.fileHash);
 
   return (
     <View
       onLayout={(e) => {
-        const w = e.nativeEvent.layout.width;
-        if (!width && w != viewWidth) setViewWidth(w);
+        const ww = e.nativeEvent.layout.width;
+        console.log('AppImage layout w is ', ww);
+        if (!width && ww != viewWidth) setViewWidth(ww);
       }}
       style={{ height }}
     >
       <CachedImage
         source={source}
-        style={{ width: viewWidth, height }}
+        style={{ width: w, height }}
         thumbnailSource={baseUrl + imageURL(file, 'sm')}
         onError={(e) => {
           console.log('Error getting image: ' + source);

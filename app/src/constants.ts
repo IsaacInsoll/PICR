@@ -1,6 +1,7 @@
 import { ColorValue } from 'react-native';
 import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import { TextStyle } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import { StyleProps } from 'react-native-reanimated';
 
 export const picrColors: ColorValue[] = [
   '#4c669f',
@@ -21,3 +22,8 @@ export const mainFont = [
 export const typographyScale = [36, 30, 24, 20, 16, 14] as const;
 
 export const finePrint: StyleProp<TextStyle> = { opacity: 0.5 } as const;
+
+export const navBarIconProps: StyleProp<TextStyle> = {
+  minWidth: 32,
+  minHeight: 24,
+};

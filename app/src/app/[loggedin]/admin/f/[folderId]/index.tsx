@@ -9,7 +9,11 @@ import { viewFolderQuery } from '@frontend/urql/queries/viewFolderQuery';
 import { useQuery } from 'urql';
 import { File, Folder } from '@frontend/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';
-import { AppFolderLink } from '@/src/components/AppFolderLink';
+import {
+  AppFileLink,
+  AppFolderLink,
+  useAppFileLink,
+} from '@/src/components/AppFolderLink';
 import { folderCache } from '@/src/helpers/folderCache';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 
@@ -43,12 +47,6 @@ export default function FolderMasterView() {
           gap: 16,
         }}
       >
-        {/*<Stack.Screen options={{ headerTitle: 'PICR3' }} />*/}
-        {/*<PTitle>Folder ID {folderId ?? 'Unknown'}</PTitle>*/}
-        {/*<PText>*/}
-        {/*  Dashboard for U be logged in with folderId {me?.folderId} as{' '}*/}
-        {/*  {me?.name}*/}
-        {/*</PText>*/}
         <Suspense fallback={<AppLoadingIndicator />}>
           <FolderBody folderId={folderId} key={folderId} />
         </Suspense>
@@ -72,19 +70,7 @@ const FolderBody = ({ folderId }: { folderId: string }) => {
   const items = [...f.subFolders, ...f.files];
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerTitle: f.name,
-          // headerLeft: () => (
-          //   <Ionicons
-          //     name={Platform.OS === 'ios' ? 'chevron-back' : 'arrow-back-sharp'}
-          //     size={25}
-          //     color="white"
-          //     onPress={() => router.back()}
-          //   />
-          // ),
-        }}
-      />
+      <Stack.Screen options={{ headerTitle: f.name }} />
 
       <FlatList
         style={{ flex: 1, width: '100%', flexGrow: 1 }}
@@ -126,21 +112,24 @@ const FlashFolder = ({ folder }) => {
 
 const FlashFile = ({ file }: { file: File }) => {
   const isImage = file.type == 'Image';
+
   return (
-    <TouchableOpacity
-    // onPress={() => {
-    //   router.push('./' + folder.id);
-    // }}
-    >
-      {isImage ? (
-        <Suspense fallback={<AppLoadingIndicator />}>
-          <AppImage file={file} />
-        </Suspense>
-      ) : null}
-      <PText style={[styles.flashView]}>
-        {file.id} {file.type} {file.name}
-      </PText>
-    </TouchableOpacity>
+    <AppFileLink file={file} asChild>
+      <TouchableOpacity
+      // onPress={() => {
+      //   router.push('./' + folder.id);
+      // }}
+      >
+        {isImage ? (
+          <Suspense fallback={<AppLoadingIndicator />}>
+            <AppImage file={file} />
+          </Suspense>
+        ) : null}
+        <PText style={[styles.flashView]}>
+          {file.id} {file.type} {file.name}
+        </PText>
+      </TouchableOpacity>
+    </AppFileLink>
   );
 };
 
