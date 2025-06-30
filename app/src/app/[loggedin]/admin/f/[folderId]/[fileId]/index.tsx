@@ -21,7 +21,7 @@ export default function AppFileView() {
     <>
       <Stack.Screen
         options={{
-          headerTitle: skeleton?.name ?? 'Loading Folder...',
+          headerTitle: skeleton?.name ?? 'Loading File...',
         }}
       />
       <View

@@ -128,15 +128,17 @@ const RecentUsers = ({ result }) => {
     <View style={{ gap: 8, width: '100%' }}>
       <PTitle level={2}>Recent Clients</PTitle>
       {result.data?.users.map((user, index) => (
-        // <AppFolderLink folder={user.folder} key={user.id}>
-        <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
-          <AppAvatar user={user} />
-          <View style={{ justifyContent: 'center', gap: 4 }}>
-            <PText>{user.name}</PText>
-            <AppDateDisplay dateString={user.lastAccess} />
-          </View>
-        </View>
-        // </AppFolderLink>
+        <AppFolderLink folder={user.folder} key={user.id} asChild>
+          <TouchableOpacity>
+            <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
+              <AppAvatar user={user} />
+              <View style={{ justifyContent: 'center', gap: 4 }}>
+                <PText>{user.name}</PText>
+                <AppDateDisplay dateString={user.lastAccess} />
+              </View>
+            </View>
+          </TouchableOpacity>
+        </AppFolderLink>
       ))}
     </View>
   );
