@@ -19,13 +19,13 @@ import * as WebBrowser from 'expo-web-browser';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useKeyboardVisible } from '@/src/hooks/useKeyboardVisible';
-import { urqlClient } from '@/src/urqlClient';
 import { loginMutation } from '@frontend/urql/mutations/loginMutation';
 import { z, ZodType } from 'zod';
 import { useState } from 'react';
 import { LoginDetails, useSetLoginDetails } from '@/src/hooks/useLoginDetails';
 import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
 import { PTitle } from '@/src/components/PTitle';
+import { picrUrqlClient } from '@shared/urql/urqlClient';
 
 const loginFormSchema: ZodType<LoginDetails> = z.object({
   server: z.string().url(),
@@ -84,7 +84,7 @@ const LoginForm = () => {
     setStep('loading');
     const { server, username, password } = data;
 
-    const newClient = urqlClient(server, {});
+    const newClient = picrUrqlClient(server, {});
     // TODO: Fix this await mutation crashing on iOS 16.4
     // No errors in console, so I just set minimum target to 17 for now :(
     const result = await newClient
