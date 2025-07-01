@@ -17,7 +17,7 @@ export default function TabLayout() {
           // headerTitleAlign: 'center', //android defaults to left, reverted as fileView was truncating names to like 3 characters
           headerTintColor: theme.brandColor,
           headerTitle: 'PICR',
-
+          contentStyle: { backgroundColor: theme.backgroundColor },
           // headerLargeTitle: true, //iOS only, looks cool but requires top header on all subviews
         }}
       />
