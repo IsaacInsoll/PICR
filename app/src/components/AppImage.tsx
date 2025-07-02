@@ -26,7 +26,7 @@ export const AppImage = ({
 
   const source = w == 0 ? null : baseUrl + imageURL(file, sourceSize);
 
-  console.log(width, viewWidth, height, file.fileHash);
+  // console.log(width, viewWidth, height, file.fileHash);
 
   return (
     <View
