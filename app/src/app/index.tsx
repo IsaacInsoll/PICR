@@ -2,7 +2,7 @@ import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { Redirect } from 'expo-router';
 import { PicrUserProvider } from '@/src/components/PicrUserProvider';
 import { Suspense } from 'react';
-import { Text } from 'react-native';
+import { PText } from '@/src/components/PText';
 
 export default function index() {
   console.log('app index.tsx');
@@ -16,7 +16,7 @@ export default function index() {
   return (
     <Suspense>
       <PicrUserProvider>
-        <Text>You should never see this page?</Text>
+        <PText>You should never see this page?</PText>
       </PicrUserProvider>
     </Suspense>
   );

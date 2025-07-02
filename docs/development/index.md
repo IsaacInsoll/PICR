@@ -17,12 +17,13 @@
 
 > Run from `app` folder. You can replace `ios` with `android` for all commands 
 
-| Command                                       | Description                            | When to use                                    |
-|-----------------------------------------------|----------------------------------------|------------------------------------------------|
-| `npx expo start`                              | Run Expo app (iOS / android)           | Used when developing mobile app                |
-| `npx expo run:ios`                            | build and run Development Build        | Used for most mobile dev                       |
-| `npx expo run:ios --configuration Release -d` | deploy release version to local device | Get 'production' (not dev) app onto device     |
-| `npx uri-scheme open picr://<some-url> --ios` | open deep link in simulator            | Used for manually testing "open in PICR" links |
+| Command                                       | Description                               | When to use                                    |
+|-----------------------------------------------|-------------------------------------------|------------------------------------------------|
+| `npx expo start`                              | Run Expo app (iOS / android)              | Used when developing mobile app                |
+| `npx expo run:ios`                            | build and run Development Build           | Used for most mobile dev                       |
+| `npx expo run:ios --configuration Release -d` | deploy release version to local device    | Get 'production' (not dev) app onto device     |
+| `npx expo start --no-dev --minify`            | run dev server but with 'production' code | Troubleshoot errors that only happen on prod   |
+| `npx uri-scheme open picr://<some-url> --ios` | open deep link in simulator               | Used for manually testing "open in PICR" links |
 
 
 ## Build Process

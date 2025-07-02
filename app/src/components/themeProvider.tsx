@@ -5,7 +5,7 @@ import { Signika_400Regular } from '@expo-google-fonts/signika/400Regular';
 import { Signika_500Medium } from '@expo-google-fonts/signika/500Medium';
 import { Signika_600SemiBold } from '@expo-google-fonts/signika/600SemiBold';
 import { Signika_700Bold } from '@expo-google-fonts/signika/700Bold';
-import { Text } from 'react-native';
+import { PText } from '@/src/components/PText';
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   let [fontsLoaded] = useFonts({
@@ -15,6 +15,6 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     Signika_600SemiBold,
     Signika_700Bold,
   });
-  if (!fontsLoaded) return <Text>Loading Fonts...</Text>;
+  if (!fontsLoaded) return <PText>Loading Fonts...</PText>;
   return children;
 };
