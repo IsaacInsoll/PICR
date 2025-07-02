@@ -7,7 +7,7 @@ import { usePathname } from 'expo-router/build/hooks';
 import { Suspense } from 'react';
 import { viewFolderQuery } from '@frontend/urql/queries/viewFolderQuery';
 import { useQuery } from 'urql';
-import { File, Folder } from '@frontend/gql/graphql';
+import { File, Folder, Image } from '@frontend/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';
 import {
   AppFileLink,
@@ -16,6 +16,7 @@ import {
 } from '@/src/components/AppFolderLink';
 import { folderCache } from '@/src/helpers/folderCache';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
+import { AspectView } from '@/src/components/AspectView';
 
 export default function FolderMasterView() {
   const me = useMe();
@@ -110,7 +111,7 @@ const FlashFolder = ({ folder }) => {
   );
 };
 
-const FlashFile = ({ file }: { file: File }) => {
+const FlashFile = ({ file }: { file: File | Image }) => {
   const isImage = file.type == 'Image';
 
   return (
@@ -121,9 +122,11 @@ const FlashFile = ({ file }: { file: File }) => {
       // }}
       >
         {isImage ? (
-          <Suspense fallback={<AppLoadingIndicator />}>
-            <AppImage file={file} />
-          </Suspense>
+          <AspectView ratio={file.imageRatio}>
+            <Suspense fallback={<AppLoadingIndicator />}>
+              <AppImage file={file} />
+            </Suspense>
+          </AspectView>
         ) : null}
         <PText style={[styles.flashView]}>
           {file.id} {file.type} {file.name}

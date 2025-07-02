@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import {
   getLoginDetailsFromLocalDevice,
   useLoginDetails,
@@ -29,12 +29,18 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
       setInitComplete(true);
     });
   }, []);
+  const client = useMemo(() => {
+    if (!me) return null;
+    console.log('PicrUserProvider: _creating_ URQL client');
+    return urqlClient(me.server, { authorization: `Bearer ${me.token}` });
+  }, [me?.server, me?.token]);
+
   if (!initComplete) return <PText>Loading...</PText>;
   if (!me) {
     console.log('PicrUserProvider: not logged in, redirecting');
     return <Redirect href="/login" />;
   }
-  console.log('PicrUserProvider: creating URQL client');
-  const client = urqlClient(me.server, { authorization: `Bearer ${me.token}` });
+
+  console.log('PicrUserProvider: returning URQL client');
   return <Provider value={client}>{children}</Provider>;
 };
