@@ -14,7 +14,7 @@ return {
   LrLibraryMenuItems = {
     {
       title = "Import PICR Data",
-      file = "ImportPicrData.lua",
+      file = "main.lua",
     },
   },
 }
