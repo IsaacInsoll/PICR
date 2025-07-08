@@ -44,7 +44,8 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "postinstall": "cd ../shared && npm install"
   },
   "browserslist": {
     "production": [

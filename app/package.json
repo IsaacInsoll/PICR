@@ -8,7 +8,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "postinstall": "cd ../shared && npm install"
   },
   "dependencies": {
     "@expo-google-fonts/signika": "^0.4.0",

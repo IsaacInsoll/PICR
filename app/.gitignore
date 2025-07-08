@@ -41,3 +41,4 @@ app-example
 #build folders, isaac added these but wasn't too sure
 ios/
 android/
+/credentials.json
