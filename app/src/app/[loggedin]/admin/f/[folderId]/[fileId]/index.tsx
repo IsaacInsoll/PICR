@@ -39,7 +39,7 @@ export default function AppFileView() {
       >
         <AppImage file={file} size="lg" width={width} key={file.id} />
 
-        <PText>
+        <PText variant="code">
           Viewing file {fileId} with width {width} and ratio {file.imageRatio}
         </PText>
         {/*<Suspense fallback={<AppLoadingIndicator />}>*/}

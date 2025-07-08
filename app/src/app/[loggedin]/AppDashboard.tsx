@@ -2,6 +2,7 @@ import {
   RefreshControl,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -23,6 +24,7 @@ import { FolderFragmentFragment, FoldersSortType } from '@frontend/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';
 import { useHostname } from '@/src/hooks/useHostname';
 import { navBarIconProps } from '@/src/constants';
+import { PView } from '@/src/components/PView';
 
 const HomeFolderButton = () => {
   const me = useMe();
@@ -112,7 +114,7 @@ export default function AppDashboard() {
           }}
         >
           {recentUsersResult.data ? (
-            <RecentUsers result={recentUsersResult} />
+            <RecentUsers users={recentUsersResult.data?.users.slice(0, 5)} />
           ) : null}
           {recentFoldersResult.data ? (
             <RecentFolders folders={recentFoldersResult.data.allFolders} />
@@ -123,23 +125,25 @@ export default function AppDashboard() {
   );
 }
 
-const RecentUsers = ({ result }) => {
+const RecentUsers = ({ users }) => {
   return (
     <View style={{ gap: 8, width: '100%' }}>
       <PTitle level={2}>Recent Clients</PTitle>
-      {result.data?.users.map((user, index) => (
-        <AppFolderLink folder={user.folder} key={user.id} asChild>
-          <TouchableOpacity>
-            <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
-              <AppAvatar user={user} />
-              <View style={{ justifyContent: 'center', gap: 4 }}>
-                <PText>{user.name}</PText>
-                <AppDateDisplay dateString={user.lastAccess} />
+      <View style={styles.indent}>
+        {users.map((user, index) => (
+          <AppFolderLink folder={user.folder} key={user.id} asChild>
+            <TouchableOpacity>
+              <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
+                <AppAvatar user={user} />
+                <View style={{ justifyContent: 'center', gap: 4 }}>
+                  <PText>{user.name}</PText>
+                  <AppDateDisplay dateString={user.lastAccess} />
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        </AppFolderLink>
-      ))}
+            </TouchableOpacity>
+          </AppFolderLink>
+        ))}
+      </View>
     </View>
   );
 };
@@ -147,20 +151,27 @@ const RecentFolders = ({ folders }: { folders: FolderFragmentFragment[] }) => {
   return (
     <View style={{ gap: 8, width: '100%' }}>
       <PTitle level={2}>Recently Modified Folders</PTitle>
-      {folders.map((f, index) => (
-        <AppFolderLink folder={f} key={f.id} asChild>
-          <TouchableOpacity>
-            <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
-              {/*<AppAvatar user={f} />*/}
-              <View style={{ justifyContent: 'center', gap: 4 }}>
-                <AppImage file={f.heroImage} size="sm" width={64} />
-                <PText>{f.name}</PText>
-                {/*<DateDisplay dateString={f.lastAccess} />*/}
-              </View>
-            </View>
-          </TouchableOpacity>
-        </AppFolderLink>
-      ))}
+      <View style={styles.indent}>
+        {folders.map((f, index) => (
+          <AppFolderLink folder={f} key={f.id} asChild>
+            <TouchableOpacity>
+              <PView key={index} row gap="sm">
+                <PView key={index} row gap="md">
+                  <AppImage file={f.heroImage} size="sm" width={48} />
+                  <PView gap="xs">
+                    <PText>{f.name}</PText>
+                    <AppDateDisplay dateString={f.folderLastModified} />
+                  </PView>
+                </PView>
+              </PView>
+            </TouchableOpacity>
+          </AppFolderLink>
+        ))}
+      </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  indent: { paddingLeft: 16, gap: 16 },
+});

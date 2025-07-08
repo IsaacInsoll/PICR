@@ -10,6 +10,8 @@ import { PTitle } from '@/src/components/PTitle';
 import { CacheManager } from '@georstat/react-native-image-cache';
 import { useEffect, useState } from 'react';
 import { prettyBytes } from '@shared/prettyBytes';
+// import Constants from 'expo-constants';
+import * as Application from 'expo-application';
 
 export default function Settings() {
   const logout = useSetLoggedOut();
@@ -59,6 +61,10 @@ const AppDetails = () => {
   return (
     <View style={styles.settingsView}>
       <PTitle level={3}>App</PTitle>
+      <PText>
+        App Version: {Application.nativeApplicationVersion} (Build{' '}
+        {Application.nativeBuildVersion})
+      </PText>
       <PText>Image cache size: {prettyBytes(cacheSize)}</PText>
     </View>
   );

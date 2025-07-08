@@ -1,7 +1,7 @@
 import { StyleProp, Text as RNText, TextProps, TextStyle } from 'react-native';
 import { useAppTheme } from '../hooks/useAppTheme';
 
-type TextVariant = 'dimmed' | 'bold';
+type TextVariant = 'dimmed' | 'bold' | 'code';
 export const PText = ({
   variant,
   style,
@@ -24,4 +24,5 @@ export const PText = ({
 const variants: { [k in TextVariant]: StyleProp<TextStyle> } = {
   dimmed: { opacity: 0.5 },
   bold: { fontWeight: 'bold' },
+  code: { fontFamily: 'monospace', fontSize: 11, opacity: 0.33 },
 };

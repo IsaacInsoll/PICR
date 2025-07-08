@@ -27,3 +27,13 @@ export const navBarIconProps: StyleProp<TextStyle> = {
   minWidth: 32,
   minHeight: 24,
 };
+
+export const PaddingSize = {
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+} as const;
+
+export type Padding = keyof paddingSize;

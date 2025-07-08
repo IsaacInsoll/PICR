@@ -20,8 +20,8 @@ export const AppDateDisplay = ({
   // in web frontend (mantine) this had props: size="sm" c="dimmed"
 
   return (
-    <TouchableOpacity onPress={() => setIsRelative(!isRelative)}>
-      <PText style={finePrint}>{isRelative ? ago : full}</PText>
-    </TouchableOpacity>
+    // <TouchableOpacity onPress={() => setIsRelative(!isRelative)}>
+    <PText style={finePrint}>{isRelative ? ago : full}</PText>
+    // </TouchableOpacity>
   );
 };
