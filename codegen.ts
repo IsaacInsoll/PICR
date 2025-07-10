@@ -6,17 +6,14 @@ const config: CodegenConfig = {
   // `src/gql/*` for useQuery/useMutation to return typed object
   generates: {
     // used by codegen to add proper typescript typing to results from a gql query/mutation
-    'frontend/src/gql/': {
+    'shared/gql/': {
       preset: 'client',
       documents: ['./frontend/src/**/*.tsx', './frontend/src/**/*.ts'],
       presetConfig: { fragmentMasking: false },
       plugins: [],
     },
     //graphql.schema.json used by URQL for caching
-    'frontend/public/graphql.schema.json': {
-      plugins: ['introspection'],
-    },
-    'app/src/graphql.schema.json': {
+    'shared/urql/graphql.schema.json': {
       plugins: ['introspection'],
     },
     // `schema.graphql` for phpStorm GQL plugin to auto complete queries, consider moving to top (server) folder

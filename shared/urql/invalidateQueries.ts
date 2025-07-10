@@ -1,5 +1,5 @@
 import { Cache } from '@urql/exchange-graphcache';
-import type { Query } from '../../frontend/src/gql/graphql.js';
+import {Query} from "../gql/graphql";
 
 export const invalidateQueries = (
   cache: Cache,
