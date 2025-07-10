@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "main": "expo-router/entry",
+  "main": "index.ts",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
@@ -23,6 +23,7 @@
     "@shopify/flash-list": "1.7.6",
     "@urql/exchange-graphcache": "^7.2.3",
     "expo": "53.0.17",
+    "expo-application": "~6.1.5",
     "expo-blur": "~14.1.5",
     "expo-build-properties": "~0.14.8",
     "expo-constants": "~17.1.6",
@@ -46,16 +47,18 @@
     "react-dom": "19.0.0",
     "react-hook-form": "^7.56.4",
     "react-native": "0.79.5",
+    "react-native-edge-to-edge": "^1.6.2",
     "react-native-file-access": "^3.1.1",
     "react-native-gesture-handler": "~2.24.0",
+    "react-native-nitro-modules": "^0.26.3",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
+    "react-native-unistyles": "^3.0.2",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
     "urql": "^4.2.2",
-    "zod": "^3.25.28",
-    "expo-application": "~6.1.5"
+    "zod": "^3.25.28"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
