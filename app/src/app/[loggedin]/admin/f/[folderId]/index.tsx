@@ -39,15 +39,7 @@ export default function FolderMasterView() {
           headerTitle: skeleton?.name ?? 'Loading Folder...',
         }}
       />
-      <View
-        style={{
-          backgroundColor: theme.backgroundColor,
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 16,
-        }}
-      >
+      <View style={{ ...styles.main, backgroundColor: theme.backgroundColor }}>
         <Suspense fallback={<AppLoadingIndicator />}>
           <FolderBody folderId={folderId} key={folderId} />
         </Suspense>
@@ -58,7 +50,6 @@ export default function FolderMasterView() {
 }
 
 const FolderBody = ({ folderId }: { folderId: string }) => {
-  // return <PText>FolderBody for {folderId}</PText>;
   const [result, requery] = useQuery({
     query: viewFolderQuery,
     variables: { folderId },
@@ -142,5 +133,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
+  },
+  main: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
   },
 });

@@ -1,7 +1,6 @@
 import { ColorValue } from 'react-native';
 import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import { TextStyle } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
-import { StyleProps } from 'react-native-reanimated';
 
 export const picrColors: ColorValue[] = [
   '#4c669f',
@@ -36,4 +35,4 @@ export const PaddingSize = {
   xl: 32,
 } as const;
 
-export type Padding = keyof paddingSize;
+export type Padding = keyof typeof PaddingSize;

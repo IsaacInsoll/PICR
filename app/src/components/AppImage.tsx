@@ -32,7 +32,7 @@ export const AppImage = ({
     <View
       onLayout={(e) => {
         const ww = e.nativeEvent.layout.width;
-        console.log('AppImage layout w is ', ww);
+        // console.log('AppImage layout w is ', ww);
         if (!width && ww != viewWidth) setViewWidth(ww);
       }}
       style={{ height }}

@@ -10,12 +10,9 @@ CacheManager.config = {
   cacheLimit: 0,
   maxRetries: 3,
   retryDelay: 3000, //ms
-  sourceAnimationDuration: 1000,
-  thumbnailAnimationDuration: 1000,
+  sourceAnimationDuration: 100,
+  thumbnailAnimationDuration: 100,
 };
-
-// Clear whole cache, mainly used when troubleshooting issues
-// CacheManager.clearCache().then(() => console.log('Cache Cleared!!!!!'));
 
 export default function AppLayout() {
   // This is the 'entrypoint' for the app :)
@@ -23,7 +20,6 @@ export default function AppLayout() {
 
   return (
     <ThemeProvider>
-      {/*<Stack screenOptions={{ headerShown: true }} />*/}
       <Slot />
     </ThemeProvider>
   );

@@ -58,6 +58,8 @@ const AppDetails = () => {
     CacheManager.getCacheSize().then((size) => setCacheSize(size));
   }, []);
 
+  //TODO: relative date option
+
   return (
     <View style={styles.settingsView}>
       <PTitle level={3}>App</PTitle>

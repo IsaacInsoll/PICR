@@ -21,34 +21,6 @@ export default function TabLayout() {
           // headerLargeTitle: true, //iOS only, looks cool but requires top header on all subviews
         }}
       />
-      {/*<Tabs*/}
-      {/*  screenOptions={{*/}
-      {/*    headerShown: true,*/}
-      {/*    headerBackgroundContainerStyle: {*/}
-      {/*      backgroundColor: '#f00',*/}
-      {/*    },*/}
-      {/*    headerStyle: { backgroundColor: theme.tabColor },*/}
-      {/*    //android tabs look wrong if you set tabColor in light mode*/}
-      {/*    tabBarStyle: theme.tabColor*/}
-      {/*      ? { backgroundColor: theme.tabColor }*/}
-      {/*      : undefined,*/}
-      {/*    sceneStyle: { backgroundColor: theme.backgroundColor },*/}
-      {/*    // headerTitleContainerStyle: { backgroundColor: '#0f0' },*/}
-      {/*  }}*/}
-      {/*>*/}
-      {/*  <Tabs.Screen*/}
-      {/*    name="dashboard"*/}
-      {/*    options={{ title: 'Home', headerTitle: 'PICR' }}*/}
-      {/*  />*/}
-      {/*  <Tabs.Screen*/}
-      {/*    name="admin/f/[folderId]"*/}
-      {/*    options={{ title: 'Folders', headerTitle: 'PICR' }}*/}
-      {/*  />*/}
-      {/*  <Tabs.Screen*/}
-      {/*    name="admin/settings"*/}
-      {/*    options={{ title: 'Settings', headerTitle: 'PICR Settings' }}*/}
-      {/*  />*/}
-      {/*</Tabs>*/}
     </PicrUserProvider>
   );
 }
