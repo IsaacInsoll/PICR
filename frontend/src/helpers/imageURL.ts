@@ -1,6 +1,5 @@
 import { MinimalFile } from '../../types.js';
-import { AllSize, ThumbnailSize } from './thumbnailSize.js';
-import { thumbnailDimensions } from '@shared/thumbnailDimensions';
+import { AllSize } from './thumbnailSize.js';
 
 export const imageURL = (
   file: Partial<Pick<MinimalFile, 'id' | 'fileHash' | 'name' | 'type'>>,
@@ -16,8 +15,8 @@ export const imageURL = (
   return path + (extension ? name + extension : name);
 };
 
-export const imageDimensions = (file: MinimalFile, size: ThumbnailSize) => {
-  const { imageRatio } = file;
-  const long = thumbnailDimensions[size];
-  return { width: long, height: (long / (imageRatio ?? 1)).toFixed(0) };
-};
+// export const imageDimensions = (file: MinimalFile, size: ThumbnailSize) => {
+//   const { imageRatio } = file;
+//   const long = thumbnailDimensions[size];
+//   return { width: long, height: (long / (imageRatio ?? 1)).toFixed(0) };
+// };
