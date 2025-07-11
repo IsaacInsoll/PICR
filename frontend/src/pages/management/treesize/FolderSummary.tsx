@@ -10,11 +10,11 @@ import {
   Tabs,
 } from '@mantine/core';
 import { prettyBytes } from '@shared/prettyBytes';
-import { pluralize } from '../../../helpers/folderSubtitle';
 import { chartColorFiles } from './chartColors';
 import { PieSlice } from './useTreeSize';
 import { FileIcon, FolderIcon, InfoIcon } from '../../../PicrIcons';
-import { atom, useAtom } from 'jotai/index';
+import { atom, useAtom } from 'jotai';
+import { pluralize } from '@shared/pluralize';
 
 export const treeSizeTabAtom = atom<'subfolders' | 'files'>('subfolders');
 

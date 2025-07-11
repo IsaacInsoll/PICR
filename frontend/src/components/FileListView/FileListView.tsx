@@ -22,7 +22,6 @@ import { FileFlagBadge } from './Review/FileFlagBadge';
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
 import { SmallPreview } from './SmallPreview';
-import { pluralize } from '../../helpers/folderSubtitle';
 import { FileMenu } from './FileMenu';
 import { fileFlagStyles } from './Review/fileFlagStyles';
 import { prettyDate } from './Filtering/PrettyDate';
@@ -32,6 +31,7 @@ import { DotsIcon } from '../../PicrIcons';
 import { FolderMenu } from './FolderMenu';
 import { PicrAvatar } from '../PicrAvatar';
 import { prettyBytes } from '@shared/prettyBytes';
+import { pluralize } from '@shared/pluralize';
 
 export const FileListView = ({
   files,
