@@ -1,4 +1,4 @@
-import { gql } from '../../../frontend/src/helpers/gql';
+import {gql} from "../gql.js";
 
 export const editUserMutation = gql(/* GraphQL */ `
   mutation EditUserMutation(

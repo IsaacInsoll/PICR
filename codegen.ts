@@ -8,7 +8,7 @@ const config: CodegenConfig = {
     // used by codegen to add proper typescript typing to results from a gql query/mutation
     'shared/gql/': {
       preset: 'client',
-      documents: ['./frontend/src/**/*.tsx', './frontend/src/**/*.ts'],
+      documents: ['./shared/**/*.tsx', './shared/**/*.ts'],
       presetConfig: { fragmentMasking: false },
       plugins: [],
     },

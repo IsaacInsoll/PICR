@@ -16,7 +16,7 @@ import { useMutation, useQuery } from 'urql';
 import { MinimalFile } from '../../../../types';
 import { CommentBodyItem } from './CommentBodyItem';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
-import { addCommentMutation } from './addCommentMutation';
+import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { CommentHistory } from './CommentHistory';

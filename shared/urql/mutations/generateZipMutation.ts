@@ -1,4 +1,4 @@
-import { gql } from '../../../frontend/src/helpers/gql';
+import {gql} from "../gql.js";
 
 export const generateZipMutation = gql(/* GraphQL */ `
   mutation GenerateZip($folderId: ID!) {

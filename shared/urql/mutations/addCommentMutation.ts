@@ -1,4 +1,4 @@
-import { gql } from '../../../helpers/gql';
+import {gql} from "../gql.js";
 
 export const addCommentMutation = gql(/* GraphQL */ `
   mutation addComment(

@@ -1,12 +1,13 @@
-import { Branding } from '../../../../graphql-types';
-import { Alert, Button, Code, Group, Modal } from '@mantine/core';
-import { BrandingForm } from './BrandingForm';
-import { useEffect, useState } from 'react';
-import { useSetAtom } from 'jotai/index';
-import { themeModeAtom } from '../../atoms/themeModeAtom';
-import { gql } from '../../helpers/gql';
-import { useMutation } from 'urql';
-import { DeleteIcon } from '../../PicrIcons';
+import {Branding} from '../../../../graphql-types';
+import {Alert, Button, Group, Modal} from '@mantine/core';
+import {BrandingForm} from './BrandingForm';
+import {useEffect, useState} from 'react';
+import {useSetAtom} from 'jotai/index';
+import {themeModeAtom} from '../../atoms/themeModeAtom';
+import {useMutation} from 'urql';
+import {DeleteIcon} from '../../PicrIcons';
+import {editBrandingMutation} from "../../../../../PICRshared/urql/fragments/EditBrandingMutation";
+import {deleteBrandingMutation} from "@shared/urql/fragments/deleteBrandingMutation";
 
 export const BrandingModal = ({
   branding: brandingProp,
@@ -91,28 +92,3 @@ export const BrandingModal = ({
   );
 };
 
-const editBrandingMutation = gql(/* GraphQL */ `
-  mutation EditBrandingMutation(
-    $folderId: ID!
-    $mode: ThemeMode
-    $primaryColor: PrimaryColor
-    $logoUrl: String
-  ) {
-    editBranding(
-      folderId: $folderId
-      mode: $mode
-      primaryColor: $primaryColor
-      logoUrl: $logoUrl
-    ) {
-      ...FolderFragment
-    }
-  }
-`);
-
-const deleteBrandingMutation = gql(/* GraphQL */ `
-  mutation DeleteBrandingMutation($folderId: ID!) {
-    deleteBranding(folderId: $folderId) {
-      ...FolderFragment
-    }
-  }
-`);

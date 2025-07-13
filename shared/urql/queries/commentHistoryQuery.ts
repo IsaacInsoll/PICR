@@ -1,4 +1,4 @@
-import { gql } from '../../../frontend/src/helpers/gql';
+import {gql} from "../gql.js";
 
 export const commentHistoryQuery = gql(/* GraphQL */ `
   query commentHistoryQuery($fileId: ID, $folderId: ID) {

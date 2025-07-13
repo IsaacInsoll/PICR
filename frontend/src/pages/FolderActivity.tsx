@@ -1,7 +1,7 @@
 import { gql } from '../helpers/gql';
 import { useMutation, useQuery } from 'urql';
 import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
-import { addCommentMutation } from '../components/FileListView/Review/AddCommentMutation';
+import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 import { useState } from 'react';
 import { useCommentPermissions } from '../hooks/useCommentPermissions';
 import { ScrollArea, Stack, Timeline } from '@mantine/core';

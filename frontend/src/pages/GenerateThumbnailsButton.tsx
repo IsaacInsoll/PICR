@@ -1,9 +1,7 @@
-import { MinimalFolder } from '../../types';
-import { useMutation, useQuery } from 'urql';
-import { gql } from '../helpers/gql';
-import { generateThumbnailsQuery } from '@shared/urql/mutations/generateThumbnailsQuery';
-import { Button } from '@mantine/core';
-import { TbPhotoCheck } from 'react-icons/tb';
+import {useMutation, useQuery} from 'urql';
+import {generateThumbnailsQuery} from '@shared/urql/mutations/generateThumbnailsQuery';
+import {Button} from '@mantine/core';
+import {TbPhotoCheck} from 'react-icons/tb';
 
 export const GenerateThumbnailsButton = ({
   folderId,
@@ -11,14 +9,7 @@ export const GenerateThumbnailsButton = ({
   folderId: number;
 }) => {
   const [result] = useQuery({
-    query: gql(/* GraphQL*/ `
-        query generateThumbnailsStats($folderId: ID!) {
-            folder(id: $folderId) {
-                ...FolderFragment
-                totalImages
-            }
-        }
-    `),
+    query: generateThumbnailsQuery,
     variables: { folderId },
   });
   const totalImages = result.data?.folder?.totalImages;
@@ -34,3 +25,4 @@ export const GenerateThumbnailsButton = ({
     </Button>
   );
 };
+
