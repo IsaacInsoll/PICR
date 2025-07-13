@@ -1,5 +1,5 @@
 import { useQuery } from 'urql';
-import { viewUserQuery } from '../../urql/queries/viewUserQuery';
+import { viewUserQuery } from '@shared/urql/queries/viewUserQuery';
 import { MinimalSharedFolder } from '../../../types';
 
 export const useViewUser = (

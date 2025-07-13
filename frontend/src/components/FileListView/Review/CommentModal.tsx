@@ -18,7 +18,7 @@ import { CommentBodyItem } from './CommentBodyItem';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { addCommentMutation } from './addCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
-import { commentHistoryQuery } from '../../../urql/queries/commentHistoryQuery';
+import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { CommentHistory } from './CommentHistory';
 import { FilePreview } from '../FilePreview';
 import { MutationAddCommentArgs } from '../../../../../graphql-types';

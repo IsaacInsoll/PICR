@@ -1,4 +1,4 @@
-import { gql } from '../../helpers/gql';
+import { gql } from '../../../frontend/src/helpers/gql';
 
 export const taskQuery = gql(/* GraphQL */ `
   query TaskQuery($folderId: ID!) {

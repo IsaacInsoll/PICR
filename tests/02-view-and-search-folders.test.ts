@@ -4,8 +4,8 @@ import {
   getUserHeader,
 } from '../frontend/testGraphqlClient';
 import { defaultCredentials } from '../backend/auth/defaultCredentials';
-import { viewFolderQuery } from '../frontend/src/urql/queries/viewFolderQuery';
-import { searchQuery } from '../frontend/src/urql/queries/searchQuery';
+import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
+import { searchQuery } from '../shared/urql/queries/searchQuery';
 
 test('View Home Folder', async () => {
   const headers = await getUserHeader(defaultCredentials);

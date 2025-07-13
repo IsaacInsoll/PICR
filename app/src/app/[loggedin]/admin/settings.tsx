@@ -1,7 +1,7 @@
 import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
 import { PicrLogo } from '@/src/components/PicrLogo';
 import { useLoginDetails, useSetLoggedOut } from '@/src/hooks/useLoginDetails';
-import { serverInfoQuery } from '@frontend/urql/queries/serverInfoQuery';
+import { serverInfoQuery } from '@shared/urql/queries/serverInfoQuery';
 import { useQuery } from 'urql';
 import { useMe } from '@/src/hooks/useMe';
 import { AppView } from '@/src/components/AppView';

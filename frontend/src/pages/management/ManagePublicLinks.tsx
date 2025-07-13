@@ -1,6 +1,6 @@
 import { ReactNode, Suspense, useState } from 'react';
 import { useQuery } from 'urql';
-import { manageFolderQuery } from '../../urql/queries/manageFolderQuery';
+import { manageFolderQuery } from '@shared/urql/queries/manageFolderQuery';
 import QueryFeedback from '../../components/QueryFeedback';
 import { ManagePublicLink } from './ManagePublicLink';
 import { MinimalFolder, MinimalSharedFolder } from '../../../types';

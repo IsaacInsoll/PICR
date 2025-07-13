@@ -3,10 +3,10 @@ import {
   createTestGraphqlClient,
   getUserHeader,
 } from '../frontend/testGraphqlClient';
-import { loginMutation } from '../frontend/src/urql/mutations/loginMutation';
+import { loginMutation } from '../shared/urql/mutations/loginMutation';
 import { defaultCredentials } from '../backend/auth/defaultCredentials';
-import { meQuery } from '../frontend/src/urql/queries/meQuery';
-import { serverInfoQuery } from '../frontend/src/urql/queries/serverInfoQuery';
+import { meQuery } from '../shared/urql/queries/meQuery';
+import { serverInfoQuery } from '../shared/urql/queries/serverInfoQuery';
 import { gte } from 'semver';
 
 test('Login Mutation Works', async () => {

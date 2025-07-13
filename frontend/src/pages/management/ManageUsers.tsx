@@ -1,6 +1,6 @@
 import { Box, Button } from '@mantine/core';
 import { useQuery } from 'urql';
-import { viewAdminsQuery } from '../../urql/queries/viewAdminsQuery';
+import { viewAdminsQuery } from '@shared/urql/queries/viewAdminsQuery';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { Suspense, useState } from 'react';
 import QueryFeedback from '../../components/QueryFeedback';

@@ -1,4 +1,4 @@
-import { gql } from '../../helpers/gql';
+import { gql } from '../../../frontend/src/helpers/gql';
 
 export const minimumFolderFragment = gql(/* GraphQL */ `
   fragment MinimumFolderFragment on Folder {

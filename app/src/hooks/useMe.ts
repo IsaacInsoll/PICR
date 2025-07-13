@@ -1,4 +1,4 @@
-import { meQuery } from '@frontend/urql/queries/meQuery';
+import { meQuery } from '@shared/urql/queries/meQuery';
 // import { extraUserProps } from '../../../backend/helpers/extraUserProps';
 import { useQuery } from 'urql';
 import { User } from '../../../graphql-types';

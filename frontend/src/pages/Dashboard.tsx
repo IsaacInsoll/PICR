@@ -25,10 +25,10 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import { PicrLink } from '../components/PicrLink';
 import { EmptyPlaceholder } from './EmptyPlaceholder';
 import { TbUnlink } from 'react-icons/tb';
-import { readAllFoldersQuery } from '../urql/queries/readAllFoldersQuery';
+import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { FoldersSortType } from '../gql/graphql';
 import { ManageFolderIconButton } from '../components/ManageFolderButton';
-import { recentUsersQuery } from '../urql/queries/recentUsersQuery';
+import { recentUsersQuery } from '@shared/urql/queries/recentUsersQuery';
 
 export const Dashboard = () => {
   const me = useMe();

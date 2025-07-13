@@ -19,7 +19,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useKeyboardVisible } from '@/src/hooks/useKeyboardVisible';
-import { loginMutation } from '@frontend/urql/mutations/loginMutation';
+import { loginMutation } from '@shared/urql/mutations/loginMutation';
 import { z, ZodType } from 'zod';
 import { useState } from 'react';
 import { LoginDetails, useSetLoginDetails } from '@/src/hooks/useLoginDetails';

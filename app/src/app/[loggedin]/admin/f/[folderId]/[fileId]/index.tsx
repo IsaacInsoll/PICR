@@ -7,7 +7,7 @@ import { fileCache } from '@/src/helpers/folderCache';
 import { PText } from '@/src/components/PText';
 import { AppImage } from '@/src/components/AppImage';
 import { useQuery } from 'urql';
-import { viewFileQuery } from '@frontend/urql/queries/viewFileQuery';
+import { viewFileQuery } from '@shared/urql/queries/viewFileQuery';
 
 export default function AppFileView() {
   const theme = useAppTheme();

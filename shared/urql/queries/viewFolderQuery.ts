@@ -1,4 +1,4 @@
-import { gql } from '../../helpers/gql';
+import { gql } from '../../../frontend/src/helpers/gql';
 
 export const viewFolderQuery = gql(/*GraphQL*/ `
     query ViewFolder($folderId: ID!) {

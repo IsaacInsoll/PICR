@@ -1,4 +1,4 @@
-import { gql } from '../../helpers/gql';
+import { gql } from '../../../frontend/src/helpers/gql';
 
 export const readAllFoldersQuery = gql(/* GraphQL */ `
   query readAllFoldersQuery($id: ID!, $sort: FoldersSortType, $limit: Int) {

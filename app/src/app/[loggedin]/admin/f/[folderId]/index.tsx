@@ -5,7 +5,7 @@ import { PText } from '@/src/components/PText';
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
 import { usePathname } from 'expo-router/build/hooks';
 import { Suspense } from 'react';
-import { viewFolderQuery } from '@frontend/urql/queries/viewFolderQuery';
+import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { useQuery } from 'urql';
 import { File, Folder, Image } from '@frontend/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';

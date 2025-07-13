@@ -1,6 +1,6 @@
 import { AvatarProps, Group, Text } from '@mantine/core';
 import { useQuery } from 'urql';
-import { viewUserQuery } from '../urql/queries/viewUserQuery';
+import { viewUserQuery } from '@shared/urql/queries/viewUserQuery';
 import { PicrAvatar } from './PicrAvatar';
 
 export const LazyPicrAvatar = ({

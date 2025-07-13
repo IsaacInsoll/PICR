@@ -1,6 +1,6 @@
 import { gql } from '../helpers/gql';
 import { useMutation, useQuery } from 'urql';
-import { commentHistoryQuery } from '../urql/queries/commentHistoryQuery';
+import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { addCommentMutation } from '../components/FileListView/Review/AddCommentMutation';
 import { useState } from 'react';
 import { useCommentPermissions } from '../hooks/useCommentPermissions';

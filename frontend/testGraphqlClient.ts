@@ -1,4 +1,4 @@
-import { loginMutation } from './src/urql/mutations/loginMutation';
+import { loginMutation } from '../shared/urql/mutations/loginMutation';
 import { ICredentials } from '../backend/auth/defaultCredentials';
 import { Client, fetchExchange } from 'urql';
 

@@ -1,7 +1,7 @@
 import { MinimalFolder } from '../../types';
 import { useMutation, useQuery } from 'urql';
 import { gql } from '../helpers/gql';
-import { generateThumbnailsQuery } from '../urql/mutations/generateThumbnailsQuery';
+import { generateThumbnailsQuery } from '@shared/urql/mutations/generateThumbnailsQuery';
 import { Button } from '@mantine/core';
 import { TbPhotoCheck } from 'react-icons/tb';
 

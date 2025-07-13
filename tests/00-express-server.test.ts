@@ -4,7 +4,7 @@ import {
   getUserHeader,
 } from '../frontend/testGraphqlClient';
 import { defaultCredentials } from '../backend/auth/defaultCredentials';
-import { viewFolderQuery } from '../frontend/src/urql/queries/viewFolderQuery';
+import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
 import { AllSize } from '../frontend/src/helpers/thumbnailSize';
 import { photoFolderId, testUrl } from './testVariables';
 
