@@ -4,19 +4,16 @@ import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PText } from '@/src/components/PText';
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
 import { usePathname } from 'expo-router/build/hooks';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { viewFolderQuery } from '@frontend/urql/queries/viewFolderQuery';
 import { useQuery } from 'urql';
 import { File, Folder, Image } from '@frontend/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';
-import {
-  AppFileLink,
-  AppFolderLink,
-  useAppFileLink,
-} from '@/src/components/AppFolderLink';
+import { AppFileLink, AppFolderLink } from '@/src/components/AppFolderLink';
 import { folderCache } from '@/src/helpers/folderCache';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { AspectView } from '@/src/components/AspectView';
+import { PView } from '@/src/components/PView';
 
 export default function FolderMasterView() {
   const me = useMe();
@@ -24,6 +21,7 @@ export default function FolderMasterView() {
   const x = usePathname();
   const { folderId } = useLocalSearchParams();
   const skeleton = folderCache[folderId];
+  const [width, setViewWidth] = useState(0);
 
   if (!folderId) {
     console.log(
@@ -40,21 +38,28 @@ export default function FolderMasterView() {
         }}
       />
       <View style={{ ...styles.main, backgroundColor: theme.backgroundColor }}>
-        <Suspense fallback={<AppLoadingIndicator />}>
-          <FolderBody folderId={folderId} key={folderId} />
-        </Suspense>
-        {/*<PText variant="dimmed">{x}</PText>*/}
+        <PView style={{ width: '100%', flex: 1 }} onWidthChange={setViewWidth}>
+          <Suspense fallback={<AppLoadingIndicator />}>
+            <FolderBody folderId={folderId} key={folderId} width={width} />
+          </Suspense>
+          {/*<PText variant="dimmed">{x}</PText>*/}
+        </PView>
       </View>
     </>
   );
 }
 
-const FolderBody = ({ folderId }: { folderId: string }) => {
+const FolderBody = ({
+  folderId,
+  width,
+}: {
+  folderId: string;
+  width: number;
+}) => {
   const [result, requery] = useQuery({
     query: viewFolderQuery,
     variables: { folderId },
   });
-
   const f = result.data?.folder;
   if (!f) {
     return <PText>Folder {folderId} Not Found</PText>;
@@ -63,29 +68,28 @@ const FolderBody = ({ folderId }: { folderId: string }) => {
   return (
     <>
       <Stack.Screen options={{ headerTitle: f.name }} />
-
       <FlatList
         style={{ flex: 1, width: '100%', flexGrow: 1 }}
         data={items}
         numColumns={1}
         keyExtractor={(item) => item['__typename'] + item.id}
-        renderItem={renderItem}
+        renderItem={(props) => renderItem({ ...props, width })}
       />
     </>
   );
 };
 
-const renderItem = ({ item, index }) => {
+const renderItem = ({ item, index, width }) => {
   const isFolder = item['__typename'] == 'Folder';
 
   return isFolder ? (
-    <FlashFolder folder={item} key={item.id} />
+    <FlashFolder folder={item} key={item.id} width={width} />
   ) : (
-    <FlashFile file={item} key={item.id} />
+    <FlashFile file={item} key={item.id} width={width} />
   );
 };
 
-const FlashFolder = ({ folder }) => {
+const FlashFolder = ({ folder, width }) => {
   return (
     <AppFolderLink folder={folder} asChild>
       <TouchableOpacity
@@ -93,7 +97,9 @@ const FlashFolder = ({ folder }) => {
       //   router.navigate('./' + folder.id, { withAnchor: true });
       // }}
       >
-        {folder.heroImage?.id ? <AppImage file={folder.heroImage} /> : null}
+        {folder.heroImage?.id ? (
+          <AppImage file={folder.heroImage} width={width} />
+        ) : null}
         <PText style={[styles.flashView]}>
           {folder.id} {folder.name}
         </PText>
@@ -102,7 +108,7 @@ const FlashFolder = ({ folder }) => {
   );
 };
 
-const FlashFile = ({ file }: { file: File | Image }) => {
+const FlashFile = ({ file, width }: { file: File | Image; width: number }) => {
   const isImage = file.type == 'Image';
 
   return (
@@ -113,7 +119,7 @@ const FlashFile = ({ file }: { file: File | Image }) => {
       // }}
       >
         {isImage ? (
-          <AspectView ratio={file.imageRatio}>
+          <AspectView ratio={file.imageRatio} width={width}>
             <Suspense fallback={<AppLoadingIndicator />}>
               <AppImage file={file} />
             </Suspense>

@@ -2,6 +2,7 @@ import { PropsWithChildren } from 'react';
 import { Padding, PaddingSize } from '../constants';
 import { View, ViewStyle } from 'react-native';
 import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
+import { StyleProps } from 'react-native-reanimated';
 export const PView = ({
   gap,
   children,
@@ -9,8 +10,8 @@ export const PView = ({
   onWidthChange,
   row,
 }: PropsWithChildren<{
-  gap: Padding;
-  style?: StyleProp<ViewStyle> | undefined;
+  gap?: Padding;
+  style?: StyleProps | undefined;
   row?: boolean;
   onWidthChange?: (width: number) => void;
 }>) => {
