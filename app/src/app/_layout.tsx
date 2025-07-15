@@ -6,6 +6,7 @@ import { Dirs } from 'react-native-file-access';
 
 //full sreen image zoom
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 CacheManager.config = {
   baseDir: `${Dirs.CacheDir}/images_cache/`,
@@ -23,9 +24,11 @@ export default function AppLayout() {
 
   return (
     <GestureHandlerRootView>
-      <ThemeProvider>
-        <Slot />
-      </ThemeProvider>
+      <SafeAreaProvider>
+        <ThemeProvider>
+          <Slot />
+        </ThemeProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
