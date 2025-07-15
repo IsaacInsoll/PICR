@@ -15,12 +15,16 @@ import * as Application from 'expo-application';
 
 export default function Settings() {
   const logout = useSetLoggedOut();
+  const doClearCache = async () => {
+    await CacheManager.clearCache();
+  };
   return (
     <AppView style={{ flex: 1 }}>
       <SafeAreaView style={{}}>
         <ServerDetails />
         <AppDetails />
-        <View style={{ marginVertical: 32 }}>
+        <View style={{ margin: 32, gap: 16 }}>
+          <Button onPress={doClearCache} title="Clear image cache" />
           <Button onPress={logout} title="Log out" />
         </View>
       </SafeAreaView>
@@ -48,9 +52,6 @@ const ServerDetails = () => {
 
 const AppDetails = () => {
   const [cacheSize, setCacheSize] = useState(0);
-  const doClearCache = async () => {
-    await CacheManager.clearCache();
-  };
 
   useEffect(() => {
     console.log('getting cache size');

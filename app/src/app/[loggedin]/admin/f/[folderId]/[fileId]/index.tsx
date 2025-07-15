@@ -8,6 +8,7 @@ import { PText } from '@/src/components/PText';
 import { AppImage } from '@/src/components/AppImage';
 import { useQuery } from 'urql';
 import { viewFileQuery } from '@frontend/urql/queries/viewFileQuery';
+import { PBigImage } from '@/src/components/PBigImage';
 
 export default function AppFileView() {
   const theme = useAppTheme();
@@ -37,8 +38,8 @@ export default function AppFileView() {
           setWidth(w);
         }}
       >
-        <AppImage file={file} size="lg" width={width} key={file.id} />
-
+        {/*<AppImage file={file} size="lg" width={width} key={file.id} />*/}
+        <PBigImage file={file} />
         <PText variant="code">
           Viewing file {fileId} with width {width} and ratio {file.imageRatio}
         </PText>

@@ -52,7 +52,7 @@ export const AppImage = ({
 
 // copied from imageURL in frontend because we were having import issues
 // but then I had to add the base URL anyway so whatever
-const imageURL = (
+export const imageURL = (
   file: Partial<Pick<File, 'id' | 'fileHash' | 'name' | 'type'>>,
   size: AllSize,
   extension?: string,
