@@ -4,7 +4,7 @@ import { FileFlagButtons } from './FileFlagButtons';
 import { useMutation } from 'urql';
 import { CommentButton } from './CommentButton';
 import { useOpenCommentsModal } from '../../../atoms/modalAtom';
-import { addCommentMutation } from './addCommentMutation';
+import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { FileFlagBadge } from './FileFlagBadge';
 import { FileRating } from './FileRating';

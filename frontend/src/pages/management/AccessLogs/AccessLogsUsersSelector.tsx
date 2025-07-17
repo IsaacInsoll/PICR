@@ -1,5 +1,5 @@
 import { useQuery } from 'urql';
-import { manageFolderQuery } from '../../../urql/queries/manageFolderQuery';
+import { manageFolderQuery } from '@shared/urql/queries/manageFolderQuery';
 import { Select } from '@mantine/core';
 
 export const AccessLogsUsersSelector = ({

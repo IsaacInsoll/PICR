@@ -3,7 +3,7 @@ import { useQuery } from 'urql';
 import { Suspense, useState } from 'react';
 import QueryFeedback from '../../components/QueryFeedback';
 import { PicrDataGrid } from '../../components/PicrDataGrid';
-import { viewBrandingsQuery } from '../../urql/queries/viewBrandingsQuery';
+import { viewBrandingsQuery } from '@shared/urql/queries/viewBrandingsQuery';
 import { BrandingIcon } from '../../PicrIcons';
 import { brandingColumns } from './brandingColumns';
 import { useSetAtom } from 'jotai/index';

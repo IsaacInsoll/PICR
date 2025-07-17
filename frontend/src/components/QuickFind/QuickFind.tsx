@@ -23,7 +23,7 @@ import { useSetFolder } from '../../hooks/useSetFolder';
 import { InfoIcon } from '../../PicrIcons';
 import { Joiner } from '../FolderName';
 import { useQuickFind } from './useQuickFind';
-import { searchQuery } from '../../urql/queries/searchQuery';
+import { searchQuery } from '@shared/urql/queries/searchQuery';
 
 type Scope = 'all' | 'current';
 type ScopeType = 'all' | 'file' | 'folder';

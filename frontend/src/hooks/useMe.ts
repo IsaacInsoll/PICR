@@ -4,7 +4,7 @@ import { useQuery } from 'urql';
 import { User } from '../../../graphql-types';
 
 import { getUUID } from '../helpers/getUUID';
-import { meQuery } from '../urql/queries/meQuery';
+import { meQuery } from '@shared/urql/queries/meQuery';
 import {
   extraUserProps,
   ExtraUserProps,

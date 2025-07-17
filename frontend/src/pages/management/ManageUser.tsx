@@ -20,7 +20,7 @@ import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { EmailIcon, NotificationIcon } from '../../PicrIcons';
-import { editAdminUserMutation } from '../../urql/mutations/editAdminUserMutation';
+import { editAdminUserMutation } from '@shared/urql/mutations/editAdminUserMutation';
 
 export const ManageUser = ({
   id,

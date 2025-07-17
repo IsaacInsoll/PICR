@@ -6,7 +6,7 @@ import {
 } from '../components/FolderHeader/FolderHeader';
 import { folderSubtitle } from '../helpers/folderSubtitle';
 import { useNavigate, useParams } from 'react-router';
-import { viewFolderQuery } from '../urql/queries/viewFolderQuery';
+import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
 import { TaskSummary } from '../components/TaskSummary';

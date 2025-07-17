@@ -5,7 +5,7 @@ import {
   getUserHeader,
 } from '../frontend/testGraphqlClient';
 import { defaultCredentials } from '../backend/auth/defaultCredentials';
-import { editUserMutation } from '../frontend/src/urql/mutations/editUserMutation';
+import { editUserMutation } from '../shared/urql/mutations/editUserMutation';
 
 import {
   gravatarTest,
@@ -14,7 +14,7 @@ import {
   testUrl,
   videoFolderId,
 } from './testVariables';
-import { viewFolderQuery } from '../frontend/src/urql/queries/viewFolderQuery';
+import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
 
 test('Create Public Link', async () => {
   const headers = await getUserHeader(defaultCredentials);

@@ -10,7 +10,7 @@ import { PicrLink } from '../../components/PicrLink';
 import {
   expensiveServerFileSizeQuery,
   serverInfoQuery,
-} from '../../urql/queries/serverInfoQuery';
+} from '@shared/urql/queries/serverInfoQuery';
 
 export const ServerInfo = () => {
   const [result] = useQuery({ query: serverInfoQuery });

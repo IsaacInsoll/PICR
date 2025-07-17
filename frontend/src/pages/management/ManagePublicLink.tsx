@@ -2,7 +2,7 @@ import { MinimalFolder } from '../../../types';
 import { randomString } from '../../helpers/randomString';
 import { useState } from 'react';
 import { useMutation } from 'urql';
-import { editUserMutation } from '../../urql/mutations/editUserMutation';
+import { editUserMutation } from '@shared/urql/mutations/editUserMutation';
 import type { MutationEditUserArgs } from '../../gql/graphql';
 import {
   ActionIcon,

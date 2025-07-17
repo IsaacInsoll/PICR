@@ -1,9 +1,9 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { SafeAreaView, View } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { fileCache } from '@/src/helpers/folderCache';
 import { useQuery } from 'urql';
-import { viewFileQuery } from '@frontend/urql/queries/viewFileQuery';
+import { viewFileQuery } from '@shared/urql/queries/viewFileQuery';
 import { PBigImage } from '@/src/components/PBigImage';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { PText } from '@/src/components/PText';

@@ -12,7 +12,7 @@ import {
   Text,
 } from '@mantine/core';
 import { Page } from './Page';
-import { taskQuery } from '../urql/queries/taskQuery';
+import { taskQuery } from '@shared/urql/queries/taskQuery';
 import { useRequery } from '../hooks/useRequery';
 
 export const TaskSummary = ({ folderId }: { folderId: string }) => {

@@ -6,7 +6,7 @@ import {
   TbFolders,
 } from 'react-icons/tb';
 import { useQuery } from 'urql';
-import { readAllFoldersQuery } from '../urql/queries/readAllFoldersQuery';
+import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { buildTreeArray, treeNode } from '../helpers/buildTreeArray';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { MinimalFolder } from '../../types';

@@ -9,7 +9,7 @@ import {
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useMe } from '@/src/hooks/useMe';
 import { useQuery } from 'urql';
-import { recentUsersQuery } from '@frontend/urql/queries/recentUsersQuery';
+import { recentUsersQuery } from '@shared/urql/queries/recentUsersQuery';
 import { AppAvatar } from '@/src/components/AppAvatar';
 import { AppDateDisplay } from '@/src/components/AppDateDisplay';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
@@ -19,7 +19,7 @@ import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { AppFolderLink } from '@/src/components/AppFolderLink';
 import { HeaderButton } from '@react-navigation/elements';
-import { readAllFoldersQuery } from '@frontend/urql/queries/readAllFoldersQuery';
+import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { FolderFragmentFragment, FoldersSortType } from '@frontend/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';
 import { useHostname } from '@/src/hooks/useHostname';

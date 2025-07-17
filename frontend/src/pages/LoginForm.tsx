@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation } from 'urql';
 import { useSetAtom } from 'jotai/index';
 import { authKeyAtom } from '../atoms/authAtom';
-import { loginMutation } from '../urql/mutations/loginMutation';
+import { loginMutation } from '@shared/urql/mutations/loginMutation';
 import {
   Button,
   Center,
