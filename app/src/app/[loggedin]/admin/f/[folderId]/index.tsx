@@ -7,7 +7,7 @@ import { usePathname } from 'expo-router/build/hooks';
 import { Suspense, useState } from 'react';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { useQuery } from 'urql';
-import { File, Folder, Image } from '@frontend/gql/graphql';
+import { File, Folder, Image } from '@shared/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';
 import { AppFileLink, AppFolderLink } from '@/src/components/AppFolderLink';
 import { folderCache } from '@/src/helpers/folderCache';

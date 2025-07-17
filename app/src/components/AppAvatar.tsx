@@ -1,5 +1,5 @@
 import { Avatar } from '@kolking/react-native-avatar';
-import { User } from '@frontend/gql/graphql';
+import { User } from '@shared/gql/graphql';
 import { Props } from '@kolking/react-native-avatar/src/Avatar';
 import { getInitialsColor } from '@/src/helpers/get-initials-color';
 

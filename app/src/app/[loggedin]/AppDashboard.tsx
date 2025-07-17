@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useMe } from '@/src/hooks/useMe';
 import { useQuery } from 'urql';
 import { recentUsersQuery } from '@shared/urql/queries/recentUsersQuery';
@@ -20,7 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { AppFolderLink } from '@/src/components/AppFolderLink';
 import { HeaderButton } from '@react-navigation/elements';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
-import { FolderFragmentFragment, FoldersSortType } from '@frontend/gql/graphql';
+import { FolderFragmentFragment, FoldersSortType } from '@shared/gql/graphql';
 import { AppImage } from '@/src/components/AppImage';
 import { useHostname } from '@/src/hooks/useHostname';
 import { navBarIconProps } from '@/src/constants';

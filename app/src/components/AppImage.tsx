@@ -1,5 +1,5 @@
 import { CachedImage } from '@georstat/react-native-image-cache';
-import { File } from '@frontend/gql/graphql';
+import { File } from '@shared/gql/graphql';
 import { AllSize, ThumbnailSize } from '@frontend/helpers/thumbnailSize';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { View } from 'react-native';
