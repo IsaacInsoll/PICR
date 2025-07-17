@@ -1,13 +1,13 @@
-import {Branding} from '../../../../graphql-types';
-import {Alert, Button, Group, Modal} from '@mantine/core';
-import {BrandingForm} from './BrandingForm';
-import {useEffect, useState} from 'react';
-import {useSetAtom} from 'jotai/index';
-import {themeModeAtom} from '../../atoms/themeModeAtom';
-import {useMutation} from 'urql';
-import {DeleteIcon} from '../../PicrIcons';
-import {editBrandingMutation} from "../../../../../PICRshared/urql/fragments/EditBrandingMutation";
-import {deleteBrandingMutation} from "@shared/urql/fragments/deleteBrandingMutation";
+import { Branding } from '../../../../graphql-types';
+import { Alert, Button, Group, Modal } from '@mantine/core';
+import { BrandingForm } from './BrandingForm';
+import { useEffect, useState } from 'react';
+import { useSetAtom } from 'jotai';
+import { themeModeAtom } from '../../atoms/themeModeAtom';
+import { useMutation } from 'urql';
+import { DeleteIcon } from '../../PicrIcons';
+import { editBrandingMutation } from '@shared/urql/mutations/editBrandingMutation';
+import { deleteBrandingMutation } from '@shared/urql/mutations/deleteBrandingMutation';
 
 export const BrandingModal = ({
   branding: brandingProp,
@@ -91,4 +91,3 @@ export const BrandingModal = ({
     </Modal>
   );
 };
-
