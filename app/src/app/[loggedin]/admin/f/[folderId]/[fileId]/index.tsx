@@ -1,9 +1,8 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { SafeAreaView } from 'react-native';
+import { Image, SafeAreaView } from 'react-native';
 import { fileCache } from '@/src/helpers/folderCache';
 import { useQuery } from 'urql';
-import { viewFileQuery } from '@shared/urql/queries/viewFileQuery';
 import { PBigImage } from '@/src/components/PBigImage';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { PText } from '@/src/components/PText';
@@ -16,6 +15,13 @@ import {
 } from 'react-native-gesture-handler';
 import { useState } from 'react';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
+import {
+  ImageGallery,
+  ImageObject,
+} from '@/src/components/react-native-image-gallery';
+import { AppImage, imageURL } from '@/src/components/AppImage';
+import { CachedImage } from '@georstat/react-native-image-cache';
+import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 
 export const fileViewFullscreenAtom = atom(false);
 
@@ -33,7 +39,55 @@ export default function AppFileView() {
     query: viewFolderQuery,
     variables: { folderId },
   });
-  const file = result.data?.folder.files.find((f) => f.id == fileId);
+  const baseUrl = useLoginDetails()?.server;
+
+  const files = result.data?.folder.files;
+  const file = files.find((f) => f.id == fileId);
+
+  const images = files.map((f) => ({
+    ...f,
+    thumbUrl: baseUrl + imageURL(file, 'sm'),
+  })); //.map((f)=> {id: f.id, url: 123});
+
+  // I didn't use <AppImage> here as it does all the weird 'detect width' stuff
+  const renderCustomImage = (file: ImageObject) => {
+    return (
+      <CachedImage
+        source={baseUrl + imageURL(file, 'raw')}
+        style={{ width: '100%', height: '100%' }}
+        thumbnailSource={baseUrl + imageURL(file, 'sm')}
+      />
+    );
+  };
+
+  //this kept causing weird behavior so i'm using the default
+  // const renderCustomThumb = (image: ImageObject, index, activeIndex) => {
+  //   const selected = activeIndex === index;
+  //   return (
+  //     <CachedImage
+  //       source={baseUrl + imageURL(file, 'sm')}
+  //       style={{
+  //         width: 48,
+  //         height: 48,
+  //         borderRadius: 12,
+  //         marginRight: 10,
+  //         borderWidth: selected ? 3 : 0,
+  //         borderColor: theme.brandColor, //TODO: the folders brand color
+  //         // opacity: selected ? 1 : 0.3,
+  //       }}
+  //       resizeMode="cover"
+  //       // thumbnailSource={baseUrl + imageURL(file, 'sm')}
+  //       // activeIndex === index
+  //       //   ? [
+  //       //       styles.thumb,
+  //       //       styles.activeThumb,
+  //       //       { borderColor: thumbColor },
+  //       //       { width: thumbSize, height: thumbSize },
+  //       //     ]
+  //       //   : [styles.thumb, { width: thumbSize, height: thumbSize }]
+  //     />
+  //   );
+  // };
 
   return (
     <>
@@ -51,7 +105,16 @@ export default function AppFileView() {
         }}
       >
         {/*<AppImage file={file} size="lg" width={width} key={file.id} />*/}
-        <PaginatedBigImage file={file} />
+        <ImageGallery
+          close={() => {}}
+          isOpen={true}
+          images={images}
+          renderCustomImage={renderCustomImage}
+          // TODO: thumbColor folder brand color
+          hideThumbs={fullScreen}
+        />
+
+        {/*<PaginatedBigImage file={file} />*/}
         <FileBottomBar file={file} />
         {/*<Suspense fallback={<AppLoadingIndicator />}>*/}
         {/*  <FolderBody folderId={folderId} key={folderId} />*/}
