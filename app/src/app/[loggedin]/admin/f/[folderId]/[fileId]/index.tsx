@@ -15,16 +15,25 @@ import {
   GestureDetector,
 } from 'react-native-gesture-handler';
 import { useState } from 'react';
+import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 
 export const fileViewFullscreenAtom = atom(false);
 
 export default function AppFileView() {
   const theme = useAppTheme();
   const [fullScreen, setFullScreen] = useAtom(fileViewFullscreenAtom);
-  const { fileId } = useLocalSearchParams<{ fileId: string }>();
+  const { folderId, fileId } = useLocalSearchParams<{
+    fileId: string;
+    folderId: string;
+  }>();
   const skeleton = fileCache[fileId];
-  const [result] = useQuery({ query: viewFileQuery, variables: { fileId } });
-  const file = result.data?.file;
+
+  // We query folder instead of file because (a) probably already loaded and (b) we will be swiping between images in this gallery
+  const [result] = useQuery({
+    query: viewFolderQuery,
+    variables: { folderId },
+  });
+  const file = result.data?.folder.files.find((f) => f.id == fileId);
 
   return (
     <>
