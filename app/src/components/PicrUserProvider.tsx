@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useMemo } from 'react';
 import {
   getLoginDetailsFromLocalDevice,
   useLoginDetails,
+  useSetLoggedOut,
   useSetLoginDetails,
 } from '@/src/hooks/useLoginDetails';
 import { Redirect } from 'expo-router';
@@ -9,6 +10,7 @@ import { urqlClient } from '@/src/urqlClient';
 import { Provider } from 'urql';
 import { PText } from '@/src/components/PText';
 import { atom, useAtom } from 'jotai';
+import { appLogin } from '@/src/helpers/appLogin';
 
 const initCompleteAtom = atom(false); // we only want this once system-wide, not per instance of this provider
 
@@ -16,6 +18,7 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
   const [initComplete, setInitComplete] = useAtom(initCompleteAtom);
   const me = useLoginDetails();
   const setLogin = useSetLoginDetails();
+  const logout = useSetLoggedOut();
 
   // console.log('PicrUserProvider: ' + me?.username + ' ' + pathName);
 
@@ -25,6 +28,15 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
     getLoginDetailsFromLocalDevice().then((login) => {
       if (login) {
         setLogin(login);
+        //this could be a super old token, so lets trigger a non-inline refresh just in case
+        appLogin(login).then(({ token, error }) => {
+          if (token) {
+            console.log('[PicrUserProvider] Updating token');
+            setLogin({ ...login, token });
+          } else {
+            logout();
+          }
+        });
       }
       setInitComplete(true);
     });
