@@ -19,13 +19,12 @@ import * as WebBrowser from 'expo-web-browser';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useKeyboardVisible } from '@/src/hooks/useKeyboardVisible';
-import { loginMutation } from '@shared/urql/mutations/loginMutation';
 import { z, ZodType } from 'zod';
 import { useState } from 'react';
 import { LoginDetails, useSetLoginDetails } from '@/src/hooks/useLoginDetails';
 import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
 import { PTitle } from '@/src/components/PTitle';
-import { picrUrqlClient } from '@shared/urql/urqlClient';
+import { appLogin } from '@/src/helpers/appLogin';
 
 const loginFormSchema: ZodType<LoginDetails> = z.object({
   server: z.string().url(),
@@ -82,27 +81,20 @@ const LoginForm = () => {
 
   const onSubmit = async (data: LoginDetails) => {
     setStep('loading');
-    const { server, username, password } = data;
-
-    const newClient = picrUrqlClient(server, {});
-    // TODO: Fix this await mutation crashing on iOS 16.4
-    // No errors in console, so I just set minimum target to 17 for now :(
-    const result = await newClient
-      .mutation(loginMutation, { username, password })
-      .toPromise();
-    const token = result?.data?.auth;
+    const { token, error } = await appLogin(data);
     if (token) {
       setStep('success');
       console.log('[login/index.tsx] redirecting to dashboard??');
       router.replace('/');
       setLogin({ ...data, token });
     } else {
-      setStep(result.error ? 'networkError' : 'authError');
-      const message = result.error
-        ? 'Unable to connect to server: ' + result.error.message
-        : 'Incorrect username or password';
+      setStep(
+        error == 'Incorrect username or password'
+          ? 'authError'
+          : 'networkError',
+      );
       {
-        Alert.alert('Login Failed', message, [
+        Alert.alert('Login Failed', error, [
           {
             text: 'Cancel',
             onPress: () => setStep('ready'),

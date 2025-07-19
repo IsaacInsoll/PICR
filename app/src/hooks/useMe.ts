@@ -8,6 +8,7 @@ export const useMe = (): Pick<
   'id' | 'name' | 'folderId' | 'commentPermissions'
 > => {
   const [result] = useQuery({ query: meQuery });
+  // if result.error == No Permissions then your token expired, reauth?
   const data = result.data;
   if (!data) return null;
   const me = {
