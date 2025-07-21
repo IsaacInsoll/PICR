@@ -1,4 +1,4 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import {
   SafeAreaView,
@@ -8,22 +8,30 @@ import {
 } from 'react-native';
 import { addToFileCache, fileCache } from '@/src/helpers/folderCache';
 import { useQuery } from 'urql';
-import { PBigImage } from '@/src/components/PBigImage';
+import { PBigImage, useLocalImageUrl } from '@/src/components/PBigImage';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { PText } from '@/src/components/PText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as MediaLibrary from 'expo-media-library';
 import { PView } from '@/src/components/PView';
 import Animated, {
+  Easing,
   interpolate,
   interpolateColor,
   useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
 import { useCallback, useState } from 'react';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { useAppFolderLink } from '@/src/components/AppFolderLink';
 import { BlurView } from 'expo-blur';
-
+import { useHostname } from '@/src/hooks/useHostname';
+import { HeaderButton } from '@react-navigation/elements';
+import { Ionicons } from '@expo/vector-icons';
+import { navBarIconProps } from '@/src/constants';
+import { File } from '@shared/gql/graphql';
 export const fileViewFullscreenAtom = atom(false);
 
 interface ItemProps {
@@ -56,6 +64,9 @@ export default function AppFileView() {
 
   const { width } = useWindowDimensions();
   const [isZoomed, setIsZoomed] = useState(false);
+
+  const flash = useSharedValue(0);
+
   const customAnimation = useCallback(
     (value: number) => {
       'worklet';
@@ -78,6 +89,18 @@ export default function AppFileView() {
       <Stack.Screen
         options={{
           headerTitle: skeleton?.name ?? 'Loading File...',
+          headerRight: () => (
+            <AppDownloadFileButton
+              file={file}
+              onPress={() => {
+                flash.value = 0.8;
+                flash.value = withTiming(0, {
+                  duration: 300,
+                  easing: Easing.out(Easing.circle),
+                });
+              }}
+            />
+          ),
           // headerShown: !fullScreen, //toggling this causes ugly image jump behaviour
         }}
       />
@@ -117,6 +140,13 @@ export default function AppFileView() {
           windowSize={5} // lazy loading
         />
         <FileBottomBar file={file} />
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: '#fff', zIndex: 1000, opacity: flash },
+          ]}
+        />
         {/*<Suspense fallback={<AppLoadingIndicator />}>*/}
         {/*  <FolderBody folderId={folderId} key={folderId} />*/}
         {/*</Suspense>*/}
@@ -181,5 +211,35 @@ const CustomItem = ({
         style={[StyleSheet.absoluteFill, maskStyle]}
       />
     </View>
+  );
+};
+
+const AppDownloadFileButton = ({
+  file,
+  onPress,
+}: {
+  file: File;
+  onPress?: () => void;
+}) => {
+  const theme = useAppTheme();
+  const uri = useLocalImageUrl(file, 'raw');
+  const onClick = () => {
+    if (onPress) onPress();
+    try {
+      MediaLibrary.saveToLibraryAsync(uri).then(() => console.log('Saved!!'));
+    } catch (e) {
+      console.log('error saving file');
+      console.log(e);
+    }
+  };
+  return (
+    <HeaderButton onPress={onClick}>
+      <Ionicons
+        name="download"
+        size={25}
+        color={theme.brandColor}
+        style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
+      />
+    </HeaderButton>
   );
 };

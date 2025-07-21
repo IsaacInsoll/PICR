@@ -45,6 +45,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         backgroundColor: '#ffffff',
       },
     ],
+    [
+      'expo-media-library',
+      {
+        photosPermission: 'Allow PICR to access your photos.',
+        savePhotosPermission: 'Allow PICR to save photos.',
+        isAccessMediaLocationEnabled: true,
+      },
+    ],
     'expo-secure-store',
     'expo-web-browser',
     'expo-font',
