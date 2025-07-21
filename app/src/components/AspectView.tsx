@@ -16,7 +16,7 @@ export const AspectView = ({
   const [viewWidth, setViewWidth] = useState(0);
   const width = widthProp ?? viewWidth;
   const height = width / (ratio ?? 1);
-  console.log([width, height, ratio]);
+  // console.log([width, height, ratio]);
   return (
     <View
       onLayout={(e) => {

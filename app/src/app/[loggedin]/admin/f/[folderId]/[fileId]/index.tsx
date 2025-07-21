@@ -1,31 +1,48 @@
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { SafeAreaView } from 'react-native';
-import { fileCache } from '@/src/helpers/folderCache';
+import {
+  SafeAreaView,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import { addToFileCache, fileCache } from '@/src/helpers/folderCache';
 import { useQuery } from 'urql';
-import { viewFileQuery } from '@shared/urql/queries/viewFileQuery';
 import { PBigImage } from '@/src/components/PBigImage';
 import { atom, useAtom, useAtomValue } from 'jotai';
 import { PText } from '@/src/components/PText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PView } from '@/src/components/PView';
-import {
-  Directions,
-  Gesture,
-  GestureDetector,
-} from 'react-native-gesture-handler';
-import { useState } from 'react';
+import Animated, {
+  interpolate,
+  interpolateColor,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+import Carousel from 'react-native-reanimated-carousel';
+import { useCallback, useState } from 'react';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
+import { useAppFolderLink } from '@/src/components/AppFolderLink';
+import { BlurView } from 'expo-blur';
 
 export const fileViewFullscreenAtom = atom(false);
 
+interface ItemProps {
+  index: number;
+  animationValue: Animated.SharedValue<number>;
+  setIsZoomed: (value: boolean) => void;
+}
+
 export default function AppFileView() {
   const theme = useAppTheme();
+  const safe = useSafeAreaInsets();
+
+  const router = useRouter();
   const [fullScreen, setFullScreen] = useAtom(fileViewFullscreenAtom);
   const { folderId, fileId } = useLocalSearchParams<{
     fileId: string;
     folderId: string;
   }>();
+  const folderLink = useAppFolderLink({ id: folderId });
   const skeleton = fileCache[fileId];
 
   // We query folder instead of file because (a) probably already loaded and (b) we will be swiping between images in this gallery
@@ -33,25 +50,72 @@ export default function AppFileView() {
     query: viewFolderQuery,
     variables: { folderId },
   });
-  const file = result.data?.folder.files.find((f) => f.id == fileId);
+  const files = result.data?.folder.files;
+  const file = files?.find((f) => f.id == fileId);
+  const fileIndex = files?.findIndex((f) => f.id == fileId);
+
+  const { width } = useWindowDimensions();
+  const [isZoomed, setIsZoomed] = useState(false);
+  const customAnimation = useCallback(
+    (value: number) => {
+      'worklet';
+
+      const zIndex = Math.round(interpolate(value, [-1, 0, 1], [10, 20, 30]));
+      const translateX = Math.round(
+        interpolate(value, [-2, 0, 1], [-width, 0, width]),
+      );
+
+      return {
+        transform: [{ translateX }],
+        zIndex,
+      };
+    },
+    [width],
+  );
 
   return (
     <>
       <Stack.Screen
         options={{
           headerTitle: skeleton?.name ?? 'Loading File...',
-          headerShown: !fullScreen,
+          // headerShown: !fullScreen, //toggling this causes ugly image jump behaviour
         }}
       />
       <SafeAreaView
         style={{
-          backgroundColor: theme.tabColor, //'#000', // theme.backgroundColor we want absolute black, not dark grey
-          flex: 1,
-          gap: 16,
+          flexGrow: 1,
+          marginBottom: safe.bottom,
+          backgroundColor: theme.tabColor,
         }}
       >
-        {/*<AppImage file={file} size="lg" width={width} key={file.id} />*/}
-        <PaginatedBigImage file={file} />
+        <Carousel
+          loop={false}
+          // autoPlay={!isZoomed}
+          defaultIndex={fileIndex}
+          style={{ flexGrow: 1 }}
+          width={width}
+          data={files}
+          renderItem={({ index, animationValue }) => {
+            return (
+              <CustomItem
+                key={index}
+                file={files[index]}
+                index={index}
+                animationValue={animationValue}
+                setIsZoomed={setIsZoomed}
+              />
+            );
+          }}
+          customAnimation={customAnimation}
+          enabled={!isZoomed}
+          onSnapToItem={(index) => {
+            const f = files[index];
+            addToFileCache(f);
+            router.setParams({ folderId, fileId: f.id });
+          }}
+          scrollAnimationDuration={150}
+          windowSize={5} // lazy loading
+        />
         <FileBottomBar file={file} />
         {/*<Suspense fallback={<AppLoadingIndicator />}>*/}
         {/*  <FolderBody folderId={folderId} key={folderId} />*/}
@@ -62,46 +126,60 @@ export default function AppFileView() {
   );
 }
 
-const PaginatedBigImage = ({ file }) => {
-  const [transform, setTransform] = useState(0);
-  const flingLeft = Gesture.Fling()
-    .direction(Directions.LEFT)
-    .onEnd((evt) => {
-      console.log('fling left');
-    });
-  const flingRight = Gesture.Fling()
-    .direction(Directions.RIGHT)
-    .onEnd((evt) => {
-      console.log('fling right');
-    });
-
-  const gestures = Gesture.Race(flingLeft, flingRight);
-  return (
-    <GestureDetector gesture={gestures}>
-      <PBigImage file={file} />
-    </GestureDetector>
-  );
-};
-
 const FileBottomBar = ({ file }) => {
   const theme = useAppTheme();
   const fullScreen = useAtomValue(fileViewFullscreenAtom);
-  const safe = useSafeAreaInsets();
+  // const safe = useSafeAreaInsets();
   if (fullScreen) return null;
   return (
-    <PView
+    <BlurView
+      intensity={90}
+      tint="dark"
+      experimentalBlurMethod="dimezisBlurView"
       style={{
         position: 'absolute',
-        bottom: safe.bottom,
+        // bottom: safe.bottom,
+        bottom: 0,
         left: 0,
         right: 0,
         padding: 16,
-        backgroundColor: theme.backgroundColor,
+        // backgroundColor: theme.backgroundColor,
       }}
     >
       <PText variant="code">
         Viewing file {file.id} with ratio {file.imageRatio}
       </PText>
-    </PView>
+    </BlurView>
+  );
+};
+
+const CustomItem = ({
+  index,
+  file,
+  animationValue,
+  setIsZoomed,
+}: ItemProps) => {
+  console.log('CustomItem rendering' + index);
+  const maskStyle = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(
+      animationValue.value,
+      [-1, 0, 1],
+      ['#00000066', 'transparent', '#00000066'],
+    );
+
+    return {
+      backgroundColor,
+    };
+  }, [animationValue]);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <PBigImage file={file} setIsZoomed={setIsZoomed} />
+      <Animated.View
+        pointerEvents="none"
+        // style={[StyleSheet.absoluteFill]}
+        style={[StyleSheet.absoluteFill, maskStyle]}
+      />
+    </View>
   );
 };
