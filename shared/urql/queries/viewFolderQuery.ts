@@ -1,4 +1,4 @@
-import {gql} from "../gql.js";
+import {gql} from "../gql";
 
 export const viewFolderQuery = gql(/*GraphQL*/ `
     query ViewFolder($folderId: ID!) {

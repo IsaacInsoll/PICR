@@ -1,4 +1,4 @@
-import {gql} from "../gql.js";
+import {gql} from "../gql";
 
 export const generateThumbnailsQuery = gql(/*GraphQL*/ `
     mutation generateThumbnailsQuery($folderId: ID!) {

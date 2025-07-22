@@ -1,4 +1,4 @@
-import {gql} from "../gql.js";
+import {gql} from "../gql";
 
 export const taskQuery = gql(/* GraphQL */ `
   query TaskQuery($folderId: ID!) {

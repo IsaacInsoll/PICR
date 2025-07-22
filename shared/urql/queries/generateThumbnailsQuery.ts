@@ -1,4 +1,4 @@
-import {gql} from "../gql.js";
+import {gql} from "../gql";
 
 const generateThumbnailsQuery = gql(/* GraphQL*/ `
     query generateThumbnailsStats($folderId: ID!) {

@@ -1,4 +1,4 @@
-import {gql} from "../gql.js";
+import {gql} from "../gql";
 
 const treeSizeFragment = gql(/* GraphQL */ `
     fragment TreeSizeFragment on Folder {

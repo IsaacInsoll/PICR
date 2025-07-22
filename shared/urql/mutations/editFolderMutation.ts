@@ -1,4 +1,4 @@
-import {gql} from "../gql.js";
+import {gql} from "../gql";
 
 export const editFolderMutation = gql(/* GraphQL */ `
     mutation editFolder($folderId: ID!, $heroImageId: ID!) {

@@ -1,4 +1,4 @@
-import {gql} from "../gql.js";
+import {gql} from "../gql";
 
 export const viewUserQuery = gql(/*GraphQL*/ `
     query ViewUserQuery($id: ID!) {

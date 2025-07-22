@@ -1,4 +1,4 @@
-import {gql} from "../gql.js";
+import {gql} from "../gql";
 
 const imageMetadataFragment = gql(/* GraphQL */ `
   fragment ImageMetadataFragment on Image {

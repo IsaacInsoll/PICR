@@ -35,7 +35,7 @@
     "readable-fractions": "^0.1.1",
     "typescript": "^5.6.0-beta",
     "ua-parser-js": "^2.0.0",
-    "urql": "^4.0.6",
+    "urql": "^4.2.2",
     "victory": "^37.3.5",
     "vite": "^6.3.3",
     "vite-plugin-tsconfig-paths": "^1.4.1",

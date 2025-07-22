@@ -1,4 +1,4 @@
-import {gql} from "../gql.js";
+import {gql} from "../gql";
 
 export const meQuery = gql(/* GraphQL */ `
   query MeQuery {

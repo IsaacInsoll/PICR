@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@frontend/*": ["../frontend/src/*"],
+      "@app/*": ["../app/*"]
+    },
+
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+  ]
+}
