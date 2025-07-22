@@ -1,8 +1,15 @@
 import { ExpoConfig, ConfigContext } from 'expo/config';
 
+const IS_DEV = process.env.APP_VARIANT === 'development';
+
+const appName = 'PICR' + (IS_DEV ? ' [Dev]' : '');
+const bundle = 'com.isaacinsoll.picr' + (IS_DEV ? '.dev' : '');
+
+console.log(IS_DEV ? 'Dev Props' : 'Prod Props');
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: 'PICR',
+  name: appName,
   slug: 'picr',
   version: '1.0.0',
   orientation: 'portrait',
@@ -12,7 +19,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
-    bundleIdentifier: 'com.isaacinsoll.picr',
+    bundleIdentifier: bundle,
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
     },
@@ -27,7 +34,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: '#ffffff',
     },
     edgeToEdgeEnabled: true,
-    package: 'com.isaacinsoll.picr',
+    package: bundle,
   },
   web: {
     bundler: 'metro',

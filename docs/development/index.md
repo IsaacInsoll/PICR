@@ -17,16 +17,21 @@
 
 > Run from `app` folder. You can replace `ios` with `android` for all commands 
 
-| Command                                       | Description                                                   | When to use                                    |
-|-----------------------------------------------|---------------------------------------------------------------|------------------------------------------------|
-| `npx expo start`                              | Run Expo app (iOS / android)                                  | Used when developing mobile app                |
-| `npx expo export --platform ios`              | Build JS Bundle                                               | Test for JS compile issues like bad imports    |
-| `npx expo run:ios`                            | build and run Development Build                               | Used for most mobile dev                       |
-| `npx expo run:ios --configuration Release -d` | deploy release version to local device                        | Get 'production' (not dev) app onto device     |
-| `npx expo run:android --variant release`      | deploy release version to local device                        | Get 'production' (not dev) app onto device     |
-| `npx expo start --no-dev --minify`            | run dev server but with 'production' code                     | Troubleshoot errors that only happen on prod   |
-| `npx uri-scheme open picr://<some-url> --ios` | open deep link in simulator                                   | Used for manually testing "open in PICR" links |
-| `eas build` then `eas submit`                 | send to EAS for remote building then submission to app stores | Equivilent of 'release' but for expo app       |
+| Command                                       | Description                                                   | When to use                                                     |
+|-----------------------------------------------|---------------------------------------------------------------|-----------------------------------------------------------------|
+| `npx expo start`                              | Run Expo app (iOS / android)                                  | Used when developing mobile app                                 |
+| *Local Development Builds*                    |
+| `npx expo run:ios`                            | build and run Development Build                               | Used for most mobile dev                                        |
+| `APPVARIANT=development npx expo run:ios`     | build and run Development Build with separate package name    | So you can have production and dev builds coexist on one device |
+| *Local Release Builds Builds*                 |
+| `npx expo run:ios --configuration Release -d` | deploy release version to local device                        | Get 'production' (not dev) app onto device                      |
+| `npx expo run:android --variant release`      | deploy release version to local device                        | Get 'production' (not dev) app onto device                      |
+| *Troubleshooting*                             |
+| `npx expo export --platform ios`              | Build JS Bundle                                               | Test for JS compile issues like bad imports                     |
+| `npx expo start --no-dev --minify`            | run dev server but with 'production' code                     | Troubleshoot errors that only happen on prod                    |
+| `npx uri-scheme open picr://<some-url> --ios` | open deep link in simulator                                   | Used for manually testing "open in PICR" links                  |
+| *Releases*                                    |
+| `eas build` then `eas submit`                 | send to EAS for remote building then submission to app stores | Equivilent of 'release' but for expo app                        |
 
 
 ## Build Process
