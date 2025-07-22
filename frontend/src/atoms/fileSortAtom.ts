@@ -1,4 +1,4 @@
-import { atom } from 'jotai/index';
+import { atom } from 'jotai';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 import { atomWithHash } from 'jotai-location';
 
@@ -28,7 +28,6 @@ export const fileSortAtom = atom<FileSort>(
     return { type, direction };
   },
   (get, set, args: FileSort) => {
-    console.log(args);
     set(
       fileSortHashAtom,
       fileSortEncoding[args.type] + (args.direction == 'Asc' ? 'a' : ''),

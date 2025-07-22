@@ -14,7 +14,6 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n    mutation DeleteBrandingMutation($folderId: ID!) {\n        deleteBranding(folderId: $folderId) {\n            ...FolderFragment\n        }\n    }\n": typeof types.DeleteBrandingMutationDocument,
     "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    flag\n    rating\n    totalComments\n    latestComment\n    folderId\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": typeof types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    __typename\n    name\n    parentId\n    permissions\n    folderLastModified\n    parents {\n      id\n      name\n    }\n    branding {\n      id\n      folderId\n      mode\n      primaryColor\n      logoUrl\n      folder {\n        id\n        name\n      }\n    }\n    ...HeroImageFragment\n  }\n": typeof types.FolderFragmentFragmentDoc,
     "\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n    }\n  }\n": typeof types.HeroImageFragmentFragmentDoc,
@@ -25,7 +24,9 @@ type Documents = {
     "\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    commentPermissions\n    gravatar\n    ntfy\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n": typeof types.UserFragmentFragmentDoc,
     "\n  fragment VideoMetadataFragment on Video {\n    ... on Video {\n      metadata {\n        Bitrate\n        Duration\n        Format\n        VideoCodec\n        VideoCodecDescription\n        Width\n        Height\n        Framerate\n        AudioCodec\n        AudioCodecDescription\n      }\n    }\n  }\n": typeof types.VideoMetadataFragmentFragmentDoc,
     "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n": typeof types.AddCommentDocument,
+    "\n    mutation DeleteBrandingMutation($folderId: ID!) {\n        deleteBranding(folderId: $folderId) {\n            ...FolderFragment\n        }\n    }\n": typeof types.DeleteBrandingMutationDocument,
     "\n  mutation EditAdminUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $password: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n    $ntfy: String\n  ) {\n    editAdminUser(\n      id: $id\n      name: $name\n      username: $username\n      password: $password\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n      ntfy: $ntfy\n    ) {\n      ...UserFragment\n    }\n  }\n": typeof types.EditAdminUserMutationDocument,
+    "\n  mutation EditBrandingMutation(\n    $folderId: ID!\n    $mode: ThemeMode\n    $primaryColor: PrimaryColor\n    $logoUrl: String\n  ) {\n    editBranding(\n      folderId: $folderId\n      mode: $mode\n      primaryColor: $primaryColor\n      logoUrl: $logoUrl\n    ) {\n      ...FolderFragment\n    }\n  }\n": typeof types.EditBrandingMutationDocument,
     "\n    mutation editFolder($folderId: ID!, $heroImageId: ID!) {\n        editFolder(folderId: $folderId, heroImageId: $heroImageId) {\n            ...FolderFragment\n            ...HeroImageFragment\n        }\n    }\n": typeof types.EditFolderDocument,
     "\n  mutation EditUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      username: $username\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n": typeof types.EditUserMutationDocument,
     "\n    mutation generateThumbnailsQuery($folderId: ID!) {\n        generateThumbnails(folderId: $folderId)\n    }": typeof types.GenerateThumbnailsQueryDocument,
@@ -49,7 +50,6 @@ type Documents = {
     "\n    query ViewUserQuery($id: ID!) {\n        user(id:$id) {\n            ...UserFragment\n            \n        }\n    }\n": typeof types.ViewUserQueryDocument,
 };
 const documents: Documents = {
-    "\n    mutation DeleteBrandingMutation($folderId: ID!) {\n        deleteBranding(folderId: $folderId) {\n            ...FolderFragment\n        }\n    }\n": types.DeleteBrandingMutationDocument,
     "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    flag\n    rating\n    totalComments\n    latestComment\n    folderId\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    __typename\n    name\n    parentId\n    permissions\n    folderLastModified\n    parents {\n      id\n      name\n    }\n    branding {\n      id\n      folderId\n      mode\n      primaryColor\n      logoUrl\n      folder {\n        id\n        name\n      }\n    }\n    ...HeroImageFragment\n  }\n": types.FolderFragmentFragmentDoc,
     "\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n    }\n  }\n": types.HeroImageFragmentFragmentDoc,
@@ -60,7 +60,9 @@ const documents: Documents = {
     "\n  fragment UserFragment on User {\n    id\n    name\n    username\n    enabled\n    uuid\n    folderId\n    commentPermissions\n    gravatar\n    ntfy\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n    }\n  }\n": types.UserFragmentFragmentDoc,
     "\n  fragment VideoMetadataFragment on Video {\n    ... on Video {\n      metadata {\n        Bitrate\n        Duration\n        Format\n        VideoCodec\n        VideoCodecDescription\n        Width\n        Height\n        Framerate\n        AudioCodec\n        AudioCodecDescription\n      }\n    }\n  }\n": types.VideoMetadataFragmentFragmentDoc,
     "\n  mutation addComment(\n    $id: ID!\n    $rating: Int\n    $flag: FileFlag\n    $comment: String\n    $nickName: String\n  ) {\n    addComment(\n      id: $id\n      rating: $rating\n      flag: $flag\n      comment: $comment\n      nickName: $nickName\n    ) {\n      ...FileFragment\n    }\n  }\n": types.AddCommentDocument,
+    "\n    mutation DeleteBrandingMutation($folderId: ID!) {\n        deleteBranding(folderId: $folderId) {\n            ...FolderFragment\n        }\n    }\n": types.DeleteBrandingMutationDocument,
     "\n  mutation EditAdminUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $password: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n    $ntfy: String\n  ) {\n    editAdminUser(\n      id: $id\n      name: $name\n      username: $username\n      password: $password\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n      ntfy: $ntfy\n    ) {\n      ...UserFragment\n    }\n  }\n": types.EditAdminUserMutationDocument,
+    "\n  mutation EditBrandingMutation(\n    $folderId: ID!\n    $mode: ThemeMode\n    $primaryColor: PrimaryColor\n    $logoUrl: String\n  ) {\n    editBranding(\n      folderId: $folderId\n      mode: $mode\n      primaryColor: $primaryColor\n      logoUrl: $logoUrl\n    ) {\n      ...FolderFragment\n    }\n  }\n": types.EditBrandingMutationDocument,
     "\n    mutation editFolder($folderId: ID!, $heroImageId: ID!) {\n        editFolder(folderId: $folderId, heroImageId: $heroImageId) {\n            ...FolderFragment\n            ...HeroImageFragment\n        }\n    }\n": types.EditFolderDocument,
     "\n  mutation EditUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      username: $username\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n    ) {\n      ...UserFragment\n    }\n  }\n": types.EditUserMutationDocument,
     "\n    mutation generateThumbnailsQuery($folderId: ID!) {\n        generateThumbnails(folderId: $folderId)\n    }": types.GenerateThumbnailsQueryDocument,
@@ -98,10 +100,6 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n    mutation DeleteBrandingMutation($folderId: ID!) {\n        deleteBranding(folderId: $folderId) {\n            ...FolderFragment\n        }\n    }\n"): (typeof documents)["\n    mutation DeleteBrandingMutation($folderId: ID!) {\n        deleteBranding(folderId: $folderId) {\n            ...FolderFragment\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -145,7 +143,15 @@ export function graphql(source: "\n  mutation addComment(\n    $id: ID!\n    $ra
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n    mutation DeleteBrandingMutation($folderId: ID!) {\n        deleteBranding(folderId: $folderId) {\n            ...FolderFragment\n        }\n    }\n"): (typeof documents)["\n    mutation DeleteBrandingMutation($folderId: ID!) {\n        deleteBranding(folderId: $folderId) {\n            ...FolderFragment\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation EditAdminUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $password: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n    $ntfy: String\n  ) {\n    editAdminUser(\n      id: $id\n      name: $name\n      username: $username\n      password: $password\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n      ntfy: $ntfy\n    ) {\n      ...UserFragment\n    }\n  }\n"): (typeof documents)["\n  mutation EditAdminUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $password: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n    $ntfy: String\n  ) {\n    editAdminUser(\n      id: $id\n      name: $name\n      username: $username\n      password: $password\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n      ntfy: $ntfy\n    ) {\n      ...UserFragment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation EditBrandingMutation(\n    $folderId: ID!\n    $mode: ThemeMode\n    $primaryColor: PrimaryColor\n    $logoUrl: String\n  ) {\n    editBranding(\n      folderId: $folderId\n      mode: $mode\n      primaryColor: $primaryColor\n      logoUrl: $logoUrl\n    ) {\n      ...FolderFragment\n    }\n  }\n"): (typeof documents)["\n  mutation EditBrandingMutation(\n    $folderId: ID!\n    $mode: ThemeMode\n    $primaryColor: PrimaryColor\n    $logoUrl: String\n  ) {\n    editBranding(\n      folderId: $folderId\n      mode: $mode\n      primaryColor: $primaryColor\n      logoUrl: $logoUrl\n    ) {\n      ...FolderFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -16,7 +16,7 @@ const config: CodegenConfig = {
     'shared/urql/graphql.schema.json': {
       plugins: ['introspection'],
     },
-    // `schema.graphql` for phpStorm GQL plugin to auto complete queries, consider moving to top (server) folder
+    // `schema.graphql` for phpStorm GQL plugin to auto complete queries
     './schema.graphql': {
       schema: 'http://localhost:6900/graphql',
       plugins: ['schema-ast'],
