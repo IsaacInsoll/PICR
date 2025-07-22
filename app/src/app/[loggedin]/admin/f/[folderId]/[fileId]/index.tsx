@@ -1,4 +1,4 @@
-import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import {
   SafeAreaView,
@@ -9,11 +9,10 @@ import {
 import { addToFileCache, fileCache } from '@/src/helpers/folderCache';
 import { useQuery } from 'urql';
 import { PBigImage, useLocalImageUrl } from '@/src/components/PBigImage';
-import { atom, useAtom, useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { PText } from '@/src/components/PText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as MediaLibrary from 'expo-media-library';
-import { PView } from '@/src/components/PView';
 import Animated, {
   Easing,
   interpolate,
@@ -27,12 +26,11 @@ import { useCallback, useState } from 'react';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { useAppFolderLink } from '@/src/components/AppFolderLink';
 import { BlurView } from 'expo-blur';
-import { useHostname } from '@/src/hooks/useHostname';
 import { HeaderButton } from '@react-navigation/elements';
 import { Ionicons } from '@expo/vector-icons';
 import { navBarIconProps } from '@/src/constants';
 import { File } from '@shared/gql/graphql';
-export const fileViewFullscreenAtom = atom(false);
+import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 
 interface ItemProps {
   index: number;

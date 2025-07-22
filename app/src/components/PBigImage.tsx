@@ -7,10 +7,10 @@ import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { Image as ExpoImage } from 'expo-image';
 import { imageURL } from '@/src/components/AppImage';
 import { Platform, StyleSheet, ViewStyle } from 'react-native';
-import { fileViewFullscreenAtom } from '@/src/app/[loggedin]/admin/f/[folderId]/[fileId]';
 import { useAtom } from 'jotai';
 import { AllSize } from '@frontend/helpers/thumbnailSize';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
+import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 
 export const PBigImage = memo(
   ({

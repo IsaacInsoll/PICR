@@ -21,7 +21,7 @@ export const AspectView = ({
     <View
       onLayout={(e) => {
         const ww = e.nativeEvent.layout.width;
-        console.log('ww', ww);
+        // console.log('ww', ww);
         if (!widthProp && ww != viewWidth) setViewWidth(ww);
       }}
       style={{ height, width: widthProp }}
