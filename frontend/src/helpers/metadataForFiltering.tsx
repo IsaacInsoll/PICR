@@ -1,6 +1,6 @@
 import { MinimalFile } from '../../types';
 import { uniq } from 'lodash';
-import { MetadataSummary } from '../gql/graphql';
+import { MetadataSummary } from '@shared/gql/graphql';
 
 export type MetadataOptionsForFiltering = Partial<
   Record<keyof MetadataSummary, (string | number)[]>

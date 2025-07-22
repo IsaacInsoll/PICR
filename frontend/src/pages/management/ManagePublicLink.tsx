@@ -3,7 +3,7 @@ import { randomString } from '../../helpers/randomString';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import { editUserMutation } from '@shared/urql/mutations/editUserMutation';
-import type { MutationEditUserArgs } from '../../gql/graphql';
+import type { MutationEditUserArgs } from '@shared/gql/graphql';
 import {
   ActionIcon,
   Button,

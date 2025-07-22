@@ -4,8 +4,8 @@ import { MdOutlineCameraRoll } from 'react-icons/md';
 import {
   ImageMetadataSummary,
   VideoMetadataSummary,
-} from '../../../gql/graphql';
-import { useAtomValue, useSetAtom } from 'jotai/index';
+} from '@shared/gql/graphql';
+import { useAtomValue, useSetAtom } from 'jotai';
 import {
   resetFilterOptions,
   totalMetadataFilterOptionsSelected,

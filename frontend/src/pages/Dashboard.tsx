@@ -26,9 +26,9 @@ import { PicrLink } from '../components/PicrLink';
 import { EmptyPlaceholder } from './EmptyPlaceholder';
 import { TbUnlink } from 'react-icons/tb';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
-import { FoldersSortType } from '../gql/graphql';
 import { ManageFolderIconButton } from '../components/ManageFolderButton';
 import { recentUsersQuery } from '@shared/urql/queries/recentUsersQuery';
+import { FoldersSortType } from '@shared/gql/graphql';
 
 export const Dashboard = () => {
   const me = useMe();

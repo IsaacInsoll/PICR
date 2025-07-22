@@ -12,10 +12,12 @@ export const addToFolderCache = (folder: Partial<Folder>) => {
   if (id && name) folderCache[id] = { ...folderCache[id], name, heroImage };
 };
 export const fileCache: {
-  [key: string]: Pick<File, 'name' | 'fileHash'>;
+  [key: string]: Partial<Pick<File, 'name' | 'fileHash'>>;
 } = {};
 
 export const addToFileCache = (file: Partial<File>) => {
   const { id, name, fileHash } = file;
-  if (id && name) fileCache[id] = { ...folderCache[id], name, fileHash };
+  if (!id) return;
+  if (name) fileCache[id] = { ...folderCache[id], name };
+  if (fileHash) fileCache[id] = { ...folderCache[id], fileHash };
 };
