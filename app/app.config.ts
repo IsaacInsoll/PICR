@@ -5,7 +5,9 @@ const IS_DEV = process.env.APP_VARIANT === 'development';
 const appName = 'PICR' + (IS_DEV ? ' [Dev]' : '');
 const bundle = 'com.isaacinsoll.picr' + (IS_DEV ? '.dev' : '');
 
-console.log(IS_DEV ? 'Dev Props' : 'Prod Props');
+if (IS_DEV) {
+  console.log('== PICR: Using [Dev] App name and Bundle ID ==');
+}
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,

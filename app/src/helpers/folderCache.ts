@@ -18,6 +18,6 @@ export const fileCache: {
 export const addToFileCache = (file: Partial<File>) => {
   const { id, name, fileHash } = file;
   if (!id) return;
-  if (name) fileCache[id] = { ...folderCache[id], name };
-  if (fileHash) fileCache[id] = { ...folderCache[id], fileHash };
+  if (name) fileCache[id] = { ...fileCache[id], name };
+  if (fileHash) fileCache[id] = { ...fileCache[id], fileHash };
 };
