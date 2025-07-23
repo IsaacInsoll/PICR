@@ -135,7 +135,7 @@ export default function AppFileView() {
             router.setParams({ folderId, fileId: f.id });
           }}
           scrollAnimationDuration={150}
-          windowSize={5} // lazy loading
+          windowSize={10} // lazy loading
         />
         <FileBottomBar file={file} />
         <Animated.View

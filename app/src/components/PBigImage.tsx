@@ -24,7 +24,7 @@ export const PBigImage = memo(
   }) => {
     console.log('PBIGImage rendering ' + file.name);
     const ref = useRef(null);
-    const uri = useLocalImageUrl(file, 'raw');
+    const uri = useLocalImageUrl(file, 'lg');
     const [fullScreen, setFullScreen] = useAtom(fileViewFullscreenAtom);
     const theme = useAppTheme();
     if (!uri) return null;
