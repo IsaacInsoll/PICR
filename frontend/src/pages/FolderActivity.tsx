@@ -1,12 +1,8 @@
-import { gql } from '../helpers/gql';
-import { useMutation, useQuery } from 'urql';
-import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
-import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
-import { useState } from 'react';
-import { useCommentPermissions } from '../hooks/useCommentPermissions';
-import { ScrollArea, Stack, Timeline } from '@mantine/core';
-import { CommentBodyItem } from '../components/FileListView/Review/CommentBodyItem';
-import { CommentHistory } from '../components/FileListView/Review/CommentHistory';
+import {useQuery} from 'urql';
+import {commentHistoryQuery} from '@shared/urql/queries/commentHistoryQuery';
+import {useCommentPermissions} from '../hooks/useCommentPermissions';
+import {Stack} from '@mantine/core';
+import {CommentHistory} from '../components/FileListView/Review/CommentHistory';
 
 export const FolderActivity = ({ folderId }: { folderId: number }) => {
   const [result, requery] = useQuery({

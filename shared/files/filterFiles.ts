@@ -1,54 +1,14 @@
-import { MinimalFile } from '../../types';
-import {
-  AspectFilterOptions,
-  FilterOptionsInterface,
-} from '../atoms/filterAtom';
-import { MetadataOptionsForFiltering } from './metadataForFiltering';
-import { MetadataSummary } from '../../../backend/types/MetadataSummary';
-import { FileSort } from '../atoms/fileSortAtom';
-
-export const sortFiles = (files: MinimalFile[], sort: FileSort) => {
-  const { type, direction } = sort;
-  const positive = direction == 'Asc' ? 1 : -1;
-  if (type == 'Filename') {
-    return files.toSorted((a, b) => {
-      if (a.name < b.name) return -positive;
-      if (a.name > b.name) return positive;
-      return 0;
-    });
-  }
-  if (type == 'LastModified') {
-    return files.toSorted((a, b) => {
-      if (a.fileLastModified < b.fileLastModified) return positive;
-      if (a.fileLastModified > b.fileLastModified) return -positive;
-      return 0;
-    });
-  }
-  if (type == 'RecentlyCommented') {
-    return files.toSorted((a, b) => {
-      if (!a.latestComment || a.latestComment < b.latestComment)
-        return positive;
-      if (!b.latestComment || a.latestComment > b.latestComment)
-        return -positive;
-      return 0;
-    });
-  }
-  if (type == 'Rating') {
-    return files.toSorted((a, b) => {
-      if (a.rating < b.rating) return positive;
-      if (a.rating > b.rating) return -positive;
-      return 0;
-    });
-  }
-  return files;
-};
+import {AspectFilterOptions, FilterOptionsInterface,} from '@frontend/atoms/filterAtom';
+import {MetadataOptionsForFiltering} from '@frontend/helpers/metadataForFiltering';
+import {MetadataSummary} from '../../backend/types/MetadataSummary';
+import {File, Image, Video} from '@/gql/graphql'
 
 export const filterFiles = (
-  files: MinimalFile[],
+  files: File[],
   filters: FilterOptionsInterface,
 ) => {
   const { ratio, searchText, metadata } = filters;
-  return files.filter((file: MinimalFile) => {
+  return files.filter((file: File) => {
     return (
       ratioFilter(file, ratio) &&
       textFilter(file, searchText) &&
@@ -58,12 +18,12 @@ export const filterFiles = (
   });
 };
 
-const textFilter = (file: MinimalFile, text: string): boolean => {
+const textFilter = (file: File, text: string): boolean => {
   return !!file.name && file.name?.toLowerCase().includes(text.toLowerCase());
 };
 
 const ratioFilter = (
-  file: MinimalFile,
+  file: File|Image,
   ratio: AspectFilterOptions,
 ): boolean => {
   const ar = file.imageRatio;
@@ -78,7 +38,7 @@ const ratioFilter = (
 };
 
 const metadataFilter = (
-  file: MinimalFile,
+  file: File|Image|Video,
   metadata: MetadataOptionsForFiltering,
 ): boolean => {
   let allowed = true;
@@ -92,7 +52,7 @@ const metadataFilter = (
 };
 
 const commentsFilter = (
-  file: MinimalFile,
+  file: File,
   filters: FilterOptionsInterface,
 ): boolean => {
   const { flag, rating, ratingComparison, comments } = filters;

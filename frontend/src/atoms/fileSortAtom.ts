@@ -1,18 +1,9 @@
 import { atom } from 'jotai';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 import { atomWithHash } from 'jotai-location';
+import {FileSort, FileSortType} from "@shared/files/sortFiles";
 
-type FileSortType =
-  | 'Filename'
-  | 'LastModified'
-  | 'RecentlyCommented'
-  | 'Rating';
-type FileSortDirection = 'Asc' | 'Desc';
 
-export interface FileSort {
-  type: FileSortType;
-  direction: FileSortDirection;
-}
 
 const fileSortHashAtom = atomWithHash('s', '', opts);
 
@@ -24,7 +15,7 @@ export const fileSortAtom = atom<FileSort>(
       Object.entries(fileSortEncoding).find(([k, v]) => v == sort[0])[0] ??
       'Filename';
     const direction = sort[1] == 'a' ? 'Asc' : 'Desc';
-    console.log({ type, direction });
+    // console.log({ type, direction });
     return { type, direction };
   },
   (get, set, args: FileSort) => {

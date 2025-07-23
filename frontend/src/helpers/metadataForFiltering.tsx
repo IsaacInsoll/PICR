@@ -1,16 +1,15 @@
-import { MinimalFile } from '../../types';
-import { uniq } from 'lodash';
-import { MetadataSummary } from '@shared/gql/graphql';
+import {uniq} from 'lodash';
+import {Image, ImageMetadataSummary} from '@shared/gql/graphql';
 
 export type MetadataOptionsForFiltering = Partial<
-  Record<keyof MetadataSummary, (string | number)[]>
+  Record<keyof ImageMetadataSummary, (string | number)[]>
 >;
 
 export const metadataForFiltering = (
-  files: MinimalFile[],
+  files: Image[],
 ): MetadataOptionsForFiltering => {
   const metas = files.map((f) => f.metadata);
-  const unique = (key: keyof MetadataSummary): (string | number)[] => {
+  const unique = (key: keyof ImageMetadataSummary): (string | number)[] => {
     const m = metas.map((i) => i?.[key]);
     return uniq(m).filter((x): x is string | number => !!x);
   };

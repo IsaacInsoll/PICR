@@ -1,4 +1,4 @@
-import { atom } from 'jotai/index';
+import { atom } from 'jotai';
 import { MetadataOptionsForFiltering } from '../helpers/metadataForFiltering';
 import { FileFlag } from '../../../graphql-types';
 

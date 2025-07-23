@@ -1,26 +1,21 @@
-import { MinimalFile, MinimalFolder } from '../../../types';
-import { selectedViewAtom, viewOptions } from '../ViewSelector';
-import { GridGallery } from './GridGallery';
-import { FileDataListView } from './FileDataListView';
-import { useEffect, useMemo } from 'react';
-import { ImageFeed } from './ImageFeed';
-import { SelectedFileView } from './SelectedFile/SelectedFileView';
-import {
-  filterAtom,
-  filterOptions,
-  resetFilterOptions,
-} from '../../atoms/filterAtom';
-import { useAtomValue } from 'jotai';
-import { FilteringOptions } from './Filtering/FilteringOptions';
-import { filterFiles, sortFiles } from '../../helpers/filterFiles';
-import { useAtom, useSetAtom } from 'jotai/index';
-import { Tabs, Transition } from '@mantine/core';
-import { Page } from '../Page';
-import { useParams } from 'react-router';
-import { useSetFolder } from '../../hooks/useSetFolder';
-import { FolderRouteParams } from '../../Router';
-import { FileListView } from './FileListView';
-import { fileSortAtom } from '../../atoms/fileSortAtom';
+import {MinimalFile, MinimalFolder} from '../../../types';
+import {selectedViewAtom, viewOptions} from '../ViewSelector';
+import {GridGallery} from './GridGallery';
+import {useEffect} from 'react';
+import {ImageFeed} from './ImageFeed';
+import {SelectedFileView} from './SelectedFile/SelectedFileView';
+import {filterAtom, filterOptions, resetFilterOptions,} from '../../atoms/filterAtom';
+import {useAtom, useAtomValue, useSetAtom} from 'jotai';
+import {FilteringOptions} from './Filtering/FilteringOptions';
+import {filterFiles} from '@shared/files/filterFiles';
+import {Tabs, Transition} from '@mantine/core';
+import {Page} from '../Page';
+import {useParams} from 'react-router';
+import {useSetFolder} from '../../hooks/useSetFolder';
+import {FolderRouteParams} from '../../Router';
+import {FileListView} from './FileListView';
+import {fileSortAtom} from '../../atoms/fileSortAtom';
+import {sortFiles} from "@shared/files/sortFiles";
 
 export interface FileListViewProps {
   files: MinimalFile[];
