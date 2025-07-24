@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Image } from '../../../graphql-types';
 
 // Show an image but cache it to device
+//TODO: copy PBIGImage and use ExpoImage so we can do BlurRadius prop, and progressively load higher res images?
 export const AppImage = ({
   file,
   size,

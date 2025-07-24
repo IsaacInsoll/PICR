@@ -14,6 +14,7 @@ import { folderCache } from '@/src/helpers/folderCache';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { AspectView } from '@/src/components/AspectView';
 import { PView } from '@/src/components/PView';
+import { AppFolderContentsView } from '@/src/components/FolderContents/AppFolderContentsView';
 
 export default function FolderMasterView() {
   const me = useMe();
@@ -68,78 +69,12 @@ const FolderBody = ({
   return (
     <>
       <Stack.Screen options={{ headerTitle: f.name }} />
-      <FlatList
-        style={{ flex: 1, width: '100%', flexGrow: 1 }}
-        data={items}
-        numColumns={1}
-        keyExtractor={(item) => item['__typename'] + item.id}
-        renderItem={(props) => renderItem({ ...props, width })}
-      />
+      <AppFolderContentsView folder={f} width={width} />
     </>
   );
 };
 
-const renderItem = ({ item, index, width }) => {
-  const isFolder = item['__typename'] == 'Folder';
-
-  return isFolder ? (
-    <FlashFolder folder={item} key={item.id} width={width} />
-  ) : (
-    <FlashFile file={item} key={item.id} width={width} />
-  );
-};
-
-const FlashFolder = ({ folder, width }) => {
-  return (
-    <AppFolderLink folder={folder} asChild>
-      <TouchableOpacity
-      // onPress={() => {
-      //   router.navigate('./' + folder.id, { withAnchor: true });
-      // }}
-      >
-        {folder.heroImage?.id ? (
-          <AppImage file={folder.heroImage} width={width} />
-        ) : null}
-        <PText style={[styles.flashView]}>
-          {folder.id} {folder.name}
-        </PText>
-      </TouchableOpacity>
-    </AppFolderLink>
-  );
-};
-
-const FlashFile = ({ file, width }: { file: File | Image; width: number }) => {
-  const isImage = file.type == 'Image';
-
-  return (
-    <AppFileLink file={file} asChild>
-      <TouchableOpacity
-      // onPress={() => {
-      //   router.push('./' + folder.id);
-      // }}
-      >
-        {isImage ? (
-          <AspectView ratio={file.imageRatio} width={width}>
-            <Suspense fallback={<AppLoadingIndicator />}>
-              <AppImage file={file} />
-            </Suspense>
-          </AspectView>
-        ) : null}
-        <PText style={[styles.flashView]}>
-          {file.id} {file.type} {file.name}
-        </PText>
-      </TouchableOpacity>
-    </AppFileLink>
-  );
-};
-
 const styles = StyleSheet.create({
-  flashView: {
-    minHeight: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-  },
   main: {
     flex: 1,
     justifyContent: 'center',

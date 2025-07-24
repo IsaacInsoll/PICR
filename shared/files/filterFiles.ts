@@ -74,8 +74,9 @@ const commentsFilter = (
         break;
     }
   }
-  if (comments == 'None' && file.totalComments > 0) return false;
-  if (comments == 'Some' && file.totalComments == 0) return false;
+  const tc = file.totalComments ?? 0;
+  if (comments == 'None' && tc > 0) return false;
+  if (comments == 'Some' && tc == 0) return false;
 
   return true;
 };

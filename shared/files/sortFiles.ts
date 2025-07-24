@@ -39,8 +39,10 @@ export const sortFiles = (files: File[], sort: FileSort) => {
     }
     if (type == 'Rating') {
         return files.toSorted((a, b) => {
-            if (a.rating < b.rating) return positive;
-            if (a.rating > b.rating) return -positive;
+            const ar = a.rating ?? 0;
+            const br = b.rating ?? 0;
+            if (ar < br) return positive;
+            if (ar > br) return -positive;
             return 0;
         });
     }
