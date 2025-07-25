@@ -5,7 +5,7 @@ import { TbLayoutGrid, TbList, TbPhoto } from 'react-icons/tb';
 import { actionIconSize } from '../theme';
 import { ReactNode } from 'react';
 
-export type SelectedView = 'list' | 'gallery' | 'slideshow';
+export type SelectedView = 'list' | 'gallery' | 'feed';
 
 export const selectedViewAtom = atomWithStorage<SelectedView>(
   'SelectedView',
@@ -55,7 +55,7 @@ export const viewOptions: {
     label: 'Gallery',
   },
   {
-    name: 'slideshow',
+    name: 'feed',
     icon: <TbPhoto size={actionIconSize} />,
     label: 'Feed',
   },

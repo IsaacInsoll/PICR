@@ -6,11 +6,11 @@ import {
   useSetLoginDetails,
 } from '@/src/hooks/useLoginDetails';
 import { Redirect } from 'expo-router';
-import { urqlClient } from '@/src/urqlClient';
 import { Provider } from 'urql';
 import { PText } from '@/src/components/PText';
 import { atom, useAtom } from 'jotai';
 import { appLogin } from '@/src/helpers/appLogin';
+import { picrUrqlClient } from '@shared/urql/urqlClient';
 
 const initCompleteAtom = atom(false); // we only want this once system-wide, not per instance of this provider
 
@@ -44,7 +44,7 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
   const client = useMemo(() => {
     if (!me) return null;
     console.log('PicrUserProvider: _creating_ URQL client');
-    return urqlClient(me.server, { authorization: `Bearer ${me.token}` });
+    return picrUrqlClient(me.server, { authorization: `Bearer ${me.token}` });
   }, [me?.server, me?.token]);
 
   if (!initComplete) return <PText>Loading...</PText>;

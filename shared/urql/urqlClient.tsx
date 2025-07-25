@@ -15,7 +15,3 @@ export const picrUrqlClient = (url: string, headers: HeadersInit) => {
     },
   });
 };
-
-// export const PicrUrqlProvider = ({ client, children }) => {
-//   return <Provider value={client}>{children}</Provider>;
-// };

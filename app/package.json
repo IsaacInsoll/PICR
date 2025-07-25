@@ -15,6 +15,7 @@
     "@expo-google-fonts/signika": "^0.4.0",
     "@expo/vector-icons": "^14.1.0",
     "@georstat/react-native-image-cache": "^3.1.0",
+    "@gorhom/bottom-sheet": "^5",
     "@hookform/resolvers": "^5.0.1",
     "@kolking/react-native-avatar": "^2.1.5",
     "@likashefqet/react-native-image-zoom": "^4.3.0",
@@ -34,6 +35,7 @@
     "expo-image": "~2.3.2",
     "expo-linear-gradient": "~14.1.5",
     "expo-linking": "~7.1.7",
+    "expo-media-library": "~17.1.7",
     "expo-router": "~5.1.3",
     "expo-secure-store": "~14.2.3",
     "expo-splash-screen": "~0.30.10",
@@ -56,12 +58,12 @@
     "react-native-reanimated-carousel": "^4.0.2",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
+    "react-native-segmented-control-2": "^2.1.0",
     "react-native-unistyles": "^3.0.2",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
     "urql": "^4.2.2",
-    "zod": "^3.25.28",
-    "expo-media-library": "~17.1.7"
+    "zod": "^3.25.28"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
