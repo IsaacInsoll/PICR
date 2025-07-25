@@ -19,6 +19,9 @@ import { atom, useAtom, useSetAtom } from 'jotai';
 import { PTitle } from '@/src/components/PTitle';
 import { AppPicker } from '@/src/components/AppPicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { DefaultFilterOptions, filterFiles } from '@shared/files/filterFiles';
+import { FileSort, sortFiles } from '@shared/files/sortFiles';
+import { FilterOptionsInterface } from '@frontend/atoms/filterAtom';
 
 const folderOptionsDialogOpenAtom = atom(false);
 
@@ -68,22 +71,40 @@ const FolderBody = ({
     variables: { folderId },
   });
 
-  const f = result.data?.folder;
-  if (!f) {
+  const sort: FileSort = { direction: 'Asc', type: 'Filename' };
+  const filtering = false;
+  const filters: FilterOptionsInterface = DefaultFilterOptions;
+
+  const folder = result.data?.folder;
+  if (!folder) {
     return <PText>Folder {folderId} Not Found</PText>;
   }
-  const items = [...f.subFolders, ...f.files];
+
+  //start copied from FolderContentsView.tsx
+  // useEffect(() => resetFilters(null), [resetFilters, folderId]);
+
+  // don't memo files because it breaks graphicache (IE: file changing rating won't reflect)
+  const filteredFiles = filtering
+    ? filterFiles(folder.files, filters)
+    : folder.files;
+  const sortedFiles = sortFiles(filteredFiles, sort);
+
+  const withProps = sortedFiles.map((f) => {
+    return { ...f, isHeroImage: f.id == folder.heroImage?.id };
+  });
+
+  //end copied from FolderContentsView.tsx
 
   return (
     <>
       <Stack.Screen
         options={{
-          headerTitle: f.name,
+          headerTitle: folder.name,
           headerRight: () => <FolderOptionsButton />,
         }}
       />
 
-      <AppFolderContentsView folder={f} width={width} />
+      <AppFolderContentsView folder={folder} files={withProps} width={width} />
       <FolderOptions />
     </>
   );

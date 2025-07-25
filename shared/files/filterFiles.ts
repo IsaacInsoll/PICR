@@ -3,6 +3,16 @@ import {MetadataOptionsForFiltering} from '@frontend/helpers/metadataForFilterin
 import {MetadataSummary} from '../../backend/types/MetadataSummary';
 import {File, Image, Video} from '@/gql/graphql'
 
+export const DefaultFilterOptions: FilterOptionsInterface = {
+  ratio: 'Any Ratio',
+  searchText: '',
+  metadata: {},
+  flag: null,
+  ratingComparison: null,
+  rating: 0,
+  comments: null,
+};
+
 export const filterFiles = (
   files: File[],
   filters: FilterOptionsInterface,
