@@ -13,6 +13,7 @@ module.exports = {
       '@frontend': __dirname + '/../frontend/src',
       '@shared': __dirname + '/../shared',
     },
+    // enableGlobalPackages: true,
   },
   watchFolders: [__dirname + '/../frontend/src', __dirname + '/../shared'],
 };

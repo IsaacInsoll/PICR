@@ -71,6 +71,8 @@ const FolderBody = ({
     variables: { folderId },
   });
 
+  // const x = useFolder(folderId);
+
   const sort: FileSort = { direction: 'Asc', type: 'Filename' };
   const filtering = false;
   const filters: FilterOptionsInterface = DefaultFilterOptions;
