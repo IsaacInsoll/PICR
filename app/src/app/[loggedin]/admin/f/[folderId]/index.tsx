@@ -1,6 +1,6 @@
 import { useMe } from '@/src/hooks/useMe';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { StyleSheet, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
 import { PText } from '@/src/components/PText';
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
 import { usePathname } from 'expo-router/build/hooks';
@@ -22,7 +22,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DefaultFilterOptions, filterFiles } from '@shared/files/filterFiles';
 import { FileSort, sortFiles } from '@shared/files/sortFiles';
 import { FilterOptionsInterface } from '@frontend/atoms/filterAtom';
-
+import * as DropdownMenu from 'zeego/dropdown-menu';
 const folderOptionsDialogOpenAtom = atom(false);
 
 export default function FolderMasterView() {
@@ -48,6 +48,7 @@ export default function FolderMasterView() {
         }}
       />
       <View style={{ ...styles.main, backgroundColor: theme.backgroundColor }}>
+        <MyMenu />
         <PView style={{ width: '100%', flex: 1 }} onWidthChange={setViewWidth}>
           <Suspense fallback={<AppLoadingIndicator />}>
             <FolderBody folderId={folderId} key={folderId} width={width} />
@@ -190,3 +191,30 @@ const FolderOptions = () => {
     </BottomSheet>
   );
 };
+export function MyMenu() {
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>
+        <Button title="menu" />
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content>
+        <DropdownMenu.Label />
+        <DropdownMenu.Item>
+          <DropdownMenu.ItemTitle />
+        </DropdownMenu.Item>
+        <DropdownMenu.Group>
+          <DropdownMenu.Item />
+        </DropdownMenu.Group>
+        <DropdownMenu.CheckboxItem>
+          <DropdownMenu.ItemIndicator />
+        </DropdownMenu.CheckboxItem>
+        <DropdownMenu.Sub>
+          <DropdownMenu.SubTrigger />
+          <DropdownMenu.SubContent />
+        </DropdownMenu.Sub>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Arrow />
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  );
+}
