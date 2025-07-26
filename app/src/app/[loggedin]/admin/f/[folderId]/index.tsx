@@ -15,14 +15,19 @@ import { HeaderButton } from '@react-navigation/elements';
 import { Ionicons } from '@expo/vector-icons';
 import { navBarIconProps } from '@/src/constants';
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { atom, useAtom, useSetAtom } from 'jotai';
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { PTitle } from '@/src/components/PTitle';
 import { AppPicker } from '@/src/components/AppPicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DefaultFilterOptions, filterFiles } from '@shared/files/filterFiles';
-import { FileSort, sortFiles } from '@shared/files/sortFiles';
+import {
+  FileSort,
+  FileSortDirection,
+  FileSortType,
+  sortFiles,
+} from '@shared/files/sortFiles';
 import { FilterOptionsInterface } from '@frontend/atoms/filterAtom';
-import { FileSortMenu } from '@/src/components/Menus/FileSortMenu';
+import { fileSortAtom } from '@/src/atoms/atoms';
 
 const folderOptionsDialogOpenAtom = atom(false);
 
@@ -74,7 +79,7 @@ const FolderBody = ({
 
   // const x = useFolder(folderId);
 
-  const sort: FileSort = { direction: 'Asc', type: 'Filename' };
+  const sort = useAtomValue(fileSortAtom);
   const filtering = false;
   const filters: FilterOptionsInterface = DefaultFilterOptions;
 
@@ -151,7 +156,7 @@ const FolderOptionsButton = () => {
 
 const FolderOptions = () => {
   const safe = useSafeAreaInsets();
-
+  const [sort, setSort] = useAtom(fileSortAtom);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const theme = useAppTheme();
   const [optionsDialog, setOptionsDialog] = useAtom(
@@ -166,6 +171,7 @@ const FolderOptions = () => {
   }, [bottomSheetRef, optionsDialog]);
 
   const [v, setV] = useState('Filename');
+  console.log('v', v);
 
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
@@ -177,7 +183,7 @@ const FolderOptions = () => {
       onClose={() => setOptionsDialog(false)}
       enablePanDownToClose={true}
       index={-1} // start in closed state
-      backgroundStyle={{ backgroundColor: theme.backgroundColor }}
+      backgroundStyle={{ backgroundColor: theme.backgroundColor + 'ee' }}
       handleIndicatorStyle={{
         backgroundColor: theme.brandColor,
         opacity: 0.5,
@@ -187,17 +193,25 @@ const FolderOptions = () => {
         style={{
           flex: 1,
           // padding: 36,
+          gap: 16,
           alignItems: 'center',
           paddingBottom: safe.bottom, // system bottom bar :/
         }}
       >
         <PTitle level={3}>Sort</PTitle>
         <AppPicker
-          options={['Filename', 'Modified', 'Commented', 'Rating']}
-          value={v}
-          onChange={setV}
+          options={['Filename', 'LastModified', 'RecentlyCommented', 'Rating']}
+          value={sort.type}
+          onChange={(type: FileSortType) => setSort((s) => ({ ...s, type }))}
         />
-        <PText>Awesome2 🎉</PText>
+        <AppPicker
+          options={['Asc', 'Desc']}
+          value={sort.direction}
+          onChange={(direction: FileSortDirection) =>
+            setSort((s) => ({ ...s, direction }))
+          }
+        />
+        {/*<PText>Awesome2 🎉</PText>*/}
       </BottomSheetView>
     </BottomSheet>
   );

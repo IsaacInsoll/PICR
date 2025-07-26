@@ -6,6 +6,7 @@ interface PicrAppTheme {
   textColor: string;
   tabColor?: string;
   brandColor: string;
+  dimmedColor: string;
 }
 
 export const useAppTheme = (): PicrAppTheme => {
@@ -18,16 +19,18 @@ const baseTheme: Partial<PicrAppTheme> = {} as const;
 const darkTheme: PicrAppTheme = {
   ...baseTheme,
   mode: 'dark',
-  backgroundColor: '#111',
-  textColor: '#fff',
+  backgroundColor: '#111111',
+  textColor: '#ffffff',
+  dimmedColor: '#666666',
   brandColor: '#2F8084',
-  tabColor: '#000', //android natively supports dark mode for this
+  tabColor: '#000000', //android natively supports dark mode for this
 } as const;
 const lightTheme: PicrAppTheme = {
   ...baseTheme,
   mode: 'light',
-  backgroundColor: '#fff',
-  textColor: '#000',
+  backgroundColor: '#ffffff',
+  textColor: '#000000',
+  dimmedColor: '#999999',
   brandColor: '#1C4B4F',
   tabColor: undefined,
 } as const;

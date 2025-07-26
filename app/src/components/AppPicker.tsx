@@ -20,9 +20,9 @@ export const AppPicker = ({
       tabs={options}
       value={selectedIndex}
       onChange={(i) => {
-        console.log('clicked', i);
         if (onChange) {
-          return i != selectedIndex ? onChange(options[i]) : onChange(-1);
+          // console.log('clicked', i, options[i]);
+          onChange(options[i]);
         }
       }}
     />

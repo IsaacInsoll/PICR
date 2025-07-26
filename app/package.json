@@ -18,6 +18,7 @@
     "@gorhom/bottom-sheet": "^5",
     "@hookform/resolvers": "^5.0.1",
     "@kolking/react-native-avatar": "^2.1.5",
+    "@kolking/react-native-rating": "^1.4.1",
     "@likashefqet/react-native-image-zoom": "^4.3.0",
     "@react-native-menu/menu": "^1.2.3",
     "@react-navigation/bottom-tabs": "^7.3.10",
