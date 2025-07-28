@@ -1,7 +1,7 @@
-// design-system/context-menu.tsx
 import * as ContextMenu from 'zeego/context-menu';
 import { View } from 'react-native';
 
+//A menu component anchored to an element, triggered by a long press.
 export const ContextMenuRoot = ContextMenu.Root;
 
 export const ContextMenuTrigger = ContextMenu.create(

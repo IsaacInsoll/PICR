@@ -1,7 +1,7 @@
-// design-system/dropdown-menu.tsx
 import * as DropdownMenu from 'zeego/dropdown-menu';
 import { View } from 'react-native';
 
+// A menu component anchored to a button pressed by a user.
 export const DropdownMenuRoot = DropdownMenu.Root;
 export const DropdownMenuTrigger = DropdownMenu.create(
   (props: React.ComponentProps<typeof DropdownMenu.Trigger>) => (

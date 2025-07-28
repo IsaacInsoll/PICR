@@ -1,6 +1,6 @@
 import { useMe } from '@/src/hooks/useMe';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { Button, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { PText } from '@/src/components/PText';
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
 import { usePathname } from 'expo-router/build/hooks';
@@ -22,7 +22,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DefaultFilterOptions, filterFiles } from '@shared/files/filterFiles';
 import { FileSort, sortFiles } from '@shared/files/sortFiles';
 import { FilterOptionsInterface } from '@frontend/atoms/filterAtom';
-import * as DropdownMenu from 'zeego/dropdown-menu';
+import { FileSortMenu } from '@/src/components/Menus/FileSortMenu';
+
 const folderOptionsDialogOpenAtom = atom(false);
 
 export default function FolderMasterView() {
@@ -48,7 +49,6 @@ export default function FolderMasterView() {
         }}
       />
       <View style={{ ...styles.main, backgroundColor: theme.backgroundColor }}>
-        <MyMenu />
         <PView style={{ width: '100%', flex: 1 }} onWidthChange={setViewWidth}>
           <Suspense fallback={<AppLoadingIndicator />}>
             <FolderBody folderId={folderId} key={folderId} width={width} />
@@ -126,14 +126,26 @@ const FolderOptionsButton = () => {
   const open = useSetAtom(folderOptionsDialogOpenAtom);
   const theme = useAppTheme();
   return (
-    <HeaderButton onPress={() => open((b) => !b)}>
-      <Ionicons
-        name="options-outline"
-        size={25}
-        color={theme.brandColor}
-        style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
-      />
-    </HeaderButton>
+    <>
+      <FileSortMenu>
+        <HeaderButton>
+          <Ionicons
+            name="chevron-expand-outline"
+            size={25}
+            color={theme.brandColor}
+            style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
+          />
+        </HeaderButton>
+      </FileSortMenu>
+      <HeaderButton onPress={() => open((b) => !b)}>
+        <Ionicons
+          name="options-outline"
+          size={25}
+          color={theme.brandColor}
+          style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
+        />
+      </HeaderButton>
+    </>
   );
 };
 
@@ -154,7 +166,6 @@ const FolderOptions = () => {
   }, [bottomSheetRef, optionsDialog]);
 
   const [v, setV] = useState('Filename');
-  console.log('v', v);
 
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
@@ -191,30 +202,3 @@ const FolderOptions = () => {
     </BottomSheet>
   );
 };
-export function MyMenu() {
-  return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
-        <Button title="menu" />
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        <DropdownMenu.Label />
-        <DropdownMenu.Item>
-          <DropdownMenu.ItemTitle />
-        </DropdownMenu.Item>
-        <DropdownMenu.Group>
-          <DropdownMenu.Item />
-        </DropdownMenu.Group>
-        <DropdownMenu.CheckboxItem>
-          <DropdownMenu.ItemIndicator />
-        </DropdownMenu.CheckboxItem>
-        <DropdownMenu.Sub>
-          <DropdownMenu.SubTrigger />
-          <DropdownMenu.SubContent />
-        </DropdownMenu.Sub>
-        <DropdownMenu.Separator />
-        <DropdownMenu.Arrow />
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
-  );
-}
