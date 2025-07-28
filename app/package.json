@@ -19,6 +19,7 @@
     "@hookform/resolvers": "^5.0.1",
     "@kolking/react-native-avatar": "^2.1.5",
     "@likashefqet/react-native-image-zoom": "^4.3.0",
+    "@react-native-menu/menu": "^1.2.3",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
