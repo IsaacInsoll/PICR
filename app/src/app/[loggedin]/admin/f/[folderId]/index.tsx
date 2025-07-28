@@ -28,6 +28,7 @@ import {
 } from '@shared/files/sortFiles';
 import { FilterOptionsInterface } from '@frontend/atoms/filterAtom';
 import { fileSortAtom } from '@/src/atoms/atoms';
+import { FileSortMenu } from '@/src/components/Menus/FileSortMenu';
 
 const folderOptionsDialogOpenAtom = atom(false);
 
