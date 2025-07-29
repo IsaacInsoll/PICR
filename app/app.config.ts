@@ -4,6 +4,7 @@ const IS_DEV = process.env.APP_VARIANT === 'development';
 
 const appName = 'PICR' + (IS_DEV ? ' [Dev]' : '');
 const bundle = 'com.isaacinsoll.picr' + (IS_DEV ? '.dev' : '');
+const scheme = !IS_DEV ? 'picr' : 'picrdev';
 
 if (IS_DEV) {
   console.log('== PICR: Using [Dev] App name and Bundle ID ==');
@@ -16,7 +17,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/images/picr-logo-1024.png',
-  scheme: 'picr',
+  scheme: scheme,
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
