@@ -5,6 +5,8 @@ const IS_DEV = process.env.APP_VARIANT === 'development';
 const appName = 'PICR' + (IS_DEV ? ' [Dev]' : '');
 const bundle = 'com.isaacinsoll.picr' + (IS_DEV ? '.dev' : '');
 const scheme = !IS_DEV ? 'picr' : 'picrdev';
+const icon =
+  './assets/images/picr-logo' + (IS_DEV ? '-beta' : '') + '-1024.png';
 
 if (IS_DEV) {
   console.log('== PICR: Using [Dev] App name and Bundle ID ==');
@@ -16,7 +18,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   slug: 'picr',
   version: '1.0.0',
   orientation: 'portrait',
-  icon: './assets/images/picr-logo-1024.png',
+  icon: icon,
   scheme: scheme,
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
@@ -27,13 +29,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       ITSAppUsesNonExemptEncryption: false,
     },
     icon: {
-      light: './assets/images/picr-logo-1024.png',
+      light: icon,
       dark: './assets/images/dark/picr-logo-dark-1024.png',
     },
   },
   android: {
     adaptiveIcon: {
-      foregroundImage: './assets/images/picr-logo-1024.png',
+      foregroundImage: icon,
       backgroundColor: '#ffffff',
     },
     edgeToEdgeEnabled: true,
@@ -49,7 +51,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-splash-screen',
       {
-        image: './assets/images/picr-logo-1024.png',
+        image: icon,
         imageWidth: 200,
         resizeMode: 'contain',
         backgroundColor: '#ffffff',
