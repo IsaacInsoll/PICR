@@ -9,7 +9,7 @@ import {
 import { addToFileCache, fileCache } from '@/src/helpers/folderCache';
 import { useQuery } from 'urql';
 import { PBigImage, useLocalImageUrl } from '@/src/components/PBigImage';
-import { useAtom, useAtomValue } from 'jotai';
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { PText } from '@/src/components/PText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as MediaLibrary from 'expo-media-library';
@@ -31,12 +31,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { navBarIconProps } from '@/src/constants';
 import { File } from '@shared/gql/graphql';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
+import { FileCommentsBottomSheet } from '@/src/components/FileCommentsBottomSheet';
 
 interface ItemProps {
   index: number;
   animationValue: Animated.SharedValue<number>;
   setIsZoomed: (value: boolean) => void;
 }
+
+const showCommentsAtom = atom(false);
 
 export default function AppFileView() {
   const theme = useAppTheme();
@@ -59,6 +62,8 @@ export default function AppFileView() {
   const files = result.data?.folder.files;
   const file = files?.find((f) => f.id == fileId);
   const fileIndex = files?.findIndex((f) => f.id == fileId);
+
+  const [showComments, setShowComments] = useAtom(showCommentsAtom);
 
   const { width } = useWindowDimensions();
   const [isZoomed, setIsZoomed] = useState(false);
@@ -88,16 +93,19 @@ export default function AppFileView() {
         options={{
           headerTitle: skeleton?.name ?? 'Loading File...',
           headerRight: () => (
-            <AppDownloadFileButton
-              file={file}
-              onPress={() => {
-                flash.value = 0.8;
-                flash.value = withTiming(0, {
-                  duration: 300,
-                  easing: Easing.out(Easing.circle),
-                });
-              }}
-            />
+            <View style={{ flexDirection: 'row' }}>
+              <AppDownloadFileButton
+                file={file}
+                onPress={() => {
+                  flash.value = 0.8;
+                  flash.value = withTiming(0, {
+                    duration: 300,
+                    easing: Easing.out(Easing.circle),
+                  });
+                }}
+              />
+              <AppFileCommentsButton file={file} />
+            </View>
           ),
           // headerShown: !fullScreen, //toggling this causes ugly image jump behaviour
         }}
@@ -150,6 +158,11 @@ export default function AppFileView() {
         {/*</Suspense>*/}
         {/*<PText variant="dimmed">{x}</PText>*/}
       </SafeAreaView>
+      <FileCommentsBottomSheet
+        file={file}
+        open={showComments}
+        onClose={() => setShowComments(false)}
+      />
     </>
   );
 }
@@ -234,6 +247,26 @@ const AppDownloadFileButton = ({
     <HeaderButton onPress={onClick}>
       <Ionicons
         name="download"
+        size={25}
+        color={theme.brandColor}
+        style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
+      />
+    </HeaderButton>
+  );
+};
+
+const AppFileCommentsButton = ({ file }: { file: File }) => {
+  const setShowComments = useSetAtom(showCommentsAtom);
+  const { totalComments } = file;
+  const theme = useAppTheme();
+  return (
+    <HeaderButton onPress={() => setShowComments((c) => !c)}>
+      <Ionicons
+        name={
+          totalComments && totalComments > 0
+            ? 'chatbox-ellipses-outline'
+            : 'chatbox-outline'
+        }
         size={25}
         color={theme.brandColor}
         style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/

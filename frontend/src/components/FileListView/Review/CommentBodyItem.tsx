@@ -11,13 +11,13 @@ import {
 import { Comment } from '../../../../../graphql-types';
 import { MinimalFile } from '../../../../types';
 import { PicrImage } from '../../PicrImage';
-import { prettyDate } from '../Filtering/PrettyDate';
 import { FileFlagBadge } from './FileFlagBadge';
 import { useSetFolder } from '../../../hooks/useSetFolder';
 import { useOpenCommentsModal } from '../../../atoms/modalAtom';
 import { CommentHistoryProps } from './CommentHistory';
 import { PicrAvatar } from '../../PicrAvatar';
 import { useIsMobile } from '../../../hooks/useIsMobile';
+import {prettyDate} from "@shared/prettyDate";
 
 export const CommentBodyItem = ({
   comment,

@@ -143,14 +143,14 @@ const FolderOptionsButton = () => {
           />
         </HeaderButton>
       </FileSortMenu>
-      <HeaderButton onPress={() => open((b) => !b)}>
-        <Ionicons
-          name="options-outline"
-          size={25}
-          color={theme.brandColor}
-          style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
-        />
-      </HeaderButton>
+      {/*<HeaderButton onPress={() => open((b) => !b)}>*/}
+      {/*  <Ionicons*/}
+      {/*    name="options-outline"*/}
+      {/*    size={25}*/}
+      {/*    color={theme.brandColor}*/}
+      {/*    style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/*/}
+      {/*  />*/}
+      {/*</HeaderButton>*/}
     </>
   );
 };
