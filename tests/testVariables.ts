@@ -1,7 +1,7 @@
 import {
   CommentPermissions,
   EditUserMutationMutationVariables,
-} from '../frontend/src/gql/graphql.js';
+} from '../shared/gql/graphql.js';
 
 export const testUrl = 'http://localhost:6901/';
 
