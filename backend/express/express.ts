@@ -11,16 +11,16 @@ export const expressServer = () => {
   exp.use(express.static('public', { index: false }));
   exp.get('/image/:id/:size/:hash/:filename', imageRequest); //filename is ignored but nice for users to see a 'nice' name
   exp.get('/zip/:folderId/:hash/:filename', zipRequest); //filename is ignored but nice for users to see a 'nice' name
-  exp.get('/debug',debug);
+  // exp.get('/debug',debug);
   //catch all other URLS and return the front end template
   exp.use(picrTemplate);
 
   return exp;
 };
 
-const debug=async (
-  req: Request,
-  res: Response) =>{
-  console.log(req);
-  res.sendStatus(404);
-};
+// const debug=async (
+//   req: Request,
+//   res: Response) =>{
+//   console.log(req.headers);
+//   res.send(JSON.stringify(req.headers));
+// };
