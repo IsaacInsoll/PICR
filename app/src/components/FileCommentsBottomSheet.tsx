@@ -3,17 +3,15 @@ import { PTitle } from '@/src/components/PTitle';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ReactNode, Suspense, useCallback, useEffect, useRef } from 'react';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { Comment, File } from '@shared/gql/graphql';
+import { Comment, File, FileFlag } from '@shared/gql/graphql';
 import { PText } from '@/src/components/PText';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { useQuery } from 'urql';
-import { TextStyle, View, ViewStyle } from 'react-native';
+import { TextStyle, View } from 'react-native';
 import { AppAvatar } from '@/src/components/AppAvatar';
-
 import { prettyDate } from '@shared/prettyDate';
 import { Rating } from '@kolking/react-native-rating';
-import { FileFlag } from '@shared/gql/graphql';
 import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -152,7 +150,7 @@ export const AppFileFlagBadge = ({
   flag: FileFlag;
   hideIfNone?: boolean;
 }) => {
-  if (hideIfNone && (!flag || flag == FileFlag.None)) return null;
+  if (hideIfNone && (!flag || flag === FileFlag.None)) return null;
   if (!flag) return null;
   const { icon, style } = fileFlagStyles[flag];
   return (
@@ -176,9 +174,12 @@ const fileFlagStyles: {
     style: { color: '#0f0' },
     icon: <Ionicons name="thumbs-up-outline" size={16} color={'#0f0'} />,
   },
-  [FileFlag.None]: { style: {}, icon: null },
+  [FileFlag.None]: {
+    style: { color: '#888' },
+    icon: <Ionicons name="flag-outline" size={16} color={'#888'} />,
+  },
   [FileFlag.Rejected]: {
-    style: {},
-    icon: <Ionicons name="thumbs-up-outline" size={16} color={'#0f0'} />,
+    style: { color: '#f00' },
+    icon: <Ionicons name="thumbs-down-outline" size={16} color={'#f00'} />,
   },
 } as const;
