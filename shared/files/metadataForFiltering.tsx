@@ -1,5 +1,5 @@
 import {uniq} from 'lodash';
-import {Image, ImageMetadataSummary} from '@shared/gql/graphql';
+import {Image, ImageMetadataSummary} from '@/gql/graphql';
 
 export type MetadataOptionsForFiltering = Partial<
   Record<keyof ImageMetadataSummary, (string | number)[]>

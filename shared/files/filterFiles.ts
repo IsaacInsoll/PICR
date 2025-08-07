@@ -1,5 +1,5 @@
-import {AspectFilterOptions, FilterOptionsInterface,} from '@frontend/atoms/filterAtom';
-import {MetadataOptionsForFiltering} from '@frontend/helpers/metadataForFiltering';
+import {AspectFilterOptions, FilterOptionsInterface,} from '@/filterAtom';
+import {MetadataOptionsForFiltering} from '@/files/metadataForFiltering';
 import {MetadataSummary} from '../../backend/types/MetadataSummary';
 import {File, Image, Video} from '@/gql/graphql'
 

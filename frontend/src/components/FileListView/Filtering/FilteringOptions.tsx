@@ -1,6 +1,6 @@
 import { MinimalFile } from '../../../../types';
 import { ReactNode, useMemo } from 'react';
-import { metadataForFiltering } from '../../../helpers/metadataForFiltering';
+import { metadataForFiltering } from '@shared/files/metadataForFiltering';
 import { AspectSelector } from './AspectSelector';
 import { SearchBox } from './SearchBox';
 import { MetadataBox } from './MetadataBox';
@@ -24,7 +24,7 @@ import {
   filterAtom,
   resetFilterOptions,
   totalFilterOptionsSelected,
-} from '../../../atoms/filterAtom';
+} from '@shared/filterAtom';
 import { useAtomValue } from 'jotai';
 import { useSetAtom } from 'jotai/index';
 import { InfoIcon } from '../../../PicrIcons';

@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue } from 'jotai/index';
-import { filterAtom, totalFilterOptionsSelected } from '../atoms/filterAtom';
+import { filterAtom, totalFilterOptionsSelected } from '@shared/filterAtom';
 import { Badge, Button } from '@mantine/core';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { FilterIcon } from '../PicrIcons';

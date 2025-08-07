@@ -32,7 +32,7 @@ import {
 import { FolderRouteParams } from '../Router';
 import { useGenerateZip } from '../hooks/useGenerateZip';
 import { useSetAtom } from 'jotai/index';
-import { filterAtom } from '../atoms/filterAtom';
+import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { defaultBranding, themeModeAtom } from '../atoms/themeModeAtom';
 import { Branding } from '../../../graphql-types';

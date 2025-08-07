@@ -1,5 +1,5 @@
 import { MinimalFile } from '../../../../types';
-import { MetadataOptionsForFiltering } from '../../../helpers/metadataForFiltering';
+import { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
 import { MdOutlineCameraRoll } from 'react-icons/md';
 import {
   ImageMetadataSummary,
@@ -9,7 +9,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import {
   resetFilterOptions,
   totalMetadataFilterOptionsSelected,
-} from '../../../atoms/filterAtom';
+} from '@shared/filterAtom';
 import { Button, Group, Indicator, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { MetadataSelect } from './MetadataSelect';

@@ -3,7 +3,7 @@ import { useAtom } from 'jotai/index';
 import {
   CommentsFilterOptions,
   filterOptions,
-} from '../../../atoms/filterAtom';
+} from '@shared/filterAtom';
 import { ReactNode } from 'react';
 import { CommentIcon, CommentsIcon } from '../../../PicrIcons';
 

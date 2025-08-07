@@ -1,7 +1,7 @@
 import { Button } from '@mantine/core';
 import { fileFlags } from '../Review/fileFlagStyles';
 import { useAtom } from 'jotai/index';
-import { filterOptions } from '../../../atoms/filterAtom';
+import { filterOptions } from '@shared/filterAtom';
 
 export const FlagFilterBox = () => {
   const [options, setOptions] = useAtom(filterOptions);

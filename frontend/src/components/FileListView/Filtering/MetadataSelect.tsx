@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai/index';
-import { filterOptions } from '../../../atoms/filterAtom';
+import { filterOptions } from '@shared/filterAtom';
 import { formatMetadataValues } from '../../../metadata/formatMetadataValues';
 import { MultiSelect } from '@mantine/core';
 import { metadataIcons } from '../metadataIcons';

@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai/index';
-import { AspectFilterOptions, filterOptions } from '../../../atoms/filterAtom';
+import { AspectFilterOptions, filterOptions } from '@shared/filterAtom';
 import {
   MdOutlineCropFree,
   MdOutlineCropLandscape,

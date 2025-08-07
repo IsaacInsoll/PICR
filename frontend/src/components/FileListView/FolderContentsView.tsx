@@ -4,7 +4,7 @@ import {GridGallery} from './GridGallery';
 import {useEffect} from 'react';
 import {ImageFeed} from './ImageFeed';
 import {SelectedFileView} from './SelectedFile/SelectedFileView';
-import {filterAtom, filterOptions, resetFilterOptions,} from '../../atoms/filterAtom';
+import {filterAtom, filterOptions, resetFilterOptions,} from '@shared/filterAtom';
 import {useAtom, useAtomValue, useSetAtom} from 'jotai';
 import {FilteringOptions} from './Filtering/FilteringOptions';
 import {filterFiles} from '@shared/files/filterFiles';

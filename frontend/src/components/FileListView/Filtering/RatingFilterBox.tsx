@@ -3,7 +3,7 @@ import { useAtom } from 'jotai/index';
 import {
   filterOptions,
   RatingsComparisonOptions,
-} from '../../../atoms/filterAtom';
+} from '@shared/filterAtom';
 import { ReactNode } from 'react';
 import { TbEqual, TbMathEqualGreater, TbMathEqualLower } from 'react-icons/tb';
 import { FileRating } from '../Review/FileRating';
