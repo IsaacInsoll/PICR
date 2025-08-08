@@ -24,6 +24,8 @@ import { AppImage } from '@/src/components/AppImage';
 import { useHostname } from '@/src/hooks/useHostname';
 import { navBarIconProps } from '@/src/constants';
 import { PView } from '@/src/components/PView';
+import { AppFileListItem } from '@/src/components/FolderContents/AppFolderFileList';
+import { PFileImage } from '@/src/components/PFileImage';
 
 const HomeFolderButton = () => {
   const me = useMe();
@@ -128,15 +130,31 @@ const RecentUsers = ({ users }) => {
   return (
     <View style={{ gap: 8, width: '100%' }}>
       <PTitle level={2}>Recent Clients</PTitle>
-      <View style={styles.indent}>
+      <View style={[styles.indent]}>
         {users.map((user, index) => (
           <AppFolderLink folder={user.folder} key={user.id} asChild>
             <TouchableOpacity>
               <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
-                <AppAvatar user={user} />
+                <PFileImage
+                  file={user.folder.heroImage}
+                  style={{ width: 80, height: 80 }}
+                  contentFit="contain"
+                  size="sm"
+                />
                 <View style={{ justifyContent: 'center', gap: 4 }}>
-                  <PText>{user.name}</PText>
-                  <AppDateDisplay dateString={user.lastAccess} />
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      gap: 8,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <AppAvatar user={user} size={24} />
+                    <View style={{ gap: 4 }}>
+                      <PTitle level={4}>{user.name}</PTitle>
+                      <AppDateDisplay dateString={user.lastAccess} />
+                    </View>
+                  </View>
                 </View>
               </View>
             </TouchableOpacity>
@@ -152,19 +170,22 @@ const RecentFolders = ({ folders }: { folders: FolderFragmentFragment[] }) => {
       <PTitle level={2}>Recently Modified Folders</PTitle>
       <View style={styles.indent}>
         {folders.map((f, index) => (
-          <AppFolderLink folder={f} key={f.id} asChild>
-            <TouchableOpacity>
-              <PView key={index} row gap="sm">
-                <PView key={index} row gap="md">
-                  <AppImage file={f.heroImage} size="sm" width={48} />
-                  <PView gap="xs">
-                    <PText>{f.name}</PText>
-                    <AppDateDisplay dateString={f.folderLastModified} />
-                  </PView>
-                </PView>
-              </PView>
-            </TouchableOpacity>
-          </AppFolderLink>
+          <AppFileListItem item={f}>
+            <AppDateDisplay dateString={f.folderLastModified} />
+          </AppFileListItem>
+          // <AppFolderLink folder={f} key={f.id} asChild>
+          //   <TouchableOpacity>
+          //     <PView key={index} row gap="sm">
+          //       <PView key={index} row gap="md">
+          //         <AppImage file={f.heroImage} size="sm" width={48} />
+          //         <PView gap="xs">
+          //           <PText>{f.name}</PText>
+          //           <AppDateDisplay dateString={f.folderLastModified} />
+          //         </PView>
+          //       </PView>
+          //     </PView>
+          //   </TouchableOpacity>
+          // </AppFolderLink>
         ))}
       </View>
     </View>
@@ -172,5 +193,5 @@ const RecentFolders = ({ folders }: { folders: FolderFragmentFragment[] }) => {
 };
 
 const styles = StyleSheet.create({
-  indent: { paddingLeft: 16, gap: 16 },
+  indent: { paddingLeft: 16 },
 });

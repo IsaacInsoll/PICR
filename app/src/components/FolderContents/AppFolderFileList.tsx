@@ -1,14 +1,9 @@
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import {
-  AppFileLink,
-  AppFolderLink,
-  AppLink,
-} from '@/src/components/AppFolderLink';
+import { AppFolderLink, AppLink } from '@/src/components/AppFolderLink';
 import { AppImage } from '@/src/components/AppImage';
 import { PText } from '@/src/components/PText';
-import { File, Image } from '@shared/gql/graphql';
+import { File, Folder, Image } from '@shared/gql/graphql';
 import { AspectView } from '@/src/components/AspectView';
-import { Suspense } from 'react';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
@@ -29,12 +24,22 @@ export const AppFolderFileList = ({ items, width }) => {
       data={items}
       numColumns={1}
       keyExtractor={(item) => item['__typename'] + item.id}
-      renderItem={(props) => renderItem({ ...props, width })}
+      renderItem={({ item, index }) => (
+        <AppFileListItem item={item} key={index} width={width} />
+      )}
     />
   );
 };
 
-const renderItem = ({ item, index, width }) => {
+export const AppFileListItem = ({
+  item,
+  width,
+  children,
+}: {
+  item: File | Folder;
+  width?: number;
+  children?: React.ReactNode;
+}) => {
   const isFolder = item['__typename'] == 'Folder';
   const img = isFolder ? item.heroImage : item;
   return (
@@ -58,7 +63,9 @@ const renderItem = ({ item, index, width }) => {
           ) : null}
           <View style={{ gap: 4 }}>
             <PTitle level={4}>{item.name}</PTitle>
-            {isFolder ? (
+            {children ? (
+              children
+            ) : isFolder ? (
               <FolderDetails folder={item} />
             ) : (
               <FileDetails file={item} />
@@ -71,7 +78,6 @@ const renderItem = ({ item, index, width }) => {
 };
 
 const FolderDetails = ({ folder }) => {
-  console.log(folder);
   return <PText variant="dimmed">Folder</PText>;
 };
 

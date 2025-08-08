@@ -200,7 +200,6 @@ const FolderOptions = () => {
   }, [bottomSheetRef, optionsDialog]);
 
   const [v, setV] = useState('Filename');
-  console.log('v', v);
 
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);

@@ -11,6 +11,10 @@ export const PFileImage = memo(
     size,
     ...props
   }: { file: Image; size: ThumbnailSize } & ImageProps) => {
+    // I had this in here and it worked, but I prefer the idea of the parent deciding how to render this (IE: if it's a folder)
+    // as different views have different needs (EG: blurring, overlaying text etc)
+    //    const isFolder = file.__typename == 'Folder';
+    //     const uri = useLocalImageUrl(isFolder ? file.heroImage : file, size);
     const uri = useLocalImageUrl(file, size);
     if (!uri) return null;
 

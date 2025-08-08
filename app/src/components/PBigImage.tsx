@@ -76,6 +76,7 @@ export const PBigImage = memo(
 );
 
 export const useLocalImageUrl = (file: Image, size: AllSize) => {
+  if (!file) return null;
   const [uri, setUri] = useState<string | undefined>(undefined);
   const baseUrl = useLoginDetails()?.server;
   const source = baseUrl + imageURL(file, size);

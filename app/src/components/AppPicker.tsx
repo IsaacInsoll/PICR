@@ -13,7 +13,6 @@ export const AppPicker = ({
   onChange?: (value: string) => void;
 }) => {
   const selectedIndex = value ? options.indexOf(value) : -1;
-  console.log(value, options, selectedIndex);
   return (
     <SegmentedControl
       // style={{ backgroundColor: '#f00', width: '100%', height: 32 }}
