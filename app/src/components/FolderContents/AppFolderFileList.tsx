@@ -53,7 +53,7 @@ export const AppFileListItem = ({
             alignItems: 'center',
           }}
         >
-          {img.id ? (
+          {img?.id ? (
             <PFileImage
               file={img}
               style={{ width: 80, height: 80 }}
