@@ -164,7 +164,17 @@ const FolderViewButton = () => {
   const setView = useSetAtom(folderViewModeAtom);
   const onPress = () => {
     setView((v) => {
-      return v == 'feed' ? 'list' : 'feed';
+      switch (v) {
+        case 'list':
+          return 'feed';
+        case 'feed':
+          return 'gallery';
+        case 'gallery':
+          return 'gallery2';
+        case 'gallery2':
+          return 'list';
+      }
+      return v == 'feed' ? 'list' : v == 'list' ? 'gallery' : 'feed';
     });
   };
   return (

@@ -88,20 +88,6 @@ const FileDetails = ({ file }: { file: File | Image }) => {
       <AppCommentsChip totalComments={file.totalComments} />
     </View>
   );
-  // return (
-  //   <AppFileLink file={file} asChild>
-  //     <TouchableOpacity>
-  //       <View style={styles.fileActions}>
-  //         {/*TODO: HeroImageSet, Info, Download */}
-  //         <FileRating
-  //           file={file}
-  //           onChange={(rating) => mutate({ id, rating })}
-  //         />
-  //         <FileCommentsIcon file={file} />
-  //       </View>
-  //     </TouchableOpacity>
-  //   </AppFileLink>
-  // );
 };
 
 const styles = StyleSheet.create({

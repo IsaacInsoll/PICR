@@ -4,6 +4,7 @@ import { File } from '@shared/gql/graphql';
 import { useAtomValue } from 'jotai';
 import { folderViewModeAtom } from '@/src/atoms/atoms';
 import { AppFolderFileList } from '@/src/components/FolderContents/AppFolderFileList';
+import { AppFolderGalleryList } from '@/src/components/FolderContents/AppFolderGalleryList';
 
 export const AppFolderContentsView = ({
   folder,
@@ -24,7 +25,9 @@ export const AppFolderContentsView = ({
   */
   switch (view) {
     case 'gallery':
-      return <AppFolderFeed items={items} width={width} />;
+      return <AppFolderGalleryList items={items} width={width} colCount={2} />;
+    case 'gallery2':
+      return <AppFolderGalleryList items={items} width={width} colCount={3} />;
     case 'feed':
       return <AppFolderFeed items={items} width={width} />;
     case 'list':
