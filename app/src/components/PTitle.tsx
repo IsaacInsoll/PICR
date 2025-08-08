@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import { mainFont, typographyScale } from '@/src/constants';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 
-type TitleLevel = 1 | 2 | 3;
+type TitleLevel = 1 | 2 | 3 | 4;
 
 export const PTitle = ({
   children,
@@ -26,4 +26,5 @@ const styles: { [k in TitleLevel]: TextStyle } = {
   1: { fontFamily: mainFont[2], fontSize: typographyScale[1] },
   2: { fontFamily: mainFont[3], fontSize: typographyScale[2] },
   3: { fontFamily: mainFont[4], fontSize: typographyScale[3] },
+  4: { fontFamily: mainFont[1], fontSize: typographyScale[4] },
 } as const;

@@ -1,11 +1,13 @@
 import { Link, LinkProps } from 'expo-router';
 import { useHostname } from '@/src/hooks/useHostname';
+import { File, Folder } from '@shared/gql/graphql';
 import {
   addToFileCache,
   addToFolderCache,
   FileIDandName,
   FolderIDandName,
 } from '@/src/helpers/folderCache';
+import { ReactNode } from 'react';
 
 export const AppFolderLink = ({
   folder,
@@ -35,6 +37,31 @@ export const AppFileLink = ({
       {children}
     </Link>
   );
+};
+
+// Link to either file or folder, requires `__typename`
+export const AppLink = ({
+  item,
+  children,
+  asChild,
+}: {
+  item: File | Folder;
+  children: ReactNode;
+  asChild?: boolean;
+}) => {
+  if (item.__typename === 'Folder') {
+    return (
+      <AppFolderLink folder={item} asChild={asChild}>
+        {children}
+      </AppFolderLink>
+    );
+  } else {
+    return (
+      <AppFileLink file={item} asChild={asChild}>
+        {children}
+      </AppFileLink>
+    );
+  }
 };
 
 export const useAppFolderLink = (folder: { id: string }) => {

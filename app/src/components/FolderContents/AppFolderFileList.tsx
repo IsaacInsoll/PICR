@@ -1,0 +1,121 @@
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  AppFileLink,
+  AppFolderLink,
+  AppLink,
+} from '@/src/components/AppFolderLink';
+import { AppImage } from '@/src/components/AppImage';
+import { PText } from '@/src/components/PText';
+import { File, Image } from '@shared/gql/graphql';
+import { AspectView } from '@/src/components/AspectView';
+import { Suspense } from 'react';
+import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
+import { useAppTheme } from '@/src/hooks/useAppTheme';
+import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
+import { useMutation } from 'urql';
+import { FileCommentsIcon } from '@/src/components/FolderContents/FileCommentsIcon';
+import { FileFlagIcon } from '@/src/components/FolderContents/FileFlagIcon';
+import { FileRating } from '@/src/components/FolderContents/FileRating';
+import { PTitle } from '@/src/components/PTitle';
+import { PFileImage } from '@/src/components/PFileImage';
+import { AppFileFlagChip } from '@/src/components/chips/AppFileFlagChip';
+import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
+import { AppCommentsChip } from '@/src/components/chips/AppCommentsChip';
+
+export const AppFolderFileList = ({ items, width }) => {
+  return (
+    <FlatList
+      style={{ flex: 1, width: '100%', flexGrow: 1 }}
+      data={items}
+      numColumns={1}
+      keyExtractor={(item) => item['__typename'] + item.id}
+      renderItem={(props) => renderItem({ ...props, width })}
+    />
+  );
+};
+
+const renderItem = ({ item, index, width }) => {
+  const isFolder = item['__typename'] == 'Folder';
+  const img = isFolder ? item.heroImage : item;
+  return (
+    <AppLink item={item} asChild={true}>
+      <TouchableOpacity>
+        <View
+          style={{
+            width: '100%',
+            flexDirection: 'row',
+            gap: 8,
+            alignItems: 'center',
+          }}
+        >
+          {img.id ? (
+            <PFileImage
+              file={img}
+              style={{ width: 80, height: 80 }}
+              contentFit="contain"
+              size="sm"
+            />
+          ) : null}
+          <View style={{ gap: 4 }}>
+            <PTitle level={4}>{item.name}</PTitle>
+            {isFolder ? (
+              <FolderDetails folder={item} />
+            ) : (
+              <FileDetails file={item} />
+            )}
+          </View>
+        </View>
+      </TouchableOpacity>
+    </AppLink>
+  );
+};
+
+const FolderDetails = ({ folder }) => {
+  console.log(folder);
+  return <PText variant="dimmed">Folder</PText>;
+};
+
+const FileDetails = ({ file }: { file: File | Image }) => {
+  const isImage = file.type == 'Image';
+  const { id } = file;
+  const [, mutate] = useMutation(addCommentMutation);
+
+  return (
+    <View style={{ flexDirection: 'row', gap: 8 }}>
+      <PText variant="dimmed">{file.type}</PText>
+      <AppFileFlagChip flag={file.flag} hideIfNone={true} />
+      <AppFileRatingChip rating={file.rating} />
+      <AppCommentsChip totalComments={file.totalComments} />
+    </View>
+  );
+  // return (
+  //   <AppFileLink file={file} asChild>
+  //     <TouchableOpacity>
+  //       <View style={styles.fileActions}>
+  //         {/*TODO: HeroImageSet, Info, Download */}
+  //         <FileRating
+  //           file={file}
+  //           onChange={(rating) => mutate({ id, rating })}
+  //         />
+  //         <FileCommentsIcon file={file} />
+  //       </View>
+  //     </TouchableOpacity>
+  //   </AppFileLink>
+  // );
+};
+
+const styles = StyleSheet.create({
+  flashView: {
+    minHeight: 32,
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    paddingVertical: 16,
+  },
+  fileActions: {
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+  },
+  thumbnailBox: { width: 64, height: 64 },
+});

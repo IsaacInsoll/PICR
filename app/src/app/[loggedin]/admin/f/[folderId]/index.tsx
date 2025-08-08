@@ -21,14 +21,14 @@ import { AppPicker } from '@/src/components/AppPicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DefaultFilterOptions, filterFiles } from '@shared/files/filterFiles';
 import {
-  FileSort,
   FileSortDirection,
   FileSortType,
   sortFiles,
 } from '@shared/files/sortFiles';
 import { FilterOptionsInterface } from '@shared/filterAtom';
-import { fileSortAtom } from '@/src/atoms/atoms';
+import { fileSortAtom, folderViewModeAtom } from '@/src/atoms/atoms';
 import { FileSortMenu } from '@/src/components/Menus/FileSortMenu';
+import { GridIcon } from '@/src/components/AppIcons';
 
 const folderOptionsDialogOpenAtom = atom(false);
 
@@ -109,7 +109,19 @@ const FolderBody = ({
       <Stack.Screen
         options={{
           headerTitle: folder.name,
-          headerRight: () => <FolderOptionsButton />,
+          headerRight: () => (
+            <View
+              style={{
+                flexDirection: 'row',
+                height: 32,
+                alignItems: 'center',
+                // backgroundColor: 'red',
+              }}
+            >
+              <FolderOptionsButton />
+              <FolderViewButton />
+            </View>
+          ),
         }}
       />
 
@@ -137,24 +149,30 @@ const FolderOptionsButton = () => {
         <HeaderButton>
           <Ionicons
             name="chevron-expand-outline"
-            size={25}
+            size={24}
             color={theme.brandColor}
             style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
           />
         </HeaderButton>
       </FileSortMenu>
-      {/*<HeaderButton onPress={() => open((b) => !b)}>*/}
-      {/*  <Ionicons*/}
-      {/*    name="options-outline"*/}
-      {/*    size={25}*/}
-      {/*    color={theme.brandColor}*/}
-      {/*    style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/*/}
-      {/*  />*/}
-      {/*</HeaderButton>*/}
     </>
   );
 };
 
+const FolderViewButton = () => {
+  const theme = useAppTheme();
+  const setView = useSetAtom(folderViewModeAtom);
+  const onPress = () => {
+    setView((v) => {
+      return v == 'feed' ? 'list' : 'feed';
+    });
+  };
+  return (
+    <HeaderButton onPress={onPress}>
+      <GridIcon size={24} color={theme.brandColor} style={navBarIconProps} />
+    </HeaderButton>
+  );
+};
 const FolderOptions = () => {
   const safe = useSafeAreaInsets();
   const [sort, setSort] = useAtom(fileSortAtom);
