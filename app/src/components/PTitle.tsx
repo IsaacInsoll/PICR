@@ -1,4 +1,4 @@
-import { Text, TextStyle } from 'react-native';
+import { Text, TextProps, TextStyle } from 'react-native';
 import { ReactNode } from 'react';
 import { mainFont, typographyScale } from '@/src/constants';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
@@ -8,15 +8,14 @@ type TitleLevel = 1 | 2 | 3 | 4;
 export const PTitle = ({
   children,
   level = 1,
-  style = {},
+  style,
+  ...props
 }: {
-  children: ReactNode;
   level?: TitleLevel;
-  style?: TextStyle;
-}) => {
+} & TextProps) => {
   const theme = useAppTheme();
   return (
-    <Text style={{ ...styles[level], color: theme.textColor, ...style }}>
+    <Text style={[styles[level], { color: theme.textColor }, style]}>
       {children}
     </Text>
   );

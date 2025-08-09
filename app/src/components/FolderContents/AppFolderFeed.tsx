@@ -12,6 +12,7 @@ import { useMutation } from 'urql';
 import { FileCommentsIcon } from '@/src/components/FolderContents/FileCommentsIcon';
 import { FileFlagIcon } from '@/src/components/FolderContents/FileFlagIcon';
 import { FileRating } from '@/src/components/FolderContents/FileRating';
+import { PTitle } from '@/src/components/PTitle';
 
 export const AppFolderFeed = ({ items, width }) => {
   return (
@@ -42,9 +43,9 @@ const FlashFolder = ({ folder, width }) => {
         {folder.heroImage?.id ? (
           <AppImage file={folder.heroImage} width={width} />
         ) : null}
-        <PText style={[styles.flashView]}>
-          {folder.id} {folder.name}
-        </PText>
+        <PTitle level={4} style={[styles.flashView]}>
+          {folder.name}
+        </PTitle>
       </TouchableOpacity>
     </AppFolderLink>
   );
