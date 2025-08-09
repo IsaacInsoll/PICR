@@ -147,6 +147,7 @@ const LoginForm = () => {
         style={styles.textInput}
         autoCapitalize={'none'}
         autoCorrect={false}
+        autoComplete="password"
         returnKeyType="go"
         onSubmitEditing={handleSubmit(onSubmit)}
       />
