@@ -26,6 +26,8 @@ import { navBarIconProps } from '@/src/constants';
 import { PView } from '@/src/components/PView';
 import { AppFileListItem } from '@/src/components/FolderContents/AppFolderFileList';
 import { PFileImage } from '@/src/components/PFileImage';
+import { Suspense } from 'react';
+import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 
 const HomeFolderButton = () => {
   const me = useMe();
@@ -61,6 +63,23 @@ const SettingsButton = () => {
 };
 
 export default function AppDashboard() {
+  return (
+    <>
+      <Stack.Screen
+        options={{
+          headerTitle: 'PICR',
+          headerLeft: () => <HomeFolderButton />,
+          headerRight: () => <SettingsButton />,
+        }}
+      />
+      <Suspense fallback={<AppLoadingIndicator />}>
+        <DashboardBody />
+      </Suspense>
+    </>
+  );
+}
+
+const DashboardBody = () => {
   const me = useMe();
   const theme = useAppTheme();
 
@@ -85,46 +104,37 @@ export default function AppDashboard() {
   };
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerTitle: 'PICR',
-          headerLeft: () => <HomeFolderButton />,
-          headerRight: () => <SettingsButton />,
-        }}
-      />
-      <ScrollView
+    <ScrollView
+      style={{
+        backgroundColor: theme.backgroundColor,
+      }}
+      refreshControl={
+        <RefreshControl
+          refreshing={recentUsersResult.fetching}
+          onRefresh={doRefresh}
+        />
+      }
+    >
+      <SafeAreaView
         style={{
-          backgroundColor: theme.backgroundColor,
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 32,
+          width: '100%',
+          paddingHorizontal: 32,
         }}
-        refreshControl={
-          <RefreshControl
-            refreshing={recentUsersResult.fetching}
-            onRefresh={doRefresh}
-          />
-        }
       >
-        <SafeAreaView
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: 32,
-            width: '100%',
-            paddingHorizontal: 32,
-          }}
-        >
-          {recentUsersResult.data ? (
-            <RecentUsers users={recentUsersResult.data?.users.slice(0, 5)} />
-          ) : null}
-          {recentFoldersResult.data ? (
-            <RecentFolders folders={recentFoldersResult.data.allFolders} />
-          ) : null}
-        </SafeAreaView>
-      </ScrollView>
-    </>
+        {recentUsersResult.data ? (
+          <RecentUsers users={recentUsersResult.data?.users.slice(0, 5)} />
+        ) : null}
+        {recentFoldersResult.data ? (
+          <RecentFolders folders={recentFoldersResult.data.allFolders} />
+        ) : null}
+      </SafeAreaView>
+    </ScrollView>
   );
-}
+};
 
 const RecentUsers = ({ users }) => {
   return (
@@ -170,22 +180,9 @@ const RecentFolders = ({ folders }: { folders: FolderFragmentFragment[] }) => {
       <PTitle level={2}>Recently Modified Folders</PTitle>
       <View style={styles.indent}>
         {folders.map((f, index) => (
-          <AppFileListItem item={f}>
+          <AppFileListItem item={f} key={index}>
             <AppDateDisplay dateString={f.folderLastModified} />
           </AppFileListItem>
-          // <AppFolderLink folder={f} key={f.id} asChild>
-          //   <TouchableOpacity>
-          //     <PView key={index} row gap="sm">
-          //       <PView key={index} row gap="md">
-          //         <AppImage file={f.heroImage} size="sm" width={48} />
-          //         <PView gap="xs">
-          //           <PText>{f.name}</PText>
-          //           <AppDateDisplay dateString={f.folderLastModified} />
-          //         </PView>
-          //       </PView>
-          //     </PView>
-          //   </TouchableOpacity>
-          // </AppFolderLink>
         ))}
       </View>
     </View>
