@@ -15,7 +15,7 @@ export const PTitle = ({
 } & TextProps) => {
   const theme = useAppTheme();
   return (
-    <Text style={[styles[level], { color: theme.textColor }, style]}>
+    <Text style={[styles[level], { color: theme.textColor }, style]} {...props}>
       {children}
     </Text>
   );

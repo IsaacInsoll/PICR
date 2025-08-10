@@ -1,19 +1,35 @@
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { PTitle } from '@/src/components/PTitle';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ReactNode, Suspense, useCallback, useEffect, useRef } from 'react';
+import {
+  ReactNode,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { Comment, File, FileFlag } from '@shared/gql/graphql';
 import { PText } from '@/src/components/PText';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
-import { useQuery } from 'urql';
-import { TextStyle, View } from 'react-native';
+import { useMutation, useQuery } from 'urql';
+import {
+  Keyboard,
+  StyleSheet,
+  TextInput,
+  TextStyle,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { AppAvatar } from '@/src/components/AppAvatar';
 import { prettyDate } from '@shared/prettyDate';
 import { Rating } from '@kolking/react-native-rating';
 import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import { Ionicons } from '@expo/vector-icons';
+import { AppIconButton } from '@/src/components/AppIcons';
+import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 
 // This must be the bottom most element in the view
 export const FileCommentsBottomSheet = ({
@@ -28,10 +44,35 @@ export const FileCommentsBottomSheet = ({
   const safe = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const theme = useAppTheme();
+  const textInputRef = useRef<TextInput | null>(null);
+
+  const [, mutate] = useMutation(addCommentMutation);
+
+  const [addComment, setAddComment] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  console.log({ commentText }, commentText.length);
+  const onShowAddComment = () => {
+    setAddComment(true);
+    setTimeout(() => textInputRef.current?.focus(), 100);
+    bottomSheetRef.current?.expand();
+  };
+  const onHideAddComment = () => {
+    setAddComment(false);
+    Keyboard.dismiss();
+    bottomSheetRef.current?.close();
+  };
+
+  const onSubmitComment = async () => {
+    const result = await mutate({ comment: commentText, id: file.id });
+    if (result.data && !result.error) {
+      setAddComment(false);
+      setCommentText('');
+    }
+  };
 
   useEffect(() => {
     if (open) {
-      bottomSheetRef.current?.expand();
+      bottomSheetRef.current?.snapToIndex(addComment ? 1 : 0);
     } else {
       bottomSheetRef.current?.close();
     }
@@ -41,13 +82,23 @@ export const FileCommentsBottomSheet = ({
     console.log('handleSheetChanges', index);
   }, []);
 
+  const handleClose = () => {
+    Keyboard.dismiss();
+    if (onClose) onClose();
+  };
+
   return (
     <BottomSheet
       ref={bottomSheetRef}
       onChange={handleSheetChanges}
-      onClose={onClose}
-      enablePanDownToClose={true}
+      onClose={handleClose}
+      enablePanDownToClose={!addComment}
+      enableHandlePanningGesture={!addComment}
+      enableContentPanningGesture={!addComment}
+      enableDynamicSizing={false}
       index={-1} // start in closed state
+      snapPoints={['50%', '100%']}
+      keyboardBehavior="extend"
       backgroundStyle={{ backgroundColor: theme.backgroundColor + 'ee' }}
       handleIndicatorStyle={{
         backgroundColor: theme.brandColor,
@@ -59,12 +110,80 @@ export const FileCommentsBottomSheet = ({
           zIndex: 10000000,
           flex: 1,
           gap: 16,
+          padding: 8,
           // padding: 100,
           alignItems: 'center',
           paddingBottom: safe.bottom, // system bottom bar :/
         }}
       >
-        <PTitle level={3}>Comments for {file.name}</PTitle>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            alignContent: 'space-between',
+            width: '100%',
+          }}
+        >
+          <PTitle level={3} style={{ flexGrow: 1, maxWidth: '60%' }}>
+            Comments for {file.name}
+          </PTitle>
+          <View
+            style={{
+              flexGrow: 1,
+              flex: 1,
+              justifyContent: 'flex-start',
+              alignItems: 'flex-end',
+            }}
+          >
+            {addComment ? (
+              <TouchableOpacity onPress={onHideAddComment}>
+                <Ionicons name="close" size={32} color={theme.brandColor} />
+              </TouchableOpacity>
+            ) : (
+              <Ionicons.Button
+                backgroundColor={theme.brandColor}
+                name="chatbubble-ellipses-outline"
+                size={16}
+                onPress={onShowAddComment}
+              >
+                Add Comment
+              </Ionicons.Button>
+            )}
+          </View>
+        </View>
+        <TextInput
+          placeholder="Your comment..."
+          multiline={true}
+          value={commentText}
+          onChangeText={(txt) => setCommentText(txt)}
+          ref={textInputRef}
+          style={[
+            styles.commentInput,
+            {
+              color: theme.textColor,
+              borderColor: theme.textColor + '40',
+              display: addComment ? 'flex' : 'none',
+            },
+          ]}
+        />
+        {addComment ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+              width: '100%',
+            }}
+          >
+            <AppIconButton
+              name="chatbubble-ellipses-outline"
+              disabled={commentText.length == 0}
+              onPress={onSubmitComment}
+            >
+              Add Comment
+            </AppIconButton>
+          </View>
+        ) : null}
+        )
         <Suspense fallback={<AppLoadingIndicator />}>
           <FileCommentsBody id={file.id} />
         </Suspense>
@@ -95,24 +214,10 @@ const FileCommentsBody = ({ id }: { id: string }) => {
 const AppComment = ({ comment }: { comment: Comment }) => {
   const { user, timestamp, systemGenerated } = comment;
   return (
-    <View
-      style={{
-        paddingHorizontal: 16,
-        width: '100%',
-        flexDirection: 'row',
-        gap: 16,
-      }}
-    >
+    <View style={styles.commentContainer}>
       <AppAvatar user={user} size={32} />
       <View style={{ gap: 8 }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: '100%',
-            paddingRight: 32,
-          }}
-        >
+        <View style={styles.comment}>
           <PText variant="dimmed">{user?.name}</PText>
           <PText variant="dimmed">{prettyDate(timestamp)}</PText>
           {/*TODO: copy commentAction component from web*/}
@@ -120,7 +225,7 @@ const AppComment = ({ comment }: { comment: Comment }) => {
         {systemGenerated ? (
           <CommentAction comment={comment} />
         ) : (
-          <PText>Comment {comment.comment}</PText>
+          <PText>{comment.comment}</PText>
         )}
       </View>
     </View>
@@ -183,3 +288,25 @@ const fileFlagStyles: {
     icon: <Ionicons name="thumbs-down-outline" size={16} color={'#f00'} />,
   },
 } as const;
+
+const styles = StyleSheet.create({
+  comment: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingRight: 32,
+  },
+  commentInput: {
+    width: '100%',
+    fontSize: 14,
+    borderRadius: 4,
+    borderWidth: 1,
+    padding: 8,
+  },
+  commentContainer: {
+    paddingHorizontal: 16,
+    width: '100%',
+    flexDirection: 'row',
+    gap: 16,
+  },
+});
