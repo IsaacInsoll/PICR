@@ -200,7 +200,6 @@ const CustomItem = ({
   animationValue,
   setIsZoomed,
 }: ItemProps) => {
-  console.log('CustomItem rendering' + index);
   const maskStyle = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
       animationValue.value,

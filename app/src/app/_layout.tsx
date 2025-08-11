@@ -7,6 +7,7 @@ import { Dirs } from 'react-native-file-access';
 //full sreen image zoom
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AppErrorBoundary } from '@/src/components/AppErrorBoundary';
 
 CacheManager.config = {
   baseDir: `${Dirs.CacheDir}/images_cache/`,
@@ -23,12 +24,14 @@ export default function AppLayout() {
   console.log('PICR App Booting');
 
   return (
-    <GestureHandlerRootView>
-      <SafeAreaProvider>
-        <ThemeProvider>
-          <Slot />
-        </ThemeProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <AppErrorBoundary>
+      <GestureHandlerRootView>
+        <SafeAreaProvider>
+          <ThemeProvider>
+            <Slot />
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </AppErrorBoundary>
   );
 }

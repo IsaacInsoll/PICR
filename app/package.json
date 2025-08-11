@@ -50,11 +50,14 @@
     "moment-timezone": "^0.6.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "react-error-boundary": "^6.0.0",
     "react-hook-form": "^7.56.4",
     "react-native": "0.79.5",
     "react-native-edge-to-edge": "^1.6.2",
     "react-native-file-access": "^3.1.1",
     "react-native-gesture-handler": "~2.24.0",
+    "react-native-ios-context-menu": "3.1.0",
+    "react-native-ios-utilities": "5.1.2",
     "react-native-nitro-modules": "^0.26.3",
     "react-native-reanimated": "~3.17.4",
     "react-native-reanimated-carousel": "^4.0.2",
@@ -66,9 +69,7 @@
     "react-native-webview": "13.13.5",
     "urql": "^4.2.2",
     "zeego": "^3.0.6",
-    "zod": "^3.25.28",
-    "react-native-ios-context-menu": "3.1.0",
-    "react-native-ios-utilities": "5.1.2"
+    "zod": "^3.25.28"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

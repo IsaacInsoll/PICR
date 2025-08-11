@@ -1,5 +1,4 @@
 import { Text, TextProps, TextStyle } from 'react-native';
-import { ReactNode } from 'react';
 import { mainFont, typographyScale } from '@/src/constants';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 

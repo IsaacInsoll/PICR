@@ -183,7 +183,6 @@ export const FileCommentsBottomSheet = ({
             </AppIconButton>
           </View>
         ) : null}
-        )
         <Suspense fallback={<AppLoadingIndicator />}>
           <FileCommentsBody id={file.id} />
         </Suspense>
@@ -220,7 +219,6 @@ const AppComment = ({ comment }: { comment: Comment }) => {
         <View style={styles.comment}>
           <PText variant="dimmed">{user?.name}</PText>
           <PText variant="dimmed">{prettyDate(timestamp)}</PText>
-          {/*TODO: copy commentAction component from web*/}
         </View>
         {systemGenerated ? (
           <CommentAction comment={comment} />
