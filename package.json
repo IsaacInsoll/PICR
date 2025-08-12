@@ -89,7 +89,7 @@
     },
     "hooks": {
       "before:init": [
-        "npm run workflow"
+        "npm run test"
       ]
     },
     "git": {
