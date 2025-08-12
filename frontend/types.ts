@@ -6,6 +6,9 @@ import {
   VideoMetadataSummary,
 } from '../graphql-types.js';
 
+// August 2025:
+// These should not be used and should be replaced with Partial<GraphQLType> types as this is an unnecessary complication
+
 export interface MinimalFolder {
   id: string;
   name?: string;
