@@ -5,6 +5,7 @@ import { picrConfig } from '../../config/picrConfig.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { ServerInfo } from '../../../graphql-types.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { valid } from 'semver';
 
 const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   _,
@@ -34,12 +35,13 @@ export const serverInfo = {
 };
 
 const getLatestBuild = async () => {
-  const req = await fetch('https://api.github.com/repos/isaacinsoll/picr/tags');
+  const req = await fetch('https://api.github.com/repos/isaacinsoll/picr/releases');
   const json = (await req.json()) as { name: string }[];
   // this is a list of releases, the latest is tagged `latest`, the second one is the same build but with a version number
   if (Array.isArray(json)) {
-    const version = json.find(({ name }) => name != 'latest');
-    return version?.name ?? '';
+    console.log(json[0]);
+    console.log('yolo',json[0]?.tag_name );
+    return json[0]?.tag_name ?? '';
   } else {
     return json; // this should probably just return empty string, but I want to see what it is
   }
