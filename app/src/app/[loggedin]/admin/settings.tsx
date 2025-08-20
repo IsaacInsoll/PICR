@@ -17,6 +17,7 @@ export default function Settings() {
   const logout = useSetLoggedOut();
   const doClearCache = async () => {
     await CacheManager.clearCache();
+    alert('Cleared');
   };
   return (
     <AppView style={{ flex: 1 }}>

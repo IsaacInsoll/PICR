@@ -18,6 +18,8 @@ export const PFileImage = memo(
     const uri = useLocalImageUrl(file, size);
     if (!uri) return null;
 
-    return <ExpoImage {...props} source={{ uri }} />;
+    return (
+      <ExpoImage {...props} source={{ uri }} placeholder={file.blurHash} />
+    );
   },
 );

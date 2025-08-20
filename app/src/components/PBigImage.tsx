@@ -62,6 +62,7 @@ export const PBigImage = memo(
         }}
       >
         <ExpoImage
+          placeholder={file.blurHash}
           source={{ uri }}
           style={{
             ...styles.image,

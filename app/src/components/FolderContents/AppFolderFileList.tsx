@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AppFolderLink, AppLink } from '@/src/components/AppFolderLink';
 import { AppImage } from '@/src/components/AppImage';
 import { PText } from '@/src/components/PText';
@@ -16,10 +16,11 @@ import { PFileImage } from '@/src/components/PFileImage';
 import { AppFileFlagChip } from '@/src/components/chips/AppFileFlagChip';
 import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
 import { AppCommentsChip } from '@/src/components/chips/AppCommentsChip';
+import { FlashList } from '@shopify/flash-list';
 
 export const AppFolderFileList = ({ items, width }) => {
   return (
-    <FlatList
+    <FlashList
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
       data={items}
       numColumns={1}

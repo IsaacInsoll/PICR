@@ -17,62 +17,50 @@ import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
 import { AppCommentsChip } from '@/src/components/chips/AppCommentsChip';
 import { BlurView } from 'expo-blur';
 import { useMemo, useState } from 'react';
-
-// inspired by https://github.com/shevon14/react-native-masonry-gallery/ which doesn't have NPM package and is super simple
+import { FlashList } from '@shopify/flash-list';
 
 const border = 2;
 const defaultHeight = 200; //EG: non-images
 
 export const AppFolderGalleryList = ({ items, width, colCount }) => {
-  const columns = useMemo(() => {
-    console.log('calculating columns');
-    return splitImages(items, colCount);
-  }, [items, colCount]);
-
-  // it's a bit slow to load all images at once and you get notable column-by-column rendering
-  // so lets start with rendering the tops of each row and then continue rendering down
-  // literally as soon as i did this the user experience felt 10x better
-  const [imagesLoaded, setImagesLoaded] = useState(0);
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      showsVerticalScrollIndicator={false}
-    >
-      {columns.map((column, index) => (
-        <View key={index}>
-          {column.map((image, imageIndex) => {
-            // see images loaded for why we are 'rolling out' rather than insta-loading
-            if (imageIndex > imagesLoaded / colCount + 2) return null;
+    <FlashList
+      masonry={true}
+      style={{ flex: 1, width: '100%', flexGrow: 1 }}
+      data={items}
+      numColumns={colCount}
+      keyExtractor={(item) => item['__typename'] + item.id}
+      renderItem={(props) => (
+        <MasonryItem {...props} width={width} colCount={colCount} />
+      )}
+    />
+  );
+};
 
-            const isFolder = image.__typename == 'Folder';
-            return (
-              <View key={image.id} style={styles.imageContainer}>
-                <AppLink item={image} asChild={true}>
-                  <TouchableOpacity>
-                    <PFileImage
-                      file={isFolder ? image.heroImage : image}
-                      size="md"
-                      style={{
-                        width: width / colCount - border * 2,
-                        height: image.imageRatio
-                          ? width / colCount / image.imageRatio
-                          : defaultHeight,
-                      }}
-                      transition={100}
-                      onDisplay={() => setImagesLoaded((l) => l + 1)}
-                      // blurRadius={isFolder ? 0 : undefined}
-                    />
-                    {isFolder ? (
-                      <FolderName folder={image} intensity={colCount} />
-                    ) : null}
-                  </TouchableOpacity>
-                </AppLink>
-              </View>
-            );
-          })}
-        </View>
-      ))}
-    </ScrollView>
+const MasonryItem = ({ item, width, colCount }) => {
+  const image = item;
+  const isFolder = image.__typename == 'Folder';
+  return (
+    <View key={image.id} style={styles.imageContainer}>
+      <AppLink item={image} asChild={true}>
+        <TouchableOpacity>
+          <PFileImage
+            file={isFolder ? image.heroImage : image}
+            size="md"
+            style={{
+              width: width / colCount - border * 2,
+              height: image.imageRatio
+                ? width / colCount / image.imageRatio
+                : defaultHeight,
+            }}
+            transition={100}
+            // onDisplay={() => setImagesLoaded((l) => l + 1)}
+            // blurRadius={isFolder ? 0 : undefined}
+          />
+          {isFolder ? <FolderName folder={image} intensity={colCount} /> : null}
+        </TouchableOpacity>
+      </AppLink>
+    </View>
   );
 };
 
