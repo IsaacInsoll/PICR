@@ -107,7 +107,7 @@ export default function AppFileView() {
               <AppFileCommentsButton file={file} />
             </View>
           ),
-          // headerShown: !fullScreen, //toggling this causes ugly image jump behaviour
+          headerShown: !fullScreen, //toggling this causes ugly image jump behaviour
         }}
       />
       <SafeAreaView
