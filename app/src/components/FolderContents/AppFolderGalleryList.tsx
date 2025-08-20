@@ -18,20 +18,23 @@ import { AppCommentsChip } from '@/src/components/chips/AppCommentsChip';
 import { BlurView } from 'expo-blur';
 import { useMemo, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
+import { useScreenOrientation } from '@/src/hooks/useScreenOrientation';
 
 const border = 2;
 const defaultHeight = 200; //EG: non-images
 
 export const AppFolderGalleryList = ({ items, width, colCount }) => {
+  const [, isLandscape] = useScreenOrientation();
+  const cols = isLandscape ? colCount * 2 : colCount;
   return (
     <FlashList
       masonry={true}
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
       data={items}
-      numColumns={colCount}
+      numColumns={cols}
       keyExtractor={(item) => item['__typename'] + item.id}
       renderItem={(props) => (
-        <MasonryItem {...props} width={width} colCount={colCount} />
+        <MasonryItem {...props} width={width} colCount={cols} />
       )}
     />
   );
@@ -41,7 +44,7 @@ const MasonryItem = ({ item, width, colCount }) => {
   const image = item;
   const isFolder = image.__typename == 'Folder';
   return (
-    <View key={image.id} style={styles.imageContainer}>
+    <View style={styles.imageContainer}>
       <AppLink item={image} asChild={true}>
         <TouchableOpacity>
           <PFileImage
