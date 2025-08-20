@@ -17,7 +17,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   name: appName,
   slug: 'picr',
   version: '1.0.0',
-  orientation: 'portrait',
+  orientation: 'default',
   icon: icon,
   scheme: scheme,
   userInterfaceStyle: 'automatic',
@@ -74,6 +74,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         ios: {
           deploymentTarget: '17.0',
         },
+      },
+    ],
+    [
+      'expo-screen-orientation',
+      {
+        initialOrientation: 'DEFAULT',
       },
     ],
   ],
