@@ -10,7 +10,7 @@ export const PView = ({
   row,
 }: PropsWithChildren<{
   gap?: Padding;
-  style?: any | defined;
+  style?: any | undefined;
   row?: boolean;
   onWidthChange?: (width: number) => void;
 }>) => {

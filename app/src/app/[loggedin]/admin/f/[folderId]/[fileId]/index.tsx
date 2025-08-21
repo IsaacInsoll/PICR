@@ -32,6 +32,7 @@ import { navBarIconProps } from '@/src/constants';
 import { File } from '@shared/gql/graphql';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 import { FileCommentsBottomSheet } from '@/src/components/FileCommentsBottomSheet';
+import { useScreenOrientation } from '@/src/hooks/useScreenOrientation';
 
 interface ItemProps {
   index: number;
@@ -87,6 +88,8 @@ export default function AppFileView() {
     [width],
   );
 
+  const [orientation] = useScreenOrientation();
+
   return (
     <>
       <Stack.Screen
@@ -120,6 +123,7 @@ export default function AppFileView() {
         <Carousel
           loop={false}
           // autoPlay={!isZoomed}
+          key={orientation} //force rerender if screen changes orientation, otherwise it's blank
           defaultIndex={fileIndex}
           style={{ flexGrow: 1 }}
           width={width}

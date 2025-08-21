@@ -126,7 +126,7 @@ const FolderBody = ({
       />
 
       <AppFolderContentsView folder={folder} files={withProps} width={width} />
-      <FolderOptions />
+      {/*<FolderOptions />*/}
     </>
   );
 };

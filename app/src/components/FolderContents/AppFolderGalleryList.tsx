@@ -24,10 +24,17 @@ const border = 2;
 const defaultHeight = 200; //EG: non-images
 
 export const AppFolderGalleryList = ({ items, width, colCount }) => {
-  const [, isLandscape] = useScreenOrientation();
+  // I was using `useScreenOrientation` but it casued more rerenders when rotating device between portrait/landscape
+  // this current onLayout/setState implementation is less glitchy feeling
+  const [isLandscape, setIsLandscape] = useState(false);
   const cols = isLandscape ? colCount * 2 : colCount;
   return (
     <FlashList
+      onLayout={(e) => {
+        const layout = e.nativeEvent.layout;
+        const arl = layout.width / layout.height > 1.0;
+        if (arl != isLandscape) setIsLandscape(arl);
+      }}
       masonry={true}
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
       data={items}
