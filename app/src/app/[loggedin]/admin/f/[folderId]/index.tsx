@@ -125,7 +125,12 @@ const FolderBody = ({
         }}
       />
 
-      <AppFolderContentsView folder={folder} files={withProps} width={width} />
+      <AppFolderContentsView
+        folder={folder}
+        files={withProps}
+        width={width}
+        refresh={() => requery({ requestPolicy: 'cache-and-network' })}
+      />
       {/*<FolderOptions />*/}
     </>
   );

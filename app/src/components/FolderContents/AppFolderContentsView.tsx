@@ -1,4 +1,4 @@
-import { ViewFolderQuery } from '@shared/gql/graphql';
+import { Folder, ViewFolderQuery } from '@shared/gql/graphql';
 import { AppFolderFeed } from '@/src/components/FolderContents/AppFolderFeed';
 import { File } from '@shared/gql/graphql';
 import { useAtomValue } from 'jotai';
@@ -6,15 +6,25 @@ import { folderViewModeAtom } from '@/src/atoms/atoms';
 import { AppFolderFileList } from '@/src/components/FolderContents/AppFolderFileList';
 import { AppFolderGalleryList } from '@/src/components/FolderContents/AppFolderGalleryList';
 
+interface AppFolderContentsViewProps {
+  folder: ViewFolderQuery['folder'];
+  files: File[];
+  width: number;
+  refresh: () => void;
+}
+
+export interface AppFolderContentsViewChildProps {
+  items: (File | Folder)[];
+  width: number;
+  refresh: () => void;
+}
+
 export const AppFolderContentsView = ({
   folder,
   files,
   width,
-}: {
-  folder: ViewFolderQuery['folder'];
-  files: File[];
-  width: number;
-}) => {
+  refresh,
+}: AppFolderContentsViewProps) => {
   const items = [...folder.subFolders, ...files];
   const view = useAtomValue(folderViewModeAtom);
   /*
@@ -25,12 +35,28 @@ export const AppFolderContentsView = ({
   */
   switch (view) {
     case 'gallery':
-      return <AppFolderGalleryList items={items} width={width} colCount={2} />;
+      return (
+        <AppFolderGalleryList
+          items={items}
+          width={width}
+          colCount={2}
+          refresh={refresh}
+        />
+      );
     case 'gallery2':
-      return <AppFolderGalleryList items={items} width={width} colCount={3} />;
+      return (
+        <AppFolderGalleryList
+          items={items}
+          width={width}
+          colCount={3}
+          refresh={refresh}
+        />
+      );
     case 'feed':
-      return <AppFolderFeed items={items} width={width} />;
+      return <AppFolderFeed items={items} width={width} refresh={refresh} />;
     case 'list':
-      return <AppFolderFileList items={items} width={width} />;
+      return (
+        <AppFolderFileList items={items} width={width} refresh={refresh} />
+      );
   }
 };

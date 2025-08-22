@@ -19,17 +19,24 @@ import { BlurView } from 'expo-blur';
 import { useMemo, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import { useScreenOrientation } from '@/src/hooks/useScreenOrientation';
+import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
 
 const border = 2;
 const defaultHeight = 200; //EG: non-images
 
-export const AppFolderGalleryList = ({ items, width, colCount }) => {
+export const AppFolderGalleryList = ({
+  items,
+  width,
+  refresh,
+  colCount,
+}: AppFolderContentsViewChildProps & { colCount: number }) => {
   // I was using `useScreenOrientation` but it casued more rerenders when rotating device between portrait/landscape
   // this current onLayout/setState implementation is less glitchy feeling
   const [isLandscape, setIsLandscape] = useState(false);
   const cols = isLandscape ? colCount * 2 : colCount;
   return (
     <FlashList
+      onRefresh={refresh}
       onLayout={(e) => {
         const layout = e.nativeEvent.layout;
         const arl = layout.width / layout.height > 1.0;

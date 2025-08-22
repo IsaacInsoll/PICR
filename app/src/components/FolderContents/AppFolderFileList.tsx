@@ -17,10 +17,16 @@ import { AppFileFlagChip } from '@/src/components/chips/AppFileFlagChip';
 import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
 import { AppCommentsChip } from '@/src/components/chips/AppCommentsChip';
 import { FlashList } from '@shopify/flash-list';
+import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
 
-export const AppFolderFileList = ({ items, width }) => {
+export const AppFolderFileList = ({
+  items,
+  width,
+  refresh,
+}: AppFolderContentsViewChildProps) => {
   return (
     <FlashList
+      onRefresh={refresh}
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
       data={items}
       numColumns={1}

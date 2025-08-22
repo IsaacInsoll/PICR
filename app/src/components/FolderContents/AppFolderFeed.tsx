@@ -14,10 +14,16 @@ import { FileFlagIcon } from '@/src/components/FolderContents/FileFlagIcon';
 import { FileRating } from '@/src/components/FolderContents/FileRating';
 import { PTitle } from '@/src/components/PTitle';
 import { FlashList } from '@shopify/flash-list';
+import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
 
-export const AppFolderFeed = ({ items, width }) => {
+export const AppFolderFeed = ({
+  items,
+  width,
+  refresh,
+}: AppFolderContentsViewChildProps) => {
   return (
     <FlashList
+      onRefresh={refresh}
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
       data={items}
       numColumns={1}
