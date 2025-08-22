@@ -16,7 +16,7 @@ import { FolderModalManager } from '../components/FolderModalManager';
 import { Page } from '../components/Page';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 import { QuickFind } from '../components/QuickFind/QuickFind';
-import { useRequery } from '../hooks/useRequery';
+import { useRequery } from '@shared/hooks/useRequery';
 import { LoggedInHeader } from '../components/Header/LoggedInHeader';
 import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';

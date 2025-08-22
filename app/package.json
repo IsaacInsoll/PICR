@@ -46,7 +46,7 @@
     "expo-symbols": "~0.4.5",
     "expo-system-ui": "~5.0.10",
     "expo-web-browser": "~14.2.0",
-    "jotai": "^2.12.4",
+    "jotai": "2.12.5",
     "moment": "^2.30.1",
     "moment-timezone": "^0.6.0",
     "react": "19.0.0",

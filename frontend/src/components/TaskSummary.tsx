@@ -13,7 +13,7 @@ import {
 } from '@mantine/core';
 import { Page } from './Page';
 import { taskQuery } from '@shared/urql/queries/taskQuery';
-import { useRequery } from '../hooks/useRequery';
+import { useRequery } from '@shared/hooks/useRequery';
 
 export const TaskSummary = ({ folderId }: { folderId: string }) => {
   const [result, requery] = useQuery({
