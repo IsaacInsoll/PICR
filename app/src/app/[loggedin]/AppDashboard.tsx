@@ -28,6 +28,7 @@ import { AppFileListItem } from '@/src/components/FolderContents/AppFolderFileLi
 import { PFileImage } from '@/src/components/PFileImage';
 import { Suspense } from 'react';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
+import { AppTaskSummary } from '@/src/components/AppTaskSummary';
 
 const HomeFolderButton = () => {
   const me = useMe();
@@ -125,6 +126,9 @@ const DashboardBody = () => {
           paddingHorizontal: 32,
         }}
       >
+        <Suspense>
+          <AppTaskSummary folderId={me?.folderId} />
+        </Suspense>
         {recentUsersResult.data ? (
           <RecentUsers users={recentUsersResult.data?.users.slice(0, 5)} />
         ) : null}
