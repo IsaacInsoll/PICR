@@ -20,12 +20,13 @@ jobs:
         cache: 'npm'
 
 # BACKEND
-    - name: "🗃️ [backend] Install Dependencies"
-      run: npm ci
     - name: "🗃️ [backend] Build (TSC)"
-      run: npm run build
+#     we NPM CI here to install typescript and any shared deps
+      run: cd shared && npm ci && cd ../backend && npm ci && npm run build
     - name: "🗃️  [backend] copy extra resources"
       run:  bash ./copy-backend-files.sh
+    - name: "🗃️ [backend] Install Dependencies"
+      run: cd dist && npm ci
 
 # FRONTEND
     - name: "💄 [frontend] Install Dependencies"
@@ -43,6 +44,8 @@ jobs:
 # TESTS
     - name: "🧪  [tests] download sample files"
       run: mkdir -p ./tests/env && wget --no-verbose https://photosummaryapp.com/picr-demo-data.zip --output-document=./tests/env/sample.zip
+    - name: "🧪 [test] Install Dependencies"
+      run: npm ci
     - name: "🧪 [test] run backend tests (vitest)"
       run: npm run test
 

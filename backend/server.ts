@@ -1,4 +1,4 @@
-import pkg from '../package.json' with { type: 'json' };
+import pkg from './package.json' with { type: 'json' };
 import { fileWatcher } from './filesystem/fileWatcher.js';
 import { setupRootFolder } from './filesystem/events/addFolder.js';
 import { envPassword } from './boot/envPassword.js';

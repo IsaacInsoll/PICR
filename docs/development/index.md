@@ -1,5 +1,15 @@
-`# Development
-`
+> __TODO: MONOLITH REFACTOR NOTES__
+> 
+> I'm currently moving the node backend from being in `.` to `./backend`
+> Current problems unaddressed is: 
+> 1. need to do `npm install` in dist folder
+> 2. need an `.env` in dist folder
+> 
+> We are doing this because the server should be self contained in `backend` and not have it's `package.json` etc in 
+> the actual root (like it has been since the beginning). 
+
+# Development
+
 - See [Initial Setup](initial-setup.md) if you are setting up a new environment. 
 - Check out the [Basic Tutorial](basic-tutorial.md) if you are set up but don't know how to get started.
 - [Testing](testing.md) how to create/run tests using vitest.
@@ -58,8 +68,8 @@ This will run the following commands in order. You can run any of these individu
 
 | Command                        | Description                            | Notes                                             |
 |--------------------------------|----------------------------------------|---------------------------------------------------|
-| `npm install`                  | 🗃️ Install backend deps               |                                                   |
-| `npm run build`                | 🗃️ Build backend (TSC)                | Finds any typescript issues preventing deploy.    |
+| `cd backend && npm install`    | 🗃️ Install backend deps               |                                                   |
+| `cd backend && npm run build`  | 🗃️ Build backend (TSC)                | Finds any typescript issues preventing deploy.    |
 | `./copy-backend-files.sh`      | 🗃️ Copy non-TS backend files          | Copies backend files "missed" by TSC              |
 | `cd frontend && npm install`   | 💄 Install front end deps              |                                                   |
 | `cd frontend && npm run build` | 💄 Build frontend (vite)               | Finds any frontend 'build blockers'               |

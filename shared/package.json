@@ -3,7 +3,9 @@
   "description": "Functionality shared between PICR web and app",
   "type": "module",
   "dependencies": {
+    "@graphql-typed-document-node/core": "^3.2.0",
     "jotai": "2.12.5",
+    "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "pretty-bytes": "^7.0.0",
     "react": "19.0.0"

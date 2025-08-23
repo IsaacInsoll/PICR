@@ -2,8 +2,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "NodeNext",
-//    "moduleResolution": "node",
-    "outDir": "dist/server",
+    "outDir": "../dist/server",
     "sourceMap": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -17,6 +16,6 @@
 //      "@/*": ["./*"]
 //    }
   },
-  "include": ["backend/**/*.ts"],
+  "include": ["./**/*.ts"],
   "exclude": ["node_modules"]
 }

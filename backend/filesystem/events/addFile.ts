@@ -2,7 +2,6 @@ import { basename, dirname, extname } from 'path';
 import { folderList, relativePath } from '../fileManager.js';
 import { log } from '../../logger.js';
 import { fastHash } from '../fileHash.js';
-import fs from 'fs';
 import { FileType } from '../../../graphql-types.js';
 import { getImageRatio } from '../../media/getImageRatio.js';
 import { getImageMetadata } from '../../media/getImageMetadata.js';
