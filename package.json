@@ -1,6 +1,6 @@
 {
   "name": "picr",
-  "version": "0.7.13",
+  "version": "0.8.0",
   "description": "",
   "type": "module",
   "directories": {
@@ -18,8 +18,7 @@
     "start:db": "docker compose up -d",
     "start": "concurrently -c \"gray,blue,magenta,cyan\" npm:start:*"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "decompress": "^4.2.1",
     "docker-compose": "^1.1.0",
