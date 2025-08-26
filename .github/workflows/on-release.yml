@@ -12,10 +12,7 @@ jobs:
     uses: ./.github/workflows/build.yml
   docker_build:
     needs: build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ubuntu-24.04
     steps:
       -
         name: Checkout
@@ -24,7 +21,7 @@ jobs:
         name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: picr-build-${{ github.sha }}-${{ matrix.os }}
+          name: picr-build-${{ github.sha }}
           path: ./dist
 #      -
 #        name: Debug download
@@ -46,6 +43,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
 #          tags: isaacinsoll/picr:latest,isaacinsoll/picr:${{ github.ref_name }},ghcr.io/isaacinsoll/picr:latest,ghcr.io/isaacinsoll/picr:${{ github.ref_name }}
           tags: isaacinsoll/picr:${{ github.ref_name }},isaacinsoll/picr:latest
