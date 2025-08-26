@@ -54,7 +54,6 @@
     "@types/pg": "^8.11.11",
     "@types/sanitize-html": "^2.13.0",
     "@types/semver": "^7.5.8",
-    "@types/supertest": "^6.0.2",
     "@types/validator": "^13.11.9",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
@@ -67,7 +66,6 @@
     "nodemon": "^3.1.9",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
-
   },
   "overrides": {
     "join-images": {
