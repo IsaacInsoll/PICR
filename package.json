@@ -50,7 +50,7 @@
     "plugins": {
       "@release-it/bumper": {
         "out": {
-          "file": "../version.txt",
+          "file": "./version.txt",
           "type": "text/plain",
           "consumeWholeFile": true
         }
