@@ -68,7 +68,7 @@
     "react-native-unistyles": "^3.0.2",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
-    "urql": "5.0.0",
+    "urql": "^4.2.2",
     "zeego": "^3.0.6",
     "zod": "^4.0.17"
   },
