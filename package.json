@@ -58,5 +58,12 @@
     }
   },
   "author": "Isaac Insoll",
-  "license": "ISC"
+  "license": "ISC",
+  "private": true,
+  "workspaces": [
+    "backend/*",
+    "frontend/*",
+    "shared/*",
+    "app/*"
+  ]
 }
