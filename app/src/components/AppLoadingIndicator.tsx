@@ -1,5 +1,5 @@
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, ActivityIndicatorProps } from 'react-native';
 
-export const AppLoadingIndicator = () => {
-  return <ActivityIndicator />;
+export const AppLoadingIndicator = (props: ActivityIndicatorProps) => {
+  return <ActivityIndicator {...props} />;
 };
