@@ -52,6 +52,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
         fileSize: stats.size,
         fileLastModified: stats.mtime,
         exists: false, //set as `true` once we have all the hash/metadata
+        existsRescan: false,
         totalComments: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -109,6 +110,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
     }
   }
   file.exists = true;
+  file.existsRescan = true;
   await db
     .update(dbFile)
     .set({ ...file, updatedAt: new Date() })

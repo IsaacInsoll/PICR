@@ -7,7 +7,8 @@
   "scripts": {
     "build": "rm -rf ../dist/server && tsc",
     "start": " node ../dist/server/backend/app.js",
-    "server": "nodemon --delay 0.5 --watch .env --watch server server/backend/app.js"
+    "server": "nodemon --delay 0.5 --watch .env --watch server server/backend/app.js",
+    "dk": "NODE_OPTIONS='--import tsx' drizzle-kit"
   },
   "author": "Isaac Insoll",
   "license": "ISC",

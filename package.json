@@ -13,19 +13,20 @@
     "gql": "graphql-codegen --config codegen.ts",
     "release": "dotenv -- release-it --only-version",
     "start:server-ts": "cd backend && tsc -w",
-    "start:server": "cd dist && nodemon --delay 0.5 --watch .env --watch server server/backend/app.js",
+    "start:server": "nodemon --delay 0.5 --watch .env --watch dist/server dist/server/backend/app.js",
     "start:client": "cd frontend && npm start",
     "start:db": "docker compose up -d",
     "start": "concurrently -c \"gray,blue,magenta,cyan\" npm:start:*"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@release-it/bumper": "^7.0.2",
+    "concurrently": "^9.1.2",
     "decompress": "^4.2.1",
     "docker-compose": "^1.1.0",
     "dotenv-cli": "^7.4.2",
     "nodemon": "^3.1.9",
-    "concurrently": "^9.1.2",
-    "@release-it/bumper": "^7.0.2",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
     "vitest": "^3.1.1"
   },
   "release-it": {

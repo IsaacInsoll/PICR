@@ -36,6 +36,13 @@
       "when": 1746520770375,
       "tag": "0004_token-secret",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1756448564400,
+      "tag": "0005_wise_preak",
+      "breakpoints": true
     }
   ]
 }

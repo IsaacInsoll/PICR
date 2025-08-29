@@ -19,10 +19,10 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
   const intervalMultiplier = config.pollingInterval; // multiply default interval values by this
 
   //update all files to 'not exist' then set as exist when we find them
-  await db.update(dbFile).set({ exists: false });
+  await db.update(dbFile).set({ existsRescan: false });
   await db
     .update(dbFolder)
-    .set({ exists: false })
+    .set({ existsRescan: false })
     .where(isNotNull(dbFolder.parentId)); //don't set Home (root) to not exist
 
   const watcher = chokidar.watch(picrConfig.mediaPath!, {

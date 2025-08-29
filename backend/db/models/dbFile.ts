@@ -8,9 +8,9 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { baseColumns } from "../column.helpers.js";
-import { dbFolder } from "./dbFolder.js";
-import { fileFlagEnum, fileTypeEnum } from "./enums.js";
+import { baseColumns } from '../column.helpers.js';
+import { dbFolder } from './dbFolder.js';
+import { fileFlagEnum, fileTypeEnum } from './enums.js';
 import { relations } from 'drizzle-orm';
 
 export const dbFile = pgTable('Files', {
@@ -28,6 +28,7 @@ export const dbFile = pgTable('Files', {
     withTimezone: true,
   }).notNull(),
   exists: boolean('exists').notNull(), // bulk set as 'false' at boot, then set true when detected, to weed out files deleted while server down
+  existsRescan: boolean('existsRescan').notNull().default(false), // used to detect if files still exist at boot time
   totalComments: integer('totalComments').notNull(), //we could calculate it but this is faster and easier
   latestComment: timestamp('latestComment', { withTimezone: true }),
   folderId: integer('folderId')

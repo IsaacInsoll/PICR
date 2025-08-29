@@ -1,10 +1,13 @@
-import { addFile } from "./events/addFile.js";
-import { addFolder } from "./events/addFolder.js";
-import { removeFolder } from "./events/removeFolder.js";
-import { Task } from "../../graphql-types.js";
-import { generateAllThumbs } from "../media/generateImageThumbnail.js";
-import { log } from "../logger.js";
-import { dbFileForId } from "../db/picrDb.js";
+import { addFile } from './events/addFile.js';
+import { addFolder } from './events/addFolder.js';
+import { removeFolder } from './events/removeFolder.js';
+import { Task } from '../../graphql-types.js';
+import { generateAllThumbs } from '../media/generateImageThumbnail.js';
+import { log } from '../logger.js';
+import { db, dbFileForId } from '../db/picrDb.js';
+import { and, count, eq, isNotNull } from 'drizzle-orm';
+import { dbFile, dbFolder } from '../db/models/index.js';
+import { delay } from '../helpers/delay.js';
 
 type QueueAction =
   | 'addDir'
@@ -17,6 +20,7 @@ let queue: Promise<void> | null = null;
 let queueDone = 0;
 let queueTotal = 0;
 export let initComplete = false;
+const timeToInit = Date.now();
 
 interface QueuePayload {
   path?: string;
@@ -62,10 +66,7 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
       break;
     case 'initComplete':
       initComplete = true;
-      // I decided to leave them exist=false as 'archived' rather than actual delete
-      // await File.destroy({ where: { exists: false } });
-      // await Folder.destroy({ where: { exists: false } });
-      log('info', '✅ Initial scan complete. Ready for changes', true);
+      await handleInitComplete();
       break;
   }
   queueDone++;
@@ -82,4 +83,51 @@ export const queueTaskStatus = (): null | Task => {
     step: queueDone,
     totalSteps: queueTotal,
   };
+};
+
+const handleInitComplete = async (): Promise<void> => {
+  // I decided to leave them exist=false as 'archived' rather than actual delete
+  const removedFiles = await db
+    .select({ count: count() })
+    .from(dbFile)
+    .where(and(eq(dbFile.exists, true), eq(dbFile.existsRescan, false)));
+
+  const removedFolders = await db
+    .select({ count: count() })
+    .from(dbFolder)
+    .where(and(eq(dbFolder.exists, true), eq(dbFolder.existsRescan, false)));
+
+  const foundFiles = await db
+    .select({ count: count() })
+    .from(dbFile)
+    .where(eq(dbFile.existsRescan, true));
+
+  const foundFolders = await db
+    .select({ count: count() })
+    .from(dbFolder)
+    .where(eq(dbFolder.existsRescan, true));
+
+  await db
+    .update(dbFile)
+    .set({ exists: false })
+    .where(eq(dbFile.existsRescan, false));
+
+  await db
+    .update(dbFolder)
+    .set({ exists: false })
+    .where(and(eq(dbFolder.existsRescan, false), isNotNull(dbFolder.parentId)));
+
+  const bootupTime = (Date.now() - timeToInit) / 1000;
+
+  log(
+    'info',
+    `✅ Initial scan complete. Found ${foundFolders[0].count} folders and ${foundFiles[0].count} files in ${bootupTime.toFixed(2)} seconds`,
+    true,
+  );
+  if (removedFiles[0].count || removedFolders[0].count) {
+    log(
+      'info',
+      `Unexisted ${removedFiles[0].count} files and ${removedFolders[0].count} folders during boot`,
+    );
+  }
 };

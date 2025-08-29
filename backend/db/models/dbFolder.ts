@@ -5,8 +5,8 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { dbFile } from "./dbFile.js";
-import { baseColumns } from "../column.helpers.js";
+import { dbFile } from './dbFile.js';
+import { baseColumns } from '../column.helpers.js';
 import { relations } from 'drizzle-orm';
 
 export const dbFolder = pgTable('Folders', {
@@ -15,6 +15,7 @@ export const dbFolder = pgTable('Folders', {
   folderHash: varchar('folderHash', { length: 255 }),
   relativePath: varchar('relativePath', { length: 255 }), // can't be null because of root folder
   exists: boolean('exists').notNull(), // bulk set as 'false' at boot, then set true when detected, to weed out files deleted while server down
+  existsRescan: boolean('existsRescan').notNull().default(false), // used to detect if files still exist at boot time
   folderLastModified: timestamp('folderLastModified', {
     withTimezone: true,
   })

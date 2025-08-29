@@ -67,10 +67,14 @@ export const addFolder = async (path: string) => {
       ),
     });
 
-    if (newFolder && !newFolder.exists) {
+    if (newFolder && !newFolder.existsRescan) {
       await db
         .update(dbFolder)
-        .set({ exists: true, folderLastModified: stats.mtime }) // I'm intentionally not updating `lastUpdated` here (, updatedAt: new Date())
+        .set({
+          exists: true,
+          existsRescan: true,
+          folderLastModified: stats.mtime,
+        }) // I'm intentionally not updating `lastUpdated` here (, updatedAt: new Date())
         .where(eq(dbFolder.id, newFolder.id));
     }
 
@@ -83,6 +87,7 @@ export const addFolder = async (path: string) => {
           createdAt: new Date(),
           updatedAt: new Date(),
           exists: true,
+          existsRescan: true,
           folderLastModified: stats.mtime,
         })
         .returning()
