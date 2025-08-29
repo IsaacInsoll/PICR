@@ -8,6 +8,7 @@ import { db, dbFileForId } from '../db/picrDb.js';
 import { and, count, eq, isNotNull } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../db/models/index.js';
 import { delay } from '../helpers/delay.js';
+import { Stats } from 'node:fs';
 
 type QueueAction =
   | 'addDir'
@@ -26,6 +27,7 @@ interface QueuePayload {
   path?: string;
   generateThumbs?: boolean;
   id?: number;
+  stats?: Stats;
 }
 
 export const addToQueue = (
@@ -51,13 +53,17 @@ export const addToQueue = (
 const processQueue = async (action: QueueAction, payload: QueuePayload) => {
   switch (action) {
     case 'addDir':
-      await addFolder(payload.path!);
+      await addFolder(payload.path!, payload.stats);
       break;
     case 'unlinkDir':
       await removeFolder(payload.path!);
       break;
     case 'add':
-      await addFile(payload.path!, payload.generateThumbs ?? false);
+      await addFile(
+        payload.path!,
+        payload.generateThumbs ?? false,
+        payload.stats,
+      );
       break;
     case 'generateThumbnails':
       // lol, we pass an ID to this function, not a path, but it's fine, trust me!

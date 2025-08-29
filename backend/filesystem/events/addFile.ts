@@ -12,9 +12,13 @@ import { picrConfig } from '../../config/picrConfig.js';
 import { and, eq } from 'drizzle-orm';
 import { db } from '../../db/picrDb.js';
 import { dbFile } from '../../db/models/index.js';
-import { statSync } from 'node:fs';
+import { Stats, statSync } from 'node:fs';
 
-export const addFile = async (filePath: string, generateThumbs: boolean) => {
+export const addFile = async (
+  filePath: string,
+  generateThumbs: boolean,
+  statsProp?: Stats,
+) => {
   const type = validExtension(filePath);
   if (!type) {
     log('info', `🤷‍♂️ Ignoring ${filePath} as it's not a supported file format`);
@@ -25,7 +29,7 @@ export const addFile = async (filePath: string, generateThumbs: boolean) => {
   // console.log(`${basename(filePath)} of type ${type} in ${dirname(filePath)}`);
   const folderId = await findFolderId(dirname(filePath));
 
-  const stats = statSync(filePath);
+  const stats = statsProp ?? statSync(filePath);
 
   const props = {
     name: basename(filePath),

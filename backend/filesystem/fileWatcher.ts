@@ -35,16 +35,16 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
   });
 
   watcher
-    .on('add', (path) => {
+    .on('add', (path, stats) => {
       log('info', '➕ ' + path);
-      addToQueue('add', { path, generateThumbs: initComplete });
+      addToQueue('add', { path, generateThumbs: initComplete, stats });
     })
     // .on('change', path => log('✖️ ' + path))
     // .on('unlink', path => log('➖ ' + path))
     .on('error', (error) => console.log('⚠️ Error happened: ' + error))
-    .on('addDir', (path) => {
+    .on('addDir', (path, stats) => {
       log('info', `📁➕ ${relativePath(path)}`);
-      addToQueue('addDir', { path });
+      addToQueue('addDir', { path, stats });
     })
     .on('unlinkDir', (path) => {
       log('info', `📁➖ ${relativePath(path)}`);

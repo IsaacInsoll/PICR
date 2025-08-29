@@ -5,7 +5,7 @@ import { sep } from 'path';
 import { db, FolderFields } from '../../db/picrDb.js';
 import { and, eq, isNull } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
-import { statSync } from 'node:fs';
+import { Stats, statSync } from 'node:fs';
 import { picrConfig } from '../../config/picrConfig.js';
 
 let rootFolder: FolderFields | undefined = undefined;
@@ -36,12 +36,12 @@ export const setupRootFolder = async () => {
   return root;
 };
 
-export const addFolder = async (path: string) => {
+export const addFolder = async (path: string, statsProp?: Stats) => {
   const relative = relativePath(path);
   const root = rootFolder!;
   if (relative === '') return root;
 
-  const stats = statSync(path);
+  const stats = statsProp ?? statSync(path);
 
   let f = root.id;
   const ps = pathSplit(path);

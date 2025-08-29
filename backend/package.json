@@ -15,7 +15,7 @@
   "dependencies": {
     "archiver": "^7.0.1",
     "blurhash": "^2.0.5",
-    "chokidar": "^3.6.0",
+    "chokidar": "^4.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.41.0",
     "exif-reader": "^2.0.2",
