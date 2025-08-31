@@ -11,6 +11,7 @@ import { useAtom } from 'jotai';
 import { AllSize } from '@frontend/helpers/thumbnailSize';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
+import { File } from '@shared/gql/graphql';
 
 export const PBigImage = memo(
   ({
@@ -76,7 +77,10 @@ export const PBigImage = memo(
   },
 );
 
-export const useLocalImageUrl = (file: Image, size: AllSize) => {
+export const useLocalImageUrl = (
+  file: Partial<Pick<File, 'id' | 'fileHash' | 'name' | 'type'>>,
+  size: AllSize,
+) => {
   if (!file) return null;
   const [uri, setUri] = useState<string | undefined>(undefined);
   const baseUrl = useLoginDetails()?.server;
