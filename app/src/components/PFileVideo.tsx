@@ -5,6 +5,7 @@ import { useLocalImageUrl } from '@/src/components/PBigImage';
 import { ThumbnailSize } from '@frontend/helpers/thumbnailSize';
 import { Video } from '@shared/gql/graphql';
 import { View } from 'react-native';
+import { aspectFit } from '@shared/files/aspectFit';
 
 // Basically an Video Thumbnail
 export const PFileVideo = memo(
@@ -17,36 +18,40 @@ export const PFileVideo = memo(
     const second = useSecond();
     if (!uri) return null;
 
-    const { height, width } = props.style;
-    const aspect = width / (file.imageRatio ?? 1);
-
-    console.log(height, width, aspect);
-
+    const af = aspectFit(props.style, file.imageRatio);
     const frame = second - 1;
 
     return (
       <View
         style={{
-          position: 'relative',
-          overflow: 'hidden',
-          width: width,
-          height: aspect, //intentionally not parent height
+          ...props.style,
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
-        <ExpoImage
-          {...props}
-          source={{ uri }}
-          contentFit="contain"
+        <View
           style={{
-            position: 'absolute',
-            top: aspect * -frame,
-            left: 0,
-            right: 0,
-            // bottom: height * -9,
-            width: width,
-            height: aspect * 10,
+            position: 'relative',
+            overflow: 'hidden',
+            width: af.width,
+            height: af.height, //intentionally not parent height
           }}
-        />
+        >
+          <ExpoImage
+            {...props}
+            source={{ uri }}
+            contentFit="contain"
+            style={{
+              position: 'absolute',
+              top: af.height * -frame,
+              // left: (props.style.width - af.width) / 2,
+              // right: (props.style.width - af.width) / 2,
+              // bottom: height * -9,
+              width: af.width,
+              height: af.height * 10,
+            }}
+          />
+        </View>
       </View>
     );
   },

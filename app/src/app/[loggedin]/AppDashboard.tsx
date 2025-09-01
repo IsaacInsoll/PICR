@@ -29,6 +29,7 @@ import { PFileImage } from '@/src/components/PFileImage';
 import { Suspense } from 'react';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { AppTaskSummary } from '@/src/components/AppTaskSummary';
+import { PFileView } from '@/src/components/PFileView';
 
 const HomeFolderButton = () => {
   const me = useMe();
@@ -149,7 +150,7 @@ const RecentUsers = ({ users }) => {
           <AppFolderLink folder={user.folder} key={user.id} asChild>
             <TouchableOpacity>
               <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
-                <PFileImage
+                <PFileView
                   file={user.folder.heroImage}
                   style={{ width: 80, height: 80 }}
                   contentFit="contain"

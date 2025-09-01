@@ -9,6 +9,9 @@ type IIconButtonProps = ComponentProps<typeof Ionicons.Button>;
 export const ApprovedIcon = (props: IIconProps) => {
   return <Ionicons name="thumbs-up-outline" {...props} />;
 };
+export const FolderIcon = (props: IIconProps) => {
+  return <Ionicons name="folder-outline" {...props} />;
+};
 export const RejectedIcon = (props: IIconProps) => {
   return <Ionicons name="thumbs-down-outline" {...props} />;
 };

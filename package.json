@@ -19,6 +19,9 @@
     "start": "concurrently -c \"gray,blue,magenta,cyan\" npm:start:*"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.5",
+    "@graphql-codegen/client-preset": "^4.8.0",
+    "@graphql-codegen/introspection": "^4.0.3",
     "@release-it/bumper": "^7.0.2",
     "concurrently": "^9.1.2",
     "decompress": "^4.2.1",

@@ -16,7 +16,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 type Documents = {
     "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    flag\n    rating\n    totalComments\n    latestComment\n    folderId\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": typeof types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    __typename\n    name\n    parentId\n    permissions\n    folderLastModified\n    parents {\n      id\n      name\n    }\n    branding {\n      id\n      folderId\n      mode\n      primaryColor\n      logoUrl\n      folder {\n        id\n        name\n      }\n    }\n    ...HeroImageFragment\n  }\n": typeof types.FolderFragmentFragmentDoc,
-    "\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n    }\n  }\n": typeof types.HeroImageFragmentFragmentDoc,
+    "\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n      type\n    }\n  }\n": typeof types.HeroImageFragmentFragmentDoc,
     "\n  fragment ImageMetadataFragment on Image {\n    ... on Image {\n      metadata {\n        Camera\n        Lens\n        Artist\n        DateTimeOriginal\n        DateTimeEdit\n        Aperture\n        ExposureTime\n        ISO\n        Width\n        Height\n        Rating\n      }\n    }\n  }\n": typeof types.ImageMetadataFragmentFragmentDoc,
     "\n  fragment MinimumFolderFragment on Folder {\n    id\n    __typename\n    name\n    parentId\n    ...HeroImageFragment\n  }\n": typeof types.MinimumFolderFragmentFragmentDoc,
     "\n    fragment TreeSizeFragment on Folder {\n        id\n        name\n        totalFiles\n        totalFolders\n        totalSize\n        totalDirectSize\n    }\n": typeof types.TreeSizeFragmentFragmentDoc,
@@ -52,7 +52,7 @@ type Documents = {
 const documents: Documents = {
     "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileLastModified\n    flag\n    rating\n    totalComments\n    latestComment\n    folderId\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    __typename\n    name\n    parentId\n    permissions\n    folderLastModified\n    parents {\n      id\n      name\n    }\n    branding {\n      id\n      folderId\n      mode\n      primaryColor\n      logoUrl\n      folder {\n        id\n        name\n      }\n    }\n    ...HeroImageFragment\n  }\n": types.FolderFragmentFragmentDoc,
-    "\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n    }\n  }\n": types.HeroImageFragmentFragmentDoc,
+    "\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n      type\n    }\n  }\n": types.HeroImageFragmentFragmentDoc,
     "\n  fragment ImageMetadataFragment on Image {\n    ... on Image {\n      metadata {\n        Camera\n        Lens\n        Artist\n        DateTimeOriginal\n        DateTimeEdit\n        Aperture\n        ExposureTime\n        ISO\n        Width\n        Height\n        Rating\n      }\n    }\n  }\n": types.ImageMetadataFragmentFragmentDoc,
     "\n  fragment MinimumFolderFragment on Folder {\n    id\n    __typename\n    name\n    parentId\n    ...HeroImageFragment\n  }\n": types.MinimumFolderFragmentFragmentDoc,
     "\n    fragment TreeSizeFragment on Folder {\n        id\n        name\n        totalFiles\n        totalFolders\n        totalSize\n        totalDirectSize\n    }\n": types.TreeSizeFragmentFragmentDoc,
@@ -111,7 +111,7 @@ export function graphql(source: "\n  fragment FolderFragment on Folder {\n    id
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n    }\n  }\n"): (typeof documents)["\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n    }\n  }\n"];
+export function graphql(source: "\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n      type\n    }\n  }\n"): (typeof documents)["\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n      type\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

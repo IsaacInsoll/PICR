@@ -18,6 +18,7 @@ import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
 import { AppCommentsChip } from '@/src/components/chips/AppCommentsChip';
 import { FlashList } from '@shopify/flash-list';
 import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
+import { PFileView } from '@/src/components/PFileView';
 
 export const AppFolderFileList = ({
   items,
@@ -60,14 +61,12 @@ export const AppFileListItem = ({
             alignItems: 'center',
           }}
         >
-          {img?.id ? (
-            <PFileImage
-              file={img}
-              style={{ width: 80, height: 80 }}
-              contentFit="contain"
-              size="sm"
-            />
-          ) : null}
+          <PFileView
+            file={item}
+            style={{ width: 80, height: 80 }}
+            contentFit="contain"
+            size="sm"
+          />
           <View style={{ gap: 4 }}>
             <PTitle level={4}>{item.name}</PTitle>
             {children ? (

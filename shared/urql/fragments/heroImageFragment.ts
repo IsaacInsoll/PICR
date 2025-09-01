@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 export const heroImageFragment = gql(/* GraphQL */ `
   fragment HeroImageFragment on Folder {
@@ -8,6 +8,7 @@ export const heroImageFragment = gql(/* GraphQL */ `
       fileHash
       imageRatio
       blurHash
+      type
     }
   }
 `);
