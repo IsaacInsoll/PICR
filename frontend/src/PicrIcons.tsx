@@ -20,6 +20,7 @@ import {
   TbTypeface,
   TbUserCog,
   TbVideo,
+  TbDeviceMobileShare,
 } from 'react-icons/tb';
 import { CiAt } from 'react-icons/ci';
 import { IconBaseProps } from 'react-icons/lib/iconBase';
@@ -62,6 +63,9 @@ export const AccessLogsIcon = (props: IconBaseProps) => <TbSpy {...props} />;
 export const ErrorIcon = (props: IconBaseProps) => <BiSolidError {...props} />;
 export const DotsIcon = (props: IconBaseProps) => <TbDots {...props} />;
 export const CommentIcon = (props: IconBaseProps) => <BiComment {...props} />;
+export const OpenInAppIcon = (props: IconBaseProps) => (
+  <TbDeviceMobileShare {...props} />
+);
 export const CommentsIcon = (props: IconBaseProps) => (
   <BiCommentDetail {...props} />
 );

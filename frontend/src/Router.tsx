@@ -1,4 +1,4 @@
-import { Route, Routes, useNavigate } from 'react-router';
+import { Navigate, Route, Routes, useNavigate } from 'react-router';
 import { LoginForm } from './pages/LoginForm';
 import { ViewFolder } from './pages/ViewFolder';
 import { PageNotFound } from './pages/PageNotFound';
@@ -23,7 +23,8 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
         <>
           <Route path={`/admin/f${folderRoute}`} element={<ViewFolder />} />
           <Route path="/admin/settings/:tab?/:slug?" element={<Settings />} />
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<Navigate to="/admin" replace />} />
+          <Route path="/admin" element={<Dashboard />} />
         </>
       ) : null}
       <Route

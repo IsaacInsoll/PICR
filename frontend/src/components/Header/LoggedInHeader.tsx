@@ -5,23 +5,23 @@ import { ActionIcon, Box, Button, Group, Menu, Text } from '@mantine/core';
 import classes from './LoggedInHeader.module.css';
 import { PicrLogo } from '../../pages/LoginForm';
 import { PicrAvatar } from '../PicrAvatar';
-import { useFolderLink, useSetFolder } from '../../hooks/useSetFolder';
+import { useFolderLink } from '../../hooks/useSetFolder';
 import { useQuickFind } from '../QuickFind/useQuickFind';
-import { NavLink, useNavigate } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import {
   DashboardIcon,
   HomeIcon,
   LogOutIcon,
+  OpenInAppIcon,
   SearchIcon,
   UserSettingsIcon,
 } from '../../PicrIcons';
-import { useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai';
 import { authKeyAtom } from '../../atoms/authAtom';
 import { MinimalFolder } from '../../../types';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
-import { placeholderFolder } from '../FolderHeader/PlaceholderFolder';
 
 export const LoggedInHeader = ({
   folder,
@@ -113,7 +113,8 @@ const RightSide = ({ me }) => {
   const homeFolderLink = useFolderLink(me.folder);
   const [, setOpened] = useQuickFind();
   const logOut = useLogout();
-
+  const location = useLocation();
+  const appUrl = 'picr://' + window.location.host + location.pathname;
   return (
     <Menu
       shadow="md"
@@ -135,7 +136,7 @@ const RightSide = ({ me }) => {
 
       <Menu.Dropdown>
         <Menu.Label>Files & Folders</Menu.Label>
-        <PicrMenuItem leftSection={<DashboardIcon />} to="/">
+        <PicrMenuItem leftSection={<DashboardIcon />} to="/admin">
           Dashboard
         </PicrMenuItem>
         <PicrMenuItem leftSection={<HomeIcon />} {...homeFolderLink}>
@@ -145,6 +146,9 @@ const RightSide = ({ me }) => {
           Search
         </Menu.Item>
         <Menu.Label>PICR</Menu.Label>
+        <Menu.Item component={Link} leftSection={<OpenInAppIcon />} to={appUrl}>
+          Open in app
+        </Menu.Item>
         <PicrMenuItem leftSection={<UserSettingsIcon />} to="/admin/settings">
           Settings
         </PicrMenuItem>
