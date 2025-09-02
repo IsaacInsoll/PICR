@@ -13,10 +13,20 @@ import { appLogin } from '@/src/helpers/appLogin';
 import { picrUrqlClient } from '@shared/urql/urqlClient';
 import * as Application from 'expo-application';
 import { Platform } from 'react-native';
+import { usePathname } from 'expo-router/build/hooks';
 
 const initCompleteAtom = atom(false); // we only want this once system-wide, not per instance of this provider
 
+const useIsPublicUserPath = (): false | { uuid: string; server: string } => {
+  const paths = usePathname().split('/');
+  const isPublic = paths.length > 3 && paths[2] == 's'; // leading forwardslash is first segment
+  if (isPublic) return { server: 'https://' + paths[1] + '/', uuid: paths[3] };
+  console.log('useIsPublicUserPath', isPublic, paths);
+  return false;
+};
+
 export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
+  const isPublic = useIsPublicUserPath();
   const [initComplete, setInitComplete] = useAtom(initCompleteAtom);
   const me = useLoginDetails();
   const setLogin = useSetLoginDetails();
@@ -25,7 +35,7 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
   // console.log('PicrUserProvider: ' + me?.username + ' ' + pathName);
 
   useEffect(() => {
-    if (initComplete) return;
+    if (initComplete || isPublic) return;
     console.log('getting login details from local storage');
     getLoginDetailsFromLocalDevice().then((login) => {
       if (login) {
@@ -44,13 +54,30 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
   const client = useMemo(() => {
+    if (isPublic) {
+      console.log(
+        'PicrUserProvider: _creating_ public URQL client for ' +
+          isPublic.uuid +
+          ' at ' +
+          isPublic.server,
+      );
+      return picrUrqlClient(isPublic.server, {
+        uuid: isPublic.uuid,
+        'user-agent': `${Application.applicationName} ${Platform.OS} ${Application.nativeApplicationVersion} (Build ${Application.nativeBuildVersion})`,
+      });
+    }
     if (!me) return null;
-    console.log('PicrUserProvider: _creating_ URQL client');
+    console.log(
+      'PicrUserProvider: _creating_ URQL client for ' +
+        me.username +
+        ' at ' +
+        me.server,
+    );
     return picrUrqlClient(me.server, {
       authorization: `Bearer ${me.token}`,
       'user-agent': `${Application.applicationName} ${Platform.OS} ${Application.nativeApplicationVersion} (Build ${Application.nativeBuildVersion})`,
     });
-  }, [me?.server, me?.token]);
+  }, [me?.server, me?.token, isPublic.toString()]);
 
   if (!initComplete) return <PText>Loading...</PText>;
   if (!me) {

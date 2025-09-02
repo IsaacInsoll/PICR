@@ -34,6 +34,7 @@ import { PFileView } from '@/src/components/PFileView';
 const HomeFolderButton = () => {
   const me = useMe();
   const theme = useAppTheme();
+  if (!me) return null; //hit this issue when making public user access
   return (
     <HeaderButton>
       <AppFolderLink folder={{ id: me.folderId, name: 'Home' }} asChild={true}>
