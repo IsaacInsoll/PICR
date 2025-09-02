@@ -5,3 +5,8 @@ export const useHostname = () => {
   const global = useGlobalSearchParams();
   return global?.loggedin;
 };
+
+export const useUuid = (): string | null => {
+  const global = useGlobalSearchParams();
+  return global?.uuid;
+};

@@ -1,5 +1,5 @@
 import { Link, LinkProps } from 'expo-router';
-import { useHostname } from '@/src/hooks/useHostname';
+import { useHostname, useUuid } from '@/src/hooks/useHostname';
 import { File, Folder } from '@shared/gql/graphql';
 import {
   addToFileCache,
@@ -66,6 +66,10 @@ export const AppLink = ({
 
 export const useAppFolderLink = (folder: { id: string }) => {
   const hostname = useHostname();
+  const uuid = useUuid();
+  if (uuid) {
+    return hostname + '/s/' + uuid + '/' + folder.id;
+  }
 
   return hostname + '/admin/f/' + folder.id;
 };

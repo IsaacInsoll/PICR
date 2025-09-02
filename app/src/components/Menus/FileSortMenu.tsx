@@ -17,7 +17,7 @@ import { SFSymbol } from 'expo-symbols';
 
 export const FileSortMenu = ({ children }: { children: ReactNode }) => {
   const [sort, setSort] = useAtom(fileSortAtom);
-  console.log('sort', sort);
+  // console.log('sort', sort);
 
   return (
     <DropdownMenuRoot>
