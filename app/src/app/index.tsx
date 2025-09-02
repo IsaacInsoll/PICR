@@ -5,12 +5,13 @@ import { Suspense } from 'react';
 import { PText } from '@/src/components/PText';
 
 export default function index() {
-  console.log('app index.tsx');
+  console.log('[app index.tsx]');
   const me = useLoginDetails();
   if (me?.hostname) {
-    console.log('[app/index.tsx] redirecting from base URL');
+    const destination = '/' + me?.hostname + 'admin';
+    console.log('[app/index.tsx] redirecting from base URL to ' + destination);
     // router.replace('/' + me?.hostname);
-    return <Redirect href={'/' + me?.hostname} withAnchor />;
+    return <Redirect href={destination} withAnchor />;
   }
 
   return (

@@ -31,7 +31,7 @@ export const useSetLoginDetails = () => {
     };
     setter(payload);
     await saveLoginDetailsToLocalDevice(payload);
-    router.replace('/' + details.hostname);
+    router.replace('/' + details.hostname + '/admin');
   };
 };
 

@@ -65,7 +65,7 @@ const SettingsButton = () => {
   );
 };
 
-export default function AppDashboard() {
+export default function index() {
   return (
     <>
       <Stack.Screen
