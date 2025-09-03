@@ -73,6 +73,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     'expo-secure-store',
+    'expo-notifications',
     'expo-web-browser',
     'expo-font',
     ['react-native-edge-to-edge'],
