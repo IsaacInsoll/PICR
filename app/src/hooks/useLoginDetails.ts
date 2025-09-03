@@ -22,7 +22,6 @@ export const useLoginDetails = () => {
 };
 
 export const useSetLoginDetails = () => {
-  const router = useRouter();
   const setter = useSetAtom(loginDetailsAtom);
   return async (details: LoginDetails) => {
     const payload: LoginDetails = {
@@ -31,7 +30,6 @@ export const useSetLoginDetails = () => {
     };
     setter(payload);
     await saveLoginDetailsToLocalDevice(payload);
-    router.replace('/' + details.hostname + '/admin');
   };
 };
 
