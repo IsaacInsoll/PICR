@@ -31,6 +31,7 @@ type Branding {
 
 type ClientInfo {
   avifEnabled: Boolean!
+  canWrite: Boolean!
 }
 
 type Comment {
@@ -207,6 +208,7 @@ type Query {
 
 type ServerInfo {
   cacheSize: BigInt!
+  canWrite: Boolean!
   databaseUrl: String!
   dev: Boolean!
   host: String!

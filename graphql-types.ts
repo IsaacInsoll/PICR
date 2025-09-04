@@ -47,6 +47,7 @@ export type Branding = {
 export type ClientInfo = {
   __typename?: 'ClientInfo';
   avifEnabled: Scalars['Boolean']['output'];
+  canWrite: Scalars['Boolean']['output'];
 };
 
 export type Comment = {
@@ -354,6 +355,7 @@ export type QueryUsersArgs = {
 export type ServerInfo = {
   __typename?: 'ServerInfo';
   cacheSize: Scalars['BigInt']['output'];
+  canWrite: Scalars['Boolean']['output'];
   databaseUrl: Scalars['String']['output'];
   dev: Scalars['Boolean']['output'];
   host: Scalars['String']['output'];

@@ -22,6 +22,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     databaseUrl: picrConfig.databaseUrl,
     usePolling: picrConfig.usePolling,
     dev: picrConfig.dev,
+    canWrite: picrConfig.canWrite,
     //these are functions because they can be potentially SUPER EXPENSIVE
     cacheSize: () => folderSize(picrConfig.cachePath),
     mediaSize: () => folderSize(picrConfig.mediaPath),
@@ -35,7 +36,9 @@ export const serverInfo = {
 };
 
 const getLatestBuild = async () => {
-  const req = await fetch('https://api.github.com/repos/isaacinsoll/picr/releases');
+  const req = await fetch(
+    'https://api.github.com/repos/isaacinsoll/picr/releases',
+  );
   const json = (await req.json()) as { tag_name: string }[];
   if (Array.isArray(json)) {
     return json[0]?.tag_name ?? '';

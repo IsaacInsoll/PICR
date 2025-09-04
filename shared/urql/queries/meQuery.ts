@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 export const meQuery = gql(/* GraphQL */ `
   query MeQuery {
@@ -16,6 +16,7 @@ export const meQuery = gql(/* GraphQL */ `
     }
     clientInfo {
       avifEnabled
+      canWrite
     }
   }
 `);

@@ -48,6 +48,9 @@ export const ServerInfo = () => {
         <Row title="Use Polling">
           <Bool value={server.usePolling} />
         </Row>
+        <Row title="Can write">
+          <Bool value={server?.canWrite} />
+        </Row>
         <Suspense>
           <AvifEnabled />
         </Suspense>

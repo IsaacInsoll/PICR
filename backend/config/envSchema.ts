@@ -56,4 +56,5 @@ export const envSchema = z.object({
   DEBUG_SQL: castStringToBool,
   CONSOLE_LOGGING: castStringToBool,
   USE_POLLING: castStringToBool,
+  CAN_WRITE: castStringToBool,
 });

@@ -15,6 +15,7 @@ export const serverInfoType = new GraphQLObjectType({
     databaseUrl: { type: new GraphQLNonNull(GraphQLString) },
     usePolling: { type: new GraphQLNonNull(GraphQLBoolean) },
     dev: { type: new GraphQLNonNull(GraphQLBoolean) },
+    canWrite: { type: new GraphQLNonNull(GraphQLBoolean) },
     cacheSize: { type: new GraphQLNonNull(GraphQLBigInt) },
     mediaSize: { type: new GraphQLNonNull(GraphQLBigInt) },
   }),

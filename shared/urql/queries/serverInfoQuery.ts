@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 export const serverInfoQuery = gql(/* GraphQL */ `
   query serverInfoQuery {
@@ -9,6 +9,7 @@ export const serverInfoQuery = gql(/* GraphQL */ `
       dev
       usePolling
       host
+      canWrite
     }
   }
 `);

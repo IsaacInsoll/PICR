@@ -1,10 +1,10 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
-const generateThumbnailsQuery = gql(/* GraphQL*/ `
+export const generateThumbnailsQuery = gql(/* GraphQL*/ `
     query generateThumbnailsStats($folderId: ID!) {
         folder(id: $folderId) {
             ...FolderFragment
             totalImages
         }
     }
-`)
+`);

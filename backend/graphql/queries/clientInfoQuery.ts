@@ -4,6 +4,7 @@ import { clientInfoType } from '../types/clientInfoType.js';
 import { getServerOptions } from '../../db/picrDb.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import { picrConfig } from '../../config/picrConfig.js';
 
 const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   _,
@@ -17,6 +18,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
 
   return {
     avifEnabled: opts.avifEnabled ?? false,
+    canWrite: user.userType == 'Admin' && picrConfig.canWrite,
   };
 };
 

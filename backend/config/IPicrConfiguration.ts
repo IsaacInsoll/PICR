@@ -12,4 +12,5 @@ export interface IPicrConfiguration {
   updateMetadata: boolean;
   cachePath: string;
   mediaPath: string;
+  canWrite?: boolean;
 }
