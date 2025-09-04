@@ -3,7 +3,7 @@ import { thumbnailPath } from './thumbnailPath.js';
 import { ffmpegForFile } from './ffmpegForFile.js';
 import { VideoMetadata } from '../types/MetadataSummary.js';
 import { thumbnailDimensions } from '../../shared/thumbnailDimensions.js';
-import { existsSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import { log } from '../logger.js';
 // import joinImages from 'join-images'; TODO: find ES6 modules compatible alternative?
 import * as ji from 'join-images';
@@ -47,6 +47,9 @@ const processVideoThumbnail = async (
     .map((_, index) => (index / numberOfVideoSnapshots) * Duration);
 
   return new Promise((resolve) => {
+    const p = thumbnailPath(file, size);
+    mkdirSync(p, { recursive: true });
+
     try {
       ffmpegForFile(file)
         .on('end', (outFile) => {
@@ -82,7 +85,6 @@ const mergeImages = async (file: FileFields, size: ThumbnailSize) => {
   const outFile = thumbnailPath(file, size);
 
   const files = lodash.range(1, 11).map((r) => `${outFile}/${size}_${r}.jpg`);
-  console.log(files);
   const img = await ji.joinImages(files, { direction: 'vertical' });
   await img.toFile(outFile + '/joined.jpg');
 };
