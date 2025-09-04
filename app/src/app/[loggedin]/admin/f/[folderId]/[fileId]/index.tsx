@@ -33,6 +33,8 @@ import { File } from '@shared/gql/graphql';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 import { FileCommentsBottomSheet } from '@/src/components/FileCommentsBottomSheet';
 import { useScreenOrientation } from '@/src/hooks/useScreenOrientation';
+import { PTitle } from '@/src/components/PTitle';
+import { PBigVideo } from '@/src/components/PBigVideo';
 
 interface ItemProps {
   index: number;
@@ -203,7 +205,12 @@ const CustomItem = ({
   file,
   animationValue,
   setIsZoomed,
-}: ItemProps) => {
+}: ItemProps & { file: File }) => {
+  const { folderId, fileId } = useLocalSearchParams<{
+    fileId: string;
+    folderId: string;
+  }>();
+  const isSelected = file.id == fileId;
   const maskStyle = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
       animationValue.value,
@@ -218,7 +225,19 @@ const CustomItem = ({
 
   return (
     <View style={{ flex: 1 }}>
-      <PBigImage file={file} setIsZoomed={setIsZoomed} />
+      {file.type == 'Image' ? (
+        <PBigImage file={file} setIsZoomed={setIsZoomed} />
+      ) : file.type == 'Video' ? (
+        <PBigVideo
+          file={file}
+          setIsZoomed={setIsZoomed}
+          selected={isSelected}
+        />
+      ) : (
+        <PTitle level={4} style={{ color: 'red' }}>
+          TODO File {file.name} of type {file.type} not supported (yet!)
+        </PTitle>
+      )}
       <Animated.View
         pointerEvents="none"
         // style={[StyleSheet.absoluteFill]}
