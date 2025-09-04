@@ -47,18 +47,18 @@ export const PBigVideo = ({
         allowsFullscreen
         allowsPictureInPicture
       />
-      <View>
-        <Button
-          title={isPlaying ? 'Pause' : 'Play'}
-          onPress={() => {
-            if (isPlaying) {
-              player.pause();
-            } else {
-              player.play();
-            }
-          }}
-        />
-      </View>
+      {/*<View>*/}
+      {/*  <Button*/}
+      {/*    title={isPlaying ? 'Pause' : 'Play'}*/}
+      {/*    onPress={() => {*/}
+      {/*      if (isPlaying) {*/}
+      {/*        player.pause();*/}
+      {/*      } else {*/}
+      {/*        player.play();*/}
+      {/*      }*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*</View>*/}
     </View>
   );
 };
