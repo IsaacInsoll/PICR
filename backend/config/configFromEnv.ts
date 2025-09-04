@@ -41,10 +41,10 @@ export const configFromEnv = () => {
   };
 
   log('info', '#️⃣  Version: ' + (c.dev ? '[DEV] ' : '') + c.version, true);
-  if (c.dev) {
-    console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
-    console.log(c);
-  }
+  // if (c.dev) {
+  //   console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
+  //   console.log(c);
+  // }
 
   if (c.consoleLogging) {
     addDevLogger();

@@ -1,5 +1,5 @@
 import { cacheExchange } from '@urql/exchange-graphcache';
-import schema from '../../public/graphql.schema.json';
+import schema from '@shared/urql/graphql.schema.json';
 import { invalidateQueries } from '../helpers/invalidateQueries';
 
 export const urqlCacheExchange = cacheExchange({
