@@ -6,6 +6,7 @@ import { fullPathForFile } from '../filesystem/fileManager.js';
 import { FileFields } from '../db/picrDb.js';
 
 export const getVideoMetadata = async (file: FileFields) => {
+  //PROBLEM when not running in docker: need to prefix this with `dist/`
   ffmpeg.setFfprobePath('node_modules/ffprobe-static/bin/linux/x64/ffprobe');
 
   //ffprobe is 'traditional callback' style so lets promise-ify it
@@ -32,7 +33,9 @@ export const getVideoMetadata = async (file: FileFields) => {
       m.VideoCodecDescription = video.codec_long_name;
       m.Width = video.width;
       m.Height = video.height;
-      m.Framerate = video.avg_frame_rate ? eval(video.avg_frame_rate) ?? 0 : 0; // TODO: convert "25/1" to
+      m.Framerate = video.avg_frame_rate
+        ? (eval(video.avg_frame_rate) ?? 0)
+        : 0; // TODO: convert "25/1" to
     }
 
     const audio = streams.find(({ codec_type }) => codec_type == 'audio');
