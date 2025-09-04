@@ -12,6 +12,8 @@ import { useEffect, useState } from 'react';
 import { prettyBytes } from '@shared/prettyBytes';
 // import Constants from 'expo-constants';
 import * as Application from 'expo-application';
+import { useNavigate } from 'storybook/internal/router';
+import { useRouter } from 'expo-router';
 
 export default function Settings() {
   const logout = useSetLoggedOut();
@@ -38,9 +40,17 @@ const ServerDetails = () => {
   const login = useLoginDetails();
   const me = useMe();
   const details = result.data?.serverInfo;
+  const router = useRouter();
+
+  const [logoTaps, setLogoTaps] = useState(0);
+  const onLogoPress = () => {
+    setLogoTaps((t) => t + 1);
+    if (logoTaps >= 5) router.push('/storybook');
+  };
+
   return (
     <View style={styles.settingsView}>
-      <PicrLogo />
+      <PicrLogo onTouchEnd={onLogoPress} />
       <PTitle level={3}>Server</PTitle>
       <PText>{login?.server}</PText>
       <PText>{me?.name}</PText>

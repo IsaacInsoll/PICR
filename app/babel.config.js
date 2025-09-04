@@ -14,6 +14,7 @@ module.exports = function (api) {
           root: 'src',
         },
       ],
+      ['@babel/plugin-transform-class-static-block'],
       ['react-native-reanimated/plugin'],
     ],
   };
