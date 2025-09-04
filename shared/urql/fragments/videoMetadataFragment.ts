@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 const videoMetadataFragment = gql(/* GraphQL */ `
   fragment VideoMetadataFragment on Video {

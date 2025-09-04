@@ -1,8 +1,8 @@
-import { useState, MouseEvent } from "react";
-import { CheckButton } from "./CheckButton";
-import { ImageExtended, ImageProps } from "./types";
-import * as styles from "./styles";
-import { getStyle } from "./styles";
+import { useState, MouseEvent } from 'react';
+import { CheckButton } from './CheckButton';
+import { ImageExtended, ImageProps } from './types';
+import * as styles from './styles';
+import { getStyle } from './styles';
 
 export const Image = <T extends ImageExtended>({
   item,
@@ -22,10 +22,10 @@ export const Image = <T extends ImageExtended>({
 
   const thumbnailProps = {
     key: index,
-    "data-testid": "grid-gallery-item_thumbnail",
+    'data-testid': 'grid-gallery-item_thumbnail',
     src: item.src,
-    alt: item.alt ? item.alt : "",
-    title: typeof item.caption === "string" ? item.caption : null,
+    alt: item.alt ? item.alt : '',
+    title: typeof item.caption === 'string' ? item.caption : null,
     style: getStyle(thumbnailStyle, styles.thumbnail, styleContext),
   };
 

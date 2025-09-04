@@ -14,36 +14,30 @@ jobs:
     needs: build
     runs-on: ubuntu-24.04
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
-      -
-        name: Download artifact
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: picr-build-${{ github.sha }}
           path: ./dist
-#      -
-#        name: Debug download
-#        run: pwd && ls -la && ls -la ./dist
-      -
-        name: Login to Docker Hub
+      #      -
+      #        name: Debug download
+      #        run: pwd && ls -la && ls -la ./dist
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Set up QEMU
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      -
-        name: Build and push
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-#          tags: isaacinsoll/picr:latest,isaacinsoll/picr:${{ github.ref_name }},ghcr.io/isaacinsoll/picr:latest,ghcr.io/isaacinsoll/picr:${{ github.ref_name }}
+          #          tags: isaacinsoll/picr:latest,isaacinsoll/picr:${{ github.ref_name }},ghcr.io/isaacinsoll/picr:latest,ghcr.io/isaacinsoll/picr:${{ github.ref_name }}
           tags: isaacinsoll/picr:${{ github.ref_name }},isaacinsoll/picr:latest

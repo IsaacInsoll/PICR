@@ -1,4 +1,4 @@
-import { MouseEvent, CSSProperties, ReactNode, ComponentType } from "react";
+import { MouseEvent, CSSProperties, ReactNode, ComponentType } from 'react';
 
 type Key = string | number;
 
@@ -42,7 +42,7 @@ export type ImageExtendedRow<T extends Image = Image> = ImageExtended<T>[];
 export type EventHandler<T extends Image = Image> = (
   index: number,
   item: T,
-  event: MouseEvent<HTMLElement>
+  event: MouseEvent<HTMLElement>,
 ) => void;
 
 export type StyleFunctionContext<T extends Image = Image> = {
@@ -50,7 +50,7 @@ export type StyleFunctionContext<T extends Image = Image> = {
 };
 
 export type StyleFunction<T extends Image = Image> = (
-  context: StyleFunctionContext
+  context: StyleFunctionContext,
 ) => CSSProperties;
 
 export type StyleProp<T extends Image = Image> =

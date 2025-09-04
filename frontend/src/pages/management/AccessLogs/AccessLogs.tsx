@@ -1,18 +1,18 @@
-import {useQuery} from 'urql';
-import {PicrColumns, PicrDataGrid} from '../../../components/PicrDataGrid';
-import {AccessLog, UserType} from '../../../../../graphql-types';
-import {DateDisplay} from '../../../components/FileListView/Filtering/PrettyDate';
-import {LazyPicrAvatar} from '../../../components/LazyPicrAvatar';
-import {UAParser} from 'ua-parser-js';
-import {Badge, BadgeProps, Code, Group, Stack} from '@mantine/core';
-import {MinimalSharedFolder} from '../../../../types';
-import {Suspense, useState} from 'react';
-import {LoadingIndicator} from '../../../components/LoadingIndicator';
-import {AccessLogsUsersSelector} from './AccessLogsUsersSelector';
-import {FolderName} from '../../../components/FolderName';
-import {EmptyPlaceholder} from '../../EmptyPlaceholder';
-import {TbUnlink} from 'react-icons/tb';
-import {accessLogQuery} from "@shared/urql/queries/accessLogQuery";
+import { useQuery } from 'urql';
+import { PicrColumns, PicrDataGrid } from '../../../components/PicrDataGrid';
+import { AccessLog, UserType } from '../../../../../graphql-types';
+import { DateDisplay } from '../../../components/FileListView/Filtering/PrettyDate';
+import { LazyPicrAvatar } from '../../../components/LazyPicrAvatar';
+import { UAParser } from 'ua-parser-js';
+import { Badge, BadgeProps, Code, Group, Stack } from '@mantine/core';
+import { MinimalSharedFolder } from '../../../../types';
+import { Suspense, useState } from 'react';
+import { LoadingIndicator } from '../../../components/LoadingIndicator';
+import { AccessLogsUsersSelector } from './AccessLogsUsersSelector';
+import { FolderName } from '../../../components/FolderName';
+import { EmptyPlaceholder } from '../../EmptyPlaceholder';
+import { TbUnlink } from 'react-icons/tb';
+import { accessLogQuery } from '@shared/urql/queries/accessLogQuery';
 
 export const AccessLogs = ({
   folderId,

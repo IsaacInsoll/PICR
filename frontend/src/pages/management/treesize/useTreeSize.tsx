@@ -1,7 +1,7 @@
-import {useQuery} from 'urql';
-import {chartColorFiles, chartColorRest, chartColors} from './chartColors';
-import {Folder} from '../../../../../graphql-types';
-import {treeSizeQuery} from "@shared/urql/fragments/treeSizeQuery";
+import { useQuery } from 'urql';
+import { chartColorFiles, chartColorRest, chartColors } from './chartColors';
+import { Folder } from '../../../../../graphql-types';
+import { treeSizeQuery } from '@shared/urql/fragments/treeSizeQuery';
 
 // Queries server then formats data with colors for presentation
 export const useTreeSize = (

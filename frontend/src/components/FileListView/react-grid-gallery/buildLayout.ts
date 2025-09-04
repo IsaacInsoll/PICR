@@ -3,12 +3,12 @@ import {
   Image,
   BuildLayoutOptions,
   ImageExtendedRow,
-} from "./types";
+} from './types';
 
 const calculateCutOff = <T extends ImageExtended = ImageExtended>(
   items: T[],
   totalRowWidth: number,
-  protrudingWidth: number
+  protrudingWidth: number,
 ) => {
   const cutOff: number[] = [];
   let cutSum = 0;
@@ -32,7 +32,7 @@ const calculateCutOff = <T extends ImageExtended = ImageExtended>(
 
 const getRow = <T extends Image = Image>(
   images: T[],
-  { containerWidth, rowHeight, margin }: BuildLayoutOptions
+  { containerWidth, rowHeight, margin }: BuildLayoutOptions,
 ): [ImageExtendedRow<T>, T[]] => {
   const row: ImageExtendedRow<T> = [];
   const imgMargin = 2 * margin;
@@ -70,7 +70,7 @@ const getRow = <T extends Image = Image>(
 const getRows = <T extends Image = Image>(
   images: T[],
   options: BuildLayoutOptions,
-  rows: ImageExtendedRow<T>[] = []
+  rows: ImageExtendedRow<T>[] = [],
 ): ImageExtendedRow<T>[] => {
   const [row, imagesLeft] = getRow(images, options);
   const nextRows = [...rows, row];
@@ -86,10 +86,10 @@ const getRows = <T extends Image = Image>(
 
 export const buildLayout = <T extends Image = Image>(
   images: T[],
-  { containerWidth, maxRows, rowHeight, margin }: BuildLayoutOptions
+  { containerWidth, maxRows, rowHeight, margin }: BuildLayoutOptions,
 ): ImageExtendedRow<T>[] => {
-  rowHeight = typeof rowHeight === "undefined" ? 180 : rowHeight;
-  margin = typeof margin === "undefined" ? 2 : margin;
+  rowHeight = typeof rowHeight === 'undefined' ? 180 : rowHeight;
+  margin = typeof margin === 'undefined' ? 2 : margin;
 
   if (!images) return [];
   if (!containerWidth) return [];
@@ -100,7 +100,7 @@ export const buildLayout = <T extends Image = Image>(
 
 export const buildLayoutFlat = <T extends Image = Image>(
   images: T[],
-  options: BuildLayoutOptions
+  options: BuildLayoutOptions,
 ): ImageExtendedRow<T> => {
   const rows = buildLayout(images, options);
   return [].concat.apply([], rows);

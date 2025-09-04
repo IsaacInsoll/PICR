@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 export const searchQuery = gql(/* GraphQL */ `
   query searchQuery($folderId: ID!, $query: String!) {

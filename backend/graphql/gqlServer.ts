@@ -1,12 +1,12 @@
 import { createHandler } from 'graphql-http/lib/use/express';
-import { schema } from "./schema.js";
-import { IncomingCustomHeaders } from "../types/incomingCustomHeaders.js";
-import { getUserFromToken } from "../auth/jwt-auth.js";
-import { PicrRequestContext } from "../types/PicrRequestContext.js";
-import { getUserFromUUID } from "../auth/getUserFromUUID.js";
-import { dbFolderForId } from "../db/picrDb.js";
-import { extraUserProps } from "../helpers/extraUserProps.js";
-import { UserType } from "../../graphql-types.js";
+import { schema } from './schema.js';
+import { IncomingCustomHeaders } from '../types/incomingCustomHeaders.js';
+import { getUserFromToken } from '../auth/jwt-auth.js';
+import { PicrRequestContext } from '../types/PicrRequestContext.js';
+import { getUserFromUUID } from '../auth/getUserFromUUID.js';
+import { dbFolderForId } from '../db/picrDb.js';
+import { extraUserProps } from '../helpers/extraUserProps.js';
+import { UserType } from '../../graphql-types.js';
 
 export const gqlServer = createHandler({
   schema: schema,

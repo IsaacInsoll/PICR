@@ -6,7 +6,7 @@ import { useSetAtom } from 'jotai';
 import { closeModalAtom } from '../../../atoms/modalAtom';
 import { FilePreview } from '../FilePreview';
 import { prettyBytes } from '@shared/prettyBytes';
-import {prettyDate} from "@shared/prettyDate";
+import { prettyDate } from '@shared/prettyDate';
 
 export const FileInfoModal = ({ file }) => {
   const onClose = useSetAtom(closeModalAtom);

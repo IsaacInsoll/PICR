@@ -1,18 +1,18 @@
-import { useState } from "react";
-import * as styles from "./styles";
-import { CheckButtonProps } from "./types";
+import { useState } from 'react';
+import * as styles from './styles';
+import { CheckButtonProps } from './types';
 
 export const CheckButton = ({
   isSelected = false,
   isVisible = true,
   onClick,
-  color = "#FFFFFFB2",
-  selectedColor = "#4285F4FF",
-  hoverColor = "#FFFFFFFF",
+  color = '#FFFFFFB2',
+  selectedColor = '#4285F4FF',
+  hoverColor = '#FFFFFFFF',
 }: CheckButtonProps): JSX.Element => {
   const [hover, setHover] = useState(false);
 
-  const circleStyle = { display: isSelected ? "block" : "none" };
+  const circleStyle = { display: isSelected ? 'block' : 'none' };
   const fillColor = isSelected ? selectedColor : hover ? hoverColor : color;
 
   const handleMouseOver = () => setHover(true);

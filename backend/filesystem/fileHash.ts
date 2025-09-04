@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
 import { sep } from 'path';
-import { FileFields } from "../db/picrDb.js";
+import { FileFields } from '../db/picrDb.js';
 
 export const fileHash = (filePath: string): string => {
   const fileBuffer = fs.readFileSync(filePath);

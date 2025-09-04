@@ -5,10 +5,10 @@ import {
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
-import { baseColumns } from "../column.helpers.js";
-import { commentPermissionsEnum, userTypeEnum } from "./enums.js";
+import { baseColumns } from '../column.helpers.js';
+import { commentPermissionsEnum, userTypeEnum } from './enums.js';
 import { relations } from 'drizzle-orm';
-import { dbFolder } from "./dbFolder.js";
+import { dbFolder } from './dbFolder.js';
 
 export const dbUser = pgTable('Users', {
   ...baseColumns,

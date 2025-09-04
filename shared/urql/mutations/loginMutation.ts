@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 export const loginMutation = gql(/* GraphQL */ `
   mutation login($username: String!, $password: String!) {

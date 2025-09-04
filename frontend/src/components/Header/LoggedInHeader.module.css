@@ -1,7 +1,11 @@
 .header {
-    margin-bottom: var(--mantine-spacing-lg);
-    padding-top: var(--mantine-spacing-sm);
-    padding-bottom: var(--mantine-spacing-xs);
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
-    border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+  margin-bottom: var(--mantine-spacing-lg);
+  padding-top: var(--mantine-spacing-sm);
+  padding-bottom: var(--mantine-spacing-xs);
+  background-color: light-dark(
+    var(--mantine-color-gray-0),
+    var(--mantine-color-dark-6)
+  );
+  border-bottom: rem(1px) solid
+    light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
 }

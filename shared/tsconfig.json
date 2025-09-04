@@ -8,16 +8,10 @@
     "strict": true,
     "jsx": "react-jsx",
     "paths": {
-      "@/*": [
-        "./*"
-      ],
+      "@/*": ["./*"],
       "@frontend/*": ["../frontend/src/*"],
       "@app/*": ["../app/*"]
-    },
-
+    }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-  ]
+  "include": ["**/*.ts", "**/*.tsx"]
 }

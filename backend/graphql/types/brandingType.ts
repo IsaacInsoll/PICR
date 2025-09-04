@@ -4,8 +4,8 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { folderType } from "./folderType.js";
-import { primaryColorEnum, themeModeEnum } from "./enums.js";
+import { folderType } from './folderType.js';
+import { primaryColorEnum, themeModeEnum } from './enums.js';
 
 export const brandingType = new GraphQLObjectType({
   name: 'Branding',

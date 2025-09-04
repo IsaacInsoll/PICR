@@ -6,11 +6,11 @@ services:
     volumes:
       - ./env/media:/home/node/app/media:ro
     # intentionally leaving the cache inside the container as we can't write to the host when running in docker ?
-#      - ./env/cache:/home/node/app/cache
+    #      - ./env/cache:/home/node/app/cache
     depends_on:
       - test-db
     ports:
-      - "6901:6900"
+      - '6901:6900'
     environment:
       - DATABASE_URL=postgres://user:pass@test-db/picr
       - USE_POLLING=true
@@ -19,7 +19,7 @@ services:
   test-db:
     container_name: test-db
     ports:
-      - "54313:5432"
+      - '54313:5432'
     image: postgres:16
     environment:
       POSTGRES_USER: user

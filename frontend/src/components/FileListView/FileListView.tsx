@@ -31,7 +31,7 @@ import { FolderMenu } from './FolderMenu';
 import { PicrAvatar } from '../PicrAvatar';
 import { prettyBytes } from '@shared/prettyBytes';
 import { pluralize } from '@shared/pluralize';
-import {prettyDate} from "@shared/prettyDate";
+import { prettyDate } from '@shared/prettyDate';
 
 export const FileListView = ({
   files,

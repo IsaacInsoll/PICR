@@ -1,8 +1,8 @@
-import {useQuery} from 'urql';
-import {commentHistoryQuery} from '@shared/urql/queries/commentHistoryQuery';
-import {useCommentPermissions} from '../hooks/useCommentPermissions';
-import {Stack} from '@mantine/core';
-import {CommentHistory} from '../components/FileListView/Review/CommentHistory';
+import { useQuery } from 'urql';
+import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
+import { useCommentPermissions } from '../hooks/useCommentPermissions';
+import { Stack } from '@mantine/core';
+import { CommentHistory } from '../components/FileListView/Review/CommentHistory';
 
 export const FolderActivity = ({ folderId }: { folderId: number }) => {
   const [result, requery] = useQuery({

@@ -2,10 +2,9 @@
 
 ### Self-hosted online image sharing tool for photographers to share photos with clients.
 
- 👩🏻‍💻 [GitHub](https://github.com/isaacinsoll/picr) | 🐳 [Docker Hub](https://hub.docker.com/r/isaacinsoll/picr)
+👩🏻‍💻 [GitHub](https://github.com/isaacinsoll/picr) | 🐳 [Docker Hub](https://hub.docker.com/r/isaacinsoll/picr)
 
 ![](docs/images/picr-header.png)
-
 
 📝 [Picr Manual](https://isaacinsoll.github.io/PICR/) for the full feature list and documentation
 

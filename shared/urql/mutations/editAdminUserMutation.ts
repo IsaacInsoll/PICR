@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 export const editAdminUserMutation = gql(/* GraphQL */ `
   mutation EditAdminUserMutation(

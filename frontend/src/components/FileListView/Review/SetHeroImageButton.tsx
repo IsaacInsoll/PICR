@@ -1,12 +1,12 @@
-import {MinimalFile} from '../../../../types';
-import {useMe} from '../../../hooks/useMe';
-import {ActionIcon, Tooltip} from '@mantine/core';
-import {TbPhotoHeart} from 'react-icons/tb';
-import {useMutation} from 'urql';
-import {useId, useState} from 'react';
-import {useReward} from 'react-rewards';
-import {confettiOptions} from './ConfettiOptions';
-import {editFolderMutation} from "@shared/urql/mutations/editFolderMutation";
+import { MinimalFile } from '../../../../types';
+import { useMe } from '../../../hooks/useMe';
+import { ActionIcon, Tooltip } from '@mantine/core';
+import { TbPhotoHeart } from 'react-icons/tb';
+import { useMutation } from 'urql';
+import { useId, useState } from 'react';
+import { useReward } from 'react-rewards';
+import { confettiOptions } from './ConfettiOptions';
+import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 
 export const SetHeroImageButton = ({ file }: { file: MinimalFile }) => {
   const me = useMe();
@@ -53,4 +53,3 @@ export const SetHeroImageButton = ({ file }: { file: MinimalFile }) => {
     </>
   );
 };
-

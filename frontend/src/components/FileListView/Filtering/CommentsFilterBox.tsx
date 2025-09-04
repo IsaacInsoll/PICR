@@ -1,9 +1,6 @@
 import { Button } from '@mantine/core';
 import { useAtom } from 'jotai/index';
-import {
-  CommentsFilterOptions,
-  filterOptions,
-} from '@shared/filterAtom';
+import { CommentsFilterOptions, filterOptions } from '@shared/filterAtom';
 import { ReactNode } from 'react';
 import { CommentIcon, CommentsIcon } from '../../../PicrIcons';
 

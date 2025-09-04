@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 export const userFragment = gql(/* GraphQL */ `
   fragment UserFragment on User {

@@ -1,9 +1,7 @@
 import { atom } from 'jotai';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 import { atomWithHash } from 'jotai-location';
-import {FileSort, FileSortType} from "@shared/files/sortFiles";
-
-
+import { FileSort, FileSortType } from '@shared/files/sortFiles';
 
 const fileSortHashAtom = atomWithHash('s', '', opts);
 

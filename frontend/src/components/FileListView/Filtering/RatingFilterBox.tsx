@@ -1,9 +1,6 @@
 import { ActionIcon, Group } from '@mantine/core';
 import { useAtom } from 'jotai/index';
-import {
-  filterOptions,
-  RatingsComparisonOptions,
-} from '@shared/filterAtom';
+import { filterOptions, RatingsComparisonOptions } from '@shared/filterAtom';
 import { ReactNode } from 'react';
 import { TbEqual, TbMathEqualGreater, TbMathEqualLower } from 'react-icons/tb';
 import { FileRating } from '../Review/FileRating';

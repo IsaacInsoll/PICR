@@ -1,9 +1,13 @@
-import { FileFields, FolderFields, UserFields } from "../db/picrDb.js";
-import { AccessType } from "../../graphql-types.js";
-import { folderAndAllParentIds } from "../helpers/folderAndAllParentIds.js";
-import { usersForFolders } from "../helpers/usersForFolders.js";
-import { sendNtfyNotification } from "./sendNtfyNotification.js";
-import { urlForImage, userUrlForFile, userUrlForFolder } from "../helpers/url.js";
+import { FileFields, FolderFields, UserFields } from '../db/picrDb.js';
+import { AccessType } from '../../graphql-types.js';
+import { folderAndAllParentIds } from '../helpers/folderAndAllParentIds.js';
+import { usersForFolders } from '../helpers/usersForFolders.js';
+import { sendNtfyNotification } from './sendNtfyNotification.js';
+import {
+  urlForImage,
+  userUrlForFile,
+  userUrlForFolder,
+} from '../helpers/url.js';
 
 export type NotificationType =
   | 'downloaded'

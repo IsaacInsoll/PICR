@@ -1,0 +1,5 @@
+backend/db/drizzle/*
+graphql-types.ts
+schema.graphql
+shared/gql/*
+lightroom/*

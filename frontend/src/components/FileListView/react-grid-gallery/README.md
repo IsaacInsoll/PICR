@@ -9,13 +9,13 @@ There are breaking changes with v0.5.x, check out the [migration guide](https://
 ## Live Demo & Examples
 
 https://benhowell.github.io/react-grid-gallery/
-* [Image Selection](https://benhowell.github.io/react-grid-gallery/examples/selection)
-* [Custom Overlay](https://benhowell.github.io/react-grid-gallery/examples/custom-overlay)
-* [Thumbnail Captions](https://benhowell.github.io/react-grid-gallery/examples/captions)
-* [Custom Image Component](https://benhowell.github.io/react-grid-gallery/examples/custom-image-component)
-* [Lightbox integration `react-image-lightbox`](https://benhowell.github.io/react-grid-gallery/examples/with-react-image-lightbox)
-* [Lightbox integration `yet-another-react-lightbox`](https://benhowell.github.io/react-grid-gallery/examples/with-yet-another-react-lightbox)
 
+- [Image Selection](https://benhowell.github.io/react-grid-gallery/examples/selection)
+- [Custom Overlay](https://benhowell.github.io/react-grid-gallery/examples/custom-overlay)
+- [Thumbnail Captions](https://benhowell.github.io/react-grid-gallery/examples/captions)
+- [Custom Image Component](https://benhowell.github.io/react-grid-gallery/examples/custom-image-component)
+- [Lightbox integration `react-image-lightbox`](https://benhowell.github.io/react-grid-gallery/examples/with-react-image-lightbox)
+- [Lightbox integration `yet-another-react-lightbox`](https://benhowell.github.io/react-grid-gallery/examples/with-yet-another-react-lightbox)
 
 ## Installation
 
@@ -28,40 +28,40 @@ npm install --save react-grid-gallery
 ## Quick Start
 
 ```jsx
-import { Gallery } from "react-grid-gallery";
+import { Gallery } from 'react-grid-gallery';
 
 const images = [
-   {
-      src: "https://c2.staticflickr.com/9/8817/28973449265_07e3aa5d2e_b.jpg",
-      width: 320,
-      height: 174,
-      isSelected: true,
-      caption: "After Rain (Jeshu John - designerspics.com)",
-   },
-   {
-      src: "https://c2.staticflickr.com/9/8356/28897120681_3b2c0f43e0_b.jpg",
-      width: 320,
-      height: 212,
-      tags: [
-         { value: "Ocean", title: "Ocean" },
-         { value: "People", title: "People" },
-      ],
-      alt: "Boats (Jeshu John - designerspics.com)",
-   },
-   {
-      src: "https://c4.staticflickr.com/9/8887/28897124891_98c4fdd82b_b.jpg",
-      width: 320,
-      height: 212,
-   },
+  {
+    src: 'https://c2.staticflickr.com/9/8817/28973449265_07e3aa5d2e_b.jpg',
+    width: 320,
+    height: 174,
+    isSelected: true,
+    caption: 'After Rain (Jeshu John - designerspics.com)',
+  },
+  {
+    src: 'https://c2.staticflickr.com/9/8356/28897120681_3b2c0f43e0_b.jpg',
+    width: 320,
+    height: 212,
+    tags: [
+      { value: 'Ocean', title: 'Ocean' },
+      { value: 'People', title: 'People' },
+    ],
+    alt: 'Boats (Jeshu John - designerspics.com)',
+  },
+  {
+    src: 'https://c4.staticflickr.com/9/8887/28897124891_98c4fdd82b_b.jpg',
+    width: 320,
+    height: 212,
+  },
 ];
 
-<Gallery images={images} />
+<Gallery images={images} />;
 ```
 
 ## Image Options
 
 | Property         | Type                    | Description                                                                                                                                                                                                                                                                                                                                                                                            |
-|:-----------------|:------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :--------------- | :---------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | src              | string                  | Required. A string referring to any valid image resource (file, url, etc).                                                                                                                                                                                                                                                                                                                             |
 | width            | number                  | Required. Width of the image.                                                                                                                                                                                                                                                                                                                                                                          |
 | height           | number                  | Required. Height of the image.                                                                                                                                                                                                                                                                                                                                                                         |
@@ -77,7 +77,7 @@ const images = [
 ## Gallery Options
 
 | Property                | Type                      | Description                                                                                                                                                                                                                                  |
-|:------------------------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| :---------------------- | :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | images                  | array                     | Required. An array of objects containing image properties (see Image Options above).                                                                                                                                                         |
 | id                      | string                    | Optional, default `ReactGridGallery`. `id` attribute for `<Gallery>` tag. This prop may be useful for those who wish to discriminate between multiple galleries.                                                                             |
 | enableImageSelection    | bool                      | Optional, default `true`. Allow images to be selectable. Setting this option to `false` whilst supplying images with `isSelected: true` will result in those images being permanently selected.                                              |
@@ -92,71 +92,69 @@ const images = [
 | thumbnailImageComponent | React component           | Optional. Substitute in a React component that would get passed `imageProps` (the props that would have been passed to the `<img>` tag) and `item` (the original item in `images`) to be used to render thumbnails; useful for lazy loading. |
 | defaultContainerWidth   | number                    | Optional. Set default width for the container. This option is useful during server-side rendering when we want to generate an initial markup before we can detect the actual container width.                                                |
 
-
 ### General Notes
 
- * [react-grid-gallery](https://github.com/benhowell/react-grid-gallery) is built for modern browsers and therefore IE support is limited to IE 11 and newer.
+- [react-grid-gallery](https://github.com/benhowell/react-grid-gallery) is built for modern browsers and therefore IE support is limited to IE 11 and newer.
 
- * As the inspiration for this component comes from [Google Photos](https://photos.google.com/), very small thumbnails may not be the most aesthetically pleasing due to the border size applied when selected. A sensible rowHeight default of 180px has been chosen, but rowHeights down to 100px are still reasonable.
+- As the inspiration for this component comes from [Google Photos](https://photos.google.com/), very small thumbnails may not be the most aesthetically pleasing due to the border size applied when selected. A sensible rowHeight default of 180px has been chosen, but rowHeights down to 100px are still reasonable.
 
- * Gallery width is determined by the containing element. Therefore your containing element must have a width (%, em, px, whatever) **_before_** the gallery is loaded!
+- Gallery width is determined by the containing element. Therefore your containing element must have a width (%, em, px, whatever) **_before_** the gallery is loaded!
 
- * If you don't know your `width` and `height` values, you can find these out using any number of [javascript hacks](http://stackoverflow.com/a/1944298), bearing in mind the load penalty associated with these methods.
-
+- If you don't know your `width` and `height` values, you can find these out using any number of [javascript hacks](http://stackoverflow.com/a/1944298), bearing in mind the load penalty associated with these methods.
 
 ### Contributing
+
 All contributions to [react-grid-gallery](https://github.com/benhowell/react-grid-gallery) are very welcome. Feature requests, issue reports and pull requests are greatly appreciated. Please follow the [contribution guidelines](https://github.com/benhowell/react-grid-gallery/blob/master/.github/contributing.md)
 
-
 ### License
+
 React Grid Gallery is free to use for personal and commercial projects under the [MIT License](https://github.com/benhowell/react-grid-gallery/blob/master/LICENSE). Attribution is not required, but appreciated.
 
-
 ### Acknowledgements
- * [itoldya](https://github.com/itoldya) for the large overhaul of the code base to bring the library to its v1 release.
 
- * Visual design inspired by [Google Photos](https://photos.google.com/).
+- [itoldya](https://github.com/itoldya) for the large overhaul of the code base to bring the library to its v1 release.
 
- * Thumbnail viewport implementation inspired by [GPlusGallery](http://fmaul.de/gallery-grid-example/) by Florian Maul.
+- Visual design inspired by [Google Photos](https://photos.google.com/).
 
- * Backend lightbox functionality via [React Images](https://github.com/jossmac/react-images) by [jossmac](https://github.com/jossmac).
+- Thumbnail viewport implementation inspired by [GPlusGallery](http://fmaul.de/gallery-grid-example/) by Florian Maul.
 
- * The following gallery functions were obtained from the [React Images example](https://github.com/jossmac/react-images/blob/b85bd83ae651d0fd373bb495ac88670ee4dfadab/examples/src/components/Gallery.js) demo: closeLightbox, gotoNext, gotoPrevious, handleClickImage, openLightbox.
+- Backend lightbox functionality via [React Images](https://github.com/jossmac/react-images) by [jossmac](https://github.com/jossmac).
 
- * [cust0dian](https://github.com/cust0dian) for critical bug fixes in [PR 6](https://github.com/benhowell/react-grid-gallery/pull/6) and [PR 7](https://github.com/benhowell/react-grid-gallery/pull/7).
+- The following gallery functions were obtained from the [React Images example](https://github.com/jossmac/react-images/blob/b85bd83ae651d0fd373bb495ac88670ee4dfadab/examples/src/components/Gallery.js) demo: closeLightbox, gotoNext, gotoPrevious, handleClickImage, openLightbox.
 
- * [ValYouW](https://github.com/ValYouW) for lightboxWillOpen and lightBoxWillClose functionality [PR 20](https://github.com/benhowell/react-grid-gallery/pull/20) and customOverlay option: [PR 22](https://github.com/benhowell/react-grid-gallery/pull/22).
+- [cust0dian](https://github.com/cust0dian) for critical bug fixes in [PR 6](https://github.com/benhowell/react-grid-gallery/pull/6) and [PR 7](https://github.com/benhowell/react-grid-gallery/pull/7).
 
- * [danalloway](https://github.com/danalloway) for theme pass-through prop [PR 27](https://github.com/benhowell/react-grid-gallery/pull/27)
+- [ValYouW](https://github.com/ValYouW) for lightboxWillOpen and lightBoxWillClose functionality [PR 20](https://github.com/benhowell/react-grid-gallery/pull/20) and customOverlay option: [PR 22](https://github.com/benhowell/react-grid-gallery/pull/22).
 
- * [SimeonC](https://github.com/SimeonC) for _update thumbnails when maxRows changes_ [PR 35](https://github.com/benhowell/react-grid-gallery/pull/35) and _resize on scrollbar presence change_ [PR 40](https://github.com/benhowell/react-grid-gallery/pull/40)
+- [danalloway](https://github.com/danalloway) for theme pass-through prop [PR 27](https://github.com/benhowell/react-grid-gallery/pull/27)
 
- * [jakub-tucek](https://github.com/jakub-tucek) for thumbnailCaption functionality [PR 42](https://github.com/benhowell/react-grid-gallery/pull/42)
+- [SimeonC](https://github.com/SimeonC) for _update thumbnails when maxRows changes_ [PR 35](https://github.com/benhowell/react-grid-gallery/pull/35) and _resize on scrollbar presence change_ [PR 40](https://github.com/benhowell/react-grid-gallery/pull/40)
 
- * [mis94](https://github.com/mis94) for EXIF image rotation functionality [PR 67](https://github.com/benhowell/react-grid-gallery/pull/67)
+- [jakub-tucek](https://github.com/jakub-tucek) for thumbnailCaption functionality [PR 42](https://github.com/benhowell/react-grid-gallery/pull/42)
 
- * [forforf](https://github.com/forforf) for contentWindow check [PR 77](https://github.com/benhowell/react-grid-gallery/pull/77)
+- [mis94](https://github.com/mis94) for EXIF image rotation functionality [PR 67](https://github.com/benhowell/react-grid-gallery/pull/67)
 
-* [ScottMRafferty](https://github.com/ScottMRafferty) for preloadNextImage not propagating to Lightbox fix [PR 78](https://github.com/benhowell/react-grid-gallery/pull/78)
+- [forforf](https://github.com/forforf) for contentWindow check [PR 77](https://github.com/benhowell/react-grid-gallery/pull/77)
 
-* [Approximator](https://github.com/approximator) for currentImageWillChange (Function to execute before lightbox image change) [PR 97](https://github.com/benhowell/react-grid-gallery/pull/97).
+- [ScottMRafferty](https://github.com/ScottMRafferty) for preloadNextImage not propagating to Lightbox fix [PR 78](https://github.com/benhowell/react-grid-gallery/pull/78)
 
-* [Vadimuz](https://github.com/vadimuz) for nano image props and functionality [PR 101](https://github.com/benhowell/react-grid-gallery/pull/101).
+- [Approximator](https://github.com/approximator) for currentImageWillChange (Function to execute before lightbox image change) [PR 97](https://github.com/benhowell/react-grid-gallery/pull/97).
 
-* [pxpeterxu](https://github.com/pxpeterxu) for adding functionality to inject a custom thumbnail image component (for lazy-loading) [PR 104](https://github.com/benhowell/react-grid-gallery/pull/104).
+- [Vadimuz](https://github.com/vadimuz) for nano image props and functionality [PR 101](https://github.com/benhowell/react-grid-gallery/pull/101).
 
-* [lryta](https://github.com/lryta) for fixing crash when this.props.images.length - 1 < this.state.currentImage [PR #111](https://github.com/benhowell/react-grid-gallery/pull/111).
+- [pxpeterxu](https://github.com/pxpeterxu) for adding functionality to inject a custom thumbnail image component (for lazy-loading) [PR 104](https://github.com/benhowell/react-grid-gallery/pull/104).
 
-* [jimishf](https://github.com/JimishF) for lightBoxProps option to assign any prop directly to lightbox [PR #121](https://github.com/benhowell/react-grid-gallery/pull/121).
+- [lryta](https://github.com/lryta) for fixing crash when this.props.images.length - 1 < this.state.currentImage [PR #111](https://github.com/benhowell/react-grid-gallery/pull/111).
 
-* [kym6464](https://github.com/kym6464) for replacing deprecated defaultProps and for clearing of rollup cache on build [PR #298](https://github.com/benhowell/react-grid-gallery/pull/298)
+- [jimishf](https://github.com/JimishF) for lightBoxProps option to assign any prop directly to lightbox [PR #121](https://github.com/benhowell/react-grid-gallery/pull/121).
 
+- [kym6464](https://github.com/kym6464) for replacing deprecated defaultProps and for clearing of rollup cache on build [PR #298](https://github.com/benhowell/react-grid-gallery/pull/298)
 
- * Demo stock photos:
-   * [Jeshu John - designerspics.com](https://designerspics.com)
-   * [Gratisography](https://gratisography.com)
-   * [Tom Eversley - isorepublic.com](https://isorepublic.com)
-   * [Jan Vasek - jeshoots.com](https://unsplash.com/)
-   * [moveast.me](https://moveast.me)
-   * [贝莉儿 NG. - unsplash.com](https://unsplash.com/)
-   * [Matthew Wiebe. - unsplash.com](https://unsplash.com/)
+- Demo stock photos:
+  - [Jeshu John - designerspics.com](https://designerspics.com)
+  - [Gratisography](https://gratisography.com)
+  - [Tom Eversley - isorepublic.com](https://isorepublic.com)
+  - [Jan Vasek - jeshoots.com](https://unsplash.com/)
+  - [moveast.me](https://moveast.me)
+  - [贝莉儿 NG. - unsplash.com](https://unsplash.com/)
+  - [Matthew Wiebe. - unsplash.com](https://unsplash.com/)

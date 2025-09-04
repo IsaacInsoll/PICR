@@ -5,7 +5,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { folderType } from "./folderType.js";
+import { folderType } from './folderType.js';
 
 export const taskType = new GraphQLObjectType({
   name: 'Task',

@@ -1,4 +1,9 @@
-import sharp, { AvifOptions, JpegOptions, OutputInfo, ResizeOptions } from 'sharp';
+import sharp, {
+  AvifOptions,
+  JpegOptions,
+  OutputInfo,
+  ResizeOptions,
+} from 'sharp';
 import { fullPath, fullPathForFile } from '../filesystem/fileManager.js';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'path';
@@ -63,7 +68,7 @@ export const generateThumbnail = async (
   const opts = await getServerOptions();
 
   try {
-    const promises:Promise<OutputInfo>[] = [];
+    const promises: Promise<OutputInfo>[] = [];
     promises.push(
       img.jpeg(jpegOptions).toFile(thumbnailPath(file, size, '.jpg')),
     );

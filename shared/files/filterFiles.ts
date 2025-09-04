@@ -1,7 +1,7 @@
-import {AspectFilterOptions, FilterOptionsInterface,} from '@/filterAtom';
-import {MetadataOptionsForFiltering} from '@/files/metadataForFiltering';
-import {MetadataSummary} from '../../backend/types/MetadataSummary';
-import {File, Image, Video} from '@/gql/graphql'
+import { AspectFilterOptions, FilterOptionsInterface } from '@/filterAtom';
+import { MetadataOptionsForFiltering } from '@/files/metadataForFiltering';
+import { MetadataSummary } from '../../backend/types/MetadataSummary';
+import { File, Image, Video } from '@/gql/graphql';
 
 export const DefaultFilterOptions: FilterOptionsInterface = {
   ratio: 'Any Ratio',
@@ -13,10 +13,7 @@ export const DefaultFilterOptions: FilterOptionsInterface = {
   comments: null,
 };
 
-export const filterFiles = (
-  files: File[],
-  filters: FilterOptionsInterface,
-) => {
+export const filterFiles = (files: File[], filters: FilterOptionsInterface) => {
   const { ratio, searchText, metadata } = filters;
   return files.filter((file: File) => {
     return (
@@ -33,7 +30,7 @@ const textFilter = (file: File, text: string): boolean => {
 };
 
 const ratioFilter = (
-  file: File|Image,
+  file: File | Image,
   ratio: AspectFilterOptions,
 ): boolean => {
   // @ts-ignore
@@ -49,18 +46,18 @@ const ratioFilter = (
 };
 
 const metadataFilter = (
-  file: File|Image|Video,
+  file: File | Image | Video,
   metadata: MetadataOptionsForFiltering,
 ): boolean => {
   let allowed = true;
   Object.entries(metadata).forEach(([title, options]) => {
     if (options.length > 0) {
-      if(file?.__typename == 'File') {
+      if (file?.__typename == 'File') {
         allowed = false; // basic files don't have metadata
       } else {
-      // @ts-ignore
+        // @ts-ignore
         const val = file.metadata?.[title as keyof MetadataSummary];
-      if (!val || !options.includes(val)) allowed = false;
+        if (!val || !options.includes(val)) allowed = false;
       }
     }
   });

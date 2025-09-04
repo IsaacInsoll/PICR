@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState } from "react";
+import { useRef, useCallback, useState } from 'react';
 
 export function useContainerWidth(defaultContainerWidth: number) {
   const ref = useRef<HTMLElement | null>(null);
@@ -25,7 +25,7 @@ export function useContainerWidth(defaultContainerWidth: number) {
 
     updateWidth();
 
-    if (node && typeof ResizeObserver !== "undefined") {
+    if (node && typeof ResizeObserver !== 'undefined') {
       observerRef.current = new ResizeObserver(updateWidth);
       observerRef.current.observe(node);
     }

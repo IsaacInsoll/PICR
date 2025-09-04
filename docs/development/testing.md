@@ -22,7 +22,7 @@ endpoints on the backend, and if we have more developer time in future we may ad
 
 ## Troubleshooting 'ALL TESTS FAILING'
 
-If every test fails then it's probably because the `test-picr` container isn't booting up okay. 
+If every test fails then it's probably because the `test-picr` container isn't booting up okay.
 You can troubleshoot this with `cd tests && docker compose build && docker compose up`
 
 This will build the container then start it, with all output going to the terminal (rather than hidden like when running tests)
@@ -32,16 +32,16 @@ Common faults include:
 1. You didn't run all the pre-build steps like `./copy-files.sh`, `npm install`, `npm run build` etc
 2. You wrote some code that works in 'existing' dev environment but breaks on a 'first run' (EG: expecting a DB field to be defined)
 
-
 ## Creating Tests
+
 You can find tests in the `tests` folder and the files should be named starting with a 2 digit number as the existing tests are.
 You are welcome to rename them to change the order if it makes sense to you
-(EG: 'create shared folder' happens before 'can access shared folder'). 
+(EG: 'create shared folder' happens before 'can access shared folder').
 
 ## When are tests run?
+
 - Tests are run before each release as part of the `release-it` configuration.
 - Tests are no run before each commit.
-- You can manually run a `npm run test` before commit to make sure it works*
+- You can manually run a `npm run test` before commit to make sure it works\*
 
-\* I didn't want to force this on you as it's a bit of time "wasted" doing builds/tests if just commiting a small change. 
-
+\* I didn't want to force this on you as it's a bit of time "wasted" doing builds/tests if just commiting a small change.

@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 //Literally same as `sharedFolderFragment` but I added `username` and `folder.parents`
 export const viewBrandingsQuery = gql(/*GraphQL*/ `

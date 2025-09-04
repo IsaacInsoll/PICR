@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tsConfigPaths from "vite-plugin-tsconfig-paths"
+import tsConfigPaths from 'vite-plugin-tsconfig-paths';
 
 // https://vitejs.dev/config/
 
@@ -36,8 +36,8 @@ export default defineConfig({
     outDir: '../dist/public',
     emptyOutDir: true,
     rollupOptions: {
-      external:[],
-    }
+      external: [],
+    },
   },
   esbuild: { minifyIdentifiers: false }, //keep function names for easier debugging on production
   server: {

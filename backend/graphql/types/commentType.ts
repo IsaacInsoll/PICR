@@ -5,9 +5,9 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { userType } from "./userType.js";
+import { userType } from './userType.js';
 import { GraphQLDateTime } from 'graphql-scalars';
-import { fileType } from "./fileType.js";
+import { fileType } from './fileType.js';
 
 export const commentType = new GraphQLObjectType({
   name: 'Comment',

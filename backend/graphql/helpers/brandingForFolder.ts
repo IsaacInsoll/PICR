@@ -2,12 +2,12 @@ import {
   Branding as BrandingType,
   PrimaryColor,
   ThemeMode,
-} from "../../../graphql-types.js";
+} from '../../../graphql-types.js';
 import {
   brandingForFolderId,
   dbFolderForId,
   FolderFields,
-} from "../../db/picrDb.js";
+} from '../../db/picrDb.js';
 
 export const brandingForFolder = async (
   folder: FolderFields,

@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 export const minimumFolderFragment = gql(/* GraphQL */ `
   fragment MinimumFolderFragment on Folder {

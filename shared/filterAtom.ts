@@ -1,7 +1,7 @@
 import { atom } from 'jotai';
 import { MetadataOptionsForFiltering } from './files/metadataForFiltering';
 import { FileFlag } from '../graphql-types';
-import {DefaultFilterOptions} from "./files/filterFiles";
+import { DefaultFilterOptions } from './files/filterFiles';
 
 export const filterAtom = atom<boolean>(false); // is filtering enabled?
 
@@ -23,8 +23,6 @@ export interface FilterOptionsInterface {
   rating: number;
   comments: CommentsFilterOptions | null;
 }
-
-
 
 export const filterOptions = atom<FilterOptionsInterface>(DefaultFilterOptions);
 

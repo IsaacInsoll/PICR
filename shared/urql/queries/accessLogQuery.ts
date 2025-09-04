@@ -1,28 +1,28 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 export const accessLogQuery = gql(/* GraphQL */ `
-    query AccessLogsQuery(
-        $folderId: ID!
-        $userId: ID
-        $includeChildren: Boolean
-        $userType: UserType
+  query AccessLogsQuery(
+    $folderId: ID!
+    $userId: ID
+    $includeChildren: Boolean
+    $userType: UserType
+  ) {
+    accessLogs(
+      folderId: $folderId
+      userId: $userId
+      includeChildren: $includeChildren
+      userType: $userType
     ) {
-        accessLogs(
-            folderId: $folderId
-            userId: $userId
-            includeChildren: $includeChildren
-            userType: $userType
-        ) {
-            id
-            timestamp
-            type
-            userId
-            folderId
-            ipAddress
-            userAgent
-            folder {
-                ...FolderFragment
-            }
-        }
+      id
+      timestamp
+      type
+      userId
+      folderId
+      ipAddress
+      userAgent
+      folder {
+        ...FolderFragment
+      }
     }
+  }
 `);

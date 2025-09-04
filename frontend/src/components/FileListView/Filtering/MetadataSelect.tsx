@@ -13,7 +13,7 @@ export const MetadataSelect = ({
   options: (string | number)[];
 }) => {
   const [fo, setFo] = useAtom(filterOptions);
-  const value = options.length === 1 ? options : fo.metadata[title] ?? [];
+  const value = options.length === 1 ? options : (fo.metadata[title] ?? []);
   const data = formatMetadataValues(title, options);
 
   const label = title === 'ExposureTime' ? 'Shutter Speed' : title;

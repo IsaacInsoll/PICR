@@ -1,12 +1,12 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 const treeSizeFragment = gql(/* GraphQL */ `
-    fragment TreeSizeFragment on Folder {
-        id
-        name
-        totalFiles
-        totalFolders
-        totalSize
-        totalDirectSize
-    }
+  fragment TreeSizeFragment on Folder {
+    id
+    name
+    totalFiles
+    totalFolders
+    totalSize
+    totalDirectSize
+  }
 `);

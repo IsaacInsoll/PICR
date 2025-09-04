@@ -1,5 +1,5 @@
 import { pbkdf2Sync } from 'node:crypto';
-import { picrConfig } from "../config/picrConfig.js";
+import { picrConfig } from '../config/picrConfig.js';
 
 export const hashPassword = (password: string): string => {
   const salt = picrConfig.tokenSecret!;

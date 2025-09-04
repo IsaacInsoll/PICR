@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 export const recentUsersQuery = gql(/* GraphQL */ `
   query RecentUsersQuery($folderId: ID!) {
@@ -15,7 +15,7 @@ export const recentUsersQuery = gql(/* GraphQL */ `
           id
           name
         }
-          ...HeroImageFragment
+        ...HeroImageFragment
       }
     }
   }

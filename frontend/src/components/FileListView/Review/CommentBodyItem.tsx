@@ -17,7 +17,7 @@ import { useOpenCommentsModal } from '../../../atoms/modalAtom';
 import { CommentHistoryProps } from './CommentHistory';
 import { PicrAvatar } from '../../PicrAvatar';
 import { useIsMobile } from '../../../hooks/useIsMobile';
-import {prettyDate} from "@shared/prettyDate";
+import { prettyDate } from '@shared/prettyDate';
 
 export const CommentBodyItem = ({
   comment,

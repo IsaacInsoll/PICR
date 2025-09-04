@@ -1,4 +1,4 @@
-import {gql} from "../gql";
+import { gql } from '../gql';
 
 export const manageFolderQuery = gql(/*GraphQL*/ `
     query ManageFolderQuery($folderId: ID!, $includeParents: Boolean!, $includeChildren: Boolean!) {

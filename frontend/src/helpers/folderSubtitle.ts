@@ -8,4 +8,3 @@ export const folderSubtitle = (folder: { subFolders: any[]; files: any[] }) => {
   const join = f !== '' && fi !== '' ? ', ' : '';
   return `${f}${join}${fi}`;
 };
-
