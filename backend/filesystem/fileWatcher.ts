@@ -32,6 +32,7 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
     usePolling: config.usePolling,
     interval: 100 * intervalMultiplier,
     binaryInterval: 300 * intervalMultiplier,
+    alwaysStat: true,
   });
 
   watcher
@@ -39,8 +40,12 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
       log('info', '➕ ' + path);
       addToQueue('add', { path, generateThumbs: initComplete, stats });
     })
-    // .on('change', path => log('✖️ ' + path))
-    // .on('unlink', path => log('➖ ' + path))
+    .on('change', (path, stats) => {
+      addToQueue('add', { path, generateThumbs: initComplete, stats });
+    })
+    .on('unlink', (path) => {
+      addToQueue('unlink', { path });
+    })
     .on('error', (error) => console.log('⚠️ Error happened: ' + error))
     .on('addDir', (path, stats) => {
       log('info', `📁➕ ${relativePath(path)}`);

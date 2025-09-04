@@ -7,13 +7,14 @@ import { log } from '../logger.js';
 import { db, dbFileForId } from '../db/picrDb.js';
 import { and, count, eq, isNotNull } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../db/models/index.js';
-import { delay } from '../helpers/delay.js';
 import { Stats } from 'node:fs';
+import { removeFile } from './events/removeFile.js';
 
 type QueueAction =
   | 'addDir'
   | 'unlinkDir'
   | 'add'
+  | 'unlink'
   | 'generateThumbnails'
   | 'initComplete';
 
@@ -64,6 +65,9 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
         payload.generateThumbs ?? false,
         payload.stats,
       );
+      break;
+    case 'unlink':
+      await removeFile(payload.path!);
       break;
     case 'generateThumbnails':
       // lol, we pass an ID to this function, not a path, but it's fine, trust me!
