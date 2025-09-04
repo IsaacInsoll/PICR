@@ -59,6 +59,7 @@ Run the following commands to make a separate 'dev' version of the app with a di
 APP_VARIANT=development npx expo prebuild --clean
 APP_VARIANT=development npx expo run:ios -d
 ```
+> Windows PowerShell ProTip: run `$env:APP_VARIANT = "development"` to set the env var for the current session
 
 You will need to redo these steps if you install anything that requires new native packages
 
