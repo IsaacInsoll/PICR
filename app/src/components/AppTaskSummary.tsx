@@ -26,7 +26,7 @@ export const AppTaskSummary = ({ folderId }: { folderId: string }) => {
       {remaining.map(({ id, name, step, totalSteps }) => {
         const hasSteps = step && totalSteps && totalSteps > 0;
         const percent = hasSteps
-          ? (step / totalSteps).toFixed(2) * 100.0
+          ? ((step / totalSteps) * 100.0).toFixed(1)
           : null;
         return (
           <PView

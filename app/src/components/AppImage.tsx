@@ -38,6 +38,7 @@ export const AppImage = ({
       }}
       style={{ height }}
     >
+      {/*TODO: this is only instance of CachedImage in entire codebase, refactor to be Expo Image powered by the cache like we are doing elsewhere? */}
       <CachedImage
         source={source}
         style={{ width: w, height }}
