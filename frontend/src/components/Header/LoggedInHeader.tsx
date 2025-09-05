@@ -22,6 +22,8 @@ import { MinimalFolder } from '../../../types';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
+import { UAParser } from 'ua-parser-js';
+import { User } from '@shared/gql/graphql';
 
 export const LoggedInHeader = ({
   folder,
@@ -113,8 +115,7 @@ const RightSide = ({ me }) => {
   const homeFolderLink = useFolderLink(me.folder);
   const [, setOpened] = useQuickFind();
   const logOut = useLogout();
-  const location = useLocation();
-  const appUrl = 'picr://' + window.location.host + location.pathname;
+
   return (
     <Menu
       shadow="md"
@@ -146,9 +147,7 @@ const RightSide = ({ me }) => {
           Search
         </Menu.Item>
         <Menu.Label>PICR</Menu.Label>
-        <Menu.Item component={Link} leftSection={<OpenInAppIcon />} to={appUrl}>
-          Open in app
-        </Menu.Item>
+        <OpenInApp />
         <PicrMenuItem leftSection={<UserSettingsIcon />} to="/admin/settings">
           Settings
         </PicrMenuItem>
@@ -166,4 +165,18 @@ const useLogout = () => {
     setAuthKey('');
     window.location.reload();
   };
+};
+
+const OpenInApp = () => {
+  const { device } = UAParser(navigator.userAgent);
+  const isMobile = device.is('mobile');
+  const location = useLocation();
+  if (!isMobile) return null;
+  //todo: show links to app store?
+  const appUrl = 'picr://' + window.location.host + location.pathname;
+  return (
+    <Menu.Item component={Link} leftSection={<OpenInAppIcon />} to={appUrl}>
+      Open in app
+    </Menu.Item>
+  );
 };
