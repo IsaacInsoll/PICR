@@ -1,9 +1,9 @@
 import { taskQuery } from '@shared/urql/queries/taskQuery';
-// import { useRequery } from '@shared/hooks/useRequery';
+import { useRequery } from 'picr-shared/hooks/useRequery';
 import { useQuery } from 'urql';
 import { View } from 'react-native';
 import { PText } from '@/src/components/PText';
-import { useRequery } from '@/src/app-shared/useRequery';
+// import { useRequery } from '@/src/app-shared/useRequery';
 import { PView } from '@/src/components/PView';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { PTitle } from '@/src/components/PTitle';

@@ -3,6 +3,7 @@
   "version": "0.8.3",
   "description": "",
   "type": "module",
+  "private": true,
   "directories": {
     "doc": "docs",
     "test": "tests"
@@ -61,6 +62,7 @@
       }
     }
   },
+  "workspaces": ["shared","app","frontend","backend"],
   "author": "Isaac Insoll",
   "license": "ISC"
 }

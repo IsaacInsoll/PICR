@@ -5,8 +5,7 @@ import type { UseQueryExecute } from 'urql';
 export const useRequery = (reQuery: UseQueryExecute, ms?: number) => {
   useEffect(() => {
     const timer = setInterval(() => {
-      if (!document.visibilityState || document.visibilityState == 'visible')
-        reQuery({ requestPolicy: 'cache-and-network' });
+      if (true) reQuery({ requestPolicy: 'cache-and-network' });
     }, ms ?? 5000);
     return () => clearInterval(timer);
   }, [reQuery, ms]);

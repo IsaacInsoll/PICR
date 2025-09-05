@@ -2,7 +2,7 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: 'http://localhost:6900/graphql',
+  schema: 'https://picr.insoll.media/graphql',
   // `src/gql/*` for useQuery/useMutation to return typed object
   generates: {
     // used by codegen to add proper typescript typing to results from a gql query/mutation
@@ -13,19 +13,19 @@ const config: CodegenConfig = {
       plugins: [],
     },
     //graphql.schema.json used by URQL for caching
-    'shared/urql/graphql.schema.json': {
-      plugins: ['introspection'],
-    },
-    // `schema.graphql` for phpStorm GQL plugin to auto complete queries
-    './schema.graphql': {
-      schema: 'http://localhost:6900/graphql',
-      plugins: ['schema-ast'],
-    },
-    // for importing types into server TS files
-    './graphql-types.ts': {
-      plugins: ['typescript', 'typescript-operations'],
-      config: {},
-    },
+    // 'shared/urql/graphql.schema.json': {
+    //   plugins: ['introspection'],
+    // },
+    // // `schema.graphql` for phpStorm GQL plugin to auto complete queries
+    // './schema.graphql': {
+    //   schema: 'http://localhost:6900/graphql',
+    //   plugins: ['schema-ast'],
+    // },
+    // // for importing types into server TS files
+    // './graphql-types.ts': {
+    //   plugins: ['typescript', 'typescript-operations'],
+    //   config: {},
+    // },
   },
 };
 
