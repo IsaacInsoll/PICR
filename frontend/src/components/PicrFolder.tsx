@@ -22,8 +22,8 @@ export const PicrFolder = ({
     <BackgroundImage src={src?.replace(' ', '%20')} radius={0} ref={ref}>
       <Box
         style={{
-          backdropFilter: hovered ? 'blur(3px)' : 'blur(8px)',
-          backgroundColor: dark ? '#3339' : '#ccc9',
+          backdropFilter: hovered ? 'blur(2px)' : 'blur(5px)',
+          backgroundColor: dark ? '#2229' : '#ddd9',
         }}
       >
         <Button
@@ -31,7 +31,7 @@ export const PicrFolder = ({
           leftSection={<FolderIcon />}
           fullWidth
           variant="transparent"
-          color={hovered ? 'blue' : 'gray'}
+          color={hovered ? 'blue' : dark ? '#ddd' : '#333'}
         >
           {folder.name}
         </Button>
