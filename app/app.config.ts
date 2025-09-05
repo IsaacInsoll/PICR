@@ -65,7 +65,15 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         isAccessMediaLocationEnabled: true,
       },
     ],
+    [
+      'expo-video',
+      {
+        supportsBackgroundPlayback: true,
+        supportsPictureInPicture: true,
+      },
+    ],
     'expo-secure-store',
+    'expo-notifications',
     'expo-web-browser',
     'expo-font',
     ['react-native-edge-to-edge'],
