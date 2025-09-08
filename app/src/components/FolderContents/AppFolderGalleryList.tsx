@@ -57,8 +57,11 @@ export const AppFolderGalleryList = ({
 const MasonryItem = ({ item, width, colCount }) => {
   const image = item;
   const isFolder = image.__typename == 'Folder';
+  const theme = useAppTheme();
   return (
-    <View style={styles.imageContainer}>
+    <View
+      style={[styles.imageContainer, { borderColor: theme.backgroundColor }]}
+    >
       <AppLink item={image} asChild={true}>
         <TouchableOpacity>
           <PFileImage
@@ -124,7 +127,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   imageContainer: {
-    borderRadius: 4,
+    borderRadius: 6,
     overflow: 'hidden',
     borderWidth: border,
     // borderColor: '#fff',
