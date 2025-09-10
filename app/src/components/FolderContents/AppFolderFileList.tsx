@@ -19,6 +19,10 @@ import { AppCommentsChip } from '@/src/components/chips/AppCommentsChip';
 import { FlashList } from '@shopify/flash-list';
 import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
 import { PFileView } from '@/src/components/PFileView';
+import {
+  AppFooterPadding,
+  AppHeaderPadding,
+} from '@/src/components/AppHeaderPadding';
 
 export const AppFolderFileList = ({
   items,
@@ -31,6 +35,8 @@ export const AppFolderFileList = ({
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
       data={items}
       numColumns={1}
+      ListHeaderComponent={<AppHeaderPadding />}
+      ListFooterComponent={<AppFooterPadding />}
       keyExtractor={(item) => item['__typename'] + item.id}
       renderItem={({ item, index }) => (
         <AppFileListItem item={item} key={index} width={width} />

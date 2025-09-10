@@ -6,7 +6,6 @@ import { File, Image } from '@shared/gql/graphql';
 import { AspectView } from '@/src/components/AspectView';
 import { Suspense } from 'react';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
-import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 import { useMutation } from 'urql';
 import { FileCommentsIcon } from '@/src/components/FolderContents/FileCommentsIcon';
@@ -18,6 +17,10 @@ import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents
 import { fileProps } from '@shared/files/fileProps';
 import { AppVideo } from '@/src/components/AppVideo';
 import { PFileFolderThumbnail } from '@/src/components/PFileView';
+import {
+  AppFooterPadding,
+  AppHeaderPadding,
+} from '@/src/components/AppHeaderPadding';
 
 export const AppFolderFeed = ({
   items,
@@ -29,6 +32,8 @@ export const AppFolderFeed = ({
       onRefresh={refresh}
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
       data={items}
+      ListHeaderComponent={<AppHeaderPadding />}
+      ListFooterComponent={<AppFooterPadding />}
       numColumns={1}
       keyExtractor={(item) => item['__typename'] + item.id}
       renderItem={(props) => renderItem({ ...props, width })}
@@ -69,7 +74,7 @@ const FlashFile = ({ file, width }: { file: File | Image; width: number }) => {
   const [, mutate] = useMutation(addCommentMutation);
 
   return (
-    <AppFileLink file={file} asChild>
+    <AppFileLink file={file} asChild disabled={isVideo}>
       <TouchableOpacity>
         {isImage ? (
           <AspectView ratio={file.imageRatio} width={width}>

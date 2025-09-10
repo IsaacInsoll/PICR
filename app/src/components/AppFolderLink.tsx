@@ -29,9 +29,11 @@ export const AppFolderLink = ({
 export const AppFileLink = ({
   file,
   children,
+  isDisabled,
   ...props
-}: { file: FileIDandName } & Omit<LinkProps, 'href'>) => {
+}: { file: FileIDandName; isDisabled?: boolean } & Omit<LinkProps, 'href'>) => {
   const pathname = useAppFileLink(file);
+  if (isDisabled) return children;
   return (
     <Link href={{ pathname }} {...props} onPress={() => addToFileCache(file)}>
       {children}

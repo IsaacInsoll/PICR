@@ -24,7 +24,6 @@ import Animated, {
 import Carousel from 'react-native-reanimated-carousel';
 import { useCallback, useState } from 'react';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
-import { useAppFolderLink } from '@/src/components/AppFolderLink';
 import { BlurView } from 'expo-blur';
 import { HeaderButton } from '@react-navigation/elements';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,6 +34,7 @@ import { FileCommentsBottomSheet } from '@/src/components/FileCommentsBottomShee
 import { useScreenOrientation } from '@/src/hooks/useScreenOrientation';
 import { PTitle } from '@/src/components/PTitle';
 import { PBigVideo } from '@/src/components/PBigVideo';
+import { useNavigationScreenOptions } from '@/src/hooks/useNavigationScreenOptions';
 
 interface ItemProps {
   index: number;
@@ -54,7 +54,6 @@ export default function AppFileView() {
     fileId: string;
     folderId: string;
   }>();
-  const folderLink = useAppFolderLink({ id: folderId });
   const skeleton = fileCache[fileId];
 
   // We query folder instead of file because (a) probably already loaded and (b) we will be swiping between images in this gallery
@@ -91,11 +90,13 @@ export default function AppFileView() {
   );
 
   const [orientation] = useScreenOrientation();
+  const headerOptions = useNavigationScreenOptions();
 
   return (
-    <>
+    <View style={{ backgroundColor: theme.tabColor }}>
       <Stack.Screen
         options={{
+          ...headerOptions,
           headerTitle: skeleton?.name ?? 'Loading File...',
           headerRight: () => (
             <View style={{ flexDirection: 'row' }}>
@@ -115,61 +116,54 @@ export default function AppFileView() {
           headerShown: !fullScreen, //toggling this causes ugly image jump behaviour
         }}
       />
-      <SafeAreaView
-        style={{
-          flexGrow: 1,
-          marginBottom: safe.bottom,
-          backgroundColor: theme.tabColor,
+      {/* Don't do safe area view because then the image can't 'fill' the screen (both bottom and under transparent top nav). If you want a bottom bar then float it over the top, not inside safe area view */}
+      <Carousel
+        loop={false}
+        // autoPlay={!isZoomed}
+        key={orientation} //force rerender if screen changes orientation, otherwise it's blank
+        defaultIndex={fileIndex}
+        style={{ flexGrow: 1 }}
+        width={width}
+        data={files}
+        renderItem={({ index, animationValue }) => {
+          return (
+            <CustomItem
+              key={index}
+              file={files[index]}
+              index={index}
+              animationValue={animationValue}
+              setIsZoomed={setIsZoomed}
+            />
+          );
         }}
-      >
-        <Carousel
-          loop={false}
-          // autoPlay={!isZoomed}
-          key={orientation} //force rerender if screen changes orientation, otherwise it's blank
-          defaultIndex={fileIndex}
-          style={{ flexGrow: 1 }}
-          width={width}
-          data={files}
-          renderItem={({ index, animationValue }) => {
-            return (
-              <CustomItem
-                key={index}
-                file={files[index]}
-                index={index}
-                animationValue={animationValue}
-                setIsZoomed={setIsZoomed}
-              />
-            );
-          }}
-          customAnimation={customAnimation}
-          enabled={!isZoomed}
-          onSnapToItem={(index) => {
-            const f = files[index];
-            addToFileCache(f);
-            router.setParams({ folderId, fileId: f.id });
-          }}
-          scrollAnimationDuration={150}
-          windowSize={10} // lazy loading
-        />
-        <FileBottomBar file={file} />
-        <Animated.View
-          pointerEvents="none"
-          style={[
-            StyleSheet.absoluteFill,
-            { backgroundColor: '#fff', zIndex: 1000, opacity: flash },
-          ]}
-        />
-        {/*<Suspense fallback={<AppLoadingIndicator />}>*/}
-        {/*  <FolderBody folderId={folderId} key={folderId} />*/}
-        {/*</Suspense>*/}
-        {/*<PText variant="dimmed">{x}</PText>*/}
-      </SafeAreaView>
+        customAnimation={customAnimation}
+        enabled={!isZoomed}
+        onSnapToItem={(index) => {
+          const f = files[index];
+          addToFileCache(f);
+          router.setParams({ folderId, fileId: f.id });
+        }}
+        scrollAnimationDuration={150}
+        windowSize={10} // lazy loading
+      />
+      {/*<FileBottomBar file={file} />*/}
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          StyleSheet.absoluteFill,
+          { backgroundColor: '#fff', zIndex: 1000, opacity: flash },
+        ]}
+      />
+      {/*<Suspense fallback={<AppLoadingIndicator />}>*/}
+      {/*  <FolderBody folderId={folderId} key={folderId} />*/}
+      {/*</Suspense>*/}
+      {/*<PText variant="dimmed">{x}</PText>*/}
       <FileCommentsBottomSheet
         file={file}
         open={showComments}
         onClose={() => setShowComments(false)}
       />
-    </>
+    </View>
   );
 }
 

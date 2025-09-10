@@ -1,28 +1,18 @@
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { AppFolderLink, AppLink } from '@/src/components/AppFolderLink';
-import { AppImage } from '@/src/components/AppImage';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AppLink } from '@/src/components/AppFolderLink';
 import { PText } from '@/src/components/PText';
 import { File, Folder, Image, Video } from '@shared/gql/graphql';
-import { AspectView } from '@/src/components/AspectView';
-import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
-import { FileCommentsIcon } from '@/src/components/FolderContents/FileCommentsIcon';
-import { FileFlagIcon } from '@/src/components/FolderContents/FileFlagIcon';
-import { FileRating } from '@/src/components/FolderContents/FileRating';
-import { PTitle } from '@/src/components/PTitle';
-import { PFileImage } from '@/src/components/PFileImage';
-import { AppFileFlagChip } from '@/src/components/chips/AppFileFlagChip';
-import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
-import { AppCommentsChip } from '@/src/components/chips/AppCommentsChip';
 import { BlurView } from 'expo-blur';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
-import { useScreenOrientation } from '@/src/hooks/useScreenOrientation';
 import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
 import { fileProps } from '@shared/files/fileProps';
 import { PFileFolderThumbnail, PFileView } from '@/src/components/PFileView';
-import { PFileVideo } from '@/src/components/PFileVideo';
+import {
+  AppFooterPadding,
+  AppHeaderPadding,
+} from '@/src/components/AppHeaderPadding';
 
 const border = 2;
 const defaultHeight = 200; //EG: non-images
@@ -51,6 +41,8 @@ export const AppFolderGalleryList = ({
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
       data={items}
       numColumns={cols}
+      ListHeaderComponent={<AppHeaderPadding />}
+      ListFooterComponent={<AppFooterPadding />}
       keyExtractor={(item) => item['__typename'] + item.id}
       renderItem={(props) => (
         <MasonryItem
