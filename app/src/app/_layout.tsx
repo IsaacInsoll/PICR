@@ -8,6 +8,7 @@ import { Dirs } from 'react-native-file-access';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppErrorBoundary } from '@/src/components/AppErrorBoundary';
+import { NotificationHandler } from '@/src/components/NotificationHandler';
 
 CacheManager.config = {
   baseDir: `${Dirs.CacheDir}/images_cache/`,

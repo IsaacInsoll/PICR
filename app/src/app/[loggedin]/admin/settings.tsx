@@ -1,4 +1,4 @@
-import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Button, SafeAreaView, StyleSheet, Switch, View } from 'react-native';
 import { PicrLogo } from '@/src/components/PicrLogo';
 import { useLoginDetails, useSetLoggedOut } from '@/src/hooks/useLoginDetails';
 import { serverInfoQuery } from '@shared/urql/queries/serverInfoQuery';
@@ -12,8 +12,10 @@ import { useEffect, useState } from 'react';
 import { prettyBytes } from '@shared/prettyBytes';
 // import Constants from 'expo-constants';
 import * as Application from 'expo-application';
+import { NotificationHandler } from '@/src/components/NotificationHandler';
 
 export default function Settings() {
+  const [allowNotifications, setAllowNotifications] = useState(false);
   const logout = useSetLoggedOut();
   const doClearCache = async () => {
     await CacheManager.clearCache();
@@ -25,6 +27,23 @@ export default function Settings() {
         <ServerDetails />
         <AppDetails />
         <View style={{ margin: 32, gap: 16 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+              justifyContent: 'center',
+            }}
+          >
+            <PText>Allow Notifications</PText>
+            <Switch
+              value={allowNotifications}
+              onChange={(event) =>
+                setAllowNotifications(event.nativeEvent.value)
+              }
+            />
+          </View>
+          {allowNotifications ? <NotificationHandler /> : null}
           <Button onPress={doClearCache} title="Clear image cache" />
           <Button onPress={logout} title="Log out" />
         </View>
