@@ -23,7 +23,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: 'automatic',
   newArchEnabled: true,
   ios: {
-    // supportsTablet: true,
+    supportsTablet: IS_DEV, //if setting to true then we need iPad screenshots to get published on app store
     bundleIdentifier: bundle,
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
@@ -81,7 +81,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'expo-build-properties',
       {
         ios: {
-          deploymentTarget: '17.0',
+          deploymentTarget: IS_DEV ? '16.0' : '17.0',
         },
       },
     ],
