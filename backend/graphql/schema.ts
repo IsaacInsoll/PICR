@@ -39,6 +39,9 @@ import { accessLogType } from './types/accessLogType.js';
 import { clientInfo } from './queries/clientInfoQuery.js';
 import { clientInfoType } from './types/clientInfoType.js';
 import { accessTypeEnum, userTypeEnum } from './types/enums.js';
+import { userDeviceType } from './types/userDeviceType.js';
+import { editUserDevice } from './mutations/editUserDevice.js';
+import { userDevices } from './queries/userDevices.js';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -57,6 +60,7 @@ const queries = new GraphQLObjectType({
     searchFolders,
     tasks,
     user,
+    userDevices,
     users,
     serverInfo,
   }),
@@ -75,6 +79,7 @@ const mutations = new GraphQLObjectType({
     editFolder,
     editBranding,
     deleteBranding,
+    editUserDevice,
   }),
 });
 
@@ -93,6 +98,7 @@ const types = [
   serverInfoType,
   taskType,
   userType,
+  userDeviceType,
   videoFileType,
   videoMetadataSummaryType,
   userTypeEnum,
