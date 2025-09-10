@@ -7,6 +7,8 @@
       <excludeFolder url="file://$MODULE_DIR$/backend/db/drizzle" />
       <excludeFolder url="file://$MODULE_DIR$/cache" />
       <excludeFolder url="file://$MODULE_DIR$/media" />
+      <excludeFolder url="file://$MODULE_DIR$/app/android" />
+      <excludeFolder url="file://$MODULE_DIR$/app/ios" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
