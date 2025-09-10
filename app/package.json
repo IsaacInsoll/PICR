@@ -72,7 +72,8 @@
     "zeego": "^3.0.6",
     "zod": "^4.0.17",
     "expo-video": "~2.2.2",
-    "expo-notifications": "~0.31.4"
+    "expo-notifications": "~0.31.4",
+    "expo-device": "~7.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

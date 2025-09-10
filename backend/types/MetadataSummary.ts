@@ -1,4 +1,5 @@
 // TODO: Rename to ImageMetadata... plus width/height specs???
+// and move to @shared
 export interface MetadataSummary {
   Camera?: string | null;
   Lens?: string | null;
