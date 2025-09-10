@@ -43,6 +43,13 @@
       "when": 1756448564400,
       "tag": "0005_wise_preak",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1757535717923,
+      "tag": "0006_devices",
+      "breakpoints": true
     }
   ]
 }

@@ -6,5 +6,6 @@ export * from './dbFile.js';
 export * from './dbFolder.js';
 export * from './dbServerOptions.js';
 export * from './dbUser.js';
+export * from './dbUserDevice.js';
 export * from './dbBranding.js';
 export { enumToGQL } from '../../graphql/helpers/enumToGQL.js';
