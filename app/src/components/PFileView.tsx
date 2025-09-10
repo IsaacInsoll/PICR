@@ -39,7 +39,12 @@ export const PFileView = memo(
   },
 );
 
-const PFileFolderThumbnail = ({ folder, ...props }: { folder: Folder }) => {
+export const PFileFolderThumbnail = ({
+  folder,
+  ...props
+}: {
+  folder: Folder;
+}) => {
   const color = getInitialsColor(folder.name);
   return (
     <View

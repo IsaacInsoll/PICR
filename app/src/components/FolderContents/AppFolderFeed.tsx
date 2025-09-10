@@ -15,6 +15,9 @@ import { FileRating } from '@/src/components/FolderContents/FileRating';
 import { PTitle } from '@/src/components/PTitle';
 import { FlashList } from '@shopify/flash-list';
 import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
+import { fileProps } from '@shared/files/fileProps';
+import { AppVideo } from '@/src/components/AppVideo';
+import { PFileFolderThumbnail } from '@/src/components/PFileView';
 
 export const AppFolderFeed = ({
   items,
@@ -49,7 +52,9 @@ const FlashFolder = ({ folder, width }) => {
       <TouchableOpacity>
         {folder.heroImage?.id ? (
           <AppImage file={folder.heroImage} width={width} />
-        ) : null}
+        ) : (
+          <PFileFolderThumbnail folder={folder} style={{ minHeight: 200 }} />
+        )}
         <PTitle level={4} style={[styles.flashView]}>
           {folder.name}
         </PTitle>
@@ -59,7 +64,7 @@ const FlashFolder = ({ folder, width }) => {
 };
 
 const FlashFile = ({ file, width }: { file: File | Image; width: number }) => {
-  const isImage = file.type == 'Image';
+  const { isImage, isVideo } = fileProps(file);
   const { id } = file;
   const [, mutate] = useMutation(addCommentMutation);
 
@@ -69,7 +74,14 @@ const FlashFile = ({ file, width }: { file: File | Image; width: number }) => {
         {isImage ? (
           <AspectView ratio={file.imageRatio} width={width}>
             <Suspense fallback={<AppLoadingIndicator />}>
-              <AppImage file={file} />
+              <AppImage file={file} width={width} />
+            </Suspense>
+          </AspectView>
+        ) : null}
+        {isVideo ? (
+          <AspectView ratio={file.imageRatio} width={width}>
+            <Suspense fallback={<AppLoadingIndicator />}>
+              <AppVideo file={file} width={width} />
             </Suspense>
           </AspectView>
         ) : null}
