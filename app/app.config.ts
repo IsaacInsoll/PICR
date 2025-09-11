@@ -100,6 +100,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     eas: {
       projectId: '5f55a8a5-d73d-4066-8a91-5d4e211af5fb',
     },
+    isDev: IS_DEV,
   },
   owner: 'isaacinsoll',
 });

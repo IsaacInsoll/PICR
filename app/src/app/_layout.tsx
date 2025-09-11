@@ -8,7 +8,7 @@ import { Dirs } from 'react-native-file-access';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppErrorBoundary } from '@/src/components/AppErrorBoundary';
-import { NotificationHandler } from '@/src/components/NotificationHandler';
+import * as Notifications from 'expo-notifications';
 
 CacheManager.config = {
   baseDir: `${Dirs.CacheDir}/images_cache/`,
@@ -19,6 +19,15 @@ CacheManager.config = {
   sourceAnimationDuration: 1,
   thumbnailAnimationDuration: 1,
 };
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 export default function AppLayout() {
   // This is the 'entrypoint' for the app :)

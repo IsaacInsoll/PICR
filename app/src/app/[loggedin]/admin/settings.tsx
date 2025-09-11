@@ -1,4 +1,4 @@
-import { Button, SafeAreaView, StyleSheet, Switch, View } from 'react-native';
+import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
 import { PicrLogo } from '@/src/components/PicrLogo';
 import { useLoginDetails, useSetLoggedOut } from '@/src/hooks/useLoginDetails';
 import { serverInfoQuery } from '@shared/urql/queries/serverInfoQuery';
@@ -8,15 +8,17 @@ import { AppView } from '@/src/components/AppView';
 import { PText } from '@/src/components/PText';
 import { PTitle } from '@/src/components/PTitle';
 import { CacheManager } from '@georstat/react-native-image-cache';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { prettyBytes } from '@shared/prettyBytes';
 // import Constants from 'expo-constants';
 import * as Application from 'expo-application';
-import { NotificationHandler } from '@/src/components/NotificationHandler';
+import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
+import Constants from 'expo-constants';
+import { NotificationSettings } from '@/src/app/[loggedin]/admin/NotificationSettings';
 
 export default function Settings() {
-  const [allowNotifications, setAllowNotifications] = useState(false);
   const logout = useSetLoggedOut();
+
   const doClearCache = async () => {
     await CacheManager.clearCache();
     alert('Cleared');
@@ -27,23 +29,9 @@ export default function Settings() {
         <ServerDetails />
         <AppDetails />
         <View style={{ margin: 32, gap: 16 }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-              justifyContent: 'center',
-            }}
-          >
-            <PText>Allow Notifications</PText>
-            <Switch
-              value={allowNotifications}
-              onChange={(event) =>
-                setAllowNotifications(event.nativeEvent.value)
-              }
-            />
-          </View>
-          {allowNotifications ? <NotificationHandler /> : null}
+          <Suspense fallback={<AppLoadingIndicator size="small" />}>
+            <NotificationSettings />
+          </Suspense>
           <Button onPress={doClearCache} title="Clear image cache" />
           <Button onPress={logout} title="Log out" />
         </View>
@@ -101,3 +89,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 });
+
+const useIsDev = () => {
+  return !!Constants?.expoConfig?.extra?.dev;
+};
