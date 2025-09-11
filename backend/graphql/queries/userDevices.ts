@@ -1,21 +1,17 @@
-import { requireFullAdmin } from './admins.js';
-import { brandingType } from '../types/brandingType.js';
-import { GraphQLList, GraphQLNonNull } from 'graphql';
-import { addFolderRelationship } from '../helpers/addFolderRelationship.js';
+import { GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql';
 import { db } from '../../db/picrDb.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { userDeviceType } from '../types/userDeviceType.js';
-import { GraphQLBoolean, GraphQLID } from 'graphql/index.js';
-import { userTypeEnum } from '../types/enums.js';
-import { eq } from 'drizzle-orm';
-import { dbFolder, dbUserDevice } from '../../db/models/index.js';
+import { GraphQLID } from 'graphql/index.js';
+import { and, eq } from 'drizzle-orm';
+import { dbUserDevice } from '../../db/models/index.js';
 
 const resolver: GraphQLFieldResolver<
   any,
   PicrRequestContext,
-  { userId: number }
+  { userId: number; notificationToken?: string }
 > = async (_, params, context) => {
   const { user, isUser } = context;
   if (!user || !isUser) {
@@ -24,10 +20,15 @@ const resolver: GraphQLFieldResolver<
   if (user.id != params.userId) {
     throw new GraphQLError('Unable to view other user devices');
   }
-  const list = await db.query.dbUserDevice.findMany({
-    where: eq(dbUserDevice.userId, params.userId),
+
+  const filters = [eq(dbUserDevice.userId, params.userId)];
+  if (params.notificationToken) {
+    filters.push(eq(dbUserDevice.notificationToken, params.notificationToken));
+  }
+
+  return db.query.dbUserDevice.findMany({
+    where: and(...filters),
   });
-  return list;
 };
 
 export const userDevices = {
@@ -35,5 +36,6 @@ export const userDevices = {
   resolve: resolver,
   args: {
     userId: { type: GraphQLID },
+    notificationToken: { type: GraphQLString },
   },
 };
