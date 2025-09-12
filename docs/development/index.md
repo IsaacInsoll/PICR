@@ -18,11 +18,11 @@
 
 ## Development CLI Commands
 
-| Command                    | Description                                            | When to use                                                                                             |
-| -------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| `npm start`                | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. <br /> Uses nodemon/vite to reload on changes                              |
-| `npm run gql`              | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br />or after updating a query on client side |
-| `NODE_OPTIONS='--import tsx' npx drizzle-kit generate` | generate migration files (optional `--name=xyz`)       | Run when db schema modified and you want to commit changes                                              |
+| Command                                                              | Description                                            | When to use                                                                                             |
+|----------------------------------------------------------------------| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `npm start`                                                          | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. <br /> Uses nodemon/vite to reload on changes                              |
+| `npm run gql`                                                        | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br />or after updating a query on client side |
+| `cd backend && NODE_OPTIONS='--import tsx' npx drizzle-kit generate` | generate migration files (optional `--name=xyz`)       | Run when db schema modified and you want to commit changes                                              |
 
 ## App Development CLI Commands
 
