@@ -14,7 +14,7 @@ import { prettyBytes } from '@shared/prettyBytes';
 import * as Application from 'expo-application';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import Constants from 'expo-constants';
-import { NotificationSettings } from '@/src/app/[loggedin]/admin/NotificationSettings';
+import { NotificationSettings } from '@/src/components/NotificationSettings';
 
 export default function Settings() {
   const logout = useSetLoggedOut();
