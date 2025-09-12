@@ -184,6 +184,7 @@ export type Mutation = {
   editBranding: Folder;
   editFolder: Folder;
   editUser: User;
+  editUserDevice: UserDevice;
   generateThumbnails: Scalars['Boolean']['output'];
   generateZip: Scalars['String']['output'];
 };
@@ -246,6 +247,14 @@ export type MutationEditUserArgs = {
 };
 
 
+export type MutationEditUserDeviceArgs = {
+  enabled: Scalars['Boolean']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  notificationToken: Scalars['String']['input'];
+  userId: Scalars['ID']['input'];
+};
+
+
 export type MutationGenerateThumbnailsArgs = {
   folderId?: InputMaybe<Scalars['ID']['input']>;
 };
@@ -288,6 +297,7 @@ export type Query = {
   serverInfo?: Maybe<ServerInfo>;
   tasks: Array<Task>;
   user: User;
+  userDevices: Array<UserDevice>;
   users: Array<User>;
 };
 
@@ -345,6 +355,12 @@ export type QueryUserArgs = {
 };
 
 
+export type QueryUserDevicesArgs = {
+  notificationToken?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
 export type QueryUsersArgs = {
   folderId: Scalars['ID']['input'];
   includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
@@ -396,6 +412,15 @@ export type User = {
   userType?: Maybe<UserType>;
   username?: Maybe<Scalars['String']['output']>;
   uuid?: Maybe<Scalars['String']['output']>;
+};
+
+export type UserDevice = {
+  __typename?: 'UserDevice';
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  notificationToken?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['ID']['output'];
 };
 
 export enum UserType {

@@ -18,23 +18,23 @@ export const userTypeEnum = pgEnum('user_type', userTypeOptions);
 export const accessTypeOptions = ['Download', 'View'] as const;
 export const accessTypeEnum = pgEnum('accesslogs_type', accessTypeOptions);
 
-export const themeModeOptions = ['Auto', 'Light', 'Dark'] as const;
+export const themeModeOptions = ['auto', 'light', 'dark'] as const;
 export const themeModeEnum = pgEnum('theme_mode', themeModeOptions);
 
 export const primaryColorOptions = [
-  'Blue',
-  'Cyan',
-  'Dark',
-  'Grape',
-  'Gray',
-  'Green',
-  'Indigo',
-  'Lime',
-  'Orange',
-  'Pink',
-  'Red',
-  'Teal',
-  'Violet',
-  'Yellow',
+  'blue',
+  'cyan',
+  'dark',
+  'grape',
+  'gray',
+  'green',
+  'indigo',
+  'lime',
+  'orange',
+  'pink',
+  'red',
+  'teal',
+  'violet',
+  'yellow',
 ] as const;
 export const primaryColorEnum = pgEnum('theme_color', primaryColorOptions);
