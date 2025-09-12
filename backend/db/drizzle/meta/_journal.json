@@ -50,6 +50,13 @@
       "when": 1757535717923,
       "tag": "0006_devices",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1757656141115,
+      "tag": "0007_branding-enums-fix",
+      "breakpoints": true
     }
   ]
 }
