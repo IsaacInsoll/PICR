@@ -4,10 +4,10 @@ export const sendNtfyNotification = async (
   topic: string,
   payload: NotificationPayload,
 ) => {
-  const { message, type, url } = payload;
+  const { message, type, url, title } = payload;
 
   const headers: Record<string, string | readonly string[]> = {
-    Title: 'PICR',
+    Title: title,
     Tags: ntfyEmoji[type],
     // 'Priority': '5'
     // TODO: action buttons?

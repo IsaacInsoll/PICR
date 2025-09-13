@@ -1,4 +1,4 @@
-import { FileFields, FolderFields, UserFields } from '../db/picrDb.js';
+import { db, FileFields, FolderFields, UserFields } from '../db/picrDb.js';
 import { AccessType } from '../../graphql-types.js';
 import { folderAndAllParentIds } from '../helpers/folderAndAllParentIds.js';
 import { usersForFolders } from '../helpers/usersForFolders.js';
@@ -8,6 +8,12 @@ import {
   userUrlForFile,
   userUrlForFolder,
 } from '../helpers/url.js';
+import { dbUserDevice } from '../db/models/index.js';
+import { and, eq, inArray, isNotNull } from 'drizzle-orm';
+import {
+  ExpoNotifications,
+  sendExpoNotifications,
+} from './sendExpoNotification.js';
 
 export type NotificationType =
   | 'downloaded'
@@ -17,7 +23,7 @@ export type NotificationType =
   | 'commented';
 
 export interface NotificationPayload {
-  // title?: string; // it will just be 'PICR' or something like that for now
+  title: string; // it will just be 'PICR' or something like that for now
   message: string;
   url?: string;
   imageUrl?: string;
@@ -35,7 +41,8 @@ export const sendFolderViewedNotification = async (
     return;
   }
   await sendNotification(folder, {
-    message: `${user.name} ${type} ${folder.name}`,
+    title: user.name,
+    message: `${type} ${folder.name}`,
     type: type == 'View' ? 'viewed' : 'downloaded',
     url: userUrlForFolder(folder.id),
   });
@@ -49,7 +56,8 @@ export const sendCommentAddedNotification = async (
   value?: string,
 ) => {
   await sendNotification(folder, {
-    message: `${user.name} ${type} ${value} on ${file.name} in ${folder.name}`,
+    title: user.name,
+    message: `${type} ${value} on ${file.name} in ${folder.name}`,
     type,
     userId: user.id,
     url: userUrlForFile(file),
@@ -63,10 +71,26 @@ const sendNotification = async (
 ) => {
   const folderIds = await folderAndAllParentIds(folder);
   const users = await usersForFolders(folderIds);
-  const promises = users
+  const ntfys = users
     .filter((u) => !!u.ntfy && payload.userId != u.id)
     .map((u) => {
       return sendNtfyNotification(u.ntfy!, payload);
     });
-  return await Promise.all(promises);
+
+  const userIds = users.map((u) => u.id).filter((i) => i != payload.userId);
+  const devices = await db.query.dbUserDevice.findMany({
+    where: and(
+      inArray(dbUserDevice.userId, userIds),
+      eq(dbUserDevice.enabled, true),
+      isNotNull(dbUserDevice.notificationToken),
+    ),
+  });
+  const expos: ExpoNotifications[] = devices.map(({ notificationToken }) => ({
+    token: notificationToken,
+    payload,
+  }));
+
+  const sendExpo = sendExpoNotifications(expos);
+
+  return await Promise.all([...ntfys, sendExpo]);
 };

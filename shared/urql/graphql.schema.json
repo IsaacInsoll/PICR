@@ -1,12 +1,10 @@
 {
   "__schema": {
     "queryType": {
-      "name": "Query",
-      "kind": "OBJECT"
+      "name": "Query"
     },
     "mutationType": {
-      "name": "Mutation",
-      "kind": "OBJECT"
+      "name": "Mutation"
     },
     "subscriptionType": null,
     "types": [
