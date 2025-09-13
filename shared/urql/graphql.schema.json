@@ -2916,18 +2916,6 @@
             "description": null,
             "args": [
               {
-                "name": "notificationToken",
-                "description": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "userId",
                 "description": null,
                 "type": {

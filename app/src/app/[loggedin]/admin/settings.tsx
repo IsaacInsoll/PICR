@@ -8,13 +8,17 @@ import { AppView } from '@/src/components/AppView';
 import { PText } from '@/src/components/PText';
 import { PTitle } from '@/src/components/PTitle';
 import { CacheManager } from '@georstat/react-native-image-cache';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { prettyBytes } from '@shared/prettyBytes';
 // import Constants from 'expo-constants';
 import * as Application from 'expo-application';
+import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
+import Constants from 'expo-constants';
+import { NotificationSettings } from '@/src/components/NotificationSettings';
 
 export default function Settings() {
   const logout = useSetLoggedOut();
+
   const doClearCache = async () => {
     await CacheManager.clearCache();
     alert('Cleared');
@@ -25,6 +29,9 @@ export default function Settings() {
         <ServerDetails />
         <AppDetails />
         <View style={{ margin: 32, gap: 16 }}>
+          <Suspense fallback={<AppLoadingIndicator size="small" />}>
+            <NotificationSettings />
+          </Suspense>
           <Button onPress={doClearCache} title="Clear image cache" />
           <Button onPress={logout} title="Log out" />
         </View>
@@ -82,3 +89,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 });
+
+const useIsDev = () => {
+  return !!Constants?.expoConfig?.extra?.dev;
+};

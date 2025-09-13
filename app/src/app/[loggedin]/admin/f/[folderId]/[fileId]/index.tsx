@@ -1,11 +1,6 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import {
-  SafeAreaView,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { addToFileCache, fileCache } from '@/src/helpers/folderCache';
 import { useQuery } from 'urql';
 import { PBigImage, useLocalImageUrl } from '@/src/components/PBigImage';

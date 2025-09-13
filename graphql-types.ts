@@ -356,7 +356,6 @@ export type QueryUserArgs = {
 
 
 export type QueryUserDevicesArgs = {
-  notificationToken?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
