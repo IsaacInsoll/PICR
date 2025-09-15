@@ -30,14 +30,18 @@ export const sendExpoNotifications = async (
       continue;
     }
 
+    // replace URL with one that will open in the app
+    const targetUrl = payload.url?.startsWith('https://')
+      ? 'picr://' + payload.url?.substring(8)
+      : payload.url;
+
     // Construct a message (see https://docs.expo.io/push-notifications/sending-notifications/)
-    //TODO: convert payload to message
     messages.push({
       to: token,
       title: payload.title,
       body: payload.message,
       sound: 'default',
-      data: { url: payload.url },
+      data: { url: targetUrl },
       richContent: {
         image: payload.imageUrl,
       },
