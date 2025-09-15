@@ -40,6 +40,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     edgeToEdgeEnabled: true,
     package: bundle,
+📱    blockedPermissions: [
+      'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
+    ],
   },
   web: {
     bundler: 'metro',
