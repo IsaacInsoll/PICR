@@ -1,6 +1,5 @@
 import {
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -30,6 +29,7 @@ import { Suspense } from 'react';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { AppTaskSummary } from '@/src/components/AppTaskSummary';
 import { PFileView } from '@/src/components/PFileView';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeFolderButton = () => {
   const me = useMe();

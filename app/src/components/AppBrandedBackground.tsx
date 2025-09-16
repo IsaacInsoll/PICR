@@ -1,8 +1,9 @@
 import { picrColors } from '@/src/constants';
 import { Stack } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { ReactNode } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const AppBrandedBackground = ({ children }: { children: ReactNode }) => {
   return (

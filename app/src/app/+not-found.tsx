@@ -1,4 +1,4 @@
-import { Button, SafeAreaView } from 'react-native';
+import { Button } from 'react-native';
 import { Redirect, useNavigation, useRouter } from 'expo-router';
 import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
 import { PTitle } from '@/src/components/PTitle';
@@ -6,6 +6,7 @@ import { usePathname } from 'expo-router/build/hooks';
 import { PText } from '@/src/components/PText';
 import { PicrLogo } from '../components/PicrLogo';
 import * as Linking from 'expo-linking';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function NotFound() {
   const navigation = useNavigation();

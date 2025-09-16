@@ -1,4 +1,4 @@
-import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
 import { PicrLogo } from '@/src/components/PicrLogo';
 import { useLoginDetails, useSetLoggedOut } from '@/src/hooks/useLoginDetails';
 import { serverInfoQuery } from '@shared/urql/queries/serverInfoQuery';
@@ -15,6 +15,7 @@ import * as Application from 'expo-application';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import Constants from 'expo-constants';
 import { NotificationSettings } from '@/src/components/NotificationSettings';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Settings() {
   const logout = useSetLoggedOut();

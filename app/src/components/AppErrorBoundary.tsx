@@ -1,8 +1,9 @@
 import { ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { Image } from 'expo-image';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const AppErrorBoundary = ({ children }: { children: ReactNode }) => {
   return (
