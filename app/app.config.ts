@@ -84,7 +84,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'expo-build-properties',
       {
         ios: {
-          deploymentTarget: IS_DEV ? '16.0' : '17.0',
+          deploymentTarget: '16.0',
         },
       },
     ],
