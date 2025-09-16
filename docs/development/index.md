@@ -1,4 +1,29 @@
-> **TODO: MONOLITH REFACTOR NOTES**
+
+# Development
+
+| Doc                                      | Notes                                         |
+|------------------------------------------|-----------------------------------------------|
+| 🎉 [Initial Setup](initial-setup.md)     | How to setup development environment          |
+| 📱 [App Development](app.md)             | React Native (Expo) App Development           |
+| 👷 [Build Process](build.md)             | How backend build process works               |
+| 📃 [Basic Tutorial](basic-tutorial.md)   | Basic tutorial on front/backend feature dev   |
+| 🧪 [Testing](testing.md)                 | Create and run tests (currently backend only) |
+| 🚀 [Releases](release.md)                | How to do releases                            |
+| 🐛 [Troubleshooting](troubleshooting.md) | Troubleshooting tips                          |
+
+
+## Folders
+
+| Folder     | Description                                      |
+| ---------- | ------------------------------------------------ |
+| `backend`  | Node server source                               |
+| `frontend` | React frontend source                            |
+| `shared`   | Client logic shared by `frontend` and `app`      |
+| `app`      | iOS/Android App (Expo / React Native)            |
+| `dist`     | _Compiled_ source (frontend/backend/extra files) |
+
+
+>  **TODO: MONOLITH REFACTOR NOTES**
 >
 > I'm currently moving the node backend from being in `.` to `./backend`
 > Current problems unaddressed is:
@@ -9,12 +34,6 @@
 > We are doing this because the server should be self contained in `backend` and not have it's `package.json` etc in
 > the actual root (like it has been since the beginning).
 
-# Development
-
-- See [Initial Setup](initial-setup.md) if you are setting up a new environment.
-- Check out the [Basic Tutorial](basic-tutorial.md) if you are set up but don't know how to get started.
-- [Testing](testing.md) how to create/run tests using vitest.
-- [Troubleshooting](troubleshooting.md) might help if you get stuck.
 
 ## Development CLI Commands
 
@@ -24,73 +43,6 @@
 | `npm run gql`                                                        | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br />or after updating a query on client side |
 | `cd backend && NODE_OPTIONS='--import tsx' npx drizzle-kit generate` | generate migration files (optional `--name=xyz`)       | Run when db schema modified and you want to commit changes                                              |
 
-## App Development CLI Commands
-
-> Run from `app` folder. You can replace `ios` with `android` for all commands
-
-| Command                       | Description                                                   |
-| ----------------------------- | ------------------------------------------------------------- |
-| `npx expo start`              | Run Expo dev server                                           |
-| `npx expo run:ios -d`         | build and run Development Build                               |
-| `eas build` then `eas submit` | send to EAS for remote building then submission to app stores |
-
-| Troubleshooting                               |                                                                                                |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `npx expo export --platform ios`              | Build JS Bundle, used to troubleshoot bundle issues like bad imports                           |
-| `npx expo start --no-dev --minify`            | run dev server but with 'production' code, for troubleshooting issues that don't hapeen in dev |
-| `npx uri-scheme open picr://<some-url> --ios` | open deep link in simulator                                                                    |
-
-### Local release build
-
-Development builds require connection to a dev server. If you want a 'proper' build then:
-
-`npx expo run:ios --configuration Release -d` or
-
-`npx expo run:android --variant release -d`
-
-These will have javascript 'baked in' and don't require dev server.
-
-### Make a separate 'development' variant
-
-If you want to have a release version and development version on the same device then you will need separate bundle IDs.
-Run the following commands to make a separate 'dev' version of the app with a different bundle id.
-
-```shell
-APP_VARIANT=development npx expo prebuild --clean
-APP_VARIANT=development npx expo run:ios -d
-```
-> Windows PowerShell ProTip: run `$env:APP_VARIANT = "development"` to set the env var for the current session
-
-You will need to redo these steps if you install anything that requires new native packages
-
-## Build Process (frontend/backend)
-
-The build process is in `.github/workflows/build.yml`.
-
-- Github will automatically run this on every push to `master`
-- You can run it locally with the following command: `npm run workflow`
-
-This will run the following commands in order. You can run any of these individually at any time
-
-| Command                        | Description                           | Notes                                             |
-| ------------------------------ | ------------------------------------- | ------------------------------------------------- |
-| `cd backend && npm install`    | 🗃️ Install backend deps               |                                                   |
-| `cd backend && npm run build`  | 🗃️ Build backend (TSC)                | Finds any typescript issues preventing deploy.    |
-| `./copy-backend-files.sh`      | 🗃️ Copy non-TS backend files          | Copies backend files "missed" by TSC              |
-| `cd frontend && npm install`   | 💄 Install front end deps             |                                                   |
-| `cd frontend && npm run build` | 💄 Build frontend (vite)              | Finds any frontend 'build blockers'               |
-| `npm run test`                 | 🧪 Create docker image, run tests     | Have everything built first! (IE: commands above) |
-| _build artifact_               | 🗜️ Do locally with `npm run workflow` |                                                   |
-
-## Releases
-
-Run `npm run release` which will:
-
-1. Do a full build (backend and frontend) then do tests
-2. If successful, ask you for a new version number then push that to github
-3. Release push will trigger github actions to build docker images
-
-You can then manually edit the release on github if you want to add release notes.
 
 ## Dev Server
 
@@ -103,13 +55,3 @@ Ports are exposed during development:
 | http://localhost:6901 | Testing Server        | When running tests we build a container using this port for running tests against                                     |
 
 For front end development you definitely want to use the 6969 address. For backend either would be fine but I typically just use 6969 anyway.
-
-## Folders
-
-| Folder     | Description                                      |
-| ---------- | ------------------------------------------------ |
-| `backend`  | Node server source                               |
-| `frontend` | React frontend source                            |
-| `shared`   | Client logic shared by `frontend` and `app`      |
-| `app`      | iOS/Android App (Expo / React Native)            |
-| `dist`     | _Compiled_ source (frontend/backend/extra files) |
