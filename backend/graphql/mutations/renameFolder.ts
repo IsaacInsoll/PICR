@@ -22,6 +22,10 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     'Admin',
   );
 
+  if (!picrConfig.canWrite) {
+    throw new GraphQLError('No Write Access');
+  }
+
   const { oldPath, newPath } = params;
 
   if (folder.parentId == null) {
