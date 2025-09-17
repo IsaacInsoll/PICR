@@ -194,7 +194,7 @@ const OpenInApp = () => {
   const isMobile = device.is('mobile');
   const location = useLocation();
   const setOpen = useSetAtom(openInAppAtom);
-  // if (!isMobile) return null;
+  if (!isMobile) return null;
 
   const appUrl = 'picr://' + window.location.host + location.pathname;
 
