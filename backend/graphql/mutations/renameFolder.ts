@@ -73,11 +73,14 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     );
 
   console.log(folders);
+  console.log(
+    `REGEXP_REPLACE(${dbFile.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)}`,
+  );
 
   const files = await db
     .update(dbFile)
     .set({
-      relativePath: sql`REPLACE(${dbFile.relativePath}, ${oldPath}, ${newPath})`,
+      relativePath: sql`REGEXP_REPLACE(${dbFile.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)})`,
     })
     .where(
       and(like(dbFile.relativePath, oldPath + '%'), eq(dbFile.exists, true)),
@@ -119,3 +122,6 @@ const moveCacheFolders = (oldPath: string, newPath: string) => {
     console.error('Error moving caches folder:', err);
   }
 };
+function escapeRegExp(string: string): string {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
