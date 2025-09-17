@@ -1,6 +1,17 @@
 import { useMe } from '../../hooks/useMe';
 import { Page } from '../Page';
-import { ActionIcon, Box, Button, Group, Menu, Text } from '@mantine/core';
+import {
+  ActionIcon,
+  Anchor,
+  Box,
+  Button,
+  Group,
+  Image,
+  Menu,
+  Modal,
+  Stack,
+  Text,
+} from '@mantine/core';
 
 import classes from './LoggedInHeader.module.css';
 import { PicrLogo } from '../../pages/LoginForm';
@@ -16,7 +27,7 @@ import {
   SearchIcon,
   UserSettingsIcon,
 } from '../../PicrIcons';
-import { useSetAtom } from 'jotai';
+import { atom, useSetAtom } from 'jotai';
 import { authKeyAtom } from '../../atoms/authAtom';
 import { MinimalFolder } from '../../../types';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -24,6 +35,9 @@ import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
 import { UAParser } from 'ua-parser-js';
 import { User } from '@shared/gql/graphql';
+import { useState } from 'react';
+import { useAtom } from 'jotai/index';
+import { appStoreLinks } from '@shared/consts';
 
 export const LoggedInHeader = ({
   folder,
@@ -117,45 +131,51 @@ const RightSide = ({ me }) => {
   const logOut = useLogout();
 
   return (
-    <Menu
-      shadow="md"
-      width={200}
-      openDelay={0}
-      trigger="hover"
-      position="bottom-end"
-    >
-      <Menu.Target>
-        <Button variant="subtle" px="xs" size="sm">
-          <Group justify="right" gap="sm">
-            <Text c="dimmed" size="xs">
-              {me.name}
-            </Text>
-            <PicrAvatar user={me} size="sm" />
-          </Group>
-        </Button>
-      </Menu.Target>
+    <>
+      <OpenInAppModal />
+      <Menu
+        shadow="md"
+        width={200}
+        openDelay={0}
+        trigger="hover"
+        position="bottom-end"
+      >
+        <Menu.Target>
+          <Button variant="subtle" px="xs" size="sm">
+            <Group justify="right" gap="sm">
+              <Text c="dimmed" size="xs">
+                {me.name}
+              </Text>
+              <PicrAvatar user={me} size="sm" />
+            </Group>
+          </Button>
+        </Menu.Target>
 
-      <Menu.Dropdown>
-        <Menu.Label>Files & Folders</Menu.Label>
-        <PicrMenuItem leftSection={<DashboardIcon />} to="/admin">
-          Dashboard
-        </PicrMenuItem>
-        <PicrMenuItem leftSection={<HomeIcon />} {...homeFolderLink}>
-          {me.folder?.name ?? 'Home'}
-        </PicrMenuItem>
-        <Menu.Item leftSection={<SearchIcon />} onClick={() => setOpened(true)}>
-          Search
-        </Menu.Item>
-        <Menu.Label>PICR</Menu.Label>
-        <OpenInApp />
-        <PicrMenuItem leftSection={<UserSettingsIcon />} to="/admin/settings">
-          Settings
-        </PicrMenuItem>
-        <Menu.Item leftSection={<LogOutIcon />} onClick={logOut}>
-          Log out
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
+        <Menu.Dropdown>
+          <Menu.Label>Files & Folders</Menu.Label>
+          <PicrMenuItem leftSection={<DashboardIcon />} to="/admin">
+            Dashboard
+          </PicrMenuItem>
+          <PicrMenuItem leftSection={<HomeIcon />} {...homeFolderLink}>
+            {me.folder?.name ?? 'Home'}
+          </PicrMenuItem>
+          <Menu.Item
+            leftSection={<SearchIcon />}
+            onClick={() => setOpened(true)}
+          >
+            Search
+          </Menu.Item>
+          <Menu.Label>PICR</Menu.Label>
+          <OpenInApp />
+          <PicrMenuItem leftSection={<UserSettingsIcon />} to="/admin/settings">
+            Settings
+          </PicrMenuItem>
+          <Menu.Item leftSection={<LogOutIcon />} onClick={logOut}>
+            Log out
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    </>
   );
 };
 
@@ -167,16 +187,57 @@ const useLogout = () => {
   };
 };
 
+const openInAppAtom = atom<string | undefined>(undefined);
+
 const OpenInApp = () => {
   const { device } = UAParser(navigator.userAgent);
   const isMobile = device.is('mobile');
   const location = useLocation();
-  if (!isMobile) return null;
-  //todo: show links to app store?
+  const setOpen = useSetAtom(openInAppAtom);
+  // if (!isMobile) return null;
+
   const appUrl = 'picr://' + window.location.host + location.pathname;
+
   return (
-    <Menu.Item component={Link} leftSection={<OpenInAppIcon />} to={appUrl}>
-      Open in app
-    </Menu.Item>
+    <>
+      <Menu.Item
+        component={Link}
+        leftSection={<OpenInAppIcon />}
+        to={appUrl}
+        onClick={() => setOpen(appUrl)}
+      >
+        Open in app
+      </Menu.Item>
+    </>
   );
 };
+
+const OpenInAppModal = () => {
+  const [open, setOpen] = useAtom(openInAppAtom);
+  return (
+    <Modal
+      size="xs"
+      opened={open}
+      onClose={() => setOpen(undefined)}
+      title="Download the PICR App"
+      centered={true}
+    >
+      <Stack style={{ alignItems: 'center' }}>
+        <Text size="sm" c="dimmed">
+          PICR should open automatically if it is installed.
+        </Text>
+        <a href={appStoreLinks.ios} target="_blank">
+          <Image src="/app-store.png" style={imgProps} />
+        </a>
+        <a href={appStoreLinks.android} target="_blank">
+          <Image src="/google-play.png" style={imgProps} />
+        </a>
+        <Anchor href={open} size="sm" c="dimmed">
+          Open App
+        </Anchor>
+      </Stack>
+    </Modal>
+  );
+};
+
+const imgProps = { width: 150 };
