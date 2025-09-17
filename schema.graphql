@@ -170,6 +170,7 @@ type Mutation {
   editUserDevice(enabled: Boolean!, name: String, notificationToken: String!, userId: ID!): UserDevice!
   generateThumbnails(folderId: ID): Boolean!
   generateZip(folderId: ID): String!
+  renameFolder(folderId: ID!, newPath: String!, oldPath: String!): Folder!
 }
 
 enum PrimaryColor {
@@ -204,7 +205,7 @@ type Query {
   serverInfo: ServerInfo
   tasks(folderId: ID): [Task!]!
   user(id: ID!): User!
-  userDevices(userId: ID): [UserDevice!]!
+  userDevices(notificationToken: String, userId: ID): [UserDevice!]!
   users(folderId: ID!, includeChildren: Boolean, includeParents: Boolean, sortByRecent: Boolean): [User!]!
 }
 

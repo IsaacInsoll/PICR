@@ -137,5 +137,13 @@ export const folderType: GraphQLObjectType<any, any> = new GraphQLObjectType({
         });
       },
     },
+    relativePath: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: async (f: FolderFields, params, context) => {
+        const { permissions, folder } = await contextPermissions(context, f.id);
+        if (permissions != 'Admin') return null;
+        return folder?.relativePath;
+      },
+    },
   }),
 });

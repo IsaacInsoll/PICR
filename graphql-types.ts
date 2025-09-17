@@ -187,6 +187,7 @@ export type Mutation = {
   editUserDevice: UserDevice;
   generateThumbnails: Scalars['Boolean']['output'];
   generateZip: Scalars['String']['output'];
+  renameFolder: Folder;
 };
 
 
@@ -262,6 +263,13 @@ export type MutationGenerateThumbnailsArgs = {
 
 export type MutationGenerateZipArgs = {
   folderId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationRenameFolderArgs = {
+  folderId: Scalars['ID']['input'];
+  newPath: Scalars['String']['input'];
+  oldPath: Scalars['String']['input'];
 };
 
 export enum PrimaryColor {
@@ -356,6 +364,7 @@ export type QueryUserArgs = {
 
 
 export type QueryUserDevicesArgs = {
+  notificationToken?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['ID']['input']>;
 };
 

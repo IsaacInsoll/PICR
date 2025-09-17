@@ -10,7 +10,10 @@ export const removeFolder = async (path: string) => {
   // don't filter including parentId as it might be a cut/paste from different folder levels???
   await delay(1000);
   const folder = await db.query.dbFolder.findFirst({
-    where: eq(dbFolder.relativePath, relativePath(path)),
+    where: and(
+      eq(dbFolder.relativePath, relativePath(path)),
+      eq(dbFolder.exists, true),
+    ),
   });
   if (!folder) return;
   const newFolder = await db.query.dbFolder.findFirst({
@@ -22,6 +25,9 @@ export const removeFolder = async (path: string) => {
 
   if (newFolder) {
     //TODO: Handle folder rename (move data across?)
+    console.log(
+      `🔀 Appears to be folder Rename from ${folder.relativePath} to ${newFolder.relativePath}`,
+    );
     log(
       'info',
       `🔀 Appears to be folder Rename from ${folder.relativePath} to ${newFolder.relativePath}`,
