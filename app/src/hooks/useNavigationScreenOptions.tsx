@@ -8,7 +8,6 @@ import { Platform } from 'react-native';
 export const useNavigationScreenOptions = (): NativeStackNavigationOptions => {
   const theme = useAppTheme();
   const isAndroid = Platform.OS == 'android'; // if you change this, also update AppHeaderPadding
-
   return {
     headerStyle: isAndroid
       ? {
@@ -24,6 +23,14 @@ export const useNavigationScreenOptions = (): NativeStackNavigationOptions => {
       : undefined,
     // headerLargeTitle: true, //iOS only, looks cool but requires top header on all subviews
     headerTransparent: !isAndroid,
-    headerBlurEffect: 'regular',
+    headerBlurEffect: isIOS26OrHigher() ? undefined : 'regular', //default gradient on iOS 26 is enough
   };
+};
+
+const isIOS26OrHigher = () => {
+  if (Platform.OS === 'ios') {
+    const majorVersionIOS = parseInt(Platform.Version, 10);
+    return majorVersionIOS >= 26;
+  }
+  return false;
 };

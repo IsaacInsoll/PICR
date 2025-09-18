@@ -23,8 +23,8 @@ export const typographyScale = [36, 30, 24, 20, 16, 14] as const;
 export const finePrint: StyleProp<TextStyle> = { opacity: 0.5 } as const;
 
 export const navBarIconProps: StyleProp<TextStyle> = {
-  minWidth: 32,
-  minHeight: 24,
+  // minWidth: 32,
+  // minHeight: 24,
 };
 
 export const PaddingSize = {
