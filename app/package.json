@@ -20,7 +20,7 @@
     "@kolking/react-native-avatar": "^2.1.5",
     "@kolking/react-native-rating": "^1.4.1",
     "@likashefqet/react-native-image-zoom": "^4.3.0",
-    "@react-native-menu/menu": "^1.2.3",
+    "@react-native-menu/menu": "2.0.0",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
@@ -81,7 +81,7 @@
   },
   "overrides": {
     "zeego": {
-      "@react-native-menu/menu": "1.2.3"
+      "@react-native-menu/menu": "2.0.0"
     }
   },
   "private": true
