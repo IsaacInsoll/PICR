@@ -3,6 +3,7 @@
 
 | Doc                                      | Notes                                         |
 |------------------------------------------|-----------------------------------------------|
+| 🎉 [Contributing](../CONTRIBUTING.md)    | Contribution Guidelines                       |
 | 🎉 [Initial Setup](initial-setup.md)     | How to setup development environment          |
 | 📱 [App Development](app.md)             | React Native (Expo) App Development           |
 | 👷 [Build Process](build.md)             | How backend build process works               |
