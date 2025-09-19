@@ -8,11 +8,12 @@ import * as Device from 'expo-device';
 import { Switch, View } from 'react-native';
 import { PText } from '@/src/components/PText';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
+import { useIsDev } from '@/src/app/[loggedin]/admin/settings';
 
 export const NotificationSettings = () => {
   const [token, setToken] = useState<string | undefined>(undefined);
   const me = useMe();
-
+  const isDev = useIsDev();
   const [result, requery] = useQuery({
     query: userDeviceQuery,
     variables: { userId: me.id, token: token },
@@ -25,7 +26,9 @@ export const NotificationSettings = () => {
 
   //TODO: refactor to check notif permissions locally, rather than requesting notif access right away
   useEffect(() => {
-    registerForPushNotificationsAsync().then(setToken);
+    registerForPushNotificationsAsync().then((t) => {
+      setToken(isDev ? t + ' DEV' : t);
+    });
     // now get existing value from server
   }, []);
 

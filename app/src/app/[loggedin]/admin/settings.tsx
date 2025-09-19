@@ -91,6 +91,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const useIsDev = () => {
+export const useIsDev = () => {
   return !!Constants?.expoConfig?.extra?.dev;
 };

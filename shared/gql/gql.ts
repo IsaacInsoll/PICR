@@ -44,7 +44,7 @@ type Documents = {
     "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n": typeof types.ServerInfoQueryDocument,
     "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n": typeof types.ExpensiveServerFileSizeQueryDocument,
     "\n  query TaskQuery($folderId: ID!) {\n    tasks(folderId: $folderId) {\n      id\n      name\n      step\n      totalSteps\n      status\n    }\n  }\n": typeof types.TaskQueryDocument,
-    "\n  query UserDeviceQuery($userId: ID!) {\n    userDevices(userId: $userId) {\n      userId\n      enabled\n      name\n      notificationToken\n    }\n  }\n": typeof types.UserDeviceQueryDocument,
+    "\n  query UserDeviceQuery($userId: ID!, $token: String!) {\n    userDevices(userId: $userId, notificationToken: $token) {\n      userId\n      enabled\n      name\n      notificationToken\n    }\n  }\n": typeof types.UserDeviceQueryDocument,
     "\n    query ViewAdminsQuery {\n        admins {\n            ...UserFragment\n        }\n    }\n": typeof types.ViewAdminsQueryDocument,
     "\n    query ViewBrandingsQuery {\n        brandings {\n            id\n            logoUrl\n            primaryColor\n            mode\n            folderId\n            folder {\n               ...MinimumFolderFragment\n            }\n        }\n    }\n": typeof types.ViewBrandingsQueryDocument,
     "\n    query ViewFile($fileId: ID!) {\n        file(id:$fileId) {\n            ...FileFragment\n            ...ImageMetadataFragment\n        }\n    }\n": typeof types.ViewFileDocument,
@@ -82,7 +82,7 @@ const documents: Documents = {
     "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n": types.ServerInfoQueryDocument,
     "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n": types.ExpensiveServerFileSizeQueryDocument,
     "\n  query TaskQuery($folderId: ID!) {\n    tasks(folderId: $folderId) {\n      id\n      name\n      step\n      totalSteps\n      status\n    }\n  }\n": types.TaskQueryDocument,
-    "\n  query UserDeviceQuery($userId: ID!) {\n    userDevices(userId: $userId) {\n      userId\n      enabled\n      name\n      notificationToken\n    }\n  }\n": types.UserDeviceQueryDocument,
+    "\n  query UserDeviceQuery($userId: ID!, $token: String!) {\n    userDevices(userId: $userId, notificationToken: $token) {\n      userId\n      enabled\n      name\n      notificationToken\n    }\n  }\n": types.UserDeviceQueryDocument,
     "\n    query ViewAdminsQuery {\n        admins {\n            ...UserFragment\n        }\n    }\n": types.ViewAdminsQueryDocument,
     "\n    query ViewBrandingsQuery {\n        brandings {\n            id\n            logoUrl\n            primaryColor\n            mode\n            folderId\n            folder {\n               ...MinimumFolderFragment\n            }\n        }\n    }\n": types.ViewBrandingsQueryDocument,
     "\n    query ViewFile($fileId: ID!) {\n        file(id:$fileId) {\n            ...FileFragment\n            ...ImageMetadataFragment\n        }\n    }\n": types.ViewFileDocument,
@@ -227,7 +227,7 @@ export function graphql(source: "\n  query TaskQuery($folderId: ID!) {\n    task
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query UserDeviceQuery($userId: ID!) {\n    userDevices(userId: $userId) {\n      userId\n      enabled\n      name\n      notificationToken\n    }\n  }\n"): (typeof documents)["\n  query UserDeviceQuery($userId: ID!) {\n    userDevices(userId: $userId) {\n      userId\n      enabled\n      name\n      notificationToken\n    }\n  }\n"];
+export function graphql(source: "\n  query UserDeviceQuery($userId: ID!, $token: String!) {\n    userDevices(userId: $userId, notificationToken: $token) {\n      userId\n      enabled\n      name\n      notificationToken\n    }\n  }\n"): (typeof documents)["\n  query UserDeviceQuery($userId: ID!, $token: String!) {\n    userDevices(userId: $userId, notificationToken: $token) {\n      userId\n      enabled\n      name\n      notificationToken\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

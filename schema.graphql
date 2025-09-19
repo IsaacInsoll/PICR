@@ -107,6 +107,7 @@ type Folder {
   parentId: ID
   parents: [Folder!]!
   permissions: FolderPermissions
+  relativePath: String!
   subFolders: [Folder!]!
   totalDirectSize: String!
   totalFiles: Int!

@@ -11,7 +11,6 @@ import { recentUsersQuery } from '@shared/urql/queries/recentUsersQuery';
 import { AppAvatar } from '@/src/components/AppAvatar';
 import { AppDateDisplay } from '@/src/components/AppDateDisplay';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { PText } from '@/src/components/PText';
 import { PTitle } from '@/src/components/PTitle';
 import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,17 +18,17 @@ import { AppFolderLink } from '@/src/components/AppFolderLink';
 import { HeaderButton } from '@react-navigation/elements';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { FolderFragmentFragment, FoldersSortType } from '@shared/gql/graphql';
-import { AppImage } from '@/src/components/AppImage';
 import { useHostname } from '@/src/hooks/useHostname';
 import { navBarIconProps } from '@/src/constants';
-import { PView } from '@/src/components/PView';
 import { AppFileListItem } from '@/src/components/FolderContents/AppFolderFileList';
-import { PFileImage } from '@/src/components/PFileImage';
 import { Suspense } from 'react';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { AppTaskSummary } from '@/src/components/AppTaskSummary';
 import { PFileView } from '@/src/components/PFileView';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  AppFooterPadding,
+  AppHeaderPadding,
+} from '@/src/components/AppHeaderPadding';
 
 const HomeFolderButton = () => {
   const me = useMe();
@@ -118,7 +117,7 @@ const DashboardBody = () => {
         />
       }
     >
-      <SafeAreaView
+      <View
         style={{
           flex: 1,
           justifyContent: 'center',
@@ -128,6 +127,7 @@ const DashboardBody = () => {
           paddingHorizontal: 32,
         }}
       >
+        <AppHeaderPadding />
         <Suspense>
           <AppTaskSummary folderId={me?.folderId} />
         </Suspense>
@@ -137,7 +137,8 @@ const DashboardBody = () => {
         {recentFoldersResult.data ? (
           <RecentFolders folders={recentFoldersResult.data.allFolders} />
         ) : null}
-      </SafeAreaView>
+      </View>
+      <AppFooterPadding />
     </ScrollView>
   );
 };

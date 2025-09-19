@@ -121,6 +121,7 @@ export type Folder = {
   parentId?: Maybe<Scalars['ID']['output']>;
   parents: Array<Folder>;
   permissions?: Maybe<FolderPermissions>;
+  relativePath: Scalars['String']['output'];
   subFolders: Array<Folder>;
   totalDirectSize: Scalars['String']['output'];
   totalFiles: Scalars['Int']['output'];

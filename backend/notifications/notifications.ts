@@ -14,6 +14,7 @@ import {
   ExpoNotifications,
   sendExpoNotifications,
 } from './sendExpoNotification.js';
+import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder.js';
 
 export type NotificationType =
   | 'downloaded'
@@ -40,11 +41,14 @@ export const sendFolderViewedNotification = async (
   if (user.userType != 'Link') {
     return;
   }
+
+  const heroImage = heroImageForFolder(folder);
   await sendNotification(folder, {
     title: user.name,
     message: `${type} ${folder.name}`,
     type: type == 'View' ? 'viewed' : 'downloaded',
     url: userUrlForFolder(folder.id),
+    imageUrl: heroImage ? urlForImage(heroImage, 'sm') : undefined,
   });
 };
 
