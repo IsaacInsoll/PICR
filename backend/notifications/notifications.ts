@@ -42,7 +42,7 @@ export const sendFolderViewedNotification = async (
     return;
   }
 
-  const heroImage = heroImageForFolder(folder);
+  const heroImage = await heroImageForFolder(folder);
   await sendNotification(folder, {
     title: user.name,
     message: `${type} ${folder.name}`,
