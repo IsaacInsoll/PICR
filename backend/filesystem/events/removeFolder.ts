@@ -35,6 +35,9 @@ export const removeFolder = async (path: string) => {
   }
   folderList[relativePath(path)] = undefined;
   // console.log(folderList);
-  await db.delete(dbFolder).where(eq(dbFolder.id, folder.id));
+  await db
+    .update(dbFolder)
+    .set({ exists: false })
+    .where(eq(dbFolder.id, folder.id));
   log('info', `📁➖ ${relativePath(path)}`);
 };
