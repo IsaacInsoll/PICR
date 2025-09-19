@@ -16,6 +16,8 @@ import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import Constants from 'expo-constants';
 import { NotificationSettings } from '@/src/components/NotificationSettings';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppHeaderPadding } from '@/src/components/AppHeaderPadding';
+import { SettingsScreen } from '@/src/components/settings/SettingsScreen';
 
 export default function Settings() {
   const logout = useSetLoggedOut();
@@ -25,9 +27,13 @@ export default function Settings() {
     alert('Cleared');
   };
   return (
-    <AppView style={{ flex: 1 }}>
+    <AppView style={{ flex: 1, alignItems: 'center' }}>
+      <AppHeaderPadding />
+      <PicrLogo />
+      <Suspense fallback={<AppLoadingIndicator size="small" />}>
+        <SettingsContainer />
+      </Suspense>
       <SafeAreaView style={{}}>
-        <ServerDetails />
         <AppDetails />
         <View style={{ margin: 32, gap: 16 }}>
           <Suspense fallback={<AppLoadingIndicator size="small" />}>
@@ -41,6 +47,38 @@ export default function Settings() {
   );
 }
 
+export interface SettingsData {
+  server?: string;
+  me?: string;
+  serverVersion?: string;
+  serverLatest?: string;
+}
+const SettingsContainer = () => {
+  // get all data, create all callbacks, and provide it to a native view
+  const [result] = useQuery({ query: serverInfoQuery });
+  const login = useLoginDetails();
+  const me = useMe();
+  const details = result.data?.serverInfo;
+
+  const logout = useSetLoggedOut();
+
+  const doClearCache = async () => {
+    await CacheManager.clearCache();
+    alert('Cleared');
+  };
+
+  const data: SettingsData = {
+    server: login?.server,
+    me: me?.name,
+    serverVersion: details?.version,
+    serverLatest: details?.latest,
+  };
+
+  return <SettingsScreen data={data} />;
+
+  return <></>;
+};
+
 const ServerDetails = () => {
   const [result] = useQuery({ query: serverInfoQuery });
   const login = useLoginDetails();
@@ -48,7 +86,6 @@ const ServerDetails = () => {
   const details = result.data?.serverInfo;
   return (
     <View style={styles.settingsView}>
-      <PicrLogo />
       <PTitle level={3}>Server</PTitle>
       <PText>{login?.server}</PText>
       <PText>{me?.name}</PText>
@@ -63,7 +100,6 @@ const AppDetails = () => {
   const [cacheSize, setCacheSize] = useState(0);
 
   useEffect(() => {
-    console.log('getting cache size');
     //note, this always returns a tiny value and is useless, see https://github.com/georstat/react-native-image-cache/issues/81
     CacheManager.getCacheSize().then((size) => setCacheSize(size));
   }, []);
