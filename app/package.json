@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@expo-google-fonts/signika": "^0.4.0",
+    "@expo/ui": "~0.2.0-beta.3",
     "@expo/vector-icons": "^15.0.2",
     "@georstat/react-native-image-cache": "^3.1.0",
     "@gorhom/bottom-sheet": "^5",
