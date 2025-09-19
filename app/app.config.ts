@@ -43,6 +43,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     blockedPermissions: [
       'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
     ],
+    googleServicesFile: './google-services.json',
   },
   web: {
     bundler: 'metro',

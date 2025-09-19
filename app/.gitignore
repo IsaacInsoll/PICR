@@ -42,3 +42,4 @@ app-example
 ios/
 android/
 /credentials.json
+google-services.json
