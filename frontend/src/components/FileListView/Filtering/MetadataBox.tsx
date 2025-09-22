@@ -1,10 +1,6 @@
 import { MinimalFile } from '../../../../types';
 import { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
 import { MdOutlineCameraRoll } from 'react-icons/md';
-import {
-  ImageMetadataSummary,
-  VideoMetadataSummary,
-} from '@shared/gql/graphql';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   resetFilterOptions,
@@ -13,10 +9,7 @@ import {
 import { Button, Group, Indicator, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { MetadataSelect } from './MetadataSelect';
-
-export type AnyMetadataKey =
-  | keyof ImageMetadataSummary
-  | keyof VideoMetadataSummary;
+import { AnyMetadataKey } from '@shared/fileMetadata';
 
 export const MetadataBox = ({
   files,
@@ -78,9 +71,3 @@ export const MetadataBox = ({
     </>
   );
 };
-
-export interface formattedValue {
-  label: string;
-  value: string;
-  raw: string | number;
-}

@@ -3,7 +3,8 @@ import { filterOptions } from '@shared/filterAtom';
 import { formatMetadataValues } from '../../../metadata/formatMetadataValues';
 import { MultiSelect } from '@mantine/core';
 import { metadataIcons } from '../metadataIcons';
-import { AnyMetadataKey } from './MetadataBox';
+
+import { AnyMetadataKey } from '@shared/fileMetadata';
 
 export const MetadataSelect = ({
   title,

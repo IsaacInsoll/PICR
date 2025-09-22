@@ -51,12 +51,3 @@ export const metadataIcons: Record<
   AspectRatio: <TbAspectRatio />,
   Rating: <GiStarsStack />,
 } as const;
-
-export const metadataDescription: Record<
-  keyof ImageMetadataSummary | keyof VideoMetadataSummary,
-  string
-> = {
-  ExposureTime: 'Shutter Speed',
-  DateTimeEdit: 'Last Edited',
-  DateTimeOriginal: 'Created',
-};

@@ -4,11 +4,13 @@
   "type": "module",
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
+    "format-duration": "^3.0.2",
     "jotai": "2.12.5",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "pretty-bytes": "^7.0.0",
-    "react": "19.0.0"
+    "react": "19.0.0",
+    "readable-fractions": "^0.1.1"
   },
   "devDependencies": {
     "@types/react": "19.0"
@@ -16,6 +18,8 @@
   "peerDependencies": {
     "@urql/exchange-graphcache": "^7.2.3",
     "@urql/exchange-retry": "^1.3.1",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.6.0",
     "urql": "^4.2.2"
   }
 }

@@ -1,16 +1,9 @@
-import { tz } from 'moment-timezone';
 import moment from 'moment';
 import { Text, Tooltip } from '@mantine/core';
 import { ReactNode } from 'react';
 
 import { useAtom } from 'jotai';
 import { dateDisplayRelativeAtom } from '@shared/uiAtoms';
-
-export const prettyDateNoTZ = (dateString: string): string => {
-  // This was tested as matching with Adobe Lightroom perfectly for both `capture time` and `export time`
-  const d = new Date(dateString);
-  return tz(d, 'YYYY-MM-DDTHH:mm:ss[Z]').format('MMMM Do YYYY, h:mm:ss a');
-};
 
 export const DateDisplay = ({
   dateString,

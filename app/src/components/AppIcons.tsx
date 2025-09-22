@@ -1,7 +1,11 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { TextStyle } from 'react-native';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
+import {
+  ImageMetadataSummary,
+  VideoMetadataSummary,
+} from '@shared/gql/graphql';
 
 type IIconProps = Omit<ComponentProps<typeof Ionicons>, 'name'>;
 type IIconButtonProps = ComponentProps<typeof Ionicons.Button>;
@@ -51,3 +55,30 @@ export const AppIconButton = ({ style, ...props }: IIconProps) => {
     />
   );
 };
+
+export const appMetadataIcons: Record<
+  keyof ImageMetadataSummary | keyof VideoMetadataSummary,
+  string
+> = {
+  __typename: null,
+  //   //PHOTO
+  Camera: 'camera-outline',
+  Lens: 'telescope-outline',
+  ISO: 'film-outline',
+  ExposureTime: 'stopwatch-outline',
+  Aperture: 'aperture-outline',
+  Artist: 'person',
+  DateTimeEdit: 'time-outline',
+  DateTimeOriginal: 'time-outline',
+  //   //VIDEO
+  Audio: 'volume-medium-outline',
+  Framerate: 'videocam-outline',
+  Height: 'resize',
+  Width: 'resize',
+  Video: 'videocam-outline',
+  Format: 'information',
+  Duration: 'stopwatch-outline',
+  Bitrate: 'pulse-outline',
+  AspectRatio: 'resize-outline',
+  Rating: 'star-half-outline',
+} as const;

@@ -30,6 +30,7 @@ import { useScreenOrientation } from '@/src/hooks/useScreenOrientation';
 import { PTitle } from '@/src/components/PTitle';
 import { PBigVideo } from '@/src/components/PBigVideo';
 import { useNavigationScreenOptions } from '@/src/hooks/useNavigationScreenOptions';
+import { FileInfoBottomSheet } from '@/src/components/FileInfoBottomSheet';
 
 interface ItemProps {
   index: number;
@@ -38,6 +39,7 @@ interface ItemProps {
 }
 
 const showCommentsAtom = atom(false);
+const showFileInfoAtom = atom(false);
 
 export default function AppFileView() {
   const theme = useAppTheme();
@@ -61,6 +63,7 @@ export default function AppFileView() {
   const fileIndex = files?.findIndex((f) => f.id == fileId);
 
   const [showComments, setShowComments] = useAtom(showCommentsAtom);
+  const [showInfo, setShowInfo] = useAtom(showFileInfoAtom);
 
   const { width } = useWindowDimensions();
   const [isZoomed, setIsZoomed] = useState(false);
@@ -92,6 +95,7 @@ export default function AppFileView() {
       <Stack.Screen
         options={{
           ...headerOptions,
+          headerTransparent: true, //overriding the 'false on android' so when we toggle it on and off there is no layout shift
           headerTitle: skeleton?.name ?? 'Loading File...',
           headerRight: () => (
             <View style={{ flexDirection: 'row' }}>
@@ -106,6 +110,7 @@ export default function AppFileView() {
                 }}
               />
               <AppFileCommentsButton file={file} />
+              <AppFileInfoButton file={file} />
             </View>
           ),
           headerShown: !fullScreen, //toggling this causes ugly image jump behaviour
@@ -157,6 +162,11 @@ export default function AppFileView() {
         file={file}
         open={showComments}
         onClose={() => setShowComments(false)}
+      />
+      <FileInfoBottomSheet
+        file={file}
+        open={showInfo}
+        onClose={() => setShowInfo(false)}
       />
     </View>
   );
@@ -278,6 +288,22 @@ const AppFileCommentsButton = ({ file }: { file: File }) => {
             ? 'chatbox-ellipses-outline'
             : 'chatbox-outline'
         }
+        size={25}
+        color={theme.brandColor}
+        style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
+      />
+    </HeaderButton>
+  );
+};
+
+const AppFileInfoButton = ({ file }: { file: File }) => {
+  const setShowInfo = useSetAtom(showFileInfoAtom);
+  // const { totalComments } = file;
+  const theme = useAppTheme();
+  return (
+    <HeaderButton onPress={() => setShowInfo((c) => !c)}>
+      <Ionicons
+        name="information-circle-outline"
         size={25}
         color={theme.brandColor}
         style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/

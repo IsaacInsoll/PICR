@@ -1,8 +1,8 @@
 import {
-  AnyMetadataKey,
+  formatMetadataValue,
   formattedValue,
-} from '../components/FileListView/Filtering/MetadataBox';
-import { formatMetadataValue } from './formatMetadataValue';
+} from '@shared/formatMetadataValue';
+import { AnyMetadataKey } from '@shared/fileMetadata';
 
 export const formatMetadataValues = (
   title: AnyMetadataKey,
