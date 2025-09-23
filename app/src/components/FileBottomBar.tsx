@@ -4,7 +4,7 @@ import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 import { BlurView } from 'expo-blur';
 import { PText } from '@/src/components/PText';
 
-export const FileBottomBar = ({ file }) => {
+export const FileBottomBar = ({ file, onComments, onInfo }) => {
   const theme = useAppTheme();
   const fullScreen = useAtomValue(fileViewFullscreenAtom);
   // const safe = useSafeAreaInsets();

@@ -147,7 +147,14 @@ export default function AppFileView() {
         scrollAnimationDuration={150}
         windowSize={10} // lazy loading
       />
-      <FileBottomBar file={file} />
+      <FileBottomBar
+        file={file}
+        onComments={() => setShowComments(true)}
+        onInfo={() => {
+          console.log('info');
+          setShowInfo(true);
+        }}
+      />
       <Animated.View
         pointerEvents="none"
         style={[
@@ -172,7 +179,6 @@ export default function AppFileView() {
     </View>
   );
 }
-
 
 const CustomItem = ({
   index,

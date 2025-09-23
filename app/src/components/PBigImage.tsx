@@ -23,7 +23,7 @@ export const PBigImage = memo(
     style?: ViewStyle;
     setIsZoomed: (z: boolean) => void;
   }) => {
-    console.log('PBIGImage rendering ' + file.name);
+    // console.log('PBIGImage rendering ' + file.name);
     const ref = useRef(null);
     const uri = useLocalImageUrl(file, 'lg');
     const [fullScreen, setFullScreen] = useAtom(fileViewFullscreenAtom);
@@ -50,7 +50,10 @@ export const PBigImage = memo(
         doubleTapScale={3}
         isSingleTapEnabled
         isDoubleTapEnabled
-        onSingleTap={() => setFullScreen((fs) => !fs)}
+        onSingleTap={(e) => {
+          console.log(e);
+          setFullScreen((fs) => !fs);
+        }}
         onInteractionStart={() => {
           onZoom();
         }}
