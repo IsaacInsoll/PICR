@@ -10,6 +10,7 @@ import {
   HStack,
   Text,
 } from '@expo/ui/swift-ui';
+import { GlassView } from 'expo-glass-effect';
 
 export const FileBottomBar = ({ file }) => {
   const theme = useAppTheme();
@@ -17,24 +18,26 @@ export const FileBottomBar = ({ file }) => {
   // const safe = useSafeAreaInsets();
   if (fullScreen) return null;
   return (
-    <Host
-      // matchContents={true}
-      style={{
-        position: 'absolute',
-        // bottom: safe.bottom,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        padding: 24,
-        // backgroundColor: '#ff0000',
-      }}
-    >
-      <GlassEffectContainer>
-        <HStack spacing={32}>
-          <Text>Hi from Swift UI</Text>
-          <Button variant="glass">yo dawg</Button>
-        </HStack>
-      </GlassEffectContainer>
-    </Host>
+    <GlassView>
+      <Host
+        // matchContents={true}
+        style={{
+          position: 'absolute',
+          // bottom: safe.bottom,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: 24,
+          // backgroundColor: '#ff0000',
+        }}
+      >
+        <GlassEffectContainer>
+          <HStack spacing={32}>
+            <Text>Hi from Swift UI</Text>
+            <Button variant="glass">yo dawg</Button>
+          </HStack>
+        </GlassEffectContainer>
+      </Host>
+    </GlassView>
   );
 };
