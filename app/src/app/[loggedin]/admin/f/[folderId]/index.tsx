@@ -27,7 +27,7 @@ import {
 } from '@shared/files/sortFiles';
 import { FilterOptionsInterface } from '@shared/filterAtom';
 import { fileSortAtom, folderViewModeAtom } from '@/src/atoms/atoms';
-// import { FileSortMenu } from '@/src/components/Menus/FileSortMenu';
+import { FileSortMenu } from '@/src/components/Menus/FileSortMenu';
 import { GridIcon } from '@/src/components/AppIcons';
 
 const folderOptionsDialogOpenAtom = atom(false);
@@ -118,7 +118,7 @@ const FolderBody = ({
                 // backgroundColor: 'red',
               }}
             >
-              {/*<FolderOptionsButton />*/}
+              <FolderOptionsButton />
               <FolderViewButton />
             </View>
           ),
@@ -145,24 +145,24 @@ const styles = StyleSheet.create({
   },
 });
 
-// const FolderOptionsButton = () => {
-//   const open = useSetAtom(folderOptionsDialogOpenAtom);
-//   const theme = useAppTheme();
-//   return (
-//     <>
-//       <FileSortMenu>
-//         <HeaderButton>
-//           <Ionicons
-//             name="chevron-expand-outline"
-//             size={24}
-//             color={theme.brandColor}
-//             style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
-//           />
-//         </HeaderButton>
-//       </FileSortMenu>
-//     </>
-//   );
-// };
+const FolderOptionsButton = () => {
+  const open = useSetAtom(folderOptionsDialogOpenAtom);
+  const theme = useAppTheme();
+  return (
+    <>
+      <FileSortMenu>
+        <HeaderButton>
+          <Ionicons
+            name="chevron-expand-outline"
+            size={24}
+            color={theme.brandColor}
+            style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
+          />
+        </HeaderButton>
+      </FileSortMenu>
+    </>
+  );
+};
 
 const FolderViewButton = () => {
   const theme = useAppTheme();
