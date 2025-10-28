@@ -53,12 +53,20 @@ If you have a folder you are already using then point the `media` mount to that,
 
 Typically `media` and `cache` will be created in the folder you are putting the `compose` file in for simplicity.
 
+## Reverse Proxy / Port Forwarding
+
+Like most publicly accessible self hosted apps: PICR doesn't do HTTPS and you are expected to put it behind a _Reverse Proxy_ which basically does all the security stuff like HTTPS (and optionally blocking the bad guys). 
+
+I'm personally using Nginx Proxy manager but any of them will work fine. 
+
+If you are planning on making this accessible over the internet (rather than just playing around with it within your home network) you should definitely set up a reverse proxy. Set `BASE_URL` to the reverse proxy address.
+
 ## Environment variables
 
 There are lots of environment variables you can use, but only a few are needed:
 
 - `BASE_URL` the public facing URL including a trailing slash. eg https://clients.mydomain.com/.  
-  PICR will actually respond on all domains that point to it, but this is the domain used when sending out external links.
+  PICR will actually respond on all domains that point to it, but this is the domain used when sending out external links. This URL will also need to be set up on your reverse proxy. 
 
 - `DATABASE_URL` You can leave the defaults here, which match the `db` container listed lower in the docker file.
 
