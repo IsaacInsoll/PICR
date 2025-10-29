@@ -56,11 +56,18 @@ export const sendExpoNotifications = async (
         receiptIds.push(ticket.id);
       }
       if (ticket.status == 'error') {
-        console.log('ticket.status==error');
-        console.log(ticket.details);
         if (ticket.details?.error == 'DeviceNotRegistered') {
           // @ts-ignore it's never an array
           disableToken(messages[index].to);
+        } else if (ticket.details?.error == 'InvalidCredentials') {
+          // @ts-ignore it's never an array
+          console.log(
+            'InvalidCredentials error when sending push notification to ' +
+              messages[index].to,
+          );
+        } else {
+          console.log('ticket.status==error');
+          console.log(ticket.details);
         }
       }
       if (receiptIds.length > 0) {
