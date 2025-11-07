@@ -1,15 +1,21 @@
 import sharp from 'sharp';
 import { encode } from 'blurhash';
+import { log } from '../logger.js';
 
-//from https://github.com/woltapp/blurhash/issues/43#issuecomment-597674435
-export const encodeImageToBlurhash = (path: string): Promise<string> =>
-  new Promise((resolve, reject) => {
-    sharp(path)
+export async function encodeImageToBlurhash(path: string): Promise<string> {
+  try {
+    const { data, info } = await sharp(path)
       .raw()
       .ensureAlpha()
       .resize(32, 32, { fit: 'inside' })
-      .toBuffer((err, buffer, { width, height }) => {
-        if (err) return reject(err);
-        resolve(encode(new Uint8ClampedArray(buffer), width, height, 4, 4));
-      });
-  });
+      .toBuffer({ resolveWithObject: true }); // returns { data, info }
+
+    return encode(new Uint8ClampedArray(data), info.width, info.height, 4, 4);
+  } catch (err: any) {
+    log(
+      'error',
+      `Failed to create blurhash for "${path}": ${err?.message || err}`,
+    );
+    return '';
+  }
+}
