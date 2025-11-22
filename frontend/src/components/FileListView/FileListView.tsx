@@ -38,17 +38,16 @@ export const FileListView = ({
   setSelectedFileId,
   folders,
 }: FileListViewStyleComponentProps) => {
-  const { canView, isNone } = useCommentPermissions();
-  const setFolder = useSetFolder();
+  const items = [...folders, ...files];
 
-  const [lazyLoaded, onBecomeVisible] = useLazyLoad(100, files.length);
-  const loadedFiles = [...folders, ...files].slice(0, lazyLoaded);
+  const [lazyLoaded, onBecomeVisible] = useLazyLoad(100, items.length);
+  const loadedFiles = items.slice(0, lazyLoaded);
 
   return (
     <Page style={{}}>
       <Table highlightOnHover>
         <Table.Tbody>
-          {loadedFiles?.map((f, i) => (
+          {loadedFiles.map((f, i) => (
             <Row
               file={f}
               key={f.id}
@@ -136,7 +135,7 @@ const Row = ({
             {canView ? (
               <Group gap="xs" align="center">
                 {descriptionOverride ? (
-                  { ...descriptionOverride }
+                  descriptionOverride
                 ) : (
                   <>
                     {isMobile ? (

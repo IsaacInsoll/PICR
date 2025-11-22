@@ -1,6 +1,9 @@
 import { useState } from 'react';
 
-export const useLazyLoad = (initial: number = 15, total: number) => {
+export const useLazyLoad = (
+  initial: number = 15,
+  total: number,
+): [amount: number, onBecomeVisible: (i: number) => void] => {
   const [amount, setAmount] = useState(initial);
 
   const onBecomeVisible = (i: number) => {
