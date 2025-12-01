@@ -20,6 +20,7 @@ export const fileInterfaceFields = () => ({
   folder: { type: folderType },
   fileHash: { type: new GraphQLNonNull(GraphQLString) },
   fileSize: { type: new GraphQLNonNull(GraphQLBigInt) }, //custom BigInt as Int only goes to 2gb (32bit)
+  fileCreated: { type: new GraphQLNonNull(GraphQLDateTime) },
   fileLastModified: { type: new GraphQLNonNull(GraphQLDateTime) },
   latestComment: { type: GraphQLDateTime },
 });

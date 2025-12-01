@@ -69,6 +69,7 @@ export enum CommentPermissions {
 
 export type File = FileInterface & {
   __typename?: 'File';
+  fileCreated: Scalars['DateTime']['output'];
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
@@ -90,6 +91,7 @@ export enum FileFlag {
 }
 
 export type FileInterface = {
+  fileCreated: Scalars['DateTime']['output'];
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
@@ -145,6 +147,7 @@ export enum FoldersSortType {
 export type Image = FileInterface & {
   __typename?: 'Image';
   blurHash: Scalars['String']['output'];
+  fileCreated: Scalars['DateTime']['output'];
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];
@@ -442,6 +445,7 @@ export enum UserType {
 export type Video = FileInterface & {
   __typename?: 'Video';
   duration?: Maybe<Scalars['Float']['output']>;
+  fileCreated: Scalars['DateTime']['output'];
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
   fileSize: Scalars['BigInt']['output'];

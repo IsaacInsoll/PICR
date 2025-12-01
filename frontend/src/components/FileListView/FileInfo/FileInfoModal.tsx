@@ -35,6 +35,7 @@ export const FileInfoModal = ({ file }) => {
           label="Last modified"
           value={prettyDate(file.fileLastModified)}
         />
+        <StatCard label="Created" value={prettyDate(file.fileCreated)} />
       </Group>
       {file.metadata ? (
         <Table>

@@ -54,6 +54,7 @@ export const addFile = async (
         ...props,
         type: type,
         fileSize: stats.size,
+        fileCreated: stats.birthtime,
         fileLastModified: stats.mtime,
         exists: false, //set as `true` once we have all the hash/metadata
         existsRescan: false,
@@ -70,7 +71,16 @@ export const addFile = async (
   if (!file) return; // not needed, just for typescript to know it's not null at this point
 
   const modified =
-    !created && file.fileLastModified.getTime() != stats.mtime.getTime();
+    !created &&
+    (file.fileLastModified.getTime() != stats.mtime.getTime() ||
+      file.fileCreated.getTime() != stats.birthtime.getTime());
+
+  console.log([
+    modified,
+    file.fileCreated.getTime(),
+    stats.birthtime.getTime(),
+  ]);
+
   if (created || !file.fileHash || modified) {
     log(
       'info',
@@ -82,6 +92,8 @@ export const addFile = async (
     );
     // const hash = await fileHash2(filePath);
     file.fileHash = fastHash(file, stats);
+    file.fileCreated = stats.birthtime;
+    file.fileLastModified = stats.mtime;
 
     if (type == 'Image') {
       // deleteAllThumbs(filePath);

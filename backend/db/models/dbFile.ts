@@ -27,6 +27,9 @@ export const dbFile = pgTable('Files', {
   fileLastModified: timestamp('fileLastModified', {
     withTimezone: true,
   }).notNull(),
+  fileCreated: timestamp('fileCreated', {
+    withTimezone: true,
+  }).notNull(),
   exists: boolean('exists').notNull(), // bulk set as 'false' at boot, then set true when detected, to weed out files deleted while server down
   existsRescan: boolean('existsRescan').notNull().default(false), // used to detect if files still exist at boot time
   totalComments: integer('totalComments').notNull(), //we could calculate it but this is faster and easier

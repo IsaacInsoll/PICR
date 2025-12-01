@@ -8,6 +8,7 @@ export const fileFragment = gql(/* GraphQL */ `
     type
     fileHash
     fileSize
+    fileCreated
     fileLastModified
     flag
     rating

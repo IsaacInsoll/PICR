@@ -1,0 +1,1 @@
+ALTER TABLE "Files" ADD COLUMN "fileCreated" timestamp with time zone DEFAULT now() NOT NULL;
