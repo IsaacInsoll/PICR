@@ -37,7 +37,7 @@
     "ua-parser-js": "^2.0.0",
     "urql": "^4.2.2",
     "victory": "^37.3.5",
-    "vite": "^6.3.3",
+    "vite": "^6.4.1",
     "vite-plugin-tsconfig-paths": "^1.4.1",
     "yet-another-react-lightbox": "^3.17.0"
   },
