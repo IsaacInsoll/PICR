@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@locator/babel-jsx": "^0.4.4",
+    "@locator/babel-jsx": "^0.5.1",
     "@types/cli-progress": "^3.11.5",
     "@types/lodash": "^4.17.0",
     "@types/node": "^22.10.3",
