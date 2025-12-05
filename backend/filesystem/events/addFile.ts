@@ -75,12 +75,6 @@ export const addFile = async (
     (file.fileLastModified.getTime() != stats.mtime.getTime() ||
       file.fileCreated.getTime() != stats.birthtime.getTime());
 
-  console.log([
-    modified,
-    file.fileCreated.getTime(),
-    stats.birthtime.getTime(),
-  ]);
-
   if (created || !file.fileHash || modified) {
     log(
       'info',
