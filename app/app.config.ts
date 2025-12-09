@@ -95,6 +95,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         initialOrientation: 'DEFAULT',
       },
     ],
+    ['@rnrepo/expo-config-plugin'],
   ],
   experiments: {
     typedRoutes: true,
