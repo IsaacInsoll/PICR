@@ -5,6 +5,7 @@ import { useAtomValue } from 'jotai';
 import { folderViewModeAtom } from '@/src/atoms/atoms';
 import { AppFolderFileList } from '@/src/components/FolderContents/AppFolderFileList';
 import { AppFolderGalleryList } from '@/src/components/FolderContents/AppFolderGalleryList';
+import { AppFolderGalleryList2 } from '@/src/components/FolderContents/AppFolderGalleryList2';
 
 interface AppFolderContentsViewProps {
   folder: ViewFolderQuery['folder'];
@@ -36,7 +37,7 @@ export const AppFolderContentsView = ({
   switch (view) {
     case 'gallery':
       return (
-        <AppFolderGalleryList
+        <AppFolderGalleryList2
           items={items}
           width={width}
           colCount={2}
