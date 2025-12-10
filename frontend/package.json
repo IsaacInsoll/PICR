@@ -39,7 +39,7 @@
     "victory": "^37.3.5",
     "vite": "^6.4.1",
     "vite-plugin-tsconfig-paths": "^1.4.1",
-    "yet-another-react-lightbox": "^3.17.0"
+    "yet-another-react-lightbox": "^3.26.0"
   },
   "scripts": {
     "start": "vite",

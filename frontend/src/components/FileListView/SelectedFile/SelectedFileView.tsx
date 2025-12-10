@@ -1,5 +1,10 @@
 // The "Lightbox" appears when an individual image is selected
-import { ControllerRef, Lightbox } from 'yet-another-react-lightbox';
+import {
+  CarouselSettings,
+  ControllerRef,
+  Lightbox,
+  SlotStyles,
+} from 'yet-another-react-lightbox';
 
 import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/captions.css';
@@ -14,8 +19,7 @@ import { LightboxFileRating } from './LightboxFileRating';
 import { filesForLightbox } from './filesForLightbox';
 import { LightboxInfoButton } from './LightboxInfoButton';
 import { lightboxPlugins } from './lightboxPlugins';
-import { useAtomValue } from 'jotai';
-import { useSetAtom } from 'jotai/index';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { lightboxControllerRefAtom } from '../../../atoms/lightboxControllerRefAtom';
 import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
 
@@ -64,6 +68,7 @@ export const SelectedFileView = ({
           <LightboxFileRating slide={slide} selected={selectedImage} />
         ),
       }}
+      carousel={carouselProps}
       thumbnails={{ position: 'bottom' }}
       on={{
         entered: unInert,
@@ -79,7 +84,7 @@ export const SelectedFileView = ({
   );
 };
 
-const lightBoxStyles = {
+const lightBoxStyles: SlotStyles = {
   root: { fontFamily: theme.fontFamily, zIndex: 200 }, // mantine modals are 200
 };
 
@@ -95,4 +100,13 @@ const unInert = () => {
       node.removeAttribute('inert');
       node.removeAttribute('aria-hidden');
     });
+};
+
+const carouselProps: CarouselSettings = {
+  imageFit: 'cover' as const, // we want 'cover' otherwise there is too much padding on mobile
+  padding: 0,
+  spacing: 0,
+  imageProps: {
+    style: { objectFit: 'contain' }, // fix image getting cropped
+  },
 };
