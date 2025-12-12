@@ -258,7 +258,10 @@ const AppDownloadFileButton = ({
   const onClick = () => {
     if (onPress) onPress();
     try {
-      MediaLibrary.saveToLibraryAsync(uri).then(() => console.log('Saved!!'));
+      //saveToLibraryAsync was stripping metadata? The following line is untested (so far!)
+      //TODO: test this, also consider making a PICR gallery folder
+      MediaLibrary.createAssetAsync(uri).then(() => console.log('Saved!!'));
+      // MediaLibrary.saveToLibraryAsync(uri).then(() => console.log('Saved!!'));
     } catch (e) {
       console.log('error saving file');
       console.log(e);
