@@ -85,7 +85,8 @@
   },
   "overrides": {
     "zeego": {
-      "@react-native-menu/menu": "2.0.0"
+      "@react-native-menu/menu": "2.0.0",
+      "react-native-ios-context-menu": "3.2"
     }
   },
   "private": true
