@@ -47,6 +47,7 @@ export type Branding = {
 export type ClientInfo = {
   __typename?: 'ClientInfo';
   avifEnabled: Scalars['Boolean']['output'];
+  baseUrl: Scalars['String']['output'];
   canWrite: Scalars['Boolean']['output'];
 };
 

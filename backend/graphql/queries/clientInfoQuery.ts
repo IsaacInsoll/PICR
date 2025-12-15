@@ -19,6 +19,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   return {
     avifEnabled: opts.avifEnabled ?? false,
     canWrite: user.userType == 'Admin' && picrConfig.canWrite,
+    baseUrl: picrConfig.baseUrl,
   };
 };
 

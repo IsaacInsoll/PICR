@@ -3,6 +3,7 @@ import { copyToClipboard, publicURLFor } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
 import { ClipboardIcon } from '../../PicrIcons';
 import { TbClipboard } from 'react-icons/tb';
+import { useBaseUrl } from '../../hooks/useMe';
 
 export const CopyPublicLinkButton = ({
   disabled,
@@ -14,7 +15,8 @@ export const CopyPublicLinkButton = ({
   hash: string;
   folderId: number;
 } & ButtonProps) => {
-  const url = publicURLFor(hash, folderId);
+  const baseUrl = useBaseUrl();
+  const url = publicURLFor(baseUrl, hash, folderId);
   const notif = {
     title: 'Link copied to clipboard',
     message: url,

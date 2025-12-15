@@ -13,7 +13,7 @@ import {
 export const useMe = ():
   | (Pick<User, 'id' | 'name' | 'folderId' | 'commentPermissions'> &
       ExtraUserProps & {
-        clientInfo: { avifEnabled?: boolean };
+        clientInfo: { avifEnabled?: boolean; baseUrl: string };
       })
   | null => {
   // console.log('useMe()');
@@ -34,4 +34,8 @@ export const useMe = ():
 export const useAvifEnabled = () => {
   const me = useMe();
   return me?.clientInfo?.avifEnabled ?? false;
+};
+export const useBaseUrl = () => {
+  const me = useMe();
+  return me?.clientInfo?.baseUrl;
 };

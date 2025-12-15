@@ -15,6 +15,7 @@ export const meQuery = gql(/* GraphQL */ `
       }
     }
     clientInfo {
+      baseUrl
       avifEnabled
       canWrite
     }
