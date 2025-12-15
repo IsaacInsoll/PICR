@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Alert, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { addToFileCache, fileCache } from '@/src/helpers/folderCache';
 import { useQuery } from 'urql';
 import { PBigImage, useLocalImageUrl } from '@/src/components/PBigImage';
@@ -255,12 +255,20 @@ const AppDownloadFileButton = ({
 }) => {
   const theme = useAppTheme();
   const uri = useLocalImageUrl(file, 'raw');
-  const onClick = () => {
+  const onClick = async () => {
     if (onPress) onPress();
     try {
       //saveToLibraryAsync was stripping metadata? The following line is untested (so far!)
-      //TODO: test this, also consider making a PICR gallery folder
-      MediaLibrary.createAssetAsync(uri).then(() => console.log('Saved!!'));
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission required',
+          'Media library access is needed to perform this action.',
+        );
+      } else {
+        await MediaLibrary.createAssetAsync(uri);
+        console.log('Saved!!');
+      }
       // MediaLibrary.saveToLibraryAsync(uri).then(() => console.log('Saved!!'));
     } catch (e) {
       console.log('error saving file');
