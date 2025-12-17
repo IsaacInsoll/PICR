@@ -219,8 +219,8 @@ const SearchResultRow = ({ item }: { item: File | Folder }) => {
         <View style={styles.resultRow}>
           <PFileView
             file={item}
+            variant="rounded-fit"
             style={styles.thumbnail}
-            contentFit="cover"
             size="sm"
           />
           <View style={{ flex: 1, gap: 6 }}>

@@ -163,8 +163,7 @@ const RecentUsers = ({ users }) => {
               <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
                 <PFileView
                   file={user.folder.heroImage}
-                  style={{ width: 80, height: 80 }}
-                  contentFit="contain"
+                  variant="rounded-fit"
                   size="sm"
                 />
                 <View style={{ justifyContent: 'center', gap: 4 }}>

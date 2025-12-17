@@ -3,39 +3,52 @@ import { ImageProps } from 'expo-image';
 import { ThumbnailSize } from '@frontend/helpers/thumbnailSize';
 import { File, Folder, Video, Image } from '@shared/gql/graphql';
 import { PFileVideo } from '@/src/components/PFileVideo';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { PFileImage } from '@/src/components/PFileImage';
 import { FolderIcon } from '@/src/components/AppIcons';
 import { getInitialsColor } from '@/src/helpers/get-initials-color';
+import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 // Used for thumbnails and gallery, presents image/video/folder thumbnail
 export const PFileView = memo(
   ({
     file,
     size,
+    variant,
     ...props
   }: {
     file?: File | Image | Video | Folder | null;
     size: ThumbnailSize;
+    variant?: 'rounded-fit';
   } & ImageProps) => {
     // I had this in here and it worked, but I prefer the idea of the parent deciding how to render this (IE: if it's a folder)
     // as different views have different needs (EG: blurring, overlaying text etc)
+
+    const p: StyleProp<ImageProps> =
+      variant === 'rounded-fit'
+        ? {
+            contentFit: 'cover',
+            style: [styles.roundedFit, props.style],
+            ...props,
+          }
+        : { ...props };
+
     const isFolder = file?.__typename == 'Folder';
     //     const uri = useLocalImageUrl(isFolder ? file.heroImage : file, size);
     if (file?.type == 'Video') {
-      return <PFileVideo {...props} file={file} />;
+      return <PFileVideo {...p} file={file} />;
     }
     if (file?.type == 'Image') {
-      return <PFileImage size={size} {...props} file={file} />;
+      return <PFileImage size={size} {...p} file={file} />;
     }
 
     if (isFolder && file.heroImage?.type == 'Image') {
-      return <PFileImage size={size} {...props} file={file.heroImage} />;
+      return <PFileImage size={size} {...p} file={file.heroImage} />;
     }
 
-    if (isFolder) return <PFileFolderThumbnail {...props} folder={file} />;
+    if (isFolder) return <PFileFolderThumbnail {...p} folder={file} />;
 
-    return <View {...props} />;
+    return <View {...p} />;
   },
 );
 
@@ -62,3 +75,7 @@ export const PFileFolderThumbnail = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  roundedFit: { borderRadius: 12, overflow: 'hidden', width: 80, height: 80 },
+});

@@ -1,18 +1,10 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { AppFolderLink, AppLink } from '@/src/components/AppFolderLink';
-import { AppImage } from '@/src/components/AppImage';
+import { AppLink } from '@/src/components/AppFolderLink';
 import { PText } from '@/src/components/PText';
 import { File, Folder, Image } from '@shared/gql/graphql';
-import { AspectView } from '@/src/components/AspectView';
-import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
-import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 import { useMutation } from 'urql';
-import { FileCommentsIcon } from '@/src/components/FolderContents/FileCommentsIcon';
-import { FileFlagIcon } from '@/src/components/FolderContents/FileFlagIcon';
-import { FileRating } from '@/src/components/FolderContents/FileRating';
 import { PTitle } from '@/src/components/PTitle';
-import { PFileImage } from '@/src/components/PFileImage';
 import { AppFileFlagChip } from '@/src/components/chips/AppFileFlagChip';
 import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
 import { AppCommentsChip } from '@/src/components/chips/AppCommentsChip';
@@ -67,12 +59,7 @@ export const AppFileListItem = ({
             alignItems: 'center',
           }}
         >
-          <PFileView
-            file={item}
-            style={{ width: 80, height: 80 }}
-            contentFit="contain"
-            size="sm"
-          />
+          <PFileView file={item} variant="rounded-fit" size="sm" />
           <View style={{ gap: 4 }}>
             <PTitle level={4}>{item.name}</PTitle>
             {children ? (
