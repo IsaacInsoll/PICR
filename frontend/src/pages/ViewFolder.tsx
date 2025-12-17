@@ -37,6 +37,7 @@ import { LoadingIndicator } from '../components/LoadingIndicator';
 import { defaultBranding, themeModeAtom } from '../atoms/themeModeAtom';
 import { Branding } from '../../../graphql-types';
 import { ManageFolder } from './ManageFolder';
+import { TbFolderStar } from 'react-icons/tb';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -196,6 +197,12 @@ const FolderOverflowMenu = ({ folder }: { folder: MinimalFolder }) => {
 
       <Menu.Dropdown>
         <Menu.Label>{folder?.name}</Menu.Label>
+        <Menu.Item
+          leftSection={<TbFolderStar />}
+          onClick={() => setFolder(folder, 'manage/links')}
+        >
+          {`Manage Folder`}
+        </Menu.Item>
         <Menu.Item
           leftSection={<FilterIcon />}
           onClick={() => setFiltering(true)}
