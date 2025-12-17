@@ -1,6 +1,6 @@
 // Full-screen image with pinch-to-zoom etc
 import { ZOOM_TYPE, Zoomable } from '@likashefqet/react-native-image-zoom';
-import { memo, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { CacheManager } from '@georstat/react-native-image-cache';
 import { Image } from '../../../graphql-types';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
@@ -81,14 +81,35 @@ export const useLocalImageUrl = (
   file: Partial<Pick<File, 'id' | 'fileHash' | 'name' | 'type'>>,
   size: AllSize,
 ) => {
-  if (!file) return null;
   const [uri, setUri] = useState<string | undefined>(undefined);
   const baseUrl = useLoginDetails()?.server;
-  const source = baseUrl + imageURL(file, size);
-  CacheManager.get(source, undefined).getPath().then(setUri);
-  // console.log([source, uri]);
-  // return source;
-  return Platform.OS == 'android' ? `file://${uri}` : uri;
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!file || !baseUrl) {
+      setUri(undefined);
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const source = baseUrl + imageURL(file, size);
+    CacheManager.get(source, undefined)
+      .getPath()
+      .then((path) => {
+        if (!cancelled) setUri(path);
+      })
+      .catch(() => {
+        if (!cancelled) setUri(undefined);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [baseUrl, file?.fileHash, file?.id, file?.name, size]);
+
+  if (!uri) return null;
+  return Platform.OS === 'android' ? `file://${uri}` : uri;
 };
 
 const styles = StyleSheet.create({
