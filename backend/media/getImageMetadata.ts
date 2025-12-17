@@ -13,10 +13,12 @@ export const getImageMetadata = async (file: FileFields) => {
 
     if (!exif) return null;
     const x = ex(exif);
+    const camera = joinDefined(x?.Image?.Make, x?.Image?.Model);
+    const lens = joinDefined(x?.Photo?.LensMake, x?.Photo?.LensModel);
     // const et = x?.Photo?.ExposureTime;
     const result: MetadataSummary = {
-      Camera: `${x?.Image?.Make} ${x?.Image?.Model}`,
-      Lens: `${x?.Photo?.LensMake} ${x?.Photo?.LensModel}`,
+      Camera: camera,
+      Lens: lens,
       Artist: x?.Image?.Artist,
       DateTimeEdit: x?.Image?.DateTime,
       DateTimeOriginal: x?.Photo?.DateTimeOriginal,
@@ -33,6 +35,16 @@ export const getImageMetadata = async (file: FileFields) => {
     console.log(e);
     return null;
   }
+};
+
+// Join optional string parts and return null instead of "undefined" when metadata is missing
+const joinDefined = (
+  ...values: Array<string | null | undefined>
+): string | null => {
+  const defined = values
+    .map((v) => v?.trim())
+    .filter((v): v is string => !!v && v.length > 0);
+  return defined.length ? defined.join(' ') : null;
 };
 
 // We need attributes (not just child elements) to read lightroom rating)

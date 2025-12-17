@@ -32,6 +32,10 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
   }
 
   if (valid(opts.lastBootedVersion)) {
+    if (lt(opts.lastBootedVersion!, '0.8.19')) {
+      console.log(' ℹ️ Enabling metadata refresh for upgrade to 0.8.19+');
+      config.updateMetadata = true;
+    }
     if (lt(opts.lastBootedVersion!, '0.7.0')) {
       // config.updateMetadata = true;
       await removeDuplicates();
