@@ -29,6 +29,7 @@ import { FilterOptionsInterface } from '@shared/filterAtom';
 import { fileSortAtom, folderViewModeAtom } from '@/src/atoms/atoms';
 import { FileSortMenu } from '@/src/components/Menus/FileSortMenu';
 import { GridIcon } from '@/src/components/AppIcons';
+import { SearchHeaderButton } from '@/src/components/SearchHeaderButton';
 
 const folderOptionsDialogOpenAtom = atom(false);
 
@@ -118,6 +119,7 @@ const FolderBody = ({
                 // backgroundColor: 'red',
               }}
             >
+              <SearchHeaderButton folderId={folderId} />
               <FolderOptionsButton />
               <FolderViewButton />
             </View>

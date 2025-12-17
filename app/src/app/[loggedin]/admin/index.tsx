@@ -29,6 +29,7 @@ import {
   AppFooterPadding,
   AppHeaderPadding,
 } from '@/src/components/AppHeaderPadding';
+import { SearchHeaderButton } from '@/src/components/SearchHeaderButton';
 
 const HomeFolderButton = () => {
   const me = useMe();
@@ -63,6 +64,14 @@ const SettingsButton = () => {
     </HeaderButton>
   );
 };
+const HeaderActions = () => {
+  return (
+    <View style={{ flexDirection: 'row' }}>
+      <SearchHeaderButton />
+      <SettingsButton />
+    </View>
+  );
+};
 
 export default function index() {
   return (
@@ -71,7 +80,7 @@ export default function index() {
         options={{
           headerTitle: 'PICR',
           headerLeft: () => <HomeFolderButton />,
-          headerRight: () => <SettingsButton />,
+          headerRight: () => <HeaderActions />,
         }}
       />
       <Suspense fallback={<AppLoadingIndicator />}>
