@@ -1,18 +1,18 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `backend/`: Node/Express GraphQL API + media/DB logic; builds to `dist/server`.
+- `backend/`: Node/Express/Drizzle GraphQL API + media/DB logic; builds to `dist/server`.
 - `frontend/`: Vite + React 19 UI (`src/` routes/components, `public/` assets).
 - `shared/`: React/utility modules shared by web and app.
 - `app/`: Expo/React Native client.
 - `tests/`: Vitest e2e suites, Docker Compose setup, sample media fixtures.
 - `docs/`: Dev notes; `readme.md` for a quick overview.
-- `lightroom/`: Lightroom Classic plugin prototype.
+- `lightroom/`: Lightroom Classic plugin prototype coded in LUA.
 
 ## Architecture & Runtime
 - Runs on servers/NAS via Docker; backend scans media, builds thumbnails, and serves GraphQL.
 - Frontend (React 19 + React Compiler) drives the admin UI for secret-link galleries; public links stay static.
-- `/shared` powers web and the WIP React Native app.
+- `/shared` powers frontend and the WIP React Native app. Because they have different versions of react and urql we can't import those in `shared`. We want to move as much other shared logic there as we can (IE: types, functions, queries)
 
 ## Build, Test, and Development Commands
 - `npm start`: Runs the dev stack (backend TS watch + nodemon, Vite dev server, Docker services).
