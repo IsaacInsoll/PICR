@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
@@ -6,6 +6,14 @@ import { FlashList } from '@shopify/flash-list';
 import { useQuery } from 'urql';
 import { searchQuery } from '@shared/urql/queries/searchQuery';
 import { File, Folder } from '@shared/gql/graphql';
+import {
+  buildSearchResultList,
+  formatFileFolderName,
+  formatFolderPath,
+  getSearchResultMeta,
+  isFolderResult,
+  SearchResultType,
+} from '@shared/search/searchResults';
 import { useMe } from '@/src/hooks/useMe';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { PTitle } from '@/src/components/PTitle';
@@ -26,7 +34,6 @@ import { useDebouncedValue } from '@/src/hooks/useDebouncedValue';
 import { TogglePill } from '@/src/components/TogglePill';
 
 type Scope = 'current' | 'all';
-type ResultType = 'all' | 'file' | 'folder';
 
 export default function FindScreen() {
   const params = useLocalSearchParams<{ folderId?: string | string[] }>();
@@ -41,7 +48,7 @@ export default function FindScreen() {
       : undefined;
   const [query, setQuery] = useState('');
   const [scope, setScope] = useState<Scope>('current');
-  const [type, setType] = useState<ResultType>('all');
+  const [type, setType] = useState<SearchResultType>('all');
   const [debouncedQuery] = useDebouncedValue(query, 250);
   const trimmedQuery = debouncedQuery.trim();
 
@@ -154,7 +161,7 @@ const SearchResults = ({
   activeFolderId?: string;
   trimmedQuery: string;
   queryEnabled: boolean;
-  type: ResultType;
+  type: SearchResultType;
 }) => {
   const [result] = useQuery({
     query: searchQuery,
@@ -164,14 +171,15 @@ const SearchResults = ({
 
   const folders = result.data?.searchFolders ?? [];
   const files = result.data?.searchFiles ?? [];
-  const list = useMemo(() => {
-    if (type === 'file') return files;
-    if (type === 'folder') return folders;
-    return [...folders, ...files];
-  }, [files, folders, type]);
+  const list = useMemo(
+    () => buildSearchResultList(files, folders, type),
+    [files, folders, type],
+  );
 
-  const moreResults = folders.length === 100 || files.length === 100;
-  const totalResults = folders.length + files.length;
+  const { moreResults, total, totalFiles, totalFolders } = useMemo(
+    () => getSearchResultMeta(files, folders),
+    [files, folders],
+  );
   const searching = queryEnabled && result.fetching;
 
   return (
@@ -193,10 +201,10 @@ const SearchResults = ({
         <EmptyState hasQuery={trimmedQuery.length > 0} isLoading={searching} />
       )}
       ListFooterComponent={
-        moreResults || totalResults > 0 ? (
+        moreResults || total > 0 ? (
           <SearchFooter
-            totalFiles={files.length}
-            totalFolders={folders.length}
+            totalFiles={totalFiles}
+            totalFolders={totalFolders}
             moreResults={moreResults}
           />
         ) : (
@@ -208,10 +216,10 @@ const SearchResults = ({
 };
 
 const SearchResultRow = ({ item }: { item: File | Folder }) => {
-  const isFolder = item.__typename === 'Folder';
+  const isFolder = isFolderResult(item);
   const secondary = isFolder
     ? formatFolderPath(item)
-    : formatFilePath(item as File);
+    : formatFileFolderName(item);
 
   return (
     <AppLink item={item} asChild>
@@ -297,18 +305,6 @@ const SearchFooter = ({
       <AppFooterPadding />
     </View>
   );
-};
-
-const formatFolderPath = (folder: Folder) => {
-  const parents = folder.parents ?? [];
-  const names = parents.map((p) => p?.name).filter(Boolean);
-  if (!names.length) return '';
-  return [...names, folder.name].join(' / ');
-};
-
-const formatFilePath = (file: File) => {
-  if (file.folder?.name) return file.folder.name;
-  return '';
 };
 
 const styles = StyleSheet.create({

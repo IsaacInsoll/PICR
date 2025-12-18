@@ -24,11 +24,16 @@ import { InfoIcon } from '../../PicrIcons';
 import { Joiner } from '../FolderName';
 import { useQuickFind } from './useQuickFind';
 import { searchQuery } from '@shared/urql/queries/searchQuery';
+import {
+  buildSearchResultList,
+  getSearchResultMeta,
+  isFolderResult,
+  SearchResultType,
+} from '@shared/search/searchResults';
 
 type Scope = 'all' | 'current';
-type ScopeType = 'all' | 'file' | 'folder';
 const scopeAtom = atom<Scope>('current');
-const scopeTypeAtom = atom<ScopeType>('all');
+const scopeTypeAtom = atom<SearchResultType>('all');
 const queryAtom = atom('');
 
 export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
@@ -126,8 +131,11 @@ const Results = ({
   const folders = results.data?.searchFolders ?? [];
   const files = results.data?.searchFiles ?? [];
 
-  const list =
-    type == 'all' ? [...folders, ...files] : type == 'file' ? files : folders;
+  const list = buildSearchResultList(files, folders, type);
+  const { totalFiles, totalFolders, moreResults } = getSearchResultMeta(
+    files,
+    folders,
+  );
 
   const handleClick = (e, folder, file) => {
     close();
@@ -151,8 +159,10 @@ const Results = ({
         );
       }
       if (e.code == 'Enter') {
+        if (index == null) return;
         const item = list[index];
-        if (item['__typename'] == 'Folder') {
+        if (!item) return;
+        if (isFolderResult(item)) {
           handleClick(e, item);
         } else {
           handleClick(e, item.folder, item);
@@ -169,7 +179,7 @@ const Results = ({
   return (
     <Stack gap={0}>
       {list?.map((item, i) => {
-        if (item['__typename'] == 'Folder') {
+        if (isFolderResult(item)) {
           return (
             <ResultButton
               key={'folder' + item.id}
@@ -198,8 +208,9 @@ const Results = ({
       })}
 
       <QuickFindFooter
-        totalFiles={files.length}
-        totalFolders={folders.length}
+        totalFiles={totalFiles}
+        totalFolders={totalFolders}
+        moreResults={moreResults}
         inHomeFolder={scope == 'current' && folderId !== me?.folderId}
       />
     </Stack>
@@ -247,15 +258,16 @@ const ResultButton = ({
 const QuickFindFooter = ({
   totalFolders,
   totalFiles,
+  moreResults,
   inHomeFolder,
 }: {
   totalFiles: number;
   totalFolders: number;
+  moreResults: boolean;
   inHomeFolder: boolean;
 }) => {
   const setSelectedScope = useSetAtom(scopeAtom);
   const total = totalFiles + totalFolders;
-  const moreResults = totalFiles == 100 || totalFolders == 100;
   return (
     <Stack p="lg">
       <Group gap="md">
