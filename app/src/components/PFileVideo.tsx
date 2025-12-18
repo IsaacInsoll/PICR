@@ -1,33 +1,30 @@
 import { memo, useEffect, useState } from 'react';
-import { Image } from '../../../graphql-types';
 import { Image as ExpoImage, ImageProps } from 'expo-image';
 import { useLocalImageUrl } from '@/src/components/PBigImage';
-import { ThumbnailSize } from '@frontend/helpers/thumbnailSize';
 import { Video } from '@shared/gql/graphql';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { aspectFit } from '@shared/files/aspectFit';
 
 // Basically an Video Thumbnail
 export const PFileVideo = memo(
   ({ file, ...props }: { file: Video } & ImageProps) => {
-    // I had this in here and it worked, but I prefer the idea of the parent deciding how to render this (IE: if it's a folder)
-    // as different views have different needs (EG: blurring, overlaying text etc)
-    //    const isFolder = file.__typename == 'Folder';
-    //     const uri = useLocalImageUrl(isFolder ? file.heroImage : file, size);
     const uri = useLocalImageUrl(file, 'md');
-    const second = useSecond();
+    // const second = useSecond();
     if (!uri) return null;
 
-    const af = aspectFit(props.style, file.imageRatio);
-    const frame = second - 1;
+    const flatStyle = StyleSheet.flatten(props.style);
+    const af = aspectFit(flatStyle, file.imageRatio);
+    const frame = 3; //second - 1;
 
     return (
       <View
-        style={{
-          ...props.style,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
+        style={[
+          props.style,
+          {
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+        ]}
       >
         <View
           style={{
@@ -41,6 +38,7 @@ export const PFileVideo = memo(
             {...props}
             source={{ uri }}
             contentFit="contain"
+            onError={console.log}
             style={{
               position: 'absolute',
               top: af.height * -frame,
