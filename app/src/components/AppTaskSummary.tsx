@@ -5,7 +5,10 @@ import { View } from 'react-native';
 import { PText } from '@/src/components/PText';
 import { useRequery } from '@/src/app-shared/useRequery';
 import { PView } from '@/src/components/PView';
-import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
+import {
+  AppLoadingIndicator,
+  InlineAppLoadingIndicator,
+} from '@/src/components/AppLoadingIndicator';
 import { PTitle } from '@/src/components/PTitle';
 
 export const AppTaskSummary = ({ folderId }: { folderId: string }) => {
@@ -35,7 +38,7 @@ export const AppTaskSummary = ({ folderId }: { folderId: string }) => {
             gap="md"
             style={{ padding: 8, width: '100%', justifyContent: 'center' }}
           >
-            <AppLoadingIndicator />
+            <InlineAppLoadingIndicator />
             <PTitle level={4}>{name}</PTitle>
             <PTitle level={4}>({percent}%)</PTitle>
           </PView>
