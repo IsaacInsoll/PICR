@@ -8,6 +8,7 @@
 - `tests/`: Vitest e2e suites, Docker Compose setup, sample media fixtures.
 - `docs/`: Dev notes; `readme.md` for a quick overview.
 - `lightroom/`: Lightroom Classic plugin prototype coded in LUA.
+- `schema.graphql` has the full API exposed by backend, which is used by `frontend`, `shared` and `app`
 
 ## Architecture & Runtime
 - Runs on servers/NAS via Docker; backend scans media, builds thumbnails, and serves GraphQL.
