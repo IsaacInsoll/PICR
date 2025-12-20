@@ -40,8 +40,9 @@ services:
     volumes:
       - ./data:/var/lib/postgresql/data #database storage, you should back this up
 ```
-
 ## Volumes (File Locations)
+
+To avoid permissions issues please create these folders before first starting PICR.
 
 | Folder  | Description                                                                                                                                                       | Backup         |
 | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------- |
