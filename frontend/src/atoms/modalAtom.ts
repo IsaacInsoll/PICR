@@ -2,6 +2,7 @@ import { atom, useSetAtom } from 'jotai/index';
 import { atomWithHash } from 'jotai-location';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 import { lightboxControllerRefAtom } from './lightboxControllerRefAtom';
+import { MinimalFolder } from '../../types';
 
 export type FileViewType = 'info' | 'comments' | undefined;
 
@@ -40,4 +41,16 @@ export const useOpenCommentsModal = () => {
 export const useOpenFileInfoModal = () => {
   const open = useSetAtom(openModalAtom);
   return (fileId: string) => open({ mode: 'info', fileId });
+};
+
+export const moveRenameFolderAtom = atom<MinimalFolder | null>(null);
+
+export const useOpenMoveRenameFolderModal = () => {
+  const setFolder = useSetAtom(moveRenameFolderAtom);
+  return (folder: MinimalFolder) => setFolder(folder);
+};
+
+export const useCloseMoveRenameFolderModal = () => {
+  const setFolder = useSetAtom(moveRenameFolderAtom);
+  return () => setFolder(null);
 };

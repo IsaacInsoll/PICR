@@ -18,6 +18,8 @@ export const urqlCacheExchange = cacheExchange({
         invalidateQueries(cache, ['brandings', 'folder']),
       editBranding: (_, args, cache) =>
         invalidateQueries(cache, ['brandings', 'folder']),
+      renameFolder: (_, args, cache) =>
+        invalidateQueries(cache, ['allFolders', 'folder', 'searchFolders']),
     },
   },
 });

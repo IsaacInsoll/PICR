@@ -8,7 +8,15 @@ import {
 import { useQuery } from 'urql';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { buildTreeArray, treeNode } from '../helpers/buildTreeArray';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import type { MouseEvent } from 'react';
 import { MinimalFolder } from '../../types';
 import { LoadingIndicator } from './LoadingIndicator';
 import { values } from 'lodash';
@@ -29,9 +37,13 @@ const prettyFolderPath = (folder: MinimalFolder) => {
 export const FolderSelector = ({
   folder,
   setFolder,
+  label = 'Folder',
+  description = 'This user can control public links and other users under this folder',
 }: {
   folder: MinimalFolder;
   setFolder: (folder: MinimalFolder) => void;
+  label?: string;
+  description?: string;
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -39,11 +51,7 @@ export const FolderSelector = ({
 
   return (
     <>
-      <Input.Wrapper
-        label="Folder"
-        description="This user can control public links and other users under this folder"
-        // error="Input error"
-      >
+      <Input.Wrapper label={label} description={description}>
         <Input
           placeholder="Folder Name"
           onClick={() => setOpen(true)}
@@ -92,24 +100,47 @@ const FolderTreeView = ({
     multiple: false,
   });
 
+  const folders = useMemo(
+    () => (result?.data?.allFolders ?? []).filter(Boolean),
+    [result?.data?.allFolders],
+  );
+
   const treeData = useMemo(() => {
-    const treeRaw: treeNode[] = result?.data?.allFolders.map((f) => ({
-      id: f?.id, //buildTree
-      value: f?.id, // <Tree> view
-      label: f?.name,
-      parentId: f?.parentId,
+    const treeRaw: treeNode[] = folders.map((f) => ({
+      id: f.id, // buildTree
+      value: f.id, // <Tree> view
+      label: f.name,
+      parentId: f.parentId,
     }));
     return buildTreeArray(treeRaw, rootId);
-  }, [result, rootId]);
+  }, [folders, rootId]);
 
-  //setSelected when we observe the value has changed
+  const foldersById = useMemo(() => {
+    const map = new Map<string, MinimalFolder>();
+    folders.forEach((f) => {
+      if (f?.id) map.set(f.id, f);
+    });
+    return map;
+  }, [folders]);
+
+  const lastSelectedId = useRef<string | undefined>(folder?.id);
+
+  const selectFolderById = useCallback(
+    (id: string | undefined) => {
+      if (!id) return;
+      if (lastSelectedId.current === id) return;
+      const selected = foldersById.get(id);
+      if (!selected) return;
+      lastSelectedId.current = id;
+      setFolder(selected);
+    },
+    [foldersById, setFolder],
+  );
+
+  // Sync selected folder when tree selection changes.
   useEffect(() => {
-    const selected = result?.data?.allFolders.find(
-      ({ id }) => id === tree.selectedState[0],
-    );
-    if (selected) setFolder(selected);
-    console.log(selected);
-  }, [tree.selectedState, setFolder]);
+    selectFolderById(tree.selectedState[0]);
+  }, [tree.selectedState, selectFolderById]);
 
   //expand the selected parents if we have nothing expanded (IE: first open) {
   useEffect(() => {
@@ -117,6 +148,18 @@ const FolderTreeView = ({
       tree.setExpandedState(expandedParents(folder));
     }
   }, [open]);
+
+  const lastFolderId = useRef<string | undefined>(folder?.id);
+
+  useEffect(() => {
+    if (!folder?.id) return;
+    if (lastFolderId.current !== folder.id) {
+      tree.setSelectedState([folder.id]);
+      tree.setExpandedState(expandedParents(folder));
+      lastFolderId.current = folder.id;
+      lastSelectedId.current = folder.id;
+    }
+  }, [folder?.id]);
 
   if (!open) return null;
   return (
@@ -134,16 +177,13 @@ const FolderTreeView = ({
         levelOffset="lg"
         style={{ overflowY: 'scroll', height: 250 }}
         // not onAbortCapture,onBlur, onAbort
-        renderNode={({
-          node,
-          expanded,
-          hasChildren,
-          elementProps,
-          level,
-          selected,
-        }) => {
+        renderNode={({ node, hasChildren, elementProps, selected }) => {
+          const onClick = (event: MouseEvent) => {
+            elementProps.onClick?.(event);
+            selectFolderById(node.value);
+          };
           return (
-            <Group gap={5} {...elementProps}>
+            <Group gap={5} {...elementProps} onClick={onClick}>
               {selected ? (
                 <TbFolderOpen style={{ color: 'Highlight' }} />
               ) : hasChildren ? (

@@ -20,6 +20,11 @@ import { FolderRouteParams } from '../../Router';
 import { FileListView } from './FileListView';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import { sortFiles } from '@shared/files/sortFiles';
+import {
+  moveRenameFolderAtom,
+  useCloseMoveRenameFolderModal,
+} from '../../atoms/modalAtom';
+import { MoveRenameFolderModal } from './MoveRenameFolderModal';
 
 export interface FileListViewProps {
   files: MinimalFile[];
@@ -44,6 +49,8 @@ export const FolderContentsView = ({ folder }) => {
   const filters = useAtomValue(filterOptions);
   const resetFilters = useSetAtom(resetFilterOptions);
   const sort = useAtomValue(fileSortAtom);
+  const moveFolder = useAtomValue(moveRenameFolderAtom);
+  const closeMoveFolderModal = useCloseMoveRenameFolderModal();
 
   const setSelectedFileId = (fileId: string | undefined) => {
     const file = fileId ? { id: fileId } : undefined;
@@ -71,6 +78,13 @@ export const FolderContentsView = ({ folder }) => {
   // console.log('FCV render');
   return (
     <>
+      {moveFolder ? (
+        <MoveRenameFolderModal
+          folder={moveFolder}
+          opened={true}
+          onClose={closeMoveFolderModal}
+        />
+      ) : null}
       <Transition
         mounted={filtering}
         transition="scale-y"
