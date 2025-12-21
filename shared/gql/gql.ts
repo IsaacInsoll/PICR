@@ -33,6 +33,7 @@ type Documents = {
     "\n    mutation generateThumbnailsQuery($folderId: ID!) {\n        generateThumbnails(folderId: $folderId)\n    }": typeof types.GenerateThumbnailsQueryDocument,
     "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n": typeof types.GenerateZipDocument,
     "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": typeof types.LoginDocument,
+    "\n  mutation RenameFolder(\n    $folderId: ID!\n    $oldPath: String!\n    $newPath: String!\n  ) {\n    renameFolder(folderId: $folderId, oldPath: $oldPath, newPath: $newPath) {\n      ...FolderFragment\n    }\n  }\n": typeof types.RenameFolderDocument,
     "\n  query AccessLogsQuery(\n    $folderId: ID!\n    $userId: ID\n    $includeChildren: Boolean\n    $userType: UserType\n  ) {\n    accessLogs(\n      folderId: $folderId\n      userId: $userId\n      includeChildren: $includeChildren\n      userType: $userType\n    ) {\n      id\n      timestamp\n      type\n      userId\n      folderId\n      ipAddress\n      userAgent\n      folder {\n        ...FolderFragment\n      }\n    }\n  }\n": typeof types.AccessLogsQueryDocument,
     "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      userId\n      file {\n        ...FileFragment\n      }\n      user {\n        id\n        gravatar\n        name\n      }\n    }\n  }\n": typeof types.CommentHistoryQueryDocument,
     "\n    query generateThumbnailsStats($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n            totalImages\n        }\n    }\n": typeof types.GenerateThumbnailsStatsDocument,
@@ -71,6 +72,7 @@ const documents: Documents = {
     "\n    mutation generateThumbnailsQuery($folderId: ID!) {\n        generateThumbnails(folderId: $folderId)\n    }": types.GenerateThumbnailsQueryDocument,
     "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n": types.GenerateZipDocument,
     "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
+    "\n  mutation RenameFolder(\n    $folderId: ID!\n    $oldPath: String!\n    $newPath: String!\n  ) {\n    renameFolder(folderId: $folderId, oldPath: $oldPath, newPath: $newPath) {\n      ...FolderFragment\n    }\n  }\n": types.RenameFolderDocument,
     "\n  query AccessLogsQuery(\n    $folderId: ID!\n    $userId: ID\n    $includeChildren: Boolean\n    $userType: UserType\n  ) {\n    accessLogs(\n      folderId: $folderId\n      userId: $userId\n      includeChildren: $includeChildren\n      userType: $userType\n    ) {\n      id\n      timestamp\n      type\n      userId\n      folderId\n      ipAddress\n      userAgent\n      folder {\n        ...FolderFragment\n      }\n    }\n  }\n": types.AccessLogsQueryDocument,
     "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      userId\n      file {\n        ...FileFragment\n      }\n      user {\n        id\n        gravatar\n        name\n      }\n    }\n  }\n": types.CommentHistoryQueryDocument,
     "\n    query generateThumbnailsStats($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n            totalImages\n        }\n    }\n": types.GenerateThumbnailsStatsDocument,
@@ -180,6 +182,10 @@ export function graphql(source: "\n  mutation GenerateZip($folderId: ID!) {\n   
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"): (typeof documents)["\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation RenameFolder(\n    $folderId: ID!\n    $oldPath: String!\n    $newPath: String!\n  ) {\n    renameFolder(folderId: $folderId, oldPath: $oldPath, newPath: $newPath) {\n      ...FolderFragment\n    }\n  }\n"): (typeof documents)["\n  mutation RenameFolder(\n    $folderId: ID!\n    $oldPath: String!\n    $newPath: String!\n  ) {\n    renameFolder(folderId: $folderId, oldPath: $oldPath, newPath: $newPath) {\n      ...FolderFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

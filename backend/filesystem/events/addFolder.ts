@@ -39,7 +39,7 @@ export const setupRootFolder = async () => {
 export const addFolder = async (path: string, statsProp?: Stats) => {
   const relative = relativePath(path);
   const root = rootFolder!;
-  if (relative === '') return root;
+  if (relative === '') return root.id;
 
   const stats = statsProp ?? statSync(path);
 
