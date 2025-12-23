@@ -37,17 +37,35 @@ export const addToQueue = (
   priority?: boolean,
 ) => {
   queueTotal++;
-  if (queue) {
-    if (priority) {
-      // @ts-ignore
-      queue = processQueue(action, payload).then(queue);
-    } else {
-      queue = queue.then(() => processQueue(action, payload));
+  const oldQueue = queue;
+  const task = () => runQueueItem(action, payload);
+
+  if (oldQueue) {
+    queue = priority
+      ? task().then(() => oldQueue)
+      : oldQueue.then(() => task());
+    return;
+  }
+
+  queueDone = 0;
+  queue = task();
+};
+
+const runQueueItem = async (action: QueueAction, payload: QueuePayload) => {
+  try {
+    await processQueue(action, payload);
+  } catch (err) {
+    log(
+      'error',
+      `⚠️ fileQueue task "${action}" failed: ${(err as Error).message ?? err}`,
+    );
+  } finally {
+    queueDone++;
+    if (queueDone === queueTotal) {
+      queueDone = 0;
+      queueTotal = 0;
+      queue = null;
     }
-  } else {
-    queueTotal = 1;
-    queueDone = 0;
-    queue = processQueue(action, payload);
   }
 };
 
@@ -78,11 +96,6 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
       initComplete = true;
       await handleInitComplete();
       break;
-  }
-  queueDone++;
-  if (queueDone == queueTotal) {
-    queueDone = 0;
-    queueTotal = 0;
   }
 };
 
