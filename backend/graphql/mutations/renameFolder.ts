@@ -7,7 +7,7 @@ import { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import { existsSync, renameSync } from 'node:fs';
 import { db } from '../../db/picrDb.js';
-import { and, eq, like, sql } from 'drizzle-orm';
+import { and, eq, like, sql, isNull } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 import { folderList, pathSplit } from '../../filesystem/fileManager.js';
 
@@ -28,7 +28,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
 
   const { oldPath, newPath } = params;
 
-  if (folder.parentId == null) {
+  if (folder.parentId == null || oldPath === '') {
     throw new GraphQLError('Cannot rename root folder');
   }
 
@@ -38,6 +38,9 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   if (oldPath == newPath || !newPath || newPath == '') {
     throw new GraphQLError('New name invalid');
   }
+  if (newPath.startsWith(oldPath + '/')) {
+    throw new GraphQLError('Cannot move a folder into its own subfolder');
+  }
 
   const fullOld = picrConfig.mediaPath + '/' + oldPath;
   const fullNew = picrConfig.mediaPath + '/' + newPath;
@@ -46,14 +49,32 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     throw new GraphQLError('New folder name already exists');
   }
 
-  const [shortName] = pathSplit(newPath).slice(-1);
+  const pathParts = pathSplit(newPath);
+  const [shortName] = pathParts.slice(-1);
+  const newParentPath = pathParts.slice(0, -1).join('/');
 
   console.log(`renamed [${shortName}] ${fullOld} => ${fullNew}`);
+
+  const newParentFolder = newParentPath
+    ? await db.query.dbFolder.findFirst({
+        where: and(
+          eq(dbFolder.relativePath, newParentPath),
+          eq(dbFolder.exists, true),
+        ),
+      })
+    : await db.query.dbFolder.findFirst({
+        where: and(isNull(dbFolder.parentId), eq(dbFolder.exists, true)),
+      });
+
+  if (!newParentFolder) {
+    throw new GraphQLError('New parent folder not found');
+  }
 
   const thisFolder = await db
     .update(dbFolder)
     .set({
       name: shortName,
+      parentId: newParentFolder.id,
     })
     .where(eq(dbFolder.id, folder.id));
 
@@ -62,8 +83,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   const folders = await db
     .update(dbFolder)
     .set({
-      //TODO: regex this so it only replaces start of string, and not all occurrences of $oldPath
-      relativePath: sql`REPLACE(${dbFolder.relativePath}, ${oldPath}, ${newPath})`,
+      relativePath: sql`REGEXP_REPLACE(${dbFolder.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)})`,
     })
     .where(
       and(
@@ -88,7 +108,21 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
 
   console.log(files);
 
-  folderList[newPath] = folder.id;
+  const filesFolderIds = await db
+    .update(dbFile)
+    .set({
+      folderId: sql`(SELECT ${dbFolder.id} FROM ${dbFolder} WHERE ${dbFolder.relativePath} = ${dbFile.relativePath} AND ${dbFolder.exists} = true LIMIT 1)`,
+    })
+    .where(
+      and(
+        like(dbFile.relativePath, newPath + '%'),
+        eq(dbFile.exists, true),
+      ),
+    );
+
+  console.log(filesFolderIds);
+
+  updateFolderListPaths(oldPath, newPath);
 
   try {
     renameSync(fullOld, fullNew);
@@ -121,6 +155,24 @@ const moveCacheFolders = (oldPath: string, newPath: string) => {
   } catch (err) {
     console.error('Error moving caches folder:', err);
   }
+};
+
+const updateFolderListPaths = (oldPath: string, newPath: string) => {
+  const updates: Array<[string, string, number]> = [];
+  Object.entries(folderList).forEach(([path, id]) => {
+    if (!id) return;
+    if (path === oldPath || path.startsWith(oldPath + '/')) {
+      updates.push([path, newPath + path.slice(oldPath.length), id]);
+    }
+  });
+
+  updates.forEach(([oldKey]) => {
+    delete folderList[oldKey];
+  });
+
+  updates.forEach(([, newKey, id]) => {
+    folderList[newKey] = id;
+  });
 };
 function escapeRegExp(string: string): string {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
