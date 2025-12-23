@@ -21,23 +21,16 @@ import { LoggedInHeader } from '../components/Header/LoggedInHeader';
 import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
 import { useCommentPermissions } from '../hooks/useCommentPermissions';
+import { useSetAtom } from 'jotai';
 import { MinimalFolder } from '../../types';
-import {
-  CommentIcon,
-  DotsIcon,
-  DownloadIcon,
-  FilterIcon,
-  FolderIcon,
-} from '../PicrIcons';
+import { CommentIcon, DotsIcon, FilterIcon, FolderIcon } from '../PicrIcons';
 import { FolderRouteParams } from '../Router';
-import { useGenerateZip } from '../hooks/useGenerateZip';
-import { useSetAtom } from 'jotai/index';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { defaultBranding, themeModeAtom } from '../atoms/themeModeAtom';
 import { Branding } from '../../../graphql-types';
 import { ManageFolder } from './ManageFolder';
-import { TbFolderStar } from 'react-icons/tb';
+import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -178,8 +171,6 @@ const ViewFolderBody = () => {
 const FolderOverflowMenu = ({ folder }: { folder: MinimalFolder }) => {
   const setFolder = useSetFolder();
   const setFiltering = useSetAtom(filterAtom);
-  const generateZip = useGenerateZip(folder, () => setTempDisabled(false));
-
   const { canView } = useCommentPermissions();
   return (
     <Menu
@@ -198,20 +189,12 @@ const FolderOverflowMenu = ({ folder }: { folder: MinimalFolder }) => {
       <Menu.Dropdown>
         <Menu.Label>{folder?.name}</Menu.Label>
         <Menu.Item
-          leftSection={<TbFolderStar />}
-          onClick={() => setFolder(folder, 'manage/links')}
-        >
-          {`Manage Folder`}
-        </Menu.Item>
-        <Menu.Item
           leftSection={<FilterIcon />}
           onClick={() => setFiltering(true)}
         >
           Filter Files
         </Menu.Item>
-        <Menu.Item leftSection={<DownloadIcon />} onClick={generateZip}>
-          Download ZIP
-        </Menu.Item>
+        <FolderMenuItems folder={folder} showOpenItem={false} />
         {canView ? (
           <>
             <Menu.Label>Comments & Ratings</Menu.Label>

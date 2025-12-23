@@ -7,7 +7,16 @@ import { TbFolderShare, TbFolderStar } from 'react-icons/tb';
 import { useMe } from '../../hooks/useMe';
 import { useOpenMoveRenameFolderModal } from '../../atoms/modalAtom';
 
-export const FolderMenu = ({ folder }: { folder: MinimalFolder }) => {
+type FolderMenuItemsProps = {
+  folder: MinimalFolder;
+  showFolderLabel?: boolean;
+  showOpenItem?: boolean;
+};
+
+export const FolderMenuItems = ({
+  folder,
+  showOpenItem = true,
+}: FolderMenuItemsProps) => {
   const setFolder = useSetFolder();
   const generateZip = useGenerateZip(folder);
   const me = useMe();
@@ -15,21 +24,23 @@ export const FolderMenu = ({ folder }: { folder: MinimalFolder }) => {
 
   return (
     <>
-      <Menu.Item
-        leftSection={<FolderIcon size="20" />}
-        key="open"
-        onClick={() => {
-          setFolder(folder);
-        }}
-      >
-        Open {folder.name}
-      </Menu.Item>
+      {showOpenItem ? (
+        <Menu.Item
+          leftSection={<FolderIcon size="20" />}
+          key="open"
+          onClick={() => {
+            setFolder(folder);
+          }}
+        >
+          Open {folder.name}
+        </Menu.Item>
+      ) : null}
       {me?.isUser ? (
         <Menu.Item
           leftSection={<TbFolderStar size="20" />}
           key="manage"
           onClick={() => {
-            setFolder(folder, 'manage');
+            setFolder(folder, 'manage/links');
           }}
         >
           Manage {folder.name}
@@ -44,13 +55,18 @@ export const FolderMenu = ({ folder }: { folder: MinimalFolder }) => {
           Move/Rename Folder
         </Menu.Item>
       ) : null}
+
       <Menu.Item
         leftSection={<DownloadIcon />}
         key="download"
         onClick={generateZip}
       >
-        Download
+        Download ZIP
       </Menu.Item>
     </>
   );
 };
+
+export const FolderMenu = ({ folder }: { folder: MinimalFolder }) => (
+  <FolderMenuItems folder={folder} showOpenItem />
+);
