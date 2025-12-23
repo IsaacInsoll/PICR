@@ -8,5 +8,9 @@ export const Page = ({
   children: ReactNode;
   props?: ContainerProps;
 }) => {
-  return <Container {...props}>{children}</Container>;
+  return (
+    <Container size="xl" {...props}>
+      {children}
+    </Container>
+  );
 };
