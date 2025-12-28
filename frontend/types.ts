@@ -14,6 +14,7 @@ export interface MinimalFolder {
   name?: string;
   parentId?: string | null | undefined;
   parents?: MinimalFolder[];
+  relativePath?: string;
 }
 
 export interface MinimalFile {

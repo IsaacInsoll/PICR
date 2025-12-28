@@ -1,4 +1,5 @@
 import { basename, dirname, extname } from 'path';
+import { addFolder } from './addFolder.js';
 import { folderList, relativePath } from '../fileManager.js';
 import { log } from '../../logger.js';
 import { fastHash } from '../fileHash.js';
@@ -11,8 +12,9 @@ import { encodeImageToBlurhash } from '../../media/blurHash.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import { and, eq } from 'drizzle-orm';
 import { db } from '../../db/picrDb.js';
-import { dbFile } from '../../db/models/index.js';
-import { Stats, statSync } from 'node:fs';
+import { dbFile, dbFolder } from '../../db/models/index.js';
+import { delay } from '../../helpers/delay.js';
+import { existsSync, Stats, statSync } from 'node:fs';
 
 export const addFile = async (
   filePath: string,
@@ -133,13 +135,32 @@ export const addFile = async (
 };
 
 const findFolderId = async (fullPath: string) => {
-  while (true) {
-    if (fullPath == picrConfig.mediaPath) return 1;
-    const id = folderList[relativePath(fullPath)];
-    if (id && id !== 0) return id;
-    log('info', '💤 Sleeping waiting for a FolderID for a file in ' + fullPath);
-    await new Promise((r) => setTimeout(r, 500));
+  if (fullPath === picrConfig.mediaPath) return 1;
+
+  const relative = relativePath(fullPath);
+
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const cached = folderList[relative];
+    if (cached && cached !== 0) return cached;
+
+    const dbFolderMatch = await db.query.dbFolder.findFirst({
+      columns: { id: true },
+      where: eq(dbFolder.relativePath, relative),
+    });
+    if (dbFolderMatch) {
+      folderList[relative] = dbFolderMatch.id;
+      return dbFolderMatch.id;
+    }
+
+    if (existsSync(fullPath)) {
+      const folderId = await addFolder(fullPath);
+      if (folderId) return folderId;
+    }
+
+    await delay(200);
   }
+
+  throw new Error(`Unable to resolve folderId for ${relative}`);
 };
 
 const validExtension = (filePath: string): FileType | null => {
