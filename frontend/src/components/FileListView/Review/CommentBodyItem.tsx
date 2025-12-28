@@ -18,6 +18,7 @@ import { CommentHistoryProps } from './CommentHistory';
 import { PicrAvatar } from '../../PicrAvatar';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { prettyDate } from '@shared/prettyDate';
+import { viewTransitionNameForFile } from '../../../helpers/viewTransitions';
 
 export const CommentBodyItem = ({
   comment,
@@ -104,6 +105,7 @@ const FilePreview = ({
               width: 96 * (file.imageRatio ?? 1),
               height: 80,
             }}
+            viewTransitionName={viewTransitionNameForFile(file.id)}
           />
         ) : null // <Code>{file.name}</Code>
       }

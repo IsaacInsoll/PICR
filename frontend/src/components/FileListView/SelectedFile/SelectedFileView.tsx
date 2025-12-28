@@ -13,7 +13,7 @@ import 'yet-another-react-lightbox/plugins/thumbnails.css';
 import { FileListViewStyleComponentProps } from '../FolderContentsView';
 import { theme } from '../../../theme';
 import { useSetFolder } from '../../../hooks/useSetFolder';
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { useParams } from 'react-router';
 import { LightboxFileRating } from './LightboxFileRating';
 import { filesForLightbox } from './filesForLightbox';
@@ -22,6 +22,7 @@ import { lightboxPlugins } from './lightboxPlugins';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { lightboxControllerRefAtom } from '../../../atoms/lightboxControllerRefAtom';
 import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
+import { viewTransitionNameForFile } from '../../../helpers/viewTransitions';
 
 export const SelectedFileView = ({
   files,
@@ -34,6 +35,7 @@ export const SelectedFileView = ({
   const ref = useRef<ControllerRef>(null);
   const { fileId } = useParams();
   const portal = useAtomValue(lightboxRefAtom);
+  const lastTransitionImage = useRef<HTMLImageElement | null>(null);
 
   const setControllerRef = useSetAtom(lightboxControllerRefAtom);
 
@@ -49,6 +51,39 @@ export const SelectedFileView = ({
     'slideshow',
     'close',
   ];
+
+  useLayoutEffect(() => {
+    if (!selectedImage?.id) return;
+    const root = portal?.current ?? document;
+    const transitionName = viewTransitionNameForFile(selectedImage.id);
+
+    const apply = () => {
+      const image = root.querySelector('.yarl__slide_current img');
+      if (!(image instanceof HTMLImageElement)) return;
+      if (lastTransitionImage.current && lastTransitionImage.current !== image) {
+        lastTransitionImage.current.style.viewTransitionName = '';
+      }
+      image.style.viewTransitionName = transitionName;
+      lastTransitionImage.current = image;
+    };
+
+    const raf = requestAnimationFrame(apply);
+    const observer = new MutationObserver(() => apply());
+    observer.observe(root, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+    });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+      if (lastTransitionImage.current) {
+        lastTransitionImage.current.style.viewTransitionName = '';
+        lastTransitionImage.current = null;
+      }
+    };
+  }, [selectedImage?.id, portal]);
 
   return (
     <Lightbox

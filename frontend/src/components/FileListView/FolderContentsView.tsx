@@ -25,6 +25,7 @@ import {
   useCloseMoveRenameFolderModal,
 } from '../../atoms/modalAtom';
 import { MoveRenameFolderModal } from './MoveRenameFolderModal';
+import { runViewTransition } from '../../helpers/viewTransitions';
 
 export interface FileListViewProps {
   files: MinimalFile[];
@@ -53,8 +54,10 @@ export const FolderContentsView = ({ folder }) => {
   const closeMoveFolderModal = useCloseMoveRenameFolderModal();
 
   const setSelectedFileId = (fileId: string | undefined) => {
-    const file = fileId ? { id: fileId } : undefined;
-    setFolder({ id: folderId }, file);
+    runViewTransition(() => {
+      const file = fileId ? { id: fileId } : undefined;
+      setFolder({ id: folderId }, file);
+    });
   };
 
   useEffect(() => resetFilters(null), [resetFilters, folderId]);
@@ -109,7 +112,14 @@ export const FolderContentsView = ({ folder }) => {
           />
         </>
       ) : null}
-      <Tabs value={view} onChange={setView} keepMounted={false}>
+      <Tabs
+        value={view}
+        onChange={(nextView) => {
+          if (!nextView || nextView === view) return;
+          runViewTransition(() => setView(nextView));
+        }}
+        keepMounted={false}
+      >
         <Page>
           <Tabs.List grow mb="xs">
             {viewOptions.map((v) => (

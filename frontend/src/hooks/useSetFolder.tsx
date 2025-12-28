@@ -4,6 +4,7 @@ import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder'
 import { MinimalFile, MinimalFolder } from '../../types';
 
 import { useBaseViewFolderURL } from './useBaseViewFolderURL';
+import { runViewTransition } from '../helpers/viewTransitions';
 
 export const useSetFolder = () => {
   const navigate = useNavigate();
@@ -14,10 +15,12 @@ export const useSetFolder = () => {
     file?: Pick<MinimalFile, 'id'> | string,
     options?: NavigateOptions,
   ) => {
-    setPlaceholderFolder({ ...folder });
-    const base = baseUrl + folder.id;
-    const f = file && file.id ? `/${file.id}` : file ? '/' + file : '';
-    navigate(base + f, options);
+    runViewTransition(() => {
+      setPlaceholderFolder({ ...folder });
+      const base = baseUrl + folder.id;
+      const f = file && file.id ? `/${file.id}` : file ? '/' + file : '';
+      navigate(base + f, options);
+    });
   };
 };
 

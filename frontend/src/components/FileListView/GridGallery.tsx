@@ -9,6 +9,7 @@ import './GridGallery.css';
 import { FilePreview } from './FilePreview';
 import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { useSetFolder } from '../../hooks/useSetFolder';
+import { viewTransitionNameForFile } from '../../helpers/viewTransitions';
 
 export const GridGallery = ({
   files,
@@ -69,7 +70,13 @@ type GalleryImageProps = ThumbnailImageProps & { item: { file: MinimalFile } };
 
 const GalleryImage = ({ imageProps, item }: GalleryImageProps) => {
   const file: MinimalFile = item.file;
-  return <FilePreview file={file} imageProps={imageProps} />;
+  return (
+    <FilePreview
+      file={file}
+      imageProps={imageProps}
+      viewTransitionName={viewTransitionNameForFile(file.id)}
+    />
+  );
   // if (file.type == 'Video') {
   //   return <PicrVideoPreview file={file} imageProps={imageProps} />;
   // }

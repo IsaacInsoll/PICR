@@ -3,6 +3,7 @@ import { atomWithHash } from 'jotai-location';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 import { lightboxControllerRefAtom } from './lightboxControllerRefAtom';
 import { MinimalFolder } from '../../types';
+import { runViewTransition } from '../helpers/viewTransitions';
 
 export type FileViewType = 'info' | 'comments' | undefined;
 
@@ -12,7 +13,7 @@ export const closeModalAtom = atom(null, (get, set) => {
   //TODO: clear these from URL bar so it's not modalType=&modalId= sitting there empty
   const lb = get(lightboxControllerRefAtom);
   lb?.current?.focus();
-  set(modalTypeAtom, '');
+  runViewTransition(() => set(modalTypeAtom, ''));
 });
 
 const openModalAtom = atom(
@@ -22,13 +23,15 @@ const openModalAtom = atom(
     set,
     args: { fileId: string; mode: FileViewType; highlight?: string },
   ) => {
-    set(
-      modalTypeAtom,
-      args.mode +
-        (args.fileId
-          ? '-' + args.fileId + (args.highlight ? '-' + args.highlight : '')
-          : ''),
-    );
+    runViewTransition(() => {
+      set(
+        modalTypeAtom,
+        args.mode +
+          (args.fileId
+            ? '-' + args.fileId + (args.highlight ? '-' + args.highlight : '')
+            : ''),
+      );
+    });
   },
 );
 

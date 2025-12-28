@@ -1,7 +1,7 @@
 import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { MinimalFile } from '../../../types';
 import { imageURL } from '../../helpers/imageURL';
-import { useEffect, useMemo } from 'react';
+import { CSSProperties, useEffect, useMemo } from 'react';
 import useMeasure from 'react-use-measure';
 import {
   ActionIcon,
@@ -24,6 +24,7 @@ import { InfoIcon } from '../../PicrIcons';
 import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { useInView } from 'react-intersection-observer';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
+import { viewTransitionNameForFile } from '../../helpers/viewTransitions';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 
@@ -41,31 +42,29 @@ export const ImageFeed = ({
   return (
     <Container>
       <Box ref={ref}></Box>
-      {bounds.width == 0 ? null : (
-        <>
-          {folders.map((f) => (
-            <Page key={f.id}>
-              <PicrFolder
-                folder={f}
-                mb="md"
-                style={{ height: 75 }}
-                onClick={() => setFolder(f)}
-              />
-            </Page>
-          ))}
-          {loadedFiles.map((file, i) => {
-            return (
-              <FeedItem
-                file={file}
-                key={file.id}
-                onClick={setSelectedFileId}
-                width={bounds.width}
-                onBecomeVisible={() => onBecomeVisible(i)}
-              />
-            );
-          })}
-        </>
-      )}
+      <>
+        {folders.map((f) => (
+          <Page key={f.id}>
+            <PicrFolder
+              folder={f}
+              mb="md"
+              style={{ height: 75 }}
+              onClick={() => setFolder(f)}
+            />
+          </Page>
+        ))}
+        {loadedFiles.map((file, i) => {
+          return (
+            <FeedItem
+              file={file}
+              key={file.id}
+              onClick={setSelectedFileId}
+              width={bounds.width}
+              onBecomeVisible={() => onBecomeVisible(i)}
+            />
+          );
+        })}
+      </>
     </Container>
   );
 };
@@ -93,10 +92,17 @@ const FeedItem = ({
   }, [inView, onBecomeVisible]);
 
   //we know image ratios and viewport width, so size things correctly before images have loaded
-  const dimensions = useMemo(() => {
+  const dimensions = useMemo<CSSProperties>(() => {
+    if (width > 0) {
+      return {
+        width,
+        height: file.imageRatio ? width / file.imageRatio : 75,
+      };
+    }
     return {
-      width: width,
-      height: file.imageRatio ? width / file.imageRatio : 75,
+      width: '100%',
+      aspectRatio: file.imageRatio ?? 1,
+      height: 'auto',
     };
   }, [width, file.imageRatio]);
 
@@ -126,6 +132,7 @@ const FeedItem = ({
               onClick={() => onClick(file.id)}
               clickable={true}
               style={dimensions}
+              viewTransitionName={viewTransitionNameForFile(file.id)}
             />
           </Box>
         ) : null}

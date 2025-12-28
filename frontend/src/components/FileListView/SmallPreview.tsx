@@ -2,6 +2,7 @@ import { MinimalFile, MinimalFolder } from '../../../types';
 import { Avatar, Box, MantineStyleProps } from '@mantine/core';
 import { PicrImage } from '../PicrImage';
 import { FileIcon, FolderIcon, VideoIcon } from '../../PicrIcons';
+import { viewTransitionNameForFile } from '../../helpers/viewTransitions';
 
 export const SmallPreview = ({
   file,
@@ -25,6 +26,7 @@ export const SmallPreview = ({
           file={file.heroImage}
           size="sm"
           style={{ width: height * (file.heroImage.imageRatio ?? 1), height }}
+          viewTransitionName={viewTransitionNameForFile(file.heroImage.id)}
         />
       </Box>
     );
@@ -36,6 +38,7 @@ export const SmallPreview = ({
           file={file}
           size="sm"
           style={{ width: height * (file.imageRatio ?? 1), height }}
+          viewTransitionName={viewTransitionNameForFile(file.id)}
         />
       </Box>
     );

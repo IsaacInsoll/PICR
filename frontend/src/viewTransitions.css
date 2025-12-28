@@ -1,0 +1,29 @@
+:root {
+  --picr-view-transition-duration: 320ms;
+  --picr-view-transition-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+::view-transition-group(*) {
+  animation-duration: var(--picr-view-transition-duration);
+  animation-timing-function: var(--picr-view-transition-ease);
+}
+
+::view-transition-image-pair(*) {
+  animation-duration: var(--picr-view-transition-duration);
+  animation-timing-function: var(--picr-view-transition-ease);
+}
+
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: var(--picr-view-transition-duration);
+  animation-timing-function: var(--picr-view-transition-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-image-pair(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0ms;
+  }
+}

@@ -2,7 +2,7 @@ import { imageURL } from '../helpers/imageURL';
 import { Image, MantineStyleProps } from '@mantine/core';
 import { ThumbnailSize } from '../helpers/thumbnailSize';
 import { Blurhash } from 'react-blurhash';
-import { useState } from 'react';
+import { CSSProperties, useState } from 'react';
 import { MinimalFile } from '../../types';
 import { useAvifEnabled } from '../hooks/useMe';
 
@@ -13,6 +13,7 @@ interface PicrImageProps {
   onImageLoaded?: (file: MinimalFile) => void;
   style?: MantineStyleProps;
   clickable?: boolean; // for some reason onClick existing doesn't work
+  viewTransitionName?: string;
 }
 export const PicrImage = ({
   file,
@@ -21,11 +22,15 @@ export const PicrImage = ({
   onImageLoaded,
   style,
   clickable,
+  viewTransitionName,
 }: PicrImageProps) => {
   //<Image> is a mantine object that is pretty much an <img> tag
   //<picture> is HTML5 that allows you to specify multiple sources for a child image tag
   const [loaded, setLoaded] = useState(false);
   const avif = useAvifEnabled();
+  const transitionStyle = viewTransitionName
+    ? ({ viewTransitionName } as CSSProperties)
+    : undefined;
   return (
     <picture>
       {avif ? (
@@ -52,7 +57,11 @@ export const PicrImage = ({
         onClick={() => {
           if (onClick) onClick(file);
         }}
-        style={{ ...style, cursor: clickable ? 'pointer' : undefined }}
+        style={{
+          ...style,
+          ...transitionStyle,
+          cursor: clickable ? 'pointer' : undefined,
+        }}
       />
     </picture>
   );
