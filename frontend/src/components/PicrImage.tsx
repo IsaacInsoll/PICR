@@ -27,33 +27,43 @@ export const PicrImage = ({
   const [loaded, setLoaded] = useState(false);
   const avif = useAvifEnabled();
   return (
-    <picture>
-      {avif ? (
-        <source srcSet={imageURL(file, size, '.avif')} type="image/avif" />
-      ) : null}
-      <source srcSet={imageURL(file, size)} type="image/jpeg" />
-      {!loaded && file.blurHash ? (
-        <Blurhash
-          hash={file.blurHash}
-          style={{ ...style, cursor: 'pointer' }}
-          resolutionX={32}
-          resolutionY={32}
-          punch={1}
+    <div style={{ ...style, position: 'relative' }}>
+      <picture>
+        {avif ? (
+          <source srcSet={imageURL(file, size, '.avif')} type="image/avif" />
+        ) : null}
+        <source srcSet={imageURL(file, size)} type="image/jpeg" />
+        {!loaded && file.blurHash ? (
+          <Blurhash
+            hash={file.blurHash}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              opacity: loaded ? 0 : 1,
+              transition: 'opacity 160ms ease',
+            }}
+            resolutionX={32}
+            resolutionY={32}
+            punch={1}
+          />
+        ) : null}
+        <Image
+          src={imageURL(file, size)}
+          fit="contain"
+          alt={file.name}
+          onLoad={() => {
+            setLoaded(true);
+            if (onImageLoaded) onImageLoaded(file);
+          }}
+          onClick={() => {
+            if (onClick) onClick(file);
+          }}
+          style={{ ...style, cursor: clickable ? 'pointer' : undefined }}
         />
-      ) : null}
-      <Image
-        src={imageURL(file, size)}
-        fit="contain"
-        alt={file.name}
-        onLoad={() => {
-          setLoaded(true);
-          if (onImageLoaded) onImageLoaded(file);
-        }}
-        onClick={() => {
-          if (onClick) onClick(file);
-        }}
-        style={{ ...style, cursor: clickable ? 'pointer' : undefined }}
-      />
-    </picture>
+      </picture>
+    </div>
   );
 };
