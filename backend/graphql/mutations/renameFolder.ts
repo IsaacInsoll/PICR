@@ -113,7 +113,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
       })
       .where(eq(dbFolder.id, folder.id));
 
-    console.log(thisFolder);
+    // console.log(thisFolder);
 
     const folders = await db
       .update(dbFolder)
@@ -127,10 +127,10 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
         ),
       );
 
-    console.log(folders);
-    console.log(
-      `REGEXP_REPLACE(${dbFile.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)}`,
-    );
+    // console.log(folders);
+    // console.log(
+    //   `REGEXP_REPLACE(${dbFile.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)}`,
+    // );
 
     const files = await db
       .update(dbFile)
@@ -141,7 +141,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
         and(like(dbFile.relativePath, oldPath + '%'), eq(dbFile.exists, true)),
       );
 
-    console.log(files);
+    // console.log(files);
 
     const filesFolderIds = await db
       .update(dbFile)
@@ -149,13 +149,10 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
         folderId: sql`(SELECT ${dbFolder.id} FROM ${dbFolder} WHERE ${dbFolder.relativePath} = ${dbFile.relativePath} AND ${dbFolder.exists} = true LIMIT 1)`,
       })
       .where(
-        and(
-          like(dbFile.relativePath, newPath + '%'),
-          eq(dbFile.exists, true),
-        ),
+        and(like(dbFile.relativePath, newPath + '%'), eq(dbFile.exists, true)),
       );
 
-    console.log(filesFolderIds);
+    // console.log(filesFolderIds);
   } catch (err) {
     try {
       renameSync(fullNew, fullOld);
