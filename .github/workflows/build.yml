@@ -55,6 +55,7 @@ jobs:
 
       # ARTIFACT
       - uses: actions/upload-artifact@v4
+        if: ${{ !env.ACT }}
         name: '🗜️ Generate Build Artifacts'
         with:
           name: picr-build-${{ github.sha }}
