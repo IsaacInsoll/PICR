@@ -1,4 +1,3 @@
-import { MinimalFile, MinimalFolder } from '../../../types';
 import { selectedViewAtom, viewOptions } from '../ViewSelector';
 import { GridGallery } from './GridGallery';
 import { useEffect } from 'react';
@@ -11,7 +10,6 @@ import {
 } from '@shared/filterAtom';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { FilteringOptions } from './Filtering/FilteringOptions';
-import { filterFiles } from '@shared/files/filterFiles';
 import { Tabs, Transition } from '@mantine/core';
 import { Page } from '../Page';
 import { useParams } from 'react-router';
@@ -19,21 +17,24 @@ import { useSetFolder } from '../../hooks/useSetFolder';
 import { FolderRouteParams } from '../../Router';
 import { FileListView } from './FileListView';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
-import { sortFiles } from '@shared/files/sortFiles';
+import {
+  ViewFolderFileWithHero,
+  ViewFolderSubFolder,
+  FolderContentsItem,
+  folderContentsItems,
+  isFolderContentsFile,
+} from '@shared/files/folderContentsViewModel';
 import {
   moveRenameFolderAtom,
   useCloseMoveRenameFolderModal,
 } from '../../atoms/modalAtom';
 import { MoveRenameFolderModal } from './MoveRenameFolderModal';
 
-export interface FileListViewProps {
-  files: MinimalFile[];
-  folderId: string;
-}
 
 export interface FileListViewStyleComponentProps {
-  files: MinimalFile[];
-  folders: MinimalFolder[];
+  files: ViewFolderFileWithHero[];
+  folders: ViewFolderSubFolder[];
+  items?: FolderContentsItem[];
   selectedFileId?: string;
   setSelectedFileId: (id: string | undefined) => void;
   folderId: string;
@@ -60,17 +61,23 @@ export const FolderContentsView = ({ folder }) => {
   useEffect(() => resetFilters(null), [resetFilters, folderId]);
 
   // don't memo files because it breaks graphicache (IE: file changing rating won't reflect)
-  const filteredFiles = filtering ? filterFiles(files, filters) : files;
-  const sortedFiles = sortFiles(filteredFiles, sort);
-
-  const withProps = sortedFiles.map((f) => {
-    return { ...f, isHeroImage: f.id == folder.heroImage?.id };
+  const sortedItems = folderContentsItems(folder, {
+    sort,
+    filtering,
+    filters,
   });
+  const sortedFiles = sortedItems.filter(
+    isFolderContentsFile,
+  ) as ViewFolderFileWithHero[];
+  const sortedFolders = sortedItems.filter(
+    (item) => !isFolderContentsFile(item),
+  ) as ViewFolderSubFolder[];
 
   const props = {
     folderId,
-    folders: folder.subFolders,
-    files: withProps,
+    folders: sortedFolders,
+    files: sortedFiles,
+    items: sortedItems,
     selectedFileId: fileId,
     setSelectedFileId,
   };

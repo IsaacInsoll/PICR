@@ -15,6 +15,7 @@ export interface MinimalFolder {
   parentId?: string | null | undefined;
   parents?: MinimalFolder[];
   relativePath?: string;
+  folderLastModified?: string;
 }
 
 export interface MinimalFile {
@@ -31,6 +32,7 @@ export interface MinimalFile {
   flag?: FileFlag | null;
   rating?: number | null;
   totalComments: number | null;
+  isHeroImage?: boolean;
 }
 export interface MinimalSharedFolder {
   id?: string;

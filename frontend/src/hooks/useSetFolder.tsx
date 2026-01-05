@@ -1,4 +1,4 @@
-import { NavigateOptions, NavLink, useNavigate } from 'react-router';
+import { NavigateOptions, NavLink, useLocation, useNavigate } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder';
 import { MinimalFile, MinimalFolder } from '../../types';
@@ -7,6 +7,7 @@ import { useBaseViewFolderURL } from './useBaseViewFolderURL';
 
 export const useSetFolder = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const baseUrl = useBaseViewFolderURL();
   return (
@@ -17,7 +18,7 @@ export const useSetFolder = () => {
     setPlaceholderFolder({ ...folder });
     const base = baseUrl + folder.id;
     const f = file && file.id ? `/${file.id}` : file ? '/' + file : '';
-    navigate(base + f, options);
+    navigate(base + f + location.hash, options);
   };
 };
 
@@ -28,11 +29,13 @@ export const useFolderLink = (
 ) => {
   const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const baseUrl = useBaseViewFolderURL();
+  const location = useLocation();
 
   const to =
     baseUrl +
     folder.id +
-    (file && file?.id ? `/${file?.id}` : file ? '/' + file : '');
+    (file && file?.id ? `/${file?.id}` : file ? '/' + file : '') +
+    location.hash;
 
   const onClick = () => setPlaceholderFolder(folder);
 

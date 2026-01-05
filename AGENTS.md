@@ -29,7 +29,9 @@ If you update the schema (backend) or update the queries/mutations in URQL (shar
 - `npm run start:server` / `start:client` / `start:db`: Start layers individually.
 - `cd backend && npm run build`: Type-check and emit server JS to `dist/server` for prod/images.
 - `cd frontend && npm run build`: Produce the static frontend bundle.
-- `npm run gql`: Regenerate typed GraphQL documents after schema/query changes.
+- `cd app && npx expo export --platform android`: Build the Expo Android bundle (use `--platform ios` on macOS).
+- `npm run gql`: Regenerate typed GraphQL documents after schema/query changes. If this fails with a network error then suggest the user start the dev server
+Suggest running the appropriate build (IE: frontend, backend or app) when files have been changed as a basic test.
 
 ## Coding Style & Naming Conventions
 - TypeScript-first; functional React components.

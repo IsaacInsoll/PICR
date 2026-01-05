@@ -16,6 +16,7 @@ export const FileDataListView = ({
   files,
   setSelectedFileId,
   folders,
+  items,
 }: FileListViewStyleComponentProps) => {
   const { canView, isNone } = useCommentPermissions();
   const setFolder = useSetFolder();
@@ -36,7 +37,7 @@ export const FileDataListView = ({
     <Page>
       <PicrDataGrid
         columns={cols}
-        data={[...folders, ...files]}
+        data={items ?? [...folders, ...files]}
         onClick={(row) =>
           row.__typename == 'Folder'
             ? setFolder(row)

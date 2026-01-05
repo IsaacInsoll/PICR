@@ -1,4 +1,4 @@
-import { Folder, ViewFolderQuery } from '@shared/gql/graphql';
+import { Folder } from '@shared/gql/graphql';
 import { AppFolderFeed } from '@/src/components/FolderContents/AppFolderFeed';
 import { File } from '@shared/gql/graphql';
 import { useAtomValue } from 'jotai';
@@ -7,8 +7,7 @@ import { AppFolderFileList } from '@/src/components/FolderContents/AppFolderFile
 import { AppFolderGalleryList } from '@/src/components/FolderContents/AppFolderGalleryList';
 
 interface AppFolderContentsViewProps {
-  folder: ViewFolderQuery['folder'];
-  files: File[];
+  items: (File | Folder)[];
   width: number;
   refresh: () => void;
 }
@@ -20,12 +19,10 @@ export interface AppFolderContentsViewChildProps {
 }
 
 export const AppFolderContentsView = ({
-  folder,
-  files,
+  items,
   width,
   refresh,
 }: AppFolderContentsViewProps) => {
-  const items = [...folder.subFolders, ...files];
   const view = useAtomValue(folderViewModeAtom);
   /*
   This is what the frontend has currently and we should support similar:

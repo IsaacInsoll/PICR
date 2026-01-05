@@ -3,31 +3,56 @@
 import { imageURL } from '../../helpers/imageURL';
 import { Gallery, ThumbnailImageProps } from './react-grid-gallery';
 import { FileListViewStyleComponentProps } from './FolderContentsView';
-import { MinimalFile } from '../../../types';
 import 'yet-another-react-lightbox/styles.css';
 import './GridGallery.css';
 import { FilePreview } from './FilePreview';
 import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { useSetFolder } from '../../hooks/useSetFolder';
+import {
+  FolderContentsItem,
+  isFolderContentsFile,
+  ViewFolderFileWithHero,
+} from '@shared/files/folderContentsViewModel';
 
 export const GridGallery = ({
   files,
   folders,
+  items,
   setSelectedFileId,
 }: FileListViewStyleComponentProps) => {
   const setFolder = useSetFolder();
+  const orderedItems = items ?? [...folders, ...files];
   const handleClick = (index: number) => {
-    if (index < folders.length) {
-      setFolder(folders[index]);
+    const item = orderedItems[index];
+    if (!item) return;
+    if (isFolderContentsFile(item)) {
+      setSelectedFileId(item.id);
     } else {
-      setSelectedFileId(files[index - folders.length].id);
+      setFolder(item);
     }
   };
+  const galleryItems = orderedItems.map((item: FolderContentsItem) => {
+    if (isFolderContentsFile(item)) {
+      return {
+        key: item.id,
+        src: imageURL(item, 'md'),
+        width: size,
+        height: size / (item.imageRatio ?? 1),
+        file: item,
+      };
+    }
+    return {
+      key: 'f' + item.id,
+      width: size * 2,
+      height: size,
+      folder: item,
+    };
+  });
   return (
     <>
       <Gallery
         // rowHeight={180}
-        images={[...foldersForGallery(folders), ...filesForGallery(files)]}
+        images={galleryItems}
         onClick={handleClick}
         enableImageSelection={false}
         thumbnailImageComponent={(p) => {
@@ -45,30 +70,12 @@ export const GridGallery = ({
 };
 const size = 250;
 
-const foldersForGallery = (folders: Minimalolder[]) => {
-  return folders.map((folder) => ({
-    key: 'f' + folder.id,
-    width: size * 2,
-    height: size,
-    folder: folder,
-  }));
+type GalleryImageProps = ThumbnailImageProps & {
+  item: { file: ViewFolderFileWithHero };
 };
-
-const filesForGallery = (files: MinimalFile[]) => {
-  return files.map((file) => ({
-    key: file.id,
-    src: imageURL(file, 'md'),
-    width: size,
-    height: size / (file.imageRatio ?? 1),
-    file: file,
-    //alt,tags,isSelected,caption,
-  }));
-};
-
-type GalleryImageProps = ThumbnailImageProps & { item: { file: MinimalFile } };
 
 const GalleryImage = ({ imageProps, item }: GalleryImageProps) => {
-  const file: MinimalFile = item.file;
+  const file: ViewFolderFileWithHero = item.file;
   return <FilePreview file={file} imageProps={imageProps} />;
   // if (file.type == 'Video') {
   //   return <PicrVideoPreview file={file} imageProps={imageProps} />;

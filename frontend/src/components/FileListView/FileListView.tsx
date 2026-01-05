@@ -4,7 +4,7 @@ import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { useIsMobile, useIsSmallScreen } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
-import { MinimalFile, MinimalFolder } from '../../../types';
+import { FolderContentsItem } from '@shared/files/folderContentsViewModel';
 import {
   ActionIcon,
   Avatar,
@@ -37,11 +37,12 @@ export const FileListView = ({
   files,
   setSelectedFileId,
   folders,
+  items,
 }: FileListViewStyleComponentProps) => {
-  const items = [...folders, ...files];
+  const orderedItems = items ?? [...folders, ...files];
 
-  const [lazyLoaded, onBecomeVisible] = useLazyLoad(100, items.length);
-  const loadedFiles = items.slice(0, lazyLoaded);
+  const [lazyLoaded, onBecomeVisible] = useLazyLoad(100, orderedItems.length);
+  const loadedFiles = orderedItems.slice(0, lazyLoaded);
 
   return (
     <Page style={{}}>
@@ -66,13 +67,17 @@ const Row = ({
   file,
   onBecomeVisible,
 }: {
-  file: MinimalFile | MinimalFolder;
+  file: FolderContentsItem;
   onBecomeVisible: () => void;
 }) => {
   const { canView } = useCommentPermissions();
   const setFolder = useSetFolder();
   const isMobile = useIsMobile();
   const isSmall = useIsSmallScreen();
+  const isFolder = file.__typename == 'Folder';
+  const modifiedDate = isFolder
+    ? file.folderLastModified
+    : file.fileLastModified;
 
   // if filtering by RecentlyCommented or LastModified then lets show that data
   const { type } = useAtomValue(fileSortAtom);
@@ -92,13 +97,13 @@ const Row = ({
       </>
     ) : type == 'LastModified' ? (
       <>
-        <Text c="dimmed" fz="xs">
-          Modified: {prettyDate(file.fileLastModified)}
-        </Text>
+        {modifiedDate ? (
+          <Text c="dimmed" fz="xs">
+            Modified: {prettyDate(modifiedDate)}
+          </Text>
+        ) : null}
       </>
     ) : null;
-
-  const isFolder = file.__typename == 'Folder';
   const onClick = (e) => {
     isFolder ? setFolder(file) : setSelectedFileId(file.id);
   };
@@ -122,7 +127,7 @@ const Row = ({
             <Text
               fz="md"
               fw={500}
-              title={`Modified: ${prettyDate(file.fileLastModified)}\nLast Comment: ${prettyDate(file.latestComment)}`}
+              title={`Modified: ${modifiedDate ? prettyDate(modifiedDate) : 'N/A'}\nLast Comment: ${file.latestComment ? prettyDate(file.latestComment) : 'N/A'}`}
             >
               {file.name}
             </Text>

@@ -19,13 +19,11 @@ import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { PTitle } from '@/src/components/PTitle';
 import { AppPicker } from '@/src/components/AppPicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { DefaultFilterOptions, filterFiles } from '@shared/files/filterFiles';
 import {
   FileSortDirection,
   FileSortType,
-  sortFiles,
 } from '@shared/files/sortFiles';
-import { FilterOptionsInterface } from '@shared/filterAtom';
+import { folderContentsViewModel } from '@shared/files/folderContentsViewModel';
 import { fileSortAtom, folderViewModeAtom } from '@/src/atoms/atoms';
 import { FileSortMenu } from '@/src/components/Menus/FileSortMenu';
 import { GridIcon } from '@/src/components/AppIcons';
@@ -82,9 +80,6 @@ const FolderBody = ({
   // const x = useFolder(folderId);
 
   const sort = useAtomValue(fileSortAtom);
-  const filtering = false;
-  const filters: FilterOptionsInterface = DefaultFilterOptions;
-
   const folder = result.data?.folder;
   if (!folder) {
     return <PText>Folder {folderId} Not Found</PText>;
@@ -94,14 +89,7 @@ const FolderBody = ({
   // useEffect(() => resetFilters(null), [resetFilters, folderId]);
 
   // don't memo files because it breaks graphicache (IE: file changing rating won't reflect)
-  const filteredFiles = filtering
-    ? filterFiles(folder.files, filters)
-    : folder.files;
-  const sortedFiles = sortFiles(filteredFiles, sort);
-
-  const withProps = sortedFiles.map((f) => {
-    return { ...f, isHeroImage: f.id == folder.heroImage?.id };
-  });
+  const { items } = folderContentsViewModel(folder, { sort });
 
   //end copied from FolderContentsView.tsx
 
@@ -128,8 +116,7 @@ const FolderBody = ({
       />
 
       <AppFolderContentsView
-        folder={folder}
-        files={withProps}
+        items={items}
         width={width}
         refresh={() => requery({ requestPolicy: 'cache-and-network' })}
       />
