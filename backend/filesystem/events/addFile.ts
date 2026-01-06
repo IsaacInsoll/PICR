@@ -20,6 +20,7 @@ export const addFile = async (
   filePath: string,
   generateThumbs: boolean,
   statsProp?: Stats,
+  renameFromPath?: string,
 ) => {
   const type = validExtension(filePath);
   if (!type) {
@@ -39,13 +40,34 @@ export const addFile = async (
     relativePath: relativePath(dirname(filePath)),
   };
 
-  let file = await db.query.dbFile.findFirst({
-    where: and(
-      eq(dbFile.name, props.name),
-      eq(dbFile.folderId, props.folderId),
-      eq(dbFile.relativePath, props.relativePath),
-    ),
-  });
+  let wasRenamed = false;
+  let file = renameFromPath
+    ? await db.query.dbFile.findFirst({
+        where: and(
+          eq(dbFile.name, basename(renameFromPath)),
+          eq(dbFile.relativePath, relativePath(dirname(renameFromPath))),
+        ),
+      })
+    : undefined;
+
+  if (file) {
+    wasRenamed = true;
+    file.name = props.name;
+    file.relativePath = props.relativePath;
+    file.folderId = props.folderId;
+    file.type = type;
+    file.fileSize = stats.size;
+    file.fileCreated = stats.birthtime;
+    file.fileLastModified = stats.mtime;
+  } else {
+    file = await db.query.dbFile.findFirst({
+      where: and(
+        eq(dbFile.name, props.name),
+        eq(dbFile.folderId, props.folderId),
+        eq(dbFile.relativePath, props.relativePath),
+      ),
+    });
+  }
 
   const created = !file;
 
@@ -72,19 +94,24 @@ export const addFile = async (
 
   if (!file) return; // not needed, just for typescript to know it's not null at this point
 
+  const previousLastModified = created ? null : file.fileLastModified;
+  const previousCreated = created ? null : file.fileCreated;
   const modified =
     !created &&
-    (file.fileLastModified.getTime() != stats.mtime.getTime() ||
-      file.fileCreated.getTime() != stats.birthtime.getTime());
+    (previousLastModified!.getTime() != stats.mtime.getTime() ||
+      previousCreated!.getTime() != stats.birthtime.getTime() ||
+      wasRenamed);
 
   if (created || !file.fileHash || modified) {
     log(
       'info',
       (created
         ? 'New File: '
-        : modified
-          ? 'Modified: '
-          : 'Hash Mismatch for: ') + filePath,
+        : wasRenamed
+          ? 'Renamed: '
+          : modified
+            ? 'Modified: '
+            : 'Hash Mismatch for: ') + filePath,
     );
     // const hash = await fileHash2(filePath);
     file.fileHash = fastHash(file, stats);

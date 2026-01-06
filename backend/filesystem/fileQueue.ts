@@ -1,6 +1,7 @@
 import { addFile } from './events/addFile.js';
 import { addFolder } from './events/addFolder.js';
 import { removeFolder } from './events/removeFolder.js';
+import { renameFolder } from './events/renameFolder.js';
 import { Task } from '../../graphql-types.js';
 import { generateAllThumbs } from '../media/generateImageThumbnail.js';
 import { log } from '../logger.js';
@@ -12,6 +13,7 @@ import { removeFile } from './events/removeFile.js';
 
 type QueueAction =
   | 'addDir'
+  | 'renameDir'
   | 'unlinkDir'
   | 'add'
   | 'unlink'
@@ -29,6 +31,7 @@ interface QueuePayload {
   generateThumbs?: boolean;
   id?: number;
   stats?: Stats;
+  renameFromPath?: string;
 }
 
 export const addToQueue = (
@@ -74,6 +77,9 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
     case 'addDir':
       await addFolder(payload.path!, payload.stats);
       break;
+    case 'renameDir':
+      await renameFolder(payload.renameFromPath!, payload.path!, payload.stats);
+      break;
     case 'unlinkDir':
       await removeFolder(payload.path!);
       break;
@@ -82,6 +88,7 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
         payload.path!,
         payload.generateThumbs ?? false,
         payload.stats,
+        payload.renameFromPath,
       );
       break;
     case 'unlink':

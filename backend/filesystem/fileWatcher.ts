@@ -7,6 +7,7 @@ import { db } from '../db/picrDb.js';
 import { dbFile, dbFolder } from '../db/models/index.js';
 import { isNotNull } from 'drizzle-orm';
 import { IPicrConfiguration } from '../config/IPicrConfiguration.js';
+import { createRenameTracker } from './renameTracker.js';
 
 export const fileWatcher = async (config: IPicrConfiguration) => {
   log(
@@ -25,6 +26,8 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
     .set({ existsRescan: false })
     .where(isNotNull(dbFolder.parentId)); //don't set Home (root) to not exist
 
+  const renameTracker = createRenameTracker();
+
   const watcher = chokidar.watch(picrConfig.mediaPath!, {
     ignored: ignored,
     persistent: true,
@@ -38,21 +41,37 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
   watcher
     .on('add', (path, stats) => {
       log('info', '➕ ' + path);
-      addToQueue('add', { path, generateThumbs: initComplete, stats });
+      const renameFromPath = renameTracker.consumeRename('file', stats);
+      addToQueue('add', {
+        path,
+        generateThumbs: initComplete,
+        stats,
+        renameFromPath,
+      });
+      renameTracker.record('file', path, stats);
     })
     .on('change', (path, stats) => {
       addToQueue('add', { path, generateThumbs: initComplete, stats });
+      renameTracker.record('file', path, stats);
     })
     .on('unlink', (path) => {
+      renameTracker.markUnlink('file', path);
       addToQueue('unlink', { path });
     })
     .on('error', (error) => console.log('⚠️ Error happened: ' + error))
     .on('addDir', (path, stats) => {
       log('info', `📁➕ ${relativePath(path)}`);
-      addToQueue('addDir', { path, stats });
+      const renameFromPath = renameTracker.consumeRename('dir', stats);
+      if (renameFromPath) {
+        addToQueue('renameDir', { path, stats, renameFromPath });
+      } else {
+        addToQueue('addDir', { path, stats });
+      }
+      renameTracker.record('dir', path, stats);
     })
     .on('unlinkDir', (path) => {
       log('info', `📁➖ ${relativePath(path)}`);
+      renameTracker.markUnlink('dir', path);
       addToQueue('unlinkDir', { path });
     })
     .on('ready', () => {
