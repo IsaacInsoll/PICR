@@ -1,4 +1,4 @@
-import { selectedViewAtom, viewOptions } from '../ViewSelector';
+import { selectedViewAtom, viewOptions } from '../selectedViewAtom';
 import { GridGallery } from './GridGallery';
 import { useEffect } from 'react';
 import { ImageFeed } from './ImageFeed';
@@ -29,7 +29,6 @@ import {
   useCloseMoveRenameFolderModal,
 } from '../../atoms/modalAtom';
 import { MoveRenameFolderModal } from './MoveRenameFolderModal';
-
 
 export interface FileListViewStyleComponentProps {
   files: ViewFolderFileWithHero[];
