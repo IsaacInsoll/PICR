@@ -171,7 +171,6 @@ const ViewFolderBody = () => {
 const FolderOverflowMenu = ({ folder }: { folder: MinimalFolder }) => {
   const setFolder = useSetFolder();
   const setFiltering = useSetAtom(filterAtom);
-  const { canView } = useCommentPermissions();
   return (
     <Menu
       shadow="md"
@@ -195,17 +194,7 @@ const FolderOverflowMenu = ({ folder }: { folder: MinimalFolder }) => {
           Filter Files
         </Menu.Item>
         <FolderMenuItems folder={folder} showOpenItem={false} />
-        {canView ? (
-          <>
-            <Menu.Label>Comments & Ratings</Menu.Label>
-            <Menu.Item
-              leftSection={<CommentIcon />}
-              onClick={() => setFolder(folder, 'activity')}
-            >
-              View Activity
-            </Menu.Item>
-          </>
-        ) : null}
+
         {/*<Menu.Label>PICR</Menu.Label>*/}
         {/*<Menu.Item*/}
         {/*  leftSection={<UserSettingsIcon />}*/}

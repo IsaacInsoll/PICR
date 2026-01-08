@@ -1,11 +1,12 @@
 import { MinimalFolder } from '../../../types';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { Menu } from '@mantine/core';
-import { DownloadIcon, FolderIcon } from '../../PicrIcons';
+import { CommentIcon, DownloadIcon, FolderIcon } from '../../PicrIcons';
 import { useGenerateZip } from '../../hooks/useGenerateZip';
 import { TbFolderShare, TbFolderStar } from 'react-icons/tb';
 import { useMe } from '../../hooks/useMe';
 import { useOpenMoveRenameFolderModal } from '../../atoms/modalAtom';
+import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 
 type FolderMenuItemsProps = {
   folder: MinimalFolder;
@@ -21,6 +22,7 @@ export const FolderMenuItems = ({
   const generateZip = useGenerateZip(folder);
   const me = useMe();
   const openMoveModal = useOpenMoveRenameFolderModal();
+  const { canView } = useCommentPermissions();
 
   return (
     <>
@@ -63,6 +65,17 @@ export const FolderMenuItems = ({
       >
         Download ZIP
       </Menu.Item>
+      {canView ? (
+        <>
+          <Menu.Label>Comments & Ratings</Menu.Label>
+          <Menu.Item
+            leftSection={<CommentIcon />}
+            onClick={() => setFolder(folder, 'activity')}
+          >
+            View Activity
+          </Menu.Item>
+        </>
+      ) : null}
     </>
   );
 };
