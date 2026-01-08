@@ -5,6 +5,7 @@ import { folderList, relativePath } from '../fileManager.js';
 import { db } from '../../db/picrDb.js';
 import { and, eq, like, sql } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../../db/models/index.js';
+import { moveThumbnailFolder } from '../../media/moveThumbnailFolder.js';
 
 export const renameFolder = async (
   oldPath: string,
@@ -76,6 +77,7 @@ export const renameFolder = async (
     );
 
   updateFolderListPaths(oldRelative, newRelative);
+  await moveThumbnailFolder(oldRelative, newRelative);
 };
 
 const updateFolderListPaths = (oldPath: string, newPath: string) => {

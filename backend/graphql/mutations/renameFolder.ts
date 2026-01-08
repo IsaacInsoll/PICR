@@ -10,6 +10,7 @@ import { db } from '../../db/picrDb.js';
 import { and, eq, like, sql, isNull } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 import { folderList, pathSplit } from '../../filesystem/fileManager.js';
+import { moveThumbnailFolder } from '../../media/moveThumbnailFolder.js';
 import { validateRelativePath } from '../../../shared/validation/folderPath.js';
 import { folderIsUnderFolder } from '../../helpers/folderIsUnderFolderId.js';
 
@@ -164,7 +165,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
 
   updateFolderListPaths(oldPath, newPath);
 
-  moveCacheFolders(oldPath, newPath);
+  await moveThumbnailFolder(oldPath, newPath);
 
   return folder;
 };
@@ -177,17 +178,6 @@ export const renameFolder = {
     oldPath: { type: new GraphQLNonNull(GraphQLString) },
     newPath: { type: new GraphQLNonNull(GraphQLString) },
   },
-};
-
-const moveCacheFolders = (oldPath: string, newPath: string) => {
-  try {
-    renameSync(
-      picrConfig.cachePath + '/thumbs/' + oldPath,
-      picrConfig.cachePath + '/thumbs/' + newPath,
-    );
-  } catch (err) {
-    console.error('Error moving caches folder:', err);
-  }
 };
 
 const updateFolderListPaths = (oldPath: string, newPath: string) => {
