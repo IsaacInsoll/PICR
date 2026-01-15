@@ -22,6 +22,7 @@ export const userType = new GraphQLObjectType({
     commentPermissions: { type: commentPermissionsEnum },
     gravatar: { type: GraphQLString },
     ntfy: { type: GraphQLString },
+    ntfyEmail: { type: GraphQLBoolean },
     lastAccess: { type: GraphQLDateTime },
     userType: { type: userTypeEnum },
   }),

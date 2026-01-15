@@ -64,6 +64,13 @@
       "when": 1764630810542,
       "tag": "0008_file-created",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1768483200000,
+      "tag": "0009_ntfy-email",
+      "breakpoints": true
     }
   ]
 }

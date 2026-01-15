@@ -36,6 +36,9 @@ export const ManageUser = ({
   const [username, setUsername] = useState(user?.username);
   const [password, setPassword] = useState<string | null>(null);
   const [ntfy, setNtfy] = useState<string | null>(user?.ntfy);
+  const [ntfyEmail, setNtfyEmail] = useState<boolean>(
+    user?.ntfyEmail ?? false,
+  );
   const [enabled, setEnabled] = useState(user?.enabled ?? true);
   const [commentPermissions, setCommentPermissions] =
     useState<CommentPermissions>(
@@ -60,6 +63,7 @@ export const ManageUser = ({
       folderId: folder?.id,
       commentPermissions,
       ntfy,
+      ntfyEmail,
     };
     mutate(data).then(({ data, error }) => {
       if (error) {
@@ -116,6 +120,14 @@ export const ManageUser = ({
           label="NTFY Notifications URL"
           description="Get notifications on your phone"
           onChange={(e) => setNtfy(e.target.value)}
+        />
+
+        <Checkbox
+          checked={ntfyEmail}
+          label="Email NTFY notifications"
+          description="Also send NTFY alerts to this account email"
+          disabled={!ntfy}
+          onChange={(event) => setNtfyEmail(event.currentTarget.checked)}
         />
 
         <Checkbox

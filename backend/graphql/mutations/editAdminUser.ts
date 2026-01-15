@@ -75,6 +75,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   adminUser.username = params.username;
   adminUser.enabled = params.enabled;
   adminUser.ntfy = params.ntfy;
+  adminUser.ntfyEmail = params.ntfyEmail ?? adminUser.ntfyEmail ?? false;
   adminUser.commentPermissions = params.commentPermissions;
   adminUser.updatedAt = new Date();
   if (pass) adminUser.hashedPassword = hashPassword(pass);
@@ -104,5 +105,6 @@ export const editAdminUser = {
     enabled: { type: GraphQLBoolean },
     commentPermissions: { type: commentPermissionsEnum },
     ntfy: { type: GraphQLString },
+    ntfyEmail: { type: GraphQLBoolean },
   },
 };

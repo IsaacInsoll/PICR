@@ -26,6 +26,7 @@ export const dbUser = pgTable('Users', {
   hashedPassword: varchar('hashedPassword', { length: 255 }),
   username: varchar('username', { length: 255 }),
   ntfy: varchar('ntfy', { length: 255 }), // phone notifications via NTFY app
+  ntfyEmail: boolean('ntfyEmail').notNull().default(false),
 
   // IF PUBLIC LINK
   uuid: varchar('uuid', { length: 255 }),

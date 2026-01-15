@@ -42,6 +42,7 @@ export interface MinimalSharedFolder {
   commentPermissions?: CommentPermissions;
   uuid?: string;
   ntfy?: string;
+  ntfyEmail?: boolean;
   enabled?: boolean;
   folder?: MinimalFolder | null;
 }

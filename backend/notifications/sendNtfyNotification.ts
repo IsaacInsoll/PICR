@@ -3,6 +3,7 @@ import { NotificationPayload, NotificationType } from './notifications.js';
 export const sendNtfyNotification = async (
   topic: string,
   payload: NotificationPayload,
+  options?: { email?: string },
 ) => {
   const { message, type, url, title } = payload;
 
@@ -13,6 +14,7 @@ export const sendNtfyNotification = async (
     // TODO: action buttons?
   };
   if (url) headers['Click'] = url;
+  if (options?.email) headers['Email'] = options.email;
 
   //not sure how to do the thumbnail (Attach) field as the docs indicate that might download the file rather than just present it?
 

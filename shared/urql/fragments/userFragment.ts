@@ -11,6 +11,7 @@ export const userFragment = gql(/* GraphQL */ `
     commentPermissions
     gravatar
     ntfy
+    ntfyEmail
     folder {
       id
       name

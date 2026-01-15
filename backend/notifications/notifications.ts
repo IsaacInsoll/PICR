@@ -78,7 +78,11 @@ const sendNotification = async (
   const ntfys = users
     .filter((u) => !!u.ntfy && payload.userId != u.id)
     .map((u) => {
-      return sendNtfyNotification(u.ntfy!, payload);
+      const email =
+        u.ntfyEmail && u.username && u.username.includes('@')
+          ? u.username
+          : undefined;
+      return sendNtfyNotification(u.ntfy!, payload, { email });
     });
 
   const userIds = users.map((u) => u.id).filter((i) => i != payload.userId);

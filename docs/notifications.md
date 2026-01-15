@@ -10,5 +10,7 @@ We use [NTFY](https://ntfy.sh) for notifications as there isn't currently a PICR
 2. Make up an impossible to guess NTFY topic eg: `picr-<my_name>-<bunch-of-random-characters>`
 3. Log in to PICR as the user who wants notifications (can't be a public link)
 4. Edit your user profile and add the NTFY url eg: `https://ntfy.sh/picr-isaac-asdflkjasdflkja`
+5. (Optional) Enable email NTFY notifications to send alerts to your account email address. <br />
+   **NOTE**: There are [rate limits of 16 messages per hour](https://docs.ntfy.sh/publish/#e-mail-notifications). 
 
 You will now get notifications when any folders you have access to are accessed by a public link, or when comments/ratings/etc are left.

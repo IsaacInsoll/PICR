@@ -223,6 +223,7 @@ export type MutationEditAdminUserArgs = {
   id?: InputMaybe<Scalars['ID']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   ntfy?: InputMaybe<Scalars['String']['input']>;
+  ntfyEmail?: InputMaybe<Scalars['Boolean']['input']>;
   password?: InputMaybe<Scalars['String']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
 };
@@ -422,6 +423,7 @@ export type User = {
   lastAccess?: Maybe<Scalars['DateTime']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   ntfy?: Maybe<Scalars['String']['output']>;
+  ntfyEmail?: Maybe<Scalars['Boolean']['output']>;
   userType?: Maybe<UserType>;
   username?: Maybe<Scalars['String']['output']>;
   uuid?: Maybe<Scalars['String']['output']>;
