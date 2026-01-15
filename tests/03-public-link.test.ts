@@ -35,6 +35,7 @@ test('Create Public Link', async () => {
     gravatar: gravatarTest.result,
     folder: undefined,
     ntfy: null,
+    ntfyEmail: false,
   });
 
   const folder = user.folder;
