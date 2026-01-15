@@ -1,6 +1,6 @@
 {
   "name": "picr",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "",
   "type": "module",
   "directories": {
@@ -29,6 +29,7 @@
     "dotenv-cli": "^7.4.2",
     "nodemon": "^3.1.9",
     "prettier": "^3.6.2",
+    "release-it": "^19.2.3",
     "typescript": "^5.9.2",
     "vitest": "^3.1.1"
   },
@@ -36,12 +37,8 @@
     "npm": {
       "publish": false
     },
-    "hooks": {
-      "before:init": [
-        "npm run workflow"
-      ]
-    },
     "git": {
+      "requireCleanWorkingDir": false,
       "requireBranch": "master",
       "commitMessage": "🚀 Release ${version}",
       "commit": true,
