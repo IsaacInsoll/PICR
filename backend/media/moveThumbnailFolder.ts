@@ -80,7 +80,7 @@ const mergeFolders = async (
     } catch (err) {
       hadConflicts = true;
       log(
-        'warn',
+        'warning',
         `⚠️ Could not move cache file ${src} -> ${dest}: ${(err as Error).message ?? err}`,
       );
     }
@@ -132,13 +132,13 @@ export const moveThumbnailFolder = async (
     const { hadConflicts } = await mergeFolders(oldPath, newPath);
     if (hadConflicts) {
       log(
-        'warn',
+        'warning',
         `⚠️ Cache merge for ${oldRelative} -> ${newRelative} had conflicts; old cache may remain.`,
       );
     }
   } catch (err) {
     log(
-      'warn',
+      'warning',
       `⚠️ Error moving cache folder ${oldRelative} -> ${newRelative}: ${(err as Error).message ?? err}`,
     );
   }
