@@ -37,8 +37,12 @@
     "npm": {
       "publish": false
     },
+    "hooks": {
+      "before:init": [
+        "npm run workflow"
+      ]
+    },
     "git": {
-      "requireCleanWorkingDir": false,
       "requireBranch": "master",
       "commitMessage": "🚀 Release ${version}",
       "commit": true,
