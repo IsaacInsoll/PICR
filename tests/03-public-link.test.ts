@@ -15,6 +15,7 @@ import {
   videoFolderId,
 } from './testVariables';
 import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
+import { LinkMode } from '../graphql-types';
 
 test('Create Public Link', async () => {
   const headers = await getUserHeader(defaultCredentials);
@@ -36,6 +37,7 @@ test('Create Public Link', async () => {
     folder: undefined,
     ntfy: null,
     ntfyEmail: false,
+    linkMode: LinkMode.FinalDelivery,
   });
 
   const folder = user.folder;

@@ -12,7 +12,7 @@ import { badChars } from '../helpers/badChars.js';
 import { db, dbFolderForId, dbUserForId, UserFields } from '../../db/picrDb.js';
 import { and, eq, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
-import { UserType } from '../../../graphql-types.js';
+import { LinkMode, UserType } from '../../../graphql-types.js';
 import { commentPermissionsEnum, linkModeEnum } from '../types/enums.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
@@ -73,7 +73,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   user.uuid = params.uuid;
   user.enabled = params.enabled;
   user.commentPermissions = params.commentPermissions;
-  user.linkMode = params.linkMode;
+  user.linkMode = params.linkMode ?? LinkMode.FinalDelivery;
   user.updatedAt = new Date();
 
   if (user.id) {
