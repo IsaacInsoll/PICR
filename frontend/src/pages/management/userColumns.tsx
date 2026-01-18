@@ -6,6 +6,7 @@ import { CommentChip } from '../../components/CommentChip';
 import { Group } from '@mantine/core';
 import { ViewFolderButton } from '../../components/ViewFolderButton';
 import { BooleanIcon } from './BooleanIcon';
+import { LinkModeChip } from '../../components/LinkModeChip';
 
 export const userColumns: PicrColumns<User>[] = [
   { accessorKey: 'name', header: 'Name', minSize: 25 },
@@ -28,6 +29,18 @@ export const publicLinkColumns: PicrColumns<User>[] = [
   ...userColumns.filter(({ accessorKey }: PicrColumns<User>) => {
     return !['username'].includes(accessorKey);
   }),
+  {
+    header: 'Comments',
+    maxSize: 75,
+    accessorFn: (user: User) => (
+      <CommentChip commentPermissions={user.commentPermissions} />
+    ),
+  },
+  {
+    header: 'LinkMode',
+    maxSize: 75,
+    accessorFn: (user: User) => <LinkModeChip linkMode={user.linkMode} />,
+  },
   {
     header: 'Comments',
     maxSize: 75,

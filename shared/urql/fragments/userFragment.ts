@@ -9,6 +9,7 @@ export const userFragment = gql(/* GraphQL */ `
     uuid
     folderId
     commentPermissions
+    linkMode
     gravatar
     ntfy
     ntfyEmail

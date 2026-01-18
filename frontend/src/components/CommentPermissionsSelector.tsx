@@ -12,10 +12,8 @@ export const CommentPermissionsSelector = ({
   return (
     <Box>
       <InputLabel>Comment Permissions</InputLabel>
-      <InputDescription pb="xs">
-        This includes comments, ratings and flags
-      </InputDescription>
-      <Button.Group>
+
+      <Button.Group pb="xs">
         {options.map((opt) => {
           const isSelected = opt === value;
           const { icon, color } = commentPermissionsStyle[opt];
@@ -33,8 +31,15 @@ export const CommentPermissionsSelector = ({
           );
         })}
       </Button.Group>
+      <InputDescription pb="xs">{description[value]}</InputDescription>
     </Box>
   );
 };
 
 const options: CommentPermissions[] = ['none', 'read', 'edit'];
+
+const description = {
+  none: 'Users cannot see or edit ratings/comments',
+  read: "Users can see other users ratings/comments but can't change ratings or add comments",
+  edit: 'Users can see other users comments/ratings and add their own',
+} as const;

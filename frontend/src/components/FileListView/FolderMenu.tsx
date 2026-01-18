@@ -58,13 +58,15 @@ export const FolderMenuItems = ({
         </Menu.Item>
       ) : null}
 
-      <Menu.Item
-        leftSection={<DownloadIcon />}
-        key="download"
-        onClick={generateZip}
-      >
-        Download ZIP
-      </Menu.Item>
+      {generateZip ? (
+        <Menu.Item
+          leftSection={<DownloadIcon />}
+          key="download"
+          onClick={generateZip}
+        >
+          Download ZIP
+        </Menu.Item>
+      ) : null}
       {canView ? (
         <>
           <Menu.Label>Comments & Ratings</Menu.Label>

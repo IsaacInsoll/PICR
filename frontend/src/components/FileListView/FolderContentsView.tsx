@@ -1,6 +1,6 @@
 import { selectedViewAtom, viewOptions } from '../selectedViewAtom';
 import { GridGallery } from './GridGallery';
-import { useEffect } from 'react';
+import { useCallback, useEffect, type MouseEvent } from 'react';
 import { ImageFeed } from './ImageFeed';
 import { SelectedFileView } from './SelectedFile/SelectedFileView';
 import {
@@ -29,6 +29,7 @@ import {
   useCloseMoveRenameFolderModal,
 } from '../../atoms/modalAtom';
 import { MoveRenameFolderModal } from './MoveRenameFolderModal';
+import { useCanDownload } from '../../hooks/useMe';
 
 export interface FileListViewStyleComponentProps {
   files: ViewFolderFileWithHero[];
@@ -51,6 +52,7 @@ export const FolderContentsView = ({ folder }) => {
   const sort = useAtomValue(fileSortAtom);
   const moveFolder = useAtomValue(moveRenameFolderAtom);
   const closeMoveFolderModal = useCloseMoveRenameFolderModal();
+  const canDownload = useCanDownload();
 
   const setSelectedFileId = (fileId: string | undefined) => {
     const file = fileId ? { id: fileId } : undefined;
@@ -58,6 +60,17 @@ export const FolderContentsView = ({ folder }) => {
   };
 
   useEffect(() => resetFilters(null), [resetFilters, folderId]);
+
+  const handleContextMenu = useCallback(
+    (event: MouseEvent<HTMLElement>) => {
+      if (canDownload) return;
+      const target = event.target as HTMLElement | null;
+      if (target?.closest('img')) {
+        event.preventDefault();
+      }
+    },
+    [canDownload],
+  );
 
   // don't memo files because it breaks graphicache (IE: file changing rating won't reflect)
   const sortedItems = folderContentsItems(folder, {
@@ -83,7 +96,7 @@ export const FolderContentsView = ({ folder }) => {
 
   // console.log('FCV render');
   return (
-    <>
+    <div onContextMenu={handleContextMenu}>
       {moveFolder ? (
         <MoveRenameFolderModal
           folder={moveFolder}
@@ -136,6 +149,6 @@ export const FolderContentsView = ({ folder }) => {
           <ImageFeed {...props} />
         </Tabs.Panel>
       </Tabs>
-    </>
+    </div>
   );
 };

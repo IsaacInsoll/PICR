@@ -9,6 +9,7 @@ export const meQuery = gql(/* GraphQL */ `
       folderId
       uuid
       commentPermissions
+      linkMode
       folder {
         id
         name

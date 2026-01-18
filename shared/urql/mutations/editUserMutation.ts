@@ -9,6 +9,7 @@ export const editUserMutation = gql(/* GraphQL */ `
     $enabled: Boolean
     $folderId: ID
     $commentPermissions: CommentPermissions
+    $linkMode: LinkMode
   ) {
     editUser(
       id: $id
@@ -18,6 +19,7 @@ export const editUserMutation = gql(/* GraphQL */ `
       enabled: $enabled
       folderId: $folderId
       commentPermissions: $commentPermissions
+      linkMode: $linkMode
     ) {
       ...UserFragment
     }

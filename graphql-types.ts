@@ -180,6 +180,11 @@ export type ImageMetadataSummary = {
   Width?: Maybe<Scalars['Int']['output']>;
 };
 
+export enum LinkMode {
+  FinalDelivery = 'final_delivery',
+  ProofNoDownloads = 'proof_no_downloads'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   addComment: FileInterface;
@@ -248,6 +253,7 @@ export type MutationEditUserArgs = {
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   folderId?: InputMaybe<Scalars['ID']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
+  linkMode?: InputMaybe<LinkMode>;
   name?: InputMaybe<Scalars['String']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
   uuid?: InputMaybe<Scalars['String']['input']>;
@@ -421,6 +427,7 @@ export type User = {
   gravatar?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
   lastAccess?: Maybe<Scalars['DateTime']['output']>;
+  linkMode?: Maybe<LinkMode>;
   name?: Maybe<Scalars['String']['output']>;
   ntfy?: Maybe<Scalars['String']['output']>;
   ntfyEmail?: Maybe<Scalars['Boolean']['output']>;

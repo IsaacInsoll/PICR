@@ -11,7 +11,10 @@ import {
 } from '../../../backend/helpers/extraUserProps';
 
 export const useMe = ():
-  | (Pick<User, 'id' | 'name' | 'folderId' | 'commentPermissions'> &
+  | (Pick<
+      User,
+      'id' | 'name' | 'folderId' | 'commentPermissions' | 'linkMode'
+    > &
       ExtraUserProps & {
         clientInfo: {
           avifEnabled?: boolean;
@@ -42,4 +45,14 @@ export const useAvifEnabled = () => {
 export const useBaseUrl = () => {
   const me = useMe();
   return me?.clientInfo?.baseUrl;
+};
+
+export const useLinkMode = () => {
+  const me = useMe();
+  return me?.linkMode;
+};
+
+export const useCanDownload = () => {
+  const linkMode = useLinkMode();
+  return linkMode !== 'proof_no_downloads';
 };

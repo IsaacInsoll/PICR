@@ -13,15 +13,16 @@ import 'yet-another-react-lightbox/plugins/thumbnails.css';
 import { FileListViewStyleComponentProps } from '../FolderContentsView';
 import { theme } from '../../../theme';
 import { useSetFolder } from '../../../hooks/useSetFolder';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { useParams } from 'react-router';
 import { LightboxFileRating } from './LightboxFileRating';
 import { filesForLightbox } from './filesForLightbox';
 import { LightboxInfoButton } from './LightboxInfoButton';
-import { lightboxPlugins } from './lightboxPlugins';
+import { lightboxPlugins, lightboxPluginsProof } from './lightboxPlugins';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { lightboxControllerRefAtom } from '../../../atoms/lightboxControllerRefAtom';
 import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
+import { useCanDownload, useLinkMode } from '../../../hooks/useMe';
 
 export const SelectedFileView = ({
   files,
@@ -42,19 +43,26 @@ export const SelectedFileView = ({
   }, [setControllerRef, ref]);
 
   const setFolder = useSetFolder();
+  const canDownload = useCanDownload();
 
   const toolbarButtons = [
-    'download',
     <LightboxInfoButton file={selectedImage} key="InfoButton" />,
     'slideshow',
     'close',
   ];
 
+  const config = useMemo(() => {
+    return {
+      buttons: canDownload ? ['download', ...toolbarButtons] : toolbarButtons,
+      plugins: canDownload ? lightboxPlugins : lightboxPluginsProof,
+    };
+  }, [canDownload]);
+
   return (
     <Lightbox
       portal={{ root: portal?.current }}
       controller={{ ref }}
-      plugins={lightboxPlugins}
+      plugins={config.plugins}
       counter={counterProps}
       slides={filesForLightbox(files)}
       open={!!selectedFileId}
@@ -62,7 +70,7 @@ export const SelectedFileView = ({
       close={() => setSelectedFileId(undefined)}
       styles={lightBoxStyles}
       video={videoProps}
-      toolbar={{ buttons: toolbarButtons }}
+      toolbar={{ buttons: config.buttons }}
       render={{
         slideFooter: ({ slide }) => (
           <LightboxFileRating slide={slide} selected={selectedImage} />

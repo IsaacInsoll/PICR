@@ -24,7 +24,8 @@ import {
 } from 'react-icons/tb';
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
-import { CommentPermissions } from '../../../../graphql-types';
+import { LinkModeSelector } from '../../components/LinkModeSelector';
+import { CommentPermissions, LinkMode } from '../../../../graphql-types';
 import { EmailIcon, PublicLinkIcon } from '../../PicrIcons';
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
 import { ErrorAlert } from '../../components/ErrorAlert';
@@ -48,6 +49,9 @@ export const ManagePublicLink = ({
   const [enabled, setEnabled] = useState(user?.enabled ?? true);
   const [commentPermissions, setCommentPermissions] =
     useState<CommentPermissions>(user?.commentPermissions ?? 'none');
+  const [linkMode, setLinkMode] = useState<LinkMode>(
+    user?.linkMode ?? LinkMode.FinalDelivery,
+  );
   const [error, setError] = useState('');
 
   //get folder from user if they exist as it may be a parent or child
@@ -62,6 +66,7 @@ export const ManagePublicLink = ({
       enabled,
       folderId: f?.id,
       commentPermissions,
+      linkMode,
       username,
     };
     mutate(data).then(({ data, error }) => {
@@ -156,6 +161,7 @@ export const ManagePublicLink = ({
           value={commentPermissions}
           onChange={setCommentPermissions}
         />
+        <LinkModeSelector value={linkMode} onChange={setLinkMode} />
 
         <Checkbox
           checked={enabled}

@@ -5,7 +5,7 @@ import { User } from '../../../graphql-types';
 
 export const useMe = (): Pick<
   User,
-  'id' | 'name' | 'folderId' | 'commentPermissions'
+  'id' | 'name' | 'folderId' | 'commentPermissions' | 'linkMode'
 > => {
   const [result] = useQuery({ query: meQuery });
   // if result.error == No Permissions then your token expired, reauth?

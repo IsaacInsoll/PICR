@@ -21,6 +21,14 @@ export const accessTypeEnum = pgEnum('accesslogs_type', accessTypeOptions);
 export const themeModeOptions = ['auto', 'light', 'dark'] as const;
 export const themeModeEnum = pgEnum('theme_mode', themeModeOptions);
 
+// linkModeOptions: presumably this will grow over time to end up with < 7 options
+// if this grows large we should probably swap to a "roles are their own table mapping permissions and then each link has a RoleID
+export const linkModeOptions = [
+  'final_delivery',
+  'proof_no_downloads',
+] as const;
+export const linkModeEnum = pgEnum('link_mode', linkModeOptions);
+
 export const primaryColorOptions = [
   'blue',
   'cyan',

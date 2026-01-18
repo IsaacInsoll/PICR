@@ -13,7 +13,7 @@ import { db, dbFolderForId, dbUserForId, UserFields } from '../../db/picrDb.js';
 import { and, eq, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { UserType } from '../../../graphql-types.js';
-import { commentPermissionsEnum } from '../types/enums.js';
+import { commentPermissionsEnum, linkModeEnum } from '../types/enums.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
@@ -73,6 +73,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   user.uuid = params.uuid;
   user.enabled = params.enabled;
   user.commentPermissions = params.commentPermissions;
+  user.linkMode = params.linkMode;
   user.updatedAt = new Date();
 
   if (user.id) {
@@ -103,5 +104,6 @@ export const editUser = {
     uuid: { type: GraphQLString },
     enabled: { type: GraphQLBoolean },
     commentPermissions: { type: commentPermissionsEnum },
+    linkMode: { type: linkModeEnum },
   },
 };

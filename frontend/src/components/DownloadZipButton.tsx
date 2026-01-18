@@ -20,6 +20,7 @@ export const DownloadZipButton = ({
   const generateZip = useGenerateZip(folder, () => setTempDisabled(false));
   const [tempDisabled, setTempDisabled] = useState(false);
 
+  if (!generateZip) return null;
   return (
     <Button
       title="Download All Files"

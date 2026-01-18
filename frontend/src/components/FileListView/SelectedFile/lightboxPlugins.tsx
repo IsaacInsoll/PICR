@@ -17,3 +17,12 @@ export const lightboxPlugins = [
   Thumbnails,
   Video,
 ];
+//same as above but no downloads
+export const lightboxPluginsProof = [
+  Captions,
+  Counter,
+  Fullscreen,
+  Slideshow,
+  Thumbnails,
+  Video,
+];

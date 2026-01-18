@@ -71,6 +71,13 @@
       "when": 1768471273999,
       "tag": "0009_ntfy-email",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1768714189460,
+      "tag": "0010_link-mode",
+      "breakpoints": true
     }
   ]
 }
