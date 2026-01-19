@@ -17,12 +17,14 @@ import { Suspense, useEffect, useRef } from 'react';
 import { PicrErrorBoundary } from './components/PicrErrorBoundary';
 import { useSetAtom } from 'jotai';
 import { lightboxRefAtom } from './atoms/lightboxRefAtom';
+import { getBaseHrefPathname } from './helpers/baseHref';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
   const sessionKey = useSessionKey();
   const client = createClient(authKey, sessionKey);
   const customTheme = useAtomValue(themeModeAtom);
+  const basePathname = getBaseHrefPathname();
 
   //we put a portal at the start, otherwise Mantine Modals will be hidden behind it
   const portal = useRef<HTMLDivElement>(null);
@@ -34,7 +36,7 @@ const App = () => {
 
   return (
     <URQLProvider value={client}>
-      <BrowserRouter>
+      <BrowserRouter basename={basePathname || undefined}>
         <MantineProvider
           theme={{ ...theme, primaryColor: customTheme.primaryColor }}
           forceColorScheme={

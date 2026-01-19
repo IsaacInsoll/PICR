@@ -20,6 +20,13 @@ export const configFromEnv = () => {
   const cachePath = path.join(process.cwd(), 'cache');
 
   const d = env.data;
+  const baseUrl = new URL(d.BASE_URL);
+  const baseUrlPathname =
+    baseUrl.pathname === '/'
+      ? '/'
+      : baseUrl.pathname.endsWith('/')
+        ? baseUrl.pathname
+        : `${baseUrl.pathname}/`;
   const c: IPicrConfiguration = {
     updateMetadata: false, //re-read metadata, set by dbMigrate
     version: getVersion(),
@@ -27,6 +34,8 @@ export const configFromEnv = () => {
     databaseUrl: d.DATABASE_URL,
     port: d.PORT,
     baseUrl: d.BASE_URL,
+    baseUrlOrigin: baseUrl.origin,
+    baseUrlPathname,
     usePolling: d.USE_POLLING,
     pollingInterval: d.POLLING_INTERVAL,
     tokenSecret: d.TOKEN_SECRET,
