@@ -14,6 +14,7 @@ import {
 import { Page } from './Page';
 import { taskQuery } from '@shared/urql/queries/taskQuery';
 import { useRequery } from '@shared/hooks/useRequery';
+import { withBasePath } from '../helpers/baseHref';
 
 export const TaskSummary = ({ folderId }: { folderId: string }) => {
   const [result, requery] = useQuery({
@@ -34,7 +35,9 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
       if (task) {
         console.log(task);
         console.log(fh);
-        const url = `/zip/${fh.folder?.id}/${fh.hash}/${fh.folder?.name}`;
+        const url = withBasePath(
+          `/zip/${fh.folder?.id}/${fh.hash}/${fh.folder?.name}`,
+        );
         triggerDownload(url);
         setZips((list) => list.filter((zz) => zz !== fh));
       }

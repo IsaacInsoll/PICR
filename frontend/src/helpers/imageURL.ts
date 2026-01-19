@@ -1,5 +1,6 @@
 import { MinimalFile } from '../../types.js';
 import { AllSize } from './thumbnailSize.js';
+import { withBasePath } from './baseHref';
 
 export const imageURL = (
   file: Partial<Pick<MinimalFile, 'id' | 'fileHash' | 'name' | 'type'>>,
@@ -9,7 +10,8 @@ export const imageURL = (
 ) => {
   const { id, fileHash, name, type } = file;
 
-  const path = `/image/${id}/${size}/${fileHash}/`;
+  // if you change the path on the following line, also update imagePathFor in picrTemplate.ts (used by backend)
+  const path = withBasePath(`/image/${id}/${size}/${fileHash}/`);
   if (type == 'Video' && size != 'raw') return path + `joined.jpg`;
 
   return path + (extension ? name + extension : name);

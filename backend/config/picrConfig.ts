@@ -1,8 +1,9 @@
 import { IPicrConfiguration } from './IPicrConfiguration.js';
-import { testUrl } from '../../tests/testVariables.js';
 
 export const picrConfig: IPicrConfiguration = {
   baseUrl: '',
+  baseUrlOrigin: '',
+  baseUrlPathname: '',
   cachePath: '',
   mediaPath: '',
   updateMetadata: false,

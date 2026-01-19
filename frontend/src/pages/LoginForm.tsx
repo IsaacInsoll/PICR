@@ -79,5 +79,5 @@ export const LoginForm = () => {
 };
 
 export const PicrLogo = ({ style }: { style?: MantineStyleProp }) => {
-  return <Image src="/logo192.png" style={style} />;
+  return <Image src="logo192.png" style={style} />;
 };

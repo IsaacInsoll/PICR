@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { contextPermissions } from '../auth/contextPermissions.js';
 import { folderStatsSummaryText } from '../graphql/helpers/folderStats.js';
-import { imageURL } from '../../frontend/src/helpers/imageURL.js';
 import { Request, Response } from 'express';
 import { joinTitles } from '../helpers/joinTitle.js';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder.js';
@@ -9,30 +8,35 @@ import { MinimalFile } from '../../frontend/types.js';
 import { dbFolderForId, FileFields } from '../db/picrDb.js';
 import { getUserFromUUID } from '../auth/getUserFromUUID.js';
 import { picrConfig } from '../config/picrConfig.js';
+import { resolvePublicDir } from './resolvePublicDir.js';
+import { getBasePrefix, stripBasePrefix } from './basePath.js';
 
 interface ITemplateFields {
   title: string;
   description: string;
   image: string;
   url: string;
+  base: string;
 }
 
 // Build basic template, mainly so there are metadata fields if sharing this link online so you get a 'rich link'
 export const picrTemplate = async (req: Request, res: Response) => {
   const strippedBase = picrConfig.baseUrl.slice(0, -1);
+  const basePrefix = getBasePrefix();
+  const requestPath = stripBasePrefix(req.originalUrl);
   let fields: ITemplateFields = {
     ...fieldDefaults,
-    url: strippedBase + req.path,
+    url: strippedBase + requestPath,
+    base: picrConfig.baseUrlPathname,
   };
-  //todo: remainder of url
 
   //FB messenger was adding `%E2%81%A9` to outgoing links so we need to strip that. - observed december 25th, 2024
-  if (req.path.endsWith('%E2%81%A9')) {
-    return res.redirect(req.path.replace('%E2%81%A9', ''));
+  if (requestPath.endsWith('%E2%81%A9')) {
+    return res.redirect(basePrefix + requestPath.replace('%E2%81%A9', ''));
   }
 
   // Replace metadata on public links
-  const sub = req.path.split('/');
+  const sub = requestPath.split('/');
   if (sub[1] == 's' && sub.length >= 3) {
     const folderId = parseInt(sub[3]);
     if (!isNaN(folderId)) {
@@ -52,14 +56,15 @@ export const picrTemplate = async (req: Request, res: Response) => {
           title: joinTitles([folder.name, fields.title]),
           description: summary,
           image: thumb
-            ? strippedBase + imageURL(fileFieldsToMinimalFile(thumb), 'md')
+            ? strippedBase + imagePathFor(fileFieldsToMinimalFile(thumb), 'md')
             : fields.image,
         };
       }
     }
   }
 
-  let html = readFileSync('public/index.html', 'utf8');
+  const publicDir = resolvePublicDir();
+  let html = readFileSync(publicDir + '/index.html', 'utf8');
   Object.entries(fields).forEach(([key, value]) => {
     html = html.replaceAll(`{${key}}`, value);
   });
@@ -71,6 +76,7 @@ const fieldDefaults: ITemplateFields = {
   description: 'PICR File Sharing',
   image: '',
   url: '',
+  base: '/',
 };
 
 const fileFieldsToMinimalFile = (
@@ -83,4 +89,13 @@ const fileFieldsToMinimalFile = (
     // @ts-ignore
     type: f.type,
   };
+};
+
+const imagePathFor = (
+  file: Pick<MinimalFile, 'id' | 'fileHash' | 'name' | 'type'>,
+  size: 'raw' | 'sm' | 'md' | 'lg',
+) => {
+  const path = `/image/${file.id}/${size}/${file.fileHash}/`;
+  if (file.type == 'Video' && size != 'raw') return path + 'joined.jpg';
+  return path + file.name;
 };
