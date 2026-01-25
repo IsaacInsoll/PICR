@@ -1,5 +1,22 @@
 import { pgEnum } from 'drizzle-orm/pg-core';
 
+/**
+ * PostgreSQL enum definitions for the database schema.
+ *
+ * Pattern: Each enum has an `Options` array (for TypeScript) and an `Enum` (for Drizzle/Postgres).
+ * When adding a new enum value, add to BOTH the options array and regenerate migrations.
+ *
+ * @example
+ * // Using in a table definition:
+ * import { userTypeEnum } from './enums.js';
+ * const table = pgTable('example', { type: userTypeEnum() });
+ *
+ * // Using for TypeScript types:
+ * import { userTypeOptions } from './enums.js';
+ * type UserType = (typeof userTypeOptions)[number]; // 'Admin' | 'All' | 'Link' | 'User'
+ */
+
+/** Controls what comment actions a user can perform: edit (create), read (view only), none */
 export const commentPermissionsOptions = ['edit', 'none', 'read'] as const;
 export const commentPermissionsEnum = pgEnum(
   'user_commentPermissions',

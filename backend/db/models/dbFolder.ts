@@ -9,6 +9,15 @@ import { dbFile } from './dbFile.js';
 import { baseColumns } from '../column.helpers.js';
 import { relations } from 'drizzle-orm';
 
+/**
+ * Folder hierarchy mirroring the filesystem structure.
+ *
+ * - Self-referential via `parentId` to form a tree structure
+ * - Root folder (id=1) has `parentId = null` and `relativePath = null`
+ * - `exists` flag is used during boot to detect deleted folders (set false, then true when found)
+ * - `heroImageId` optionally points to a featured image for the folder thumbnail
+ * - `folderHash` is used for cache invalidation
+ */
 export const dbFolder = pgTable('Folders', {
   ...baseColumns,
   name: varchar('name', { length: 255 }).notNull(),

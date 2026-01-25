@@ -5,6 +5,17 @@ import { baseColumns } from '../column.helpers.js';
 import { dbFolder } from './dbFolder.js';
 import { relations } from 'drizzle-orm';
 
+/**
+ * Comments on files, supporting both user comments and system-generated messages.
+ *
+ * - `fileId`: the file being commented on
+ * - `folderId`: denormalized for efficient folder-level queries
+ * - `userId`: the commenter (null for anonymous/system)
+ * - `nickName`: optional display name entered by the user
+ * - `systemGenerated`: true for auto-generated comments (e.g., approval notifications)
+ *
+ * Comment permissions are controlled per-user via `dbUser.commentPermissions`.
+ */
 export const dbComment = pgTable('Comments', {
   ...baseColumns,
   folderId: integer('folderId').references(() => dbFolder.id),

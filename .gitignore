@@ -143,3 +143,5 @@ media/*
 /tests/env/*
 
 .artifacts/*
+
+lightroom/docs/*

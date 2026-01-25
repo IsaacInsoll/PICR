@@ -5,6 +5,16 @@ import { relations } from 'drizzle-orm';
 import { baseColumns } from '../column.helpers.js';
 import { accessTypeEnum } from './enums.js';
 
+/**
+ * Tracks user access events for analytics and audit purposes.
+ *
+ * - `type`: View (gallery opened) or Download (file downloaded)
+ * - `sessionId`: groups actions within a browser session
+ * - `ipAddress`/`userAgent`: for identifying unique visitors
+ *
+ * Used primarily for Link users to show gallery owners who accessed their shares.
+ * Has deduplication logic in `createAccessLog()` to avoid spam entries.
+ */
 export const dbAccessLog = pgTable('AccessLogs', {
   ...baseColumns,
   userId: integer('userId').references(() => dbUser.id),
