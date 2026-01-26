@@ -201,7 +201,25 @@ const validExtension = (filePath: string): FileType | null => {
   return FileType.File;
 };
 
-const imageExtensions = ['.png', '.jpeg', '.jpg', '.gif'];
+// sharp uses libvips but different builds support different formats (some do PSD / heif / avif!)
+// this is 'bare minimum
+// Call console.log(sharp.format) to see exactly what is supported
+
+const imageExtensions = [
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.webp',
+  '.tiff',
+  '.tif',
+  '.svg',
+  // '.avif',
+  // '.heic',
+  // '.heif',
+  // '.psd',
+];
+
 const videoExtensions = [
   '.mp4',
   '.mov',

@@ -1,6 +1,6 @@
 import { lt, valid } from 'semver';
 import { db, getServerOptions, setServerOptions } from '../db/picrDb.js';
-import { and, count, eq, inArray, isNotNull, sql } from 'drizzle-orm';
+import { and, count, eq, ilike, inArray, isNotNull, ne, or, sql } from 'drizzle-orm';
 import { IPicrConfiguration } from '../config/IPicrConfiguration.js';
 import { dirname } from 'path';
 import { randomBytes } from 'node:crypto';
@@ -35,6 +35,9 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
     if (lt(opts.lastBootedVersion!, '0.8.19')) {
       console.log(' ℹ️ Enabling metadata refresh for upgrade to 0.8.19+');
       config.updateMetadata = true;
+    }
+    if (lt(opts.lastBootedVersion!, '0.9.4')) {
+      await fixImageTypesForExtensions();
     }
     if (lt(opts.lastBootedVersion!, '0.7.0')) {
       // config.updateMetadata = true;
@@ -98,6 +101,20 @@ const removeDuplicates = async () => {
 
   console.log('🔂 PICR Migration complete');
   // process.exit();
+};
+
+const fixImageTypesForExtensions = async () => {
+  console.log('🖼️  PICR Migration: update file types for image extensions');
+
+  const imageExtensions = ['.webp', '.tiff', '.tif', '.svg'];
+  const extensionFilters = imageExtensions.map((ext) =>
+    ilike(dbFile.name, `%${ext}`),
+  );
+
+  await db
+    .update(dbFile)
+    .set({ type: 'Image' })
+    .where(and(ne(dbFile.type, 'Image'), or(...extensionFilters)));
 };
 
 const processDuplicateFolder = async (relativePath: string) => {
