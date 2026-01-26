@@ -190,6 +190,7 @@ export type Mutation = {
   addComment: FileInterface;
   auth: Scalars['String']['output'];
   deleteBranding: Folder;
+  deleteUser: Scalars['Boolean']['output'];
   editAdminUser: User;
   editBranding: Folder;
   editFolder: Folder;
@@ -218,6 +219,11 @@ export type MutationAuthArgs = {
 
 export type MutationDeleteBrandingArgs = {
   folderId: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteUserArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -421,6 +427,7 @@ export enum ThemeMode {
 export type User = {
   __typename?: 'User';
   commentPermissions?: Maybe<CommentPermissions>;
+  deleted?: Maybe<Scalars['Boolean']['output']>;
   enabled?: Maybe<Scalars['Boolean']['output']>;
   folder?: Maybe<Folder>;
   folderId: Scalars['ID']['output'];

@@ -26,7 +26,12 @@ export async function getUserFromToken(
     if (!decoded.userId) return undefined;
     const userId = parseInt(decoded.userId);
     const user = await dbUserForId(userId);
-    if (user && user.hashedPassword == decoded.hashedPassword && user.enabled)
+    if (
+      user &&
+      user.hashedPassword == decoded.hashedPassword &&
+      user.enabled &&
+      !user.deleted
+    )
       return user;
     return undefined;
   } catch (error) {

@@ -31,6 +31,7 @@ export const dbUser = pgTable('Users', {
   ...baseColumns,
   name: varchar('name', { length: 255 }).notNull(),
   enabled: boolean('enabled').notNull(),
+  deleted: boolean('deleted').notNull().default(false),
   commentPermissions: commentPermissionsEnum().notNull(),
   folderId: integer('folderId')
     .notNull()

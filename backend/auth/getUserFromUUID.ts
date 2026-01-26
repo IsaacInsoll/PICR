@@ -12,7 +12,7 @@ export const getUserFromUUID = async (
       where: eq(dbUser.uuid, context.uuid!),
     });
     //todo: check expiry dates etc
-    if (user && user.enabled) {
+    if (user && user.enabled && !user.deleted) {
       return user;
     }
   }

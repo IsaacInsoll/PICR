@@ -4,7 +4,7 @@ import { userType } from '../types/userType.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import { db, dbFolderForId } from '../../db/picrDb.js';
 import { dbUser } from '../../db/models/index.js';
-import { ne } from 'drizzle-orm';
+import { and, eq, ne } from 'drizzle-orm';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
@@ -15,7 +15,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
 ) => {
   await requireFullAdmin(context);
   const data = await db.query.dbUser.findMany({
-    where: ne(dbUser.userType, 'Link'),
+    where: and(ne(dbUser.userType, 'Link'), eq(dbUser.deleted, false)),
   });
   return data.map((u) => {
     return { ...userToJSON(u), folder: dbFolderForId(u.folderId) };

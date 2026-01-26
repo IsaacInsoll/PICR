@@ -9,7 +9,7 @@ import { allSubfolders } from '../../helpers/allSubfolders.js';
 import { accessLogType } from '../types/accessLogType.js';
 import { addFolderRelationship } from '../helpers/addFolderRelationship.js';
 import { db, getAccessLogs } from '../../db/picrDb.js';
-import { eq, isNotNull } from 'drizzle-orm';
+import { and, eq, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { userTypeEnum } from '../types/enums.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
@@ -37,7 +37,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   // if(params.userType == UserType.Link) {
 
   const linkUsers = await db.query.dbUser.findMany({
-    where: eq(dbUser.userType, 'Link'),
+    where: and(eq(dbUser.userType, 'Link'), eq(dbUser.deleted, false)),
   });
 
   const linkUserIds = linkUsers.map((u) => u.id);

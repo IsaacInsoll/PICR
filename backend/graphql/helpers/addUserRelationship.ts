@@ -24,8 +24,9 @@ export const addUserRelationship = async (
     const user = userToJSON(u);
     const userLimitedDetails = {
       id: user.id,
-      name: user.name,
+      name: u.deleted ? '[Deleted User]' : user.name,
       gravatar: user.gravatar,
+      deleted: u.deleted,
     };
     return { ...obj, user: userLimitedDetails };
   });

@@ -8,9 +8,10 @@ import {
   Modal,
   PasswordInput,
   Stack,
+  Text,
   TextInput,
 } from '@mantine/core';
-import { TbCloudUpload, TbUser } from 'react-icons/tb';
+import { TbCloudUpload, TbTrash, TbUser } from 'react-icons/tb';
 import { FolderSelector } from '../../components/FolderSelector';
 import {
   CommentPermissions,
@@ -21,6 +22,7 @@ import { CommentPermissionsSelector } from '../../components/CommentPermissionsS
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { EmailIcon, NotificationIcon } from '../../PicrIcons';
 import { editAdminUserMutation } from '@shared/urql/mutations/editAdminUserMutation';
+import { deleteUserMutation } from '@shared/urql/mutations/deleteUserMutation';
 
 export const ManageUser = ({
   id,
@@ -31,6 +33,8 @@ export const ManageUser = ({
 }) => {
   const [user, exists] = useViewUser(id);
   const [, mutate] = useMutation(editAdminUserMutation);
+  const [, deleteUser] = useMutation(deleteUserMutation);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [name, setName] = useState(user?.name ?? '');
   const [username, setUsername] = useState(user?.username);
@@ -50,6 +54,18 @@ export const ManageUser = ({
   const [error, setError] = useState('');
 
   const invalidUsername = username === '' || name === '';
+  const isRootAdmin = id === '1';
+
+  const onDelete = () => {
+    if (!id || isRootAdmin) return;
+    deleteUser({ id }).then(({ error }) => {
+      if (error) {
+        setError(error.toString());
+      } else {
+        onClose();
+      }
+    });
+  };
 
   const onSave = () => {
     //TODO: not pass password if it's null or ''
@@ -137,13 +153,46 @@ export const ManageUser = ({
           onChange={(event) => setEnabled(event.currentTarget.checked)}
         />
         <ErrorAlert message={error} />
-        <Group>
+        <Group justify="space-between">
           <Button disabled={invalidUsername} onClick={onSave}>
             <TbCloudUpload />
             {exists ? 'Save' : 'Create User'}
           </Button>
+          {exists && !isRootAdmin && (
+            <Button
+              color="red"
+              variant="outline"
+              onClick={() => setShowDeleteConfirm(true)}
+              leftSection={<TbTrash />}
+            >
+              Delete
+            </Button>
+          )}
         </Group>
       </Stack>
+
+      <Modal
+        opened={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        title="Delete User"
+        centered
+        size="sm"
+      >
+        <Stack>
+          <Text>
+            Are you sure you want to delete this user? This action cannot be
+            undone and they will no longer be able to log in.
+          </Text>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => setShowDeleteConfirm(false)}>
+              Cancel
+            </Button>
+            <Button color="red" onClick={onDelete} leftSection={<TbTrash />}>
+              Delete
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </Modal>
   );
 };

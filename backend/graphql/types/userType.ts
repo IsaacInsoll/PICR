@@ -17,6 +17,7 @@ export const userType = new GraphQLObjectType({
     uuid: { type: GraphQLString }, // can be null if 'real user'
     username: { type: GraphQLString }, // null if not 'real user'
     enabled: { type: GraphQLBoolean },
+    deleted: { type: GraphQLBoolean },
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     folder: { type: folderType },
     commentPermissions: { type: commentPermissionsEnum },
