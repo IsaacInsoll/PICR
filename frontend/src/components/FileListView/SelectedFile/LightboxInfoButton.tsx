@@ -8,9 +8,10 @@ export const LightboxInfoButton = ({ file }) => {
       key="my-button"
       type="button"
       className="yarl__button"
+      title="View file info"
       onClick={() => openFileInfo(file.id)}
     >
-      <InfoIcon size="28" />
+      <InfoIcon size="24" />
     </button>
   );
 };

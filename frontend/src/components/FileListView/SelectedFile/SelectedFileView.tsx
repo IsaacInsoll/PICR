@@ -10,10 +10,11 @@ import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/counter.css';
 import 'yet-another-react-lightbox/plugins/thumbnails.css';
+import './SelectedFileView.css';
 import { FileListViewStyleComponentProps } from '../FolderContentsView';
 import { theme } from '../../../theme';
 import { useSetFolder } from '../../../hooks/useSetFolder';
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { LightboxFileRating } from './LightboxFileRating';
 import { filesForLightbox } from './filesForLightbox';
@@ -22,7 +23,9 @@ import { lightboxPlugins, lightboxPluginsProof } from './lightboxPlugins';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { lightboxControllerRefAtom } from '../../../atoms/lightboxControllerRefAtom';
 import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
-import { useCanDownload, useLinkMode } from '../../../hooks/useMe';
+import { useCanDownload } from '../../../hooks/useMe';
+import { Thumbnails } from 'yet-another-react-lightbox/plugins';
+import { DashboardIcon, ThumbnailsIcon } from '../../../PicrIcons';
 
 export const SelectedFileView = ({
   files,
@@ -35,6 +38,7 @@ export const SelectedFileView = ({
   const ref = useRef<ControllerRef>(null);
   const { fileId } = useParams();
   const portal = useAtomValue(lightboxRefAtom);
+  const [showThumbnails, setShowThumbnails] = useState(false);
 
   const setControllerRef = useSetAtom(lightboxControllerRefAtom);
 
@@ -47,6 +51,16 @@ export const SelectedFileView = ({
 
   const toolbarButtons = [
     <LightboxInfoButton file={selectedImage} key="InfoButton" />,
+    <button
+      key="thumbnails-toggle"
+      type="button"
+      className="yarl__button"
+      onClick={() => setShowThumbnails((prev) => !prev)}
+      aria-pressed={showThumbnails}
+      title={showThumbnails ? 'Hide thumbnails' : 'Show thumbnails'}
+    >
+      <ThumbnailsIcon size="24" />
+    </button>,
     'slideshow',
     'close',
   ];
@@ -54,9 +68,11 @@ export const SelectedFileView = ({
   const config = useMemo(() => {
     return {
       buttons: canDownload ? ['download', ...toolbarButtons] : toolbarButtons,
-      plugins: canDownload ? lightboxPlugins : lightboxPluginsProof,
+      plugins: (canDownload ? lightboxPlugins : lightboxPluginsProof).filter(
+        (plugin) => showThumbnails || plugin !== Thumbnails,
+      ),
     };
-  }, [canDownload]);
+  }, [canDownload, showThumbnails]);
 
   return (
     <Lightbox
@@ -77,7 +93,7 @@ export const SelectedFileView = ({
         ),
       }}
       carousel={carouselProps}
-      thumbnails={{ position: 'bottom' }}
+      thumbnails={showThumbnails ? { position: 'bottom' } : undefined}
       on={{
         entered: unInert,
         view: ({ index }) => {

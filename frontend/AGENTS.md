@@ -182,6 +182,8 @@ updates: {
 },
 ```
 
+Consider invalidating the appropriate "list" query when adding or removing an item. Updates to an existing item should be handled automatically without doing this. 
+
 ## UI Components (Mantine)
 
 ### Theme Configuration
