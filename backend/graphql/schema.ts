@@ -43,6 +43,7 @@ import { userDeviceType } from './types/userDeviceType.js';
 import { editUserDevice } from './mutations/editUserDevice.js';
 import { userDevices } from './queries/userDevices.js';
 import { renameFolder } from './mutations/renameFolder.js';
+import { deleteUser } from './mutations/deleteUser.js';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -73,6 +74,7 @@ const mutations = new GraphQLObjectType({
   fields: () => ({
     addComment,
     auth,
+    deleteUser,
     editAdminUser,
     editUser,
     generateThumbnails,

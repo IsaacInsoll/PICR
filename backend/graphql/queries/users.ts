@@ -10,7 +10,7 @@ import { userType } from '../types/userType.js';
 import { allSubfolders } from '../../helpers/allSubfolders.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import { db, dbFolderForId } from '../../db/picrDb.js';
-import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
@@ -39,7 +39,11 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     ids.push(...childIds);
   }
 
-  const where = and(inArray(dbUser.folderId, ids), eq(dbUser.userType, 'Link'));
+  const where = and(
+    inArray(dbUser.folderId, ids),
+    eq(dbUser.userType, 'Link'),
+    eq(dbUser.deleted, false),
+  );
 
   const data = await db.query.dbUser.findMany({
     where: !params.sortByRecent

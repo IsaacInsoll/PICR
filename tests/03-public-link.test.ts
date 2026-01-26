@@ -6,6 +6,8 @@ import {
 } from '../frontend/testGraphqlClient';
 import { defaultCredentials } from '../backend/auth/defaultCredentials';
 import { editUserMutation } from '../shared/urql/mutations/editUserMutation';
+import { deleteUserMutation } from '../shared/urql/mutations/deleteUserMutation';
+import { accessLogQuery } from '../shared/urql/queries/accessLogQuery';
 
 import {
   gravatarTest,
@@ -131,6 +133,117 @@ test('Open Graph: social media friendly links', async () => {
   expect(text).toMatch(
     /<meta property="og:image" content="https?:\/\/(.){5,}\/image\/2\/md\/(.){64}\/XH2A2139.jpg" \/>/gm,
   ); //TODO: full URL
+});
+
+test('Admin can see access log entry for public link visit', async () => {
+  const headers = await getUserHeader(defaultCredentials);
+  const client = await createTestGraphqlClient(headers);
+
+  const result = await client
+    .query(accessLogQuery, { folderId: '1', includeChildren: true })
+    .toPromise();
+
+  expect(result.error).toBeUndefined();
+  expect(result.data?.accessLogs).toBeDefined();
+
+  // Find an access log entry for our test user (user ID 2)
+  const logs = result.data!.accessLogs;
+  const testUserLogs = logs.filter((log) => log.userId === '2');
+  expect(testUserLogs.length).toBeGreaterThan(0);
+
+  // Verify the log entry has expected properties
+  const log = testUserLogs[0];
+  expect(log.folderId).toBe(photoFolderId);
+  expect(log.timestamp).toBeDefined();
+});
+
+test('Disabled public link cannot access folder', async () => {
+  // Admin disables the link
+  const adminHeaders = await getUserHeader(defaultCredentials);
+  const adminClient = await createTestGraphqlClient(adminHeaders);
+
+  const disableResult = await adminClient
+    .mutation(editUserMutation, {
+      ...testPublicLink,
+      id: '2',
+      enabled: false,
+    })
+    .toPromise();
+
+  expect(disableResult.error).toBeUndefined();
+  expect(disableResult.data?.editUser?.enabled).toBe(false);
+
+  // Now try to access with the disabled link
+  const linkHeaders = await getLinkHeader(testPublicLink.uuid);
+  const linkClient = await createTestGraphqlClient(linkHeaders);
+
+  const result = await linkClient
+    .query(viewFolderQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+
+  expect(result.error).toBeDefined();
+  expect(result.data?.folder).toBeUndefined();
+});
+
+test('Re-enabled link works, then deleted link fails', async () => {
+  const adminHeaders = await getUserHeader(defaultCredentials);
+  const adminClient = await createTestGraphqlClient(adminHeaders);
+
+  // Re-enable the link
+  const enableResult = await adminClient
+    .mutation(editUserMutation, {
+      ...testPublicLink,
+      id: '2',
+      enabled: true,
+    })
+    .toPromise();
+
+  expect(enableResult.error).toBeUndefined();
+  expect(enableResult.data?.editUser?.enabled).toBe(true);
+
+  // Verify it works again
+  const linkHeaders = await getLinkHeader(testPublicLink.uuid);
+  const linkClient = await createTestGraphqlClient(linkHeaders);
+
+  const workingResult = await linkClient
+    .query(viewFolderQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+
+  expect(workingResult.error).toBeUndefined();
+  expect(workingResult.data?.folder).toBeDefined();
+
+  // Now delete the user
+  const deleteResult = await adminClient
+    .mutation(deleteUserMutation, { id: '2' })
+    .toPromise();
+
+  expect(deleteResult.error).toBeUndefined();
+  expect(deleteResult.data?.deleteUser).toBe(true);
+
+  // Deleted link should no longer work
+  const deletedResult = await linkClient
+    .query(viewFolderQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+
+  expect(deletedResult.error).toBeDefined();
+  expect(deletedResult.data?.folder).toBeUndefined();
+});
+
+test('Access logs no longer show deleted user', async () => {
+  const headers = await getUserHeader(defaultCredentials);
+  const client = await createTestGraphqlClient(headers);
+
+  const result = await client
+    .query(accessLogQuery, { folderId: '1', includeChildren: true })
+    .toPromise();
+
+  expect(result.error).toBeUndefined();
+  expect(result.data?.accessLogs).toBeDefined();
+
+  // Deleted user (ID 2) should not appear in access logs
+  const logs = result.data!.accessLogs;
+  const deletedUserLogs = logs.filter((log) => log.userId === '2');
+  expect(deletedUserLogs.length).toBe(0);
 });
 
 //TODO: can view comments

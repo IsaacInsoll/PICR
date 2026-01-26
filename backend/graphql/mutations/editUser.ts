@@ -47,7 +47,11 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   }
 
   const existingUuid = await db.query.dbUser.findFirst({
-    where: and(eq(dbUser.uuid, params.uuid), ne(dbUser.id, user?.id ?? 0)),
+    where: and(
+      eq(dbUser.uuid, params.uuid),
+      ne(dbUser.id, user?.id ?? 0),
+      eq(dbUser.deleted, false),
+    ),
   });
 
   if (existingUuid) {

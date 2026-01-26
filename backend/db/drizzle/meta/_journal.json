@@ -78,6 +78,13 @@
       "when": 1768714189460,
       "tag": "0010_link-mode",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1769383056787,
+      "tag": "0011_DeleteUser",
+      "breakpoints": true
     }
   ]
 }

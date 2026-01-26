@@ -13,6 +13,19 @@ import { dbFolder } from './dbFolder.js';
 import { fileFlagEnum, fileTypeEnum } from './enums.js';
 import { relations } from 'drizzle-orm';
 
+/**
+ * Media files (images, videos, other files) with metadata extracted during scanning.
+ *
+ * Key fields:
+ * - `type`: Discriminator for File/Image/Video (maps to GraphQL interface)
+ * - `imageRatio`: width/height for layout before image loads (images and videos only)
+ * - `duration`: length in seconds (videos only)
+ * - `blurHash`: tiny placeholder hash for progressive loading (images)
+ * - `metadata`: JSON string with EXIF/media metadata
+ * - `flag`: approval status for proofing workflows (approved/rejected/none)
+ * - `exists`: set false at boot, then true when found - detects deleted files
+ * - `totalComments`/`latestComment`: denormalized for performance
+ */
 export const dbFile = pgTable('Files', {
   ...baseColumns,
   name: varchar('name', { length: 255 }).notNull(),

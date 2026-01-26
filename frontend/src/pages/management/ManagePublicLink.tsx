@@ -3,6 +3,7 @@ import { randomString } from '../../helpers/randomString';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import { editUserMutation } from '@shared/urql/mutations/editUserMutation';
+import { deleteUserMutation } from '@shared/urql/mutations/deleteUserMutation';
 import type { MutationEditUserArgs } from '@shared/gql/graphql';
 import {
   ActionIcon,
@@ -20,6 +21,7 @@ import {
   TbCloudUpload,
   TbLabel,
   TbRefresh,
+  TbTrash,
   TbUsersGroup,
 } from 'react-icons/tb';
 import { useViewUser } from './useViewUser';
@@ -42,6 +44,8 @@ export const ManagePublicLink = ({
 }) => {
   const [user, exists] = useViewUser(id);
   const [, mutate] = useMutation(editUserMutation);
+  const [, deleteUser] = useMutation(deleteUserMutation);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [name, setName] = useState(user?.name ?? '');
   const [username, setUsername] = useState(user?.username ?? '');
@@ -80,6 +84,17 @@ export const ManagePublicLink = ({
 
   const badLink = badChars(link);
   const invalidLink = badLink.length > 0 || name === '' || link.length < 6;
+
+  const onDelete = () => {
+    if (!id) return;
+    deleteUser({ id }).then(({ error }) => {
+      if (error) {
+        setError(error.toString());
+      } else {
+        onClose();
+      }
+    });
+  };
 
   return (
     <Modal
@@ -170,18 +185,53 @@ export const ManagePublicLink = ({
           onChange={(event) => setEnabled(event.currentTarget.checked)}
         />
         <ErrorAlert message={error} />
-        <Group>
-          <CopyPublicLinkButton
-            disabled={invalidLink}
-            folderId={f!.id}
-            hash={link}
-          />
-          <Button disabled={invalidLink} onClick={onSave}>
-            <TbCloudUpload />
-            {exists ? 'Save' : 'Create Link'}
-          </Button>
+        <Group justify="space-between">
+          <Group>
+            <CopyPublicLinkButton
+              disabled={invalidLink}
+              folderId={f!.id}
+              hash={link}
+            />
+            <Button disabled={invalidLink} onClick={onSave}>
+              <TbCloudUpload />
+              {exists ? 'Save' : 'Create Link'}
+            </Button>
+          </Group>
+          {exists && (
+            <Button
+              color="red"
+              variant="outline"
+              onClick={() => setShowDeleteConfirm(true)}
+              leftSection={<TbTrash />}
+            >
+              Delete
+            </Button>
+          )}
         </Group>
       </Stack>
+
+      <Modal
+        opened={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        title="Delete Public Link"
+        centered
+        size="sm"
+      >
+        <Stack>
+          <Text>
+            Are you sure you want to delete this public link? This action cannot
+            be undone and the link will stop working immediately.
+          </Text>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => setShowDeleteConfirm(false)}>
+              Cancel
+            </Button>
+            <Button color="red" onClick={onDelete} leftSection={<TbTrash />}>
+              Delete
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </Modal>
   );
 };

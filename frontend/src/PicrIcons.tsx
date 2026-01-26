@@ -26,10 +26,11 @@ import { CiAt } from 'react-icons/ci';
 import { IconBaseProps } from 'react-icons/lib/iconBase';
 import { MdOutlineThumbsUpDown } from 'react-icons/md';
 import { BiComment, BiCommentDetail, BiSolidError } from 'react-icons/bi';
+import { LuGalleryThumbnails, LuInfo, LuLayoutGrid } from 'react-icons/lu';
 
 // Most icons are used in multiple places, so lets have a master list for consistency
 export const PublicLinkIcon = (props: IconBaseProps) => <TbLink {...props} />;
-export const InfoIcon = (props: IconBaseProps) => <TbInfoCircle {...props} />;
+export const InfoIcon = (props: IconBaseProps) => <LuInfo {...props} />;
 export const UserSettingsIcon = (props: IconBaseProps) => (
   <TbUserCog {...props} />
 );
@@ -70,9 +71,12 @@ export const CommentsIcon = (props: IconBaseProps) => (
   <BiCommentDetail {...props} />
 );
 export const DashboardIcon = (props: IconBaseProps) => (
-  <TbLayoutDashboard {...props} />
+  <LuLayoutGrid {...props} />
 );
 
 export const NotificationIcon = (props: IconBaseProps) => (
   <TbNotification {...props} />
+);
+export const ThumbnailsIcon = (props: IconBaseProps) => (
+  <LuGalleryThumbnails {...props} />
 );
