@@ -1,5 +1,5 @@
 import { useQuery } from 'urql';
-import { Suspense, useCallback, useEffect } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import {
   FolderHeader,
   PlaceholderFolderHeader,
@@ -31,6 +31,9 @@ import { defaultBranding, themeModeAtom } from '../atoms/themeModeAtom';
 import { Branding } from '../../../graphql-types';
 import { ManageFolder } from './ManageFolder';
 import { FolderMenuItems } from '../components/FileListView/FolderMenu';
+import { FolderCsvExportModal } from '../components/FileListView/FolderCsvExportModal';
+import { useMe } from '../hooks/useMe';
+import { TbTableExport } from 'react-icons/tb';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -52,6 +55,7 @@ const ViewFolderBody = () => {
   const baseUrl = useBaseViewFolderURL();
   const setFolder = useSetFolder();
   const setThemeMode = useSetAtom(themeModeAtom);
+  const [csvExportOpen, setCsvExportOpen] = useState(false);
 
   const mode: ViewFolderMode = ['manage', 'activity'].includes(fileId)
     ? fileId
@@ -99,7 +103,13 @@ const ViewFolderBody = () => {
   }
 
   if (mode === 'files') {
-    actions.push(<FolderOverflowMenu folder={folder} key="Overflow" />);
+    actions.push(
+      <FolderOverflowMenu
+        folder={folder}
+        key="Overflow"
+        onCsvExport={() => setCsvExportOpen(true)}
+      />,
+    );
   } else {
     actions.push(
       <Button
@@ -127,6 +137,11 @@ const ViewFolderBody = () => {
       <LoggedInHeader folder={folder} managing={managing} />
       <QuickFind folder={folder} />
       <FolderModalManager folder={folder} />
+      <FolderCsvExportModal
+        folder={folder}
+        opened={csvExportOpen}
+        onClose={() => setCsvExportOpen(false)}
+      />
       <QueryFeedback result={data} reQuery={reQuery} />
       {!folder ? (
         <Title order={1}>Folder Not Found</Title>
@@ -168,9 +183,17 @@ const ViewFolderBody = () => {
   );
 };
 
-const FolderOverflowMenu = ({ folder }: { folder: MinimalFolder }) => {
+const FolderOverflowMenu = ({
+  folder,
+  onCsvExport,
+}: {
+  folder: MinimalFolder;
+  onCsvExport: () => void;
+}) => {
   const setFolder = useSetFolder();
   const setFiltering = useSetAtom(filterAtom);
+  const { canView } = useCommentPermissions();
+  const me = useMe();
   return (
     <Menu
       shadow="md"
@@ -193,8 +216,28 @@ const FolderOverflowMenu = ({ folder }: { folder: MinimalFolder }) => {
         >
           Filter Files
         </Menu.Item>
+
         <FolderMenuItems folder={folder} showOpenItem={false} />
 
+        {me?.isUser ? (
+          <Menu.Item
+            leftSection={<TbTableExport size={20} />}
+            onClick={onCsvExport}
+          >
+            CSV Export
+          </Menu.Item>
+        ) : null}
+        {canView ? (
+          <>
+            <Menu.Label>Comments & Ratings</Menu.Label>
+            <Menu.Item
+              leftSection={<CommentIcon />}
+              onClick={() => setFolder(folder, 'activity')}
+            >
+              View Activity
+            </Menu.Item>
+          </>
+        ) : null}
         {/*<Menu.Label>PICR</Menu.Label>*/}
         {/*<Menu.Item*/}
         {/*  leftSection={<UserSettingsIcon />}*/}
