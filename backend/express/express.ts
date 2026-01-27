@@ -11,7 +11,6 @@ export const expressServer = () => {
   const router = express.Router();
 
   const publicDir = resolvePublicDir();
-  console.log({ publicDir });
   router.all('/graphql', gqlServer);
   router.use(express.static(publicDir, { index: false }));
   router.get('/image/:id/:size/:hash/:filename', imageRequest); //filename is ignored but nice for users to see a 'nice' name
