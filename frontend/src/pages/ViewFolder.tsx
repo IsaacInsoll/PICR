@@ -217,27 +217,12 @@ const FolderOverflowMenu = ({
           Filter Files
         </Menu.Item>
 
-        <FolderMenuItems folder={folder} showOpenItem={false} />
+        <FolderMenuItems
+          folder={folder}
+          showOpenItem={false}
+          onCsvExport={onCsvExport}
+        />
 
-        {me?.isUser ? (
-          <Menu.Item
-            leftSection={<TbTableExport size={20} />}
-            onClick={onCsvExport}
-          >
-            CSV Export
-          </Menu.Item>
-        ) : null}
-        {canView ? (
-          <>
-            <Menu.Label>Comments & Ratings</Menu.Label>
-            <Menu.Item
-              leftSection={<CommentIcon />}
-              onClick={() => setFolder(folder, 'activity')}
-            >
-              View Activity
-            </Menu.Item>
-          </>
-        ) : null}
         {/*<Menu.Label>PICR</Menu.Label>*/}
         {/*<Menu.Item*/}
         {/*  leftSection={<UserSettingsIcon />}*/}

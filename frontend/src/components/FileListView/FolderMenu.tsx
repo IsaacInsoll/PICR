@@ -3,7 +3,7 @@ import { useSetFolder } from '../../hooks/useSetFolder';
 import { Menu } from '@mantine/core';
 import { CommentIcon, DownloadIcon, FolderIcon } from '../../PicrIcons';
 import { useGenerateZip } from '../../hooks/useGenerateZip';
-import { TbFolderShare, TbFolderStar } from 'react-icons/tb';
+import { TbFolderShare, TbFolderStar, TbTableExport } from 'react-icons/tb';
 import { useMe } from '../../hooks/useMe';
 import { useOpenMoveRenameFolderModal } from '../../atoms/modalAtom';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
@@ -12,11 +12,13 @@ type FolderMenuItemsProps = {
   folder: MinimalFolder;
   showFolderLabel?: boolean;
   showOpenItem?: boolean;
+  onCsvExport?: () => void;
 };
 
 export const FolderMenuItems = ({
   folder,
   showOpenItem = true,
+  onCsvExport,
 }: FolderMenuItemsProps) => {
   const setFolder = useSetFolder();
   const generateZip = useGenerateZip(folder);
@@ -65,6 +67,14 @@ export const FolderMenuItems = ({
           onClick={generateZip}
         >
           Download ZIP
+        </Menu.Item>
+      ) : null}
+      {me?.isUser && onCsvExport ? (
+        <Menu.Item
+          leftSection={<TbTableExport size={20} />}
+          onClick={onCsvExport}
+        >
+          CSV Export
         </Menu.Item>
       ) : null}
       {canView ? (
