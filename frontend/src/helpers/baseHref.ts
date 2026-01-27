@@ -16,7 +16,6 @@ export const getBaseHrefPathname = () => {
 export const withBasePath = (path: string) => {
   const basePathname = getBaseHrefPathname();
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  console.log({ basePathname, normalizedPath });
   if (!basePathname) return normalizedPath;
   return `${basePathname}${normalizedPath}`;
 };
