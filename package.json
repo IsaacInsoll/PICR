@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "vitest run",
-    "workflow": "act push --artifact-server-path $PWD/.artifacts -P ubuntu-24.04=catthehacker/ubuntu:act-latest",
+    "workflow": "act push --pull=false --artifact-server-path $PWD/.artifacts -P ubuntu-24.04=catthehacker/ubuntu:act-latest",
     "gql": "graphql-codegen --config codegen.ts",
     "release": "dotenv -- release-it --only-version",
     "start:server-ts": "cd backend && tsc -w",
