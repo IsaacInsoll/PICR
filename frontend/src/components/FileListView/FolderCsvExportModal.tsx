@@ -9,10 +9,12 @@ import {
   Text,
   Textarea,
 } from '@mantine/core';
+import { useQuery } from 'urql';
 import { useAtomValue } from 'jotai';
 import { filterOptions } from '@shared/filterAtom';
 import { filterFiles } from '@shared/files/filterFiles';
 import { sortFiles } from '@shared/files/sortFiles';
+import { folderFilesQuery } from '@shared/urql/queries/folderFilesQuery';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import { copyToClipboard } from '../../helpers/copyToClipboard';
 import type { ViewFolderQuery } from '@shared/gql/graphql';
@@ -20,8 +22,19 @@ import { ClipboardIcon, DownloadIcon } from '../../PicrIcons';
 
 type Folder = ViewFolderQuery['folder'];
 type ExportFormat = 'picr' | 'comma' | 'space';
+type ExportFile = ViewFolderQuery['folder']['files'][number] & {
+  relativePath?: string | null;
+};
 
-const stripExtension = (name: string) => name.replace(/\.[^.]+$/, '');
+const MAX_EXPORT_FILES = 10000;
+
+const stripExtensionFromPath = (path: string) => {
+  const lastSlash = path.lastIndexOf('/');
+  const prefix = lastSlash >= 0 ? path.slice(0, lastSlash + 1) : '';
+  const base = lastSlash >= 0 ? path.slice(lastSlash + 1) : path;
+  const withoutExtension = base.replace(/\.[^.]+$/, '');
+  return prefix + withoutExtension;
+};
 
 const flagForCsv = (flag: string | null | undefined) => {
   // avoid pushing none/null/undefined through
@@ -59,21 +72,50 @@ export const FolderCsvExportModal = ({
   const [useFilters, setUseFilters] = useState(true);
   const [includeSubfolders, setIncludeSubfolders] = useState(false);
 
+  const folderFilesVariables = useMemo(
+    () => ({
+      folderId: folder?.id,
+      includeSubfolders: true,
+      limit: MAX_EXPORT_FILES,
+    }),
+    [folder?.id],
+  );
+  const folderFilesContext = useMemo(() => ({ suspense: false }), []);
+
+  const [{ data: folderFilesData, fetching: folderFilesLoading, error }] =
+    useQuery({
+      query: folderFilesQuery,
+      variables: folderFilesVariables,
+      context: folderFilesContext,
+      pause: !opened || !includeSubfolders || !folder?.id,
+    });
+
+  const folderFilesResult = includeSubfolders
+    ? folderFilesData?.folderFiles
+    : null;
+
   const files = useMemo(() => {
-    const folderFiles = folder?.files ?? [];
+    const folderFiles: ExportFile[] = includeSubfolders
+      ? (folderFilesResult?.files ?? []).map((item) => ({
+          ...item.file,
+          relativePath: item.relativePath,
+        }))
+      : (folder?.files ?? []);
     const filtered = useFilters
       ? filterFiles(folderFiles, filters)
       : folderFiles;
-    return sortFiles(filtered, sort);
-  }, [folder, useFilters, filters, sort]);
+    return sortFiles(filtered, sort) as ExportFile[];
+  }, [folder, folderFilesResult, includeSubfolders, useFilters, filters, sort]);
 
   const output = useMemo(() => {
     const names = files.map((file) => {
-      const base = file.name ?? '';
-      return excludeExtensions ? stripExtension(base) : base;
+      const base = includeSubfolders
+        ? file.relativePath ?? file.name ?? ''
+        : file.name ?? '';
+      return excludeExtensions ? stripExtensionFromPath(base) : base;
     });
 
-    if (format === 'comma') return names.join(', ');
+    if (format === 'comma') return names.join(',');
     if (format === 'space') return names.join(' ');
 
     return files
@@ -90,6 +132,9 @@ export const FolderCsvExportModal = ({
   const downloadExtension = format === 'picr' ? 'csv' : 'txt';
   const fileNameBase = (folder?.name ?? 'folder').replace(/[^\w.-]+/g, '_');
   const downloadFileName = `${fileNameBase}-export.${downloadExtension}`;
+  const outputLoading = includeSubfolders && folderFilesLoading;
+  const displayOutput = outputLoading ? 'Loading...' : output;
+  const outputDisabled = outputLoading || !output;
 
   const handleCopy = () => {
     if (!output) return;
@@ -133,23 +178,36 @@ export const FolderCsvExportModal = ({
           onChange={(event) => setUseFilters(event.currentTarget.checked)}
           label="Use current filters"
         />
-        {/*<Checkbox*/}
-        {/*  checked={includeSubfolders}*/}
-        {/*  onChange={(event) =>*/}
-        {/*    setIncludeSubfolders(event.currentTarget.checked)*/}
-        {/*  }*/}
-        {/*  disabled*/}
-        {/*  label="Include subfolders"*/}
-        {/*  description="Feature coming soon"*/}
-        {/*/>*/}
+        <Checkbox
+          checked={includeSubfolders}
+          onChange={(event) =>
+            setIncludeSubfolders(event.currentTarget.checked)
+          }
+          label="Include subfolders"
+          description="Export all files within the folder tree (max 10,000)"
+        />
 
-        <Text size="sm" c="dimmed">
-          {fileCount} file{fileCount === 1 ? '' : 's'} in export preview
-        </Text>
+        {includeSubfolders ? (
+          <Text size="sm" c={folderFilesResult?.truncated ? 'orange' : 'dimmed'}>
+            {error
+              ? 'Unable to load files from subfolders.'
+              : folderFilesLoading
+                ? 'Loading files from subfolders...'
+                : folderFilesResult
+                  ? `${folderFilesResult.totalReturned} of ${folderFilesResult.totalAvailable} files loaded` +
+                    (folderFilesResult.truncated ? ' (truncated)' : '')
+                  : 'No files found.'}
+          </Text>
+        ) : (
+          <Text size="sm" c="dimmed">
+            {fileCount} file{fileCount === 1 ? '' : 's'} in export preview
+          </Text>
+        )}
 
         <Textarea
-          value={output}
+          value={displayOutput}
           readOnly
+          disabled={outputLoading}
           minRows={6}
           autosize
           placeholder="No files to export yet."
@@ -159,14 +217,14 @@ export const FolderCsvExportModal = ({
           <Button
             variant="default"
             onClick={handleCopy}
-            disabled={!output}
+            disabled={outputDisabled}
             leftSection={<ClipboardIcon />}
           >
             Copy to clipboard
           </Button>
           <Button
             onClick={handleDownload}
-            disabled={!output}
+            disabled={outputDisabled}
             leftSection={<DownloadIcon />}
           >
             Download

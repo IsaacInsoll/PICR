@@ -120,6 +120,18 @@ type Folder {
   users: [User!]
 }
 
+type FolderFileExport {
+  file: FileInterface!
+  relativePath: String!
+}
+
+type FolderFilesResult {
+  files: [FolderFileExport!]!
+  totalAvailable: Int!
+  totalReturned: Int!
+  truncated: Boolean!
+}
+
 enum FolderPermissions {
   Admin
   None
@@ -210,6 +222,7 @@ type Query {
   comments(fileId: ID, folderId: ID): [Comment!]!
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
+  folderFiles(folderId: ID!, includeSubfolders: Boolean, limit: Int): FolderFilesResult!
   me: User
   searchFiles(folderId: ID, query: String!): [File!]!
   searchFolders(folderId: ID, query: String!): [Folder!]!

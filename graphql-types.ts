@@ -134,6 +134,20 @@ export type Folder = {
   users?: Maybe<Array<User>>;
 };
 
+export type FolderFileExport = {
+  __typename?: 'FolderFileExport';
+  file: FileInterface;
+  relativePath: Scalars['String']['output'];
+};
+
+export type FolderFilesResult = {
+  __typename?: 'FolderFilesResult';
+  files: Array<FolderFileExport>;
+  totalAvailable: Scalars['Int']['output'];
+  totalReturned: Scalars['Int']['output'];
+  truncated: Scalars['Boolean']['output'];
+};
+
 export enum FolderPermissions {
   Admin = 'Admin',
   None = 'None',
@@ -317,6 +331,7 @@ export type Query = {
   comments: Array<Comment>;
   file: FileInterface;
   folder: Folder;
+  folderFiles: FolderFilesResult;
   me?: Maybe<User>;
   searchFiles: Array<File>;
   searchFolders: Array<Folder>;
@@ -356,6 +371,13 @@ export type QueryFileArgs = {
 
 export type QueryFolderArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryFolderFilesArgs = {
+  folderId: Scalars['ID']['input'];
+  includeSubfolders?: InputMaybe<Scalars['Boolean']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 

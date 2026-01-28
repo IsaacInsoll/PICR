@@ -6,6 +6,7 @@ import {
 import { defaultCredentials } from '../backend/auth/defaultCredentials';
 import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
 import { searchQuery } from '../shared/urql/queries/searchQuery';
+import { folderFilesQuery } from '../shared/urql/queries/folderFilesQuery';
 
 test('View Home Folder', async () => {
   const headers = await getUserHeader(defaultCredentials);
@@ -62,4 +63,34 @@ test('Admin Search Files and Folders', async () => {
   expect(file.name).toContain('Birthday');
   expect(file.id).toBeTruthy();
   expect(file.folderId).toBe(folder.id);
+});
+
+test('Folder files export includes relative paths', async () => {
+  const headers = await getUserHeader(defaultCredentials);
+  const client = await createTestGraphqlClient(headers);
+  const result = await client
+    .query(folderFilesQuery, {
+      folderId: '1',
+      includeSubfolders: true,
+      limit: 1,
+    })
+    .toPromise();
+
+  expect(result.error).toBeUndefined();
+  expect(result.data?.folderFiles).toBeDefined();
+  const folderFiles = result.data!.folderFiles;
+
+  expect(folderFiles.totalReturned).toBeLessThanOrEqual(1);
+  expect(folderFiles.totalAvailable).toBeGreaterThanOrEqual(
+    folderFiles.totalReturned,
+  );
+  expect(folderFiles.truncated).toBe(
+    folderFiles.totalAvailable > folderFiles.totalReturned,
+  );
+
+  if (folderFiles.files.length > 0) {
+    const item = folderFiles.files[0];
+    expect(item.relativePath).toBeTruthy();
+    expect(item.relativePath.endsWith(item.file.name)).toBe(true);
+  }
 });

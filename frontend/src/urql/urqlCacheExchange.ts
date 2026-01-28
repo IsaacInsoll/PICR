@@ -5,6 +5,9 @@ import { invalidateQueries } from '../helpers/invalidateQueries';
 export const urqlCacheExchange = cacheExchange({
   schema,
   keys: {
+    ClientInfo: () => null,
+    FolderFileExport: () => null,
+    FolderFilesResult: () => null,
     ImageMetadataSummary: () => null,
     VideoMetadataSummary: () => null,
     Task: () => null,

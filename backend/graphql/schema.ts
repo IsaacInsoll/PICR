@@ -44,6 +44,9 @@ import { editUserDevice } from './mutations/editUserDevice.js';
 import { userDevices } from './queries/userDevices.js';
 import { renameFolder } from './mutations/renameFolder.js';
 import { deleteUser } from './mutations/deleteUser.js';
+import { folderFiles } from './queries/folderFiles.js';
+import { folderFileExportType } from './types/folderFileExportType.js';
+import { folderFilesResultType } from './types/folderFilesResultType.js';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -54,6 +57,7 @@ const queries = new GraphQLObjectType({
     clientInfo,
     comments,
     file,
+    folderFiles,
     /* Admin Only */
     accessLogs,
     folder,
@@ -96,6 +100,8 @@ const types = [
   fileInterface,
   fileType,
   folderType,
+  folderFileExportType,
+  folderFilesResultType,
   folderPermissionsType,
   imageFileType,
   imageMetadataSummaryType,
