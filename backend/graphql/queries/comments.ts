@@ -3,6 +3,7 @@ import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { commentType } from '../types/commentType.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { subFilesMap } from '../helpers/subFiles.js';
+import { doAuthError } from '../../auth/doAuthError.js';
 import { addUserRelationship } from '../helpers/addUserRelationship.js';
 import { db, dbFileForId } from '../../db/picrDb.js';
 import { dbComment } from '../../db/models/index.js';
@@ -24,7 +25,10 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
 
   if (params.fileId) {
     const file = await dbFileForId(params.fileId);
-    await contextPermissions(context, file?.folderId, 'View');
+    const { user } = await contextPermissions(context, file?.folderId, 'View');
+    if (user?.commentPermissions === 'none') {
+      doAuthError('Not allowed to view comments');
+    }
 
     const list = await db.query.dbComment.findMany({
       where: eq(dbComment.fileId, file!.id),
@@ -42,7 +46,10 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     );
   } else {
     const folderId = params.folderId;
-    await contextPermissions(context, folderId, 'View');
+    const { user } = await contextPermissions(context, folderId, 'View');
+    if (user?.commentPermissions === 'none') {
+      doAuthError('Not allowed to view comments');
+    }
     const files = await subFilesMap(folderId);
 
     const list = await db.query.dbComment.findMany({

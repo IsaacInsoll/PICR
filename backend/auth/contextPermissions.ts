@@ -35,13 +35,18 @@ export async function contextPermissions(
 
   const folder = await dbFolderForId(folderId);
 
-  if (user && user.userType != 'Link' && folder && folder.exists) {
+  if (user && user.userType == 'Admin' && folder && folder.exists) {
     if (folderIsUnderFolder(folder, userHomeFolder)) {
       return { permissions: 'Admin', user, folder };
     }
   }
 
-  if (user && user.userType == 'Link' && folder && folder.exists) {
+  if (
+    user &&
+    (user.userType == 'Link' || user.userType == 'User') &&
+    folder &&
+    folder.exists
+  ) {
     if (folderIsUnderFolder(folder, userHomeFolder)) {
       if (requires == 'Admin')
         throw new GraphQLError('No admin permissions for ' + folder.name);
