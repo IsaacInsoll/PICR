@@ -7,14 +7,18 @@ import { viewBrandingsQuery } from '@shared/urql/queries/viewBrandingsQuery';
 import { BrandingIcon } from '../../PicrIcons';
 import { brandingColumns } from './brandingColumns';
 import { useSetAtom } from 'jotai/index';
-import { defaultBranding, themeModeAtom } from '../../atoms/themeModeAtom';
-import { Branding } from '../../../../graphql-types';
+import {
+  BrandingWithHeadingFont,
+  themeModeAtom,
+} from '../../atoms/themeModeAtom';
 import { BrandingModal } from './BrandingModal';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 
 export const ManageBrandings = () => {
   const [result, reQuery] = useQuery({ query: viewBrandingsQuery });
-  const [branding, setBranding] = useState<Branding | null>(null);
+  const [branding, setBranding] = useState<BrandingWithHeadingFont | null>(
+    null,
+  );
   const setThemeMode = useSetAtom(themeModeAtom);
 
   const mouseover = false;

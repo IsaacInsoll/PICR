@@ -9,8 +9,9 @@ export const PText = ({
   ...props
 }: TextProps & { variant?: TextVariant }) => {
   const theme = useAppTheme();
+  const bodyFontFamily = 'roboto-400';
   const s = [
-    { color: theme.textColor },
+    { color: theme.textColor, fontFamily: bodyFontFamily },
     variant ? variants[variant] : undefined,
     style,
   ];
@@ -23,6 +24,6 @@ export const PText = ({
 
 const variants: { [k in TextVariant]: StyleProp<TextStyle> } = {
   dimmed: { opacity: 0.5 },
-  bold: { fontWeight: 'bold' },
+  bold: { fontFamily: 'roboto-700' },
   code: { fontFamily: 'monospace', fontSize: 11, opacity: 0.33 },
 };

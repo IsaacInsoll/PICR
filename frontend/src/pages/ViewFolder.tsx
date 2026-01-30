@@ -27,8 +27,11 @@ import { CommentIcon, DotsIcon, FilterIcon, FolderIcon } from '../PicrIcons';
 import { FolderRouteParams } from '../Router';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
-import { defaultBranding, themeModeAtom } from '../atoms/themeModeAtom';
-import { Branding } from '../../../graphql-types';
+import {
+  BrandingWithHeadingFont,
+  defaultBranding,
+  themeModeAtom,
+} from '../atoms/themeModeAtom';
 import { ManageFolder } from './ManageFolder';
 import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 import { FolderCsvExportModal } from '../components/FileListView/FolderCsvExportModal';
@@ -70,7 +73,7 @@ const ViewFolderBody = () => {
   useRequery(reQuery, 20000);
 
   useEffect(() => {
-    const theme: Branding = {
+    const theme: BrandingWithHeadingFont = {
       ...defaultBranding,
       ...data?.data?.folder?.branding,
     };

@@ -1,9 +1,9 @@
-import { Branding } from '../../../../graphql-types';
 import { Alert, Button, Group, Modal } from '@mantine/core';
 import { BrandingForm } from './BrandingForm';
 import { useEffect, useState } from 'react';
 import { useSetAtom } from 'jotai';
 import { themeModeAtom } from '../../atoms/themeModeAtom';
+import { BrandingWithHeadingFont } from '../../atoms/themeModeAtom';
 import { useMutation } from 'urql';
 import { DeleteIcon } from '../../PicrIcons';
 import { editBrandingMutation } from '@shared/urql/mutations/editBrandingMutation';
@@ -13,10 +13,12 @@ export const BrandingModal = ({
   branding: brandingProp,
   onClose,
 }: {
-  branding: Branding;
+  branding: BrandingWithHeadingFont;
   onClose: () => void;
 }) => {
-  const [branding, setBranding] = useState<Branding>({ ...brandingProp });
+  const [branding, setBranding] = useState<BrandingWithHeadingFont>({
+    ...brandingProp,
+  });
   const setThemeMode = useSetAtom(themeModeAtom);
   const [submitting, setSubmitting] = useState(false);
   const [, mutate] = useMutation(editBrandingMutation);
@@ -34,6 +36,7 @@ export const BrandingModal = ({
       mode: branding.mode,
       primaryColor: branding.primaryColor,
       logoUrl: branding.logoUrl,
+      headingFontKey: branding.headingFontKey,
     }).then(() => {
       setSubmitting(false);
       onClose();

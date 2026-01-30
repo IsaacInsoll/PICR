@@ -10,6 +10,7 @@ import {
   userTypeOptions,
 } from '../../db/models/index.js';
 import { GraphQLEnumType } from 'graphql';
+import { headingFontKeyOptions } from './headingFontKeyOptions.js';
 
 export const accessTypeEnum = new GraphQLEnumType(
   enumToGQL('AccessType', accessTypeOptions),
@@ -36,3 +37,17 @@ export const themeModeEnum = new GraphQLEnumType(
 export const primaryColorEnum = new GraphQLEnumType(
   enumToGQL('PrimaryColor', primaryColorOptions, true),
 );
+
+const headingFontKeyValues = headingFontKeyOptions.reduce(
+  (acc, value) => {
+    const name = value.replace(/[^_a-zA-Z0-9]/g, '_').toUpperCase();
+    acc[name] = { value };
+    return acc;
+  },
+  {} as Record<string, { value: string }>,
+);
+
+export const headingFontKeyEnum = new GraphQLEnumType({
+  name: 'HeadingFontKey',
+  values: headingFontKeyValues,
+});

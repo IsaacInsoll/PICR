@@ -140,7 +140,7 @@ const user = await dbUserForId(userId);       // throws if not found
 2. Export from `db/models/index.ts` if new
 3. **IMPORTANT**: AI agents must NOT run migrations directly. Prompt the user:
    ```
-   Please run: cd backend && npx drizzle-kit generate
+   Please run: cd backend && npx drizzle-kit generate --name=<suggest-a-name>
    Then review the migration in backend/db/drizzle/ and run: npx drizzle-kit migrate
    ```
 4. Server auto-migrates on startup in dev mode
@@ -479,7 +479,7 @@ npm run gql           # In another terminal
 Never run migrations automatically. Always:
 ```bash
 cd backend
-npx drizzle-kit generate  # Review the generated SQL
+npx drizzle-kit generate --name=<suggest-a-name> # Review the generated SQL
 npx drizzle-kit migrate   # Apply after review
 ```
 

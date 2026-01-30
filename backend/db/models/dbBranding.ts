@@ -11,6 +11,7 @@ import { dbFolder } from './dbFolder.js';
  * - `logoUrl`: custom logo image URL
  * - `mode`: light/dark/auto theme
  * - `primaryColor`: accent color from Mantine's color palette
+ * - `headingFontKey`: heading font key for gallery titles/section headers
  *
  * Branding cascades down the folder tree - a subfolder uses the nearest ancestor's branding.
  */
@@ -20,6 +21,7 @@ export const dbBranding = pgTable('Brandings', {
   logoUrl: varchar('logoUrl', { length: 255 }),
   mode: themeModeEnum(),
   primaryColor: primaryColorEnum(),
+  headingFontKey: varchar('headingFontKey', { length: 64 }),
 });
 
 export const dbBrandingRelations = relations(dbBranding, ({ one }) => ({

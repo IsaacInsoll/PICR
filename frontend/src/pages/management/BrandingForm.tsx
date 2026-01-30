@@ -1,4 +1,4 @@
-import { Branding, PrimaryColor, ThemeMode } from '../../../../graphql-types';
+import { PrimaryColor, ThemeMode } from '../../../../graphql-types';
 import {
   ActionIcon,
   Box,
@@ -7,6 +7,7 @@ import {
   Group,
   InputDescription,
   InputLabel,
+  Select,
   Stack,
   useMantineTheme,
 } from '@mantine/core';
@@ -16,16 +17,29 @@ import {
   MdOutlineLightMode,
 } from 'react-icons/md';
 import { TbCheck } from 'react-icons/tb';
+import {
+  fontRegistry,
+  type FontDefinition,
+  type FontKey,
+} from '@shared/branding/fontRegistry';
+import { BrandingWithHeadingFont } from '../../atoms/themeModeAtom';
+import { fontFamilies } from '../../fonts.generated';
 
 export const BrandingForm = ({
   branding,
   onChange,
 }: {
-  branding: Branding;
-  onChange: (branding: Branding) => void;
+  branding: BrandingWithHeadingFont;
+  onChange: (branding: BrandingWithHeadingFont) => void;
 }) => {
   return (
     <Stack gap="lg">
+      <HeadingFontSelector
+        value={branding.headingFontKey ?? 'default'}
+        onChange={(headingFontKey) =>
+          onChange({ ...branding, headingFontKey })
+        }
+      />
       <ModeSelector
         value={branding.mode}
         onChange={(mode) => onChange({ ...branding, mode })}
@@ -35,6 +49,73 @@ export const BrandingForm = ({
         onChange={(primaryColor) => onChange({ ...branding, primaryColor })}
       />
     </Stack>
+  );
+};
+
+const categoryLabels: Record<string, string> = {
+  sans: 'Sans Serif',
+  serif: 'Serif',
+  display: 'Display',
+  script: 'Script',
+  mono: 'Mono',
+  accessibility: 'Accessibility',
+};
+
+const HeadingFontSelector = ({
+  value,
+  onChange,
+}: {
+  value: FontKey;
+  onChange: (value: FontKey) => void;
+}) => {
+  const grouped = Object.entries(
+    fontRegistry.reduce<Record<string, FontDefinition[]>>((acc, font) => {
+      const group = categoryLabels[font.category] ?? font.category;
+      if (!acc[group]) acc[group] = [];
+      acc[group].push(font);
+      return acc;
+    }, {}),
+  ).map(([group, items]) => ({
+    group,
+    items: items.map((font) => ({
+      value: font.key,
+      label: font.label,
+      description: `${font.description}${
+        font.headingOnly ? ' (Heading only)' : ''
+      }`,
+    })),
+  }));
+
+  return (
+    <Box>
+      <InputLabel>Heading font</InputLabel>
+      <InputDescription>
+        Applies to titles and section headers only
+      </InputDescription>
+      <Select
+        data={grouped}
+        value={value}
+        searchable
+        clearable={false}
+        onChange={(next) => onChange((next ?? 'default') as FontKey)}
+        renderOption={({ option }) => (
+          <Group gap="xs" wrap="nowrap">
+            <div
+              style={{
+                fontFamily:
+                  fontFamilies[option.value as keyof typeof fontFamilies] ??
+                  fontFamilies.default,
+              }}
+            >
+              <div>{option.label}</div>
+              {option.description ? (
+                <InputDescription>{option.description}</InputDescription>
+              ) : null}
+            </div>
+          </Group>
+        )}
+      />
+    </Box>
   );
 };
 

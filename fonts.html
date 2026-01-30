@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PICR Font Preview</title>
+
+    <!-- Google Fonts (preview only) -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Signika:wght@400;600;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poiret+One&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Amatic+SC&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Oleo+Script&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;700&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.cdnfonts.com/css/opendyslexic"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.cdnfonts.com/css/dejavu-sans"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.cdnfonts.com/css/dejavu-sans-mono"
+    />
+
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+        background: #f6f4ef;
+        color: #1f1a17;
+      }
+
+      header {
+        padding: 40px 20px 20px;
+        text-align: center;
+        background: linear-gradient(135deg, #efe9df 0%, #f8f4ec 40%, #f0efe9 100%);
+        border-bottom: 1px solid #e2ddd2;
+      }
+
+      header h1 {
+        margin: 0 0 8px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      header p {
+        margin: 0;
+        color: #5f544c;
+      }
+
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 32px 20px 64px;
+      }
+
+      .group {
+        margin: 36px 0 18px;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+
+      .group h2 {
+        margin: 0;
+        font-size: 20px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+
+      .group span {
+        color: #6a5c53;
+        font-size: 13px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 18px;
+      }
+
+      .card {
+        background: #fffdf8;
+        border: 1px solid #e5ded2;
+        border-radius: 16px;
+        padding: 18px 18px 20px;
+        box-shadow: 0 10px 24px rgba(51, 38, 29, 0.08);
+      }
+
+      .card h3 {
+        margin: 0 0 10px;
+        font-size: 18px;
+      }
+
+      .sample {
+        font-size: 20px;
+        line-height: 1.3;
+        margin: 0 0 10px;
+      }
+
+      .meta {
+        font-size: 12px;
+        color: #6e5f55;
+        margin: 0;
+      }
+
+      footer {
+        text-align: center;
+        padding: 28px 20px 40px;
+        color: #7a6c63;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>PICR Font Preview</h1>
+      <p>Preview list (Google Fonts CDN) before self-hosting</p>
+    </header>
+
+    <main>
+      <div class="group">
+        <h2>Body Font Comparison</h2>
+        <span>Roboto vs Inter vs Source Sans 3</span>
+      </div>
+      <section class="grid">
+        <article class="card" style="font-family: 'Roboto', sans-serif;">
+          <h3>Roboto</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 400 / 500 / 700</p>
+        </article>
+        <article class="card" style="font-family: 'Inter', sans-serif;">
+          <h3>Inter</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 400 / 500 / 700</p>
+        </article>
+        <article class="card" style="font-family: 'Source Sans 3', sans-serif;">
+          <h3>Source Sans 3</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 400 / 500 / 700</p>
+        </article>
+      </section>
+
+      <div class="group">
+        <h2>Sans Serif</h2>
+        <span>Neutral / Modern</span>
+      </div>
+      <section class="grid">
+        <article class="card" style="font-family: 'Inter', sans-serif;">
+          <h3>Inter</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 400 / 500 / 700</p>
+        </article>
+        <article class="card" style="font-family: 'Source Sans 3', sans-serif;">
+          <h3>Source Sans 3</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 400 / 500 / 700</p>
+        </article>
+        <article class="card" style="font-family: 'Manrope', sans-serif;">
+          <h3>Manrope</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 400 / 500 / 700</p>
+        </article>
+        <article class="card" style="font-family: 'Signika', sans-serif;">
+          <h3>Signika (current)</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 400 / 600 / 700</p>
+        </article>
+        <article class="card" style="font-family: 'Merriweather Sans', sans-serif;">
+          <h3>Merriweather Sans</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 300 / 400 / 700</p>
+        </article>
+        <article class="card" style="font-family: 'Montserrat', sans-serif;">
+          <h3>Montserrat</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 200 / 400 / 700</p>
+        </article>
+      </section>
+
+      <div class="group">
+        <h2>Serif</h2>
+        <span>Editorial / Classic</span>
+      </div>
+      <section class="grid">
+        <article class="card" style="font-family: 'Merriweather', serif;">
+          <h3>Merriweather</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 300 / 400 / 700</p>
+        </article>
+        <article class="card" style="font-family: 'Lora', serif;">
+          <h3>Lora</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 400 / 700</p>
+        </article>
+        <article class="card" style="font-family: 'Libre Baskerville', serif;">
+          <h3>Libre Baskerville</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 400 / 700</p>
+        </article>
+      </section>
+
+      <div class="group">
+        <h2>Display / Script</h2>
+        <span>Accent-only</span>
+      </div>
+      <section class="grid">
+        <article class="card" style="font-family: 'Bebas Neue', sans-serif;">
+          <h3>Bebas Neue</h3>
+          <p class="sample">Gallery Title · 124 photos</p>
+          <p class="meta">Display</p>
+        </article>
+        <article class="card" style="font-family: 'Abril Fatface', serif;">
+          <h3>Abril Fatface</h3>
+          <p class="sample">Gallery Title · 124 photos</p>
+          <p class="meta">Display</p>
+        </article>
+        <article class="card" style="font-family: 'Poiret One', sans-serif;">
+          <h3>Poiret One</h3>
+          <p class="sample">Gallery Title · 124 photos</p>
+          <p class="meta">Display</p>
+        </article>
+        <article class="card" style="font-family: 'Amatic SC', cursive;">
+          <h3>Amatic SC</h3>
+          <p class="sample">Gallery Title · 124 photos</p>
+          <p class="meta">Display</p>
+        </article>
+        <article class="card" style="font-family: 'Oleo Script', cursive;">
+          <h3>Oleo Script</h3>
+          <p class="sample">Gallery Title · 124 photos</p>
+          <p class="meta">Script</p>
+        </article>
+        <article class="card" style="font-family: 'Pacifico', cursive;">
+          <h3>Pacifico</h3>
+          <p class="sample">Gallery Title · 124 photos</p>
+          <p class="meta">Script</p>
+        </article>
+        <article class="card" style="font-family: 'Pinyon Script', cursive;">
+          <h3>Pinyon Script</h3>
+          <p class="sample">Gallery Title · 124 photos</p>
+          <p class="meta">Script</p>
+        </article>
+        <article class="card" style="font-family: 'Dancing Script', cursive;">
+          <h3>Dancing Script</h3>
+          <p class="sample">Gallery Title · 124 photos</p>
+          <p class="meta">Script</p>
+        </article>
+      </section>
+
+      <div class="group">
+        <h2>Mono</h2>
+        <span>Technical / Metadata</span>
+      </div>
+      <section class="grid">
+        <article class="card" style="font-family: 'JetBrains Mono', monospace;">
+          <h3>JetBrains Mono</h3>
+          <p class="sample">IMG_2048.CR2 · 1/160 · f/2.8 · ISO 400</p>
+          <p class="meta">Weights: 400 / 700</p>
+        </article>
+      </section>
+
+      <div class="group">
+        <h2>Accessibility</h2>
+        <span>High legibility</span>
+      </div>
+      <section class="grid">
+        <article class="card" style="font-family: 'Atkinson Hyperlegible Next', sans-serif;">
+          <h3>Atkinson Hyperlegible Next</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Weights: 400 / 700</p>
+        </article>
+        <article class="card" style="font-family: 'Atkinson Hyperlegible Mono', monospace;">
+          <h3>Atkinson Hyperlegible Mono</h3>
+          <p class="sample">IMG_2048.CR2 · 1/160 · f/2.8 · ISO 400</p>
+          <p class="meta">Weights: 400 / 700</p>
+        </article>
+        <article class="card" style="font-family: 'OpenDyslexic', sans-serif;">
+          <h3>OpenDyslexic</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Regular</p>
+        </article>
+        <article class="card" style="font-family: 'DejaVu Sans', sans-serif;">
+          <h3>DejaVu Sans</h3>
+          <p class="sample">Gallery Title · 124 photos · Download All</p>
+          <p class="meta">Regular</p>
+        </article>
+        <article class="card" style="font-family: 'DejaVu Sans Mono', monospace;">
+          <h3>DejaVu Sans Mono</h3>
+          <p class="sample">IMG_2048.CR2 · 1/160 · f/2.8 · ISO 400</p>
+          <p class="meta">Regular</p>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      This page uses Google Fonts CDN for preview only.
+    </footer>
+  </body>
+</html>

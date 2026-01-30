@@ -23,9 +23,14 @@ import {
   FileSortType,
 } from '@shared/files/sortFiles';
 import { folderContentsViewModel } from '@shared/files/folderContentsViewModel';
-import { fileSortAtom, folderViewModeAtom } from '@/src/atoms/atoms';
+import {
+  fileSortAtom,
+  folderViewModeAtom,
+  headingFontKeyAtom,
+} from '@/src/atoms/atoms';
 import { FileSortMenu } from '@/src/components/Menus/FileSortMenu';
 import { GridIcon } from '@/src/components/AppIcons';
+import { normalizeHeadingFontKey } from '@/src/helpers/headingFont';
 
 const folderOptionsDialogOpenAtom = atom(false);
 
@@ -65,6 +70,7 @@ const FolderBody = ({
   folderId: string;
   width: number;
 }) => {
+  const setHeadingFontKey = useSetAtom(headingFontKeyAtom);
   const [result, requery] = useQuery({
     query: viewFolderQuery,
     variables: { folderId },
@@ -79,6 +85,10 @@ const FolderBody = ({
   if (!folder) {
     return <PText>Folder {folderId} Not Found</PText>;
   }
+
+  useEffect(() => {
+    setHeadingFontKey(normalizeHeadingFontKey(folder.branding?.headingFontKey));
+  }, [folder.branding?.headingFontKey, setHeadingFontKey]);
 
   //start copied from FolderContentsView.tsx
   // useEffect(() => resetFilters(null), [resetFilters, folderId]);

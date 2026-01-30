@@ -1,4 +1,4 @@
-import { Branding } from '../../../graphql-types';
+import { BrandingWithHeadingFont } from '../atoms/themeModeAtom';
 import { useState } from 'react';
 import { BrandingModal } from './management/BrandingModal';
 import { Button, Tabs } from '@mantine/core';
@@ -45,7 +45,10 @@ export const ManageFolder = ({ folder, toggleManaging }) => {
 const BrandingButton = ({ folder }) => {
   const folderHasBranding = folder.branding.folderId == folder.id;
   // it might be a branding from parent so lets set sensible defaults if so
-  const branding: Branding = { ...folder.branding, folderId: folder.id };
+  const branding: BrandingWithHeadingFont = {
+    ...folder.branding,
+    folderId: folder.id,
+  };
   const [open, setOpen] = useState(false);
   return (
     <>

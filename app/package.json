@@ -12,7 +12,6 @@
     "postinstall": "cd ../shared && npm install"
   },
   "dependencies": {
-    "@expo-google-fonts/signika": "^0.4.0",
     "@expo/vector-icons": "^15.0.2",
     "@georstat/react-native-image-cache": "^3.1.0",
     "@gorhom/bottom-sheet": "^5",

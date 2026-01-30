@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import App from './App';
+import './fonts.generated';
 
 const element = document.getElementById('root');
 if (element) {

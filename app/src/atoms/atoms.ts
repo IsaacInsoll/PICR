@@ -1,5 +1,6 @@
 import { atom } from 'jotai';
 import { FileSort } from '@shared/files/sortFiles';
+import { FontKey } from '@shared/branding/fontRegistry';
 
 export const fileViewFullscreenAtom = atom(false);
 
@@ -10,3 +11,5 @@ export const fileSortAtom = atom<FileSort>({
   direction: 'Asc',
   type: 'Filename',
 });
+
+export const headingFontKeyAtom = atom<FontKey>('default');

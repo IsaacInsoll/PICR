@@ -23,6 +23,7 @@ scalar BigInt
 type Branding {
   folder: Folder
   folderId: ID!
+  headingFontKey: HeadingFontKey
   id: ID!
   logoUrl: String
   mode: ThemeMode
@@ -143,6 +144,30 @@ enum FoldersSortType {
   name
 }
 
+enum HeadingFontKey {
+  ABRIL_FATFACE
+  AMATIC_SC
+  ATKINSON_HYPERLEGIBLE_MONO
+  ATKINSON_HYPERLEGIBLE_NEXT
+  BEBAS_NEUE
+  DANCING_SCRIPT
+  DEFAULT
+  INTER
+  JETBRAINS_MONO
+  LIBRE_BASKERVILLE
+  LORA
+  MANROPE
+  MERRIWEATHER
+  MERRIWEATHER_SANS
+  MONTSERRAT
+  OLEO_SCRIPT
+  PACIFICO
+  PINYON_SCRIPT
+  POIRET_ONE
+  SIGNIKA
+  SOURCE_SANS_3
+}
+
 type Image implements FileInterface {
   blurHash: String!
   fileCreated: DateTime!
@@ -187,7 +212,7 @@ type Mutation {
   deleteBranding(folderId: ID!): Folder!
   deleteUser(id: ID!): Boolean!
   editAdminUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, ntfy: String, ntfyEmail: Boolean, password: String, username: String): User!
-  editBranding(folderId: ID!, logoUrl: String, mode: ThemeMode, primaryColor: PrimaryColor): Folder!
+  editBranding(folderId: ID!, headingFontKey: HeadingFontKey, logoUrl: String, mode: ThemeMode, primaryColor: PrimaryColor): Folder!
   editFolder(folderId: ID!, heroImageId: ID): Folder!
   editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
   editUserDevice(enabled: Boolean!, name: String, notificationToken: String!, userId: ID!): UserDevice!

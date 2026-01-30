@@ -1,12 +1,16 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { mainFont } from '@/src/constants';
 import { Platform } from 'react-native';
+import { useAtomValue } from 'jotai';
+import { headingFontKeyAtom } from '@/src/atoms/atoms';
+import { getHeadingFontFamilyForLevel } from '@/src/helpers/headingFont';
 
 // We have two root navigator stacks: for logged-in users and public users, so consolidate layout to here
 
 export const useNavigationScreenOptions = (): NativeStackNavigationOptions => {
   const theme = useAppTheme();
+  const headingFontKey = useAtomValue(headingFontKeyAtom);
+  const headingFontFamily = getHeadingFontFamilyForLevel(headingFontKey, 3);
   const isAndroid = Platform.OS == 'android'; // if you change this, also update AppHeaderPadding
   return {
     headerStyle: isAndroid
@@ -14,7 +18,7 @@ export const useNavigationScreenOptions = (): NativeStackNavigationOptions => {
           backgroundColor: theme.tabColor,
         }
       : undefined,
-    headerTitleStyle: { color: theme.textColor, fontFamily: mainFont[2] },
+    headerTitleStyle: { color: theme.textColor, fontFamily: headingFontFamily },
     // headerTitleAlign: 'center', //android defaults to left, reverted as fileView was truncating names to like 3 characters
     headerTintColor: theme.brandColor,
     headerTitle: 'PICR',
