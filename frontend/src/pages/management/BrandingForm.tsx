@@ -1,6 +1,7 @@
 import { PrimaryColor, ThemeMode } from '../../../../graphql-types';
 import {
   ActionIcon,
+  Badge,
   Box,
   Button,
   Code,
@@ -36,9 +37,7 @@ export const BrandingForm = ({
     <Stack gap="lg">
       <HeadingFontSelector
         value={branding.headingFontKey ?? 'default'}
-        onChange={(headingFontKey) =>
-          onChange({ ...branding, headingFontKey })
-        }
+        onChange={(headingFontKey) => onChange({ ...branding, headingFontKey })}
       />
       <ModeSelector
         value={branding.mode}
@@ -83,6 +82,7 @@ const HeadingFontSelector = ({
       description: `${font.description}${
         font.headingOnly ? ' (Heading only)' : ''
       }`,
+      suitableFor: font.suitableFor,
     })),
   }));
 
@@ -97,22 +97,41 @@ const HeadingFontSelector = ({
         value={value}
         searchable
         clearable={false}
+        styles={{
+          input: {
+            fontFamily:
+              fontFamilies[value as keyof typeof fontFamilies] ??
+              fontFamilies.default,
+          },
+        }}
         onChange={(next) => onChange((next ?? 'default') as FontKey)}
         renderOption={({ option }) => (
-          <Group gap="xs" wrap="nowrap">
-            <div
-              style={{
-                fontFamily:
-                  fontFamilies[option.value as keyof typeof fontFamilies] ??
-                  fontFamilies.default,
-              }}
-            >
-              <div>{option.label}</div>
-              {option.description ? (
-                <InputDescription>{option.description}</InputDescription>
-              ) : null}
-            </div>
-          </Group>
+          <Stack
+            gap="xs"
+            pb="sm"
+            wrap="nowrap"
+            style={{
+              fontFamily:
+                fontFamilies[option.value as keyof typeof fontFamilies] ??
+                fontFamilies.default,
+            }}
+          >
+            <div>{option.label}</div>
+            {option.description ? (
+              <InputDescription>{option.description}</InputDescription>
+            ) : null}
+            {option.suitableFor?.length ? (
+              <InputDescription>
+                <Group gap={4} wrap="wrap">
+                  {option.suitableFor.map((tag) => (
+                    <Badge key={tag} size="xs" variant="light" color="gray">
+                      {tag}
+                    </Badge>
+                  ))}
+                </Group>
+              </InputDescription>
+            ) : null}
+          </Stack>
         )}
       />
     </Box>
