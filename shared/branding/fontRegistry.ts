@@ -1,4 +1,4 @@
-import { HeadingFontKey } from '../graphql-types';
+import { HeadingFontKey } from '../../graphql-types';
 
 export type FontCategory =
   | 'sans'
