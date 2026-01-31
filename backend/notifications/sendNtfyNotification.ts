@@ -7,7 +7,7 @@ export const sendNtfyNotification = async (
 ) => {
   const { message, type, url, title } = payload;
 
-  const headers: Record<string, string | readonly string[]> = {
+  const headers: Record<string, string> = {
     Title: title,
     Tags: ntfyEmoji[type],
     // 'Priority': '5'
