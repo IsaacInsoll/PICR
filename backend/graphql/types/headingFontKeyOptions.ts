@@ -1,25 +1,3 @@
-export const headingFontKeyOptions = [
-  'default',
-  'signika',
-  'inter',
-  'source-sans-3',
-  'manrope',
-  'merriweather-sans',
-  'montserrat',
-  'merriweather',
-  'lora',
-  'libre-baskerville',
-  'bebas-neue',
-  'abril-fatface',
-  'poiret-one',
-  'amatic-sc',
-  'oleo-script',
-  'pacifico',
-  'pinyon-script',
-  'dancing-script',
-  'jetbrains-mono',
-  'atkinson-hyperlegible-next',
-  'atkinson-hyperlegible-mono',
-] as const;
-
-export type HeadingFontKey = (typeof headingFontKeyOptions)[number];
+// Re-export from shared to maintain single source of truth
+export { fontKeys as headingFontKeyOptions } from '../../../shared/branding/fontRegistry.js';
+export type { FontKey as HeadingFontKey } from '../../../shared/branding/fontRegistry.js';

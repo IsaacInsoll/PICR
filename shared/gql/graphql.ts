@@ -165,27 +165,27 @@ export enum FoldersSortType {
 }
 
 export enum HeadingFontKey {
-  AbrilFatface = 'ABRIL_FATFACE',
-  AmaticSc = 'AMATIC_SC',
-  AtkinsonHyperlegibleMono = 'ATKINSON_HYPERLEGIBLE_MONO',
-  AtkinsonHyperlegibleNext = 'ATKINSON_HYPERLEGIBLE_NEXT',
-  BebasNeue = 'BEBAS_NEUE',
-  DancingScript = 'DANCING_SCRIPT',
-  Default = 'DEFAULT',
-  Inter = 'INTER',
-  JetbrainsMono = 'JETBRAINS_MONO',
-  LibreBaskerville = 'LIBRE_BASKERVILLE',
-  Lora = 'LORA',
-  Manrope = 'MANROPE',
-  Merriweather = 'MERRIWEATHER',
-  MerriweatherSans = 'MERRIWEATHER_SANS',
-  Montserrat = 'MONTSERRAT',
-  OleoScript = 'OLEO_SCRIPT',
-  Pacifico = 'PACIFICO',
-  PinyonScript = 'PINYON_SCRIPT',
-  PoiretOne = 'POIRET_ONE',
-  Signika = 'SIGNIKA',
-  SourceSans_3 = 'SOURCE_SANS_3'
+  AbrilFatface = 'abrilFatface',
+  AmaticSc = 'amaticSc',
+  AtkinsonHyperlegibleMono = 'atkinsonHyperlegibleMono',
+  AtkinsonHyperlegibleNext = 'atkinsonHyperlegibleNext',
+  BebasNeue = 'bebasNeue',
+  DancingScript = 'dancingScript',
+  Default = 'default',
+  Inter = 'inter',
+  JetbrainsMono = 'jetbrainsMono',
+  LibreBaskerville = 'libreBaskerville',
+  Lora = 'lora',
+  Manrope = 'manrope',
+  Merriweather = 'merriweather',
+  MerriweatherSans = 'merriweatherSans',
+  Montserrat = 'montserrat',
+  OleoScript = 'oleoScript',
+  Pacifico = 'pacifico',
+  PinyonScript = 'pinyonScript',
+  PoiretOne = 'poiretOne',
+  Signika = 'signika',
+  SourceSans3 = 'sourceSans3'
 }
 
 export type Image = FileInterface & {

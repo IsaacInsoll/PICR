@@ -1,9 +1,17 @@
 import * as Font from 'expo-font';
-import { FontKey, getFontByKey } from '@shared/branding/fontRegistry';
+import {
+  FontKey,
+  normalizeFontKey as normalizeHeadingFontKey,
+} from '@shared/branding/fontRegistry';
 import { fontFiles, fontWeightsByKey } from '@/src/fonts.generated';
+
+export { normalizeHeadingFontKey };
 
 export type TitleLevel = 1 | 2 | 3 | 4;
 
+// Track which fonts we've attempted to load this session.
+// Note: During hot reload in dev, this resets but fonts remain loaded in Expo.
+// The loadHeadingFont function handles this gracefully.
 const loadedFontKeys = new Set<FontKey>(['default', 'signika']);
 
 const resolveAssetKey = (key: FontKey) => (key === 'default' ? 'signika' : key);
@@ -51,11 +59,21 @@ export const getFontFilesForKey = (key: FontKey) => {
   }, {});
 };
 
-export const loadHeadingFont = async (key: FontKey) => {
+export const loadHeadingFont = async (key: FontKey): Promise<void> => {
   if (loadedFontKeys.has(key)) return;
+
   const files = getFontFilesForKey(key);
   if (Object.keys(files).length === 0) return;
-  await Font.loadAsync(files);
+
+  // Filter out fonts that are already loaded (handles hot reload scenarios)
+  const unloadedFiles = Object.fromEntries(
+    Object.entries(files).filter(([name]) => !Font.isLoaded(name)),
+  );
+
+  if (Object.keys(unloadedFiles).length > 0) {
+    await Font.loadAsync(unloadedFiles);
+  }
+
   loadedFontKeys.add(key);
 };
 
@@ -66,10 +84,4 @@ export const getBaseFontFiles = () => {
     'roboto-500': fontFiles['roboto-500'],
     'roboto-700': fontFiles['roboto-700'],
   };
-};
-
-export const normalizeHeadingFontKey = (key?: string | null): FontKey => {
-  if (!key) return 'default';
-  const font = getFontByKey(key as FontKey);
-  return font.key;
 };

@@ -60,7 +60,6 @@ export const fontFamilies = ${JSON.stringify(fontFamilies, null, 2)} as const;
 
 const buildAppFonts = (fontRegistry: Array<any>) => {
   const lines: string[] = [];
-  const fontAssets: Record<string, string> = { default: 'Signika' };
   const fontFiles: Record<string, string> = {};
   const fontWeightsByKey: Record<string, number[]> = {
     default: [400, 600, 700],
@@ -77,7 +76,6 @@ const buildAppFonts = (fontRegistry: Array<any>) => {
       );
       fontFiles[`${font.key}-${weight}`] = varName;
     });
-    fontAssets[font.key] = font.label;
   });
 
   [400, 500, 700].forEach((weight) => {
@@ -91,12 +89,6 @@ const buildAppFonts = (fontRegistry: Array<any>) => {
 export const fontFiles = {
 ${Object.entries(fontFiles)
   .map(([key, value]) => `  '${key}': ${value},`)
-  .join('\n')}
-} as const;
-
-export const fontAssets = {
-${Object.entries(fontAssets)
-  .map(([key, label]) => `  '${key}': '${label}',`)
   .join('\n')}
 } as const;
 

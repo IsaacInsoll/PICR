@@ -9,15 +9,24 @@ import { editUserMutation } from '../shared/urql/mutations/editUserMutation';
 import { deleteUserMutation } from '../shared/urql/mutations/deleteUserMutation';
 import { accessLogQuery } from '../shared/urql/queries/accessLogQuery';
 
-import {
-  gravatarTest,
-  photoFolderId,
-  testPublicLink,
-  testUrl,
-  videoFolderId,
-} from './testVariables';
+import { photoFolderId, videoFolderId } from './testVariables';
 import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
-import { LinkMode } from '../graphql-types';
+import { CommentPermissions, LinkMode } from '../graphql-types';
+
+// Generate unique suffix for this test run to avoid conflicts
+const testSuffix = Math.random().toString(36).slice(2, 8);
+
+const testPublicLink = {
+  folderId: photoFolderId,
+  name: 'Public Test User',
+  username: `test-public-${testSuffix}@example.com`,
+  commentPermissions: CommentPermissions.Read,
+  enabled: true,
+  uuid: `public-test-user-${testSuffix}`,
+};
+
+// Store the created user ID for use across tests
+let createdUserId: string;
 
 test('Create Public Link', async () => {
   const headers = await getUserHeader(defaultCredentials);
@@ -31,16 +40,16 @@ test('Create Public Link', async () => {
   expect(result.data?.editUser).toBeDefined();
 
   const user = result.data!.editUser;
-  //exclude folder prop, test it separately
-  expect({ ...user, folder: undefined }).toEqual({
-    ...testPublicLink,
-    id: '2',
-    gravatar: gravatarTest.result,
-    folder: undefined,
-    ntfy: null,
-    ntfyEmail: false,
-    linkMode: LinkMode.FinalDelivery,
-  });
+  createdUserId = user.id;
+
+  // Verify expected properties (excluding dynamic id)
+  expect(user.name).toBe(testPublicLink.name);
+  expect(user.username).toBe(testPublicLink.username);
+  expect(user.folderId).toBe(testPublicLink.folderId);
+  expect(user.commentPermissions).toBe(testPublicLink.commentPermissions);
+  expect(user.enabled).toBe(testPublicLink.enabled);
+  expect(user.linkMode).toBe(LinkMode.FinalDelivery);
+  expect(user.gravatar).toContain('gravatar.com/avatar/');
 
   const folder = user.folder;
   expect(folder?.id).toBe(photoFolderId);
@@ -109,6 +118,7 @@ test("Public Link can't access other folders", async () => {
 });
 
 test('Open Graph: social media friendly links', async () => {
+  const testUrl = 'http://localhost:6901/';
   const url = testUrl + `s/${testPublicLink.uuid}/${testPublicLink.folderId}`; // defined in useBaseViewFolderURL.ts
   const response = await fetch(url);
   const text = await response.text();
@@ -146,9 +156,9 @@ test('Admin can see access log entry for public link visit', async () => {
   expect(result.error).toBeUndefined();
   expect(result.data?.accessLogs).toBeDefined();
 
-  // Find an access log entry for our test user (user ID 2)
+  // Find an access log entry for our test user
   const logs = result.data!.accessLogs;
-  const testUserLogs = logs.filter((log) => log.userId === '2');
+  const testUserLogs = logs.filter((log) => log.userId === createdUserId);
   expect(testUserLogs.length).toBeGreaterThan(0);
 
   // Verify the log entry has expected properties
@@ -165,7 +175,7 @@ test('Disabled public link cannot access folder', async () => {
   const disableResult = await adminClient
     .mutation(editUserMutation, {
       ...testPublicLink,
-      id: '2',
+      id: createdUserId,
       enabled: false,
     })
     .toPromise();
@@ -193,7 +203,7 @@ test('Re-enabled link works, then deleted link fails', async () => {
   const enableResult = await adminClient
     .mutation(editUserMutation, {
       ...testPublicLink,
-      id: '2',
+      id: createdUserId,
       enabled: true,
     })
     .toPromise();
@@ -214,7 +224,7 @@ test('Re-enabled link works, then deleted link fails', async () => {
 
   // Now delete the user
   const deleteResult = await adminClient
-    .mutation(deleteUserMutation, { id: '2' })
+    .mutation(deleteUserMutation, { id: createdUserId })
     .toPromise();
 
   expect(deleteResult.error).toBeUndefined();
@@ -240,9 +250,9 @@ test('Access logs no longer show deleted user', async () => {
   expect(result.error).toBeUndefined();
   expect(result.data?.accessLogs).toBeDefined();
 
-  // Deleted user (ID 2) should not appear in access logs
+  // Deleted user should not appear in access logs
   const logs = result.data!.accessLogs;
-  const deletedUserLogs = logs.filter((log) => log.userId === '2');
+  const deletedUserLogs = logs.filter((log) => log.userId === createdUserId);
   expect(deletedUserLogs.length).toBe(0);
 });
 

@@ -38,9 +38,12 @@ export const primaryColorEnum = new GraphQLEnumType(
   enumToGQL('PrimaryColor', primaryColorOptions, true),
 );
 
+const toCamelCase = (str: string) =>
+  str.replace(/-([a-z0-9])/g, (_, char) => char.toUpperCase());
+
 const headingFontKeyValues = headingFontKeyOptions.reduce(
   (acc, value) => {
-    const name = value.replace(/[^_a-zA-Z0-9]/g, '_').toUpperCase();
+    const name = toCamelCase(value);
     acc[name] = { value };
     return acc;
   },

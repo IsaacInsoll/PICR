@@ -92,30 +92,6 @@ export const fontFiles = {
   'roboto-700': roboto_700,
 } as const;
 
-export const fontAssets = {
-  'default': 'Signika',
-  'signika': 'Signika',
-  'inter': 'Inter',
-  'source-sans-3': 'Source Sans 3',
-  'manrope': 'Manrope',
-  'merriweather-sans': 'Merriweather Sans',
-  'montserrat': 'Montserrat',
-  'merriweather': 'Merriweather',
-  'lora': 'Lora',
-  'libre-baskerville': 'Libre Baskerville',
-  'bebas-neue': 'Bebas Neue',
-  'abril-fatface': 'Abril Fatface',
-  'poiret-one': 'Poiret One',
-  'amatic-sc': 'Amatic SC',
-  'oleo-script': 'Oleo Script',
-  'pacifico': 'Pacifico',
-  'pinyon-script': 'Pinyon Script',
-  'dancing-script': 'Dancing Script',
-  'jetbrains-mono': 'JetBrains Mono',
-  'atkinson-hyperlegible-next': 'Atkinson Hyperlegible Next',
-  'atkinson-hyperlegible-mono': 'Atkinson Hyperlegible Mono',
-} as const;
-
 export const fontWeightsByKey = {
   "default": [
     400,

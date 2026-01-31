@@ -26,8 +26,10 @@ Picr is a self-hosted online image sharing tool for photographers to share photo
   How files and folders work and suggested workflows with multiple examples.
 - [Users and Links](users.md)  
   Explains how users (you) and public links (your clients) work with permissions. Also covers avatars
-- [Comments, Ratings and Flags](comments.md)  
+- [Comments, Ratings and Flags](comments.md)
   You can allow users to comment, rate and flag individual files
+- [Branding and Theming](branding.md)
+  Customize fonts, colors, and themes for your galleries
 - [Notifications](notifications.md)  
   Receive notifications on your iOS / Android device when users access the folders or leave comments/ratings.
 

@@ -1478,127 +1478,127 @@
         "interfaces": null,
         "enumValues": [
           {
-            "name": "ABRIL_FATFACE",
+            "name": "abrilFatface",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "AMATIC_SC",
+            "name": "amaticSc",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "ATKINSON_HYPERLEGIBLE_MONO",
+            "name": "atkinsonHyperlegibleMono",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "ATKINSON_HYPERLEGIBLE_NEXT",
+            "name": "atkinsonHyperlegibleNext",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "BEBAS_NEUE",
+            "name": "bebasNeue",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "DANCING_SCRIPT",
+            "name": "dancingScript",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "DEFAULT",
+            "name": "default",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "INTER",
+            "name": "inter",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "JETBRAINS_MONO",
+            "name": "jetbrainsMono",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "LIBRE_BASKERVILLE",
+            "name": "libreBaskerville",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "LORA",
+            "name": "lora",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "MANROPE",
+            "name": "manrope",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "MERRIWEATHER",
+            "name": "merriweather",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "MERRIWEATHER_SANS",
+            "name": "merriweatherSans",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "MONTSERRAT",
+            "name": "montserrat",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "OLEO_SCRIPT",
+            "name": "oleoScript",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "PACIFICO",
+            "name": "pacifico",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "PINYON_SCRIPT",
+            "name": "pinyonScript",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "POIRET_ONE",
+            "name": "poiretOne",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "SIGNIKA",
+            "name": "signika",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
-            "name": "SOURCE_SANS_3",
+            "name": "sourceSans3",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null

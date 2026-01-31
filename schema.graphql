@@ -145,27 +145,27 @@ enum FoldersSortType {
 }
 
 enum HeadingFontKey {
-  ABRIL_FATFACE
-  AMATIC_SC
-  ATKINSON_HYPERLEGIBLE_MONO
-  ATKINSON_HYPERLEGIBLE_NEXT
-  BEBAS_NEUE
-  DANCING_SCRIPT
-  DEFAULT
-  INTER
-  JETBRAINS_MONO
-  LIBRE_BASKERVILLE
-  LORA
-  MANROPE
-  MERRIWEATHER
-  MERRIWEATHER_SANS
-  MONTSERRAT
-  OLEO_SCRIPT
-  PACIFICO
-  PINYON_SCRIPT
-  POIRET_ONE
-  SIGNIKA
-  SOURCE_SANS_3
+  abrilFatface
+  amaticSc
+  atkinsonHyperlegibleMono
+  atkinsonHyperlegibleNext
+  bebasNeue
+  dancingScript
+  default
+  inter
+  jetbrainsMono
+  libreBaskerville
+  lora
+  manrope
+  merriweather
+  merriweatherSans
+  montserrat
+  oleoScript
+  pacifico
+  pinyonScript
+  poiretOne
+  signika
+  sourceSans3
 }
 
 type Image implements FileInterface {

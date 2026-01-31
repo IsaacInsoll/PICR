@@ -6,31 +6,8 @@ export type FontCategory =
   | 'mono'
   | 'accessibility';
 
-export type FontKey =
-  | 'default'
-  | 'signika'
-  | 'inter'
-  | 'source-sans-3'
-  | 'manrope'
-  | 'merriweather-sans'
-  | 'montserrat'
-  | 'merriweather'
-  | 'lora'
-  | 'libre-baskerville'
-  | 'bebas-neue'
-  | 'abril-fatface'
-  | 'poiret-one'
-  | 'amatic-sc'
-  | 'oleo-script'
-  | 'pacifico'
-  | 'pinyon-script'
-  | 'dancing-script'
-  | 'jetbrains-mono'
-  | 'atkinson-hyperlegible-next'
-  | 'atkinson-hyperlegible-mono';
-
 export interface FontDefinition {
-  key: FontKey;
+  key: string;
   label: string;
   category: FontCategory;
   weights: number[];
@@ -232,6 +209,9 @@ export const fontRegistry = [
   },
 ] as const satisfies readonly FontDefinition[];
 
+/** Font key type derived from the registry - add new fonts to fontRegistry array above */
+export type FontKey = (typeof fontRegistry)[number]['key'];
+
 export const fontRegistryByKey = new Map<FontKey, FontDefinition>(
   fontRegistry.map((font) => [font.key, font]),
 );
@@ -244,3 +224,22 @@ export const getFontByKey = (key?: FontKey | null): FontDefinition => {
 };
 
 export const getDefaultHeadingFont = (): FontDefinition => fontRegistry[0];
+
+/** Array of all valid font keys - use for validation and GraphQL enum generation */
+export const fontKeys = fontRegistry.map((f) => f.key);
+
+const fontKeySet = new Set<string>(fontKeys);
+
+/** Type guard to check if a string is a valid FontKey */
+export const isFontKey = (value?: string | null): value is FontKey => {
+  if (!value) return false;
+  return fontKeySet.has(value);
+};
+
+/** Normalize an unknown string to a valid FontKey, defaulting to 'default' */
+export const normalizeFontKey = (value?: string | null): FontKey => {
+  if (value && fontKeySet.has(value)) {
+    return value as FontKey;
+  }
+  return 'default';
+};
