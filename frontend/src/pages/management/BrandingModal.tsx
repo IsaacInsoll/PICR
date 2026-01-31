@@ -8,6 +8,11 @@ import { useMutation } from 'urql';
 import { DeleteIcon } from '../../PicrIcons';
 import { editBrandingMutation } from '@shared/urql/mutations/editBrandingMutation';
 import { deleteBrandingMutation } from '@shared/urql/mutations/deleteBrandingMutation';
+import {
+  normalizeFontKey,
+  toHeadingFontKeyEnumValue,
+} from '@shared/branding/fontRegistry';
+import { HeadingFontKey } from '../../../../graphql-types';
 
 export const BrandingModal = ({
   branding: brandingProp,
@@ -18,6 +23,7 @@ export const BrandingModal = ({
 }) => {
   const [branding, setBranding] = useState<BrandingWithHeadingFont>({
     ...brandingProp,
+    headingFontKey: normalizeFontKey(brandingProp.headingFontKey),
   });
   const setThemeMode = useSetAtom(themeModeAtom);
   const [submitting, setSubmitting] = useState(false);
@@ -36,7 +42,9 @@ export const BrandingModal = ({
       mode: branding.mode,
       primaryColor: branding.primaryColor,
       logoUrl: branding.logoUrl,
-      headingFontKey: branding.headingFontKey,
+      headingFontKey: toHeadingFontKeyEnumValue(
+        branding.headingFontKey,
+      ) as HeadingFontKey,
     }).then(() => {
       setSubmitting(false);
       onClose();

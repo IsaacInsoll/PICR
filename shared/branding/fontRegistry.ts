@@ -230,16 +230,40 @@ export const fontKeys = fontRegistry.map((f) => f.key);
 
 const fontKeySet = new Set<string>(fontKeys);
 
+const toCamelCase = (value: string) =>
+  value.replace(/-([a-z0-9])/g, (_, char) => char.toUpperCase());
+
+const toKebabCase = (value: string) =>
+  value
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/([a-zA-Z])([0-9])/g, '$1-$2')
+    .toLowerCase();
+
 /** Type guard to check if a string is a valid FontKey */
 export const isFontKey = (value?: string | null): value is FontKey => {
   if (!value) return false;
-  return fontKeySet.has(value);
+  if (fontKeySet.has(value)) return true;
+  const kebabValue = toKebabCase(value);
+  return fontKeySet.has(kebabValue);
 };
 
 /** Normalize an unknown string to a valid FontKey, defaulting to 'default' */
 export const normalizeFontKey = (value?: string | null): FontKey => {
-  if (value && fontKeySet.has(value)) {
-    return value as FontKey;
+  if (value) {
+    if (fontKeySet.has(value)) {
+      return value as FontKey;
+    }
+    const kebabValue = toKebabCase(value);
+    if (fontKeySet.has(kebabValue)) {
+      return kebabValue as FontKey;
+    }
   }
   return 'default';
+};
+
+export const toHeadingFontKeyEnumValue = (
+  value?: FontKey | null,
+): string | null | undefined => {
+  if (value === null || value === undefined) return value;
+  return toCamelCase(value);
 };

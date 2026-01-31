@@ -37,6 +37,7 @@ import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 import { FolderCsvExportModal } from '../components/FileListView/FolderCsvExportModal';
 import { useMe } from '../hooks/useMe';
 import { TbTableExport } from 'react-icons/tb';
+import { normalizeFontKey } from '@shared/branding/fontRegistry';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -73,9 +74,11 @@ const ViewFolderBody = () => {
   useRequery(reQuery, 20000);
 
   useEffect(() => {
+    const branding = data?.data?.folder?.branding;
     const theme: BrandingWithHeadingFont = {
       ...defaultBranding,
-      ...data?.data?.folder?.branding,
+      ...branding,
+      headingFontKey: normalizeFontKey(branding?.headingFontKey),
     };
     setThemeMode(theme);
   }, [data?.data?.folder?.branding, setThemeMode]);
