@@ -1,3 +1,5 @@
+import { HeadingFontKey } from '../graphql-types';
+
 export type FontCategory =
   | 'sans'
   | 'serif'
@@ -263,7 +265,7 @@ export const normalizeFontKey = (value?: string | null): FontKey => {
 
 export const toHeadingFontKeyEnumValue = (
   value?: FontKey | null,
-): string | null | undefined => {
+): HeadingFontKey | null | undefined => {
   if (value === null || value === undefined) return value;
-  return toCamelCase(value);
+  return toCamelCase(value) as HeadingFontKey;
 };

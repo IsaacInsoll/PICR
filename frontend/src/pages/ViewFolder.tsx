@@ -1,5 +1,11 @@
 import { useQuery } from 'urql';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   FolderHeader,
   PlaceholderFolderHeader,
@@ -27,17 +33,12 @@ import { CommentIcon, DotsIcon, FilterIcon, FolderIcon } from '../PicrIcons';
 import { FolderRouteParams } from '../Router';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
-import {
-  BrandingWithHeadingFont,
-  defaultBranding,
-  themeModeAtom,
-} from '../atoms/themeModeAtom';
+import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
 import { ManageFolder } from './ManageFolder';
 import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 import { FolderCsvExportModal } from '../components/FileListView/FolderCsvExportModal';
 import { useMe } from '../hooks/useMe';
 import { TbTableExport } from 'react-icons/tb';
-import { normalizeFontKey } from '@shared/branding/fontRegistry';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -64,7 +65,7 @@ const ViewFolderBody = () => {
   const mode: ViewFolderMode = ['manage', 'activity'].includes(fileId)
     ? fileId
     : 'files';
-  const managing = mode == 'manage';
+  const managing = mode === 'manage';
   const activity = mode === 'activity';
 
   const [data, reQuery] = useQuery({
@@ -73,15 +74,15 @@ const ViewFolderBody = () => {
   });
   useRequery(reQuery, 20000);
 
+  const branding = data?.data?.folder?.branding;
+  const theme = useMemo(
+    () => applyBrandingDefaults(branding),
+    [branding],
+  );
+
   useEffect(() => {
-    const branding = data?.data?.folder?.branding;
-    const theme: BrandingWithHeadingFont = {
-      ...defaultBranding,
-      ...branding,
-      headingFontKey: normalizeFontKey(branding?.headingFontKey),
-    };
     setThemeMode(theme);
-  }, [data?.data?.folder?.branding, setThemeMode]);
+  }, [theme, setThemeMode]);
 
   const toggleManaging = useCallback(() => {
     navigate(baseUrl + folderId + (managing ? '' : '/manage'));
@@ -103,7 +104,7 @@ const ViewFolderBody = () => {
 
   const actions = [];
 
-  if (hasFiles && mode == 'files') {
+  if (hasFiles && mode === 'files') {
     actions.push(<FileSortSelector key="FileSortSelector" />);
     // actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
   }
