@@ -9,6 +9,8 @@ on:
 
 jobs:
   build:
+    # Skip for Lightroom plugin releases
+    if: ${{ !startsWith(github.ref_name, 'lightroom-') }}
     uses: ./.github/workflows/build.yml
   docker_build:
     needs: build
