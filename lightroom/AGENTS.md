@@ -2,25 +2,36 @@
 
 Lightroom Classic plugin for syncing ratings and metadata with PICR. Written in Lua.
 
-## Status: Prototype
+## Status: Alpha
 
-This plugin is a **work-in-progress prototype**. Current functionality is limited to importing ratings from CSV text input. Server integration is not yet implemented.
+This plugin imports ratings and flags from PICR's CSV export into Lightroom Classic.
 
 ### What Works
 
 - Plugin installs and appears in Lightroom Library menu
-- CSV parsing for `filename,rating` format
+- CSV parsing for `filename,rating,flag` format (PICR export format)
+- Rating updates (0-5 stars)
+- Flag/pick status updates (approved → picked, rejected → rejected)
+- Subfolder support with relative paths (e.g., `subfolder/photo.jpg`)
 - File matching with virtual copy support
-- Rating updates to Lightroom catalog
+- Extension-agnostic matching (CSV `photo.jpg` matches Lightroom `photo.NEF`)
+- Progress indicators:
+  - "Scanning folders..." with cancellation during catalog scan
+  - Progress bar with current file during import
+- Empty values in CSV are skipped (no change to current value)
 - Transaction-safe catalog writes
+- Smart completion messages:
+  - Shows update count with proper pluralization
+  - Distinguishes "already up to date" from "no files matched"
+  - Truncates error list to 10 items with "...and N more" summary
+- Dialog shows folder path and photo count for verification
 
 ### What's Missing
 
-- API integration with PICR server
+- API integration with PICR server (direct sync without CSV)
 - Automatic sync of ratings/flags
-- Bi-directional sync
-- User-friendly file browser
-- Progress indication for large catalogs
+- Bi-directional sync (Lightroom → PICR)
+- Settings UI for server configuration
 
 ## Lightroom SDK Documentation
 
@@ -82,6 +93,7 @@ return {
   LrSdkVersion = 10.0,
   LrPluginName = 'PICR Lightroom Plugin',
   LrToolkitIdentifier = 'com.isaacinsoll.picr.lr-plugin',
+  LrPluginInfoUrl = 'https://github.com/IsaacInsoll/PICR/tree/master/lightroom',
 
   LrLibraryMenuItems = {
     {
@@ -90,7 +102,7 @@ return {
     },
   },
 
-  VERSION = { major = 0, minor = 1, revision = 0 },
+  VERSION = { major = 0, minor = 2, revision = 0 },
 }
 ```
 
@@ -101,23 +113,23 @@ return {
 LrTasks.startAsyncTask(function()
   -- 1. Get current folder
   local folder = Active_folder()
+  if not folder then return end
 
-  -- 2. Show dialog, get CSV input
-  local data = PicrDialog()
+  -- 2. Scan folder tree with progress indicator
+  local scanProgress = LrProgressScope({ title = 'PICR Import' })
+  scanProgress:setCaption('Scanning folders...')
+  local photoMap, photoCount = buildPhotoMap(folder, scanProgress)
+  scanProgress:done()
+
+  -- 3. Show dialog, get CSV input
+  local data = PicrDialog(folder, folderPath, photoCount)
   if not data then return end  -- User cancelled
 
-  -- 3. Validate data against folder contents
-  local photos = folder:getPhotos()
-  local errors = validateData(data, photos)
-  if #errors > 0 then
-    showErrors(errors)
-    return
-  end
+  -- 4. Validate and process with progress bar
+  local result = validateAndProcess(photoMap, data)
 
-  -- 4. Apply updates in transaction
-  catalog:withWriteAccessDo('PICR Import', function()
-    processData(data, photos)
-  end)
+  -- 5. Show appropriate result message
+  LrDialogs.message(title, message)
 end)
 ```
 
@@ -215,16 +227,40 @@ LrFunctionContext.callWithContext('MyDialog', function(context)
 end)
 ```
 
-## Current Data Format
+## CSV Data Format
 
-The plugin currently accepts CSV text input:
+The plugin accepts CSV text exported from PICR:
 
 ```
-filename,rating
-photo1.jpg,5
-photo2.jpg,3
-wedding-001.jpg,4
+filename,rating,flag
+photo1.jpg,5,approved
+photo2.jpg,3,
+subfolder/photo3.jpg,4,rejected
+photo4.jpg,,approved
 ```
+
+### Column Definitions
+
+| Column | Values | Notes |
+|--------|--------|-------|
+| filename | path/name.ext | Relative path from selected folder. Extension is ignored for matching. |
+| rating | 0-5 or empty | Empty = no change. 0 = unrated. |
+| flag | approved/rejected or empty | Empty = no change. Maps to Lightroom's pick status. |
+
+### Flag Mapping
+
+| PICR Flag | Lightroom Pick Status |
+|-----------|----------------------|
+| approved | Picked (flag) |
+| rejected | Rejected (X) |
+| (empty) | No change |
+
+### Subfolder Support
+
+When exporting from PICR with "Include subfolders" enabled, paths are relative:
+- `photo.jpg` → in selected folder
+- `day1/photo.jpg` → in subfolder "day1"
+- `day1/ceremony/photo.jpg` → in nested subfolder
 
 ### Virtual Copy Handling
 
@@ -232,6 +268,12 @@ Lightroom virtual copies have names like "Copy 1", "Copy 2". The plugin maps:
 - `photo.jpg` → original
 - `photo-2.jpg` → Copy 1 (note: -2 not -1)
 - `photo-3.jpg` → Copy 2
+
+### Extension Matching
+
+The plugin strips extensions before matching, so:
+- CSV `photo.jpg` matches Lightroom `photo.NEF` or `photo.CR2`
+- This supports workflows where JPG exports are rated in PICR but RAW files are in Lightroom
 
 ## Future: PICR Server Integration
 
@@ -286,9 +328,112 @@ logger:warn('Warning message')
 logger:error('Error message')
 ```
 
+## CRITICAL: Lua 5.1 Limitations
+
+**Lightroom uses Lua 5.1**, not modern Lua 5.2+. Many online Lua tutorials and examples use newer syntax that will cause runtime errors in Lightroom.
+
+### Features NOT Available (Lua 5.2+ only)
+
+| Feature | Error You'll See | Workaround |
+|---------|------------------|------------|
+| `goto` and `::label::` | `'=' expected near 'continue'` | Use nested `if`/`else` or extract to function |
+| `table.unpack()` | `attempt to call nil` | Use `unpack()` (global in 5.1) |
+| `table.pack()` | `attempt to call nil` | Use `{...}` and manually set `n` |
+| Bitwise operators (`&`, `\|`, `~`) | syntax error | Use `bit` library if available |
+| `_ENV` | undefined | Use `setfenv`/`getfenv` (5.1 style) |
+| `\z` string escape | invalid escape | Remove or use explicit handling |
+| `\x` hex escapes | invalid escape | Use `\ddd` decimal escapes |
+| Empty statements `;;` | syntax error | Remove extra semicolons |
+| `rawlen()` | `attempt to call nil` | Use `#` operator |
+
+### Example: Avoiding goto
+
+```lua
+-- DON'T: Lua 5.2+ syntax
+for line in lines do
+  if shouldSkip then
+    goto continue
+  end
+  process(line)
+  ::continue::
+end
+
+-- DO: Lua 5.1 compatible
+for line in lines do
+  if not shouldSkip then
+    process(line)
+  end
+end
+```
+
+## Lightroom-Specific Oddities
+
+### Sandboxed Environment
+
+Lightroom runs plugins in a sandboxed Lua environment with restrictions:
+
+| Standard Lua | Lightroom Alternative |
+|--------------|----------------------|
+| `io` library | `LrFileUtils`, `LrPathUtils` |
+| `os.execute` | Not available (security) |
+| `os.date/time` | `LrDate` |
+| `require` | `import` for Lr modules, `require` for plugin files |
+| `print` | `LrLogger` (output to system console) |
+| `dofile` | Not available |
+
+### Global Function Scope
+
+Functions defined without `local` are **global across all plugin files**:
+
+```lua
+-- In helpers.lua
+function split(str, sep)  -- This is GLOBAL
+  ...
+end
+
+-- In main.lua
+require 'helpers'
+local result = split("a,b,c", ",")  -- Works because split is global
+```
+
+This is intentional for this plugin, but be aware it can cause naming conflicts.
+
+### String Handling
+
+- All strings must be UTF-8 encoded
+- Use `..` for concatenation (not `+`)
+- Lightroom metadata can return `nil` - always handle it:
+  ```lua
+  local name = photo:getFormattedMetadata('fileName') or 'unknown'
+  ```
+
+### Async Requirements
+
+Many operations MUST be called from within `LrTasks.startAsyncTask`:
+- Any UI dialogs (`LrDialogs`)
+- Catalog operations
+- Progress scopes
+- HTTP requests
+
+```lua
+-- This will fail or behave unexpectedly:
+LrDialogs.message("Hello")  -- Called outside async task
+
+-- Do this instead:
+LrTasks.startAsyncTask(function()
+  LrDialogs.message("Hello")
+end)
+```
+
+### Catalog Write Transactions
+
+- Only ONE `withWriteAccessDo` can be active at a time
+- Keep transactions as short as possible
+- Reading metadata doesn't require write access (as of SDK 3.0)
+
 ### Common Gotchas
 
-1. **Nil checks**: Lua doesn't error on nil access, so always check:
+1. **Nil checks**: Lua doesn't error on nil table access, so always check:
    ```lua
    if folder and folder:getName() then
      -- safe to use
@@ -301,10 +446,20 @@ logger:error('Error message')
 
 4. **Local variables**: Always use `local` unless intentionally global
 
-5. **Module imports**: Use Lightroom's `import` function:
+5. **Module imports**: Use Lightroom's `import` function for SDK modules:
    ```lua
    local LrApplication = import 'LrApplication'
    ```
+
+6. **Boolean coercion**: Only `nil` and `false` are falsy. `0` and `""` are truthy!
+   ```lua
+   if 0 then print("This WILL print!") end
+   if "" then print("This WILL print too!") end
+   ```
+
+7. **Table length**: `#` operator only works reliably on arrays with no gaps
+
+8. **No continue statement**: Use nested `if` or refactor to early `return` in a function
 
 ## Troubleshooting
 

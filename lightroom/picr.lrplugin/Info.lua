@@ -1,14 +1,14 @@
 -- PICR Lightroom Plugin
 -- @copyright 2025 Isaac Insoll
--- @license: TBD
+-- @license: MIT
 return {
   LrSdkVersion = 10.0,
   LrToolkitIdentifier = "com.isaacinsoll.picr.lr-plugin",
   LrPluginName = "PICR Lightroom Plugin",
-  LrPluginInfoUrl = "",
+  LrPluginInfoUrl = "https://github.com/IsaacInsoll/PICR/tree/master/lightroom",
   VERSION = {
     major = 0,
-    minor = 1,
+    minor = 2,
     revision = 0,
   },
   LrLibraryMenuItems = {

@@ -1,5 +1,6 @@
 local LrApplication = import 'LrApplication'
 
+-- Get the currently selected folder in Lightroom
 function Active_folder()
   local catalog = LrApplication.activeCatalog()
   local sources = catalog:getActiveSources()
@@ -7,29 +8,22 @@ function Active_folder()
   for i, source in ipairs(sources) do
     if type(source) ~= 'string' then
       if source:type() == 'LrFolder' then
-        return source;
+        return source
       end
     end
   end
   return nil
 end
 
-function photoToShortFilename(pic)
-  local filename = stripExtension(pic:getFormattedMetadata('fileName'))
-
-  -- all done, except we have virtual copies :/
-  local copyName = pic:getFormattedMetadata('copyName') -- typically blank
-  if copyName ~= nil then
-    local s = split(copyName, ' ')
-    if #s == 2 then
-      if s[1] == 'Copy' then
-        filename = filename .. '-' .. tonumber(s[2]) + 1
-      end
-    end
+-- Remove file extension from a path (handles subfolder paths)
+-- e.g., "subfolder/photo.jpg" -> "subfolder/photo"
+function stripExtension(path)
+  if path == nil or path == '' then
+    return ''
   end
-  return filename
-end
-
-function stripExtension(filename)
-  return filename:sub(1, filename:find('.', 1, true) - 1) -- remove extension
+  local lastDot = path:find('%.[^./]+$')
+  if lastDot then
+    return path:sub(1, lastDot - 1)
+  end
+  return path
 end
