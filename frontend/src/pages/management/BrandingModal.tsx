@@ -28,7 +28,10 @@ export const BrandingModal = ({
   const folder = branding.folder;
 
   useEffect(() => {
-    setThemeMode(branding);
+    // Only update theme when mode is defined to prevent flickering
+    if (branding.mode) {
+      setThemeMode(branding);
+    }
   }, [branding, setThemeMode]);
 
   const onSave = () => {

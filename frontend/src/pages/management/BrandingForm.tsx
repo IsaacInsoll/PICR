@@ -104,7 +104,9 @@ const HeadingFontSelector = ({
               fontFamilies.default,
           },
         }}
-        onChange={(next) => onChange((next ?? 'default') as FontKey)}
+        onChange={(next) => {
+          if (next != null) onChange(next as FontKey);
+        }}
         renderOption={({ option }) => (
           <Stack
             gap="xs"
