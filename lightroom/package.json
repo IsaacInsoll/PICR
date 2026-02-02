@@ -1,6 +1,6 @@
 {
   "name": "picr-lightroom-plugin",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "PICR Lightroom Plugin - Import ratings and flags from PICR into Lightroom Classic",
   "type": "module",
   "private": true,
@@ -13,10 +13,7 @@
     "release-it": "^19.0.0"
   },
   "release-it": {
-    "npm": {
-      "publish": false,
-      "version": false
-    },
+    "npm": false,
     "git": {
       "requireBranch": "master",
       "commitMessage": "🔌 Lightroom plugin v${version}",
