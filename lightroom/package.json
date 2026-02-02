@@ -5,7 +5,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "release": "release-it --only-version",
+    "release": "release-it",
     "build": "node scripts/build-zip.js"
   },
   "devDependencies": {
@@ -15,6 +15,7 @@
   "release-it": {
     "npm": false,
     "git": {
+      "changelog": null,
       "requireBranch": "master",
       "commitMessage": "🔌 Lightroom plugin v${version}",
       "tagName": "lightroom-v${version}",
