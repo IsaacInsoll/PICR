@@ -1,6 +1,6 @@
 {
   "name": "picr-lightroom-plugin",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "PICR Lightroom Plugin - Import ratings and flags from PICR into Lightroom Classic",
   "type": "module",
   "private": true,
