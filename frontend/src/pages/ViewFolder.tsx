@@ -1,11 +1,5 @@
 import { useQuery } from 'urql';
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FolderHeader,
   PlaceholderFolderHeader,
@@ -75,14 +69,21 @@ const ViewFolderBody = () => {
   useRequery(reQuery, 20000);
 
   const branding = data?.data?.folder?.branding;
+  // Create a stable key from the branding values to avoid re-running effect on object reference changes
+  const brandingKey = branding
+    ? `${branding.id}-${branding.mode}-${branding.primaryColor}-${branding.headingFontKey}`
+    : 'default';
   const theme = useMemo(
     () => applyBrandingDefaults(branding),
-    [branding],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [brandingKey],
   );
 
   useEffect(() => {
+    console.log('viewfolder setThemeMode effect');
     setThemeMode(theme);
-  }, [theme, setThemeMode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brandingKey]);
 
   const toggleManaging = useCallback(() => {
     navigate(baseUrl + folderId + (managing ? '' : '/manage'));

@@ -1,4 +1,4 @@
-import { PrimaryColor, ThemeMode } from '../../../../graphql-types';
+import { Branding, PrimaryColor, ThemeMode } from '../../../../graphql-types';
 import {
   ActionIcon,
   Badge,
@@ -23,15 +23,14 @@ import {
   type FontDefinition,
   type FontKey,
 } from '@shared/branding/fontRegistry';
-import { BrandingWithHeadingFont } from '../../atoms/themeModeAtom';
 import { fontFamilies } from '../../fonts.generated';
 
 export const BrandingForm = ({
   branding,
   onChange,
 }: {
-  branding: BrandingWithHeadingFont;
-  onChange: (branding: BrandingWithHeadingFont) => void;
+  branding: Branding;
+  onChange: (branding: Branding) => void;
 }) => {
   return (
     <Stack gap="lg">

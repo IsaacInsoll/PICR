@@ -2,23 +2,25 @@ import { Alert, Button, Group, Modal } from '@mantine/core';
 import { BrandingForm } from './BrandingForm';
 import { useEffect, useState } from 'react';
 import { useSetAtom } from 'jotai';
-import { themeModeAtom } from '../../atoms/themeModeAtom';
-import { BrandingWithHeadingFont } from '../../atoms/themeModeAtom';
+import {
+  themeModeAtom,
+  applyBrandingDefaults,
+} from '../../atoms/themeModeAtom';
 import { useMutation } from 'urql';
 import { DeleteIcon } from '../../PicrIcons';
 import { editBrandingMutation } from '@shared/urql/mutations/editBrandingMutation';
 import { deleteBrandingMutation } from '@shared/urql/mutations/deleteBrandingMutation';
 import { toHeadingFontKeyEnumValue } from '@shared/branding/fontRegistry';
-import { applyBrandingDefaults } from '../../atoms/themeModeAtom';
+import { Branding } from '../../../../graphql-types';
 
 export const BrandingModal = ({
   branding: brandingProp,
   onClose,
 }: {
-  branding: BrandingWithHeadingFont;
+  branding: Branding;
   onClose: () => void;
 }) => {
-  const [branding, setBranding] = useState<BrandingWithHeadingFont>(
+  const [branding, setBranding] = useState<Branding>(
     applyBrandingDefaults(brandingProp),
   );
   const setThemeMode = useSetAtom(themeModeAtom);
@@ -30,6 +32,7 @@ export const BrandingModal = ({
   useEffect(() => {
     // Only update theme when mode is defined to prevent flickering
     if (branding.mode) {
+      console.log('updating branding mode: ', branding.mode);
       setThemeMode(branding);
     }
   }, [branding, setThemeMode]);
@@ -56,8 +59,7 @@ export const BrandingModal = ({
     });
   };
 
-  const inherited =
-    branding.folder && branding.folderId !== branding.folder.id;
+  const inherited = branding.folder && branding.folderId !== branding.folder.id;
   const title = !inherited && folder?.name ? ' for: ' + folder?.name : '';
   return (
     <Modal

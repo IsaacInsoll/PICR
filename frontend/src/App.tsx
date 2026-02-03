@@ -36,6 +36,7 @@ const App = () => {
   }, [setPortal, portal]);
 
   useEffect(() => {
+    console.log('setting default font: ', customTheme.headingFontKey);
     const key = customTheme.headingFontKey ?? 'default';
     const family =
       key in fontFamilies

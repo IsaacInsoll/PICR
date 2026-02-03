@@ -1,24 +1,24 @@
 import { atom } from 'jotai';
-import { FontKey, normalizeFontKey } from '@shared/branding/fontRegistry';
-import { Branding, PrimaryColor, ThemeMode } from '../../../graphql-types';
+import { normalizeFontKey } from '@shared/branding/fontRegistry';
+import {
+  Branding,
+  HeadingFontKey,
+  PrimaryColor,
+  ThemeMode,
+} from '../../../graphql-types';
 
-export type BrandingWithHeadingFont = Branding & {
-  headingFontKey?: FontKey | null;
-};
-
-export const defaultBranding: BrandingWithHeadingFont = {
+export const defaultBranding: Branding = {
   id: '',
+  folderId: '',
   mode: ThemeMode.Auto,
   primaryColor: PrimaryColor.Blue,
-  headingFontKey: 'default',
+  headingFontKey: HeadingFontKey.Default,
 };
 
-export const themeModeAtom = atom<BrandingWithHeadingFont>(defaultBranding);
+export const themeModeAtom = atom<Branding>(defaultBranding);
 
-export const applyBrandingDefaults = (
-  branding?: BrandingWithHeadingFont | null,
-): BrandingWithHeadingFont => ({
+export const applyBrandingDefaults = (branding?: Branding | null): Branding => ({
   ...defaultBranding,
   ...branding,
-  headingFontKey: normalizeFontKey(branding?.headingFontKey),
+  headingFontKey: normalizeFontKey(branding?.headingFontKey) ?? HeadingFontKey.Default,
 });
