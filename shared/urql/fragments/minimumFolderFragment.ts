@@ -5,6 +5,8 @@ export const minimumFolderFragment = gql(/* GraphQL */ `
     id
     __typename
     name
+    title
+    subtitle
     parentId
     folderLastModified
     ...HeroImageFragment

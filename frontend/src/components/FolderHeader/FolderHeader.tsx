@@ -20,15 +20,18 @@ import { LoggedInHeader } from '../Header/LoggedInHeader';
 export const FolderHeader = ({
   folder,
   subtitle,
+  customSubtitle,
   actions,
 }: {
   folder: MinimalFolder;
   subtitle?: string;
+  customSubtitle?: string | null;
   actions?: JSX.Element;
 }) => {
   return (
     <HeaderWrapper
-      title={folder.name ?? '(Unnamed Folder)'}
+      title={folder.title ?? folder.name ?? '(Unnamed Folder)'}
+      customSubtitle={customSubtitle ?? undefined}
       subtitle={subtitle}
       actions={actions}
       parent={folder.parents}
@@ -57,12 +60,14 @@ export const PlaceholderFolderHeader = () => {
 
 const HeaderWrapper = ({
   title,
+  customSubtitle,
   subtitle,
   children,
   actions,
   parent,
 }: {
   title?: string;
+  customSubtitle?: string;
   subtitle?: string | ReactNode;
   children?: ReactNode;
   actions?: ReactNode;
@@ -90,6 +95,7 @@ const HeaderWrapper = ({
       <Grid>
         <Grid.Col span={{ xs: 12, sm: 6 }}>
           <Title order={1}>{title}</Title>
+          {customSubtitle ? <Title order={3}>{customSubtitle}</Title> : null}
           <Text>{subtitle}</Text>
         </Grid.Col>
         <Grid.Col span={{ xs: 12, sm: 6 }}>

@@ -5,6 +5,8 @@ export const folderFragment = gql(/* GraphQL */ `
     id
     __typename
     name
+    title
+    subtitle
     parentId
     permissions
     folderLastModified

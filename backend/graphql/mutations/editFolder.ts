@@ -1,14 +1,31 @@
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { doAuthError } from '../../auth/doAuthError.js';
-import { GraphQLID, GraphQLNonNull } from 'graphql';
+import { GraphQLError, GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
 import { folderType } from '../types/folderType.js';
-import { db, dbFileForId } from '../../db/picrDb.js';
+import { db, dbFileForId, dbFolderForId } from '../../db/picrDb.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { setHeroImage } from './setHeroImage.js';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds.js';
-import { and, inArray } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
+
+const maxFolderTextLength = 255;
+
+const normalizeOptionalText = (value: unknown) => {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (typeof value !== 'string') return null;
+  return value.trim().length === 0 ? null : value;
+};
+
+const validateOptionalText = (value: string | null | undefined, label: string) => {
+  if (value && value.length > maxFolderTextLength) {
+    throw new GraphQLError(
+      `${label} must be ${maxFolderTextLength} characters or fewer`,
+    );
+  }
+};
 
 const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   _,
@@ -21,43 +38,65 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     'Admin',
   );
 
-  const heroImage = await dbFileForId(params.heroImageId);
-  if (!heroImage) {
-    doAuthError('Invalid hero image ID');
-    return;
-  }
-  if (heroImage.type != 'Image') doAuthError('Not an image');
-  if (heroImage.folderId != folder!.id) doAuthError('Not in this folder');
+  let heroImage = undefined;
+  if (params.heroImageId !== undefined && params.heroImageId !== null) {
+    heroImage = await dbFileForId(params.heroImageId);
+    if (!heroImage) {
+      doAuthError('Invalid hero image ID');
+      return;
+    }
+    if (heroImage.type != 'Image') doAuthError('Not an image');
+    if (heroImage.folderId != folder!.id) doAuthError('Not in this folder');
 
-  await setHeroImage(heroImage.id, folder!.id);
+    await setHeroImage(heroImage.id, folder!.id);
 
-  //for all parent folders: if they don't have their own in-folder hero image, update it to be this one too
-  const allParentIds = await folderAndAllParentIds(
-    folder,
-    context.userHomeFolder!.id,
-  );
-  const parents = await db.query.dbFolder.findMany({
-    where: and(
-      inArray(dbFolder.id, allParentIds),
-      // ne(dbFolder.id, dbFile.folderId), //this didn't work :/
-    ),
-    with: { heroImage: true },
-  });
-
-  const parentsWithoutHeroes = parents.filter(
-    ({ id, heroImage }) => id !== heroImage?.folderId,
-  );
-  await db
-    .update(dbFolder)
-    .set({ heroImageId: params.heroImageId, updatedAt: new Date() })
-    .where(
-      inArray(
-        dbFolder.id,
-        parentsWithoutHeroes.map(({ id }) => id),
-      ),
+    //for all parent folders: if they don't have their own in-folder hero image, update it to be this one too
+    const allParentIds = await folderAndAllParentIds(
+      folder,
+      context.userHomeFolder!.id,
     );
+    const parents = await db.query.dbFolder.findMany({
+      where: and(
+        inArray(dbFolder.id, allParentIds),
+        // ne(dbFolder.id, dbFile.folderId), //this didn't work :/
+      ),
+      with: { heroImage: true },
+    });
 
-  return { ...folder, heroImage, heroImageId: heroImage.id };
+    const parentsWithoutHeroes = parents.filter(
+      ({ id, heroImage }) => id !== heroImage?.folderId,
+    );
+    await db
+      .update(dbFolder)
+      .set({ heroImageId: params.heroImageId, updatedAt: new Date() })
+      .where(
+        inArray(
+          dbFolder.id,
+          parentsWithoutHeroes.map(({ id }) => id),
+        ),
+      );
+  }
+
+  const updates: Partial<typeof dbFolder.$inferInsert> = {};
+  const title = normalizeOptionalText(params.title);
+  const subtitle = normalizeOptionalText(params.subtitle);
+  validateOptionalText(title, 'Title');
+  validateOptionalText(subtitle, 'Subtitle');
+  if (title !== undefined) updates.title = title;
+  if (subtitle !== undefined) updates.subtitle = subtitle;
+
+  if (Object.keys(updates).length > 0) {
+    await db
+      .update(dbFolder)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(dbFolder.id, folder!.id));
+  }
+
+  const updatedFolder = await dbFolderForId(folder!.id);
+  return {
+    ...(updatedFolder ?? folder),
+    ...(heroImage ? { heroImage, heroImageId: heroImage.id } : {}),
+  };
 };
 
 export const editFolder = {
@@ -66,5 +105,7 @@ export const editFolder = {
   args: {
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     heroImageId: { type: GraphQLID },
+    title: { type: GraphQLString },
+    subtitle: { type: GraphQLString },
   },
 };

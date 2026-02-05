@@ -20,6 +20,7 @@ import {
   FolderHeaderButtons,
   folderViewStyles,
 } from '@/src/components/FolderView/FolderViewShared';
+import { FolderHeading } from '@/src/components/FolderView/FolderHeading';
 
 export default function FolderMasterView() {
   const me = useMe();
@@ -37,7 +38,7 @@ export default function FolderMasterView() {
     <>
       <Stack.Screen
         options={{
-          headerTitle: skeleton?.name ?? 'Loading Folder...',
+          headerTitle: skeleton?.title ?? skeleton?.name ?? 'Loading Folder...',
         }}
       />
       <View
@@ -85,7 +86,7 @@ const FolderBody = ({
     <>
       <Stack.Screen
         options={{
-          headerTitle: folder.name,
+          headerTitle: folder.title ?? folder.name,
           headerRight: () => (
             <FolderHeaderButtons>
               <SearchHeaderButton folderId={folderId} />
@@ -93,6 +94,7 @@ const FolderBody = ({
           ),
         }}
       />
+      <FolderHeading folder={folder} />
       <AppFolderContentsView
         items={items}
         width={width}

@@ -12,6 +12,8 @@ import {
 export interface MinimalFolder {
   id: string;
   name?: string;
+  title?: string | null;
+  subtitle?: string | null;
   parentId?: string | null | undefined;
   parents?: MinimalFolder[];
   relativePath?: string;

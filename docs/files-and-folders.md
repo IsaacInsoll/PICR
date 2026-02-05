@@ -7,6 +7,7 @@
 - Permissions for users can be assigned to any folder or subfolder and allows access to that folder and all subfolders under that.
 - No files/folders are created or uploaded in PICR, you just put the files in that folder however you normally do (IE: share that folder over the network)
 - Once files are put in the folder you access PICR to created shared links.
+- You can optionally set a display title and subtitle on folders. These are shown when viewing a folder, while lists still use the original folder name.
 
 ## Example workflow
 

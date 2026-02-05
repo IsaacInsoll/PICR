@@ -157,6 +157,7 @@ const ViewFolderBody = () => {
         <>
           <FolderHeader
             folder={folder}
+            customSubtitle={folder.subtitle ?? undefined}
             subtitle={folderSubtitle(folder)}
             actions={<Group>{actions}</Group>}
           />

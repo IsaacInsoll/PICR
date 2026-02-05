@@ -29,6 +29,8 @@ export const folderType: GraphQLObjectType<any, any> = new GraphQLObjectType({
   fields: () => ({
     id: { type: new GraphQLNonNull(GraphQLID) },
     name: { type: new GraphQLNonNull(GraphQLString) },
+    title: { type: GraphQLString },
+    subtitle: { type: GraphQLString },
     folderLastModified: { type: new GraphQLNonNull(GraphQLDateTime) },
     parentId: { type: GraphQLID },
     subFolders: {

@@ -127,6 +127,8 @@ export type Folder = {
   permissions?: Maybe<FolderPermissions>;
   relativePath: Scalars['String']['output'];
   subFolders: Array<Folder>;
+  subtitle?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
   totalDirectSize: Scalars['String']['output'];
   totalFiles: Scalars['Int']['output'];
   totalFolders: Scalars['Int']['output'];
@@ -291,6 +293,8 @@ export type MutationEditBrandingArgs = {
 export type MutationEditFolderArgs = {
   folderId: Scalars['ID']['input'];
   heroImageId?: InputMaybe<Scalars['ID']['input']>;
+  subtitle?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 

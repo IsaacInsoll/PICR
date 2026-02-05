@@ -17,6 +17,7 @@ import {
   FolderHeaderButtons,
   folderViewStyles,
 } from '@/src/components/FolderView/FolderViewShared';
+import { FolderHeading } from '@/src/components/FolderView/FolderHeading';
 
 export default function PublicFolderView() {
   const theme = useAppTheme();
@@ -28,7 +29,7 @@ export default function PublicFolderView() {
     <>
       <Stack.Screen
         options={{
-          headerTitle: skeleton?.name ?? 'Loading Folder...',
+          headerTitle: skeleton?.title ?? skeleton?.name ?? 'Loading Folder...',
         }}
       />
       <View
@@ -76,10 +77,11 @@ const FolderBody = ({
     <>
       <Stack.Screen
         options={{
-          headerTitle: folder.name,
+          headerTitle: folder.title ?? folder.name,
           headerRight: () => <FolderHeaderButtons />,
         }}
       />
+      <FolderHeading folder={folder} />
       <AppFolderContentsView
         items={items}
         width={width}
