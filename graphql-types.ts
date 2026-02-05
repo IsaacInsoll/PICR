@@ -38,6 +38,7 @@ export type Branding = {
   __typename?: 'Branding';
   folder?: Maybe<Folder>;
   folderId: Scalars['ID']['output'];
+  headingFontKey?: Maybe<HeadingFontKey>;
   id: Scalars['ID']['output'];
   logoUrl?: Maybe<Scalars['String']['output']>;
   mode?: Maybe<ThemeMode>;
@@ -159,6 +160,30 @@ export enum FoldersSortType {
   Name = 'name'
 }
 
+export enum HeadingFontKey {
+  AbrilFatface = 'abrilFatface',
+  AmaticSc = 'amaticSc',
+  AtkinsonHyperlegibleMono = 'atkinsonHyperlegibleMono',
+  AtkinsonHyperlegibleNext = 'atkinsonHyperlegibleNext',
+  BebasNeue = 'bebasNeue',
+  DancingScript = 'dancingScript',
+  Default = 'default',
+  Inter = 'inter',
+  JetbrainsMono = 'jetbrainsMono',
+  LibreBaskerville = 'libreBaskerville',
+  Lora = 'lora',
+  Manrope = 'manrope',
+  Merriweather = 'merriweather',
+  MerriweatherSans = 'merriweatherSans',
+  Montserrat = 'montserrat',
+  OleoScript = 'oleoScript',
+  Pacifico = 'pacifico',
+  PinyonScript = 'pinyonScript',
+  PoiretOne = 'poiretOne',
+  Signika = 'signika',
+  SourceSans3 = 'sourceSans3'
+}
+
 export type Image = FileInterface & {
   __typename?: 'Image';
   blurHash: Scalars['String']['output'];
@@ -256,6 +281,7 @@ export type MutationEditAdminUserArgs = {
 
 export type MutationEditBrandingArgs = {
   folderId: Scalars['ID']['input'];
+  headingFontKey?: InputMaybe<HeadingFontKey>;
   logoUrl?: InputMaybe<Scalars['String']['input']>;
   mode?: InputMaybe<ThemeMode>;
   primaryColor?: InputMaybe<PrimaryColor>;

@@ -1,5 +1,5 @@
 import { useQuery } from 'urql';
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FolderHeader,
   PlaceholderFolderHeader,
@@ -27,8 +27,7 @@ import { CommentIcon, DotsIcon, FilterIcon, FolderIcon } from '../PicrIcons';
 import { FolderRouteParams } from '../Router';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
-import { defaultBranding, themeModeAtom } from '../atoms/themeModeAtom';
-import { Branding } from '../../../graphql-types';
+import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
 import { ManageFolder } from './ManageFolder';
 import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 import { FolderCsvExportModal } from '../components/FileListView/FolderCsvExportModal';
@@ -60,7 +59,7 @@ const ViewFolderBody = () => {
   const mode: ViewFolderMode = ['manage', 'activity'].includes(fileId)
     ? fileId
     : 'files';
-  const managing = mode == 'manage';
+  const managing = mode === 'manage';
   const activity = mode === 'activity';
 
   const [data, reQuery] = useQuery({
@@ -69,13 +68,22 @@ const ViewFolderBody = () => {
   });
   useRequery(reQuery, 20000);
 
+  const branding = data?.data?.folder?.branding;
+  // Create a stable key from the branding values to avoid re-running effect on object reference changes
+  const brandingKey = branding
+    ? `${branding.id}-${branding.mode}-${branding.primaryColor}-${branding.headingFontKey}`
+    : 'default';
+  const theme = useMemo(
+    () => applyBrandingDefaults(branding),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [brandingKey],
+  );
+
   useEffect(() => {
-    const theme: Branding = {
-      ...defaultBranding,
-      ...data?.data?.folder?.branding,
-    };
+    console.log('viewfolder setThemeMode effect');
     setThemeMode(theme);
-  }, [data?.data?.folder?.branding, setThemeMode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brandingKey]);
 
   const toggleManaging = useCallback(() => {
     navigate(baseUrl + folderId + (managing ? '' : '/manage'));
@@ -97,7 +105,7 @@ const ViewFolderBody = () => {
 
   const actions = [];
 
-  if (hasFiles && mode == 'files') {
+  if (hasFiles && mode === 'files') {
     actions.push(<FileSortSelector key="FileSortSelector" />);
     // actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
   }

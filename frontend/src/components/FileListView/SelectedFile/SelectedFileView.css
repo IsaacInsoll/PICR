@@ -74,6 +74,10 @@
 [data-mantine-color-scheme='dark'] .lightbox-portal .yarl__toolbar_button:hover {
   color: var(--mantine-color-primary-6);
 }
+
+.lightbox-portal .yarl__slide_title {
+  font-family: var(--picr-heading-font);
+}
 [data-mantine-color-scheme='light'] .lightbox-portal .yarl__toolbar .yarl__button ,
 [data-mantine-color-scheme='light'] .lightbox-portal .yarl__slide_title,
 [data-mantine-color-scheme='light'] .lightbox-portal .yarl__button.yarl__navigation_next,

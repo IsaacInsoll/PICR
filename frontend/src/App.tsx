@@ -18,6 +18,7 @@ import { PicrErrorBoundary } from './components/PicrErrorBoundary';
 import { useSetAtom } from 'jotai';
 import { lightboxRefAtom } from './atoms/lightboxRefAtom';
 import { getBaseHrefPathname } from './helpers/baseHref';
+import { fontFamilies } from './fonts.generated';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
@@ -33,6 +34,20 @@ const App = () => {
   useEffect(() => {
     setPortal(portal);
   }, [setPortal, portal]);
+
+  useEffect(() => {
+    console.log('setting default font: ', customTheme.headingFontKey);
+    const key = customTheme.headingFontKey ?? 'default';
+    const family =
+      key in fontFamilies
+        ? fontFamilies[key as keyof typeof fontFamilies]
+        : fontFamilies.default;
+    const cssFamily = family.includes(' ') ? `"${family}"` : family;
+    document.documentElement.style.setProperty(
+      '--picr-heading-font',
+      cssFamily,
+    );
+  }, [customTheme.headingFontKey]);
 
   return (
     <URQLProvider value={client}>

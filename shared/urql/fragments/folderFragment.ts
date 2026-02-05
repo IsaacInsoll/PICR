@@ -18,6 +18,7 @@ export const folderFragment = gql(/* GraphQL */ `
       mode
       primaryColor
       logoUrl
+      headingFontKey
       folder {
         id
         name

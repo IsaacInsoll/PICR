@@ -17,14 +17,15 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { BlurView } from 'expo-blur';
 import { HeaderButton } from '@react-navigation/elements';
 import { Ionicons } from '@expo/vector-icons';
 import { navBarIconProps } from '@/src/constants';
 import { File } from '@shared/gql/graphql';
-import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
+import { fileViewFullscreenAtom, headingFontKeyAtom } from '@/src/atoms/atoms';
+import { normalizeHeadingFontKey } from '@/src/helpers/headingFont';
 import { FileCommentsBottomSheet } from '@/src/components/FileCommentsBottomSheet';
 import { useScreenOrientation } from '@/src/hooks/useScreenOrientation';
 import { PTitle } from '@/src/components/PTitle';
@@ -58,9 +59,15 @@ export default function AppFileView() {
     query: viewFolderQuery,
     variables: { folderId },
   });
+  const setHeadingFontKey = useSetAtom(headingFontKeyAtom);
   const files = result.data?.folder.files;
   const file = files?.find((f) => f.id == fileId);
   const fileIndex = files?.findIndex((f) => f.id == fileId);
+  const branding = result.data?.folder?.branding;
+
+  useEffect(() => {
+    setHeadingFontKey(normalizeHeadingFontKey(branding?.headingFontKey));
+  }, [branding?.headingFontKey, setHeadingFontKey]);
 
   const [showComments, setShowComments] = useAtom(showCommentsAtom);
   const [showInfo, setShowInfo] = useAtom(showFileInfoAtom);

@@ -4,9 +4,14 @@ import { folderType } from '../types/folderType.js';
 import { db, dbFolderForId } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbBranding } from '../../db/models/index.js';
-import { primaryColorEnum, themeModeEnum } from '../types/enums.js';
+import {
+  headingFontKeyEnum,
+  primaryColorEnum,
+  themeModeEnum,
+} from '../types/enums.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 
 const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   _,
@@ -15,9 +20,17 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
 ) => {
   await contextPermissions(context, params.folderId, 'Admin');
 
+  const headingFontKey =
+    params.headingFontKey === undefined
+      ? undefined
+      : params.headingFontKey === null
+        ? null
+        : normalizeHeadingFontKey(params.headingFontKey);
+
   const props = {
     mode: params.mode,
     primaryColor: params.primaryColor,
+    headingFontKey,
     folderId: params.folderId,
     updatedAt: new Date(),
   };
@@ -46,5 +59,6 @@ export const editBranding = {
     mode: { type: themeModeEnum },
     primaryColor: { type: primaryColorEnum },
     logoUrl: { type: GraphQLString },
+    headingFontKey: { type: headingFontKeyEnum },
   },
 };

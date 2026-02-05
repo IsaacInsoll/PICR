@@ -5,7 +5,8 @@ import {
   GraphQLString,
 } from 'graphql';
 import { folderType } from './folderType.js';
-import { primaryColorEnum, themeModeEnum } from './enums.js';
+import { headingFontKeyEnum, primaryColorEnum, themeModeEnum } from './enums.js';
+import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 
 export const brandingType = new GraphQLObjectType({
   name: 'Branding',
@@ -14,6 +15,10 @@ export const brandingType = new GraphQLObjectType({
     mode: { type: themeModeEnum },
     primaryColor: { type: primaryColorEnum },
     logoUrl: { type: GraphQLString },
+    headingFontKey: {
+      type: headingFontKeyEnum,
+      resolve: (branding) => normalizeHeadingFontKey(branding?.headingFontKey),
+    },
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     folder: { type: folderType },
   }),

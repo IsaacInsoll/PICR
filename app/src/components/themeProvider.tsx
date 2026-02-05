@@ -1,20 +1,31 @@
-import { ReactNode } from 'react';
-import { useFonts } from '@expo-google-fonts/signika/useFonts';
-import { Signika_300Light } from '@expo-google-fonts/signika/300Light';
-import { Signika_400Regular } from '@expo-google-fonts/signika/400Regular';
-import { Signika_500Medium } from '@expo-google-fonts/signika/500Medium';
-import { Signika_600SemiBold } from '@expo-google-fonts/signika/600SemiBold';
-import { Signika_700Bold } from '@expo-google-fonts/signika/700Bold';
+import { ReactNode, useEffect, useState } from 'react';
+import { useFonts } from 'expo-font';
 import { PText } from '@/src/components/PText';
+import { getBaseFontFiles, loadHeadingFont } from '@/src/helpers/headingFont';
+import { useAtomValue } from 'jotai';
+import { headingFontKeyAtom } from '@/src/atoms/atoms';
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  let [fontsLoaded] = useFonts({
-    Signika_300Light,
-    Signika_400Regular,
-    Signika_500Medium,
-    Signika_600SemiBold,
-    Signika_700Bold,
-  });
-  if (!fontsLoaded) return <PText>Loading Fonts...</PText>;
+  const headingFontKey = useAtomValue(headingFontKeyAtom);
+  const [fontsLoaded] = useFonts(getBaseFontFiles());
+  const [headingFontLoaded, setHeadingFontLoaded] = useState(
+    headingFontKey === 'default',
+  );
+
+  useEffect(() => {
+    if (headingFontKey === 'default') {
+      setHeadingFontLoaded(true);
+      return;
+    }
+    setHeadingFontLoaded(false);
+    loadHeadingFont(headingFontKey)
+      .then(() => setHeadingFontLoaded(true))
+      .catch(() => {
+        // Fall back to default font if custom font fails to load
+        setHeadingFontLoaded(true);
+      });
+  }, [headingFontKey]);
+
+  if (!fontsLoaded || !headingFontLoaded) return <PText>Loading Fonts...</PText>;
   return children;
 };

@@ -10,14 +10,6 @@ export const picrColors: ColorValue[] = [
 
 export const picrManualURL = 'https://isaacinsoll.github.io/PICR/';
 
-export const mainFont = [
-  'Signika_300Light',
-  'Signika_400Regular',
-  'Signika_500Medium',
-  'Signika_600SemiBold',
-  'Signika_700Bold',
-] as const;
-
 export const typographyScale = [36, 30, 24, 20, 16, 14] as const;
 
 export const finePrint: StyleProp<TextStyle> = { opacity: 0.5 } as const;

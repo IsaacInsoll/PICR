@@ -1,13 +1,17 @@
-import { Branding } from '../../../../graphql-types';
 import { Alert, Button, Group, Modal } from '@mantine/core';
 import { BrandingForm } from './BrandingForm';
 import { useEffect, useState } from 'react';
 import { useSetAtom } from 'jotai';
-import { themeModeAtom } from '../../atoms/themeModeAtom';
+import {
+  themeModeAtom,
+  applyBrandingDefaults,
+} from '../../atoms/themeModeAtom';
 import { useMutation } from 'urql';
 import { DeleteIcon } from '../../PicrIcons';
 import { editBrandingMutation } from '@shared/urql/mutations/editBrandingMutation';
 import { deleteBrandingMutation } from '@shared/urql/mutations/deleteBrandingMutation';
+import { toHeadingFontKeyEnumValue } from '@shared/branding/fontRegistry';
+import { Branding } from '../../../../graphql-types';
 
 export const BrandingModal = ({
   branding: brandingProp,
@@ -16,7 +20,9 @@ export const BrandingModal = ({
   branding: Branding;
   onClose: () => void;
 }) => {
-  const [branding, setBranding] = useState<Branding>({ ...brandingProp });
+  const [branding, setBranding] = useState<Branding>(
+    applyBrandingDefaults(brandingProp),
+  );
   const setThemeMode = useSetAtom(themeModeAtom);
   const [submitting, setSubmitting] = useState(false);
   const [, mutate] = useMutation(editBrandingMutation);
@@ -24,7 +30,11 @@ export const BrandingModal = ({
   const folder = branding.folder;
 
   useEffect(() => {
-    setThemeMode(branding);
+    // Only update theme when mode is defined to prevent flickering
+    if (branding.mode) {
+      console.log('updating branding mode: ', branding.mode);
+      setThemeMode(branding);
+    }
   }, [branding, setThemeMode]);
 
   const onSave = () => {
@@ -34,6 +44,7 @@ export const BrandingModal = ({
       mode: branding.mode,
       primaryColor: branding.primaryColor,
       logoUrl: branding.logoUrl,
+      headingFontKey: toHeadingFontKeyEnumValue(branding.headingFontKey),
     }).then(() => {
       setSubmitting(false);
       onClose();
@@ -48,7 +59,7 @@ export const BrandingModal = ({
     });
   };
 
-  const inherited = branding.folder && branding.folderId != branding.folder.id;
+  const inherited = branding.folder && branding.folderId !== branding.folder.id;
   const title = !inherited && folder?.name ? ' for: ' + folder?.name : '';
   return (
     <Modal
@@ -74,7 +85,7 @@ export const BrandingModal = ({
         <Button variant="outline" onClick={onClose}>
           Cancel
         </Button>
-        {branding.id && branding?.folderId != 1 ? (
+        {branding.id && branding?.folderId !== 1 ? (
           <Button
             loading={submitting}
             variant="outline"
