@@ -35,49 +35,23 @@ This plugin imports ratings and flags from PICR's CSV export into Lightroom Clas
 
 ## Releasing
 
-The Lightroom plugin has its own independent release track from the main PICR application.
+The Lightroom plugin version is automatically synced with the main PICR version. There is no separate release process.
 
-### Release Process
+### How It Works
 
+1. When `npm run release` is run from the root PICR folder, the release-it hook updates `Info.lua` to match the PICR version
+2. During CI build, the plugin is zipped and placed in `dist/public/picr-lightroom-plugin.zip`
+3. Users download the plugin directly from their PICR instance via the CSV Export dialog
+
+### Version Sync
+
+The plugin version in `picr.lrplugin/Info.lua` always matches the PICR version. This ensures users always have a compatible plugin for their PICR installation.
+
+### Manual Version Update
+
+If needed, update the version manually:
 ```bash
-cd lightroom
-npm install        # First time only
-npm run release    # Interactive release
-```
-
-This will:
-1. Prompt for version bump (patch/minor/major)
-2. Update `Info.lua` and `package.json` with new version
-3. Build the release zip (`dist/picr-lightroom-v*.lrplugin.zip`)
-4. Commit changes with message `🔌 Lightroom plugin v{version}`
-5. Create git tag `lightroom-v{version}`
-6. Push to GitHub
-7. Create GitHub Release with the zip attached
-
-### Tag Convention
-
-| Product | Tag Format | Example |
-|---------|------------|---------|
-| Main PICR | `v{semver}` | `v1.5.0` |
-| Lightroom Plugin | `lightroom-v{semver}` | `lightroom-v0.2.0` |
-| Lightroom Latest | `lightroom-latest` | (always points to latest) |
-
-The `lightroom-latest` tag is a **moving tag** that gets force-updated with each release, providing a stable URL:
-```
-https://github.com/IsaacInsoll/PICR/releases/tag/lightroom-latest
-```
-
-### Version Files
-
-Version is stored in two places (both updated automatically):
-- `package.json` - npm/release-it version tracking
-- `picr.lrplugin/Info.lua` - Lightroom reads this
-
-### Manual Build (without release)
-
-```bash
-cd lightroom
-npm run build      # Creates dist/picr-lightroom-v*.lrplugin.zip
+node lightroom/scripts/update-info-lua.js 1.2.3
 ```
 
 ## Lightroom SDK Documentation

@@ -4,26 +4,27 @@ Import ratings and approval flags from PICR into Lightroom Classic.
 
 ## Installation
 
-### Option 1: Download from GitHub Releases (Recommended)
+### Download from PICR (Recommended)
 
-1. Go to the [Latest Lightroom Plugin Release](https://github.com/IsaacInsoll/PICR/releases/tag/lightroom-latest)
-2. Download `picr-lightroom-v*.lrplugin.zip`
+The plugin is bundled with your PICR installation and always matches your version:
+
+1. In PICR, go to any folder and click **CSV Export**
+2. Select **PICR plugin CSV** format
+3. Click the **PICR Lightroom Plugin** download link
 4. Extract the zip file
 5. Copy the `picr.lrplugin` folder to your Lightroom plugins directory:
    - **macOS**: `~/Library/Application Support/Adobe/Lightroom/Modules/`
    - **Windows**: `C:\Users\<username>\AppData\Roaming\Adobe\Lightroom\Modules\`
 6. Restart Lightroom
 
-### Option 2: Add via Plugin Manager
+### Alternative: Add via Plugin Manager
 
-1. Download the zip from [Releases](https://github.com/IsaacInsoll/PICR/releases) and extract it
+1. Download the plugin zip from PICR (as above) and extract it
 2. In Lightroom, go to **File → Plug-in Manager**
 3. Click **Add** and navigate to the extracted `picr.lrplugin` folder
 4. Click **Done**
 
-### Option 3: Clone the Repository
-
-For developers or if you want the latest unreleased changes:
+### For Developers
 
 1. Clone the PICR repository
 2. Copy `lightroom/picr.lrplugin` to your Lightroom plugins directory
@@ -65,9 +66,9 @@ subfolder/photo3.jpg,4,rejected
 - **Extension matching**: `photo.jpg` in CSV matches `photo.NEF` in Lightroom
 - **Virtual copies**: Supports PICR's virtual copy naming (e.g., `photo-2.jpg` for Copy 1)
 
-## Version History
+## Version
 
-See [Releases](https://github.com/IsaacInsoll/PICR/releases?q=lightroom) for changelog.
+The plugin version matches the PICR version. When you update PICR, download the new plugin from the CSV Export dialog.
 
 ## Development
 

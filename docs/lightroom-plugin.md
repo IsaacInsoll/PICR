@@ -8,9 +8,12 @@ This is useful when clients have reviewed and rated images in PICR - you can syn
 
 ### Download
 
-1. Go to the [Latest Lightroom Plugin Release](https://github.com/IsaacInsoll/PICR/releases/tag/lightroom-latest)
-2. Download `picr-lightroom-v*.lrplugin.zip`
-3. Extract the zip file
+The Lightroom plugin is bundled with your PICR installation and always matches your PICR version.
+
+1. In PICR, go to any folder and click **CSV Export**
+2. Select **PICR plugin CSV** format
+3. Click the **PICR Lightroom Plugin** download link
+4. Extract the zip file
 
 ### Install in Lightroom
 
@@ -125,7 +128,8 @@ The plugin matches by filename without extension. This means:
 
 ## Updates
 
-To update the plugin:
-1. Download the latest version from [GitHub Releases](https://github.com/IsaacInsoll/PICR/releases/tag/lightroom-latest)
+The plugin version always matches your PICR installation. After updating PICR:
+
+1. Download the new plugin from the CSV Export dialog (as described above)
 2. Replace the `picr.lrplugin` folder with the new version
 3. In Lightroom, go to **File → Plug-in Manager** and click **Reload Plug-in**
