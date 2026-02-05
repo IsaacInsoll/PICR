@@ -20,18 +20,20 @@ Picr is a self-hosted online image sharing tool for photographers to share photo
 
 > **WORK IN PROGRESS:** Please contact us if you want to help making this manual better
 
-- [Installation Instructions](install.md)  
+- [Installation Instructions](install.md)
   Picr is typically installed using `docker`
-- [Files and Folders](files-and-folders.md)  
+- [Files and Folders](files-and-folders.md)
   How files and folders work and suggested workflows with multiple examples.
-- [Users and Links](users.md)  
+- [Users and Links](users.md)
   Explains how users (you) and public links (your clients) work with permissions. Also covers avatars
 - [Comments, Ratings and Flags](comments.md)
   You can allow users to comment, rate and flag individual files
 - [Branding and Theming](branding.md)
   Customize fonts, colors, and themes for your galleries
-- [Notifications](notifications.md)  
+- [Notifications](notifications.md)
   Receive notifications on your iOS / Android device when users access the folders or leave comments/ratings.
+- [Lightroom Plugin](lightroom-plugin.md)
+  Sync ratings and flags from PICR back to Lightroom Classic.
 
 ## 🧑‍💻 Development
 

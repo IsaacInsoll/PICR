@@ -2,9 +2,15 @@ name: PICR on push
 
 on:
   push:
-  #    branches: [ "master" ]
+    paths-ignore:
+      - 'lightroom/**'
+      - 'docs/**'
+      - '*.md'
   pull_request:
-#    branches: [ "master" ]
+    paths-ignore:
+      - 'lightroom/**'
+      - 'docs/**'
+      - '*.md'
 
 jobs:
   build:

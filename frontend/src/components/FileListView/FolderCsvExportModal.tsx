@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
+  Anchor,
   Button,
   Checkbox,
   Group,
@@ -165,6 +166,16 @@ export const FolderCsvExportModal = ({
           }))}
           allowDeselect={false}
         />
+
+        {format === 'picr' && (
+          <Text size="sm" c="dimmed">
+            Import this data into Lightroom Classic using the{' '}
+            <Anchor href="/picr-lightroom-plugin.zip" download>
+              PICR Lightroom Plugin
+            </Anchor>
+            .
+          </Text>
+        )}
 
         <Checkbox
           checked={excludeExtensions}

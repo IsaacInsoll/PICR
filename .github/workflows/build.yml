@@ -29,6 +29,10 @@ jobs:
       - name: '🗃️ [backend] Install Dependencies'
         run: cd dist && npm ci
 
+      # LIGHTROOM PLUGIN (before frontend so vite copies it to dist/public/)
+      - name: '🔌 [lightroom] Build plugin zip'
+        run: npm run build:lightroom
+
       # FRONTEND
       - name: '💄 [frontend] Install Dependencies'
         run: cd frontend && npm ci

@@ -1,34 +1,27 @@
+-- Split string by separator, preserving empty fields
+-- e.g., "a,,c" with sep="," returns {"a", "", "c"}
 function split(str, sep)
-    local fields = {}
-    local pattern = str.format("([^%s]+)", sep)
-    str:gsub(pattern, function(c) fields[#fields + 1] = c end)
-    return fields
+  local fields = {}
+  local start = 1
+
+  while true do
+    local sepStart, sepEnd = string.find(str, sep, start, true)
+    if sepStart then
+      table.insert(fields, string.sub(str, start, sepStart - 1))
+      start = sepEnd + 1
+    else
+      table.insert(fields, string.sub(str, start))
+      break
+    end
+  end
+
+  return fields
 end
 
-function map(tbl, f)
-    local t = {}
-    for k, v in pairs(tbl) do
-        t[k] = f(v)
-    end
-    return t
-end
-
-function filter(tbl, f)
-    local t = {}
-    for k, v in pairs(tbl) do
-        if f(v) then
-            table.insert(t, v)
-        end
-    end
-    return t
-end
-
-function in_array(tab, val)
-    for index, value in ipairs(tab) do
-        if value == val then
-            return true
-        end
-    end
-
-    return false
+-- Trim whitespace from both ends of a string
+function trim(str)
+  if str == nil then
+    return ''
+  end
+  return str:match("^%s*(.-)%s*$")
 end

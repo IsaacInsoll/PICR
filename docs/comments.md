@@ -29,4 +29,8 @@ Typically you would decide on either using `Flag` or `Rating` then when sending 
 
 Once the client has done this you can easily log in and filter for just `approved` or appropriately rated images and take action.
 
+## Syncing to Lightroom
+
+If you use Lightroom Classic, you can sync ratings and flags back to your catalog using the [Lightroom Plugin](lightroom-plugin.md). This saves you from manually updating each image in Lightroom after client review.
+
 > If there are workflow features you would love to see in PICR that don't yet exist, please open an issue on GitHub to let us know!

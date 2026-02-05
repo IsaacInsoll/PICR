@@ -12,6 +12,7 @@
     "workflow": "act push --pull=false --artifact-server-path $PWD/.artifacts -P ubuntu-24.04=catthehacker/ubuntu:act-latest",
     "gql": "graphql-codegen --config codegen.ts",
     "release": "dotenv -- release-it --only-version",
+    "build:lightroom": "cd lightroom/picr.lrplugin && zip -r ../../frontend/public/picr-lightroom-plugin.zip .",
     "start:server-ts": "cd backend && tsc -w",
     "start:server": "nodemon --delay 0.5 --watch .env --watch dist/server dist/server/backend/app.js",
     "start:client": "cd frontend && npm start",
@@ -55,6 +56,9 @@
           "consumeWholeFile": true
         }
       }
+    },
+    "hooks": {
+      "before:bump": "node lightroom/scripts/update-info-lua.js ${version}"
     }
   },
   "author": "Isaac Insoll",

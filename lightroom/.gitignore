@@ -1,0 +1,8 @@
+# Build output
+dist/
+
+# Dependencies
+node_modules/
+
+# SDK documentation (Adobe licensing)
+docs/
