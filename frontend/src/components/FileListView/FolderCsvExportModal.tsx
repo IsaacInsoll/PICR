@@ -49,9 +49,9 @@ const formatLabel = (format: ExportFormat) => {
     case 'picr':
       return 'PICR plugin CSV (filename, rating, flag)';
     case 'comma':
-      return 'Comma-separated filenames';
+      return 'Lightroom (comma-separated)';
     case 'space':
-      return 'Space-separated filenames';
+      return 'Capture One & Photo Mechanic (space-separated)';
     default:
       return format;
   }
@@ -111,8 +111,8 @@ export const FolderCsvExportModal = ({
   const output = useMemo(() => {
     const names = files.map((file) => {
       const base = includeSubfolders
-        ? file.relativePath ?? file.name ?? ''
-        : file.name ?? '';
+        ? (file.relativePath ?? file.name ?? '')
+        : (file.name ?? '');
       return excludeExtensions ? stripExtensionFromPath(base) : base;
     });
 
@@ -199,7 +199,10 @@ export const FolderCsvExportModal = ({
         />
 
         {includeSubfolders ? (
-          <Text size="sm" c={folderFilesResult?.truncated ? 'orange' : 'dimmed'}>
+          <Text
+            size="sm"
+            c={folderFilesResult?.truncated ? 'orange' : 'dimmed'}
+          >
             {error
               ? 'Unable to load files from subfolders.'
               : folderFilesLoading
