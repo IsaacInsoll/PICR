@@ -6,7 +6,7 @@ import { Suspense, useState } from 'react';
 import QueryFeedback from '../../components/QueryFeedback';
 import { PicrDataGrid } from '../../components/PicrDataGrid';
 import { ManageUser } from './ManageUser';
-import { TbUserPlus } from 'react-icons/tb';
+import { AddUserIcon } from '../../PicrIcons';
 import { userColumns } from './userColumns';
 
 export const ManageUsers = () => {
@@ -35,7 +35,7 @@ export const ManageUsers = () => {
         />
       ) : undefined}
       <Box pt="md">
-        <Button onClick={() => setUserId('')} leftSection={<TbUserPlus />}>
+        <Button onClick={() => setUserId('')} leftSection={<AddUserIcon />}>
           Add User
         </Button>
       </Box>

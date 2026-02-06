@@ -4,7 +4,7 @@ import { useSetAtom } from 'jotai/index';
 import { authKeyAtom } from '../atoms/authAtom';
 import { LoadingIndicator } from './LoadingIndicator';
 import { Alert, Button } from '@mantine/core';
-import { TbExclamationCircle } from 'react-icons/tb';
+import { AlertIcon } from '../PicrIcons';
 
 interface QueryFeedbackProps {
   result: UseQueryState;
@@ -32,7 +32,7 @@ export default function QueryFeedback({ result, reQuery }: QueryFeedbackProps) {
           variant="light"
           color="red"
           title="Alert title"
-          icon={<TbExclamationCircle />}
+          icon={<AlertIcon />}
         >
           {error.toString().replace('[GraphQL] ', '')}
           <Button onClick={reQuery}>Retry</Button>

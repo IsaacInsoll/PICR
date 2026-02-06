@@ -1,9 +1,9 @@
-import { TbCircleCheck, TbCircleXFilled } from 'react-icons/tb';
+import { CircleCheckIcon, CircleXIcon } from '../../PicrIcons';
 
 export const BooleanIcon = ({ value }: { value: boolean }) => {
   return value ? (
-    <TbCircleCheck style={{ color: 'green' }} />
+    <CircleCheckIcon style={{ color: 'green' }} />
   ) : (
-    <TbCircleXFilled style={{ color: 'red' }} />
+    <CircleXIcon style={{ color: 'red' }} />
   );
 };

@@ -1,8 +1,8 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import { atomWithHash } from 'jotai-location';
-import { TbLayoutGrid, TbList, TbPhoto } from 'react-icons/tb';
 import { actionIconSize } from '../theme';
+import { GridViewIcon, ListViewIcon, PhotoViewIcon } from '../PicrIcons';
 import { ReactNode } from 'react';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 
@@ -45,15 +45,15 @@ export const viewOptions: {
   icon: ReactNode;
   label: string;
 }[] = [
-  { name: 'list', icon: <TbList size={actionIconSize} />, label: 'List' },
+  { name: 'list', icon: <ListViewIcon size={actionIconSize} />, label: 'List' },
   {
     name: 'gallery',
-    icon: <TbLayoutGrid size={actionIconSize} />,
+    icon: <GridViewIcon size={actionIconSize} />,
     label: 'Gallery',
   },
   {
     name: 'feed',
-    icon: <TbPhoto size={actionIconSize} />,
+    icon: <PhotoViewIcon size={actionIconSize} />,
     label: 'Feed',
   },
 ] as const;

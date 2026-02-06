@@ -15,11 +15,10 @@ import { Page } from '../Page';
 import { PicrImage } from '../PicrImage';
 import { FileReview } from './Review/FileReview';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
-import { TbCloudDownload, TbSlideshow } from 'react-icons/tb';
 import { useOpenFileInfoModal } from '../../atoms/modalAtom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
-import { InfoIcon } from '../../PicrIcons';
+import { CloudDownloadIcon, InfoIcon, SlideshowIcon } from '../../PicrIcons';
 import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { useInView } from 'react-intersection-observer';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
@@ -206,7 +205,7 @@ const FileDownloadButton = ({ file }: { file: ViewFolderFileWithHero }) => {
         href={imageURL(file, 'raw')}
         download={true}
       >
-        <TbCloudDownload />
+        <CloudDownloadIcon />
       </ActionIcon>
     </Tooltip>
   );
@@ -234,7 +233,7 @@ const OpenFileButton = ({ file }: { file: ViewFolderFileWithHero }) => {
           setFolder({ id: file.folderId }, file);
         }}
       >
-        <TbSlideshow />
+        <SlideshowIcon />
       </ActionIcon>
     </Tooltip>
   );

@@ -3,7 +3,7 @@ import {
   useComputedColorScheme,
   useMantineColorScheme,
 } from '@mantine/core';
-import { CiDark, CiLight } from 'react-icons/ci';
+import { DarkModeIcon, LightModeIcon } from '../PicrIcons';
 
 const ColorSchemeToggle = () => {
   const { setColorScheme } = useMantineColorScheme();
@@ -20,7 +20,7 @@ const ColorSchemeToggle = () => {
       // size="xl"
       aria-label="Toggle color scheme"
     >
-      {isLight ? <CiDark /> : <CiLight />}
+      {isLight ? <DarkModeIcon /> : <LightModeIcon />}
     </ActionIcon>
   );
 };

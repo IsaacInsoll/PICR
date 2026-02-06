@@ -15,7 +15,7 @@ import {
   Title,
 } from '@mantine/core';
 import { ReactNode, Suspense } from 'react';
-import { AccessLogsIcon, FolderIcon } from '../PicrIcons';
+import { AccessLogsIcon, FolderIcon, UnlinkIcon } from '../PicrIcons';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { useQuery } from 'urql';
 import { FolderName } from '../components/FolderName';
@@ -24,7 +24,6 @@ import { PicrAvatar } from '../components/PicrAvatar';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { PicrLink } from '../components/PicrLink';
 import { EmptyPlaceholder } from './EmptyPlaceholder';
-import { TbUnlink } from 'react-icons/tb';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { ManageFolderIconButton } from '../components/ManageFolderButton';
 import { recentUsersQuery } from '@shared/urql/queries/recentUsersQuery';
@@ -83,7 +82,7 @@ const RecentUsers = () => {
     return (
       <EmptyPlaceholder
         text="No public links have been used (yet!)"
-        icon={<TbUnlink />}
+        icon={<UnlinkIcon />}
       />
     );
   return (

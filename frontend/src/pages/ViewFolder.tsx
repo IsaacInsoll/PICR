@@ -32,7 +32,6 @@ import { ManageFolder } from './ManageFolder';
 import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 import { FolderCsvExportModal } from '../components/FileListView/FolderCsvExportModal';
 import { useMe } from '../hooks/useMe';
-import { TbTableExport } from 'react-icons/tb';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 

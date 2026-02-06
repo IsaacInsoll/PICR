@@ -11,7 +11,7 @@ import { LoadingIndicator } from '../../../components/LoadingIndicator';
 import { AccessLogsUsersSelector } from './AccessLogsUsersSelector';
 import { FolderName } from '../../../components/FolderName';
 import { EmptyPlaceholder } from '../../EmptyPlaceholder';
-import { TbUnlink } from 'react-icons/tb';
+import { UnlinkIcon } from '../../../PicrIcons';
 import { accessLogQuery } from '@shared/urql/queries/accessLogQuery';
 
 export const AccessLogs = ({
@@ -61,7 +61,7 @@ const Body = ({ folderId, userId, includeChildren }) => {
       ) : (
         <EmptyPlaceholder
           text="Nobody has used a public link to view this folder (yet!)"
-          icon={<TbUnlink />}
+          icon={<UnlinkIcon />}
         />
       )}
     </>

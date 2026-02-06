@@ -11,7 +11,7 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
-import { TbCloudUpload, TbTrash, TbUser } from 'react-icons/tb';
+import { DeleteIcon, SaveIcon, UserIcon } from '../../PicrIcons';
 import { FolderSelector } from '../../components/FolderSelector';
 import {
   CommentPermissions,
@@ -99,7 +99,7 @@ export const ManageUser = ({
     >
       <Stack gap="lg">
         <TextInput
-          leftSection={<TbUser />}
+          leftSection={<UserIcon />}
           placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
           value={name}
           label="Name"
@@ -155,7 +155,7 @@ export const ManageUser = ({
         <ErrorAlert message={error} />
         <Group justify="space-between">
           <Button disabled={invalidUsername} onClick={onSave}>
-            <TbCloudUpload />
+            <SaveIcon />
             {exists ? 'Save' : 'Create User'}
           </Button>
           {exists && !isRootAdmin && (
@@ -163,7 +163,7 @@ export const ManageUser = ({
               color="red"
               variant="outline"
               onClick={() => setShowDeleteConfirm(true)}
-              leftSection={<TbTrash />}
+              leftSection={<DeleteIcon />}
             >
               Delete
             </Button>
@@ -187,7 +187,7 @@ export const ManageUser = ({
             <Button variant="default" onClick={() => setShowDeleteConfirm(false)}>
               Cancel
             </Button>
-            <Button color="red" onClick={onDelete} leftSection={<TbTrash />}>
+            <Button color="red" onClick={onDelete} leftSection={<DeleteIcon />}>
               Delete
             </Button>
           </Group>

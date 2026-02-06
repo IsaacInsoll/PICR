@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from 'urql';
 import { generateThumbnailsMutation } from '@shared/urql/mutations/generateThumbnailsMutation';
 import { Button } from '@mantine/core';
-import { TbPhotoCheck } from 'react-icons/tb';
+import { PhotoCheckIcon } from '../PicrIcons';
 import { generateThumbnailsQuery } from '@shared/urql/queries/generateThumbnailsQuery';
 
 export const GenerateThumbnailsButton = ({
@@ -21,7 +21,7 @@ export const GenerateThumbnailsButton = ({
       disabled={!totalImages || totalImages === 0}
       onClick={() => thumbsMutation({ folderId: folderId })}
     >
-      <TbPhotoCheck />
+      <PhotoCheckIcon />
       {`Generate ${totalImages} Thumbnails`}
     </Button>
   );

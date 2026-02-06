@@ -17,18 +17,19 @@ import {
   TextInput,
   Tooltip,
 } from '@mantine/core';
-import {
-  TbCloudUpload,
-  TbLabel,
-  TbRefresh,
-  TbTrash,
-  TbUsersGroup,
-} from 'react-icons/tb';
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { LinkModeSelector } from '../../components/LinkModeSelector';
 import { CommentPermissions, LinkMode } from '../../../../graphql-types';
-import { EmailIcon, PublicLinkIcon } from '../../PicrIcons';
+import {
+  DeleteIcon,
+  EmailIcon,
+  LabelIcon,
+  PublicLinkIcon,
+  RefreshIcon,
+  SaveIcon,
+  UsersGroupIcon,
+} from '../../PicrIcons';
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { badChars } from '../../../../backend/graphql/helpers/badChars';
@@ -109,7 +110,7 @@ export const ManagePublicLink = ({
     >
       <Stack gap="lg">
         <TextInput
-          leftSection={<TbUsersGroup />}
+          leftSection={<UsersGroupIcon />}
           placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
           value={name}
           label="Name"
@@ -158,7 +159,7 @@ export const ManagePublicLink = ({
                   setLink(pretty);
                 }}
               >
-                <TbLabel />
+                <LabelIcon />
               </ActionIcon>
             </Tooltip>
             <Tooltip label="Generate very-hard-to-guess link">
@@ -166,7 +167,7 @@ export const ManagePublicLink = ({
                 variant="default"
                 onClick={() => setLink(randomString())}
               >
-                <TbRefresh />
+                <RefreshIcon />
               </ActionIcon>
             </Tooltip>
           </Stack>
@@ -193,7 +194,7 @@ export const ManagePublicLink = ({
               hash={link}
             />
             <Button disabled={invalidLink} onClick={onSave}>
-              <TbCloudUpload />
+              <SaveIcon />
               {exists ? 'Save' : 'Create Link'}
             </Button>
           </Group>
@@ -202,7 +203,7 @@ export const ManagePublicLink = ({
               color="red"
               variant="outline"
               onClick={() => setShowDeleteConfirm(true)}
-              leftSection={<TbTrash />}
+              leftSection={<DeleteIcon />}
             >
               Delete
             </Button>
@@ -226,7 +227,7 @@ export const ManagePublicLink = ({
             <Button variant="default" onClick={() => setShowDeleteConfirm(false)}>
               Cancel
             </Button>
-            <Button color="red" onClick={onDelete} leftSection={<TbTrash />}>
+            <Button color="red" onClick={onDelete} leftSection={<DeleteIcon />}>
               Delete
             </Button>
           </Group>

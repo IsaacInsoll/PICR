@@ -1,7 +1,6 @@
 import { MinimalFolder } from '../../types';
 import { Code, Tooltip } from '@mantine/core';
-import { TbChevronRight } from 'react-icons/tb';
-import { HomeIcon } from '../PicrIcons';
+import { ChevronRightIcon, HomeIcon } from '../PicrIcons';
 import { PrettyFolderPath } from './PrettyFolderPath';
 import { useSetFolder } from '../hooks/useSetFolder';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
@@ -38,5 +37,5 @@ export const FolderName = ({ folder }: { folder: MinimalFolder }) => {
 };
 
 export const Joiner = () => {
-  return <TbChevronRight style={{ opacity: 0.5 }} />;
+  return <ChevronRightIcon style={{ opacity: 0.5 }} />;
 };

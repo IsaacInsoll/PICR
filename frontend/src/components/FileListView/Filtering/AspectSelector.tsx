@@ -1,11 +1,11 @@
 import { useAtom } from 'jotai/index';
 import { AspectFilterOptions, filterOptions } from '@shared/filterAtom';
 import {
-  MdOutlineCropFree,
-  MdOutlineCropLandscape,
-  MdOutlineCropPortrait,
-  MdOutlineCropSquare,
-} from 'react-icons/md';
+  AspectAnyIcon,
+  AspectLandscapeIcon,
+  AspectPortraitIcon,
+  AspectSquareIcon,
+} from '../../../PicrIcons';
 import { Group, Select } from '@mantine/core';
 
 export const AspectSelector = () => {
@@ -52,8 +52,8 @@ const renderOption = ({ option, checked }) => {
 };
 
 const aspectRatioIcon = {
-  'Any Ratio': <MdOutlineCropFree />,
-  Square: <MdOutlineCropSquare />,
-  Landscape: <MdOutlineCropLandscape />,
-  Portrait: <MdOutlineCropPortrait />,
+  'Any Ratio': <AspectAnyIcon />,
+  Square: <AspectSquareIcon />,
+  Landscape: <AspectLandscapeIcon />,
+  Portrait: <AspectPortraitIcon />,
 } as const;

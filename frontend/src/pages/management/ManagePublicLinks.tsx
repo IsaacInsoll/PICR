@@ -4,7 +4,7 @@ import { manageFolderQuery } from '@shared/urql/queries/manageFolderQuery';
 import QueryFeedback from '../../components/QueryFeedback';
 import { ManagePublicLink } from './ManagePublicLink';
 import { MinimalFolder, MinimalSharedFolder } from '../../../types';
-import { VscDebugDisconnect } from 'react-icons/vsc';
+import { DisconnectedIcon } from '../../PicrIcons';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { Button, Divider, Group, Stack, Switch, Tabs } from '@mantine/core';
 import { PicrDataGrid } from '../../components/PicrDataGrid';
@@ -117,7 +117,7 @@ const SharedFolderDataGrid = ({
       {sharedFolders.length === 0 ? (
         <EmptyPlaceholder
           text="You haven't created any links yet!"
-          icon={<VscDebugDisconnect />}
+          icon={<DisconnectedIcon />}
         />
       ) : (
         <PicrDataGrid

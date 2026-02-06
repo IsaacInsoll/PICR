@@ -29,7 +29,6 @@
     "@mantine/dates": "^8",
     "@mantine/hooks": "^8",
     "@mantine/notifications": "^8",
-    "@tabler/icons-react": "^3.36.1",
     "@tsparticles/engine": "^3.7.1",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.7.1",

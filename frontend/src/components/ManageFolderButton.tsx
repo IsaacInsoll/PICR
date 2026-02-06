@@ -1,8 +1,7 @@
 import { MinimalFolder } from '../../types';
 import { NavLink } from 'react-router';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
-import { FolderIcon } from '../PicrIcons';
-import { TbFolderStar } from 'react-icons/tb';
+import { FolderIcon, ManageFolderIcon } from '../PicrIcons';
 import { ActionIcon, Button } from '@mantine/core';
 import { useSetAtom } from 'jotai';
 import { placeholderFolder } from './FolderHeader/PlaceholderFolder';
@@ -16,7 +15,7 @@ export const ManageFolderButton = ({
 }) => {
   const baseUrl = useBaseViewFolderURL();
   const setPlaceholderFolder = useSetAtom(placeholderFolder);
-  const icon = managing ? <FolderIcon /> : <TbFolderStar />;
+  const icon = managing ? <FolderIcon /> : <ManageFolderIcon />;
   const onClick = () => {
     setPlaceholderFolder({ ...folder });
   };
@@ -52,7 +51,7 @@ export const ManageFolderIconButton = ({
       variant="outline"
       // size="xs"
     >
-      <TbFolderStar />
+      <ManageFolderIcon />
     </ActionIcon>
   );
 };

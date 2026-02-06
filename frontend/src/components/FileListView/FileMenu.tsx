@@ -6,9 +6,14 @@ import {
   useOpenFileInfoModal,
 } from '../../atoms/modalAtom';
 import { Group, Menu, Text } from '@mantine/core';
-import { TbCloudDownload, TbFile } from 'react-icons/tb';
 import { imageURL } from '../../helpers/imageURL';
-import { CommentIcon, CommentsIcon, InfoIcon } from '../../PicrIcons';
+import {
+  CloudDownloadIcon,
+  CommentIcon,
+  CommentsIcon,
+  FileIcon,
+  InfoIcon,
+} from '../../PicrIcons';
 
 export const FileMenu = ({ file }: { file: MinimalFile }) => {
   const setFolder = useSetFolder();
@@ -20,7 +25,7 @@ export const FileMenu = ({ file }: { file: MinimalFile }) => {
   return (
     <>
       <Menu.Item
-        leftSection={<TbFile size="20" />}
+        leftSection={<FileIcon size="20" />}
         key={1}
         onClick={() => {
           setFolder({ id: file.folderId }, file);
@@ -53,7 +58,7 @@ export const FileMenu = ({ file }: { file: MinimalFile }) => {
       ) : null}
       <Menu.Item
         component="a"
-        leftSection={<TbCloudDownload />}
+        leftSection={<CloudDownloadIcon />}
         key={4}
         href={imageURL(file, 'raw')}
         download={true}

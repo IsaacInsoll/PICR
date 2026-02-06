@@ -1,7 +1,7 @@
 import { MinimalFile } from '../../../../types';
 import { useMe } from '../../../hooks/useMe';
 import { ActionIcon, Tooltip } from '@mantine/core';
-import { TbPhotoHeart } from 'react-icons/tb';
+import { HeroImageIcon } from '../../../PicrIcons';
 import { useMutation } from 'urql';
 import { useId, useState } from 'react';
 import { useReward } from 'react-rewards';
@@ -47,7 +47,7 @@ export const SetHeroImageButton = ({ file }: { file: MinimalFile }) => {
           color="violet"
           // disabled={file.isHeroImage}
         >
-          <TbPhotoHeart />
+          <HeroImageIcon />
         </ActionIcon>
       </Tooltip>
     </>

@@ -13,11 +13,11 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import {
-  MdBrightnessAuto,
-  MdOutlineDarkMode,
-  MdOutlineLightMode,
-} from 'react-icons/md';
-import { TbCheck } from 'react-icons/tb';
+  BrightnessAutoIcon,
+  CheckIcon,
+  DarkModeOutlineIcon,
+  LightModeOutlineIcon,
+} from '../../PicrIcons';
 import {
   fontRegistry,
   type FontDefinition,
@@ -177,9 +177,9 @@ const ModeSelector = ({
 const options: ThemeMode[] = [ThemeMode.Auto, ThemeMode.Light, ThemeMode.Dark];
 
 const themeModeStyle = {
-  [ThemeMode.Auto]: { icon: <MdBrightnessAuto /> },
-  [ThemeMode.Light]: { icon: <MdOutlineLightMode /> },
-  [ThemeMode.Dark]: { icon: <MdOutlineDarkMode /> },
+  [ThemeMode.Auto]: { icon: <BrightnessAutoIcon /> },
+  [ThemeMode.Light]: { icon: <LightModeOutlineIcon /> },
+  [ThemeMode.Dark]: { icon: <DarkModeOutlineIcon /> },
 };
 
 const ColorSelector = ({
@@ -210,7 +210,7 @@ const ColorSelector = ({
               key={c}
               onClick={() => onChange(c)}
             >
-              {c == color ? <TbCheck /> : null}
+              {c == color ? <CheckIcon /> : null}
             </ActionIcon>
           );
         })}

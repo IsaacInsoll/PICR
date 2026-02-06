@@ -1,9 +1,15 @@
 import { MinimalFolder } from '../../../types';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { Menu } from '@mantine/core';
-import { CommentIcon, DownloadIcon, FolderIcon } from '../../PicrIcons';
+import {
+  CommentIcon,
+  CsvExportIcon,
+  DownloadIcon,
+  FolderIcon,
+  ManageFolderIcon,
+  MoveFolderIcon,
+} from '../../PicrIcons';
 import { useGenerateZip } from '../../hooks/useGenerateZip';
-import { TbFolderShare, TbFolderStar, TbTableExport } from 'react-icons/tb';
 import { useMe } from '../../hooks/useMe';
 import { useOpenMoveRenameFolderModal } from '../../atoms/modalAtom';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
@@ -41,7 +47,7 @@ export const FolderMenuItems = ({
       ) : null}
       {me?.isUser ? (
         <Menu.Item
-          leftSection={<TbFolderStar size="20" />}
+          leftSection={<ManageFolderIcon size="20" />}
           key="manage"
           onClick={() => {
             setFolder(folder, 'manage/links');
@@ -52,7 +58,7 @@ export const FolderMenuItems = ({
       ) : null}
       {me?.isAdmin && me.clientInfo.canWrite ? (
         <Menu.Item
-          leftSection={<TbFolderShare size="20" />}
+          leftSection={<MoveFolderIcon size="20" />}
           key="move"
           onClick={() => openMoveModal(folder)}
         >
@@ -71,7 +77,7 @@ export const FolderMenuItems = ({
       ) : null}
       {me?.isUser && onCsvExport ? (
         <Menu.Item
-          leftSection={<TbTableExport size={20} />}
+          leftSection={<CsvExportIcon size={20} />}
           onClick={onCsvExport}
         >
           CSV Export

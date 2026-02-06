@@ -1,11 +1,10 @@
 import { useQuery } from 'urql';
 import { Anchor, Code, Group, Table } from '@mantine/core';
-import { FaGithub } from 'react-icons/fa6';
 import { ReactNode, Suspense } from 'react';
 import { prettyBytes } from '@shared/prettyBytes';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { useAvifEnabled, useMe } from '../../hooks/useMe';
-import { MdOutlineSdStorage } from 'react-icons/md';
+import { GitHubIcon, StorageIcon } from '../../PicrIcons';
 import { PicrLink } from '../../components/PicrLink';
 import {
   expensiveServerFileSizeQuery,
@@ -83,7 +82,7 @@ const Version = ({ version, latest }) => {
         size="xs"
         target="_blank"
       >
-        <FaGithub /> View PICR Releases
+        <GitHubIcon /> View PICR Releases
       </Anchor>
     </Row>
   );
@@ -93,7 +92,7 @@ const TreesizeLink = () => {
   const me = useMe();
   return (
     <PicrLink to={'/admin/settings/treesize/' + me?.folderId} size="xs">
-      <MdOutlineSdStorage /> Storage Analytics
+      <StorageIcon /> Storage Analytics
     </PicrLink>
   );
 };

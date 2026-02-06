@@ -1,10 +1,10 @@
 import { Button, Group, Input, Paper, Tree, useTree } from '@mantine/core';
 import {
-  TbChevronDown,
-  TbChevronUp,
-  TbFolderOpen,
-  TbFolders,
-} from 'react-icons/tb';
+  ChevronDownIcon,
+  ChevronUpIcon,
+  FolderOpenIcon,
+  FoldersIcon,
+} from '../PicrIcons';
 import { useQuery } from 'urql';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { buildTreeArray, treeNode } from '../helpers/buildTreeArray';
@@ -61,7 +61,7 @@ export const FolderSelector = ({
           rightSectionWidth="50"
           rightSection={
             <Button variant="subtle" onClick={() => setOpen((o) => !o)}>
-              {open ? <TbChevronUp /> : <TbChevronDown />}
+              {open ? <ChevronUpIcon /> : <ChevronDownIcon />}
             </Button>
           }
         />
@@ -185,9 +185,9 @@ const FolderTreeView = ({
           return (
             <Group gap={5} {...elementProps} onClick={onClick}>
               {selected ? (
-                <TbFolderOpen style={{ color: 'Highlight' }} />
+                <FolderOpenIcon style={{ color: 'Highlight' }} />
               ) : hasChildren ? (
-                <TbFolders opacity={0.66} />
+                <FoldersIcon opacity={0.66} />
               ) : (
                 <FolderIcon opacity={0.33} />
               )}

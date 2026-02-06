@@ -1,19 +1,19 @@
 import { useAtom } from 'jotai/index';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import { Avatar, Box, Button, Group, Select, SelectProps } from '@mantine/core';
-import {
-  TbCalendar,
-  TbChevronDown,
-  TbChevronUp,
-  TbFileTypography,
-  TbSortAscending,
-  TbSortDescending,
-  TbStar,
-} from 'react-icons/tb';
 import { ReactNode } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
-import { CommentIcon } from '../../PicrIcons';
+import {
+  CalendarIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  CommentIcon,
+  FilenameIcon,
+  SortAscIcon,
+  SortDescIcon,
+  StarIcon,
+} from '../../PicrIcons';
 
 export const FileSortSelector = () => {
   const { canView } = useCommentPermissions();
@@ -102,13 +102,13 @@ const sortOptions: [
   {
     value: 'Filename',
     label: 'Filename',
-    icon: <TbFileTypography />,
+    icon: <FilenameIcon />,
     requiresComments: false,
   },
   {
     value: 'LastModified',
     label: 'Modified',
-    icon: <TbCalendar />,
+    icon: <CalendarIcon />,
     requiresComments: false,
   },
   {
@@ -120,7 +120,7 @@ const sortOptions: [
   {
     value: 'Rating',
     label: 'Rating',
-    icon: <TbStar />,
+    icon: <StarIcon />,
     requiresComments: true,
   },
 ];
@@ -128,6 +128,6 @@ const sortOptions: [
 const sortIcons: {
   [key: keyof FileSortDirection]: { icon: ReactNode; chevron: ReactNode };
 } = {
-  Asc: { icon: <TbSortDescending />, chevron: <TbChevronDown /> },
-  Desc: { icon: <TbSortAscending />, chevron: <TbChevronUp /> },
+  Asc: { icon: <SortDescIcon />, chevron: <ChevronDownIcon /> },
+  Desc: { icon: <SortAscIcon />, chevron: <ChevronUpIcon /> },
 } as const;

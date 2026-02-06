@@ -1,29 +1,28 @@
 import { ReactNode } from 'react';
-import { BsCamera, BsCamera2 } from 'react-icons/bs';
-import {
-  MdCameraRoll,
-  MdOutlineNetworkCheck,
-  MdOutlineShutterSpeed,
-} from 'react-icons/md';
-import { IoApertureOutline } from 'react-icons/io5';
 import {
   ImageMetadataSummary,
   VideoMetadataSummary,
 } from '../../../../graphql-types';
 import {
-  TbArrowAutofitHeight,
-  TbArrowAutofitWidth,
-  TbAspectRatio,
-  TbBrandSpeedtest,
-  TbCalendar,
-  TbCalendarBolt,
-  TbClock,
-  TbFile,
-  TbPhotoVideo,
-  TbVolume,
-} from 'react-icons/tb';
-import { LiaSignatureSolid } from 'react-icons/lia';
-import { GiStarsStack } from 'react-icons/gi';
+  ApertureIcon,
+  ArtistIcon,
+  AspectRatioIcon,
+  AudioIcon,
+  BitrateIcon,
+  CalendarIcon,
+  CameraIcon,
+  DateEditedIcon,
+  DurationIcon,
+  FileIcon,
+  FramerateIcon,
+  HeightIcon,
+  ISOIcon,
+  LensIcon,
+  RatingStarsIcon,
+  ShutterSpeedIcon,
+  VideoMetadataIcon,
+  WidthIcon,
+} from '../../PicrIcons';
 
 export const metadataIcons: Record<
   keyof ImageMetadataSummary | keyof VideoMetadataSummary,
@@ -31,23 +30,23 @@ export const metadataIcons: Record<
 > = {
   __typename: null,
   //PHOTO
-  Camera: <BsCamera />,
-  Lens: <BsCamera2 />,
-  ISO: <MdCameraRoll />,
-  ExposureTime: <MdOutlineShutterSpeed />,
-  Aperture: <IoApertureOutline />,
-  Artist: <LiaSignatureSolid />,
-  DateTimeEdit: <TbCalendarBolt />,
-  DateTimeOriginal: <TbCalendar />,
+  Camera: <CameraIcon />,
+  Lens: <LensIcon />,
+  ISO: <ISOIcon />,
+  ExposureTime: <ShutterSpeedIcon />,
+  Aperture: <ApertureIcon />,
+  Artist: <ArtistIcon />,
+  DateTimeEdit: <DateEditedIcon />,
+  DateTimeOriginal: <CalendarIcon />,
   //VIDEO
-  Audio: <TbVolume />,
-  Framerate: <TbBrandSpeedtest />,
-  Height: <TbArrowAutofitHeight />,
-  Width: <TbArrowAutofitWidth />,
-  Video: <TbPhotoVideo />,
-  Format: <TbFile />,
-  Duration: <TbClock />,
-  Bitrate: <MdOutlineNetworkCheck />,
-  AspectRatio: <TbAspectRatio />,
-  Rating: <GiStarsStack />,
+  Audio: <AudioIcon />,
+  Framerate: <FramerateIcon />,
+  Height: <HeightIcon />,
+  Width: <WidthIcon />,
+  Video: <VideoMetadataIcon />,
+  Format: <FileIcon />,
+  Duration: <DurationIcon />,
+  Bitrate: <BitrateIcon />,
+  AspectRatio: <AspectRatioIcon />,
+  Rating: <RatingStarsIcon />,
 } as const;

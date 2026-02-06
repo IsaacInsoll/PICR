@@ -2,7 +2,6 @@ import { Button, ButtonProps } from '@mantine/core';
 import { copyToClipboard, publicURLFor } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
 import { ClipboardIcon } from '../../PicrIcons';
-import { TbClipboard } from 'react-icons/tb';
 import { useBaseUrl } from '../../hooks/useMe';
 
 export const CopyPublicLinkButton = ({
@@ -33,7 +32,7 @@ export const CopyPublicLinkButton = ({
         notifications.show(notif);
       }}
     >
-      <TbClipboard />
+      <ClipboardIcon />
       Copy Link
     </Button>
   );

@@ -1,6 +1,6 @@
 import { MinimalFile } from '../../../types';
 import { Badge, MantineSize, MantineStyleProp } from '@mantine/core';
-import { TbVideo } from 'react-icons/tb';
+import { VideoIcon } from '../../PicrIcons';
 import formatDuration from 'format-duration';
 
 interface VideoBadgeProps {
@@ -25,7 +25,7 @@ export const VideoBadge = ({ file, size, percent }: VideoBadgeProps) => {
 
   return (
     <Badge
-      leftSection={<TbVideo size="1.2rem" />}
+      leftSection={<VideoIcon size="1.2rem" />}
       style={style}
       variant="light"
       color="gray"

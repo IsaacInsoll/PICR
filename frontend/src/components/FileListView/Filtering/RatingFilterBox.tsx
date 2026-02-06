@@ -2,7 +2,11 @@ import { ActionIcon, Group } from '@mantine/core';
 import { useAtom } from 'jotai/index';
 import { filterOptions, RatingsComparisonOptions } from '@shared/filterAtom';
 import { ReactNode } from 'react';
-import { TbEqual, TbMathEqualGreater, TbMathEqualLower } from 'react-icons/tb';
+import {
+  EqualIcon,
+  GreaterThanEqualIcon,
+  LessThanEqualIcon,
+} from '../../../PicrIcons';
 import { FileRating } from '../Review/FileRating';
 
 export const RatingFilterBox = () => {
@@ -56,7 +60,7 @@ const RatingComparisonSelector = ({ value, onChange }) => {
 };
 
 const options: { title: RatingsComparisonOptions; icon: ReactNode }[] = [
-  { title: 'lessThan', icon: <TbMathEqualLower /> },
-  { title: 'equal', icon: <TbEqual /> },
-  { title: 'greaterThan', icon: <TbMathEqualGreater /> },
+  { title: 'lessThan', icon: <LessThanEqualIcon /> },
+  { title: 'equal', icon: <EqualIcon /> },
+  { title: 'greaterThan', icon: <GreaterThanEqualIcon /> },
 ];

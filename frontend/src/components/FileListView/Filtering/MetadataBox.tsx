@@ -1,6 +1,6 @@
 import { MinimalFile } from '../../../../types';
 import { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
-import { MdOutlineCameraRoll } from 'react-icons/md';
+import { MetadataIcon } from '../../../PicrIcons';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
   resetFilterOptions,
@@ -63,7 +63,7 @@ export const MetadataBox = ({
         <Button
           onClick={open}
           variant={opened ? 'light' : 'default'}
-          leftSection={<MdOutlineCameraRoll />}
+          leftSection={<MetadataIcon />}
         >
           Metadata
         </Button>
