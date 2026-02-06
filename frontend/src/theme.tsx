@@ -1,4 +1,4 @@
-import { createTheme } from '@mantine/core';
+import { createTheme, Switch } from '@mantine/core';
 
 export const fonts =
   '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji';
@@ -11,11 +11,11 @@ export const theme = createTheme({
     fontFamily: 'var(--picr-heading-font, Signika), ' + fonts,
   },
   components: {
-    // ActionIcon: ActionIcon.extend({
-    //   defaultProps: {
-    //     size: 'xl',
-    //   },
-    // }),
+    Switch: Switch.extend({
+      defaultProps: {
+        withThumbIndicator: false,
+      },
+    }),
   },
 });
 
