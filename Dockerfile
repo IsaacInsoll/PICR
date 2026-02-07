@@ -1,4 +1,4 @@
-FROM node:24.8-alpine
+FROM node:24.13.0-alpine
 LABEL org.opencontainers.image.source=https://github.com/isaacinsoll/picr
 
 USER node

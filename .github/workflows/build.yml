@@ -11,13 +11,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-24.04]
-        node-version: [24.8]
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js from .nvmrc
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version-file: .nvmrc
           cache: 'npm'
 
       # BACKEND
