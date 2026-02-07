@@ -1,29 +1,34 @@
 import { PicrColumns } from '../../components/PicrDataGrid';
 import { Branding, ThemeMode } from '../../../../graphql-types';
-import { FolderName } from '../../components/FolderName';
-import {
-  Badge,
-  DefaultMantineColor,
-  MantineColorSchemeManager,
-} from '@mantine/core';
+import { Badge, DefaultMantineColor, Text } from '@mantine/core';
 
 export const brandingColumns: PicrColumns<Branding>[] = [
   {
-    accessorKey: 'folder.name',
-    header: 'Folder',
-    minSize: 25,
-    accessorFn: ({ folder }) => <FolderName folder={folder} />,
+    accessorKey: 'name',
+    header: 'Name',
+    minSize: 30,
+    accessorFn: ({ name }) => <Text fw={500}>{name}</Text>,
+  },
+  {
+    accessorKey: 'folders',
+    header: 'Folders',
+    minSize: 20,
+    accessorFn: ({ folders }) => (
+      <Text size="sm" c="dimmed">
+        {folders?.length ?? 0} folder{folders?.length === 1 ? '' : 's'}
+      </Text>
+    ),
   },
   {
     accessorKey: 'mode',
     header: 'Mode',
-    minSize: 25,
+    minSize: 20,
     accessorFn: ({ mode }) => <ModeChip mode={mode} />,
   },
   {
     accessorKey: 'primaryColor',
-    header: 'Primary Color',
-    minSize: 25,
+    header: 'Color',
+    minSize: 20,
     accessorFn: ({ primaryColor }) => <PrimaryColorChip color={primaryColor} />,
   },
 ];

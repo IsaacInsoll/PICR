@@ -33,6 +33,7 @@ export const folderType: GraphQLObjectType<any, any> = new GraphQLObjectType({
     subtitle: { type: GraphQLString },
     folderLastModified: { type: new GraphQLNonNull(GraphQLDateTime) },
     parentId: { type: GraphQLID },
+    brandingId: { type: GraphQLID },
     subFolders: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
       resolve: async (f: FolderFields) => subFolders(f.id),

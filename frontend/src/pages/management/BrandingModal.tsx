@@ -1,4 +1,4 @@
-import { Alert, Button, Group, Modal } from '@mantine/core';
+import { Button, Group, Modal } from '@mantine/core';
 import { BrandingForm } from './BrandingForm';
 import { useEffect, useState } from 'react';
 import { useSetAtom } from 'jotai';
@@ -27,12 +27,12 @@ export const BrandingModal = ({
   const [submitting, setSubmitting] = useState(false);
   const [, mutate] = useMutation(editBrandingMutation);
   const [, deleteBranding] = useMutation(deleteBrandingMutation);
-  const folder = branding.folder;
+
+  const isNew = !branding.id || branding.id === '0';
 
   useEffect(() => {
     // Only update theme when mode is defined to prevent flickering
     if (branding.mode) {
-      console.log('updating branding mode: ', branding.mode);
       setThemeMode(branding);
     }
   }, [branding, setThemeMode]);
@@ -40,7 +40,8 @@ export const BrandingModal = ({
   const onSave = () => {
     setSubmitting(true);
     mutate({
-      folderId: branding.folderId,
+      id: isNew ? undefined : branding.id,
+      name: branding.name,
       mode: branding.mode,
       primaryColor: branding.primaryColor,
       logoUrl: branding.logoUrl,
@@ -53,50 +54,38 @@ export const BrandingModal = ({
 
   const onDelete = () => {
     setSubmitting(true);
-    deleteBranding({ folderId: folder?.id }).then(() => {
+    deleteBranding({ id: branding.id }).then(() => {
       setSubmitting(false);
       onClose();
     });
   };
 
-  const inherited = branding.folder && branding.folderId !== branding.folder.id;
-  const title = !inherited && folder?.name ? ' for: ' + folder?.name : '';
+  const title = isNew ? 'Create Branding' : `Edit Branding: ${branding.name}`;
+
   return (
-    <Modal
-      onClose={onClose}
-      title={`Manage Branding ${title}`}
-      centered
-      opened={true}
-    >
-      {inherited ? (
-        <Alert
-          mb="md"
-          title={
-            <>
-              This branding is inherited from <em>{branding.folder?.name}</em>
-            </>
-          }
-        >
-          You can customise the look for this folder and all its subfolders
-        </Alert>
-      ) : null}
-      <BrandingForm branding={branding} onChange={setBranding} />
+    <Modal onClose={onClose} title={title} centered opened={true}>
+      <BrandingForm branding={branding} onChange={setBranding} showName />
       <Group justify="flex-end" mt="lg">
         <Button variant="outline" onClick={onClose}>
           Cancel
         </Button>
-        {branding.id && branding?.folderId !== 1 ? (
+        {!isNew ? (
           <Button
             loading={submitting}
             variant="outline"
             onClick={onDelete}
             leftSection={<DeleteIcon />}
           >
-            Remove
+            Delete
           </Button>
         ) : null}
-        <Button variant="filled" onClick={onSave} loading={submitting}>
-          Save
+        <Button
+          variant="filled"
+          onClick={onSave}
+          loading={submitting}
+          disabled={isNew && !branding.name?.trim()}
+        >
+          {isNew ? 'Create' : 'Save'}
         </Button>
       </Group>
     </Modal>

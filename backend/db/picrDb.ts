@@ -85,7 +85,13 @@ export const setServerOptions = async (
   return db.update(dbServerOptions).set({ ...opts, updatedAt: new Date() });
 };
 
-//
+export const brandingForId = async (id: number) => {
+  return db.query.dbBranding.findFirst({
+    where: eq(dbBranding.id, id),
+  });
+};
+
+// TODO: Remove once Branding.folderId is removed - kept for backwards compatibility
 export const brandingForFolderId = async (folderId: number) => {
   return db.query.dbBranding.findFirst({
     where: eq(dbBranding.folderId, folderId),

@@ -34,6 +34,7 @@ import { brandingType } from './types/brandingType.js';
 import { brandings } from './queries/brandings.js';
 import { editBranding } from './mutations/editBranding.js';
 import { deleteBranding } from './mutations/deleteBranding.js';
+import { setFolderBranding } from './mutations/setFolderBranding.js';
 import { accessLogs } from './queries/accessLogs.js';
 import { accessLogType } from './types/accessLogType.js';
 import { clientInfo } from './queries/clientInfoQuery.js';
@@ -86,6 +87,7 @@ const mutations = new GraphQLObjectType({
     editFolder,
     editBranding,
     deleteBranding,
+    setFolderBranding,
     editUserDevice,
     renameFolder,
   }),

@@ -2,24 +2,40 @@
 
 PICR allows you to customize the appearance of shared galleries with custom branding. This helps photographers maintain their brand identity when sharing photos with clients.
 
-Branding can be applied to any folder and will apply to any subfolders (unless those subfolders have their own branding). 
+Brandings are **named presets** that can be applied to any folder and will cascade to all subfolders (unless those subfolders have their own branding assigned).
 
 ## What Can Be Customized
 
 | Setting | Description |
 |---------|-------------|
+| **Name** | A name to identify this branding (e.g., "Wedding Style", "Corporate") |
 | **Heading Font** | The font used for titles and section headers |
 | **Theme Mode** | Light, dark, or auto (matches client's device) |
 | **Primary Color** | The accent color used throughout the interface |
 
-## Setting Up Branding
+## Creating a Branding
+
+1. Go to **Settings** → **Branding** tab
+2. Click **Add Branding**
+3. Enter a name and configure your preferred settings
+4. Click **Create**
+
+You can create multiple brandings for different purposes (e.g., one for weddings, one for corporate events).
+
+## Assigning Branding to Folders
 
 1. Navigate to a folder in PICR
 2. Click **Manage** to open the folder management panel
-3. Click the **Branding** tab
-4. Adjust the settings and click **Save**
+3. In the **Branding** dropdown, select a branding preset
+4. The folder will immediately use the selected branding
 
-Branding settings are **inherited** by subfolders. If you set branding on a parent folder, all subfolders will use those settings unless they have their own branding configured.
+To remove branding from a folder, select **None (inherit from parent)** in the dropdown.
+
+## Branding Inheritance
+
+Branding settings are **inherited** by subfolders. If you assign branding to a parent folder, all subfolders will use those settings unless they have their own branding assigned.
+
+This means you can set branding once at a top-level folder and have it apply to your entire gallery structure.
 
 ## Heading Fonts
 
@@ -77,11 +93,11 @@ Choose from a range of accent colors that will be used for buttons, links, and h
 
 ## Best Practices
 
-1. **Keep it consistent** - Use the same branding across related galleries for a cohesive client experience
+1. **Create reusable brandings** - Set up brandings for different client types (weddings, corporate, portraits) and reuse them
 2. **Match your brand** - Choose fonts and colors that complement your photography style and business branding
 3. **Consider accessibility** - If your clients include older audiences, consider using the Atkinson Hyperlegible fonts
 4. **Use Auto theme** - Let clients choose their preferred light/dark mode
-5. **Set branding at the top level** - Apply branding to parent folders so subfolders inherit it automatically
+5. **Assign at the top level** - Assign branding to parent folders so subfolders inherit it automatically
 
 ## Mobile App
 

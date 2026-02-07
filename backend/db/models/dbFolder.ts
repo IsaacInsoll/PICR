@@ -6,6 +6,7 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 import { dbFile } from './dbFile.js';
+import { dbBranding } from './dbBranding.js';
 import { baseColumns } from '../column.helpers.js';
 import { relations } from 'drizzle-orm';
 
@@ -17,6 +18,7 @@ import { relations } from 'drizzle-orm';
  * - `exists` flag is used during boot to detect deleted folders (set false, then true when found)
  * - `heroImageId` optionally points to a featured image for the folder thumbnail
  * - `folderHash` is used for cache invalidation
+ * - `brandingId` optionally points to a branding set (inherited by subfolders)
  */
 export const dbFolder = pgTable('Folders', {
   ...baseColumns,
@@ -38,6 +40,7 @@ export const dbFolder = pgTable('Folders', {
   heroImageId: integer('heroImageId')
     // .notNull()
     .references((): any => dbFile.id),
+  brandingId: integer('brandingId').references((): any => dbBranding.id),
 });
 
 export const dbFolderRelations = relations(dbFolder, ({ one, many }) => ({
@@ -48,6 +51,10 @@ export const dbFolderRelations = relations(dbFolder, ({ one, many }) => ({
   heroImage: one(dbFile, {
     fields: [dbFolder.heroImageId],
     references: [dbFile.id],
+  }),
+  branding: one(dbBranding, {
+    fields: [dbFolder.brandingId],
+    references: [dbBranding.id],
   }),
   files: many(dbFile),
 }));

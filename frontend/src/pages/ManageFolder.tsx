@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { BrandingModal } from './management/BrandingModal';
 import {
   Button,
-  Divider,
   Group,
   Paper,
+  Select,
   Stack,
   Tabs,
   Text,
@@ -21,9 +21,13 @@ import { ManagePublicLinks } from './management/ManagePublicLinks';
 import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
 import { AccessLogs } from './management/AccessLogs/AccessLogs';
 import { useNavigate, useParams } from 'react-router';
-import { useMutation } from 'urql';
+import { useMutation, useQuery } from 'urql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
+import { setFolderBrandingMutation } from '@shared/urql/mutations/setFolderBrandingMutation';
+import { viewBrandingsQuery } from '@shared/urql/queries/viewBrandingsQuery';
 import { ErrorAlert } from '../components/ErrorAlert';
+import { defaultBranding } from '../helpers/defaultBranding';
+import { Branding } from '../../../graphql-types';
 
 export const ManageFolder = ({ folder, toggleManaging }) => {
   const { folderId, tab } = useParams();
@@ -39,14 +43,6 @@ export const ManageFolder = ({ folder, toggleManaging }) => {
   const currentSubtitle = folder.subtitle ?? '';
   const isDirty =
     normalizedTitle !== currentTitle || normalizedSubtitle !== currentSubtitle;
-  const brandingFolderId = folder?.branding?.folderId;
-  const brandingSourceName = folder?.branding?.folder?.name;
-  const brandingSourceLabel =
-    brandingFolderId && brandingFolderId === folder.id
-      ? 'This folder'
-      : brandingSourceName
-        ? brandingSourceName
-        : 'Unknown';
 
   const setActiveTab = (tab: string) => {
     //TODO: I hate this hard coded navigation but don't know a better way :/
@@ -112,13 +108,7 @@ export const ManageFolder = ({ folder, toggleManaging }) => {
                 <Text fw={600} size="sm" c="dimmed">
                   Branding
                 </Text>
-                <Text size="sm" c="dimmed">
-                  Branding source:{' '}
-                  <Text span fw={600}>
-                    {brandingSourceLabel}
-                  </Text>
-                </Text>
-                <BrandingButton folder={folder} />
+                <BrandingSelector folder={folder} />
               </Stack>
             </Paper>
             <Stack gap="xs">
@@ -142,26 +132,61 @@ export const ManageFolder = ({ folder, toggleManaging }) => {
     </Page>
   );
 };
-const BrandingButton = ({ folder }) => {
-  const folderHasBranding = folder.branding.folderId == folder.id;
-  // it might be a branding from parent so lets set sensible defaults if so
-  const branding = {
-    ...folder.branding,
-    folderId: folder.id,
+
+const BrandingSelector = ({ folder }) => {
+  const [brandingsResult] = useQuery({ query: viewBrandingsQuery });
+  const [, setFolderBranding] = useMutation(setFolderBrandingMutation);
+  const [modalBranding, setModalBranding] = useState<Branding | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const brandings = brandingsResult.data?.brandings ?? [];
+  const currentBrandingId = folder.brandingId?.toString() ?? null;
+  const inheritedBranding = folder.branding;
+  const isInherited = !folder.brandingId && inheritedBranding?.id !== '0';
+
+  const options = [
+    { value: '', label: 'None (inherit from parent)' },
+    ...brandings.map((b) => ({ value: b.id, label: b.name ?? 'Unnamed' })),
+    { value: '__create__', label: '+ Create new branding...' },
+  ];
+
+  const handleChange = async (value: string | null) => {
+    if (value === '__create__') {
+      setModalBranding({ ...defaultBranding });
+      return;
+    }
+
+    setSaving(true);
+    await setFolderBranding({
+      folderId: folder.id,
+      brandingId: value || null,
+    });
+    setSaving(false);
   };
-  const [open, setOpen] = useState(false);
+
   return (
     <>
-      {open ? (
-        <BrandingModal branding={branding} onClose={() => setOpen(false)} />
+      {modalBranding ? (
+        <BrandingModal
+          branding={modalBranding}
+          onClose={() => setModalBranding(null)}
+        />
       ) : null}
-      <Button
-        variant="default"
+      <Select
+        label="Branding"
+        placeholder="Select a branding"
+        data={options}
+        value={currentBrandingId}
+        onChange={handleChange}
+        disabled={saving}
         leftSection={<BrandingIcon />}
-        onClick={() => setOpen(true)}
-      >
-        {folderHasBranding ? 'Edit Branding' : 'Add Branding'}
-      </Button>
+        clearable={false}
+      />
+      {isInherited ? (
+        <Text size="xs" c="dimmed">
+          Currently inheriting: {inheritedBranding?.name ?? 'Default'}
+        </Text>
+      ) : null}
     </>
   );
 };

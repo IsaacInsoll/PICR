@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Code, Text } from '@mantine/core';
+import { Alert, Box, Button } from '@mantine/core';
 import { useQuery } from 'urql';
 import { Suspense, useState } from 'react';
 import QueryFeedback from '../../components/QueryFeedback';
@@ -10,6 +10,7 @@ import { useSetAtom } from 'jotai/index';
 import { themeModeAtom } from '../../atoms/themeModeAtom';
 import { BrandingModal } from './BrandingModal';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
+import { defaultBranding } from '../../helpers/defaultBranding';
 import { Branding } from '../../../../graphql-types';
 
 export const ManageBrandings = () => {
@@ -43,17 +44,14 @@ export const ManageBrandings = () => {
           onMouseover={(row) => (mouseover ? setThemeMode(row) : null)}
         />
       ) : undefined}
-      <Text pt="md" fs="italic" c="dimmed">
-        Manage a folder to create a new Branding
-      </Text>
-      {/*<Box pt="md">*/}
-      {/*  <Button*/}
-      {/*    onClick={() => setBranding({ ...defaultBranding })}*/}
-      {/*    leftSection={<BrandingIcon />}*/}
-      {/*  >*/}
-      {/*    Add Branding*/}
-      {/*  </Button>*/}
-      {/*</Box>*/}
+      <Box pt="md">
+        <Button
+          onClick={() => setBranding({ ...defaultBranding })}
+          leftSection={<BrandingIcon />}
+        >
+          Add Branding
+        </Button>
+      </Box>
     </>
   );
 };

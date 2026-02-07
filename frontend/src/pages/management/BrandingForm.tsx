@@ -10,6 +10,7 @@ import {
   InputLabel,
   Select,
   Stack,
+  TextInput,
   useMantineTheme,
 } from '@mantine/core';
 import {
@@ -28,12 +29,23 @@ import { fontFamilies } from '../../fonts.generated';
 export const BrandingForm = ({
   branding,
   onChange,
+  showName = false,
 }: {
   branding: Branding;
   onChange: (branding: Branding) => void;
+  showName?: boolean;
 }) => {
   return (
     <Stack gap="lg">
+      {showName ? (
+        <TextInput
+          label="Name"
+          placeholder="Branding name"
+          value={branding.name ?? ''}
+          onChange={(e) => onChange({ ...branding, name: e.target.value })}
+          required
+        />
+      ) : null}
       <HeadingFontSelector
         value={branding.headingFontKey ?? 'default'}
         onChange={(headingFontKey) => onChange({ ...branding, headingFontKey })}

@@ -37,11 +37,13 @@ export enum AccessType {
 export type Branding = {
   __typename?: 'Branding';
   folder?: Maybe<Folder>;
-  folderId: Scalars['ID']['output'];
+  folderId?: Maybe<Scalars['ID']['output']>;
+  folders: Array<Folder>;
   headingFontKey?: Maybe<HeadingFontKey>;
   id: Scalars['ID']['output'];
   logoUrl?: Maybe<Scalars['String']['output']>;
   mode?: Maybe<ThemeMode>;
+  name?: Maybe<Scalars['String']['output']>;
   primaryColor?: Maybe<PrimaryColor>;
 };
 
@@ -117,6 +119,7 @@ export enum FileType {
 export type Folder = {
   __typename?: 'Folder';
   branding?: Maybe<Branding>;
+  brandingId?: Maybe<Scalars['ID']['output']>;
   files: Array<FileInterface>;
   folderLastModified: Scalars['DateTime']['output'];
   heroImage?: Maybe<Image>;
@@ -230,16 +233,17 @@ export type Mutation = {
   __typename?: 'Mutation';
   addComment: FileInterface;
   auth: Scalars['String']['output'];
-  deleteBranding: Folder;
+  deleteBranding: Scalars['Boolean']['output'];
   deleteUser: Scalars['Boolean']['output'];
   editAdminUser: User;
-  editBranding: Folder;
+  editBranding: Branding;
   editFolder: Folder;
   editUser: User;
   editUserDevice: UserDevice;
   generateThumbnails: Scalars['Boolean']['output'];
   generateZip: Scalars['String']['output'];
   renameFolder: Folder;
+  setFolderBranding: Folder;
 };
 
 
@@ -259,7 +263,7 @@ export type MutationAuthArgs = {
 
 
 export type MutationDeleteBrandingArgs = {
-  folderId: Scalars['ID']['input'];
+  id: Scalars['ID']['input'];
 };
 
 
@@ -282,10 +286,11 @@ export type MutationEditAdminUserArgs = {
 
 
 export type MutationEditBrandingArgs = {
-  folderId: Scalars['ID']['input'];
   headingFontKey?: InputMaybe<HeadingFontKey>;
+  id?: InputMaybe<Scalars['ID']['input']>;
   logoUrl?: InputMaybe<Scalars['String']['input']>;
   mode?: InputMaybe<ThemeMode>;
+  name?: InputMaybe<Scalars['String']['input']>;
   primaryColor?: InputMaybe<PrimaryColor>;
 };
 
@@ -332,6 +337,12 @@ export type MutationRenameFolderArgs = {
   folderId: Scalars['ID']['input'];
   newPath: Scalars['String']['input'];
   oldPath: Scalars['String']['input'];
+};
+
+
+export type MutationSetFolderBrandingArgs = {
+  brandingId?: InputMaybe<Scalars['ID']['input']>;
+  folderId: Scalars['ID']['input'];
 };
 
 export enum PrimaryColor {

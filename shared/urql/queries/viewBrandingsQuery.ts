@@ -1,16 +1,15 @@
 import { gql } from '../gql';
 
-//Literally same as `sharedFolderFragment` but I added `username` and `folder.parents`
 export const viewBrandingsQuery = gql(/*GraphQL*/ `
     query ViewBrandingsQuery {
         brandings {
             id
+            name
             logoUrl
             primaryColor
             mode
             headingFontKey
-            folderId
-            folder {
+            folders {
                ...MinimumFolderFragment
             }
         }

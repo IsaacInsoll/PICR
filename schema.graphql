@@ -22,11 +22,13 @@ scalar BigInt
 
 type Branding {
   folder: Folder
-  folderId: ID!
+  folderId: ID
+  folders: [Folder!]!
   headingFontKey: HeadingFontKey
   id: ID!
   logoUrl: String
   mode: ThemeMode
+  name: String
   primaryColor: PrimaryColor
 }
 
@@ -103,6 +105,7 @@ enum FileType {
 
 type Folder {
   branding: Branding
+  brandingId: ID
   files: [FileInterface!]!
   folderLastModified: DateTime!
   heroImage: Image
@@ -211,16 +214,17 @@ enum LinkMode {
 type Mutation {
   addComment(comment: String, flag: FileFlag, id: ID!, nickName: String, rating: Int): FileInterface!
   auth(password: String!, user: String!): String!
-  deleteBranding(folderId: ID!): Folder!
+  deleteBranding(id: ID!): Boolean!
   deleteUser(id: ID!): Boolean!
   editAdminUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, ntfy: String, ntfyEmail: Boolean, password: String, username: String): User!
-  editBranding(folderId: ID!, headingFontKey: HeadingFontKey, logoUrl: String, mode: ThemeMode, primaryColor: PrimaryColor): Folder!
+  editBranding(headingFontKey: HeadingFontKey, id: ID, logoUrl: String, mode: ThemeMode, name: String, primaryColor: PrimaryColor): Branding!
   editFolder(folderId: ID!, heroImageId: ID, subtitle: String, title: String): Folder!
   editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
   editUserDevice(enabled: Boolean!, name: String, notificationToken: String!, userId: ID!): UserDevice!
   generateThumbnails(folderId: ID): Boolean!
   generateZip(folderId: ID): String!
   renameFolder(folderId: ID!, newPath: String!, oldPath: String!): Folder!
+  setFolderBranding(brandingId: ID, folderId: ID!): Folder!
 }
 
 enum PrimaryColor {

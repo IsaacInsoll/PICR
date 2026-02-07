@@ -8,6 +8,7 @@ export const folderFragment = gql(/* GraphQL */ `
     title
     subtitle
     parentId
+    brandingId
     permissions
     folderLastModified
     parents {
@@ -16,15 +17,11 @@ export const folderFragment = gql(/* GraphQL */ `
     }
     branding {
       id
-      folderId
+      name
       mode
       primaryColor
       logoUrl
       headingFontKey
-      folder {
-        id
-        name
-      }
     }
     ...HeroImageFragment
   }

@@ -32,6 +32,9 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
   }
 
   if (valid(opts.lastBootedVersion)) {
+    if (lt(opts.lastBootedVersion!, '0.7.0')) {
+      await removeDuplicates();
+    }
     if (lt(opts.lastBootedVersion!, '0.8.19')) {
       console.log(' ℹ️ Enabling metadata refresh for upgrade to 0.8.19+');
       config.updateMetadata = true;
@@ -39,9 +42,8 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
     if (lt(opts.lastBootedVersion!, '0.9.4')) {
       await fixImageTypesForExtensions();
     }
-    if (lt(opts.lastBootedVersion!, '0.7.0')) {
-      // config.updateMetadata = true;
-      await removeDuplicates();
+    if (lt(opts.lastBootedVersion!, '0.9.6')) {
+      await migrateBrandingRelationship();
     }
   }
 
@@ -117,6 +119,36 @@ const fixImageTypesForExtensions = async () => {
     .where(and(ne(dbFile.type, 'Image'), or(...extensionFilters)));
 };
 
+const migrateBrandingRelationship = async () => {
+  console.log('🎨 PICR Migration: inverting branding ↔ folder relationship');
+
+  // Fetch all brandings with their associated folders
+  const brandings = await db.query.dbBranding.findMany({
+    with: { folder: true },
+  });
+
+  let migrated = 0;
+  for (const branding of brandings) {
+    if (!branding.folderId || !branding.folder) continue;
+
+    // Set branding name from folder name
+    await db
+      .update(dbBranding)
+      .set({ name: branding.folder.name })
+      .where(eq(dbBranding.id, branding.id));
+
+    // Set folder's brandingId to point to this branding
+    await db
+      .update(dbFolder)
+      .set({ brandingId: branding.id })
+      .where(eq(dbFolder.id, branding.folderId));
+
+    migrated++;
+  }
+
+  console.log(`🎨 PICR Migration complete: migrated ${migrated} brandings`);
+};
+
 const processDuplicateFolder = async (relativePath: string) => {
   const matching = await db.query.dbFolder.findMany({
     where: eq(dbFolder.relativePath, relativePath),
@@ -130,6 +162,7 @@ const processDuplicateFolder = async (relativePath: string) => {
     .update(dbAccessLog)
     .set({ folderId: firstId })
     .where(inArray(dbAccessLog.folderId, otherIds));
+  // TODO: Remove this once Branding.folderId is removed - brandingId on folder handles the relationship now
   await db
     .update(dbBranding)
     .set({ folderId: firstId })

@@ -254,12 +254,12 @@ test('Admin-only mutations are blocked for public links', async () => {
   );
   expectGraphqlError(
     await linkClient
-      .mutation(editBrandingMutation, { folderId: photoFolderId })
+      .mutation(editBrandingMutation, { name: 'Should Fail' })
       .toPromise(),
   );
   expectGraphqlError(
     await linkClient
-      .mutation(deleteBrandingMutation, { folderId: photoFolderId })
+      .mutation(deleteBrandingMutation, { id: '999' })
       .toPromise(),
   );
   expectGraphqlError(
@@ -314,12 +314,12 @@ test('Admin-only mutations are blocked for unauthenticated requests', async () =
   );
   expectGraphqlError(
     await client
-      .mutation(editBrandingMutation, { folderId: photoFolderId })
+      .mutation(editBrandingMutation, { name: 'Should Fail' })
       .toPromise(),
   );
   expectGraphqlError(
     await client
-      .mutation(deleteBrandingMutation, { folderId: photoFolderId })
+      .mutation(deleteBrandingMutation, { id: '999' })
       .toPromise(),
   );
   expectGraphqlError(

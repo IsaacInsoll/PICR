@@ -165,12 +165,28 @@ services:
 
 ## Writing Tests
 
+### Critical: Use Shared Queries and Mutations
+
+**ALWAYS import queries/mutations from `shared/urql/`** instead of writing inline GraphQL. This ensures tests validate the actual queries used by the frontend and app. If a shared query breaks, tests will catch it.
+
+```typescript
+// CORRECT - uses shared queries
+import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
+import { editBrandingMutation } from '../shared/urql/mutations/editBrandingMutation';
+
+// WRONG - inline GraphQL bypasses real query validation
+const result = await graphqlRequest(`
+  query { folder(id: $id) { ... } }
+`, variables, headers);
+```
+
 ### Test Structure
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { createTestGraphqlClient, getUserHeader } from '@frontend/testGraphqlClient';
-import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
+import { createTestGraphqlClient, getUserHeader } from '../frontend/testGraphqlClient';
+import { defaultCredentials } from '../backend/auth/defaultCredentials';
+import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
 import { photoFolderId } from './testVariables';
 
 describe('Folder Viewing', () => {
@@ -179,7 +195,7 @@ describe('Folder Viewing', () => {
     const headers = await getUserHeader(defaultCredentials);
     const client = await createTestGraphqlClient(headers);
 
-    // 2. Execute: Run query
+    // 2. Execute: Run query using shared query
     const result = await client
       .query(viewFolderQuery, { folderId: photoFolderId })
       .toPromise();
@@ -199,7 +215,7 @@ describe('Folder Viewing', () => {
 Creates URQL client pointing to test server:
 
 ```typescript
-import { createTestGraphqlClient } from '@frontend/testGraphqlClient';
+import { createTestGraphqlClient } from '../frontend/testGraphqlClient';
 
 const client = await createTestGraphqlClient({});  // Unauthenticated
 const client = await createTestGraphqlClient({ authorization: 'Bearer ...' });
@@ -210,8 +226,8 @@ const client = await createTestGraphqlClient({ authorization: 'Bearer ...' });
 Gets JWT auth header for admin login:
 
 ```typescript
-import { getUserHeader } from '@frontend/testGraphqlClient';
-import { defaultCredentials } from '@backend/auth/defaultCredentials';
+import { getUserHeader } from '../frontend/testGraphqlClient';
+import { defaultCredentials } from '../backend/auth/defaultCredentials';
 
 const headers = await getUserHeader(defaultCredentials);
 // Returns: { authorization: 'Bearer eyJ...' }
@@ -222,10 +238,30 @@ const headers = await getUserHeader(defaultCredentials);
 Gets header for public link access:
 
 ```typescript
-import { getLinkHeader } from '@frontend/testGraphqlClient';
+import { getLinkHeader } from '../frontend/testGraphqlClient';
 
 const headers = await getLinkHeader('public-test-user');
 // Returns: { uuid: 'public-test-user' }
+```
+
+### Import Patterns
+
+Always use relative imports from the test file location:
+
+```typescript
+// Test utilities
+import { createTestGraphqlClient, getUserHeader, getLinkHeader } from '../frontend/testGraphqlClient';
+import { defaultCredentials } from '../backend/auth/defaultCredentials';
+
+// Shared queries and mutations (ALWAYS use these, never inline GraphQL)
+import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
+import { editBrandingMutation } from '../shared/urql/mutations/editBrandingMutation';
+
+// GraphQL types and enums
+import { ThemeMode, PrimaryColor, CommentPermissions } from '../graphql-types';
+
+// Test variables
+import { photoFolderId, videoFolderId } from './testVariables';
 ```
 
 ### Test Variables
@@ -300,7 +336,12 @@ it('unauthenticated request fails', async () => {
 
 ### Testing Mutations
 
+Always import mutations from `shared/urql/mutations/`:
+
 ```typescript
+import { addCommentMutation } from '../shared/urql/mutations/addCommentMutation';
+import { editBrandingMutation } from '../shared/urql/mutations/editBrandingMutation';
+
 it('can add comment', async () => {
   const headers = await getUserHeader(defaultCredentials);
   const client = await createTestGraphqlClient(headers);
@@ -322,12 +363,26 @@ it('can add comment', async () => {
 
 1. Create file with numbered prefix:
    ```typescript
-   // tests/04-new-feature.test.ts
-   import { describe, it, expect } from 'vitest';
+   // tests/07-new-feature.test.ts
+   import { expect, test, describe } from 'vitest';
+   import { createTestGraphqlClient, getUserHeader } from '../frontend/testGraphqlClient';
+   import { defaultCredentials } from '../backend/auth/defaultCredentials';
+   // Import shared queries/mutations - NEVER write inline GraphQL
+   import { someQuery } from '../shared/urql/queries/someQuery';
+   import { someMutation } from '../shared/urql/mutations/someMutation';
+   import { photoFolderId } from './testVariables';
 
    describe('New Feature', () => {
-     it('should do something', async () => {
-       // Test code
+     test('should do something', async () => {
+       const headers = await getUserHeader(defaultCredentials);
+       const client = await createTestGraphqlClient(headers);
+
+       const result = await client
+         .query(someQuery, { folderId: photoFolderId })
+         .toPromise();
+
+       expect(result.error).toBeUndefined();
+       expect(result.data?.something).toBeDefined();
      });
    });
    ```
@@ -336,8 +391,17 @@ it('can add comment', async () => {
 
 3. Run to verify:
    ```bash
-   npx vitest tests/04-new-feature.test.ts
+   npx vitest tests/07-new-feature.test.ts
    ```
+
+### Why Use Shared Queries?
+
+Tests import the **same queries and mutations** used by the frontend and app. This provides:
+
+1. **Real-world validation** - Tests verify the actual GraphQL operations clients use
+2. **Automatic breakage detection** - If someone modifies a shared query incorrectly, tests fail
+3. **No drift** - Inline GraphQL in tests can become outdated while shared queries evolve
+4. **Type safety** - Shared queries have TypeScript types generated by codegen
 
 ## Fixtures
 

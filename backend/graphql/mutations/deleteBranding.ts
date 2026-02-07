@@ -1,35 +1,41 @@
-import { contextPermissions } from '../../auth/contextPermissions.js';
-import { GraphQLID, GraphQLNonNull } from 'graphql';
-import { folderType } from '../types/folderType.js';
+import { requireFullAdmin } from '../queries/admins.js';
+import { GraphQLBoolean, GraphQLID, GraphQLNonNull } from 'graphql';
 import { GraphQLError } from 'graphql/error/index.js';
-import { brandingForFolderId, db, dbFolderForId } from '../../db/picrDb.js';
-import { dbBranding } from '../../db/models/index.js';
+import { brandingForId, db } from '../../db/picrDb.js';
+import { dbBranding, dbFolder } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
-import { Branding, User } from '../../../graphql-types.js';
 
 const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   _,
   params,
   context: PicrRequestContext,
 ) => {
-  await contextPermissions(context, params.folderId, 'Admin');
+  await requireFullAdmin(context);
 
-  const obj = await brandingForFolderId(params.folderId);
+  const branding = await brandingForId(params.id);
 
-  if (!obj) {
-    throw new GraphQLError('No branding found for folder: ' + params.folderId);
+  if (!branding) {
+    throw new GraphQLError('Branding not found: ' + params.id);
   }
 
-  await db.delete(dbBranding).where(eq(dbBranding.folderId, params.folderId));
-  return await dbFolderForId(params.folderId);
+  // Clear brandingId on any folders using this branding
+  await db
+    .update(dbFolder)
+    .set({ brandingId: null, updatedAt: new Date() })
+    .where(eq(dbFolder.brandingId, params.id));
+
+  // Delete the branding
+  await db.delete(dbBranding).where(eq(dbBranding.id, params.id));
+
+  return true;
 };
 
 export const deleteBranding = {
-  type: new GraphQLNonNull(folderType),
+  type: new GraphQLNonNull(GraphQLBoolean),
   resolve: resolver,
   args: {
-    folderId: { type: new GraphQLNonNull(GraphQLID) },
+    id: { type: new GraphQLNonNull(GraphQLID) },
   },
 };
