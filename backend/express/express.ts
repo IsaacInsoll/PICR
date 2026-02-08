@@ -8,6 +8,7 @@ import { resolvePublicDir } from './resolvePublicDir.js';
 
 export const expressServer = () => {
   const exp = express();
+  exp.set('trust proxy', 1);
   const router = express.Router();
 
   const publicDir = resolvePublicDir();

@@ -11,6 +11,8 @@ import { picrConfig } from '../config/picrConfig.js';
 import { resolvePublicDir } from './resolvePublicDir.js';
 import { getBasePrefix, stripBasePrefix } from './basePath.js';
 
+let cachedIndexHtml: string | undefined;
+
 interface ITemplateFields {
   title: string;
   description: string;
@@ -63,8 +65,11 @@ export const picrTemplate = async (req: Request, res: Response) => {
     }
   }
 
-  const publicDir = resolvePublicDir();
-  let html = readFileSync(publicDir + '/index.html', 'utf8');
+  if (!cachedIndexHtml) {
+    const publicDir = resolvePublicDir();
+    cachedIndexHtml = readFileSync(publicDir + '/index.html', 'utf8');
+  }
+  let html = cachedIndexHtml;
   Object.entries(fields).forEach(([key, value]) => {
     html = html.replaceAll(`{${key}}`, value);
   });

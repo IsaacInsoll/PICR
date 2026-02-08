@@ -27,7 +27,7 @@ export const server = async () => {
   await envPassword();
   const appName = pkg.name;
   const express = expressServer();
-  express.listen(picrConfig.port, () => {
+  const httpServer = express.listen(picrConfig.port, () => {
     log(
       'info',
       `🌐 App listening at http://localhost:${picrConfig.port}`,
@@ -35,18 +35,21 @@ export const server = async () => {
     );
   });
 
-  //Close all the stuff
-  process.on('exit', function () {
-    // sequelize.close().then(() => {
-    console.log(`💀 ${appName} Closed`);
-    // });
-  });
+  const gracefulShutdown = (signal: string) => {
+    log('info', `${signal} received, shutting down ${appName}...`, true);
+    httpServer.close(() => {
+      log('info', `💀 ${appName} closed`, true);
+      process.exit(0);
+    });
+    // Force exit if graceful shutdown takes too long
+    setTimeout(() => {
+      log('error', 'Shutdown timed out, forcing exit');
+      process.exit(1);
+    }, 10_000);
+  };
 
-  // This is CTRL+C While it's running, trigger a nice shutdown
-  process.on('SIGINT', function () {
-    console.log(`❌ Shutting down ${appName}`);
-    process.exit(0);
-  });
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
   await fileWatcher(picrConfig);
 };

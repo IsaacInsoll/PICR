@@ -7,6 +7,7 @@ WORKDIR /home/node/app
 COPY --chown=node:node ./dist ./
 RUN npm ci
 
+ENV NODE_ENV=production
 EXPOSE 6900
 
 CMD [ "node", "./server/backend/app.js" ]

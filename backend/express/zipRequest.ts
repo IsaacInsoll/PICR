@@ -17,9 +17,12 @@ export const zipRequest = async (
   const zPath = zipPath({ folder, hash });
   if (!existsSync(zPath)) {
     res.sendStatus(404);
+    return;
   }
   if (zipInProgress({ folder, hash })) {
     res.sendStatus(400); // still zipping, can't send anything yet
+    return;
   }
+  res.set('Cache-Control', 'public, max-age=31536000, immutable');
   res.sendFile(zPath);
 };

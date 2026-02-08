@@ -36,8 +36,9 @@ export const imageRequest = async (
     res.sendStatus(404);
     return;
   }
-  if (file.type == 'File') res.sendStatus(404);
-  if (!allSizes.includes(size)) res.sendStatus(400);
+  if (file.type == 'File') { res.sendStatus(404); return; }
+  if (!allSizes.includes(size)) { res.sendStatus(400); return; }
+  res.set('Cache-Control', 'public, max-age=31536000, immutable');
   const extension = extname(filename).toLowerCase(); //extension ignored for original file, only used for thumbs
   const fp = fullPathFor(file, size, extension);
   if (size != 'raw' && !existsSync(fp)) {
