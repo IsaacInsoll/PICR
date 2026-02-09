@@ -115,9 +115,8 @@ cd backend && npm run build  # TypeScript → dist/server (for Docker image)
 cd frontend && npm run build # Vite production build
 cd app && npx expo export --platform android  # or --platform ios on macOS
 
-# Testing
-npm test                     # Vitest e2e suite (requires Docker)
-npx vitest tests/01-admin-login.test.ts  # Run specific test
+# Testing (DO NOT run tests yourself - ask the user to run them)
+npm run workflow             # Full CI workflow (user runs this manually)
 
 # Code Generation
 npm run gql                  # Regenerate GraphQL types (safe to run anytime)
@@ -129,6 +128,8 @@ Always suggest running the relevant build as a basic validation:
 - Backend changes → `cd backend && npm run build`
 - Frontend changes → `cd frontend && npm run build`
 - App changes → `cd app && npx expo export --platform android`
+
+**Never run tests or `npm run workflow` directly.** When testing is needed, ask the user to run `npm run workflow` themselves.
 
 ## Coding Style & Conventions
 

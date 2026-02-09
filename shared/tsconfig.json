@@ -1,11 +1,9 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ESNext",
     "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "moduleResolution": "bundler",
+    "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
       "@/*": ["./*"],
