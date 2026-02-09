@@ -9,10 +9,7 @@ import { FlashList } from '@shopify/flash-list';
 import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
 import { fileProps } from '@shared/files/fileProps';
 import { PFileFolderThumbnail, PFileView } from '@/src/components/PFileView';
-import {
-  AppFooterPadding,
-  AppHeaderPadding,
-} from '@/src/components/AppHeaderPadding';
+import { AppFooterPadding } from '@/src/components/AppHeaderPadding';
 
 const border = 2;
 const defaultHeight = 200; //EG: non-images
@@ -22,6 +19,7 @@ export const AppFolderGalleryList = ({
   width,
   refresh,
   colCount,
+  ListHeaderComponent,
 }: AppFolderContentsViewChildProps & { colCount: number }) => {
   // I was using `useScreenOrientation` but it casued more rerenders when rotating device between portrait/landscape
   // this current onLayout/setState implementation is less glitchy feeling
@@ -41,7 +39,7 @@ export const AppFolderGalleryList = ({
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
       data={items}
       numColumns={cols}
-      ListHeaderComponent={<AppHeaderPadding />}
+      ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={<AppFooterPadding />}
       keyExtractor={(item) => item['__typename'] + item.id}
       renderItem={(props) => (

@@ -20,7 +20,7 @@ import {
   FolderHeaderButtons,
   folderViewStyles,
 } from '@/src/components/FolderView/FolderViewShared';
-import { FolderHeading } from '@/src/components/FolderView/FolderHeading';
+import { FolderListHeader } from '@/src/components/FolderView/FolderListHeader';
 
 export default function FolderMasterView() {
   const me = useMe();
@@ -94,10 +94,10 @@ const FolderBody = ({
           ),
         }}
       />
-      <FolderHeading folder={folder} />
       <AppFolderContentsView
         items={items}
         width={width}
+        ListHeaderComponent={<FolderListHeader folder={folder} />}
         refresh={() => requery({ requestPolicy: 'cache-and-network' })}
       />
     </>

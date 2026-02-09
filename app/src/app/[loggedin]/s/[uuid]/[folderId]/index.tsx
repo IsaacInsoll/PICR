@@ -17,7 +17,7 @@ import {
   FolderHeaderButtons,
   folderViewStyles,
 } from '@/src/components/FolderView/FolderViewShared';
-import { FolderHeading } from '@/src/components/FolderView/FolderHeading';
+import { FolderListHeader } from '@/src/components/FolderView/FolderListHeader';
 
 export default function PublicFolderView() {
   const theme = useAppTheme();
@@ -81,10 +81,10 @@ const FolderBody = ({
           headerRight: () => <FolderHeaderButtons />,
         }}
       />
-      <FolderHeading folder={folder} />
       <AppFolderContentsView
         items={items}
         width={width}
+        ListHeaderComponent={<FolderListHeader folder={folder} />}
         refresh={() => requery({ requestPolicy: 'cache-and-network' })}
       />
     </>

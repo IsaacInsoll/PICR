@@ -10,18 +10,21 @@ interface AppFolderContentsViewProps {
   items: (File | Folder)[];
   width: number;
   refresh: () => void;
+  ListHeaderComponent?: React.ReactElement | null;
 }
 
 export interface AppFolderContentsViewChildProps {
   items: (File | Folder)[];
   width: number;
   refresh: () => void;
+  ListHeaderComponent?: React.ReactElement | null;
 }
 
 export const AppFolderContentsView = ({
   items,
   width,
   refresh,
+  ListHeaderComponent,
 }: AppFolderContentsViewProps) => {
   const view = useAtomValue(folderViewModeAtom);
   /*
@@ -38,6 +41,7 @@ export const AppFolderContentsView = ({
           width={width}
           colCount={2}
           refresh={refresh}
+          ListHeaderComponent={ListHeaderComponent}
         />
       );
     case 'gallery2':
@@ -47,13 +51,26 @@ export const AppFolderContentsView = ({
           width={width}
           colCount={3}
           refresh={refresh}
+          ListHeaderComponent={ListHeaderComponent}
         />
       );
     case 'feed':
-      return <AppFolderFeed items={items} width={width} refresh={refresh} />;
+      return (
+        <AppFolderFeed
+          items={items}
+          width={width}
+          refresh={refresh}
+          ListHeaderComponent={ListHeaderComponent}
+        />
+      );
     case 'list':
       return (
-        <AppFolderFileList items={items} width={width} refresh={refresh} />
+        <AppFolderFileList
+          items={items}
+          width={width}
+          refresh={refresh}
+          ListHeaderComponent={ListHeaderComponent}
+        />
       );
   }
 };

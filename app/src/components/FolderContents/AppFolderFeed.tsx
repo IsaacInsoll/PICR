@@ -17,22 +17,20 @@ import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents
 import { fileProps } from '@shared/files/fileProps';
 import { AppVideo } from '@/src/components/AppVideo';
 import { PFileFolderThumbnail } from '@/src/components/PFileView';
-import {
-  AppFooterPadding,
-  AppHeaderPadding,
-} from '@/src/components/AppHeaderPadding';
+import { AppFooterPadding } from '@/src/components/AppHeaderPadding';
 
 export const AppFolderFeed = ({
   items,
   width,
   refresh,
+  ListHeaderComponent,
 }: AppFolderContentsViewChildProps) => {
   return (
     <FlashList
       onRefresh={refresh}
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
       data={items}
-      ListHeaderComponent={<AppHeaderPadding />}
+      ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={<AppFooterPadding />}
       numColumns={1}
       keyExtractor={(item) => item['__typename'] + item.id}
