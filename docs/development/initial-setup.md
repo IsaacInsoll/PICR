@@ -25,6 +25,13 @@ You may optionally add extra fields such as `GITHUB_TOKEN` but these aren't requ
 
 ### 5. Run build steps
 
+Run:
+
+```bash
+npm run install-all
+npm run build:local
+```
+
 See [Development Guide](index.md) which covers dependencies and builds for both frontend and backend.
 
 No need for testing or artifacts (but you are welcome to!)

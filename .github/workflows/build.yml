@@ -20,11 +20,9 @@ jobs:
           cache: 'npm'
 
       # BACKEND
-      - name: '🗃️ [backend] Build (TSC)'
-        #     we NPM CI here to install typescript and any shared deps
+      - name: '🗃️ [backend] Build (TSC + artifact files)'
+        # backend build also copies drizzle migrations and backend package files into dist/
         run: cd shared && npm ci && cd ../backend && npm ci && npm run build
-      - name: '🗃️  [backend] copy extra resources'
-        run: bash ./copy-backend-files.sh
       - name: '🗃️ [backend] Install Dependencies'
         run: cd dist && npm ci
 
@@ -36,7 +34,7 @@ jobs:
       - name: '💄 [frontend] Install Dependencies'
         run: cd frontend && npm ci
       - name: '💄 [frontend] Build (vite)'
-        run: cd frontend && npm run build
+        run: cd frontend && npm run build -- --logLevel error
 
       # APP
       # Not needed for artifact, just checking that it didn't break something
@@ -46,7 +44,16 @@ jobs:
         run: cd app && npm ci
       - name: '📱 [app] Build (expo export)'
         if: ${{ matrix.os == 'ubuntu-24.04' }}
-        run: cd app && npx expo export --platform ios
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd app
+          npx expo export --platform ios 2>&1 | awk '
+            /^› (Assets|ios bundles|android bundles|web bundles|Files) \(/ { skip=1; next }
+            skip && NF==0 { skip=0; next }
+            skip { next }
+            { print }
+          '
 
       # TESTS
       - name: '🧪  [tests] download sample files'

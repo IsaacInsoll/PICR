@@ -10,9 +10,11 @@
   "scripts": {
     "test": "vitest run",
     "workflow": "act push --pull=false --artifact-server-path $PWD/.artifacts -P ubuntu-24.04=catthehacker/ubuntu:act-latest",
+    "install-all": "npm ci && npm --prefix shared ci && npm --prefix backend ci && npm --prefix frontend ci && npm --prefix app ci",
+    "build:local": "npm --prefix backend run build && npm run build:lightroom && npm --prefix frontend run build && npm --prefix dist ci",
     "gql": "graphql-codegen --config codegen.ts",
     "release": "dotenv -- release-it --only-version",
-    "build:lightroom": "cd lightroom/picr.lrplugin && zip -r ../../frontend/public/picr-lightroom-plugin.zip .",
+    "build:lightroom": "cd lightroom/picr.lrplugin && zip -rq ../../frontend/public/picr-lightroom-plugin.zip .",
     "start:server-ts": "cd backend && tsc -w",
     "start:server": "nodemon --delay 0.5 --watch .env --watch dist/server dist/server/backend/app.js",
     "start:client": "cd frontend && npm start",

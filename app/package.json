@@ -1,7 +1,6 @@
 {
   "name": "app",
   "main": "expo-router/entry",
-  "type": "module",
 
   "scripts": {
     "start": "expo start",
