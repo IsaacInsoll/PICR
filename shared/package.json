@@ -12,7 +12,7 @@
     "readable-fractions": "^0.1.1"
   },
   "devDependencies": {
-    "@types/react": "19.0"
+    "@types/react": "^19.1.10"
   },
   "peerDependencies": {
     "@urql/exchange-graphcache": "^7.2.3",

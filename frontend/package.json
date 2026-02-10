@@ -1,6 +1,5 @@
 {
   "name": "frontend",
-  "version": "0.1.0",
   "private": true,
   "type": "module",
   "dependencies": {
@@ -36,7 +35,6 @@
     "@vitejs/plugin-react": "^5.1.3",
     "blurhash": "^2.0.5",
     "dayjs": "^1.11.19",
-    "eslint": "^8.57.0",
     "format-duration": "^3.0.2",
     "graphql": "^16.8.1",
     "jotai": "^2.10.1",
@@ -82,17 +80,21 @@
   },
   "devDependencies": {
     "@locator/babel-jsx": "^0.5.1",
-    "@types/lodash": "^4.17.0",
-    "@types/node": "^22.19.9",
-    "@types/react": "^19.0.2",
+    "@types/lodash": "^4.17.23",
+    "@types/node": "^25.1",
+    "@types/react": "^19.1.10",
     "@types/react-dom": "^19.0.2",
-    "@typescript-eslint/eslint-plugin": "^8.19.0",
     "@typescript-eslint/typescript-estree": "^8.19.0",
     "babel-plugin-react-compiler": "^19.0.0-beta-201e55d-20241215",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react": "^7.37.0",
     "eslint-plugin-react-compiler": "^19.0.0-beta-201e55d-20241215",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.0",
     "postcss": "^8.4.39",
     "postcss-preset-mantine": "^1.18.0",
-    "postcss-simple-vars": "^7.0.1"
+    "postcss-simple-vars": "^7.0.1",
+    "typescript-eslint": "^8.55.0"
   },
   "proxy": "http://localhost:6900/",
   "overrides": {
