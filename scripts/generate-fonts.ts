@@ -253,21 +253,62 @@ const copyAppFonts = async (fontRegistry: Array<any>) => {
     throw new Error(`No TTF files found for family ${family}`);
   };
 
+  // Google Fonts CSS API returns proper static weight-specific TTFs,
+  // unlike the GitHub repo which may only have large variable font files.
+  const downloadFromGoogleFontsCSS = async (
+    family: string,
+    weight: number,
+  ): Promise<Buffer | null> => {
+    const encodedFamily = family.replace(/\s+/g, '+');
+    const cssUrl = `https://fonts.googleapis.com/css2?family=${encodedFamily}:wght@${weight}`;
+    const cssRes = await fetch(cssUrl, {
+      headers: {
+        // Android 4 user-agent triggers TTF format delivery
+        'user-agent':
+          'Mozilla/5.0 (Linux; U; Android 4.0; en-us) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30',
+      },
+    });
+    if (!cssRes.ok) return null;
+    const css = await cssRes.text();
+    // Google Fonts may use gstatic.com/s/ (TTF) or gstatic.com/l/ (opaque) URLs
+    const urlMatch = css.match(
+      /url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)\s*format\(['"]truetype['"]\)/,
+    );
+    if (!urlMatch) return null;
+    const fontRes = await fetch(urlMatch[1], {
+      headers: { 'user-agent': 'PICR font downloader' },
+    });
+    if (!fontRes.ok) return null;
+    return Buffer.from(await fontRes.arrayBuffer());
+  };
+
   const ensureFileForWeight = async (
     font: { key: string; label: string },
     weight: number,
     targetName: string,
   ) => {
+    const targetPath = path.join(targetRoot, targetName);
+    console.log(`Fonts: downloading ${font.label} ${weight} -> ${targetName}`);
+
+    // Prefer Google Fonts CSS API — always returns static weight-specific TTFs
+    const staticTTF = await downloadFromGoogleFontsCSS(font.label, weight);
+    if (staticTTF) {
+      const sizeKB = Math.round(staticTTF.length / 1024);
+      console.log(`  -> ${sizeKB} KB (from Google Fonts CSS API)`);
+      await writeFile(targetPath, staticTTF);
+      return;
+    }
+
+    // Fall back to GitHub repo
+    console.log(`  -> CSS API failed, falling back to GitHub repo`);
     const familyFiles = await getGitHubFontFiles(font.label);
     const staticMatch = pickStaticFile(familyFiles, weight);
     const match = staticMatch ?? pickVariableFile(familyFiles);
     if (!match) {
       throw new Error(
-        `No TTF file found for ${font.key} weight ${weight} in Google Fonts repo`,
+        `No TTF file found for ${font.key} weight ${weight}`,
       );
     }
-    const targetPath = path.join(targetRoot, targetName);
-    console.log(`Fonts: downloading ${font.label} ${weight} -> ${targetName}`);
     const res = await fetch(match.download_url, {
       headers: { 'user-agent': 'PICR font downloader' },
     });
@@ -277,6 +318,8 @@ const copyAppFonts = async (fontRegistry: Array<any>) => {
       );
     }
     const buffer = Buffer.from(await res.arrayBuffer());
+    const sizeKB = Math.round(buffer.length / 1024);
+    console.log(`  -> ${sizeKB} KB (from GitHub repo)`);
     await writeFile(targetPath, buffer);
   };
 
