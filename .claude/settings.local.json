@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(docker system:*)"
+      "Bash(docker system:*)",
+      "Bash(git diff:*)",
+      "Bash(npx expo export:*)"
     ]
   }
 }

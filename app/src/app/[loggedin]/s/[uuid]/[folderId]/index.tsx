@@ -2,22 +2,26 @@ import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { View } from 'react-native';
 import { PText } from '@/src/components/PText';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { useQuery } from 'urql';
 import { folderCache } from '@/src/helpers/folderCache';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { PView } from '@/src/components/PView';
 import { AppFolderContentsView } from '@/src/components/FolderContents/AppFolderContentsView';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { folderContentsViewModel } from '@shared/files/folderContentsViewModel';
-import { fileSortAtom, headingFontKeyAtom } from '@/src/atoms/atoms';
-import { normalizeHeadingFontKey } from '@/src/helpers/headingFont';
+import { fileSortAtom } from '@/src/atoms/atoms';
+import {
+  getHeadingFontFamilyForLevel,
+  normalizeHeadingFontKey,
+} from '@/src/helpers/headingFont';
 import {
   FolderHeaderButtons,
   folderViewStyles,
 } from '@/src/components/FolderView/FolderViewShared';
 import { FolderListHeader } from '@/src/components/FolderView/FolderListHeader';
+import { FolderBrandingProvider } from '@/src/components/FolderBrandingProvider';
 
 export default function PublicFolderView() {
   const theme = useAppTheme();
@@ -52,7 +56,6 @@ const FolderBody = ({
   folderId: string;
   width: number;
 }) => {
-  const setHeadingFontKey = useSetAtom(headingFontKeyAtom);
   const [result, requery] = useQuery({
     query: viewFolderQuery,
     variables: { folderId },
@@ -61,23 +64,20 @@ const FolderBody = ({
   const sort = useAtomValue(fileSortAtom);
   const folder = result.data?.folder;
 
-  useEffect(() => {
-    if (folder?.branding) {
-      setHeadingFontKey(normalizeHeadingFontKey(folder.branding.headingFontKey));
-    }
-  }, [folder?.branding, setHeadingFontKey]);
-
   if (!folder) {
     return <PText>Folder {folderId} Not Found</PText>;
   }
 
+  const fontKey = normalizeHeadingFontKey(folder.branding?.headingFontKey);
+  const headerFontFamily = getHeadingFontFamilyForLevel(fontKey, 3);
   const { items } = folderContentsViewModel(folder, { sort });
 
   return (
-    <>
+    <FolderBrandingProvider fontKey={fontKey}>
       <Stack.Screen
         options={{
           headerTitle: folder.title ?? folder.name,
+          headerTitleStyle: { fontFamily: headerFontFamily },
           headerRight: () => <FolderHeaderButtons />,
         }}
       />
@@ -87,6 +87,6 @@ const FolderBody = ({
         ListHeaderComponent={<FolderListHeader folder={folder} />}
         refresh={() => requery({ requestPolicy: 'cache-and-network' })}
       />
-    </>
+    </FolderBrandingProvider>
   );
 };

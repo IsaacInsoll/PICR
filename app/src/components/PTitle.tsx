@@ -1,9 +1,8 @@
 import { Text, TextProps, TextStyle } from 'react-native';
 import { typographyScale } from '@/src/constants';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { useAtomValue } from 'jotai';
-import { headingFontKeyAtom } from '@/src/atoms/atoms';
 import { getHeadingFontFamilyForLevel } from '@/src/helpers/headingFont';
+import { useFolderHeadingFont } from '@/src/components/FolderBrandingProvider';
 
 type TitleLevel = 1 | 2 | 3 | 4;
 
@@ -16,7 +15,7 @@ export const PTitle = ({
   level?: TitleLevel;
 } & TextProps) => {
   const theme = useAppTheme();
-  const headingFontKey = useAtomValue(headingFontKeyAtom);
+  const headingFontKey = useFolderHeadingFont();
   const fontFamily = getHeadingFontFamilyForLevel(headingFontKey, level);
   return (
     <Text

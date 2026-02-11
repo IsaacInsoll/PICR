@@ -77,6 +77,9 @@ export const loadHeadingFont = async (key: FontKey): Promise<void> => {
   loadedFontKeys.add(key);
 };
 
+export const isHeadingFontLoaded = (key: FontKey): boolean =>
+  loadedFontKeys.has(key);
+
 export const getBaseFontFiles = () => {
   return {
     ...getFontFilesForKey('default'),
