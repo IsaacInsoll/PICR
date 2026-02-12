@@ -14,6 +14,7 @@ import { picrUrqlClient } from '@shared/urql/urqlClient';
 import * as Application from 'expo-application';
 import { Platform } from 'react-native';
 import { usePathname } from 'expo-router/build/hooks';
+import { pushGlobalError } from '@shared/globalErrorAtom';
 
 let publicUserPath: false | { uuid: string; server: string } = false;
 export const isPublicLinkAtom = atom(false);
@@ -55,6 +56,8 @@ export const PicrPublicUserProvider = ({
       return picrUrqlClient(isPublic.server, {
         uuid: isPublic.uuid,
         'user-agent': `${Application.applicationName} ${Platform.OS} ${Application.nativeApplicationVersion} (Build ${Application.nativeBuildVersion})`,
+      }, {
+        onGlobalError: pushGlobalError,
       });
     }
   }, [me?.server, me?.token, isPublic]);

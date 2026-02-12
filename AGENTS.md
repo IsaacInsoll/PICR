@@ -129,6 +129,9 @@ Always suggest running the relevant build as a basic validation:
 - Frontend changes → `cd frontend && npm run build`
 - App changes → `cd app && npx expo export --platform android`
 
+Test scope note:
+- The root `tests/` Vitest suite is for backend API e2e coverage only. Do not add frontend/app unit tests there.
+
 **Never run tests or `npm run workflow` directly.** When testing is needed, ask the user to run `npm run workflow` themselves.
 
 ## Coding Style & Conventions

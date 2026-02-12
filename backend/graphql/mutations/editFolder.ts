@@ -42,11 +42,11 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   if (params.heroImageId !== undefined && params.heroImageId !== null) {
     heroImage = await dbFileForId(params.heroImageId);
     if (!heroImage) {
-      doAuthError('Invalid hero image ID');
+      doAuthError('INVALID_HERO_IMAGE');
       return;
     }
-    if (heroImage.type != 'Image') doAuthError('Not an image');
-    if (heroImage.folderId != folder!.id) doAuthError('Not in this folder');
+    if (heroImage.type != 'Image') doAuthError('INVALID_HERO_IMAGE_TYPE');
+    if (heroImage.folderId != folder!.id) doAuthError('HERO_IMAGE_OUT_OF_SCOPE');
 
     await setHeroImage(heroImage.id, folder!.id);
 

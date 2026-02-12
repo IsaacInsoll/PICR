@@ -19,6 +19,7 @@ import { useSetAtom } from 'jotai';
 import { lightboxRefAtom } from './atoms/lightboxRefAtom';
 import { getBaseHrefPathname } from './helpers/baseHref';
 import { fontFamilies } from './fonts.generated';
+import { GlobalErrorOverlay } from './components/GlobalErrorOverlay';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
@@ -68,6 +69,7 @@ const App = () => {
               <Notifications />
             </Suspense>
           </PicrErrorBoundary>
+          <GlobalErrorOverlay />
         </MantineProvider>
       </BrowserRouter>
     </URQLProvider>

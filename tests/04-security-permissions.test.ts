@@ -35,6 +35,22 @@ const expectGraphqlError = (result: { error?: unknown }) => {
   expect(result.error).toBeDefined();
 };
 
+const expectAuthCode = (
+  result: { error?: { graphQLErrors?: Array<{ extensions?: unknown }> } },
+  code: 'UNAUTHENTICATED' | 'FORBIDDEN' | 'BAD_USER_INPUT',
+  reason: string,
+) => {
+  expectGraphqlError(result);
+  const actualCode = (result.error?.graphQLErrors?.[0]?.extensions as
+    | { code?: string; reason?: string }
+    | undefined)?.code;
+  const actualReason = (result.error?.graphQLErrors?.[0]?.extensions as
+    | { code?: string; reason?: string }
+    | undefined)?.reason;
+  expect(actualCode).toBe(code);
+  expect(actualReason).toBe(reason);
+};
+
 const makeSuffix = () => Math.random().toString(36).slice(2, 8);
 
 const createLinkUser = async (overrides: Record<string, unknown>) => {
@@ -90,7 +106,7 @@ test('commentPermissions none blocks comment read and write', async () => {
   const commentsResult = await linkClient
     .query(commentHistoryQuery, { folderId: photoFolderId })
     .toPromise();
-  expectGraphqlError(commentsResult);
+  expectAuthCode(commentsResult, 'FORBIDDEN', 'COMMENTS_HIDDEN');
 
   const folderResult = await linkClient
     .query(viewFolderQuery, { folderId: photoFolderId })
@@ -102,7 +118,7 @@ test('commentPermissions none blocks comment read and write', async () => {
   const addCommentResult = await linkClient
     .mutation(addCommentMutation, { id: fileId, comment: 'Nope' })
     .toPromise();
-  expectGraphqlError(addCommentResult);
+  expectAuthCode(addCommentResult, 'FORBIDDEN', 'COMMENTS_NOT_ALLOWED');
 
   const adminHeaders = await getUserHeader(defaultCredentials);
   const adminClient = await createTestGraphqlClient(adminHeaders);
@@ -126,7 +142,7 @@ test('Public link cannot search or access files outside its folder', async () =>
   const searchResult = await linkClient
     .query(searchQuery, { folderId: videoFolderId, query: 'Birthday' })
     .toPromise();
-  expectGraphqlError(searchResult);
+  expectAuthCode(searchResult, 'FORBIDDEN', 'INVALID_LINK');
 
   const adminHeaders = await getUserHeader(defaultCredentials);
   const adminClient = await createTestGraphqlClient(adminHeaders);
@@ -140,7 +156,7 @@ test('Public link cannot search or access files outside its folder', async () =>
   const fileResult = await linkClient
     .query(viewFileQuery, { fileId: otherFileId })
     .toPromise();
-  expectGraphqlError(fileResult);
+  expectAuthCode(fileResult, 'FORBIDDEN', 'INVALID_LINK');
 
   await adminClient.mutation(deleteUserMutation, { id: user.id }).toPromise();
 });
@@ -159,24 +175,42 @@ test('Admin-only queries are blocked for public links', async () => {
   const linkHeaders = await getLinkHeader(user.uuid);
   const linkClient = await createTestGraphqlClient(linkHeaders);
 
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient
       .query(accessLogQuery, { folderId: '1', includeChildren: true })
       .toPromise(),
+    'FORBIDDEN',
+    'INVALID_LINK',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient.query(recentUsersQuery, { folderId: '1' }).toPromise(),
+    'FORBIDDEN',
+    'INVALID_LINK',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient.query(viewUserQuery, { id: '1' }).toPromise(),
+    'FORBIDDEN',
+    'INVALID_LINK',
   );
-  expectGraphqlError(await linkClient.query(viewAdminsQuery, {}).toPromise());
-  expectGraphqlError(
+  expectAuthCode(
+    await linkClient.query(viewAdminsQuery, {}).toPromise(),
+    'FORBIDDEN',
+    'INVALID_LINK',
+  );
+  expectAuthCode(
     await linkClient.query(viewBrandingsQuery, {}).toPromise(),
+    'FORBIDDEN',
+    'INVALID_LINK',
   );
-  expectGraphqlError(await linkClient.query(serverInfoQuery, {}).toPromise());
-  expectGraphqlError(
+  expectAuthCode(
+    await linkClient.query(serverInfoQuery, {}).toPromise(),
+    'FORBIDDEN',
+    'INVALID_LINK',
+  );
+  expectAuthCode(
     await linkClient.query(readAllFoldersQuery, { id: '1' }).toPromise(),
+    'FORBIDDEN',
+    'INVALID_LINK',
   );
 
   const adminHeaders = await getUserHeader(defaultCredentials);
@@ -187,20 +221,42 @@ test('Admin-only queries are blocked for public links', async () => {
 test('Admin-only queries are blocked for unauthenticated requests', async () => {
   const client = await createTestGraphqlClient({});
 
-  expectGraphqlError(
+  expectAuthCode(
     await client
       .query(accessLogQuery, { folderId: '1', includeChildren: true })
       .toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await client.query(recentUsersQuery, { folderId: '1' }).toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
   );
-  expectGraphqlError(await client.query(viewUserQuery, { id: '1' }).toPromise());
-  expectGraphqlError(await client.query(viewAdminsQuery, {}).toPromise());
-  expectGraphqlError(await client.query(viewBrandingsQuery, {}).toPromise());
-  expectGraphqlError(await client.query(serverInfoQuery, {}).toPromise());
-  expectGraphqlError(
+  expectAuthCode(
+    await client.query(viewUserQuery, { id: '1' }).toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
+  );
+  expectAuthCode(
+    await client.query(viewAdminsQuery, {}).toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
+  );
+  expectAuthCode(
+    await client.query(viewBrandingsQuery, {}).toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
+  );
+  expectAuthCode(
+    await client.query(serverInfoQuery, {}).toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
+  );
+  expectAuthCode(
     await client.query(readAllFoldersQuery, { id: '1' }).toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
   );
 });
 
@@ -218,7 +274,7 @@ test('Admin-only mutations are blocked for public links', async () => {
   const linkHeaders = await getLinkHeader(user.uuid);
   const linkClient = await createTestGraphqlClient(linkHeaders);
 
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient
       .mutation(editUserMutation, {
         folderId: photoFolderId,
@@ -229,16 +285,22 @@ test('Admin-only mutations are blocked for public links', async () => {
         uuid: `should-fail-${suffix}`,
       })
       .toPromise(),
+    'FORBIDDEN',
+    'ACCESS_DENIED',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient
       .mutation(editAdminUserMutation, { id: '1', folderId: '1', name: 'No' })
       .toPromise(),
+    'FORBIDDEN',
+    'INVALID_LINK',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient.mutation(deleteUserMutation, { id: user.id }).toPromise(),
+    'FORBIDDEN',
+    'ACCESS_DENIED',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient
       .mutation(renameFolderMutation, {
         folderId: photoFolderId,
@@ -246,26 +308,36 @@ test('Admin-only mutations are blocked for public links', async () => {
         newPath: 'Y',
       })
       .toPromise(),
+    'FORBIDDEN',
+    'ACCESS_DENIED',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient
       .mutation(editFolderMutation, { folderId: photoFolderId, heroImageId: '2' })
       .toPromise(),
+    'FORBIDDEN',
+    'ACCESS_DENIED',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient
       .mutation(editBrandingMutation, { name: 'Should Fail' })
       .toPromise(),
+    'FORBIDDEN',
+    'INVALID_LINK',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient
       .mutation(deleteBrandingMutation, { id: '999' })
       .toPromise(),
+    'FORBIDDEN',
+    'INVALID_LINK',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient
       .mutation(generateThumbnailsMutation, { folderId: photoFolderId })
       .toPromise(),
+    'FORBIDDEN',
+    'ACCESS_DENIED',
   );
 
   const adminHeaders = await getUserHeader(defaultCredentials);
@@ -276,12 +348,14 @@ test('Admin-only mutations are blocked for public links', async () => {
 test('Admin-only mutations are blocked for unauthenticated requests', async () => {
   const client = await createTestGraphqlClient({});
 
-  expectGraphqlError(
+  expectAuthCode(
     await client
       .mutation(generateZipMutation, { folderId: photoFolderId })
       .toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await client
       .mutation(editUserMutation, {
         folderId: photoFolderId,
@@ -292,13 +366,17 @@ test('Admin-only mutations are blocked for unauthenticated requests', async () =
         uuid: `no-auth-${makeSuffix()}`,
       })
       .toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await client
       .mutation(editAdminUserMutation, { id: '1', folderId: '1', name: 'No' })
       .toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await client
       .mutation(renameFolderMutation, {
         folderId: photoFolderId,
@@ -306,26 +384,36 @@ test('Admin-only mutations are blocked for unauthenticated requests', async () =
         newPath: 'Y',
       })
       .toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await client
       .mutation(editFolderMutation, { folderId: photoFolderId, heroImageId: '2' })
       .toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await client
       .mutation(editBrandingMutation, { name: 'Should Fail' })
       .toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await client
       .mutation(deleteBrandingMutation, { id: '999' })
       .toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await client
       .mutation(generateThumbnailsMutation, { folderId: photoFolderId })
       .toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
   );
 });
 
@@ -353,7 +441,7 @@ test('userDevices enforces user isolation', async () => {
   const otherDevices = await adminClient
     .query(userDeviceQuery, { userId: '2', token })
     .toPromise();
-  expectGraphqlError(otherDevices);
+  expectAuthCode(otherDevices, 'FORBIDDEN', 'ACCESS_DENIED');
 });
 
 test('Public links cannot read or edit userDevices', async () => {
@@ -370,12 +458,14 @@ test('Public links cannot read or edit userDevices', async () => {
   const linkHeaders = await getLinkHeader(user.uuid);
   const linkClient = await createTestGraphqlClient(linkHeaders);
 
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient
       .query(userDeviceQuery, { userId: '1', token: 'nope' })
       .toPromise(),
+    'FORBIDDEN',
+    'NOT_A_USER',
   );
-  expectGraphqlError(
+  expectAuthCode(
     await linkClient
       .mutation(editUserDeviceMutation, {
         token: 'nope',
@@ -384,6 +474,8 @@ test('Public links cannot read or edit userDevices', async () => {
         enabled: true,
       })
       .toPromise(),
+    'FORBIDDEN',
+    'NOT_A_USER',
   );
 
   const adminHeaders = await getUserHeader(defaultCredentials);

@@ -248,6 +248,18 @@ const { permissions } = await contextPermissions(context, folderId);
 if (permissions === 'Admin') { /* admin-only logic */ }
 ```
 
+### Auth Error Contract
+
+When denying access from GraphQL resolvers, use `doAuthError(...)` so clients can reliably classify errors.
+
+- `extensions.code` must be one of:
+  - `UNAUTHENTICATED` for login/session problems
+  - `FORBIDDEN` for permission/scope problems
+  - `BAD_USER_INPUT` for auth-related invalid input
+- `extensions.reason` must carry the specific machine-readable reason (for example `NOT_LOGGED_IN`, `ACCESS_DENIED`, `INVALID_LINK`)
+- Avoid adding new ad-hoc auth message parsing on the client. Clients should branch on `code` + `reason`, not `message`.
+- Source of truth for reason strings, default messages, and code mapping: `shared/auth/authErrorContract.ts`
+
 ### Codegen
 
 AI agents CAN run `npm run gql` freely - it regenerates:

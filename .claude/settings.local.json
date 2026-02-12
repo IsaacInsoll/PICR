@@ -3,7 +3,10 @@
     "allow": [
       "Bash(docker system:*)",
       "Bash(git diff:*)",
-      "Bash(npx expo export:*)"
+      "Bash(npx expo export:*)",
+      "Bash(python3:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

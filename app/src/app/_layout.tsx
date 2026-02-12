@@ -12,6 +12,7 @@ import * as Notifications from 'expo-notifications';
 import { NotificationsResponseListener } from '@/src/components/NotificationsResponseListener';
 import { useLastNotificationResponse } from 'expo-notifications';
 import { useEffect } from 'react';
+import { GlobalErrorOverlay } from '@/src/components/GlobalErrorOverlay';
 
 CacheManager.config = {
   baseDir: `${Dirs.CacheDir}/images_cache/`,
@@ -57,6 +58,7 @@ export default function AppLayout() {
         <SafeAreaProvider>
           <ThemeProvider>
             <Slot />
+            <GlobalErrorOverlay />
           </ThemeProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>

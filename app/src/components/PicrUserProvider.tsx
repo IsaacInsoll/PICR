@@ -13,6 +13,8 @@ import { appLogin } from '@/src/helpers/appLogin';
 import { picrUrqlClient } from '@shared/urql/urqlClient';
 import * as Application from 'expo-application';
 import { Platform } from 'react-native';
+import { pushGlobalError } from '@shared/globalErrorAtom';
+import { clearAppAuth } from '@/src/helpers/clearAppAuth';
 
 const initCompleteAtom = atom(false); // we only want this once system-wide, not per instance of this provider
 
@@ -49,6 +51,9 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
     return picrUrqlClient(me.server, {
       authorization: `Bearer ${me.token}`,
       'user-agent': `${Application.applicationName} ${Platform.OS} ${Application.nativeApplicationVersion} (Build ${Application.nativeBuildVersion})`,
+    }, {
+      onGlobalError: pushGlobalError,
+      onAuthExpired: clearAppAuth,
     });
   }, [me?.server, me?.token]);
 

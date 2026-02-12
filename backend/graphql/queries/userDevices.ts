@@ -2,11 +2,11 @@ import { GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql';
 import { db } from '../../db/picrDb.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
-import { GraphQLError } from 'graphql/error/index.js';
 import { userDeviceType } from '../types/userDeviceType.js';
 import { GraphQLID } from 'graphql/index.js';
 import { and, eq } from 'drizzle-orm';
 import { dbUserDevice } from '../../db/models/index.js';
+import { doAuthError } from '../../auth/doAuthError.js';
 
 const resolver: GraphQLFieldResolver<
   any,
@@ -15,10 +15,10 @@ const resolver: GraphQLFieldResolver<
 > = async (_, params, context) => {
   const { user, isUser } = context;
   if (!user || !isUser) {
-    throw new GraphQLError('Not a user');
+    return doAuthError('NOT_A_USER');
   }
   if (user.id != params.userId) {
-    throw new GraphQLError('Unable to view other user devices');
+    return doAuthError('ACCESS_DENIED');
   }
 
   const filters = [eq(dbUserDevice.userId, params.userId)];

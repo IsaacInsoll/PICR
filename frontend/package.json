@@ -32,6 +32,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.7.1",
     "@urql/exchange-graphcache": "^7.2.3",
+    "@urql/exchange-retry": "^2.0.0",
     "blurhash": "^2.0.5",
     "dayjs": "^1.11.19",
     "format-duration": "^3.0.2",

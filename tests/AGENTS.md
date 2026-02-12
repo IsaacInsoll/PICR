@@ -4,6 +4,15 @@ End-to-end API tests using Vitest with Docker-based test environment.
 
 The only supported production setup is docker (on either x64 or ARM) so testing is done with a built docker container to most closely match production. 
 
+## Scope Boundary (Important)
+
+This test suite is for **backend API behavior only**.
+
+- Tests must execute requests against the Dockerized backend (`test-picr`) and assert API responses.
+- Do **not** add frontend/UI/state unit tests here (for example testing React components, Jotai atoms, URQL exchanges, or browser-only behavior).
+- Do **not** import frontend-only runtime dependencies into `tests/` (for example `jotai`, `@mantine/*`, React DOM helpers).
+- If a frontend/app behavior needs coverage, use that subsystem's own test setup instead of `tests/`.
+
 ## Architecture
 
 ```mermaid

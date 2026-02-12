@@ -83,6 +83,15 @@ Shared:   React 19.0 (exact) + URQL peer dependency
 
 Different URQL instances cause hook errors. The solution: define operations in shared, use hooks in consumers.
 
+## Auth Error Contract
+
+Auth error metadata is shared across backend, frontend, and app:
+
+- Registry file: `shared/auth/authErrorContract.ts`
+- Contains canonical auth reason values, default messages, GraphQL `extensions.code` mapping, and global action hints
+- Backend should throw auth errors using this registry (via `doAuthError`)
+- Frontend/app classifiers should consume these shared constants instead of hardcoded strings
+
 ## GraphQL Operations
 
 ### Query Pattern

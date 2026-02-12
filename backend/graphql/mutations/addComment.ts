@@ -30,7 +30,7 @@ const resolver: GraphQLFieldResolver<Comment, PicrRequestContext> = async (
   );
   if (!file?.exists) throw new GraphQLError('File not found');
 
-  if (user?.commentPermissions != 'edit') doAuthError('Not allowed to comment');
+  if (user?.commentPermissions != 'edit') doAuthError('COMMENTS_NOT_ALLOWED');
   if (!user) return; // not needed, just for typescript to know it's not null at this point
 
   //TODO: set rating, flag

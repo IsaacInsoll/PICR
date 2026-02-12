@@ -308,13 +308,13 @@ function MyComponent() {
 
 ### Auth Errors
 
-Auth errors trigger automatic logout:
-```typescript
-// In urqlClient.ts - checks for specific error message
-if (error.message.includes('[GraphQL] AUTH: Not Logged In')) {
-  // Clear auth and redirect to login
-}
-```
+Auth handling should use structured GraphQL error metadata:
+
+- Use `extensions.code` (`UNAUTHENTICATED` / `FORBIDDEN` / `BAD_USER_INPUT`) and `extensions.reason` (for example `NOT_LOGGED_IN`, `ACCESS_DENIED`, `INVALID_LINK`)
+- Do not rely on error message string matching for auth decisions
+- Global overlay logic should dedupe to a single visible error state, even when polling queries fail repeatedly
+- Use shared constants from `shared/auth/authErrorContract.ts` instead of redefining reason strings in frontend code
+- Policy matrix for overlay vs local handling: `docs/global-error-policy.md`
 
 ## Adding a New Page
 

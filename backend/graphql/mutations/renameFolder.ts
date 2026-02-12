@@ -13,6 +13,7 @@ import { folderList, pathSplit } from '../../filesystem/fileManager.js';
 import { moveThumbnailFolder } from '../../media/moveThumbnailFolder.js';
 import { validateRelativePath } from '../../../shared/validation/folderPath.js';
 import { folderIsUnderFolder } from '../../helpers/folderIsUnderFolderId.js';
+import { doAuthError } from '../../auth/doAuthError.js';
 
 const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   _,
@@ -83,7 +84,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     throw new GraphQLError('New parent folder not found');
   }
   if (!folderIsUnderFolder(newParentFolder, context.userHomeFolder)) {
-    throw new GraphQLError('New parent folder not allowed');
+    doAuthError('ACCESS_DENIED');
   }
 
   const conflict = await db.query.dbFolder.findFirst({

@@ -27,6 +27,7 @@ export const useMe = ():
   const token = useAtomValue(authKeyAtom);
   const uuid = getUUID();
   const [result] = useQuery({ query: meQuery, pause: !token && !uuid });
+  if (!token && !uuid) return null;
   const data = result.data;
   if (!data) return null;
   const me = {
