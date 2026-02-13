@@ -40,7 +40,7 @@ function picrGridProps<TData extends MRT_RowData>(
         onClick(row.original);
       },
       onMouseOver: () => {
-        onMouseOver ? onMouseOver(row.original) : null;
+        if (onMouseOver) onMouseOver(row.original);
       },
       style: { cursor: 'pointer' },
     }),

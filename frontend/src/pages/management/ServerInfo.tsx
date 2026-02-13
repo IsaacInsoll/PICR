@@ -81,6 +81,7 @@ const Version = ({ version, latest }) => {
         href="https://github.com/IsaacInsoll/PICR/releases"
         size="xs"
         target="_blank"
+        rel="noreferrer"
       >
         <GitHubIcon /> View PICR Releases
       </Anchor>

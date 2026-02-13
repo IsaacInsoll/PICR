@@ -225,10 +225,10 @@ const OpenInAppModal = () => {
         <Text size="sm" c="dimmed">
           PICR should open automatically if it is installed.
         </Text>
-        <a href={appStoreLinks.ios} target="_blank">
+        <a href={appStoreLinks.ios} target="_blank" rel="noreferrer">
           <Image src="/app-store.png" style={imgProps} />
         </a>
-        <a href={appStoreLinks.android} target="_blank">
+        <a href={appStoreLinks.android} target="_blank" rel="noreferrer">
           <Image src="/google-play.png" style={imgProps} />
         </a>
         <Anchor href={open} size="sm" c="dimmed">

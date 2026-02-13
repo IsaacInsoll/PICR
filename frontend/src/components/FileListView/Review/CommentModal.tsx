@@ -1,11 +1,4 @@
-import {
-  Button,
-  Divider,
-  Group,
-  Modal,
-  Stack,
-  Textarea,
-} from '@mantine/core';
+import { Button, Divider, Group, Modal, Stack, Textarea } from '@mantine/core';
 import { closeModalAtom } from '../../../atoms/modalAtom';
 import { useSetAtom } from 'jotai/index';
 import { LoadingIndicator } from '../../LoadingIndicator';

@@ -102,7 +102,11 @@ const Row = ({
       </>
     ) : null;
   const onClick = () => {
-    isFolder ? setFolder(file) : setSelectedFileId(file.id);
+    if (isFolder) {
+      setFolder(file);
+    } else {
+      setSelectedFileId(file.id);
+    }
   };
 
   const { ref, inView } = useInView({ threshold: 0 });
