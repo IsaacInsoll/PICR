@@ -18,7 +18,10 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
     params.folderId,
     'View',
   );
-  if (user?.userType === 'Link' && user.linkMode === LinkMode.ProofNoDownloads) {
+  if (
+    user?.userType === 'Link' &&
+    user.linkMode === LinkMode.ProofNoDownloads
+  ) {
     throw new GraphQLError('Downloads are disabled for this link');
   }
   await createAccessLog(user, folder, context, AccessType.Download);

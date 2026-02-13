@@ -53,12 +53,16 @@ export const PicrPublicUserProvider = ({
           isPublic.server,
       );
       setPublic(true);
-      return picrUrqlClient(isPublic.server, {
-        uuid: isPublic.uuid,
-        'user-agent': `${Application.applicationName} ${Platform.OS} ${Application.nativeApplicationVersion} (Build ${Application.nativeBuildVersion})`,
-      }, {
-        onGlobalError: pushGlobalError,
-      });
+      return picrUrqlClient(
+        isPublic.server,
+        {
+          uuid: isPublic.uuid,
+          'user-agent': `${Application.applicationName} ${Platform.OS} ${Application.nativeApplicationVersion} (Build ${Application.nativeBuildVersion})`,
+        },
+        {
+          onGlobalError: pushGlobalError,
+        },
+      );
     }
   }, [me?.server, me?.token, isPublic]);
 

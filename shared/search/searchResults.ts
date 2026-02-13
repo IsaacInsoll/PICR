@@ -33,8 +33,7 @@ export const getSearchResultMeta = (
 
 export const isFolderResult = (
   item: File | Folder,
-): item is Folder & { __typename: 'Folder' } =>
-  item.__typename === 'Folder';
+): item is Folder & { __typename: 'Folder' } => item.__typename === 'Folder';
 
 export const isFileResult = (item: File | Folder): item is File =>
   item.__typename === 'File';

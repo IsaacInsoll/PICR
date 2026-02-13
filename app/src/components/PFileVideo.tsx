@@ -6,7 +6,10 @@ import { StyleSheet, View } from 'react-native';
 import { aspectFit } from '@shared/files/aspectFit';
 
 // Basically an Video Thumbnail
-const PFileVideoComponent = ({ file, ...props }: { file: Video } & ImageProps) => {
+const PFileVideoComponent = ({
+  file,
+  ...props
+}: { file: Video } & ImageProps) => {
   const uri = useLocalImageUrl(file, 'md');
   // const second = useSecond();
   if (!uri) return null;

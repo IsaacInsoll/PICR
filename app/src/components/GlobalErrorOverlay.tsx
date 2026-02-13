@@ -57,7 +57,10 @@ export const GlobalErrorOverlay = () => {
         </View>
         <View style={styles.buttonRow}>
           <Pressable
-            style={[styles.primaryButton, { backgroundColor: theme.brandColor }]}
+            style={[
+              styles.primaryButton,
+              { backgroundColor: theme.brandColor },
+            ]}
             onPress={retry}
           >
             <PText style={styles.buttonText}>Retry</PText>

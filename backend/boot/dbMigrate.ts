@@ -1,6 +1,16 @@
 import { lt, valid } from 'semver';
 import { db, getServerOptions, setServerOptions } from '../db/picrDb.js';
-import { and, count, eq, ilike, inArray, isNotNull, ne, or, sql } from 'drizzle-orm';
+import {
+  and,
+  count,
+  eq,
+  ilike,
+  inArray,
+  isNotNull,
+  ne,
+  or,
+  sql,
+} from 'drizzle-orm';
 import { IPicrConfiguration } from '../config/IPicrConfiguration.js';
 import { dirname } from 'path';
 import { randomBytes } from 'node:crypto';

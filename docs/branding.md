@@ -6,12 +6,12 @@ Brandings are **named presets** that can be applied to any folder and will casca
 
 ## What Can Be Customized
 
-| Setting | Description |
-|---------|-------------|
-| **Name** | A name to identify this branding (e.g., "Wedding Style", "Corporate") |
-| **Heading Font** | The font used for titles and section headers |
-| **Theme Mode** | Light, dark, or auto (matches client's device) |
-| **Primary Color** | The accent color used throughout the interface |
+| Setting           | Description                                                           |
+| ----------------- | --------------------------------------------------------------------- |
+| **Name**          | A name to identify this branding (e.g., "Wedding Style", "Corporate") |
+| **Heading Font**  | The font used for titles and section headers                          |
+| **Theme Mode**    | Light, dark, or auto (matches client's device)                        |
+| **Primary Color** | The accent color used throughout the interface                        |
 
 ## Creating a Branding
 
@@ -42,7 +42,9 @@ This means you can set branding once at a top-level folder and have it apply to 
 PICR includes a curated selection of fonts suitable for photography galleries:
 
 ### Sans Serif
+
 Clean, modern fonts for a professional look.
+
 - **Signika** (Default) - Friendly and approachable
 - **Inter** - Crisp and neutral, great for commercial work
 - **Source Sans 3** - Clean and versatile
@@ -51,41 +53,51 @@ Clean, modern fonts for a professional look.
 - **Montserrat** - Bold and branding-forward
 
 ### Serif
+
 Elegant fonts with a traditional feel.
+
 - **Merriweather** - Classic and readable with warmth
 - **Lora** - Soft and romantic
 - **Libre Baskerville** - Elegant and literary
 
 ### Display
+
 Statement fonts for headings only (not body text).
+
 - **Bebas Neue** - Bold and condensed
 - **Abril Fatface** - High contrast, elegant
 - **Poiret One** - Thin and artistic
 - **Amatic SC** - Hand-drawn and playful
 
 ### Script
+
 Handwriting-style fonts for a personal touch.
+
 - **Oleo Script** - Friendly retro style
 - **Pacifico** - Fun and playful
 - **Pinyon Script** - Formal calligraphy
 - **Dancing Script** - Readable with warmth
 
 ### Monospace
+
 Technical fonts for a modern, editorial look.
+
 - **JetBrains Mono** - Clean and technical
 
 ### Accessibility
+
 High-legibility fonts designed for visual accessibility.
+
 - **Atkinson Hyperlegible Next** - Optimized for readability
 - **Atkinson Hyperlegible Mono** - Monospace variant
 
 ## Theme Modes
 
-| Mode | Description |
-|------|-------------|
-| **Auto** | Matches the client's device preference (recommended) |
-| **Light** | Always uses light theme |
-| **Dark** | Always uses dark theme |
+| Mode      | Description                                          |
+| --------- | ---------------------------------------------------- |
+| **Auto**  | Matches the client's device preference (recommended) |
+| **Light** | Always uses light theme                              |
+| **Dark**  | Always uses dark theme                               |
 
 ## Primary Colors
 

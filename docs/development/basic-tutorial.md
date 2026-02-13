@@ -2,7 +2,7 @@
 
 > This is a basic frontend / backend tutorial. If you are just wanting to do app development then this isn't for you 🙂
 
-This is just a few basic guides and tips for somebody getting started with this project. 
+This is just a few basic guides and tips for somebody getting started with this project.
 
 This isn't how things _must_ be done, but if you aren't sure how to do something then this way works 🙂
 

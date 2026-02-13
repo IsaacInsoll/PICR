@@ -1,6 +1,11 @@
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { doAuthError } from '../../auth/doAuthError.js';
-import { GraphQLError, GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
+import {
+  GraphQLError,
+  GraphQLID,
+  GraphQLNonNull,
+  GraphQLString,
+} from 'graphql';
 import { folderType } from '../types/folderType.js';
 import { db, dbFileForId, dbFolderForId } from '../../db/picrDb.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
@@ -19,7 +24,10 @@ const normalizeOptionalText = (value: unknown) => {
   return value.trim().length === 0 ? null : value;
 };
 
-const validateOptionalText = (value: string | null | undefined, label: string) => {
+const validateOptionalText = (
+  value: string | null | undefined,
+  label: string,
+) => {
   if (value && value.length > maxFolderTextLength) {
     throw new GraphQLError(
       `${label} must be ${maxFolderTextLength} characters or fewer`,
@@ -46,7 +54,8 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
       return;
     }
     if (heroImage.type != 'Image') doAuthError('INVALID_HERO_IMAGE_TYPE');
-    if (heroImage.folderId != folder!.id) doAuthError('HERO_IMAGE_OUT_OF_SCOPE');
+    if (heroImage.folderId != folder!.id)
+      doAuthError('HERO_IMAGE_OUT_OF_SCOPE');
 
     await setHeroImage(heroImage.id, folder!.id);
 

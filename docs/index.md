@@ -51,7 +51,6 @@ See [Development Docs](docs/development/index.md) to get started
 - Each release automatically converts to GPLv3 after 4 years.
 - See `LICENSE` for the legal text
 
-
 ## 🙏 Special Thanks
 
 Thanks to:

@@ -6,11 +6,7 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 import { baseColumns } from '../column.helpers.js';
-import {
-  commentPermissionsEnum,
-  linkModeEnum,
-  userTypeEnum,
-} from './enums.js';
+import { commentPermissionsEnum, linkModeEnum, userTypeEnum } from './enums.js';
 import { relations } from 'drizzle-orm';
 import { dbFolder } from './dbFolder.js';
 

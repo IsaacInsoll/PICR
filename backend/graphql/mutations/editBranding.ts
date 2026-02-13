@@ -46,10 +46,7 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
       throw new GraphQLError('Branding not found: ' + params.id);
     }
 
-    await db
-      .update(dbBranding)
-      .set(props)
-      .where(eq(dbBranding.id, params.id));
+    await db.update(dbBranding).set(props).where(eq(dbBranding.id, params.id));
 
     return db.query.dbBranding.findFirst({
       where: eq(dbBranding.id, params.id),

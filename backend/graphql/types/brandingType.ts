@@ -6,7 +6,11 @@ import {
   GraphQLString,
 } from 'graphql';
 import { folderType } from './folderType.js';
-import { headingFontKeyEnum, primaryColorEnum, themeModeEnum } from './enums.js';
+import {
+  headingFontKeyEnum,
+  primaryColorEnum,
+  themeModeEnum,
+} from './enums.js';
 import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 import { db } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';

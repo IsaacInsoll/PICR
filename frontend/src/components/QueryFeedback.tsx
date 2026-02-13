@@ -28,12 +28,7 @@ export default function QueryFeedback({ result, reQuery }: QueryFeedbackProps) {
     <>
       {fetching && <LoadingIndicator size="large" />}
       {error && !isGlobalError && !isAuthExpired && (
-        <Alert
-          variant="light"
-          color="red"
-          title="Error"
-          icon={<AlertIcon />}
-        >
+        <Alert variant="light" color="red" title="Error" icon={<AlertIcon />}>
           {error.toString().replace('[GraphQL] ', '')}
           <Button onClick={reQuery}>Retry</Button>
           <Button onClick={logOut}>Log Out</Button>

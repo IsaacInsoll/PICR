@@ -4,15 +4,15 @@ React 19 SPA for the PICR admin interface and public gallery views.
 
 ## Tech Stack
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| React | 19.1 | UI framework |
-| React Router | 7.5 | Routing |
-| Mantine | 7.x | UI component library |
-| Jotai | 2.10 | Atomic state management |
-| URQL | 4.2 | GraphQL client |
-| Vite | 6.4 | Build tool |
-| TypeScript | 5.6 | Type safety |
+| Technology   | Version | Purpose                 |
+| ------------ | ------- | ----------------------- |
+| React        | 19.1    | UI framework            |
+| React Router | 7.5     | Routing                 |
+| Mantine      | 7.x     | UI component library    |
+| Jotai        | 2.10    | Atomic state management |
+| URQL         | 4.2     | GraphQL client          |
+| Vite         | 6.4     | Build tool              |
+| TypeScript   | 5.6     | Type safety             |
 
 ## Directory Structure
 
@@ -58,7 +58,7 @@ React Router v7 with these main routes:
 ```typescript
 interface FolderRouteParams {
   folderId: string;
-  fileId?: string;  // Can also be 'manage' or 'activity'
+  fileId?: string; // Can also be 'manage' or 'activity'
   tab?: string;
 }
 ```
@@ -122,7 +122,7 @@ const [authKey, setAuthKey] = useAtom(authKeyAtom);
 export const picrUrqlClient = (headers: HeadersInit) => {
   return new Client({
     url: '/graphql',
-    suspense: true,  // Enable React Suspense
+    suspense: true, // Enable React Suspense
     exchanges: [urqlCacheExchange, fetchExchange],
     fetchOptions: () => ({ headers }),
   });
@@ -182,7 +182,7 @@ updates: {
 },
 ```
 
-Consider invalidating the appropriate "list" query when adding or removing an item. Updates to an existing item should be handled automatically without doing this. 
+Consider invalidating the appropriate "list" query when adding or removing an item. Updates to an existing item should be handled automatically without doing this.
 
 ## UI Components (Mantine)
 
@@ -193,7 +193,7 @@ Consider invalidating the appropriate "list" query when adding or removing an it
 const theme = createTheme({
   fontFamily: 'Roboto, sans-serif',
   headings: { fontFamily: 'Signika, sans-serif' },
-  primaryColor: 'blue',  // Overridden per-folder via branding
+  primaryColor: 'blue', // Overridden per-folder via branding
 });
 ```
 
@@ -269,13 +269,13 @@ ComponentName/
 
 ### Naming Conventions
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Component files | PascalCase | `FolderView.tsx` |
-| Hook files | camelCase with use | `useIsMobile.ts` |
-| Utility files | camelCase | `formatDate.ts` |
-| Atom files | camelCase + Atom | `authAtom.ts` |
-| CSS modules | ComponentName.module.css | `Header.module.css` |
+| Type            | Convention               | Example             |
+| --------------- | ------------------------ | ------------------- |
+| Component files | PascalCase               | `FolderView.tsx`    |
+| Hook files      | camelCase with use       | `useIsMobile.ts`    |
+| Utility files   | camelCase                | `formatDate.ts`     |
+| Atom files      | camelCase + Atom         | `authAtom.ts`       |
+| CSS modules     | ComponentName.module.css | `Header.module.css` |
 
 ## Error Handling
 
@@ -319,6 +319,7 @@ Auth handling should use structured GraphQL error metadata:
 ## Adding a New Page
 
 1. Create component in `pages/`:
+
    ```typescript
    // pages/MyNewPage.tsx
    export function MyNewPage() {
@@ -327,6 +328,7 @@ Auth handling should use structured GraphQL error metadata:
    ```
 
 2. Add route in `Router.tsx`:
+
    ```typescript
    <Route path="/admin/my-new-page" element={<MyNewPage />} />
    ```
@@ -339,6 +341,7 @@ Auth handling should use structured GraphQL error metadata:
 ## Adding a New Component
 
 1. Create in `components/`:
+
    ```typescript
    // components/MyComponent.tsx
    interface MyComponentProps {

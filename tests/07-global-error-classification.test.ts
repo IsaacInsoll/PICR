@@ -3,9 +3,7 @@ import type { CombinedError } from 'urql';
 import { AUTH_REASON } from '../shared/auth/authErrorContract';
 import { classifyGlobalUrqlError } from '../shared/urql/errorClassification';
 
-const makeError = (
-  value: Partial<CombinedError>,
-) => value as CombinedError;
+const makeError = (value: Partial<CombinedError>) => value as CombinedError;
 
 test('classifies network transport failures as global network errors', () => {
   const match = classifyGlobalUrqlError(

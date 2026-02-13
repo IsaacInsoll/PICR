@@ -48,7 +48,7 @@ services:
 To avoid permissions issues please create these folders before first starting PICR.
 
 | Folder  | Description                                                                                                                                                             | Backup         |
-|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------|
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------- |
 | `data`  | database (you should back this up!) <br/>Technically it's used by `db` not `picr`                                                                                       | Yes            |
 | `media` | mount point containing folders of images, PICR only needs read access. <br/>Often this would be a folder that already exists unless you are starting from scratch       | Yes            |
 | `cache` | thumbnails, zip files built from your media <br />It's safe to delete contents of this folder (but not the folder itself!). <br />Contents will be recreated if deleted | (not required) |

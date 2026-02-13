@@ -20,7 +20,11 @@ const networkMarkers = [
   'fetch failed',
 ];
 
-const permissionFallbackMarkers = ['access denied', 'forbidden', 'invalid link'];
+const permissionFallbackMarkers = [
+  'access denied',
+  'forbidden',
+  'invalid link',
+];
 
 const normalize = (value?: string | null) => (value ?? '').toLowerCase();
 
@@ -48,7 +52,9 @@ export const classifyGlobalUrqlError = (
   }
 
   const graphQLErrors = error.graphQLErrors ?? [];
-  const graphqlText = graphQLErrors.map((entry) => normalize(entry.message)).join(' ');
+  const graphqlText = graphQLErrors
+    .map((entry) => normalize(entry.message))
+    .join(' ');
   const allText = `${normalizedMessage} ${graphqlText}`.trim();
 
   const extensionCodes = new Set(
@@ -82,7 +88,8 @@ export const classifyGlobalUrqlError = (
 
   if (
     [...reasonCodes].some(
-      (reason) => authErrorCatalog[reason].globalAction === 'global_no_permissions',
+      (reason) =>
+        authErrorCatalog[reason].globalAction === 'global_no_permissions',
     )
   ) {
     return { type: 'no_permissions', message: error.message };

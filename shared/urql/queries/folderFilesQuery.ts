@@ -1,11 +1,7 @@
 import { gql } from '../gql';
 
 export const folderFilesQuery = gql(/* GraphQL */ `
-  query FolderFiles(
-    $folderId: ID!
-    $includeSubfolders: Boolean
-    $limit: Int
-  ) {
+  query FolderFiles($folderId: ID!, $includeSubfolders: Boolean, $limit: Int) {
     folderFiles(
       folderId: $folderId
       includeSubfolders: $includeSubfolders

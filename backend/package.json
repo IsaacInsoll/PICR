@@ -1,6 +1,5 @@
 {
   "name": "picr",
-
   "description": "",
   "exports": "./app.ts",
   "type": "module",

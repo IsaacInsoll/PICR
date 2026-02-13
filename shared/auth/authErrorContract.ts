@@ -83,7 +83,9 @@ export const authErrorCatalog = {
 
 export type AuthErrorReason = keyof typeof authErrorCatalog;
 
-export const authErrorReasons = Object.keys(authErrorCatalog) as AuthErrorReason[];
+export const authErrorReasons = Object.keys(
+  authErrorCatalog,
+) as AuthErrorReason[];
 
 const authReasonSet = new Set<string>(authErrorReasons);
 

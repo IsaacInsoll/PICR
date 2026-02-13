@@ -59,9 +59,7 @@ export const sortFiles = <T extends SortableItem>(
   const { type, direction } = sort;
   const positive = direction == 'Asc' ? 1 : -1;
   if (type == 'Filename') {
-    return [...items].sort((a, b) =>
-      compareNames(a.name, b.name, direction),
-    );
+    return [...items].sort((a, b) => compareNames(a.name, b.name, direction));
   }
   if (type == 'LastModified') {
     return [...items].sort((a, b) =>

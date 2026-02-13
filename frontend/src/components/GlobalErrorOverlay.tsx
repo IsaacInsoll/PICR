@@ -43,7 +43,9 @@ export const GlobalErrorOverlay = () => {
           </Title>
           <Text c="dimmed">{description}</Text>
           <Alert variant="light" color="red" icon={<WarningIcon />}>
-            {incident.message.replace('[GraphQL] ', '').replace('[Network] ', '')}
+            {incident.message
+              .replace('[GraphQL] ', '')
+              .replace('[Network] ', '')}
           </Alert>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <Button

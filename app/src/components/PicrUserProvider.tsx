@@ -48,13 +48,17 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
   const client = useMemo(() => {
     if (!me) return null;
     console.log('PicrUserProvider: _creating_ URQL client');
-    return picrUrqlClient(me.server, {
-      authorization: `Bearer ${me.token}`,
-      'user-agent': `${Application.applicationName} ${Platform.OS} ${Application.nativeApplicationVersion} (Build ${Application.nativeBuildVersion})`,
-    }, {
-      onGlobalError: pushGlobalError,
-      onAuthExpired: clearAppAuth,
-    });
+    return picrUrqlClient(
+      me.server,
+      {
+        authorization: `Bearer ${me.token}`,
+        'user-agent': `${Application.applicationName} ${Platform.OS} ${Application.nativeApplicationVersion} (Build ${Application.nativeBuildVersion})`,
+      },
+      {
+        onGlobalError: pushGlobalError,
+        onAuthExpired: clearAppAuth,
+      },
+    );
   }, [me?.server, me?.token]);
 
   if (!initComplete) return <PText>Loading...</PText>;

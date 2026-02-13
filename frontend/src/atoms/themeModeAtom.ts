@@ -17,8 +17,11 @@ export const defaultBranding: Branding = {
 
 export const themeModeAtom = atom<Branding>(defaultBranding);
 
-export const applyBrandingDefaults = (branding?: Branding | null): Branding => ({
+export const applyBrandingDefaults = (
+  branding?: Branding | null,
+): Branding => ({
   ...defaultBranding,
   ...branding,
-  headingFontKey: normalizeFontKey(branding?.headingFontKey) ?? HeadingFontKey.Default,
+  headingFontKey:
+    normalizeFontKey(branding?.headingFontKey) ?? HeadingFontKey.Default,
 });

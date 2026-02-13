@@ -52,10 +52,7 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
     eq(dbFile.exists, true),
   );
 
-  const totals = await db
-    .select({ count: count() })
-    .from(dbFile)
-    .where(where);
+  const totals = await db.select({ count: count() }).from(dbFile).where(where);
   const totalAvailable = totals[0]?.count ?? 0;
 
   const files = await db.query.dbFile.findMany({

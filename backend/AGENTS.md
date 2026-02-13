@@ -91,16 +91,16 @@ All models in `db/models/`. See `database-erd.md` for the full entity relationsh
 
 ### Models & Relationships
 
-| Model | Table | Purpose |
-|-------|-------|---------|
-| `dbUser` | Users | Admin accounts & public links |
-| `dbFolder` | Folders | Directory hierarchy |
-| `dbFile` | Files | Media files with metadata |
-| `dbComment` | Comments | User comments on files |
-| `dbAccessLog` | AccessLogs | View/download tracking |
-| `dbBranding` | Brandings | Custom folder theming |
-| `dbUserDevice` | UserDevice | Push notification devices |
-| `dbServerOptions` | ServerOptions | Global server config |
+| Model             | Table         | Purpose                       |
+| ----------------- | ------------- | ----------------------------- |
+| `dbUser`          | Users         | Admin accounts & public links |
+| `dbFolder`        | Folders       | Directory hierarchy           |
+| `dbFile`          | Files         | Media files with metadata     |
+| `dbComment`       | Comments      | User comments on files        |
+| `dbAccessLog`     | AccessLogs    | View/download tracking        |
+| `dbBranding`      | Brandings     | Custom folder theming         |
+| `dbUserDevice`    | UserDevice    | Push notification devices     |
+| `dbServerOptions` | ServerOptions | Global server config          |
 
 ### Enums (in `db/models/enums.ts`)
 
@@ -130,8 +130,8 @@ type NewExample = typeof dbExample.$inferInsert;
 
 // Convenience functions in picrDb.ts
 const folder = await dbFolderForId(folderId); // throws if not found
-const file = await dbFileForId(fileId);       // throws if not found
-const user = await dbUserForId(userId);       // throws if not found
+const file = await dbFileForId(fileId); // throws if not found
+const user = await dbUserForId(userId); // throws if not found
 ```
 
 ### Adding/Modifying Tables
@@ -178,13 +178,13 @@ sequenceDiagram
 ```typescript
 interface PicrRequestContext {
   headers: {
-    auth: string;        // JWT token
-    uuid: string;        // Public link UUID
-    sessionId: string;   // Browser session
+    auth: string; // JWT token
+    uuid: string; // Public link UUID
+    sessionId: string; // Browser session
     userAgent: string;
     ipAddress: string;
   };
-  user?: User;           // Authenticated user (JWT or UUID)
+  user?: User; // Authenticated user (JWT or UUID)
   userHomeFolder?: Folder;
 }
 ```
@@ -193,7 +193,12 @@ interface PicrRequestContext {
 
 ```typescript
 // backend/graphql/queries/myNewQuery.ts
-import { GraphQLFieldResolver, GraphQLNonNull, GraphQLString, GraphQLID } from 'graphql';
+import {
+  GraphQLFieldResolver,
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLID,
+} from 'graphql';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { contextPermissions } from '../helpers/contextPermissions.js';
 
@@ -203,7 +208,11 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   context,
 ) => {
   // Check permissions (throws if denied)
-  const { folder, user } = await contextPermissions(context, params.folderId, 'View');
+  const { folder, user } = await contextPermissions(
+    context,
+    params.folderId,
+    'View',
+  );
 
   // Your logic here
   return { result: 'data' };
@@ -219,6 +228,7 @@ export const myNewQuery = {
 ```
 
 Then add to `schema.ts`:
+
 ```typescript
 import { myNewQuery } from './queries/myNewQuery.js';
 
@@ -245,7 +255,9 @@ const { folder, user } = await contextPermissions(context, folderId, 'View');
 
 // Optional check (returns permissions level, doesn't throw)
 const { permissions } = await contextPermissions(context, folderId);
-if (permissions === 'Admin') { /* admin-only logic */ }
+if (permissions === 'Admin') {
+  /* admin-only logic */
+}
 ```
 
 ### Auth Error Contract
@@ -263,6 +275,7 @@ When denying access from GraphQL resolvers, use `doAuthError(...)` so clients ca
 ### Codegen
 
 AI agents CAN run `npm run gql` freely - it regenerates:
+
 - `./graphql-types.ts` - TypeScript types
 - `./schema.graphql` - SDL schema
 - `shared/gql/*` - URQL client code
@@ -278,7 +291,10 @@ Run after any schema changes.
 
 ```typescript
 // Token generation (28-day expiry)
-const token = generateToken({ userId: user.id, hashedPassword: user.hashedPassword });
+const token = generateToken({
+  userId: user.id,
+  hashedPassword: user.hashedPassword,
+});
 
 // Token validation
 const payload = validateToken(token); // returns { userId, hashedPassword } or undefined
@@ -332,12 +348,12 @@ flowchart LR
 
 ### Thumbnail Sizes
 
-| Size | Dimension | Purpose |
-|------|-----------|---------|
-| `sm` | 250px | Grid thumbnails |
-| `md` | 500px | Medium previews |
-| `lg` | 2500px | Full-screen view |
-| `raw` | Original | Direct download |
+| Size  | Dimension | Purpose          |
+| ----- | --------- | ---------------- |
+| `sm`  | 250px     | Grid thumbnails  |
+| `md`  | 500px     | Medium previews  |
+| `lg`  | 2500px    | Full-screen view |
+| `raw` | Original  | Direct download  |
 
 ### Image Processing
 
@@ -402,12 +418,12 @@ flowchart TB
 
 ## Express Routes
 
-| Route | Handler | Purpose |
-|-------|---------|---------|
-| `POST /graphql` | `gqlServer` | GraphQL API |
+| Route                                  | Handler        | Purpose                 |
+| -------------------------------------- | -------------- | ----------------------- |
+| `POST /graphql`                        | `gqlServer`    | GraphQL API             |
 | `GET /image/:id/:size/:hash/:filename` | `imageRequest` | Serve images/thumbnails |
-| `GET /zip/:folderId/:hash/:filename` | `zipRequest` | Serve ZIP downloads |
-| `GET /*` | `picrTemplate` | SPA with OpenGraph meta |
+| `GET /zip/:folderId/:hash/:filename`   | `zipRequest`   | Serve ZIP downloads     |
+| `GET /*`                               | `picrTemplate` | SPA with OpenGraph meta |
 
 ### Image Request Flow
 
@@ -431,27 +447,28 @@ All env vars validated with Zod. See `.env.example` for full documentation.
 
 ### Required Variables
 
-| Variable | Description |
-|----------|-------------|
+| Variable       | Description                  |
+| -------------- | ---------------------------- |
 | `DATABASE_URL` | PostgreSQL connection string |
-| `BASE_URL` | Server URL ending with `/` |
+| `BASE_URL`     | Server URL ending with `/`   |
 
 ### Optional Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `NODE_ENV` | `production` | Environment mode |
-| `PORT` | `6900` | Server port |
-| `USE_POLLING` | `false` | File watcher polling mode |
-| `POLLING_INTERVAL` | `20` | Polling multiplier (ms × 100) |
-| `DEBUG_SQL` | `false` | Log Drizzle queries |
-| `CONSOLE_LOGGING` | `false` | Winston console output |
+| Variable           | Default      | Description                   |
+| ------------------ | ------------ | ----------------------------- |
+| `NODE_ENV`         | `production` | Environment mode              |
+| `PORT`             | `6900`       | Server port                   |
+| `USE_POLLING`      | `false`      | File watcher polling mode     |
+| `POLLING_INTERVAL` | `20`         | Polling multiplier (ms × 100) |
+| `DEBUG_SQL`        | `false`      | Log Drizzle queries           |
+| `CONSOLE_LOGGING`  | `false`      | Winston console output        |
 
 ---
 
 ## Logging
 
 Uses Winston with file destinations:
+
 - `cache/error.log` - Errors only
 - `cache/info.log` - All info+ messages
 
@@ -469,6 +486,7 @@ logger.error('Failed to process', { error: err.message });
 ### `npm run gql` fails with network error
 
 The dev server must be running for codegen to introspect the schema:
+
 ```bash
 npm run start:server  # In one terminal
 npm run gql           # In another terminal
@@ -489,6 +507,7 @@ npm run gql           # In another terminal
 ### Database migration issues
 
 Never run migrations automatically. Always:
+
 ```bash
 cd backend
 npx drizzle-kit generate --name=<suggest-a-name> # Review the generated SQL

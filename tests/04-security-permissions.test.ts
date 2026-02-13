@@ -41,12 +41,16 @@ const expectAuthCode = (
   reason: string,
 ) => {
   expectGraphqlError(result);
-  const actualCode = (result.error?.graphQLErrors?.[0]?.extensions as
-    | { code?: string; reason?: string }
-    | undefined)?.code;
-  const actualReason = (result.error?.graphQLErrors?.[0]?.extensions as
-    | { code?: string; reason?: string }
-    | undefined)?.reason;
+  const actualCode = (
+    result.error?.graphQLErrors?.[0]?.extensions as
+      | { code?: string; reason?: string }
+      | undefined
+  )?.code;
+  const actualReason = (
+    result.error?.graphQLErrors?.[0]?.extensions as
+      | { code?: string; reason?: string }
+      | undefined
+  )?.reason;
   expect(actualCode).toBe(code);
   expect(actualReason).toBe(reason);
 };
@@ -313,7 +317,10 @@ test('Admin-only mutations are blocked for public links', async () => {
   );
   expectAuthCode(
     await linkClient
-      .mutation(editFolderMutation, { folderId: photoFolderId, heroImageId: '2' })
+      .mutation(editFolderMutation, {
+        folderId: photoFolderId,
+        heroImageId: '2',
+      })
       .toPromise(),
     'FORBIDDEN',
     'ACCESS_DENIED',
@@ -389,7 +396,10 @@ test('Admin-only mutations are blocked for unauthenticated requests', async () =
   );
   expectAuthCode(
     await client
-      .mutation(editFolderMutation, { folderId: photoFolderId, heroImageId: '2' })
+      .mutation(editFolderMutation, {
+        folderId: photoFolderId,
+        heroImageId: '2',
+      })
       .toPromise(),
     'UNAUTHENTICATED',
     'NOT_LOGGED_IN',
@@ -402,9 +412,7 @@ test('Admin-only mutations are blocked for unauthenticated requests', async () =
     'NOT_LOGGED_IN',
   );
   expectAuthCode(
-    await client
-      .mutation(deleteBrandingMutation, { id: '999' })
-      .toPromise(),
+    await client.mutation(deleteBrandingMutation, { id: '999' }).toPromise(),
     'UNAUTHENTICATED',
     'NOT_LOGGED_IN',
   );

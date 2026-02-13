@@ -1,4 +1,3 @@
-
 # Enabling Rename / Move (Write Access)
 
 > You can run PICR in read-only mode and enable this later, once it's needed.
@@ -7,12 +6,11 @@ By default PICR only has **read** access to your media folder. This is the safes
 
 If you want to **rename or move folders** from inside PICR, you must enable write access in two places:
 
-
 1. **Environment variable**
-    - Add `CAN_WRITE=true` to the `environment:` section for the `picr` service.
+   - Add `CAN_WRITE=true` to the `environment:` section for the `picr` service.
 
 2. **Docker volume mount**
-    - Change the media mount from read-only (`:ro`) to read-write (`:rw`), or just remove `:ro`.
+   - Change the media mount from read-only (`:ro`) to read-write (`:rw`), or just remove `:ro`.
 
 Example:
 
