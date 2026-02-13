@@ -5,7 +5,7 @@ import {
 } from '@mantine/core';
 import { DarkModeIcon, LightModeIcon } from '../PicrIcons';
 
-const ColorSchemeToggle = () => {
+export const ColorSchemeToggle = () => {
   const { setColorScheme } = useMantineColorScheme();
   const computedColorScheme = useComputedColorScheme('light', {
     getInitialValueInEffect: true,

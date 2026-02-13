@@ -1,7 +1,7 @@
 import { Rating, RatingProps, Tooltip } from '@mantine/core';
 import { useId } from 'react';
 import { useReward } from 'react-rewards';
-import { confettiOptions, fiveStarOptions } from './ConfettiOptions';
+import { fiveStarOptions } from './ConfettiOptions';
 
 // 5 star rating, allows clicking current rating to clear it (zero stars)
 export const FileRating = ({ value, onChange, readOnly }: RatingProps) => {

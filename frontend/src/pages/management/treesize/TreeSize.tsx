@@ -8,12 +8,10 @@ import {
   Group,
   Stack,
   Text,
-  Title,
 } from '@mantine/core';
 import { LoadingIndicator } from '../../../components/LoadingIndicator';
 import { useTreeSize } from './useTreeSize';
 import { PicrPie } from './PicrPie';
-import { MinimalFolder } from '../../../../types';
 import { useNavigate, useParams } from 'react-router';
 import { FolderSummary, treeSizeTabAtom } from './FolderSummary';
 import { prettyBytes } from '@shared/prettyBytes';
@@ -59,7 +57,7 @@ const TreeSizeNode = ({
   const crumbs = [
     ...folder?.parents
       ?.toReversed()
-      .map((f, i) => (
+      .map((f) => (
         <Anchor onClick={() => setFolderId(f.id)}>{f?.name}</Anchor>
       )),
     ,

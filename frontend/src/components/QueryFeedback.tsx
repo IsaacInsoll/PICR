@@ -1,5 +1,4 @@
 import { CombinedError, UseQueryState } from 'urql';
-import React from 'react';
 import { useSetAtom } from 'jotai/index';
 import { authKeyAtom } from '../atoms/authAtom';
 import { LoadingIndicator } from './LoadingIndicator';

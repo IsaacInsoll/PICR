@@ -35,7 +35,6 @@ import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
 import { UAParser } from 'ua-parser-js';
 import { User } from '@shared/gql/graphql';
-import { useState } from 'react';
 import { useAtom } from 'jotai/index';
 import { appStoreLinks } from '@shared/consts';
 

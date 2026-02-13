@@ -19,7 +19,7 @@ export function useContainerWidth(defaultContainerWidth: number) {
       let width = ref.current.clientWidth;
       try {
         width = ref.current.getBoundingClientRect().width;
-      } catch (err) {}
+      } catch {}
       setContainerWidth(Math.floor(width));
     };
 

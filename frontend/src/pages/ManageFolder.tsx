@@ -29,7 +29,7 @@ import { ErrorAlert } from '../components/ErrorAlert';
 import { defaultBranding } from '../helpers/defaultBranding';
 import { Branding } from '../../../graphql-types';
 
-export const ManageFolder = ({ folder, toggleManaging }) => {
+export const ManageFolder = ({ folder }) => {
   const { folderId, tab } = useParams();
   const navigate = useNavigate();
   const [, mutate] = useMutation(editFolderMutation);

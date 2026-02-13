@@ -74,7 +74,7 @@ export const ManagePublicLink = ({
       linkMode,
       username,
     };
-    mutate(data).then(({ data, error }) => {
+    mutate(data).then(({ error }) => {
       if (error) {
         setError(error.toString());
       } else {

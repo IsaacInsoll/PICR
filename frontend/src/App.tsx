@@ -1,7 +1,7 @@
 import { createClient } from './urqlClient';
 import { Provider as URQLProvider } from 'urql';
 import { BrowserRouter } from 'react-router';
-import { authKeyAtom, sessionKeyAtom, useSessionKey } from './atoms/authAtom';
+import { authKeyAtom, useSessionKey } from './atoms/authAtom';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from './atoms/themeModeAtom';
 

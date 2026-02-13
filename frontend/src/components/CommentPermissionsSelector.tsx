@@ -16,7 +16,7 @@ export const CommentPermissionsSelector = ({
       <Button.Group pb="xs">
         {options.map((opt) => {
           const isSelected = opt === value;
-          const { icon, color } = commentPermissionsStyle[opt];
+          const { icon } = commentPermissionsStyle[opt];
           return (
             <Button
               leftSection={icon}

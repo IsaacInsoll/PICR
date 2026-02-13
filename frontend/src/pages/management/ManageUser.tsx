@@ -79,7 +79,7 @@ export const ManageUser = ({
       ntfy,
       ntfyEmail,
     };
-    mutate(data).then(({ data, error }) => {
+    mutate(data).then(({ error }) => {
       if (error) {
         setError(error.toString());
       } else {

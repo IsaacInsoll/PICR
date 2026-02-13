@@ -1,16 +1,14 @@
 import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { Page } from '../Page';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
-import { useIsMobile, useIsSmallScreen } from '../../hooks/useIsMobile';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
 import { FolderContentsItem } from '@shared/files/folderContentsViewModel';
 import {
   ActionIcon,
   Avatar,
-  AvatarGroup,
   Badge,
-  Box,
   Group,
   Menu,
   Rating,
@@ -73,7 +71,6 @@ const Row = ({
   const { canView } = useCommentPermissions();
   const setFolder = useSetFolder();
   const isMobile = useIsMobile();
-  const isSmall = useIsSmallScreen();
   const isFolder = file.__typename == 'Folder';
   const modifiedDate = isFolder
     ? file.folderLastModified
@@ -104,7 +101,7 @@ const Row = ({
         ) : null}
       </>
     ) : null;
-  const onClick = (e) => {
+  const onClick = () => {
     isFolder ? setFolder(file) : setSelectedFileId(file.id);
   };
 
