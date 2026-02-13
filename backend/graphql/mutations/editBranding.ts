@@ -14,7 +14,7 @@ import { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 import { GraphQLError } from 'graphql/error/index.js';
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context,

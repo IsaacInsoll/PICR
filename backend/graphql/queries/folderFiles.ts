@@ -28,7 +28,7 @@ const relativeFilePath = (file: FileWithPath, basePath?: string | null) => {
   return relativeDir ? `${relativeDir}/${file.name}` : file.name;
 };
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context,

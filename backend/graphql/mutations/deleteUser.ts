@@ -16,7 +16,7 @@ import { doAuthError } from '../../auth/doAuthError.js';
  * - Deleted users are hidden from all user listings
  * - Cannot delete user ID 1 (root admin)
  */
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context,

@@ -74,7 +74,7 @@ const testWriteAccess = (path: string): boolean => {
   try {
     accessSync(path, constants.R_OK | constants.W_OK);
     return true;
-  } catch (err) {
+  } catch {
     return false;
   }
 };

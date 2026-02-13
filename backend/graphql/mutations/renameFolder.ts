@@ -15,7 +15,7 @@ import { validateRelativePath } from '../../../shared/validation/folderPath.js';
 import { folderIsUnderFolder } from '../../helpers/folderIsUnderFolderId.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context: PicrRequestContext,
@@ -107,7 +107,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   }
 
   try {
-    const thisFolder = await db
+    await db
       .update(dbFolder)
       .set({
         name: shortName,
@@ -117,7 +117,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
 
     // console.log(thisFolder);
 
-    const folders = await db
+    await db
       .update(dbFolder)
       .set({
         relativePath: sql`REGEXP_REPLACE(${dbFolder.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)})`,
@@ -134,7 +134,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     //   `REGEXP_REPLACE(${dbFile.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)}`,
     // );
 
-    const files = await db
+    await db
       .update(dbFile)
       .set({
         relativePath: sql`REGEXP_REPLACE(${dbFile.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)})`,
@@ -145,7 +145,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
 
     // console.log(files);
 
-    const filesFolderIds = await db
+    await db
       .update(dbFile)
       .set({
         folderId: sql`(SELECT ${dbFolder.id} FROM ${dbFolder} WHERE ${dbFolder.relativePath} = ${dbFile.relativePath} AND ${dbFolder.exists} = true LIMIT 1)`,

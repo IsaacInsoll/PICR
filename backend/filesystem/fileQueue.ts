@@ -94,11 +94,12 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
     case 'unlink':
       await removeFile(payload.path!);
       break;
-    case 'generateThumbnails':
+    case 'generateThumbnails': {
       // lol, we pass an ID to this function, not a path, but it's fine, trust me!
       const file = await dbFileForId(payload.id);
       if (file) await generateAllThumbs(file);
       break;
+    }
     case 'initComplete':
       initComplete = true;
       await handleInitComplete();

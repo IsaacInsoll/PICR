@@ -91,8 +91,7 @@ const fileFieldsToMinimalFile = (
     id: f.id.toString(),
     fileHash: f.fileHash ?? undefined,
     name: f.name,
-    // @ts-ignore
-    type: f.type,
+    type: f.type as MinimalFile['type'],
   };
 };
 

@@ -62,7 +62,7 @@ const getImageRating = (xmp: Buffer | undefined): number => {
       xml['x:xmpmeta']['rdf:RDF']['rdf:Description']['@_xmp:Rating'],
     );
     return !isNaN(rating) ? rating : 0;
-  } catch (error) {
+  } catch {
     // console.log('Error parsing XML metadata for: ' + file.name);
     // console.log(error);
     return 0;

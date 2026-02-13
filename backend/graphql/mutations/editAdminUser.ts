@@ -18,7 +18,7 @@ import { commentPermissionsEnum } from '../types/enums.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context,
@@ -62,8 +62,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     }
   } else {
     if (pass && username) {
-      // @ts-ignore required fields added below
-      adminUser = {};
+      adminUser = {} as UserFields;
     } else {
       throw new GraphQLError(
         'Cannot create new user without username and password',

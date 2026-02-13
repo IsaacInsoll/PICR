@@ -15,7 +15,7 @@ import { eq } from 'drizzle-orm';
 import { fileFlagEnum } from '../types/enums.js';
 import { sendCommentAddedNotification } from '../../notifications/notifications.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { Comment, User } from '../../../graphql-types.js';
+import { Comment } from '../../../graphql-types.js';
 
 const resolver: GraphQLFieldResolver<Comment, PicrRequestContext> = async (
   _,

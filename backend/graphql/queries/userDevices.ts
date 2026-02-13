@@ -9,7 +9,7 @@ import { dbUserDevice } from '../../db/models/index.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 
 const resolver: GraphQLFieldResolver<
-  any,
+  unknown,
   PicrRequestContext,
   { userId: number; notificationToken?: string }
 > = async (_, params, context) => {

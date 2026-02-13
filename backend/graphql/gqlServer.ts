@@ -10,12 +10,12 @@ import { UserType } from '../../graphql-types.js';
 
 export const gqlServer = createHandler({
   schema: schema,
-  // @ts-ignore it works fine and i'm confused :/
-  context: async (req, params): Promise<PicrRequestContext> => {
+  // @ts-expect-error graphq-http express typings don't match runtime request shape
+  context: async (req): Promise<PicrRequestContext> => {
     const headers = req.headers as IncomingCustomHeaders;
 
     // `req.raw.ip` works fine unless we are behind a reverse proxy
-    // @ts-ignore it has always been a string (not string[]) so far, so I'm not overcomplicating it... yet
+    // @ts-expect-error req.raw exists at runtime in this server integration
     const ipAddress: string =
       headers['x-real-ip'] ?? headers['x-forwarded-for'] ?? req.raw.ip ?? '';
 

@@ -20,7 +20,7 @@ export const dbBranding = pgTable('Brandings', {
   ...baseColumns,
   name: varchar('name', { length: 255 }),
   // TODO: Remove folderId in a future release once migration is verified stable
-  folderId: integer('folderId').references((): any => dbFolder.id),
+  folderId: integer('folderId').references(() => dbFolder.id),
   logoUrl: varchar('logoUrl', { length: 255 }),
   mode: themeModeEnum(),
   primaryColor: primaryColorEnum(),

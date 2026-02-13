@@ -10,7 +10,7 @@ export const removeFile = async (filePath: string) => {
     relativePath: relativePath(dirname(filePath)),
   };
 
-  let file = await db.query.dbFile.findFirst({
+  const file = await db.query.dbFile.findFirst({
     where: and(
       eq(dbFile.name, props.name),
       eq(dbFile.relativePath, props.relativePath),

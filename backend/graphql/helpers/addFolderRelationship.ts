@@ -8,9 +8,9 @@ type FolderRelationship = { folderId: number | null | undefined }[];
 export const addFolderRelationship = async (
   list: FolderRelationship,
 ): Promise<FolderRelationship> => {
-  // @ts-ignore - fix it later
   const ids: number[] = list
     .map((b) => b.folderId)
+    .filter((v): v is number => v != null)
     .filter((v, i, a) => a.indexOf(v) === i);
 
   if (ids.length == 0) return list;

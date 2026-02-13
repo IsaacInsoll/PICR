@@ -1,6 +1,5 @@
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { Folder as GqlFolder, Folder } from '../../../graphql-types.js';
-import { IncomingCustomHeaders } from '../../types/incomingCustomHeaders.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { allSubfolders } from '../../helpers/allSubfolders.js';
 import {
@@ -17,7 +16,6 @@ const resolver: GraphQLFieldResolver<Folder, PicrRequestContext> = async (
   _,
   params,
   context,
-  info,
 ): Promise<Folder[]> => {
   await contextPermissions(context, params.id, 'Admin');
   const folders = (await allSubfolders(

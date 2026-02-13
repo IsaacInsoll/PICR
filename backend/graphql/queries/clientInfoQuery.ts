@@ -5,7 +5,7 @@ import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   _params,
   context,

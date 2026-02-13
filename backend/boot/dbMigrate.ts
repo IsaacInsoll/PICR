@@ -129,12 +129,15 @@ const migrateBrandingRelationship = async () => {
 
   let migrated = 0;
   for (const branding of brandings) {
-    if (!branding.folderId || !branding.folder) continue;
+    const folder = Array.isArray(branding.folder)
+      ? branding.folder[0]
+      : branding.folder;
+    if (!branding.folderId || !folder) continue;
 
     // Set branding name from folder name
     await db
       .update(dbBranding)
-      .set({ name: branding.folder.name })
+      .set({ name: folder.name })
       .where(eq(dbBranding.id, branding.id));
 
     // Set folder's brandingId to point to this branding

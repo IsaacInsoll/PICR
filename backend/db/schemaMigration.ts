@@ -21,8 +21,9 @@ export async function schemaMigration() {
       migrationsFolder: './backend/db/drizzle',
     });
     console.log('🗃️  Migrations Complete');
-  } catch (e: any) {
-    if (e.code === 'ECONNREFUSED') {
+  } catch (e: unknown) {
+    const code = e && typeof e === 'object' && 'code' in e ? e.code : undefined;
+    if (code === 'ECONNREFUSED') {
       console.error(
         `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\`. 
    Please ensure configuration is correct and database server is running`,
@@ -30,7 +31,7 @@ export async function schemaMigration() {
     } else {
       console.log('⚠️ Error during database migration: ' + e);
     }
-    console.log(e.code);
+    console.log(code);
     process.exit(1);
   }
 }

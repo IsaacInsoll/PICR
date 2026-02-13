@@ -9,7 +9,7 @@ import { db } from '../db/picrDb.js';
 import { dbUserDevice } from '../db/models/index.js';
 import { eq } from 'drizzle-orm';
 
-let expo = new Expo({
+const expo = new Expo({
   // we will enable this if there is abuse of notifications :)
   // accessToken: process.env.EXPO_ACCESS_TOKEN,
 });
@@ -23,8 +23,8 @@ export const sendExpoNotifications = async (
   notifications: ExpoNotifications[],
 ) => {
   // Create the messages that you want to send to clients
-  let messages: ExpoPushMessage[] = [];
-  for (let { token, payload } of notifications) {
+  const messages: ExpoPushMessage[] = [];
+  for (const { token, payload } of notifications) {
     if (!Expo.isExpoPushToken(token)) {
       console.error(`Push token ${token} is not a valid Expo push token`);
       continue;
@@ -56,14 +56,14 @@ export const sendExpoNotifications = async (
         receiptIds.push(ticket.id);
       }
       if (ticket.status == 'error') {
+        const messageTarget = messages[index]?.to;
         if (ticket.details?.error == 'DeviceNotRegistered') {
-          // @ts-ignore it's never an array
-          disableToken(messages[index].to);
+          if (typeof messageTarget === 'string') {
+            disableToken(messageTarget as ExpoPushToken);
+          }
         } else if (ticket.details?.error == 'InvalidCredentials') {
-          // @ts-ignore it's never an array
           console.log(
-            'InvalidCredentials error when sending push notification to ' +
-              messages[index].to,
+            `InvalidCredentials error when sending push notification to ${String(messageTarget)}`,
           );
         } else {
           console.log('ticket.status==error');
@@ -80,11 +80,11 @@ export const sendExpoNotifications = async (
 };
 
 const checkReceipts = async (receiptIds: ExpoPushReceiptId[]) => {
-  let receipts = await expo.getPushNotificationReceiptsAsync(receiptIds);
+  const receipts = await expo.getPushNotificationReceiptsAsync(receiptIds);
   console.log('checking receipts', receipts);
   try {
-    for (let receiptId in receipts) {
-      let receipt = receipts[receiptId];
+    for (const receiptId in receipts) {
+      const receipt = receipts[receiptId];
       if (receipt.status === 'ok') {
         continue;
       } else if (receipt.status === 'error') {

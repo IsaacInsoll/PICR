@@ -27,7 +27,7 @@ const validateOptionalText = (value: string | null | undefined, label: string) =
   }
 };
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context,

@@ -13,7 +13,7 @@ import { userDeviceType } from '../types/userDeviceType.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 
 const resolver: GraphQLFieldResolver<
-  any,
+  unknown,
   PicrRequestContext,
   { userId: number; enabled: boolean; notificationToken: string; name: string }
 > = async (_, params, context) => {
