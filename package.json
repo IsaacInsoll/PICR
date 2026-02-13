@@ -9,6 +9,9 @@
   },
   "scripts": {
     "test": "vitest run",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "ci:check": "npm run format:check && npm run lint",
     "lint": "npm run lint:shared && npm run lint:backend && npm run lint:frontend && npm run lint:app",
     "lint:shared": "npm --prefix shared run lint",
     "lint:backend": "npm --prefix backend run lint",

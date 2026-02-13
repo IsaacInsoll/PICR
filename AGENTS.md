@@ -120,6 +120,10 @@ npm run workflow             # Full CI workflow (user runs this manually)
 
 # Code Generation
 npm run gql                  # Regenerate GraphQL types (safe to run anytime)
+
+# Formatting
+npm run format               # Apply Prettier formatting across the repo
+npm run format:check         # Verify formatting only (same check used in CI)
 ```
 
 ### After Making Changes
@@ -134,6 +138,9 @@ Run lint for each touched subsystem before finalizing changes:
 - Backend changes → `cd backend && npm run lint`
 - Frontend changes → `cd frontend && npm run lint`
 - App changes → `cd app && npm run lint`
+
+Run formatting checks before finalizing:
+- `npm run format:check`
 
 Test scope note:
 - The root `tests/` Vitest suite is for backend API e2e coverage only. Do not add frontend/app unit tests there.

@@ -18,6 +18,10 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: 'npm'
+      - name: '📦 [root] Install Dependencies'
+        run: npm ci
+      - name: '🎨 [format] Prettier check'
+        run: npm run format:check
 
       # BACKEND
       - name: '🗃️ [shared] Install Dependencies'
@@ -71,8 +75,6 @@ jobs:
       # TESTS
       - name: '🧪  [tests] download sample files'
         run: mkdir -p ./tests/env && wget --no-verbose https://photosummaryapp.com/picr-demo-data.zip --output-document=./tests/env/sample.zip
-      - name: '🧪 [test] Install Dependencies'
-        run: npm ci
       - name: '🧪 [test] run backend tests (vitest)'
         run: npm run test
 
