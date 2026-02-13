@@ -1,0 +1,109 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: America/New_York
+    open-pull-requests-limit: 5
+    cooldown:
+      semver-major-days: 30
+    labels:
+      - dependencies
+      - github-actions
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:15"
+      timezone: America/New_York
+    open-pull-requests-limit: 5
+    cooldown:
+      semver-major-days: 30
+    labels:
+      - dependencies
+      - npm
+    groups:
+      npm-root:
+        patterns:
+          - "*"
+
+  - package-ecosystem: npm
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:30"
+      timezone: America/New_York
+    open-pull-requests-limit: 5
+    cooldown:
+      semver-major-days: 30
+    labels:
+      - dependencies
+      - npm
+    groups:
+      npm-backend:
+        patterns:
+          - "*"
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:45"
+      timezone: America/New_York
+    open-pull-requests-limit: 5
+    cooldown:
+      semver-major-days: 30
+    labels:
+      - dependencies
+      - npm
+    groups:
+      npm-frontend:
+        patterns:
+          - "*"
+
+  - package-ecosystem: npm
+    directory: /app
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/New_York
+    open-pull-requests-limit: 5
+    cooldown:
+      semver-major-days: 30
+    labels:
+      - dependencies
+      - npm
+    groups:
+      npm-app:
+        patterns:
+          - "*"
+
+  - package-ecosystem: npm
+    directory: /shared
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:15"
+      timezone: America/New_York
+    open-pull-requests-limit: 5
+    cooldown:
+      semver-major-days: 30
+    labels:
+      - dependencies
+      - npm
+    groups:
+      npm-shared:
+        patterns:
+          - "*"
