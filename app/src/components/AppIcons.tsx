@@ -1,4 +1,4 @@
-import { ComponentProps, ReactNode } from 'react';
+import { ComponentProps } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { TextStyle } from 'react-native';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
@@ -8,7 +8,6 @@ import {
 } from '@shared/gql/graphql';
 
 type IIconProps = Omit<ComponentProps<typeof Ionicons>, 'name'>;
-type IIconButtonProps = ComponentProps<typeof Ionicons.Button>;
 
 export const ApprovedIcon = (props: IIconProps) => {
   return <Ionicons name="thumbs-up-outline" {...props} />;
@@ -35,7 +34,7 @@ export const CommentIcon = ({
   return (
     <Ionicons
       name={
-        !totalComments || totalComments == 0
+        !totalComments || totalComments === 0
           ? 'chatbubble-outline'
           : 'chatbubble-ellipses-outline'
       }

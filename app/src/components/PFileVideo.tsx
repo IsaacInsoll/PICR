@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { memo } from 'react';
 import { Image as ExpoImage, ImageProps } from 'expo-image';
 import { useLocalImageUrl } from '@/src/components/PBigImage';
 import { Video } from '@shared/gql/graphql';
@@ -58,15 +58,3 @@ const PFileVideoComponent = ({
 
 export const PFileVideo = memo(PFileVideoComponent);
 PFileVideo.displayName = 'PFileVideo';
-
-// copied from app, should be in shared
-const useSecond = () => {
-  const [second, setSecond] = useState(0);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSecond((second) => (second >= 10 ? 1 : second + 1));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [second]);
-  return second;
-};

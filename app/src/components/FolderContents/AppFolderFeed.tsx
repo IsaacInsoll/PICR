@@ -40,7 +40,7 @@ export const AppFolderFeed = ({
 };
 
 const renderItem = ({ item, index, width }) => {
-  const isFolder = item['__typename'] == 'Folder';
+  const isFolder = item['__typename'] === 'Folder';
 
   return isFolder ? (
     <FlashFolder folder={item} key={item.id} width={width} />

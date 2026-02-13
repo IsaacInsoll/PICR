@@ -1,4 +1,4 @@
-import { Button, View, ViewStyle, StyleSheet } from 'react-native';
+import { View, ViewStyle, StyleSheet } from 'react-native';
 import { Video } from '@shared/gql/graphql';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEvent } from 'expo';
@@ -35,7 +35,7 @@ export const PBigVideo = ({
   useEffect(() => {
     if (selected && !isPlaying) player.play();
     if (!selected && isPlaying) player.pause();
-  }, [file.id, selected]);
+  }, [file.id, isPlaying, player, selected]);
 
   return (
     <View

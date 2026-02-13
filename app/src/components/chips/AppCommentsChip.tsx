@@ -11,7 +11,7 @@ export const AppCommentsChip = ({
   hideIfNone?: boolean;
 }) => {
   const theme = useAppTheme();
-  if (hideIfNone && (!totalComments || totalComments == 0)) return null;
+  if (hideIfNone && (!totalComments || totalComments === 0)) return null;
   if (!totalComments) return null;
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>

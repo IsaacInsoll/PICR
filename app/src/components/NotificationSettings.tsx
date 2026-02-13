@@ -30,7 +30,7 @@ export const NotificationSettings = () => {
       setToken(isDev ? t + ' DEV' : t);
     });
     // now get existing value from server
-  }, []);
+  }, [isDev]);
 
   const onChange = async (enabled: boolean) => {
     console.log(1);
@@ -59,9 +59,9 @@ export const NotificationSettings = () => {
       }}
     >
       <PText>Allow Notifications</PText>
-      {token == undefined ? (
+      {token === undefined ? (
         <Switch disabled={true} />
-      ) : allow == undefined ? (
+      ) : allow === undefined ? (
         <AppLoadingIndicator size="small" />
       ) : (
         <Switch

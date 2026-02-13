@@ -5,17 +5,18 @@ import { Router, useRouter } from 'expo-router';
 export const NotificationsResponseListener = () => {
   const router = useRouter();
   useEffect(() => {
-    const r =
+    const receivedSubscription =
       Notifications.addNotificationReceivedListener(notificationReceived);
-    const rr = Notifications.addNotificationResponseReceivedListener((r) =>
-      notificationResponseReceived(r, router),
-    );
+    const responseSubscription =
+      Notifications.addNotificationResponseReceivedListener((response) =>
+        notificationResponseReceived(response, router),
+      );
 
     return () => {
-      // Notifications.removeNotificationSubscription(r);
-      // Notifications.removeNotificationSubscription(rr);
+      receivedSubscription.remove();
+      responseSubscription.remove();
     };
-  }, []);
+  }, [router]);
   return <></>;
 };
 

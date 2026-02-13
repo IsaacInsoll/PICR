@@ -1,15 +1,6 @@
-import { ReactNode, useEffect, useMemo } from 'react';
-import {
-  getLoginDetailsFromLocalDevice,
-  useLoginDetails,
-  useSetLoggedOut,
-  useSetLoginDetails,
-} from '@/src/hooks/useLoginDetails';
-import { Redirect } from 'expo-router';
+import { ReactNode, useMemo } from 'react';
 import { Provider } from 'urql';
-import { PText } from '@/src/components/PText';
-import { atom, useAtom, useSetAtom } from 'jotai';
-import { appLogin } from '@/src/helpers/appLogin';
+import { atom, useSetAtom } from 'jotai';
 import { picrUrqlClient } from '@shared/urql/urqlClient';
 import * as Application from 'expo-application';
 import { Platform } from 'react-native';
@@ -21,14 +12,14 @@ export const isPublicLinkAtom = atom(false);
 
 const useIsPublicUserPath = (): false | { uuid: string; server: string } => {
   const paths = usePathname().split('/');
-  const isPublic = paths.length > 3 && paths[2] == 's'; // leading forwardslash is first segment
+  const isPublic = paths.length > 3 && paths[2] === 's'; // leading forwardslash is first segment
   if (!isPublic) return false;
 
   const server = 'https://' + paths[1] + '/';
   const uuid = paths[3];
 
   if (publicUserPath) {
-    if (publicUserPath.uuid == uuid && publicUserPath.server == server)
+    if (publicUserPath.uuid === uuid && publicUserPath.server === server)
       return publicUserPath;
   }
   publicUserPath = { server, uuid };
@@ -41,7 +32,6 @@ export const PicrPublicUserProvider = ({
   children: ReactNode;
 }) => {
   const isPublic = useIsPublicUserPath();
-  const me = useLoginDetails();
   const setPublic = useSetAtom(isPublicLinkAtom);
 
   const client = useMemo(() => {
@@ -64,7 +54,7 @@ export const PicrPublicUserProvider = ({
         },
       );
     }
-  }, [me?.server, me?.token, isPublic]);
+  }, [isPublic, setPublic]);
 
   console.log('PicrPublicUserProvider: returning URQL client');
   return <Provider value={client}>{children}</Provider>;

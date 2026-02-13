@@ -2,13 +2,9 @@ import { taskQuery } from '@shared/urql/queries/taskQuery';
 // import { useRequery } from '@shared/hooks/useRequery';
 import { useQuery } from 'urql';
 import { View } from 'react-native';
-import { PText } from '@/src/components/PText';
 import { useRequery } from '@/src/app-shared/useRequery';
 import { PView } from '@/src/components/PView';
-import {
-  AppLoadingIndicator,
-  InlineAppLoadingIndicator,
-} from '@/src/components/AppLoadingIndicator';
+import { InlineAppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { PTitle } from '@/src/components/PTitle';
 
 export const AppTaskSummary = ({ folderId }: { folderId: string }) => {
@@ -21,7 +17,7 @@ export const AppTaskSummary = ({ folderId }: { folderId: string }) => {
   // this crashes with 'Cannot read property useEffect of null' on App :/
 
   const tasks = result.data?.tasks;
-  const remaining = tasks?.filter((t) => t.status != 'Complete');
+  const remaining = tasks?.filter((t) => t.status !== 'Complete');
   if (!remaining || !remaining.length) return null;
 
   return (

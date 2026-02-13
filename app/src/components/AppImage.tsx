@@ -25,7 +25,7 @@ export const AppImage = ({
 
   const sourceSize: ThumbnailSize = size ?? (w > 250 ? 'lg' : 'md');
 
-  const source = w == 0 ? null : baseUrl + imageURL(file, sourceSize);
+  const source = w === 0 ? null : baseUrl + imageURL(file, sourceSize);
 
   // console.log(width, viewWidth, height, file.fileHash);
 
@@ -34,7 +34,7 @@ export const AppImage = ({
       onLayout={(e) => {
         const ww = e.nativeEvent.layout.width;
         // console.log('AppImage layout w is ', ww);
-        if (!width && ww != viewWidth) setViewWidth(ww);
+        if (!width && ww !== viewWidth) setViewWidth(ww);
       }}
       style={{ height }}
     >
@@ -61,7 +61,7 @@ export const imageURL = (
 ) => {
   const { id, fileHash, name, type } = file;
   const path = `image/${id}/${size}/${fileHash}/`;
-  if (type == 'Video' && size != 'raw') return path + `joined.jpg`;
+  if (type === 'Video' && size !== 'raw') return path + `joined.jpg`;
 
   return path + (extension ? name + extension : name);
 };

@@ -1,7 +1,6 @@
 import { useAtom } from 'jotai';
 import { ReactNode } from 'react';
 import moment from 'moment';
-import { TouchableOpacity } from 'react-native';
 import { finePrint } from '@/src/constants';
 import { PText } from '@/src/components/PText';
 import { dateDisplayRelativeAtom } from '@shared/uiAtoms';
@@ -11,7 +10,7 @@ export const AppDateDisplay = ({
 }: {
   dateString?: string;
 }): ReactNode => {
-  const [isRelative, setIsRelative] = useAtom(dateDisplayRelativeAtom);
+  const [isRelative] = useAtom(dateDisplayRelativeAtom);
   if (!dateString) return null;
   const d = moment(new Date(dateString));
   const ago = d.fromNow();

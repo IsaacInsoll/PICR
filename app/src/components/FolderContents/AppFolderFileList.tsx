@@ -1,9 +1,7 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { AppLink } from '@/src/components/AppFolderLink';
 import { PText } from '@/src/components/PText';
 import { File, Folder, Image } from '@shared/gql/graphql';
-import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
-import { useMutation } from 'urql';
 import { PTitle } from '@/src/components/PTitle';
 import { AppFileFlagChip } from '@/src/components/chips/AppFileFlagChip';
 import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
@@ -44,8 +42,7 @@ export const AppFileListItem = ({
   width?: number;
   children?: React.ReactNode;
 }) => {
-  const isFolder = item['__typename'] == 'Folder';
-  const img = isFolder ? item.heroImage : item;
+  const isFolder = item['__typename'] === 'Folder';
   return (
     <AppLink item={item} asChild={true}>
       <TouchableOpacity>
@@ -79,10 +76,6 @@ const FolderDetails = ({ folder }) => {
 };
 
 const FileDetails = ({ file }: { file: File | Image }) => {
-  const isImage = file.type == 'Image';
-  const { id } = file;
-  const [, mutate] = useMutation(addCommentMutation);
-
   return (
     <View style={{ flexDirection: 'row', gap: 8 }}>
       <PText variant="dimmed">{file.type}</PText>
@@ -92,19 +85,3 @@ const FileDetails = ({ file }: { file: File | Image }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  flashView: {
-    minHeight: 32,
-    // alignItems: 'center',
-    // justifyContent: 'center',
-    paddingVertical: 16,
-  },
-  fileActions: {
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'space-between',
-    paddingHorizontal: 8,
-  },
-  thumbnailBox: { width: 64, height: 64 },
-});

@@ -49,7 +49,7 @@ export default function AppLayout() {
       ]);
       setTimeout(() => router.push(url), 300);
     }
-  }, [lastNotification]);
+  }, [lastNotification, router]);
 
   return (
     <AppErrorBoundary>

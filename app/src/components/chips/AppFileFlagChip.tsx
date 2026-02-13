@@ -10,12 +10,12 @@ export const AppFileFlagChip = ({
   hideIfNone?: boolean;
 }) => {
   const theme = useAppTheme();
-  if (hideIfNone && (!flag || flag == FileFlag.None)) return null;
+  if (hideIfNone && (!flag || flag === FileFlag.None)) return null;
   if (!flag) return null;
-  if (flag == 'approved') {
+  if (flag === 'approved') {
     return <ApprovedIcon color={theme.green} />;
   }
-  if (flag == 'rejected') {
+  if (flag === 'rejected') {
     return <RejectedIcon color={theme.green} />;
   }
 

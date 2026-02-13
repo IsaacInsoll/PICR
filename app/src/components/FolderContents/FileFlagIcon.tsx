@@ -1,9 +1,6 @@
 import { File, FileFlag } from '@shared/gql/graphql';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { TouchableOpacity, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Icon, IconProps } from '@expo/vector-icons/build/createIconSet';
-import { ComponentProps } from 'react';
 import { ApprovedIcon, RejectedIcon } from '@/src/components/AppIcons';
 
 export const FileFlagIcon = ({
@@ -12,11 +9,11 @@ export const FileFlagIcon = ({
 }: {
   file: Pick<File, 'flag'>;
   onChange: (flag?: FileFlag) => void;
-}) => {
+  }) => {
   const theme = useAppTheme();
   const flag = file.flag;
-  const isApproved = flag == 'approved';
-  const isRejected = flag == 'rejected';
+  const isApproved = flag === 'approved';
+  const isRejected = flag === 'rejected';
 
   return (
     <View

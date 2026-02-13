@@ -33,7 +33,7 @@ export const AppFolderGalleryList = ({
       onLayout={(e) => {
         const layout = e.nativeEvent.layout;
         const arl = layout.width / layout.height > 1.0;
-        if (arl != isLandscape) setIsLandscape(arl);
+        if (arl !== isLandscape) setIsLandscape(arl);
       }}
       masonry={true}
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
@@ -153,18 +153,3 @@ const styles = StyleSheet.create({
     // borderColor: '#fff',
   },
 });
-
-const splitImages = (images: (File | Image)[], numCols: number = 2) => {
-  const heights = Array(numCols).fill(0);
-  // couldn't use array.fill because all values were pointing to same array :/
-  const cols = heights.map((h) => []);
-
-  images.forEach((image) => {
-    const height = defaultHeight / (image.imageRatio ?? 1); //non-image stuff can just be 100 high?
-    const shortestColHeight = Math.min(...heights);
-    const shortestCol = heights.findIndex((x) => x == shortestColHeight);
-    cols[shortestCol].push(image);
-    heights[shortestCol] += height;
-  });
-  return cols;
-};

@@ -25,7 +25,7 @@ const PBigImageComponent = ({
   console.log('PBIGImage rendering ' + file.name);
   const ref = useRef(null);
   const uri = useLocalImageUrl(file, 'lg');
-  const [fullScreen, setFullScreen] = useAtom(fileViewFullscreenAtom);
+  const [, setFullScreen] = useAtom(fileViewFullscreenAtom);
   const theme = useAppTheme();
   if (!uri) return null;
 
@@ -107,7 +107,7 @@ export const useLocalImageUrl = (
     return () => {
       cancelled = true;
     };
-  }, [baseUrl, file?.fileHash, file?.id, file?.name, size]);
+  }, [baseUrl, file, file?.fileHash, file?.id, file?.name, size]);
 
   if (!uri) return null;
   return Platform.OS === 'android' ? `file://${uri}` : uri;

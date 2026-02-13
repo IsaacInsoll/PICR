@@ -76,7 +76,7 @@ export const FileCommentsBottomSheet = ({
     } else {
       bottomSheetRef.current?.close();
     }
-  }, [bottomSheetRef, open]);
+  }, [addComment, bottomSheetRef, open]);
 
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
@@ -174,12 +174,12 @@ export const FileCommentsBottomSheet = ({
               width: '100%',
             }}
           >
-            <AppIconButton
-              name="chatbubble-ellipses-outline"
-              disabled={commentText.length == 0}
-              onPress={onSubmitComment}
-            >
-              Add Comment
+              <AppIconButton
+                name="chatbubble-ellipses-outline"
+                disabled={commentText.length === 0}
+                onPress={onSubmitComment}
+              >
+                Add Comment
             </AppIconButton>
           </View>
         ) : null}
@@ -192,14 +192,14 @@ export const FileCommentsBottomSheet = ({
 };
 
 const FileCommentsBody = ({ id }: { id: string }) => {
-  const [result, requery] = useQuery({
+  const [result] = useQuery({
     query: commentHistoryQuery,
     variables: { fileId: id },
     requestPolicy: 'cache-and-network',
   });
 
   const comments = result.data?.comments;
-  if (comments?.length == 0)
+  if (comments?.length === 0)
     return <PText variant="dimmed">No Comments (yet!)</PText>;
   return (
     <>

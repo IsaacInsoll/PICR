@@ -32,16 +32,16 @@ const PFileViewComponent = ({
         }
       : { ...props };
 
-  const isFolder = file?.__typename == 'Folder';
+  const isFolder = file?.__typename === 'Folder';
   //     const uri = useLocalImageUrl(isFolder ? file.heroImage : file, size);
-  if (file?.type == 'Video') {
+  if (file?.type === 'Video') {
     return <PFileVideo {...p} file={file} />;
   }
-  if (file?.type == 'Image') {
+  if (file?.type === 'Image') {
     return <PFileImage size={size} {...p} file={file} />;
   }
 
-  if (isFolder && file.heroImage?.type == 'Image') {
+  if (isFolder && file.heroImage?.type === 'Image') {
     return <PFileImage size={size} {...p} file={file.heroImage} />;
   }
 

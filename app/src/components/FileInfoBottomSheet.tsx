@@ -1,35 +1,13 @@
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { PTitle } from '@/src/components/PTitle';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  ReactNode,
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { Comment, File, FileFlag } from '@shared/gql/graphql';
+import { File } from '@shared/gql/graphql';
 import { PText } from '@/src/components/PText';
-import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
-import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
-import { useMutation, useQuery } from 'urql';
-import {
-  Keyboard,
-  StyleSheet,
-  TextInput,
-  TextStyle,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { AppAvatar } from '@/src/components/AppAvatar';
-import { prettyDate } from '@shared/prettyDate';
-import { Rating } from '@kolking/react-native-rating';
-import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
+import { Keyboard, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { AppIconButton, appMetadataIcons } from '@/src/components/AppIcons';
-import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
+import { appMetadataIcons } from '@/src/components/AppIcons';
 import { metadataForPresentation } from '@shared/fileMetadata';
 
 // This must be the bottom most element in the view
@@ -134,5 +112,3 @@ export const FileInfoBottomSheet = ({
     </BottomSheet>
   );
 };
-
-const styles = StyleSheet.create({});

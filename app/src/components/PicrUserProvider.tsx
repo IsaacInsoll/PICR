@@ -44,7 +44,7 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
       }
       setInitComplete(true);
     });
-  }, []);
+  }, [initComplete, logout, setInitComplete, setLogin]);
   const client = useMemo(() => {
     if (!me) return null;
     console.log('PicrUserProvider: _creating_ URQL client');
@@ -59,7 +59,7 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
         onAuthExpired: clearAppAuth,
       },
     );
-  }, [me?.server, me?.token]);
+  }, [me]);
 
   if (!initComplete) return <PText>Loading...</PText>;
   if (!me) {

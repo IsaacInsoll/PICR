@@ -11,7 +11,7 @@ export const AppFileRatingChip = ({
   hideIfNone?: boolean;
 }) => {
   const theme = useAppTheme();
-  if (hideIfNone && (!rating || rating == 0)) return null;
+  if (hideIfNone && (!rating || rating === 0)) return null;
   if (!rating) return null;
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
