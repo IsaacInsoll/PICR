@@ -20,7 +20,7 @@
     "workflow": "act push --pull=false --artifact-server-path $PWD/.artifacts -P ubuntu-24.04=catthehacker/ubuntu:act-latest",
     "install-all": "npm ci && npm --prefix shared ci && npm --prefix backend ci && npm --prefix frontend ci && npm --prefix app ci",
     "build:local": "npm --prefix backend run build && npm run build:lightroom && npm --prefix frontend run build && npm --prefix dist ci",
-    "gql": "graphql-codegen --config codegen.ts",
+    "gql": "graphql-codegen --config codegen.ts && prettier --write shared/urql/graphql.schema.json frontend/src/fonts.generated.ts app/src/fonts.generated.ts app/src/graphql.schema.json",
     "release": "dotenv -- release-it --only-version",
     "build:lightroom": "cd lightroom/picr.lrplugin && zip -rq ../../frontend/public/picr-lightroom-plugin.zip .",
     "start:server-ts": "cd backend && tsc -w",

@@ -9,7 +9,7 @@ export const FileFlagIcon = ({
 }: {
   file: Pick<File, 'flag'>;
   onChange: (flag?: FileFlag) => void;
-  }) => {
+}) => {
   const theme = useAppTheme();
   const flag = file.flag;
   const isApproved = flag === 'approved';

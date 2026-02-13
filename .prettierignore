@@ -2,4 +2,8 @@ backend/db/drizzle/*
 graphql-types.ts
 schema.graphql
 shared/gql/*
+shared/urql/graphql.schema.json
+frontend/src/fonts.generated.ts
+app/src/fonts.generated.ts
+app/src/graphql.schema.json
 lightroom/*

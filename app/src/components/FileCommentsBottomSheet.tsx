@@ -174,12 +174,12 @@ export const FileCommentsBottomSheet = ({
               width: '100%',
             }}
           >
-              <AppIconButton
-                name="chatbubble-ellipses-outline"
-                disabled={commentText.length === 0}
-                onPress={onSubmitComment}
-              >
-                Add Comment
+            <AppIconButton
+              name="chatbubble-ellipses-outline"
+              disabled={commentText.length === 0}
+              onPress={onSubmitComment}
+            >
+              Add Comment
             </AppIconButton>
           </View>
         ) : null}

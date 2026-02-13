@@ -151,7 +151,10 @@ const SearchResults = ({
     pause: !queryEnabled,
   });
 
-  const folders = useMemo(() => result.data?.searchFolders ?? [], [result.data]);
+  const folders = useMemo(
+    () => result.data?.searchFolders ?? [],
+    [result.data],
+  );
   const files = useMemo(() => result.data?.searchFiles ?? [], [result.data]);
   const list = useMemo(
     () => buildSearchResultList(files, folders, type),
