@@ -20,9 +20,17 @@ jobs:
           cache: 'npm'
 
       # BACKEND
+      - name: '🗃️ [shared] Install Dependencies'
+        run: cd shared && npm ci
+      - name: '🗃️ [backend] Install Dependencies'
+        run: cd backend && npm ci
+      - name: '🗃️ [shared] Lint'
+        run: cd shared && npm run lint
+      - name: '🗃️ [backend] Lint'
+        run: cd backend && npm run lint
       - name: '🗃️ [backend] Build (TSC + artifact files)'
         # backend build also copies drizzle migrations and backend package files into dist/
-        run: cd shared && npm ci && cd ../backend && npm ci && npm run build
+        run: cd backend && npm run build
       - name: '🗃️ [backend] Install Dependencies'
         run: cd dist && npm ci
 
@@ -33,6 +41,8 @@ jobs:
       # FRONTEND
       - name: '💄 [frontend] Install Dependencies'
         run: cd frontend && npm ci
+      - name: '💄 [frontend] Lint'
+        run: cd frontend && npm run lint
       - name: '💄 [frontend] Build (vite)'
         run: cd frontend && npm run build -- --logLevel error
 
@@ -42,6 +52,9 @@ jobs:
       - name: '📱 [app] Install Dependencies'
         if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: cd app && npm ci
+      - name: '📱 [app] Lint'
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
+        run: cd app && npm run lint
       - name: '📱 [app] Build (expo export)'
         if: ${{ matrix.os == 'ubuntu-24.04' }}
         shell: bash

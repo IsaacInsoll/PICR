@@ -4,7 +4,7 @@ import { PicrUserProvider } from '@/src/components/PicrUserProvider';
 import { Suspense } from 'react';
 import { PText } from '@/src/components/PText';
 
-export default function index() {
+export default function Index() {
   console.log('[app index.tsx]');
   const me = useLoginDetails();
   if (me?.hostname) {

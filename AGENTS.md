@@ -129,6 +129,12 @@ Always suggest running the relevant build as a basic validation:
 - Frontend changes → `cd frontend && npm run build`
 - App changes → `cd app && npx expo export --platform android`
 
+Run lint for each touched subsystem before finalizing changes:
+- Shared changes → `cd shared && npm run lint`
+- Backend changes → `cd backend && npm run lint`
+- Frontend changes → `cd frontend && npm run lint`
+- App changes → `cd app && npm run lint`
+
 Test scope note:
 - The root `tests/` Vitest suite is for backend API e2e coverage only. Do not add frontend/app unit tests there.
 

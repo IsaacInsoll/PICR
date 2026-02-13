@@ -54,56 +54,55 @@ export const AppFolderGalleryList = ({
   );
 };
 
-const MasonryItem = memo(
-  ({
-    item,
-    width,
-    colCount,
-    borderColor,
-  }: {
-    item: File | Image | Video;
-    width: number;
-    colCount: number;
-    borderColor: string;
-  }) => {
-    const { isFolder, heroImage, isImage, isVideo } = fileProps(item);
-    const image = heroImage != null ? heroImage : item;
+const MasonryItemComponent = ({
+  item,
+  width,
+  colCount,
+  borderColor,
+}: {
+  item: File | Image | Video;
+  width: number;
+  colCount: number;
+  borderColor: string;
+}) => {
+  const { isFolder, heroImage, isImage, isVideo } = fileProps(item);
+  const image = heroImage != null ? heroImage : item;
 
-    const style = {
-      width: width / colCount - border * 2,
-      height: image.imageRatio
-        ? width / colCount / image.imageRatio
-        : defaultHeight,
-    };
+  const style = {
+    width: width / colCount - border * 2,
+    height: image.imageRatio
+      ? width / colCount / image.imageRatio
+      : defaultHeight,
+  };
 
-    return (
-      <View style={[styles.imageContainer, { borderColor }]}>
-        <AppLink item={item} asChild={true}>
-          <TouchableOpacity>
-            {isImage || heroImage || isVideo ? (
-              <PFileView
-                file={image}
-                size="md"
-                style={style}
-                transition={100}
-                // onDisplay={() => setImagesLoaded((l) => l + 1)}
-                // blurRadius={isFolder ? 0 : undefined}
-              />
-            ) : (
-              <PFileFolderThumbnail
-                folder={item}
-                style={{ height: width / colCount }}
-              />
-            )}
-            {isFolder ? (
-              <FolderName folder={item} intensity={colCount} />
-            ) : null}
-          </TouchableOpacity>
-        </AppLink>
-      </View>
-    );
-  },
-);
+  return (
+    <View style={[styles.imageContainer, { borderColor }]}>
+      <AppLink item={item} asChild={true}>
+        <TouchableOpacity>
+          {isImage || heroImage || isVideo ? (
+            <PFileView
+              file={image}
+              size="md"
+              style={style}
+              transition={100}
+              // onDisplay={() => setImagesLoaded((l) => l + 1)}
+              // blurRadius={isFolder ? 0 : undefined}
+            />
+          ) : (
+            <PFileFolderThumbnail
+              folder={item}
+              style={{ height: width / colCount }}
+            />
+          )}
+          {isFolder ? <FolderName folder={item} intensity={colCount} /> : null}
+        </TouchableOpacity>
+      </AppLink>
+    </View>
+  );
+};
+
+const MasonryItem = memo(MasonryItemComponent);
+MasonryItem.displayName = 'MasonryItem';
 
 const FolderName = ({
   folder,

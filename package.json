@@ -9,6 +9,11 @@
   },
   "scripts": {
     "test": "vitest run",
+    "lint": "npm run lint:shared && npm run lint:backend && npm run lint:frontend && npm run lint:app",
+    "lint:shared": "npm --prefix shared run lint",
+    "lint:backend": "npm --prefix backend run lint",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "lint:app": "npm --prefix app run lint",
     "workflow": "act push --pull=false --artifact-server-path $PWD/.artifacts -P ubuntu-24.04=catthehacker/ubuntu:act-latest",
     "install-all": "npm ci && npm --prefix shared ci && npm --prefix backend ci && npm --prefix frontend ci && npm --prefix app ci",
     "build:local": "npm --prefix backend run build && npm run build:lightroom && npm --prefix frontend run build && npm --prefix dist ci",

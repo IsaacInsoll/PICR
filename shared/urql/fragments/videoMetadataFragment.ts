@@ -1,6 +1,6 @@
 import { gql } from '../gql';
 
-const videoMetadataFragment = gql(/* GraphQL */ `
+export const videoMetadataFragment = gql(/* GraphQL */ `
   fragment VideoMetadataFragment on Video {
     ... on Video {
       metadata {

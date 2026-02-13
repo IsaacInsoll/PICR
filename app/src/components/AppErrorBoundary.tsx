@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text } from 'react-native';
 import { Image } from 'expo-image';
@@ -11,7 +11,7 @@ export const AppErrorBoundary = ({ children }: { children: ReactNode }) => {
   );
 };
 
-function fallbackRender({ error, resetErrorBoundary }) {
+function fallbackRender({ error }: FallbackProps) {
   // const theme = useAppTheme();
   console.log(error.stack);
 
@@ -33,7 +33,10 @@ function fallbackRender({ error, resetErrorBoundary }) {
           .split('\n')
           .slice(0, 4)
           .map((line, index) => (
-            <Text style={[styles.stack, { opacity: 0.8 - index * 0.2 }]}>
+            <Text
+              key={`${index}-${line}`}
+              style={[styles.stack, { opacity: 0.8 - index * 0.2 }]}
+            >
               {line}
             </Text>
           ))}

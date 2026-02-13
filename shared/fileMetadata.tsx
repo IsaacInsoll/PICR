@@ -3,7 +3,6 @@ import {
   ImageMetadataSummary,
   VideoMetadataSummary,
 } from '@/gql/graphql';
-import { prettyAspectRatio } from '@frontend/metadata/prettyAspectRatio';
 import { formatMetadataValue } from './formatMetadataValue';
 import { toReadableFraction } from 'readable-fractions';
 
@@ -24,7 +23,7 @@ export interface MetadataPresentationResult {
   label: string;
   subLabel?: string;
   icon?: string;
-  data?: any; //if it's something that needs bespoke custom rendering
+  data?: unknown; //if it's something that needs bespoke custom rendering
 }
 export const metadataForPresentation = (
   file: File,

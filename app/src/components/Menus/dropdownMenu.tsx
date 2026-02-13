@@ -102,13 +102,6 @@ export const DropdownMenuItemIndicator = DropdownMenu.create(
   'ItemIndicator',
 );
 
-export const DropdownMenuPreview = DropdownMenu.create(
-  (props: React.ComponentProps<typeof DropdownMenu.Preview>) => (
-    <DropdownMenu.Preview {...props} />
-  ),
-  'Preview',
-);
-
 export const DropdownMenuArrow = DropdownMenu.create(
   (props: React.ComponentProps<typeof DropdownMenu.Arrow>) => (
     <DropdownMenu.Arrow {...props} />

@@ -13,69 +13,70 @@ import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 import { File } from '@shared/gql/graphql';
 
-export const PBigImage = memo(
-  ({
-    file,
-    style,
-    setIsZoomed,
-  }: {
-    file: Image;
-    style?: ViewStyle;
-    setIsZoomed: (z: boolean) => void;
-  }) => {
-    console.log('PBIGImage rendering ' + file.name);
-    const ref = useRef(null);
-    const uri = useLocalImageUrl(file, 'lg');
-    const [fullScreen, setFullScreen] = useAtom(fileViewFullscreenAtom);
-    const theme = useAppTheme();
-    if (!uri) return null;
+const PBigImageComponent = ({
+  file,
+  style,
+  setIsZoomed,
+}: {
+  file: Image;
+  style?: ViewStyle;
+  setIsZoomed: (z: boolean) => void;
+}) => {
+  console.log('PBIGImage rendering ' + file.name);
+  const ref = useRef(null);
+  const uri = useLocalImageUrl(file, 'lg');
+  const [fullScreen, setFullScreen] = useAtom(fileViewFullscreenAtom);
+  const theme = useAppTheme();
+  if (!uri) return null;
 
-    const onZoom = (zoomType?: ZOOM_TYPE) => {
-      if (!zoomType || zoomType === ZOOM_TYPE.ZOOM_IN) {
-        setIsZoomed(true);
-      }
-    };
+  const onZoom = (zoomType?: ZOOM_TYPE) => {
+    if (!zoomType || zoomType === ZOOM_TYPE.ZOOM_IN) {
+      setIsZoomed(true);
+    }
+  };
 
-    const onAnimationEnd = (finished?: boolean) => {
-      if (finished) {
-        setIsZoomed(false);
-      }
-    };
-    return (
-      <Zoomable
-        ref={ref}
-        // minScale={0.5}
-        // maxScale={maxScale}
-        // scale={scale}
-        doubleTapScale={3}
-        isSingleTapEnabled
-        isDoubleTapEnabled
-        onSingleTap={() => setFullScreen((fs) => !fs)}
-        onInteractionStart={() => {
-          onZoom();
+  const onAnimationEnd = (finished?: boolean) => {
+    if (finished) {
+      setIsZoomed(false);
+    }
+  };
+  return (
+    <Zoomable
+      ref={ref}
+      // minScale={0.5}
+      // maxScale={maxScale}
+      // scale={scale}
+      doubleTapScale={3}
+      isSingleTapEnabled
+      isDoubleTapEnabled
+      onSingleTap={() => setFullScreen((fs) => !fs)}
+      onInteractionStart={() => {
+        onZoom();
+      }}
+      onProgrammaticZoom={(zoomType) => {
+        onZoom(zoomType);
+      }}
+      style={[styles.image, style]}
+      onResetAnimationEnd={(finished) => {
+        onAnimationEnd(finished);
+      }}
+    >
+      <ExpoImage
+        placeholder={file.blurHash}
+        source={{ uri }}
+        style={{
+          ...styles.image,
+          backgroundColor: theme.tabColor, //'#000', // theme.backgroundColor we want absolute black, not dark grey
         }}
-        onProgrammaticZoom={(zoomType) => {
-          onZoom(zoomType);
-        }}
-        style={[styles.image, style]}
-        onResetAnimationEnd={(finished, values) => {
-          onAnimationEnd(finished);
-        }}
-      >
-        <ExpoImage
-          placeholder={file.blurHash}
-          source={{ uri }}
-          style={{
-            ...styles.image,
-            backgroundColor: theme.tabColor, //'#000', // theme.backgroundColor we want absolute black, not dark grey
-          }}
-          contentFit="contain"
-          onError={console.log}
-        />
-      </Zoomable>
-    );
-  },
-);
+        contentFit="contain"
+        onError={console.log}
+      />
+    </Zoomable>
+  );
+};
+
+export const PBigImage = memo(PBigImageComponent);
+PBigImage.displayName = 'PBigImage';
 
 export const useLocalImageUrl = (
   file: Partial<Pick<File, 'id' | 'fileHash' | 'name' | 'type'>>,

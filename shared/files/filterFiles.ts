@@ -33,8 +33,7 @@ const ratioFilter = (
   file: File | Image,
   ratio: AspectFilterOptions,
 ): boolean => {
-  // @ts-ignore
-  const ar = file.imageRatio ?? null;
+  const ar = 'imageRatio' in file ? (file.imageRatio ?? null) : null;
   if (!ar) return ratio === 'Any Ratio';
 
   return (
@@ -55,8 +54,10 @@ const metadataFilter = (
       if (file?.__typename == 'File') {
         allowed = false; // basic files don't have metadata
       } else {
-        // @ts-ignore
-        const val = file.metadata?.[title as keyof MetadataSummary];
+        const val =
+          'metadata' in file
+            ? file.metadata?.[title as keyof MetadataSummary]
+            : undefined;
         if (!val || !options.includes(val)) allowed = false;
       }
     }

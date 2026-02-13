@@ -32,7 +32,7 @@ const loginFormSchema: ZodType<LoginDetails> = z.object({
   password: z.string().min(8),
 });
 
-export default function index() {
+export default function Index() {
   const keyboardVisible = useKeyboardVisible();
 
   return (
