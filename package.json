@@ -3,6 +3,12 @@
   "version": "0.9.5",
   "description": "",
   "type": "module",
+  "workspaces": [
+    "shared",
+    "backend",
+    "frontend",
+    "app"
+  ],
   "directories": {
     "doc": "docs",
     "test": "tests"
@@ -18,7 +24,7 @@
     "lint:frontend": "npm --prefix frontend run lint",
     "lint:app": "npm --prefix app run lint",
     "workflow": "act push --pull=false --artifact-server-path $PWD/.artifacts -P ubuntu-24.04=catthehacker/ubuntu:act-latest",
-    "install-all": "npm ci && npm --prefix shared ci && npm --prefix backend ci && npm --prefix frontend ci && npm --prefix app ci",
+    "install-all": "npm ci",
     "build:local": "npm --prefix backend run build && npm run build:lightroom && npm --prefix frontend run build && npm --prefix dist ci",
     "gql": "graphql-codegen --config codegen.ts && prettier --write shared/urql/graphql.schema.json frontend/src/fonts.generated.ts app/src/fonts.generated.ts app/src/graphql.schema.json",
     "release": "dotenv -- release-it --only-version",
@@ -75,5 +81,24 @@
   "license": "ISC",
   "engines": {
     "node": "24.13.0"
+  },
+  "overrides": {
+    "join-images": {
+      "sharp": "^0.34"
+    },
+    "react-rewards": {
+      "react": "^19",
+      "react-dom": "^19"
+    },
+    "mantine-react-table": {
+      "@mantine/core": "^8",
+      "@mantine/dates": "^8",
+      "@mantine/hooks": "^8"
+    },
+    "zeego": {
+      "@react-native-menu/menu": "2.0.0",
+      "react-native-ios-context-menu": "3.2",
+      "react-native-ios-utilities": "5.2"
+    }
   }
 }

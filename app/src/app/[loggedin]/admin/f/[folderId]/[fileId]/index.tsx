@@ -4,7 +4,9 @@ import { Alert, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { addToFileCache, fileCache } from '@/src/helpers/folderCache';
 import { useQuery } from 'urql';
 import { PBigImage, useLocalImageUrl } from '@/src/components/PBigImage';
-import { atom, useAtom, useSetAtom } from 'jotai';
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { PText } from '@/src/components/PText';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as MediaLibrary from 'expo-media-library';
 import Animated, {
   Easing,

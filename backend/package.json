@@ -1,5 +1,5 @@
 {
-  "name": "picr",
+  "name": "picr-backend",
   "description": "",
   "exports": "./app.ts",
   "type": "module",
@@ -55,10 +55,5 @@
     "tsx": "^4.21",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.19.0"
-  },
-  "overrides": {
-    "join-images": {
-      "sharp": "^0.34"
-    }
   }
 }
