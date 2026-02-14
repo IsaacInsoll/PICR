@@ -18,6 +18,7 @@
     }
   },
   "dependencies": {
+    "@picr/shared": "file:../shared",
     "archiver": "^7.0.1",
     "blurhash": "^2.0.5",
     "chokidar": "^5",

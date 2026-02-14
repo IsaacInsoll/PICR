@@ -8,6 +8,7 @@ const config = getDefaultConfig(__dirname);
 config.resolver.extraNodeModules = {
   '@frontend': __dirname + '/../frontend/src',
   '@shared': __dirname + '/../shared',
+  '@picr/shared': __dirname + '/../shared',
 };
 
 module.exports = config;

@@ -1,7 +1,12 @@
 {
-  "name": "picr-shared",
+  "name": "@picr/shared",
+  "version": "0.0.0",
+  "private": true,
   "description": "Functionality shared between PICR web and app",
   "type": "module",
+  "exports": {
+    "./*": "./*"
+  },
   "scripts": {
     "lint": "npm --prefix ../backend exec -- eslint . --ext .ts,.tsx --config ../backend/eslint.config.mjs"
   },
