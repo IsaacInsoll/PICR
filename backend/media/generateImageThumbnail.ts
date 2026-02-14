@@ -1,9 +1,5 @@
-import sharp, {
-  AvifOptions,
-  JpegOptions,
-  OutputInfo,
-  ResizeOptions,
-} from 'sharp';
+import { AvifOptions, JpegOptions, OutputInfo, ResizeOptions } from 'sharp';
+import { openSharp } from './openSharp.js';
 import { fullPath, fullPathForFile } from '../filesystem/fileManager.js';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'path';
@@ -63,7 +59,7 @@ export const generateThumbnail = async (
   const px = thumbnailDimensions[size];
   const fullPath = fullPathForFile(file);
 
-  const img = sharp(fullPath).withMetadata().resize(px, px, sharpOpts);
+  const img = openSharp(fullPath).withMetadata().resize(px, px, sharpOpts);
 
   const opts = await getServerOptions();
 

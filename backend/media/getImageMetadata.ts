@@ -1,13 +1,13 @@
-import sharp from 'sharp';
 import { MetadataSummary } from '../types/MetadataSummary.js';
 import { default as ex } from 'exif-reader';
 import { XMLParser } from 'fast-xml-parser';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import { FileFields } from '../db/picrDb.js';
+import { openSharp } from './openSharp.js';
 
 export const getImageMetadata = async (file: FileFields) => {
   try {
-    const { exif, width, height, xmp } = await sharp(
+    const { exif, width, height, xmp } = await openSharp(
       fullPathForFile(file),
     ).metadata();
 

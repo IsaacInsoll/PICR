@@ -7,3 +7,5 @@ frontend/src/fonts.generated.ts
 app/src/fonts.generated.ts
 app/src/graphql.schema.json
 lightroom/*
+app/ios/*
+app/android/*

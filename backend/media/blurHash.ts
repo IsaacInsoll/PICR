@@ -1,10 +1,10 @@
-import sharp from 'sharp';
 import { encode } from 'blurhash';
 import { log } from '../logger.js';
+import { openSharp } from './openSharp.js';
 
 export async function encodeImageToBlurhash(path: string): Promise<string> {
   try {
-    const { data, info } = await sharp(path)
+    const { data, info } = await openSharp(path)
       .raw()
       .ensureAlpha()
       .resize(32, 32, { fit: 'inside' })
