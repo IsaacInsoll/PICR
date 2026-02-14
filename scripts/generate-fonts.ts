@@ -312,9 +312,7 @@ const copyAppFonts = async (fontRegistry: Array<any>) => {
     const staticMatch = pickStaticFile(familyFiles, weight);
     const match = staticMatch ?? pickVariableFile(familyFiles);
     if (!match) {
-      throw new Error(
-        `No TTF file found for ${font.key} weight ${weight}`,
-      );
+      throw new Error(`No TTF file found for ${font.key} weight ${weight}`);
     }
     const res = await fetch(match.download_url, {
       headers: { 'user-agent': 'PICR font downloader' },
