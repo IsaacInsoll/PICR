@@ -12,6 +12,11 @@
   },
   "author": "Isaac Insoll",
   "license": "ISC",
+  "overrides": {
+    "join-images": {
+      "sharp": "^0.34"
+    }
+  },
   "dependencies": {
     "archiver": "^7.0.1",
     "blurhash": "^2.0.5",

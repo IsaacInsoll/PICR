@@ -42,6 +42,7 @@
     "lodash": "^4.17.21",
     "mantine-react-table": "^2.0.0-beta.9",
     "moment": "^2.30.1",
+    "pretty-bytes": "^7.0.0",
     "react": "19.1",
     "react-blurhash": "^0.3.0",
     "react-dom": "19.1",

@@ -36,7 +36,7 @@ jobs:
         # backend build also copies drizzle migrations and backend package files into dist/
         run: cd backend && npm run build
       - name: '🗃️ [backend] Install Dependencies'
-        run: cd dist && npm ci
+        run: cd dist && npm install --omit=dev
 
       # LIGHTROOM PLUGIN (before frontend so vite copies it to dist/public/)
       - name: '🔌 [lightroom] Build plugin zip'
