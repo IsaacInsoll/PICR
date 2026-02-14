@@ -6,7 +6,14 @@
       "Bash(npx expo export:*)",
       "Bash(ls:*)",
       "Bash(npx tsx:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(node -e:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.expo.dev)",
+      "WebFetch(domain:github.com)",
+      "Bash(gh issue view:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }
