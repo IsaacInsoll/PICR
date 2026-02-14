@@ -145,3 +145,5 @@ media/*
 .artifacts/*
 
 lightroom/docs/*
+
+.claude/
