@@ -74,7 +74,7 @@ export const ManagePublicLink = ({
       linkMode,
       username,
     };
-    mutate(data).then(({ data, error }) => {
+    mutate(data).then(({ error }) => {
       if (error) {
         setError(error.toString());
       } else {
@@ -224,7 +224,10 @@ export const ManagePublicLink = ({
             be undone and the link will stop working immediately.
           </Text>
           <Group justify="flex-end">
-            <Button variant="default" onClick={() => setShowDeleteConfirm(false)}>
+            <Button
+              variant="default"
+              onClick={() => setShowDeleteConfirm(false)}
+            >
               Cancel
             </Button>
             <Button color="red" onClick={onDelete} leftSection={<DeleteIcon />}>

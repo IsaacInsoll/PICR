@@ -8,12 +8,10 @@ import {
   Group,
   Stack,
   Text,
-  Title,
 } from '@mantine/core';
 import { LoadingIndicator } from '../../../components/LoadingIndicator';
 import { useTreeSize } from './useTreeSize';
 import { PicrPie } from './PicrPie';
-import { MinimalFolder } from '../../../../types';
 import { useNavigate, useParams } from 'react-router';
 import { FolderSummary, treeSizeTabAtom } from './FolderSummary';
 import { prettyBytes } from '@shared/prettyBytes';
@@ -57,13 +55,12 @@ const TreeSizeNode = ({
   //   folder?.subFolders.find(({ id }) => id == hover) ?? folder;
 
   const crumbs = [
-    ...folder?.parents
-      ?.toReversed()
-      .map((f, i) => (
-        <Anchor onClick={() => setFolderId(f.id)}>{f?.name}</Anchor>
-      )),
-    ,
-    <Text>{folder?.name}</Text>,
+    ...(folder?.parents?.toReversed().map((f) => (
+      <Anchor key={f.id} onClick={() => setFolderId(f.id)}>
+        {f?.name}
+      </Anchor>
+    )) ?? []),
+    <Text key="current">{folder?.name}</Text>,
   ];
   return (
     <Stack pt="md">
@@ -71,7 +68,7 @@ const TreeSizeNode = ({
         <Breadcrumbs separator="→" separatorMargin="md" mt="xs">
           {crumbs}
         </Breadcrumbs>
-        <Code>{prettyBytes(parseInt(folder?.totalSize))}</Code>
+        <Code>{prettyBytes(Number(folder?.totalSize ?? 0))}</Code>
       </Group>
       <Divider />
       <Group style={{ alignItems: 'start' }}>

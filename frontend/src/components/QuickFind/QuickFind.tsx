@@ -127,7 +127,6 @@ const Results = ({
     pause: debouncedQuery == '' || !folderId,
   });
 
-  if (!folderId) return;
   const folders = results.data?.searchFolders ?? [];
   const files = results.data?.searchFiles ?? [];
 
@@ -174,7 +173,7 @@ const Results = ({
       window.removeEventListener('keydown', handler);
     };
   });
-  if (!debouncedQuery) return;
+  if (!folderId || !debouncedQuery) return null;
 
   return (
     <Stack gap={0}>

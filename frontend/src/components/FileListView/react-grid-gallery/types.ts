@@ -50,7 +50,7 @@ export type StyleFunctionContext<T extends Image = Image> = {
 };
 
 export type StyleFunction<T extends Image = Image> = (
-  context: StyleFunctionContext,
+  context: StyleFunctionContext<T>,
 ) => CSSProperties;
 
 export type StyleProp<T extends Image = Image> =

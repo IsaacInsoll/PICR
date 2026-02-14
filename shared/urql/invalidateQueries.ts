@@ -5,6 +5,7 @@ export const invalidateQueries = (
   cache: Cache,
   queryNames: (keyof Query)[],
 ) => {
+  const queryNameSet = new Set<string>(queryNames as string[]);
   console.log('Invalidating Queries: ' + queryNames.toString());
   console.log(
     'cache includes: ' +
@@ -15,8 +16,7 @@ export const invalidateQueries = (
   );
   cache
     .inspectFields('Query')
-    // @ts-ignore
-    .filter((field) => queryNames.includes(field.fieldName))
+    .filter((field) => queryNameSet.has(field.fieldName))
     .forEach((field) => {
       console.log(' - Invalidated ' + field.fieldName);
       cache.invalidate('Query', field.fieldName, field.arguments);

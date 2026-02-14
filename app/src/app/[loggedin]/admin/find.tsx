@@ -29,11 +29,8 @@ import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { AppFileFlagChip } from '@/src/components/chips/AppFileFlagChip';
 import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
 import { AppCommentsChip } from '@/src/components/chips/AppCommentsChip';
-import { folderCache } from '@/src/helpers/folderCache';
 import { useDebouncedValue } from '@/src/hooks/useDebouncedValue';
 import { TogglePill } from '@/src/components/TogglePill';
-
-type Scope = 'current' | 'all';
 
 export default function FindScreen() {
   const params = useLocalSearchParams<{ folderId?: string | string[] }>();
@@ -42,29 +39,14 @@ export default function FindScreen() {
   const initialFolderId = Array.isArray(params.folderId)
     ? params.folderId[0]
     : params.folderId;
-  const initialFolderName =
-    initialFolderId && folderCache[initialFolderId]?.name
-      ? folderCache[initialFolderId]?.name
-      : undefined;
   const [query, setQuery] = useState('');
-  const [scope, setScope] = useState<Scope>('current');
   const [type, setType] = useState<SearchResultType>('all');
   const [debouncedQuery] = useDebouncedValue(query, 250);
   const trimmedQuery = debouncedQuery.trim();
 
-  const activeFolderId =
-    scope === 'all' ? me?.folderId : (initialFolderId ?? me?.folderId);
+  const activeFolderId = initialFolderId ?? me?.folderId;
 
   const queryEnabled = !!activeFolderId && trimmedQuery !== '';
-
-  const currentScopeLabel =
-    scope === 'all'
-      ? 'All folders'
-      : initialFolderName
-        ? initialFolderName
-        : initialFolderId && initialFolderId !== me?.folderId
-          ? 'This folder'
-          : 'Home folder';
 
   const handleChangeQuery = (text: string) => {
     if (text.endsWith('`')) return;
@@ -169,8 +151,11 @@ const SearchResults = ({
     pause: !queryEnabled,
   });
 
-  const folders = result.data?.searchFolders ?? [];
-  const files = result.data?.searchFiles ?? [];
+  const folders = useMemo(
+    () => result.data?.searchFolders ?? [],
+    [result.data],
+  );
+  const files = useMemo(() => result.data?.searchFiles ?? [], [result.data]);
   const list = useMemo(
     () => buildSearchResultList(files, folders, type),
     [files, folders, type],

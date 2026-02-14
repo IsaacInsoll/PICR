@@ -43,7 +43,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
 
   updateZipQueue(folderHash, { status: 'Queued', hash });
 
-  const onError = (err: any) => {
+  const onError = (err: unknown) => {
     console.log('🗜️ ZIP ERROR: ', err);
     updateZipQueue(folderHash, { status: 'Error' });
   };

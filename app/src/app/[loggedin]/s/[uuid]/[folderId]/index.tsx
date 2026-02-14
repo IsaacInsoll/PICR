@@ -37,7 +37,10 @@ export default function PublicFolderView() {
         }}
       />
       <View
-        style={{ ...folderViewStyles.main, backgroundColor: theme.backgroundColor }}
+        style={{
+          ...folderViewStyles.main,
+          backgroundColor: theme.backgroundColor,
+        }}
       >
         <PView style={{ width: '100%', flex: 1 }} onWidthChange={setViewWidth}>
           <Suspense fallback={<AppLoadingIndicator />}>

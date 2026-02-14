@@ -4,7 +4,7 @@ Code shared between `frontend` (React web) and `app` (React Native). Contains Gr
 
 Originally everything was in `frontend`. Now that we have an `app` that is very similar (IE: client for the backend) we move stuff that is shared between both to `/shared`
 
-EG: actual UI is different (web uses Mantine UI, app uses React Native components), but the business logic, queries etc are shared. 
+EG: actual UI is different (web uses Mantine UI, app uses React Native components), but the business logic, queries etc are shared.
 
 ## What This Module Does
 
@@ -56,22 +56,22 @@ shared/
 
 ### Safe to Share
 
-| Type | Examples | Why Safe |
-|------|----------|----------|
+| Type               | Examples                      | Why Safe              |
+| ------------------ | ----------------------------- | --------------------- |
 | GraphQL operations | Queries, mutations, fragments | Plain strings + types |
-| Generated types | `File`, `Folder`, `User` | Pure TypeScript |
-| Pure functions | `prettyBytes`, `sortFiles` | No React dependencies |
-| Jotai atoms | `filterAtom` | Framework-agnostic |
-| Constants | `thumbnailDimensions` | Plain values |
-| Validation | `validateFolderName` | Pure functions |
+| Generated types    | `File`, `Folder`, `User`      | Pure TypeScript       |
+| Pure functions     | `prettyBytes`, `sortFiles`    | No React dependencies |
+| Jotai atoms        | `filterAtom`                  | Framework-agnostic    |
+| Constants          | `thumbnailDimensions`         | Plain values          |
+| Validation         | `validateFolderName`          | Pure functions        |
 
 ### NOT Safe to Share
 
-| Type | Why Not | Workaround |
-|------|---------|------------|
-| URQL hooks | Different instances per app | Use hooks in consumer |
-| React components | Web vs Native components | Duplicate or abstract |
-| Platform-specific code | iOS/Android/Web differences | Keep in consumer |
+| Type                   | Why Not                     | Workaround            |
+| ---------------------- | --------------------------- | --------------------- |
+| URQL hooks             | Different instances per app | Use hooks in consumer |
+| React components       | Web vs Native components    | Duplicate or abstract |
+| Platform-specific code | iOS/Android/Web differences | Keep in consumer      |
 
 ### The Core Constraint
 
@@ -82,6 +82,15 @@ Shared:   React 19.0 (exact) + URQL peer dependency
 ```
 
 Different URQL instances cause hook errors. The solution: define operations in shared, use hooks in consumers.
+
+## Auth Error Contract
+
+Auth error metadata is shared across backend, frontend, and app:
+
+- Registry file: `shared/auth/authErrorContract.ts`
+- Contains canonical auth reason values, default messages, GraphQL `extensions.code` mapping, and global action hints
+- Backend should throw auth errors using this registry (via `doAuthError`)
+- Frontend/app classifiers should consume these shared constants instead of hardcoded strings
 
 ## GraphQL Operations
 
@@ -181,7 +190,8 @@ export const urqlCacheExchange = cacheExchange({
       // Auto-invalidate queries after mutations
       editUser: (_, args, cache) => invalidateQueries(cache, ['folder']),
       addComment: (_, args, cache) => invalidateQueries(cache, ['comments']),
-      editBranding: (_, args, cache) => invalidateQueries(cache, ['brandings', 'folder']),
+      editBranding: (_, args, cache) =>
+        invalidateQueries(cache, ['brandings', 'folder']),
     },
   },
 });
@@ -226,7 +236,10 @@ pluralize(5, 'photo'); // "5 photos"
 ### Validation
 
 ```typescript
-import { validateFolderName, validateRelativePath } from '@shared/validation/folderPath';
+import {
+  validateFolderName,
+  validateRelativePath,
+} from '@shared/validation/folderPath';
 
 // Single folder name
 const error = validateFolderName('New Folder'); // null if valid
@@ -251,6 +264,7 @@ export const totalFilterOptionsSelected = atom((get) => {
 ```
 
 Usage in consumers:
+
 ```typescript
 import { useAtom } from 'jotai';
 import { filterAtom } from '@shared/filterAtom';
@@ -261,6 +275,7 @@ const [isFiltering, setIsFiltering] = useAtom(filterAtom);
 ## Adding a New Query
 
 1. Create file in `shared/urql/queries/`:
+
    ```typescript
    // shared/urql/queries/myNewQuery.ts
    import { gql } from '../gql.js';
@@ -276,22 +291,28 @@ const [isFiltering, setIsFiltering] = useAtom(filterAtom);
    ```
 
 2. Regenerate types:
+
    ```bash
    npm run gql
    ```
 
 3. Use in consumer:
+
    ```typescript
    // In frontend or app
    import { useQuery } from 'urql';
    import { myNewQuery } from '@shared/urql/queries/myNewQuery';
 
-   const [result] = useQuery({ query: myNewQuery, variables: { param: '123' } });
+   const [result] = useQuery({
+     query: myNewQuery,
+     variables: { param: '123' },
+   });
    ```
 
 ## Adding a New Utility
 
 1. Create file in appropriate location:
+
    ```typescript
    // shared/helpers/myUtility.ts
    export function myUtility(input: string): string {
@@ -335,6 +356,7 @@ shared/branding/fontRegistry.ts    <-- Single source of truth
 ### Adding a New Font
 
 1. **Add to the registry** in `shared/branding/fontRegistry.ts`:
+
    ```typescript
    {
      key: 'my-new-font',           // URL-safe identifier
@@ -348,17 +370,21 @@ shared/branding/fontRegistry.ts    <-- Single source of truth
    ```
 
 2. **Add the fontsource package** (frontend only):
+
    ```bash
    cd frontend && npm install @fontsource/my-new-font
    ```
 
 3. **Regenerate font files**:
+
    ```bash
    npx tsx scripts/generate-fonts.ts
    ```
+
    This downloads TTF files from Google Fonts for the app and generates import statements for the frontend.
 
 4. **Regenerate GraphQL types**:
+
    ```bash
    npm run gql
    ```
@@ -367,14 +393,14 @@ shared/branding/fontRegistry.ts    <-- Single source of truth
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `shared/branding/fontRegistry.ts` | Font definitions, types, and validation |
-| `scripts/generate-fonts.ts` | Code generator for platform-specific font files |
-| `frontend/src/fonts.generated.ts` | Generated CSS imports (DO NOT EDIT) |
-| `app/src/fonts.generated.ts` | Generated require() statements (DO NOT EDIT) |
-| `app/src/helpers/headingFont.ts` | App font loading and weight selection |
-| `app/src/components/FolderView/FolderViewShared.tsx` | Shared folder view components |
+| File                                                 | Purpose                                         |
+| ---------------------------------------------------- | ----------------------------------------------- |
+| `shared/branding/fontRegistry.ts`                    | Font definitions, types, and validation         |
+| `scripts/generate-fonts.ts`                          | Code generator for platform-specific font files |
+| `frontend/src/fonts.generated.ts`                    | Generated CSS imports (DO NOT EDIT)             |
+| `app/src/fonts.generated.ts`                         | Generated require() statements (DO NOT EDIT)    |
+| `app/src/helpers/headingFont.ts`                     | App font loading and weight selection           |
+| `app/src/components/FolderView/FolderViewShared.tsx` | Shared folder view components                   |
 
 ### How Font Selection Works
 
@@ -386,6 +412,7 @@ shared/branding/fontRegistry.ts    <-- Single source of truth
 ### Font Loading (App)
 
 The app uses Expo's font loading system:
+
 - Base fonts (Signika, Roboto) are loaded at startup in `ThemeProvider`
 - Custom heading fonts are loaded on-demand when a folder with branding is viewed
 - `Font.isLoaded()` prevents duplicate loading during hot reload
@@ -393,6 +420,7 @@ The app uses Expo's font loading system:
 ### Type Safety
 
 The `FontKey` type is derived from the registry array:
+
 ```typescript
 export type FontKey = (typeof fontRegistry)[number]['key'];
 ```
@@ -404,6 +432,7 @@ Adding a font to the array automatically updates the type - no manual sync neede
 ### Import not found
 
 1. Check path alias is configured in consumer's `tsconfig.json`:
+
    ```json
    {
      "paths": {

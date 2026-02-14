@@ -54,20 +54,20 @@ export default defineConfig(({ command, mode }) => {
     base: command === 'build' ? './' : '/',
     plugins: [
       ...(command === 'serve' ? [picrIndexVarsDev(env)] : []),
-    tsConfigPaths(),
-    react({
-      babel: {
-        plugins: [
-          ['babel-plugin-react-compiler', ReactCompilerConfig],
-          [
-            '@locator/babel-jsx/dist',
-            {
-              env: 'development',
-            },
+      tsConfigPaths(),
+      react({
+        babel: {
+          plugins: [
+            ['babel-plugin-react-compiler', ReactCompilerConfig],
+            [
+              '@locator/babel-jsx/dist',
+              {
+                env: 'development',
+              },
+            ],
           ],
-        ],
-      },
-    }),
+        },
+      }),
     ],
     resolve: {
       dedupe: ['react', 'react-dom'],

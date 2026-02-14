@@ -32,13 +32,13 @@ export const PicrPie = ({
           {
             target: 'data',
             eventHandlers: {
-              onClick: (e, { datum }) => {
+              onClick: (_, { datum }) => {
                 if (!['rest', 'files'].includes(datum.x)) setFolderId(datum.x);
               },
-              onMouseOver: (e, { datum }) => {
+              onMouseOver: (_, { datum }) => {
                 setHover(datum.x);
               },
-              onMouseOut: (e, { datum }) => {
+              onMouseOut: () => {
                 setHover(null);
               },
             },

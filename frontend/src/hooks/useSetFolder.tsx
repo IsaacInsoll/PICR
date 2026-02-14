@@ -1,4 +1,9 @@
-import { NavigateOptions, NavLink, useLocation, useNavigate } from 'react-router';
+import {
+  NavigateOptions,
+  NavLink,
+  useLocation,
+  useNavigate,
+} from 'react-router';
 import { useSetAtom } from 'jotai';
 import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder';
 import { MinimalFile, MinimalFolder } from '../../types';

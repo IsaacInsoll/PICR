@@ -1,4 +1,4 @@
-import { Box, Button, InputDescription, InputLabel, Text } from '@mantine/core';
+import { Box, Button, InputDescription, InputLabel } from '@mantine/core';
 import { LinkMode } from '../../../graphql-types';
 import { linkModeStyle } from './LinkModeStyle';
 

@@ -7,8 +7,15 @@ import { and, eq, isNull } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
 import { Stats, statSync } from 'node:fs';
 import { picrConfig } from '../../config/picrConfig.js';
+import type { QueryResult, QueryResultRow } from 'pg';
 
 let rootFolder: FolderFields | undefined = undefined;
+
+const firstReturnedRow = <T extends QueryResultRow>(
+  result: T[] | QueryResult<T>,
+): T | undefined => {
+  return Array.isArray(result) ? result[0] : result.rows[0];
+};
 
 export const setupRootFolder = async () => {
   let root = await db.query.dbFolder.findFirst({
@@ -29,7 +36,7 @@ export const setupRootFolder = async () => {
         folderLastModified: stats.mtime,
       })
       .returning()
-      .then((f) => f[0]);
+      .then(firstReturnedRow);
   }
 
   rootFolder = root;
@@ -91,7 +98,7 @@ export const addFolder = async (path: string, statsProp?: Stats) => {
           folderLastModified: stats.mtime,
         })
         .returning()
-        .then((f) => f[0]);
+        .then(firstReturnedRow);
     }
 
     folderList[p] = newFolder!.id; // for caching

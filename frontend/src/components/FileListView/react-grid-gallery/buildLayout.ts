@@ -12,7 +12,7 @@ const calculateCutOff = <T extends ImageExtended = ImageExtended>(
 ) => {
   const cutOff: number[] = [];
   let cutSum = 0;
-  for (let i in items) {
+  for (const i in items) {
     const item = items[i];
     const fractionOfWidth = item.scaledWidth / totalRowWidth;
     cutOff[i] = Math.floor(fractionOfWidth * protrudingWidth);
@@ -21,7 +21,7 @@ const calculateCutOff = <T extends ImageExtended = ImageExtended>(
 
   let stillToCutOff = protrudingWidth - cutSum;
   while (stillToCutOff > 0) {
-    for (let i in cutOff) {
+    for (const i in cutOff) {
       cutOff[i]++;
       stillToCutOff--;
       if (stillToCutOff < 0) break;
@@ -103,5 +103,5 @@ export const buildLayoutFlat = <T extends Image = Image>(
   options: BuildLayoutOptions,
 ): ImageExtendedRow<T> => {
   const rows = buildLayout(images, options);
-  return [].concat.apply([], rows);
+  return ([] as ImageExtendedRow<T>).concat(...rows);
 };

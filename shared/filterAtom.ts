@@ -26,12 +26,12 @@ export interface FilterOptionsInterface {
 
 export const filterOptions = atom<FilterOptionsInterface>(DefaultFilterOptions);
 
-export const resetFilterOptions = atom(null, (get, set, update) => {
+export const resetFilterOptions = atom(null, (_get, set) => {
   set(filterOptions, DefaultFilterOptions);
 });
 
 export const totalFilterOptionsSelected = atom((get) => {
-  const { ratio, searchText, metadata, ratingComparison, flag, comments } =
+  const { ratio, searchText, ratingComparison, flag, comments } =
     get(filterOptions);
   const totalMeta = get(totalMetadataFilterOptionsSelected);
   let total = totalMeta;

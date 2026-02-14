@@ -38,8 +38,8 @@ export const getHeadingFontFamilyForLevel = (
   level: TitleLevel,
 ) => {
   const resolvedKey = resolveAssetKey(key);
-  const weights =
-    fontWeightsByKey[resolvedKey] ?? fontWeightsByKey.default ?? [400];
+  const weights = fontWeightsByKey[resolvedKey] ??
+    fontWeightsByKey.default ?? [400];
   const weight = getWeightForLevel(weights, level);
   const familyKey = `${resolvedKey}-${weight}`;
   return familyKey in fontFiles ? familyKey : 'signika-400';
@@ -47,8 +47,8 @@ export const getHeadingFontFamilyForLevel = (
 
 export const getFontFilesForKey = (key: FontKey) => {
   const resolvedKey = resolveAssetKey(key);
-  const weights =
-    fontWeightsByKey[resolvedKey] ?? fontWeightsByKey.default ?? [400];
+  const weights = fontWeightsByKey[resolvedKey] ??
+    fontWeightsByKey.default ?? [400];
   return weights.reduce<Record<string, number>>((acc, weight) => {
     const familyKey = `${resolvedKey}-${weight}`;
     const file = fontFiles[familyKey as keyof typeof fontFiles];

@@ -1,6 +1,15 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { FontKey } from '@shared/branding/fontRegistry';
-import { isHeadingFontLoaded, loadHeadingFont } from '@/src/helpers/headingFont';
+import {
+  isHeadingFontLoaded,
+  loadHeadingFont,
+} from '@/src/helpers/headingFont';
 
 const FolderBrandingContext = createContext<FontKey>('default');
 

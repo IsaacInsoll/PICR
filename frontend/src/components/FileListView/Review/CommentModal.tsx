@@ -1,20 +1,10 @@
-import {
-  Button,
-  Divider,
-  Group,
-  Modal,
-  ScrollArea,
-  Stack,
-  Textarea,
-  Timeline,
-} from '@mantine/core';
+import { Button, Divider, Group, Modal, Stack, Textarea } from '@mantine/core';
 import { closeModalAtom } from '../../../atoms/modalAtom';
 import { useSetAtom } from 'jotai/index';
 import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import { MinimalFile } from '../../../../types';
-import { CommentBodyItem } from './CommentBodyItem';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';

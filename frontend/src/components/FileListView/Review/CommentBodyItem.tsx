@@ -12,7 +12,6 @@ import { Comment } from '../../../../../graphql-types';
 import { MinimalFile } from '../../../../types';
 import { PicrImage } from '../../PicrImage';
 import { FileFlagBadge } from './FileFlagBadge';
-import { useSetFolder } from '../../../hooks/useSetFolder';
 import { useOpenCommentsModal } from '../../../atoms/modalAtom';
 import { CommentHistoryProps } from './CommentHistory';
 import { PicrAvatar } from '../../PicrAvatar';
@@ -24,14 +23,9 @@ export const CommentBodyItem = ({
   ...p
 }: { comment: Comment } & CommentHistoryProps) => {
   const { id, timestamp, user, systemGenerated, file } = comment;
-  const setFolder = useSetFolder();
   const openCommentModal = useOpenCommentsModal();
 
   const showFile = file && !p?.singleFile;
-
-  const openFile = () => {
-    setFolder({ id: file.folderId }, file);
-  };
 
   const isHighlighted = p?.highlight == id;
   const isMobile = useIsMobile();

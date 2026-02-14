@@ -1,6 +1,16 @@
 import { lt, valid } from 'semver';
 import { db, getServerOptions, setServerOptions } from '../db/picrDb.js';
-import { and, count, eq, ilike, inArray, isNotNull, ne, or, sql } from 'drizzle-orm';
+import {
+  and,
+  count,
+  eq,
+  ilike,
+  inArray,
+  isNotNull,
+  ne,
+  or,
+  sql,
+} from 'drizzle-orm';
 import { IPicrConfiguration } from '../config/IPicrConfiguration.js';
 import { dirname } from 'path';
 import { randomBytes } from 'node:crypto';
@@ -129,12 +139,15 @@ const migrateBrandingRelationship = async () => {
 
   let migrated = 0;
   for (const branding of brandings) {
-    if (!branding.folderId || !branding.folder) continue;
+    const folder = Array.isArray(branding.folder)
+      ? branding.folder[0]
+      : branding.folder;
+    if (!branding.folderId || !folder) continue;
 
     // Set branding name from folder name
     await db
       .update(dbBranding)
-      .set({ name: branding.folder.name })
+      .set({ name: folder.name })
       .where(eq(dbBranding.id, branding.id));
 
     // Set folder's brandingId to point to this branding

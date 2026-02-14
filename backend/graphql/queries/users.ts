@@ -10,13 +10,12 @@ import { userType } from '../types/userType.js';
 import { allSubfolders } from '../../helpers/allSubfolders.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import { db, dbFolderForId } from '../../db/picrDb.js';
-import { and, desc, eq, inArray, isNotNull, ne } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
-import { ServerInfo, User } from '../../../graphql-types.js';
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context,

@@ -1,6 +1,5 @@
-import { Folder } from '@shared/gql/graphql';
+import { Folder, File } from '@shared/gql/graphql';
 import { AppFolderFeed } from '@/src/components/FolderContents/AppFolderFeed';
-import { File } from '@shared/gql/graphql';
 import { useAtomValue } from 'jotai';
 import { folderViewModeAtom } from '@/src/atoms/atoms';
 import { AppFolderFileList } from '@/src/components/FolderContents/AppFolderFileList';

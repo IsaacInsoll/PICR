@@ -1,4 +1,5 @@
 import {
+  type AnyPgColumn,
   boolean,
   integer,
   pgTable,
@@ -36,11 +37,13 @@ export const dbFolder = pgTable('Folders', {
     .defaultNow(),
   parentId: integer('parentId')
     // .notNull() root folder :/
-    .references((): any => dbFolder.id),
+    .references((): AnyPgColumn => dbFolder.id),
   heroImageId: integer('heroImageId')
     // .notNull()
-    .references((): any => dbFile.id),
-  brandingId: integer('brandingId').references((): any => dbBranding.id),
+    .references((): AnyPgColumn => dbFile.id),
+  brandingId: integer('brandingId').references(
+    (): AnyPgColumn => dbBranding.id,
+  ),
 });
 
 export const dbFolderRelations = relations(dbFolder, ({ one, many }) => ({

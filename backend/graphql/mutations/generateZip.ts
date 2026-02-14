@@ -8,7 +8,7 @@ import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { GraphQLError } from 'graphql/error/index.js';
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context: PicrRequestContext,
@@ -18,7 +18,10 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     params.folderId,
     'View',
   );
-  if (user?.userType === 'Link' && user.linkMode === LinkMode.ProofNoDownloads) {
+  if (
+    user?.userType === 'Link' &&
+    user.linkMode === LinkMode.ProofNoDownloads
+  ) {
     throw new GraphQLError('Downloads are disabled for this link');
   }
   await createAccessLog(user, folder, context, AccessType.Download);

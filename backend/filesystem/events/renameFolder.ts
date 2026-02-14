@@ -64,7 +64,10 @@ export const renameFolder = async (
       relativePath: sql`REGEXP_REPLACE(${dbFile.relativePath}, ${'^' + escapeRegExp(oldRelative)}, ${escapeRegExp(newRelative)})`,
     })
     .where(
-      and(like(dbFile.relativePath, oldRelative + '/%'), eq(dbFile.exists, true)),
+      and(
+        like(dbFile.relativePath, oldRelative + '/%'),
+        eq(dbFile.exists, true),
+      ),
     );
 
   await db
@@ -73,7 +76,10 @@ export const renameFolder = async (
       folderId: sql`(SELECT ${dbFolder.id} FROM ${dbFolder} WHERE ${dbFolder.relativePath} = ${dbFile.relativePath} AND ${dbFolder.exists} = true LIMIT 1)`,
     })
     .where(
-      and(like(dbFile.relativePath, newRelative + '/%'), eq(dbFile.exists, true)),
+      and(
+        like(dbFile.relativePath, newRelative + '/%'),
+        eq(dbFile.exists, true),
+      ),
     );
 
   updateFolderListPaths(oldRelative, newRelative);

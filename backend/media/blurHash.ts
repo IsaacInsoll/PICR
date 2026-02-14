@@ -11,11 +11,9 @@ export async function encodeImageToBlurhash(path: string): Promise<string> {
       .toBuffer({ resolveWithObject: true }); // returns { data, info }
 
     return encode(new Uint8ClampedArray(data), info.width, info.height, 4, 4);
-  } catch (err: any) {
-    log(
-      'error',
-      `Failed to create blurhash for "${path}": ${err?.message || err}`,
-    );
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    log('error', `Failed to create blurhash for "${path}": ${message}`);
     return '';
   }
 }

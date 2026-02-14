@@ -1,4 +1,3 @@
-import { MinimalFile } from '../../../../types';
 import { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
 import { MetadataIcon } from '../../../PicrIcons';
 import { useAtomValue, useSetAtom } from 'jotai';
@@ -12,10 +11,8 @@ import { MetadataSelect } from './MetadataSelect';
 import { AnyMetadataKey } from '@shared/fileMetadata';
 
 export const MetadataBox = ({
-  files,
   metadata,
 }: {
-  files: MinimalFile[];
   metadata: MetadataOptionsForFiltering;
 }) => {
   const [opened, { open, close }] = useDisclosure(false);

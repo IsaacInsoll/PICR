@@ -10,47 +10,48 @@ import { getInitialsColor } from '@/src/helpers/get-initials-color';
 import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 // Used for thumbnails and gallery, presents image/video/folder thumbnail
-export const PFileView = memo(
-  ({
-    file,
-    size,
-    variant,
-    ...props
-  }: {
-    file?: File | Image | Video | Folder | null;
-    size: ThumbnailSize;
-    variant?: 'rounded-fit';
-  } & ImageProps) => {
-    // I had this in here and it worked, but I prefer the idea of the parent deciding how to render this (IE: if it's a folder)
-    // as different views have different needs (EG: blurring, overlaying text etc)
+const PFileViewComponent = ({
+  file,
+  size,
+  variant,
+  ...props
+}: {
+  file?: File | Image | Video | Folder | null;
+  size: ThumbnailSize;
+  variant?: 'rounded-fit';
+} & ImageProps) => {
+  // I had this in here and it worked, but I prefer the idea of the parent deciding how to render this (IE: if it's a folder)
+  // as different views have different needs (EG: blurring, overlaying text etc)
 
-    const p: StyleProp<ImageProps> =
-      variant === 'rounded-fit'
-        ? {
-            contentFit: 'cover',
-            style: [styles.roundedFit, props.style],
-            ...props,
-          }
-        : { ...props };
+  const p: StyleProp<ImageProps> =
+    variant === 'rounded-fit'
+      ? {
+          contentFit: 'cover',
+          style: [styles.roundedFit, props.style],
+          ...props,
+        }
+      : { ...props };
 
-    const isFolder = file?.__typename == 'Folder';
-    //     const uri = useLocalImageUrl(isFolder ? file.heroImage : file, size);
-    if (file?.type == 'Video') {
-      return <PFileVideo {...p} file={file} />;
-    }
-    if (file?.type == 'Image') {
-      return <PFileImage size={size} {...p} file={file} />;
-    }
+  const isFolder = file?.__typename === 'Folder';
+  //     const uri = useLocalImageUrl(isFolder ? file.heroImage : file, size);
+  if (file?.type === 'Video') {
+    return <PFileVideo {...p} file={file} />;
+  }
+  if (file?.type === 'Image') {
+    return <PFileImage size={size} {...p} file={file} />;
+  }
 
-    if (isFolder && file.heroImage?.type == 'Image') {
-      return <PFileImage size={size} {...p} file={file.heroImage} />;
-    }
+  if (isFolder && file.heroImage?.type === 'Image') {
+    return <PFileImage size={size} {...p} file={file.heroImage} />;
+  }
 
-    if (isFolder) return <PFileFolderThumbnail {...p} folder={file} />;
+  if (isFolder) return <PFileFolderThumbnail {...p} folder={file} />;
 
-    return <View {...p} />;
-  },
-);
+  return <View {...p} />;
+};
+
+export const PFileView = memo(PFileViewComponent);
+PFileView.displayName = 'PFileView';
 
 export const PFileFolderThumbnail = ({
   folder,

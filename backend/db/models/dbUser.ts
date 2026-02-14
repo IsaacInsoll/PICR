@@ -6,12 +6,7 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 import { baseColumns } from '../column.helpers.js';
-import {
-  commentPermissionsEnum,
-  linkModeEnum,
-  themeModeEnum,
-  userTypeEnum,
-} from './enums.js';
+import { commentPermissionsEnum, linkModeEnum, userTypeEnum } from './enums.js';
 import { relations } from 'drizzle-orm';
 import { dbFolder } from './dbFolder.js';
 
@@ -51,7 +46,7 @@ export const dbUser = pgTable('Users', {
   linkMode: linkModeEnum(),
 });
 
-export const dbUserRelations = relations(dbUser, ({ one, many }) => ({
+export const dbUserRelations = relations(dbUser, ({ one }) => ({
   folder: one(dbFolder, {
     fields: [dbUser.folderId],
     references: [dbFolder.id],

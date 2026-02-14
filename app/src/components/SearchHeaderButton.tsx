@@ -5,11 +5,7 @@ import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { navBarIconProps } from '@/src/constants';
 import { useHostname } from '@/src/hooks/useHostname';
 
-export const SearchHeaderButton = ({
-  folderId,
-}: {
-  folderId?: string;
-}) => {
+export const SearchHeaderButton = ({ folderId }: { folderId?: string }) => {
   const hostname = useHostname();
   const theme = useAppTheme();
   const href = folderId

@@ -1,6 +1,5 @@
 import { Alert, Transition } from '@mantine/core';
 import { WarningIcon } from '../PicrIcons';
-import { ReactNode } from 'react';
 
 export interface ErrorAlertProps {
   message: string | null;

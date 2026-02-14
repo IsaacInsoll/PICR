@@ -12,5 +12,9 @@
 
 🧑‍💻 [Development Docs](docs/development/index.md) if you want to contribute
 
+Quick contributor checks:
+
+- `npm run format:check`
+- `npm run lint`
 
 <img src="https://api.star-history.com/svg?repos=IsaacInsoll/PICR&type=date&legend=bottom-right" alt="GitHub Star History" width="350" />

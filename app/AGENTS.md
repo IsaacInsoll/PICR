@@ -4,15 +4,15 @@ Expo/React Native mobile app for PICR, providing gallery viewing and push notifi
 
 ## Tech Stack
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Expo | SDK 54 | React Native framework |
-| Expo Router | 6.0 | File-based navigation |
-| React Native | 0.81 | Mobile UI |
-| React | 19.1 | UI framework |
-| URQL | 4.2 | GraphQL client |
-| Jotai | 2.12 | State management |
-| Expo Notifications | - | Push notifications |
+| Technology         | Version | Purpose                |
+| ------------------ | ------- | ---------------------- |
+| Expo               | SDK 54  | React Native framework |
+| Expo Router        | 6.0     | File-based navigation  |
+| React Native       | 0.81    | Mobile UI              |
+| React              | 19.1    | UI framework           |
+| URQL               | 4.2     | GraphQL client         |
+| Jotai              | 2.12    | State management       |
+| Expo Notifications | -       | Push notifications     |
 
 ## Directory Structure
 
@@ -111,10 +111,10 @@ import { formatMetadataValue } from '@frontend/metadata/formatMetadataValue';
 
 ### What CAN Be Imported
 
-| Source | What's Safe | What's NOT Safe |
-|--------|-------------|-----------------|
-| `@shared` | Types, queries, pure functions, Jotai atoms | URQL hooks |
-| `@frontend` | Pure formatting functions | React hooks, components |
+| Source      | What's Safe                                 | What's NOT Safe         |
+| ----------- | ------------------------------------------- | ----------------------- |
+| `@shared`   | Types, queries, pure functions, Jotai atoms | URQL hooks              |
+| `@frontend` | Pure formatting functions                   | React hooks, components |
 
 Any attempt to import from @frontend should trigger a "should this be refactored to be in @shared" consideration.
 
@@ -129,6 +129,7 @@ Any attempt to import from @frontend should trigger a "should this be refactored
 **Workaround**: The `useRequery` hook and potentially others are copied to `app-shared/`.
 
 **Future Fix**: This should be resolved by either:
+
 1. Proper monorepo tooling (e.g., Turborepo)
 2. Extracting URQL client creation to app-specific code
 3. Waiting for Expo/Metro improvements
@@ -204,21 +205,22 @@ Push notifications include URLs that deep link into the app:
 
 ### iOS vs Android
 
-| Feature | iOS | Android |
-|---------|-----|---------|
-| Header | Transparent + blur | Solid background |
+| Feature       | iOS                             | Android                   |
+| ------------- | ------------------------------- | ------------------------- |
+| Header        | Transparent + blur              | Solid background          |
 | Context menus | `react-native-ios-context-menu` | `@react-native-menu/menu` |
-| Safe area | Different nav bar handling | Edge-to-edge UI |
-| Status bar | Adapts to content | Fixed style |
+| Safe area     | Different nav bar handling      | Edge-to-edge UI           |
+| Status bar    | Adapts to content               | Fixed style               |
 
 ### Platform-Specific Code
 
 ```typescript
 import { Platform } from 'react-native';
 
-const headerStyle = Platform.OS === 'ios'
-  ? { backgroundColor: 'transparent' }
-  : { backgroundColor: colors.background };
+const headerStyle =
+  Platform.OS === 'ios'
+    ? { backgroundColor: 'transparent' }
+    : { backgroundColor: colors.background };
 ```
 
 ## UI Components
@@ -288,6 +290,7 @@ function MyComponent() {
 ## Adding a New Screen
 
 1. Create file in `src/app/` following route structure:
+
    ```typescript
    // src/app/[loggedin]/admin/my-screen.tsx
    export default function MyScreen() {

@@ -2,7 +2,16 @@
 
 End-to-end API tests using Vitest with Docker-based test environment.
 
-The only supported production setup is docker (on either x64 or ARM) so testing is done with a built docker container to most closely match production. 
+The only supported production setup is docker (on either x64 or ARM) so testing is done with a built docker container to most closely match production.
+
+## Scope Boundary (Important)
+
+This test suite is for **backend API behavior only**.
+
+- Tests must execute requests against the Dockerized backend (`test-picr`) and assert API responses.
+- Do **not** add frontend/UI/state unit tests here (for example testing React components, Jotai atoms, URQL exchanges, or browser-only behavior).
+- Do **not** import frontend-only runtime dependencies into `tests/` (for example `jotai`, `@mantine/*`, React DOM helpers).
+- If a frontend/app behavior needs coverage, use that subsystem's own test setup instead of `tests/`.
 
 ## Architecture
 
@@ -32,12 +41,12 @@ flowchart TB
 
 ## Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| Vitest 3.1 | Test runner |
-| Docker Compose | Test environment |
-| URQL | GraphQL client for tests |
-| PostgreSQL 16 | Test database (tmpfs) |
+| Technology     | Purpose                  |
+| -------------- | ------------------------ |
+| Vitest 3.1     | Test runner              |
+| Docker Compose | Test environment         |
+| URQL           | GraphQL client for tests |
+| PostgreSQL 16  | Test database (tmpfs)    |
 
 ## Directory Structure
 
@@ -67,6 +76,7 @@ npm test
 ```
 
 This:
+
 1. Downloads sample media (first run only)
 2. Builds Docker images
 3. Starts test containers
@@ -122,6 +132,7 @@ Runs once before all tests:
 ### Global Teardown
 
 Runs after all tests complete:
+
 - Stops and removes containers
 - Preserves images for faster subsequent runs
 
@@ -134,7 +145,7 @@ services:
   test-picr:
     build: ..
     ports:
-      - "6901:6900"
+      - '6901:6900'
     environment:
       DATABASE_URL: postgres://user:pass@test-db/picr
       USE_POLLING: true
@@ -147,13 +158,13 @@ services:
   test-db:
     image: postgres:16
     ports:
-      - "54313:5432"
+      - '54313:5432'
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: picr
     tmpfs:
-      - /var/lib/postgresql/data  # RAM-based, wiped each run
+      - /var/lib/postgresql/data # RAM-based, wiped each run
 ```
 
 ### Key Design Decisions
@@ -175,16 +186,23 @@ import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
 import { editBrandingMutation } from '../shared/urql/mutations/editBrandingMutation';
 
 // WRONG - inline GraphQL bypasses real query validation
-const result = await graphqlRequest(`
+const result = await graphqlRequest(
+  `
   query { folder(id: $id) { ... } }
-`, variables, headers);
+`,
+  variables,
+  headers,
+);
 ```
 
 ### Test Structure
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { createTestGraphqlClient, getUserHeader } from '../frontend/testGraphqlClient';
+import {
+  createTestGraphqlClient,
+  getUserHeader,
+} from '../frontend/testGraphqlClient';
 import { defaultCredentials } from '../backend/auth/defaultCredentials';
 import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
 import { photoFolderId } from './testVariables';
@@ -217,7 +235,7 @@ Creates URQL client pointing to test server:
 ```typescript
 import { createTestGraphqlClient } from '../frontend/testGraphqlClient';
 
-const client = await createTestGraphqlClient({});  // Unauthenticated
+const client = await createTestGraphqlClient({}); // Unauthenticated
 const client = await createTestGraphqlClient({ authorization: 'Bearer ...' });
 ```
 
@@ -250,7 +268,11 @@ Always use relative imports from the test file location:
 
 ```typescript
 // Test utilities
-import { createTestGraphqlClient, getUserHeader, getLinkHeader } from '../frontend/testGraphqlClient';
+import {
+  createTestGraphqlClient,
+  getUserHeader,
+  getLinkHeader,
+} from '../frontend/testGraphqlClient';
 import { defaultCredentials } from '../backend/auth/defaultCredentials';
 
 // Shared queries and mutations (ALWAYS use these, never inline GraphQL)
@@ -269,8 +291,8 @@ import { photoFolderId, videoFolderId } from './testVariables';
 ```typescript
 // tests/testVariables.ts
 export const testUrl = 'http://localhost:6901/';
-export const photoFolderId = '3';      // Dog Photos folder
-export const videoFolderId = '2';      // Birthday Video folder
+export const photoFolderId = '3'; // Dog Photos folder
+export const videoFolderId = '2'; // Birthday Video folder
 export const testPublicLink = {
   folderId: photoFolderId,
   name: 'Public Test User',
@@ -323,7 +345,7 @@ it('link user can view shared folder', async () => {
 
 ```typescript
 it('unauthenticated request fails', async () => {
-  const client = await createTestGraphqlClient({});  // No auth
+  const client = await createTestGraphqlClient({}); // No auth
 
   const result = await client
     .query(viewFolderQuery, { folderId: '1' })
@@ -362,10 +384,14 @@ it('can add comment', async () => {
 ## Adding a New Test File
 
 1. Create file with numbered prefix:
+
    ```typescript
    // tests/07-new-feature.test.ts
    import { expect, test, describe } from 'vitest';
-   import { createTestGraphqlClient, getUserHeader } from '../frontend/testGraphqlClient';
+   import {
+     createTestGraphqlClient,
+     getUserHeader,
+   } from '../frontend/testGraphqlClient';
    import { defaultCredentials } from '../backend/auth/defaultCredentials';
    // Import shared queries/mutations - NEVER write inline GraphQL
    import { someQuery } from '../shared/urql/queries/someQuery';
@@ -409,10 +435,10 @@ Tests import the **same queries and mutations** used by the frontend and app. Th
 
 Downloaded from `https://photosummaryapp.com/picr-demo-data.zip`:
 
-| Folder | Contents |
-|--------|----------|
-| Dog Photos | 10 JPG images (~17.6 MB) |
-| Birthday Video | 1 MP4 video (~11.2 MB) |
+| Folder         | Contents                 |
+| -------------- | ------------------------ |
+| Dog Photos     | 10 JPG images (~17.6 MB) |
+| Birthday Video | 1 MP4 video (~11.2 MB)   |
 
 ### Adding New Fixtures
 
@@ -436,6 +462,7 @@ docker compose up  # Watch for errors
 ### Database connection errors
 
 1. Check PostgreSQL container is running:
+
    ```bash
    docker compose ps
    ```

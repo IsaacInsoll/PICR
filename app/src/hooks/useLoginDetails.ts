@@ -10,7 +10,7 @@ export type LoginDetails = {
   token?: string; //auth token
 };
 
-const loginDetailsAtom = atom<LoginDetails | undefined>(undefined);
+export const loginDetailsAtom = atom<LoginDetails | undefined>(undefined);
 
 export const useLoginDetails = () => {
   const details = useAtomValue(loginDetailsAtom);

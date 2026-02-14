@@ -18,7 +18,7 @@ import { userToJSON } from '../helpers/userToJSON.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context,
@@ -42,8 +42,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
         "You don't have access to edit users in folder " + userFolder.id,
       );
   } else {
-    // @ts-ignore required fields added below
-    user = {};
+    user = {} as UserFields;
   }
 
   const existingUuid = await db.query.dbUser.findFirst({

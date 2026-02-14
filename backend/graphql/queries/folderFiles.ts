@@ -28,7 +28,7 @@ const relativeFilePath = (file: FileWithPath, basePath?: string | null) => {
   return relativeDir ? `${relativeDir}/${file.name}` : file.name;
 };
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context,
@@ -52,10 +52,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     eq(dbFile.exists, true),
   );
 
-  const totals = await db
-    .select({ count: count() })
-    .from(dbFile)
-    .where(where);
+  const totals = await db.select({ count: count() }).from(dbFile).where(where);
   const totalAvailable = totals[0]?.count ?? 0;
 
   const files = await db.query.dbFile.findMany({

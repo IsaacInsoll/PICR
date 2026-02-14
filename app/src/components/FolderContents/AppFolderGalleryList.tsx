@@ -33,7 +33,7 @@ export const AppFolderGalleryList = ({
       onLayout={(e) => {
         const layout = e.nativeEvent.layout;
         const arl = layout.width / layout.height > 1.0;
-        if (arl != isLandscape) setIsLandscape(arl);
+        if (arl !== isLandscape) setIsLandscape(arl);
       }}
       masonry={true}
       style={{ flex: 1, width: '100%', flexGrow: 1 }}
@@ -54,56 +54,55 @@ export const AppFolderGalleryList = ({
   );
 };
 
-const MasonryItem = memo(
-  ({
-    item,
-    width,
-    colCount,
-    borderColor,
-  }: {
-    item: File | Image | Video;
-    width: number;
-    colCount: number;
-    borderColor: string;
-  }) => {
-    const { isFolder, heroImage, isImage, isVideo } = fileProps(item);
-    const image = heroImage != null ? heroImage : item;
+const MasonryItemComponent = ({
+  item,
+  width,
+  colCount,
+  borderColor,
+}: {
+  item: File | Image | Video;
+  width: number;
+  colCount: number;
+  borderColor: string;
+}) => {
+  const { isFolder, heroImage, isImage, isVideo } = fileProps(item);
+  const image = heroImage != null ? heroImage : item;
 
-    const style = {
-      width: width / colCount - border * 2,
-      height: image.imageRatio
-        ? width / colCount / image.imageRatio
-        : defaultHeight,
-    };
+  const style = {
+    width: width / colCount - border * 2,
+    height: image.imageRatio
+      ? width / colCount / image.imageRatio
+      : defaultHeight,
+  };
 
-    return (
-      <View style={[styles.imageContainer, { borderColor }]}>
-        <AppLink item={item} asChild={true}>
-          <TouchableOpacity>
-            {isImage || heroImage || isVideo ? (
-              <PFileView
-                file={image}
-                size="md"
-                style={style}
-                transition={100}
-                // onDisplay={() => setImagesLoaded((l) => l + 1)}
-                // blurRadius={isFolder ? 0 : undefined}
-              />
-            ) : (
-              <PFileFolderThumbnail
-                folder={item}
-                style={{ height: width / colCount }}
-              />
-            )}
-            {isFolder ? (
-              <FolderName folder={item} intensity={colCount} />
-            ) : null}
-          </TouchableOpacity>
-        </AppLink>
-      </View>
-    );
-  },
-);
+  return (
+    <View style={[styles.imageContainer, { borderColor }]}>
+      <AppLink item={item} asChild={true}>
+        <TouchableOpacity>
+          {isImage || heroImage || isVideo ? (
+            <PFileView
+              file={image}
+              size="md"
+              style={style}
+              transition={100}
+              // onDisplay={() => setImagesLoaded((l) => l + 1)}
+              // blurRadius={isFolder ? 0 : undefined}
+            />
+          ) : (
+            <PFileFolderThumbnail
+              folder={item}
+              style={{ height: width / colCount }}
+            />
+          )}
+          {isFolder ? <FolderName folder={item} intensity={colCount} /> : null}
+        </TouchableOpacity>
+      </AppLink>
+    </View>
+  );
+};
+
+const MasonryItem = memo(MasonryItemComponent);
+MasonryItem.displayName = 'MasonryItem';
 
 const FolderName = ({
   folder,
@@ -154,18 +153,3 @@ const styles = StyleSheet.create({
     // borderColor: '#fff',
   },
 });
-
-const splitImages = (images: (File | Image)[], numCols: number = 2) => {
-  const heights = Array(numCols).fill(0);
-  // couldn't use array.fill because all values were pointing to same array :/
-  const cols = heights.map((h) => []);
-
-  images.forEach((image) => {
-    const height = defaultHeight / (image.imageRatio ?? 1); //non-image stuff can just be 100 high?
-    const shortestColHeight = Math.min(...heights);
-    const shortestCol = heights.findIndex((x) => x == shortestColHeight);
-    cols[shortestCol].push(image);
-    heights[shortestCol] += height;
-  });
-  return cols;
-};

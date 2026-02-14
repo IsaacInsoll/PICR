@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // ignored on android currently as we don't have transparent headers
 export const AppHeaderPadding = () => {
   const headerHeight = useHeaderHeight();
-  const isAndroid = Platform.OS == 'android';
+  const isAndroid = Platform.OS === 'android';
   if (isAndroid) return undefined;
   return <View style={{ height: headerHeight }} />;
 };

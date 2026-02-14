@@ -1,8 +1,7 @@
-
 # Development
 
 | Doc                                      | Notes                                         |
-|------------------------------------------|-----------------------------------------------|
+| ---------------------------------------- | --------------------------------------------- |
 | 🎉 [Contributing](../CONTRIBUTING.md)    | Contribution Guidelines                       |
 | 🎉 [Initial Setup](initial-setup.md)     | How to setup development environment          |
 | 📱 [App Development](app.md)             | React Native (Expo) App Development           |
@@ -11,7 +10,6 @@
 | 🧪 [Testing](testing.md)                 | Create and run tests (currently backend only) |
 | 🚀 [Releases](release.md)                | How to do releases                            |
 | 🐛 [Troubleshooting](troubleshooting.md) | Troubleshooting tips                          |
-
 
 ## Folders
 
@@ -23,8 +21,7 @@
 | `app`      | iOS/Android App (Expo / React Native)            |
 | `dist`     | _Compiled_ source (frontend/backend/extra files) |
 
-
->  **TODO: MONOLITH REFACTOR NOTES**
+> **TODO: MONOLITH REFACTOR NOTES**
 >
 > I'm currently moving the node backend from being in `.` to `./backend`
 > Current problems unaddressed is:
@@ -35,15 +32,13 @@
 > We are doing this because the server should be self contained in `backend` and not have it's `package.json` etc in
 > the actual root (like it has been since the beginning).
 
-
 ## Development CLI Commands
 
 | Command                                                                              | Description                                            | When to use                                                                                             |
-|--------------------------------------------------------------------------------------| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
 | `npm start`                                                                          | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. <br /> Uses nodemon/vite to reload on changes                              |
 | `npm run gql`                                                                        | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br />or after updating a query on client side |
 | `cd backend && NODE_OPTIONS='--import tsx' npx drizzle-kit generate --name=<yodawg>` | generate migration files (optional `--name=xyz`)       | Run when db schema modified and you want to commit changes                                              |
-
 
 ## Dev Server
 

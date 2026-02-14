@@ -32,7 +32,7 @@ const loginFormSchema: ZodType<LoginDetails> = z.object({
   password: z.string().min(8),
 });
 
-export default function index() {
+export default function Index() {
   const keyboardVisible = useKeyboardVisible();
 
   return (
@@ -89,7 +89,7 @@ const LoginForm = () => {
       setLogin({ ...data, token });
     } else {
       setStep(
-        error == 'Incorrect username or password'
+        error === 'Incorrect username or password'
           ? 'authError'
           : 'networkError',
       );
@@ -119,7 +119,7 @@ const LoginForm = () => {
           let s = watch('server').trim();
           if (!s.startsWith('http')) s = 'https://' + s;
           if (!s.endsWith('/')) s = s + '/';
-          if (s != watch('server')) {
+          if (s !== watch('server')) {
             setValue('server', s);
           }
         }}
@@ -153,7 +153,7 @@ const LoginForm = () => {
       />
       <ErrorMessage error={errors.password} />
       <View style={{ marginTop: 16 }}>
-        {step == 'loading' ? (
+        {step === 'loading' ? (
           <ActivityIndicator size="large" />
         ) : (
           <Button

@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import { doAuthError } from '../../auth/doAuthError.js';
 
 /**
  * Soft-deletes a user (Link or Admin).
@@ -15,7 +16,7 @@ import { GraphQLFieldResolver } from 'graphql/type/index.js';
  * - Deleted users are hidden from all user listings
  * - Cannot delete user ID 1 (root admin)
  */
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context,
@@ -51,9 +52,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
   );
 
   if (!folderAllowed) {
-    throw new GraphQLError(
-      "You don't have permission to delete users in folder " + userFolder.id,
-    );
+    doAuthError('ACCESS_DENIED');
   }
 
   // Soft delete the user

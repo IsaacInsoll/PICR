@@ -1,8 +1,6 @@
 import { Comment } from '../../../../../graphql-types';
 import { CommentBodyItem } from './CommentBodyItem';
-import { Box, Group, Paper, SegmentedControl, Timeline } from '@mantine/core';
-import { c } from 'vite/dist/node/types.d-aGj9QkWt';
-import { useState } from 'react';
+import { Group, SegmentedControl, Timeline } from '@mantine/core';
 import { atom, useAtom } from 'jotai/index';
 import { useAtomValue } from 'jotai';
 

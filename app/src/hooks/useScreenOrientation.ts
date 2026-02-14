@@ -1,10 +1,6 @@
 import * as ScreenOrientation from 'expo-screen-orientation';
-import {
-  Orientation,
-  OrientationChangeListener,
-} from 'expo-screen-orientation';
+import { Orientation } from 'expo-screen-orientation';
 import { useEffect, useState } from 'react';
-import { EventSubscription } from 'react-native';
 
 export const useScreenOrientation = (): [
   orientation: Orientation,

@@ -93,89 +93,25 @@ export const fontFiles = {
 } as const;
 
 export const fontWeightsByKey = {
-  "default": [
-    400,
-    600,
-    700
-  ],
-  "signika": [
-    400,
-    600,
-    700
-  ],
-  "inter": [
-    400,
-    500,
-    700
-  ],
-  "source-sans-3": [
-    400,
-    500,
-    700
-  ],
-  "manrope": [
-    400,
-    500,
-    700
-  ],
-  "merriweather-sans": [
-    300,
-    400,
-    700
-  ],
-  "montserrat": [
-    200,
-    400,
-    700
-  ],
-  "merriweather": [
-    300,
-    400,
-    700
-  ],
-  "lora": [
-    400,
-    700
-  ],
-  "libre-baskerville": [
-    400,
-    700
-  ],
-  "bebas-neue": [
-    400
-  ],
-  "abril-fatface": [
-    400
-  ],
-  "poiret-one": [
-    400
-  ],
-  "amatic-sc": [
-    400
-  ],
-  "oleo-script": [
-    400
-  ],
-  "pacifico": [
-    400
-  ],
-  "pinyon-script": [
-    400
-  ],
-  "dancing-script": [
-    400,
-    700
-  ],
-  "jetbrains-mono": [
-    400,
-    700
-  ],
-  "atkinson-hyperlegible-next": [
-    400,
-    700
-  ],
-  "atkinson-hyperlegible-mono": [
-    400,
-    700
-  ]
+  default: [400, 600, 700],
+  signika: [400, 600, 700],
+  inter: [400, 500, 700],
+  'source-sans-3': [400, 500, 700],
+  manrope: [400, 500, 700],
+  'merriweather-sans': [300, 400, 700],
+  montserrat: [200, 400, 700],
+  merriweather: [300, 400, 700],
+  lora: [400, 700],
+  'libre-baskerville': [400, 700],
+  'bebas-neue': [400],
+  'abril-fatface': [400],
+  'poiret-one': [400],
+  'amatic-sc': [400],
+  'oleo-script': [400],
+  pacifico: [400],
+  'pinyon-script': [400],
+  'dancing-script': [400, 700],
+  'jetbrains-mono': [400, 700],
+  'atkinson-hyperlegible-next': [400, 700],
+  'atkinson-hyperlegible-mono': [400, 700],
 } as const;

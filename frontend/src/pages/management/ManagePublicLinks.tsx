@@ -6,7 +6,7 @@ import { ManagePublicLink } from './ManagePublicLink';
 import { MinimalFolder, MinimalSharedFolder } from '../../../types';
 import { DisconnectedIcon } from '../../PicrIcons';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
-import { Button, Divider, Group, Stack, Switch, Tabs } from '@mantine/core';
+import { Button, Divider, Group, Stack, Switch } from '@mantine/core';
 import { PicrDataGrid } from '../../components/PicrDataGrid';
 import { EmptyPlaceholder } from '../EmptyPlaceholder';
 import { PublicLinkIcon } from '../../PicrIcons';
@@ -14,7 +14,6 @@ import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { Tips } from '../../components/Tips';
 import { publicLinkColumns } from './userColumns';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import { AccessLogs } from './AccessLogs/AccessLogs';
 
 interface ManagePublicLinksProps {
   folder: MinimalFolder;

@@ -9,20 +9,20 @@ import { and, eq } from 'drizzle-orm';
 import { dbUserDevice } from '../../db/models/index.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
-import { GraphQLError } from 'graphql/error/index.js';
 import { userDeviceType } from '../types/userDeviceType.js';
+import { doAuthError } from '../../auth/doAuthError.js';
 
 const resolver: GraphQLFieldResolver<
-  any,
+  unknown,
   PicrRequestContext,
   { userId: number; enabled: boolean; notificationToken: string; name: string }
 > = async (_, params, context) => {
   const { user, isUser } = context;
   if (!user || !isUser) {
-    throw new GraphQLError('Not a user');
+    return doAuthError('NOT_A_USER');
   }
   if (user.id != params.userId) {
-    throw new GraphQLError('Unable to edit other user devices');
+    return doAuthError('ACCESS_DENIED');
   }
 
   const props = {

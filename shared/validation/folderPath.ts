@@ -1,4 +1,8 @@
-const hasControlChars = (value: string) => /[\u0000-\u001f\u007f]/.test(value);
+const hasControlChars = (value: string) =>
+  [...value].some((char) => {
+    const code = char.charCodeAt(0);
+    return code <= 31 || code === 127;
+  });
 
 export const validateFolderName = (name: string) => {
   if (name.length === 0) return 'Folder name is required.';

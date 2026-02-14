@@ -10,7 +10,7 @@ export const fileSortAtom = atom<FileSort>(
     const sort = get(fileSortHashAtom);
     if (!sort) return { type: 'Filename', direction: 'Asc' };
     const type =
-      Object.entries(fileSortEncoding).find(([k, v]) => v == sort[0])[0] ??
+      Object.entries(fileSortEncoding).find(([, v]) => v == sort[0])?.[0] ??
       'Filename';
     const direction = sort[1] == 'a' ? 'Asc' : 'Desc';
     // console.log({ type, direction });

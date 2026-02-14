@@ -11,7 +11,7 @@ import { desc, eq } from 'drizzle-orm';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context,
@@ -27,7 +27,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     const file = await dbFileForId(params.fileId);
     const { user } = await contextPermissions(context, file?.folderId, 'View');
     if (user?.commentPermissions === 'none') {
-      doAuthError('Not allowed to view comments');
+      doAuthError('COMMENTS_HIDDEN');
     }
 
     const list = await db.query.dbComment.findMany({
@@ -48,7 +48,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
     const folderId = params.folderId;
     const { user } = await contextPermissions(context, folderId, 'View');
     if (user?.commentPermissions === 'none') {
-      doAuthError('Not allowed to view comments');
+      doAuthError('COMMENTS_HIDDEN');
     }
     const files = await subFilesMap(folderId);
 

@@ -13,7 +13,7 @@ export const brandingForFolder = async (
     if (f.brandingId) {
       const branding = await brandingForId(f.brandingId);
       if (branding) {
-        // @ts-ignore unreasonable to expect parent/child folders on this query
+        // @ts-expect-error GraphQL result omits full folder tree here by design
         return { ...branding, folder: f };
       }
     }

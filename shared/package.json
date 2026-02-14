@@ -2,6 +2,9 @@
   "name": "picr-shared",
   "description": "Functionality shared between PICR web and app",
   "type": "module",
+  "scripts": {
+    "lint": "npm --prefix ../backend exec -- eslint . --ext .ts,.tsx --config ../backend/eslint.config.mjs"
+  },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
     "format-duration": "^3.0.2",

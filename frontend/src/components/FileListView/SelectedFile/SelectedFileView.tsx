@@ -25,7 +25,7 @@ import { lightboxControllerRefAtom } from '../../../atoms/lightboxControllerRefA
 import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
 import { useCanDownload } from '../../../hooks/useMe';
 import { Thumbnails } from 'yet-another-react-lightbox/plugins';
-import { DashboardIcon, ThumbnailsIcon } from '../../../PicrIcons';
+import { ThumbnailsIcon } from '../../../PicrIcons';
 
 export const SelectedFileView = ({
   files,

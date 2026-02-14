@@ -4,9 +4,7 @@ import { Alert, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { addToFileCache, fileCache } from '@/src/helpers/folderCache';
 import { useQuery } from 'urql';
 import { PBigImage, useLocalImageUrl } from '@/src/components/PBigImage';
-import { atom, useAtom, useAtomValue } from 'jotai';
-import { PText } from '@/src/components/PText';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { atom, useAtom, useSetAtom } from 'jotai';
 import * as MediaLibrary from 'expo-media-library';
 import Animated, {
   Easing,
@@ -19,7 +17,6 @@ import Animated, {
 import Carousel from 'react-native-reanimated-carousel';
 import { useCallback, useState } from 'react';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
-import { BlurView } from 'expo-blur';
 import { HeaderButton } from '@react-navigation/elements';
 import { Ionicons } from '@expo/vector-icons';
 import { navBarIconProps } from '@/src/constants';
@@ -48,11 +45,10 @@ const showFileInfoAtom = atom(false);
 
 export default function AppFileView() {
   const theme = useAppTheme();
-  const safe = useSafeAreaInsets();
 
   const router = useRouter();
-  const [fullScreen, setFullScreen] = useAtom(fileViewFullscreenAtom);
-  const { folderId, fileId } = useLocalSearchParams<{
+  const [fullScreen] = useAtom(fileViewFullscreenAtom);
+  const { fileId } = useLocalSearchParams<{
     fileId: string;
     folderId: string;
   }>();
@@ -64,8 +60,8 @@ export default function AppFileView() {
     variables: { folderId },
   });
   const files = result.data?.folder.files;
-  const file = files?.find((f) => f.id == fileId);
-  const fileIndex = files?.findIndex((f) => f.id == fileId);
+  const file = files?.find((f) => f.id === fileId);
+  const fileIndex = files?.findIndex((f) => f.id === fileId);
   const branding = result.data?.folder?.branding;
   const fontKey = normalizeHeadingFontKey(branding?.headingFontKey);
   const headerFontFamily = getHeadingFontFamilyForLevel(fontKey, 3);
@@ -159,7 +155,6 @@ export default function AppFileView() {
           scrollAnimationDuration={150}
           windowSize={10} // lazy loading
         />
-        {/*<FileBottomBar file={file} />*/}
         <Animated.View
           pointerEvents="none"
           style={[
@@ -182,44 +177,17 @@ export default function AppFileView() {
   );
 }
 
-const FileBottomBar = ({ file }) => {
-  const theme = useAppTheme();
-  const fullScreen = useAtomValue(fileViewFullscreenAtom);
-  // const safe = useSafeAreaInsets();
-  if (fullScreen) return null;
-  return (
-    <BlurView
-      intensity={90}
-      tint="dark"
-      experimentalBlurMethod="dimezisBlurView"
-      style={{
-        position: 'absolute',
-        // bottom: safe.bottom,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        padding: 16,
-        // backgroundColor: theme.backgroundColor,
-      }}
-    >
-      <PText variant="code">
-        Viewing file {file.id} with ratio {file.imageRatio}
-      </PText>
-    </BlurView>
-  );
-};
-
 const CustomItem = ({
   index,
   file,
   animationValue,
   setIsZoomed,
 }: ItemProps & { file: File }) => {
-  const { folderId, fileId } = useLocalSearchParams<{
+  const { fileId } = useLocalSearchParams<{
     fileId: string;
     folderId: string;
   }>();
-  const isSelected = file.id == fileId;
+  const isSelected = file.id === fileId;
   const maskStyle = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
       animationValue.value,
@@ -234,9 +202,9 @@ const CustomItem = ({
 
   return (
     <View style={{ flex: 1 }}>
-      {file.type == 'Image' ? (
+      {file.type === 'Image' ? (
         <PBigImage file={file} setIsZoomed={setIsZoomed} />
-      ) : file.type == 'Video' ? (
+      ) : file.type === 'Video' ? (
         <PBigVideo
           file={file}
           setIsZoomed={setIsZoomed}

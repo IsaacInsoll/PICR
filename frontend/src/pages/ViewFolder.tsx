@@ -20,10 +20,9 @@ import { useRequery } from '@shared/hooks/useRequery';
 import { LoggedInHeader } from '../components/Header/LoggedInHeader';
 import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
-import { useCommentPermissions } from '../hooks/useCommentPermissions';
 import { useSetAtom } from 'jotai';
 import { MinimalFolder } from '../../types';
-import { CommentIcon, DotsIcon, FilterIcon, FolderIcon } from '../PicrIcons';
+import { DotsIcon, FilterIcon, FolderIcon } from '../PicrIcons';
 import { FolderRouteParams } from '../Router';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
@@ -31,7 +30,6 @@ import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
 import { ManageFolder } from './ManageFolder';
 import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 import { FolderCsvExportModal } from '../components/FileListView/FolderCsvExportModal';
-import { useMe } from '../hooks/useMe';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -198,10 +196,7 @@ const FolderOverflowMenu = ({
   folder: MinimalFolder;
   onCsvExport: () => void;
 }) => {
-  const setFolder = useSetFolder();
   const setFiltering = useSetAtom(filterAtom);
-  const { canView } = useCommentPermissions();
-  const me = useMe();
   return (
     <Menu
       shadow="md"

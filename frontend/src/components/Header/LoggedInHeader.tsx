@@ -35,7 +35,6 @@ import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
 import { UAParser } from 'ua-parser-js';
 import { User } from '@shared/gql/graphql';
-import { useState } from 'react';
 import { useAtom } from 'jotai/index';
 import { appStoreLinks } from '@shared/consts';
 
@@ -226,10 +225,10 @@ const OpenInAppModal = () => {
         <Text size="sm" c="dimmed">
           PICR should open automatically if it is installed.
         </Text>
-        <a href={appStoreLinks.ios} target="_blank">
+        <a href={appStoreLinks.ios} target="_blank" rel="noreferrer">
           <Image src="/app-store.png" style={imgProps} />
         </a>
-        <a href={appStoreLinks.android} target="_blank">
+        <a href={appStoreLinks.android} target="_blank" rel="noreferrer">
           <Image src="/google-play.png" style={imgProps} />
         </a>
         <Anchor href={open} size="sm" c="dimmed">

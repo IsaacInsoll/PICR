@@ -15,7 +15,6 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
-import { ParticleBackground } from '../components/ParticleBackground';
 
 export const LoginForm = () => {
   const [user, setUser] = useState('');

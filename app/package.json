@@ -1,7 +1,6 @@
 {
   "name": "app",
   "main": "expo-router/entry",
-
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",

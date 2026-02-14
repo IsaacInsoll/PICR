@@ -42,7 +42,7 @@ export const AspectSelector = () => {
   );
 };
 
-const renderOption = ({ option, checked }) => {
+const renderOption = ({ option }) => {
   return (
     <Group flex={1} gap="sm">
       <div>{aspectRatioIcon[option.label]}</div>

@@ -1,7 +1,6 @@
 import { File } from '@shared/gql/graphql';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { PText } from '@/src/components/PText';
 import { CommentIcon } from '@/src/components/AppIcons';
 

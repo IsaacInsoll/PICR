@@ -34,7 +34,7 @@ export async function getUserFromToken(
     )
       return user;
     return undefined;
-  } catch (error) {
+  } catch {
     return undefined; //doAuthError('Invalid Token: ' + token);
   }
 }

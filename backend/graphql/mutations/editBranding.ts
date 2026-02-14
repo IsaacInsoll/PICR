@@ -14,7 +14,7 @@ import { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 import { GraphQLError } from 'graphql/error/index.js';
 
-const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
+const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
   context,
@@ -46,10 +46,7 @@ const resolver: GraphQLFieldResolver<any, PicrRequestContext> = async (
       throw new GraphQLError('Branding not found: ' + params.id);
     }
 
-    await db
-      .update(dbBranding)
-      .set(props)
-      .where(eq(dbBranding.id, params.id));
+    await db.update(dbBranding).set(props).where(eq(dbBranding.id, params.id));
 
     return db.query.dbBranding.findFirst({
       where: eq(dbBranding.id, params.id),

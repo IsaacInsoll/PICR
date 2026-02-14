@@ -48,8 +48,7 @@ export async function contextPermissions(
     folder.exists
   ) {
     if (folderIsUnderFolder(folder, userHomeFolder)) {
-      if (requires == 'Admin')
-        throw new GraphQLError('No admin permissions for ' + folder.name);
+      if (requires == 'Admin') doAuthError('ACCESS_DENIED');
       return {
         permissions: 'View',
         user: user,
@@ -60,10 +59,10 @@ export async function contextPermissions(
 
   if (requires) {
     if (user?.userType == 'Link') {
-      throw new GraphQLError('Invalid Link (UUID)');
+      doAuthError('INVALID_LINK');
     } else {
-      if (!user) doAuthError('Not Logged In');
-      doAuthError('Access Denied');
+      if (!user) doAuthError('NOT_LOGGED_IN');
+      doAuthError('ACCESS_DENIED');
     }
   }
   return { permissions: 'None', user: undefined };

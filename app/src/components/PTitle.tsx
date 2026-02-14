@@ -19,11 +19,7 @@ export const PTitle = ({
   const fontFamily = getHeadingFontFamilyForLevel(headingFontKey, level);
   return (
     <Text
-      style={[
-        styles[level],
-        { color: theme.textColor, fontFamily },
-        style,
-      ]}
+      style={[styles[level], { color: theme.textColor, fontFamily }, style]}
       {...props}
     >
       {children}

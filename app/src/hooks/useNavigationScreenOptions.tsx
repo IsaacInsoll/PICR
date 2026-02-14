@@ -8,7 +8,7 @@ import { getHeadingFontFamilyForLevel } from '@/src/helpers/headingFont';
 export const useNavigationScreenOptions = (): NativeStackNavigationOptions => {
   const theme = useAppTheme();
   const headingFontFamily = getHeadingFontFamilyForLevel('default', 3);
-  const isAndroid = Platform.OS == 'android'; // if you change this, also update AppHeaderPadding
+  const isAndroid = Platform.OS === 'android'; // if you change this, also update AppHeaderPadding
   return {
     headerStyle: isAndroid
       ? {

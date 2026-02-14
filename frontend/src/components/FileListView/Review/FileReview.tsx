@@ -9,18 +9,16 @@ import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { FileFlagBadge } from './FileFlagBadge';
 import { FileRating } from './FileRating';
 import { SetHeroImageButton } from './SetHeroImageButton';
-import { useId } from 'react';
 
 // Horizontal component containing Flag, Rating and Comment buttons
 export const FileReview = ({ file }: { file: MinimalFile }) => {
   const { readOnly, isNone } = useCommentPermissions();
+  const [, mutate] = useMutation(addCommentMutation);
+  const openComment = useOpenCommentsModal();
 
   if (isNone) return null;
 
-  const [, mutate] = useMutation(addCommentMutation);
   const { id, flag, rating, totalComments } = file;
-
-  const openComment = useOpenCommentsModal();
 
   // Note when plumbing in mutations:
   //Rating will probably want something like   return <Loader color="blue" size="sm" type="dots" />;

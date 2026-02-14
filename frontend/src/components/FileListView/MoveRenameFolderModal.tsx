@@ -205,7 +205,7 @@ const withParents = (
   return { ...folder, parents };
 };
 
-const buildRelativePath = (folder?: MinimalFolder, allowRoot = false) => {
+const buildRelativePath = (folder?: MinimalFolder) => {
   if (!folder?.name) return '';
   if (folder.parentId == null) return '';
   const parents = folder.parents ?? [];

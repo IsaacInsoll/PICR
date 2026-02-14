@@ -40,9 +40,7 @@ export const ManageUser = ({
   const [username, setUsername] = useState(user?.username);
   const [password, setPassword] = useState<string | null>(null);
   const [ntfy, setNtfy] = useState<string | null>(user?.ntfy);
-  const [ntfyEmail, setNtfyEmail] = useState<boolean>(
-    user?.ntfyEmail ?? false,
-  );
+  const [ntfyEmail, setNtfyEmail] = useState<boolean>(user?.ntfyEmail ?? false);
   const [enabled, setEnabled] = useState(user?.enabled ?? true);
   const [commentPermissions, setCommentPermissions] =
     useState<CommentPermissions>(
@@ -81,7 +79,7 @@ export const ManageUser = ({
       ntfy,
       ntfyEmail,
     };
-    mutate(data).then(({ data, error }) => {
+    mutate(data).then(({ error }) => {
       if (error) {
         setError(error.toString());
       } else {
@@ -184,7 +182,10 @@ export const ManageUser = ({
             undone and they will no longer be able to log in.
           </Text>
           <Group justify="flex-end">
-            <Button variant="default" onClick={() => setShowDeleteConfirm(false)}>
+            <Button
+              variant="default"
+              onClick={() => setShowDeleteConfirm(false)}
+            >
               Cancel
             </Button>
             <Button color="red" onClick={onDelete} leftSection={<DeleteIcon />}>

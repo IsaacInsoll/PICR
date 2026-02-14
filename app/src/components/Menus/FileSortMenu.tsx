@@ -2,7 +2,6 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
   DropdownMenuItemIcon,
   DropdownMenuItemTitle,
   DropdownMenuLabel,
@@ -28,7 +27,7 @@ export const FileSortMenu = ({ children }: { children: ReactNode }) => {
           <DropdownMenuCheckboxItem
             key={value}
             onSelect={() => setSort((s) => ({ ...s, type: value }))}
-            value={sort.type == value ? 'on' : 'off'}
+            value={sort.type === value ? 'on' : 'off'}
           >
             <DropdownMenuItemTitle>{label}</DropdownMenuItemTitle>
             <DropdownMenuItemIcon ios={{ name: sfSymbol }} />
@@ -40,7 +39,7 @@ export const FileSortMenu = ({ children }: { children: ReactNode }) => {
             <DropdownMenuCheckboxItem
               key={value}
               onSelect={() => setSort((s) => ({ ...s, direction: value }))}
-              value={sort.direction == value ? 'on' : 'off'}
+              value={sort.direction === value ? 'on' : 'off'}
             >
               <DropdownMenuItemTitle>{label}</DropdownMenuItemTitle>
               <DropdownMenuItemIcon ios={{ name: sfSymbol }} />

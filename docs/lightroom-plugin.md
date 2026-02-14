@@ -20,6 +20,7 @@ The Lightroom plugin is bundled with your PICR installation and always matches y
 **Option A: Copy to Modules folder**
 
 Copy the extracted `picr.lrplugin` folder to:
+
 - **macOS**: `~/Library/Application Support/Adobe/Lightroom/Modules/`
 - **Windows**: `C:\Users\<username>\AppData\Roaming\Adobe\Lightroom\Modules\`
 
@@ -53,13 +54,12 @@ Then restart Lightroom.
 2. Go to **Library → Plug-in Extras → Import PICR Data**
 3. Paste the CSV data into the text field
 4. Click **Import**
-![](images/export-csv-3.png)
-
-
+   ![](images/export-csv-3.png)
 
 ### Step 3: Review Results
 
 The plugin will show you:
+
 - How many files were updated
 - Any files that couldn't be found
 - If all files were already up to date
@@ -70,20 +70,20 @@ The plugin will show you:
 
 PICR ratings (0-5 stars) are synced to Lightroom's star ratings.
 
-| PICR | Lightroom |
-|------|-----------|
-| 0 stars | Unrated |
+| PICR      | Lightroom |
+| --------- | --------- |
+| 0 stars   | Unrated   |
 | 1-5 stars | 1-5 stars |
 
 ### Flags
 
 PICR approval flags are synced to Lightroom's pick status.
 
-| PICR Flag | Lightroom |
-|-----------|-----------|
-| Approved | Picked (white flag) |
-| Rejected | Rejected (black X) |
-| None | No change |
+| PICR Flag | Lightroom           |
+| --------- | ------------------- |
+| Approved  | Picked (white flag) |
+| Rejected  | Rejected (black X)  |
+| None      | No change           |
 
 ### Subfolders
 
@@ -92,6 +92,7 @@ When exporting from PICR with "Include subfolders" enabled, the plugin will matc
 ### Extension Matching
 
 The plugin matches by filename without extension. This means:
+
 - `photo.jpg` in PICR matches `photo.NEF` or `photo.CR2` in Lightroom
 - Perfect for workflows where you export JPGs to PICR but keep RAW files in Lightroom
 

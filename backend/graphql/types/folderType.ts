@@ -24,129 +24,137 @@ import { dbFile, dbUser } from '../../db/models/index.js';
 import { GraphQLDateTime } from 'graphql-scalars';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
-export const folderType: GraphQLObjectType<any, any> = new GraphQLObjectType({
-  name: 'Folder',
-  fields: () => ({
-    id: { type: new GraphQLNonNull(GraphQLID) },
-    name: { type: new GraphQLNonNull(GraphQLString) },
-    title: { type: GraphQLString },
-    subtitle: { type: GraphQLString },
-    folderLastModified: { type: new GraphQLNonNull(GraphQLDateTime) },
-    parentId: { type: GraphQLID },
-    brandingId: { type: GraphQLID },
-    subFolders: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
-      resolve: async (f: FolderFields) => subFolders(f.id),
-    },
-    parents: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),
-      resolve: (f: FolderFields, params, context: PicrRequestContext) => {
-        return parentFolders(f, context);
+export const folderType: GraphQLObjectType<FolderFields, PicrRequestContext> =
+  new GraphQLObjectType({
+    name: 'Folder',
+    fields: () => ({
+      id: { type: new GraphQLNonNull(GraphQLID) },
+      name: { type: new GraphQLNonNull(GraphQLString) },
+      title: { type: GraphQLString },
+      subtitle: { type: GraphQLString },
+      folderLastModified: { type: new GraphQLNonNull(GraphQLDateTime) },
+      parentId: { type: GraphQLID },
+      brandingId: { type: GraphQLID },
+      subFolders: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(folderType)),
+        ),
+        resolve: async (f: FolderFields) => subFolders(f.id),
       },
-    },
-    files: {
-      type: new GraphQLNonNull(
-        new GraphQLList(new GraphQLNonNull(fileInterface)),
-      ),
-      resolve: async (f: FolderFields) => getFilesForFolder(f.id),
-    },
-    heroImage: {
-      type: imageFileType,
-      resolve: async (f: FolderFields) => heroImageForFolder(f),
-    },
-    permissions: { type: folderPermissionsType },
-    branding: {
-      type: brandingType,
-      resolve: async (f: FolderFields) => {
-        return await brandingForFolder(f);
+      parents: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(folderType)),
+        ),
+        resolve: (f: FolderFields, _params, context: PicrRequestContext) => {
+          return parentFolders(f, context);
+        },
       },
-    },
-    totalSize: {
-      type: new GraphQLNonNull(GraphQLString), // because GraphQLInt is 32bit which is TINY
-      resolve: async (f: FolderFields, params, context) => {
-        const folderIds = await allSubfolderIds(f);
+      files: {
+        type: new GraphQLNonNull(
+          new GraphQLList(new GraphQLNonNull(fileInterface)),
+        ),
+        resolve: async (f: FolderFields) => getFilesForFolder(f.id),
+      },
+      heroImage: {
+        type: imageFileType,
+        resolve: async (f: FolderFields) => heroImageForFolder(f),
+      },
+      permissions: { type: folderPermissionsType },
+      branding: {
+        type: brandingType,
+        resolve: async (f: FolderFields) => {
+          return await brandingForFolder(f);
+        },
+      },
+      totalSize: {
+        type: new GraphQLNonNull(GraphQLString), // because GraphQLInt is 32bit which is TINY
+        resolve: async (f: FolderFields) => {
+          const folderIds = await allSubfolderIds(f);
 
-        const totes = await db
-          .select({ value: sum(dbFile.fileSize) })
-          .from(dbFile)
-          .where(
-            and(inArray(dbFile.folderId, folderIds), eq(dbFile.exists, true)),
+          const totes = await db
+            .select({ value: sum(dbFile.fileSize) })
+            .from(dbFile)
+            .where(
+              and(inArray(dbFile.folderId, folderIds), eq(dbFile.exists, true)),
+            );
+
+          return totes[0].value ?? '0';
+        },
+      },
+      totalDirectSize: {
+        type: new GraphQLNonNull(GraphQLString), // because GraphQLInt is 32bit which is TINY
+        resolve: async (f: FolderFields) => {
+          const totes = await db
+            .select({ value: sum(dbFile.fileSize) })
+            .from(dbFile)
+            .where(and(eq(dbFile.folderId, f.id), eq(dbFile.exists, true)));
+
+          return totes[0].value ?? '0';
+        },
+      },
+      totalFiles: {
+        type: new GraphQLNonNull(GraphQLInt),
+        resolve: async (f: FolderFields) => {
+          const folderIds = await allSubfolderIds(f);
+          const total = await db
+            .select({ count: count() })
+            .from(dbFile)
+            .where(
+              and(inArray(dbFile.folderId, folderIds), eq(dbFile.exists, true)),
+            );
+          return total[0].count;
+        },
+      },
+      totalFolders: {
+        type: new GraphQLNonNull(GraphQLInt),
+        resolve: async (f: FolderFields) => {
+          const total = await allSubfolderIds(f);
+          return total.length - 1;
+        },
+      },
+      totalImages: {
+        type: new GraphQLNonNull(GraphQLInt),
+        resolve: async (f: FolderFields) => {
+          const folderIds = await allSubfolderIds(f);
+          const total = await db
+            .select({ count: count() })
+            .from(dbFile)
+            .where(
+              and(
+                eq(dbFile.type, 'Image'),
+                inArray(dbFile.folderId, folderIds),
+                eq(dbFile.exists, true),
+              ),
+            );
+          return total[0].count;
+        },
+      },
+      users: {
+        type: new GraphQLList(new GraphQLNonNull(userType)),
+        resolve: async (f: FolderFields, _params, context) => {
+          //TODO: handle this better: viewing a folder with a lot of subfolders calls this query a bunch of times and slows shit down
+          const { permissions } = await contextPermissions(context, f.id);
+          if (permissions != 'Admin') return null;
+
+          const users = await db.query.dbUser.findMany({
+            where: eq(dbUser.folderId, f.id),
+          });
+
+          return users.map((pl) => {
+            return { ...userToJSON(pl) };
+          });
+        },
+      },
+      relativePath: {
+        type: new GraphQLNonNull(GraphQLString),
+        resolve: async (f: FolderFields, _params, context) => {
+          const { permissions, folder } = await contextPermissions(
+            context,
+            f.id,
           );
-
-        return totes[0].value ?? '0';
+          if (permissions != 'Admin') return null;
+          return folder?.relativePath;
+        },
       },
-    },
-    totalDirectSize: {
-      type: new GraphQLNonNull(GraphQLString), // because GraphQLInt is 32bit which is TINY
-      resolve: async (f: FolderFields, params, context) => {
-        const totes = await db
-          .select({ value: sum(dbFile.fileSize) })
-          .from(dbFile)
-          .where(and(eq(dbFile.folderId, f.id), eq(dbFile.exists, true)));
-
-        return totes[0].value ?? '0';
-      },
-    },
-    totalFiles: {
-      type: new GraphQLNonNull(GraphQLInt),
-      resolve: async (f: FolderFields, params, context) => {
-        const folderIds = await allSubfolderIds(f);
-        const total = await db
-          .select({ count: count() })
-          .from(dbFile)
-          .where(
-            and(inArray(dbFile.folderId, folderIds), eq(dbFile.exists, true)),
-          );
-        return total[0].count;
-      },
-    },
-    totalFolders: {
-      type: new GraphQLNonNull(GraphQLInt),
-      resolve: async (f: FolderFields, params, context) => {
-        const total = await allSubfolderIds(f);
-        return total.length - 1;
-      },
-    },
-    totalImages: {
-      type: new GraphQLNonNull(GraphQLInt),
-      resolve: async (f: FolderFields, params, context) => {
-        const folderIds = await allSubfolderIds(f);
-        const total = await db
-          .select({ count: count() })
-          .from(dbFile)
-          .where(
-            and(
-              eq(dbFile.type, 'Image'),
-              inArray(dbFile.folderId, folderIds),
-              eq(dbFile.exists, true),
-            ),
-          );
-        return total[0].count;
-      },
-    },
-    users: {
-      type: new GraphQLList(new GraphQLNonNull(userType)),
-      resolve: async (f: FolderFields, params, context) => {
-        //TODO: handle this better: viewing a folder with a lot of subfolders calls this query a bunch of times and slows shit down
-        const { permissions } = await contextPermissions(context, f.id);
-        if (permissions != 'Admin') return null;
-
-        const users = await db.query.dbUser.findMany({
-          where: eq(dbUser.folderId, f.id),
-        });
-
-        return users.map((pl) => {
-          return { ...userToJSON(pl) };
-        });
-      },
-    },
-    relativePath: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: async (f: FolderFields, params, context) => {
-        const { permissions, folder } = await contextPermissions(context, f.id);
-        if (permissions != 'Admin') return null;
-        return folder?.relativePath;
-      },
-    },
-  }),
-});
+    }),
+  });
