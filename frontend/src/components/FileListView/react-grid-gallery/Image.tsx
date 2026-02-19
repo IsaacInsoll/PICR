@@ -15,7 +15,7 @@ export const Image = <T extends ImageExtended>({
   index,
   onSelect,
   onClick,
-}: ImageProps<T>): JSX.Element => {
+}: ImageProps<T>) => {
   const styleContext = { item };
 
   const [hover, setHover] = useState(false);
@@ -26,7 +26,13 @@ export const Image = <T extends ImageExtended>({
     src: item.src,
     alt: item.alt ? item.alt : '',
     title: typeof item.caption === 'string' ? item.caption : null,
-    style: getStyle(thumbnailStyle, styles.thumbnail, styleContext),
+    style: getStyle(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      thumbnailStyle as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      styles.thumbnail as any,
+      styleContext,
+    ),
   };
 
   const handleCheckButtonClick = (event: MouseEvent<HTMLElement>) => {
@@ -51,7 +57,6 @@ export const Image = <T extends ImageExtended>({
     thumbnailStyle,
     tagStyle,
   };
-
   return (
     <div
       className="ReactGridGallery_tile"
@@ -65,7 +70,7 @@ export const Image = <T extends ImageExtended>({
         style={styles.tileIconBar}
       >
         <CheckButton
-          isSelected={item.isSelected}
+          isSelected={!!item.isSelected}
           isVisible={item.isSelected || (isSelectable && hover)}
           onClick={handleCheckButtonClick}
         />
@@ -82,7 +87,15 @@ export const Image = <T extends ImageExtended>({
               title={tag.title}
               style={styles.tagItemBlock}
             >
-              <span style={getStyle(tagStyle, styles.tagItem, styleContext)}>
+              <span
+                style={getStyle(
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  tagStyle as any,
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  styles.tagItem as any,
+                  styleContext,
+                )}
+              >
                 {tag.value}
               </span>
             </div>
@@ -109,16 +122,23 @@ export const Image = <T extends ImageExtended>({
       <div
         className="ReactGridGallery_tile-viewport"
         data-testid="grid-gallery-item_viewport"
-        style={getStyle(tileViewportStyle, styles.tileViewport, styleContext)}
+        style={getStyle(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          tileViewportStyle as any,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          styles.tileViewport as any,
+          styleContext,
+        )}
         onClick={handleViewportClick}
       >
         {ThumbnailImageComponent ? (
           <ThumbnailImageComponent
-            {...thumbnailImageProps}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            {...(thumbnailImageProps as any)}
             imageProps={thumbnailProps}
           />
         ) : (
-          <img {...thumbnailProps} />
+          <img {...thumbnailProps} title={thumbnailProps.title ?? undefined} />
         )}
       </div>
       {item.thumbnailCaption && (

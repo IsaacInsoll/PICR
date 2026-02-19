@@ -3,7 +3,6 @@ import { PTitle } from '@/src/components/PTitle';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCallback, useEffect, useRef } from 'react';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { File } from '@shared/gql/graphql';
 import { PText } from '@/src/components/PText';
 import { Keyboard, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,7 +15,7 @@ export const FileInfoBottomSheet = ({
   open,
   onClose,
 }: {
-  file: File;
+  file: any;
   open: boolean;
   onClose: () => void;
 }) => {
@@ -94,7 +93,10 @@ export const FileInfoBottomSheet = ({
               >
                 <View style={{ width: 32, paddingTop: 0 }}>
                   <Ionicons
-                    name={appMetadataIcons[icon]}
+                    name={
+                      appMetadataIcons[icon ?? ''] ??
+                      'information-circle-outline'
+                    }
                     size={24}
                     color={theme.textColor}
                     style={{ opacity: 0.33 }}

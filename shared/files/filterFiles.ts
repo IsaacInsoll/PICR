@@ -1,7 +1,9 @@
-import { AspectFilterOptions, FilterOptionsInterface } from '@/filterAtom';
-import { MetadataOptionsForFiltering } from '@/files/metadataForFiltering';
-import { MetadataSummary } from '../../backend/types/MetadataSummary';
-import { File, Image, Video } from '@/gql/graphql';
+import {
+  AspectFilterOptions,
+  FilterOptionsInterface,
+} from '@shared/filterAtom';
+import { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
+import { FileFlag } from '@shared/gql/graphql';
 
 export const DefaultFilterOptions: FilterOptionsInterface = {
   ratio: 'Any Ratio',
@@ -13,9 +15,22 @@ export const DefaultFilterOptions: FilterOptionsInterface = {
   comments: null,
 };
 
-export const filterFiles = (files: File[], filters: FilterOptionsInterface) => {
+type FilterableFile = {
+  __typename: string;
+  name?: string | null;
+  imageRatio?: number | null;
+  metadata?: Record<string, string | number | null | undefined> | null;
+  flag?: FileFlag | null;
+  rating?: number | null;
+  totalComments?: number | null;
+};
+
+export const filterFiles = <T extends FilterableFile>(
+  files: T[],
+  filters: FilterOptionsInterface,
+): T[] => {
   const { ratio, searchText, metadata } = filters;
-  return files.filter((file: File) => {
+  return files.filter((file: T) => {
     return (
       ratioFilter(file, ratio) &&
       textFilter(file, searchText) &&
@@ -25,15 +40,15 @@ export const filterFiles = (files: File[], filters: FilterOptionsInterface) => {
   });
 };
 
-const textFilter = (file: File, text: string): boolean => {
+const textFilter = (file: FilterableFile, text: string): boolean => {
   return !!file.name && file.name?.toLowerCase().includes(text.toLowerCase());
 };
 
 const ratioFilter = (
-  file: File | Image,
+  file: FilterableFile,
   ratio: AspectFilterOptions,
 ): boolean => {
-  const ar = 'imageRatio' in file ? (file.imageRatio ?? null) : null;
+  const ar = file.imageRatio ?? null;
   if (!ar) return ratio === 'Any Ratio';
 
   return (
@@ -45,7 +60,7 @@ const ratioFilter = (
 };
 
 const metadataFilter = (
-  file: File | Image | Video,
+  file: FilterableFile,
   metadata: MetadataOptionsForFiltering,
 ): boolean => {
   let allowed = true;
@@ -54,10 +69,7 @@ const metadataFilter = (
       if (file?.__typename == 'File') {
         allowed = false; // basic files don't have metadata
       } else {
-        const val =
-          'metadata' in file
-            ? file.metadata?.[title as keyof MetadataSummary]
-            : undefined;
+        const val = file.metadata?.[title];
         if (!val || !options.includes(val)) allowed = false;
       }
     }
@@ -66,7 +78,7 @@ const metadataFilter = (
 };
 
 const commentsFilter = (
-  file: File,
+  file: FilterableFile,
   filters: FilterOptionsInterface,
 ): boolean => {
   const { flag, rating, ratingComparison, comments } = filters;
@@ -75,7 +87,6 @@ const commentsFilter = (
   if (!flagOk) return false;
   if (ratingComparison) {
     const r = file.rating ?? 0;
-    console.log([ratingComparison, file.rating, rating]);
     switch (ratingComparison) {
       case 'equal':
         if (r != rating) return false;

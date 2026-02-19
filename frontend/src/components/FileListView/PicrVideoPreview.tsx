@@ -1,9 +1,9 @@
 import { useElementSize, useMouse } from '@mantine/hooks';
-import { MinimalFile } from '../../../types';
+import { PicrFile } from '../../../types';
 import { Box, Image, LoadingOverlay } from '@mantine/core';
 import { VideoBadge } from './VideoBadge';
 import { VideoProgressIndicator } from './VideoProgressIndicator';
-import { ThumbnailImageComponentImageProps } from 'react-grid-gallery';
+import { ThumbnailImageComponentImageProps } from './react-grid-gallery';
 import { CSSProperties, useEffect, useState } from 'react';
 import { imageURL } from '../../helpers/imageURL';
 
@@ -13,18 +13,20 @@ export const PicrVideoPreview = ({
   style,
   ...imageProps
 }: {
-  file: MinimalFile;
+  file: PicrFile;
   style?: CSSProperties;
-  imageProps?: ThumbnailImageComponentImageProps;
-}) => {
+} & Partial<ThumbnailImageComponentImageProps>) => {
   const [loaded, setLoaded] = useState(false);
   const { x: mouseX, ...mouse } = useMouse({ resetOnExit: true });
   const element = useElementSize();
   const second = useSecond();
 
   //Get 'styled' width, otherwise determine based on width of Box
-  const w = style?.width ?? element.width;
-  const h = style?.height ?? element.width / (file.imageRatio ?? 1);
+  const styleWidth = typeof style?.width === 'number' ? style.width : undefined;
+  const styleHeight =
+    typeof style?.height === 'number' ? style.height : undefined;
+  const w = styleWidth ?? element.width;
+  const h = styleHeight ?? element.width / (file.imageRatio ?? 1);
 
   let frame = 0; // not mouseover
   if (w && mouseX) {
@@ -37,7 +39,11 @@ export const PicrVideoPreview = ({
     frame = second;
   }
 
-  const finalStyle = { ...style, height: undefined, position: 'absolute' };
+  const finalStyle: CSSProperties = {
+    ...style,
+    height: undefined,
+    position: 'absolute',
+  };
 
   if (frame > 0) {
     // +1 because it's not enough otherwise, NFI about absolute positioning
@@ -58,11 +64,11 @@ export const PicrVideoPreview = ({
       ) : null}
       <Image
         {...imageProps}
+        title={imageProps.title ?? undefined}
         style={finalStyle}
         ref={mouse.ref}
         src={imageURL(file, 'md')}
         onLoad={() => {
-          console.log('loaded');
           setLoaded(true);
           // if (onImageLoaded) onImageLoaded(file);
         }}

@@ -405,3 +405,25 @@ npm run gql           # In another
 3. Hot reload enabled for instant feedback
 4. Build for production: `npm run build`
 5. Output goes to `dist/public` for backend to serve
+
+## Validation Commands
+
+Run these after frontend changes:
+
+```bash
+cd frontend && npm run lint
+cd frontend && npx tsc --noEmit
+cd frontend && npm run build
+```
+
+Also run repo-wide formatting checks:
+
+```bash
+npm run format:check
+```
+
+For test validation, ask the user to run:
+
+```bash
+npm run workflow
+```

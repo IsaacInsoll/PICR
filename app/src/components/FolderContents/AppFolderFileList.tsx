@@ -1,7 +1,7 @@
 import { TouchableOpacity, View } from 'react-native';
 import { AppLink } from '@/src/components/AppFolderLink';
 import { PText } from '@/src/components/PText';
-import { File, Folder, Image } from '@shared/gql/graphql';
+import { File, Image } from '@shared/gql/graphql';
 import { PTitle } from '@/src/components/PTitle';
 import { AppFileFlagChip } from '@/src/components/chips/AppFileFlagChip';
 import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
@@ -38,7 +38,7 @@ export const AppFileListItem = ({
   width,
   children,
 }: {
-  item: File | Folder;
+  item: any;
   width?: number;
   children?: React.ReactNode;
 }) => {
@@ -71,17 +71,17 @@ export const AppFileListItem = ({
   );
 };
 
-const FolderDetails = ({ folder }) => {
+const FolderDetails = ({ folder }: { folder: any }) => {
   return <PText variant="dimmed">Folder</PText>;
 };
 
-const FileDetails = ({ file }: { file: File | Image }) => {
+const FileDetails = ({ file }: { file: File | Image | any }) => {
   return (
     <View style={{ flexDirection: 'row', gap: 8 }}>
       <PText variant="dimmed">{file.type}</PText>
-      <AppFileFlagChip flag={file.flag} hideIfNone={true} />
-      <AppFileRatingChip rating={file.rating} />
-      <AppCommentsChip totalComments={file.totalComments} />
+      <AppFileFlagChip flag={file.flag ?? undefined} hideIfNone={true} />
+      <AppFileRatingChip rating={file.rating ?? undefined} />
+      <AppCommentsChip totalComments={file.totalComments ?? undefined} />
     </View>
   );
 };

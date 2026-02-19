@@ -1,17 +1,19 @@
-import { MinimalFile, MinimalFolder } from '../../../types';
-import { Avatar, Box, MantineStyleProps } from '@mantine/core';
+import { PicrFile, PicrFolder } from '../../../types';
+import { Avatar, Box } from '@mantine/core';
 import { PicrImage } from '../PicrImage';
 import { FileIcon, FolderIcon, VideoIcon } from '../../PicrIcons';
+import { CSSProperties } from 'react';
 
 export const SmallPreview = ({
   file,
   height = 48,
 }: {
-  file: MinimalFile | MinimalFolder;
-  height: number;
+  file: PicrFile | PicrFolder;
+  height?: number;
 }) => {
-  const isFolder = file.__typename == 'Folder';
-  const style: MantineStyleProps = {
+  const isFolder = isPicrFolder(file);
+  const fileType = !isFolder ? file.type : undefined;
+  const style: CSSProperties = {
     height,
     display: 'flex',
     justifyContent: 'center',
@@ -29,13 +31,16 @@ export const SmallPreview = ({
       </Box>
     );
   }
-  if (!isFolder && file.type == 'Image') {
+  if (!isFolder && fileType == 'Image') {
     return (
       <Box style={style}>
         <PicrImage
           file={file}
           size="sm"
-          style={{ width: height * (file.imageRatio ?? 1), height }}
+          style={{
+            width: height * ((file.imageRatio as number | null) ?? 1),
+            height,
+          }}
         />
       </Box>
     );
@@ -49,12 +54,12 @@ export const SmallPreview = ({
         size="md"
         opacity={0.5}
         variant="light"
-        name={file.name}
+        name={file.name ?? undefined}
         color="initials"
       >
         {isFolder ? (
           <FolderIcon {...iconProps} />
-        ) : file.type == 'Video' ? (
+        ) : fileType == 'Video' ? (
           <VideoIcon {...iconProps} />
         ) : (
           <FileIcon {...iconProps} />
@@ -63,3 +68,6 @@ export const SmallPreview = ({
     </Box>
   );
 };
+
+const isPicrFolder = (file: PicrFile | PicrFolder): file is PicrFolder =>
+  !('type' in file);

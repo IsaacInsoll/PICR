@@ -8,6 +8,7 @@ import { atom, useAtom, useSetAtom } from 'jotai';
 import * as MediaLibrary from 'expo-media-library';
 import Animated, {
   Easing,
+  SharedValue,
   interpolate,
   interpolateColor,
   useAnimatedStyle,
@@ -20,7 +21,7 @@ import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { HeaderButton } from '@react-navigation/elements';
 import { Ionicons } from '@expo/vector-icons';
 import { navBarIconProps } from '@/src/constants';
-import { File } from '@shared/gql/graphql';
+import { ViewFolderQuery } from '@shared/gql/graphql';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 import {
   getHeadingFontFamilyForLevel,
@@ -36,9 +37,11 @@ import { FileInfoBottomSheet } from '@/src/components/FileInfoBottomSheet';
 
 interface ItemProps {
   index: number;
-  animationValue: Animated.SharedValue<number>;
+  animationValue: SharedValue<number>;
   setIsZoomed: (value: boolean) => void;
 }
+
+type ViewFolderFile = ViewFolderQuery['folder']['files'][number];
 
 const showCommentsAtom = atom(false);
 const showFileInfoAtom = atom(false);
@@ -48,10 +51,15 @@ export default function AppFileView() {
 
   const router = useRouter();
   const [fullScreen] = useAtom(fileViewFullscreenAtom);
-  const { fileId } = useLocalSearchParams<{
-    fileId: string;
-    folderId: string;
+  const params = useLocalSearchParams<{
+    fileId?: string | string[];
+    folderId?: string | string[];
   }>();
+  const fileId =
+    (Array.isArray(params.fileId) ? params.fileId[0] : params.fileId) ?? '';
+  const folderId = Array.isArray(params.folderId)
+    ? params.folderId[0]
+    : (params.folderId ?? '');
   const skeleton = fileCache[fileId];
 
   // We query folder instead of file because (a) probably already loaded and (b) we will be swiping between images in this gallery
@@ -59,15 +67,16 @@ export default function AppFileView() {
     query: viewFolderQuery,
     variables: { folderId },
   });
-  const files = result.data?.folder.files;
-  const file = files?.find((f) => f.id === fileId);
-  const fileIndex = files?.findIndex((f) => f.id === fileId);
+  const files = result.data?.folder.files ?? [];
+  const file = files.find((f) => f.id === fileId);
+  const fileIndex = files.findIndex((f) => f.id === fileId);
   const branding = result.data?.folder?.branding;
   const fontKey = normalizeHeadingFontKey(branding?.headingFontKey);
   const headerFontFamily = getHeadingFontFamilyForLevel(fontKey, 3);
 
   const [showComments, setShowComments] = useAtom(showCommentsAtom);
   const [showInfo, setShowInfo] = useAtom(showFileInfoAtom);
+  const selectedFile = file;
 
   const { width } = useWindowDimensions();
   const [isZoomed, setIsZoomed] = useState(false);
@@ -93,6 +102,10 @@ export default function AppFileView() {
 
   const [orientation] = useScreenOrientation();
   const headerOptions = useNavigationScreenOptions();
+  const headerTitleStyle = StyleSheet.flatten([
+    headerOptions.headerTitleStyle,
+    { fontFamily: headerFontFamily },
+  ]);
 
   return (
     <FolderBrandingProvider fontKey={fontKey}>
@@ -102,24 +115,25 @@ export default function AppFileView() {
             ...headerOptions,
             headerTransparent: true, //overriding the 'false on android' so when we toggle it on and off there is no layout shift
             headerTitle: skeleton?.name ?? 'Loading File...',
-            headerTitleStyle: {
-              ...headerOptions.headerTitleStyle,
-              fontFamily: headerFontFamily,
-            },
+            headerTitleStyle,
             headerRight: () => (
               <View style={{ flexDirection: 'row' }}>
-                <AppDownloadFileButton
-                  file={file}
-                  onPress={() => {
-                    flash.value = 0.8;
-                    flash.value = withTiming(0, {
-                      duration: 300,
-                      easing: Easing.out(Easing.circle),
-                    });
-                  }}
-                />
-                <AppFileCommentsButton file={file} />
-                <AppFileInfoButton file={file} />
+                {file ? (
+                  <>
+                    <AppDownloadFileButton
+                      file={file}
+                      onPress={() => {
+                        flash.value = 0.8;
+                        flash.value = withTiming(0, {
+                          duration: 300,
+                          easing: Easing.out(Easing.circle),
+                        });
+                      }}
+                    />
+                    <AppFileCommentsButton file={file} />
+                    <AppFileInfoButton file={file} />
+                  </>
+                ) : null}
               </View>
             ),
             headerShown: !fullScreen, //toggling this causes ugly image jump behaviour
@@ -130,7 +144,7 @@ export default function AppFileView() {
           loop={false}
           // autoPlay={!isZoomed}
           key={orientation} //force rerender if screen changes orientation, otherwise it's blank
-          defaultIndex={fileIndex}
+          defaultIndex={fileIndex >= 0 ? fileIndex : 0}
           style={{ flexGrow: 1 }}
           width={width}
           data={files}
@@ -149,7 +163,8 @@ export default function AppFileView() {
           enabled={!isZoomed}
           onSnapToItem={(index) => {
             const f = files[index];
-            addToFileCache(f);
+            if (!f) return;
+            addToFileCache({ id: f.id, name: f.name, fileHash: f.fileHash });
             router.setParams({ folderId, fileId: f.id });
           }}
           scrollAnimationDuration={150}
@@ -162,16 +177,20 @@ export default function AppFileView() {
             { backgroundColor: '#fff', zIndex: 1000, opacity: flash },
           ]}
         />
-        <FileCommentsBottomSheet
-          file={file}
-          open={showComments}
-          onClose={() => setShowComments(false)}
-        />
-        <FileInfoBottomSheet
-          file={file}
-          open={showInfo}
-          onClose={() => setShowInfo(false)}
-        />
+        {selectedFile ? (
+          <FileCommentsBottomSheet
+            file={selectedFile}
+            open={showComments}
+            onClose={() => setShowComments(false)}
+          />
+        ) : null}
+        {selectedFile ? (
+          <FileInfoBottomSheet
+            file={selectedFile}
+            open={showInfo}
+            onClose={() => setShowInfo(false)}
+          />
+        ) : null}
       </View>
     </FolderBrandingProvider>
   );
@@ -182,12 +201,11 @@ const CustomItem = ({
   file,
   animationValue,
   setIsZoomed,
-}: ItemProps & { file: File }) => {
+}: ItemProps & { file?: ViewFolderFile }) => {
   const { fileId } = useLocalSearchParams<{
     fileId: string;
     folderId: string;
   }>();
-  const isSelected = file.id === fileId;
   const maskStyle = useAnimatedStyle(() => {
     const backgroundColor = interpolateColor(
       animationValue.value,
@@ -199,12 +217,14 @@ const CustomItem = ({
       backgroundColor,
     };
   }, [animationValue]);
+  if (!file) return null;
+  const isSelected = file.id === fileId;
 
   return (
     <View style={{ flex: 1 }}>
-      {file.type === 'Image' ? (
+      {file.__typename === 'Image' ? (
         <PBigImage file={file} setIsZoomed={setIsZoomed} />
-      ) : file.type === 'Video' ? (
+      ) : file.__typename === 'Video' ? (
         <PBigVideo
           file={file}
           setIsZoomed={setIsZoomed}
@@ -228,13 +248,14 @@ const AppDownloadFileButton = ({
   file,
   onPress,
 }: {
-  file: File;
+  file: ViewFolderFile;
   onPress?: () => void;
 }) => {
   const theme = useAppTheme();
   const uri = useLocalImageUrl(file, 'raw');
   const onClick = async () => {
     if (onPress) onPress();
+    if (!uri) return;
     try {
       //saveToLibraryAsync was stripping metadata? The following line is untested (so far!)
       const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -265,7 +286,7 @@ const AppDownloadFileButton = ({
   );
 };
 
-const AppFileCommentsButton = ({ file }: { file: File }) => {
+const AppFileCommentsButton = ({ file }: { file: ViewFolderFile }) => {
   const setShowComments = useSetAtom(showCommentsAtom);
   const { totalComments } = file;
   const theme = useAppTheme();
@@ -285,7 +306,7 @@ const AppFileCommentsButton = ({ file }: { file: File }) => {
   );
 };
 
-const AppFileInfoButton = ({ file }: { file: File }) => {
+const AppFileInfoButton = ({ file }: { file: ViewFolderFile }) => {
   const setShowInfo = useSetAtom(showFileInfoAtom);
   // const { totalComments } = file;
   const theme = useAppTheme();

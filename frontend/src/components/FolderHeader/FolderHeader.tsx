@@ -1,6 +1,6 @@
-import { MinimalFolder } from '../../../types';
+import { PicrFolder } from '../../../types';
 import { FolderLink } from '../FolderLink';
-import { ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { placeholderFolder } from './PlaceholderFolder';
 import { Page } from '../Page';
@@ -23,10 +23,10 @@ export const FolderHeader = ({
   customSubtitle,
   actions,
 }: {
-  folder: MinimalFolder;
+  folder: PicrFolder;
   subtitle?: string;
   customSubtitle?: string | null;
-  actions?: JSX.Element;
+  actions?: ReactElement;
 }) => {
   return (
     <HeaderWrapper
@@ -71,10 +71,10 @@ const HeaderWrapper = ({
   subtitle?: string | ReactNode;
   children?: ReactNode;
   actions?: ReactNode;
-  parent?: MinimalFolder[];
+  parent?: PicrFolder[];
 }) => {
   //let's populate each parent folder with a list of its parents so when we click one the placeholder has its parent hierachy for good UI
-  const filledParents: MinimalFolder[] | undefined = parent?.map((f, i) => {
+  const filledParents: PicrFolder[] | undefined = parent?.map((f, i) => {
     return { ...f, parents: parent.slice(i + 1) };
   });
   const crumbs = filledParents?.length
@@ -86,7 +86,7 @@ const HeaderWrapper = ({
 
   return (
     <Page>
-      <PicrTitle title={[title, 'PICR']} />
+      <PicrTitle title={[title, 'PICR'].filter(Boolean) as string[]} />
       <Box style={{ minHeight: 25 }}>
         <Breadcrumbs separator="→" separatorMargin="md" mt="xs">
           {crumbs}

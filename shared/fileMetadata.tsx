@@ -1,18 +1,9 @@
-import {
-  File,
-  ImageMetadataSummary,
-  VideoMetadataSummary,
-} from '@/gql/graphql';
 import { formatMetadataValue } from './formatMetadataValue';
 import { toReadableFraction } from 'readable-fractions';
 
-export type AnyMetadataKey =
-  | keyof ImageMetadataSummary
-  | keyof VideoMetadataSummary;
-export const metadataDescription: Record<
-  keyof ImageMetadataSummary | keyof VideoMetadataSummary,
-  string
-> = {
+export type AnyMetadataKey = string;
+
+export const metadataDescription: Partial<Record<AnyMetadataKey, string>> = {
   ExposureTime: 'Shutter Speed',
   DateTimeEdit: 'Last Edited',
   DateTimeOriginal: 'Created',
@@ -23,48 +14,54 @@ export interface MetadataPresentationResult {
   label: string;
   subLabel?: string;
   icon?: string;
-  data?: unknown; //if it's something that needs bespoke custom rendering
+  data?: unknown; // if it's something that needs bespoke custom rendering
 }
+
+type MetadataObject = Record<string, string | number | null | undefined>;
+
+type MetadataFile = {
+  metadata?: MetadataObject | null;
+  imageRatio?: number | null;
+};
+
 export const metadataForPresentation = (
-  file: File,
+  file: MetadataFile,
 ): MetadataPresentationResult[] => {
   const metadata = file.metadata;
-  if (!metadata) return null;
+  if (!metadata) return [];
 
-  const keys: AnyMetadataKey[] = Object.keys(metadata).filter(
-    (x) => !!metadata[x],
-  );
+  const keys = Object.keys(metadata).filter((key) => !!metadata[key]);
 
-  const list: MetadataPresentationResult[] = keys.map((k) => ({
-    icon: k,
-    description: metadataDescription[k] ?? k,
-    label: formatMetadataValue(k, metadata[k]).label,
+  const list: MetadataPresentationResult[] = keys.map((key) => ({
+    icon: key,
+    description: metadataDescription[key] ?? key,
+    label: formatMetadataValue(key, metadata[key] as string | number).label,
   }));
 
-  const remove: AnyMetadataKey[] = [];
+  const remove: string[] = [];
 
   if (metadata.VideoCodec && metadata.VideoCodecDescription) {
     remove.push('VideoCodec', 'VideoCodecDescription');
     list.push({
       description: 'Video',
-      label: metadata.VideoCodec,
-      subLabel: metadata.VideoCodecDescription,
+      label: String(metadata.VideoCodec),
+      subLabel: String(metadata.VideoCodecDescription),
     });
   }
   if (metadata.AudioCodec && metadata.AudioCodecDescription) {
     remove.push('AudioCodec', 'AudioCodecDescription');
     list.push({
       description: 'Audio',
-      label: metadata.AudioCodec,
-      subLabel: metadata.AudioCodecDescription,
+      label: String(metadata.AudioCodec),
+      subLabel: String(metadata.AudioCodecDescription),
     });
   }
 
-  if (file.imageRatio) {
+  if (typeof file.imageRatio === 'number' && file.imageRatio > 0) {
     list.push({
       icon: 'AspectRatio',
       description: 'Aspect Ratio',
-      label: formattedAspectRatio(file),
+      label: formattedAspectRatio(file.imageRatio),
       data: file.imageRatio,
     });
   }
@@ -74,7 +71,7 @@ export const metadataForPresentation = (
     list.push({
       icon: 'AspectRatio',
       description: 'Dimensions',
-      label: metadata.Width + ' x ' + metadata.Height + ' px',
+      label: `${metadata.Width} x ${metadata.Height} px`,
     });
   }
 
@@ -83,22 +80,17 @@ export const metadataForPresentation = (
     list.push({
       icon: 'Rating',
       description: 'Original Rating',
-      label: metadata.Rating,
+      label: String(metadata.Rating),
     });
   }
 
-  console.log(list.map((x) => x.description));
-  console.log(remove);
   const filtered = list.filter(
     ({ description }) => !remove.includes(description),
   );
-
   return filtered;
 };
 
-export const formattedAspectRatio = (file: File): string | null => {
-  const ratio = file.imageRatio;
-  if (!ratio) return null;
+export const formattedAspectRatio = (ratio: number): string => {
   const { denominator, numerator } = toReadableFraction(ratio);
   return `${numerator}/${denominator}`;
 };

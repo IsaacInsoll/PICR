@@ -31,7 +31,7 @@ export const ManageUsers = () => {
         <PicrDataGrid
           columns={userColumns}
           data={result.data?.admins}
-          onClick={(row) => setUserId(row.id)}
+          onClick={(row) => setUserId(row.id ?? null)}
         />
       ) : undefined}
       <Box pt="md">

@@ -1,5 +1,5 @@
 import { Button } from 'react-native';
-import { Redirect, useNavigation, useRouter } from 'expo-router';
+import { Href, Redirect, useNavigation, useRouter } from 'expo-router';
 import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
 import { PTitle } from '@/src/components/PTitle';
 import { usePathname } from 'expo-router/build/hooks';
@@ -21,7 +21,7 @@ export default function NotFound() {
     if (hostname && !path?.includes(hostname)) {
       const target = `/${hostname}/${path}`;
       console.log('[not-found] redirecting to add hostname: ', target);
-      return <Redirect href={target} />;
+      return <Redirect href={target as Href} />;
     }
   }
 

@@ -20,6 +20,7 @@ import { lightboxRefAtom } from './atoms/lightboxRefAtom';
 import { getBaseHrefPathname } from './helpers/baseHref';
 import { fontFamilies } from './fonts.generated';
 import { GlobalErrorOverlay } from './components/GlobalErrorOverlay';
+import { normalizeFontKey } from '@shared/branding/fontRegistry';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
@@ -37,8 +38,7 @@ const App = () => {
   }, [setPortal, portal]);
 
   useEffect(() => {
-    console.log('setting default font: ', customTheme.headingFontKey);
-    const key = customTheme.headingFontKey ?? 'default';
+    const key = normalizeFontKey(customTheme.headingFontKey);
     const family =
       key in fontFamilies
         ? fontFamilies[key as keyof typeof fontFamilies]
@@ -54,9 +54,14 @@ const App = () => {
     <URQLProvider value={client}>
       <BrowserRouter basename={basePathname || undefined}>
         <MantineProvider
-          theme={{ ...theme, primaryColor: customTheme.primaryColor }}
+          theme={{
+            ...theme,
+            primaryColor: customTheme.primaryColor ?? undefined,
+          }}
           forceColorScheme={
-            customTheme.mode == 'auto' ? undefined : customTheme.mode
+            customTheme.mode == null || customTheme.mode === 'auto'
+              ? undefined
+              : customTheme.mode
           }
           defaultColorScheme={'auto'}
         >

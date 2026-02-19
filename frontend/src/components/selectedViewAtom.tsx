@@ -23,7 +23,7 @@ const viewEncoding: { [key in SelectedView]: string } = {
   feed: 'f',
 };
 
-export const selectedViewAtom = atom<SelectedView>(
+export const selectedViewAtom = atom<SelectedView, [SelectedView], void>(
   (get) => {
     const hash = get(selectedViewHashAtom);
     if (hash) {

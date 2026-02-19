@@ -27,9 +27,12 @@ import { setFolderBrandingMutation } from '@shared/urql/mutations/setFolderBrand
 import { viewBrandingsQuery } from '@shared/urql/queries/viewBrandingsQuery';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { defaultBranding } from '../helpers/defaultBranding';
-import { Branding } from '../../../graphql-types';
+import { PicrFolder } from '../../types';
+import type { ViewBrandingsQueryQuery } from '@shared/gql/graphql';
 
-export const ManageFolder = ({ folder }) => {
+type BrandingItem = ViewBrandingsQueryQuery['brandings'][number];
+
+export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
   const { folderId, tab } = useParams();
   const navigate = useNavigate();
   const [, mutate] = useMutation(editFolderMutation);
@@ -44,7 +47,8 @@ export const ManageFolder = ({ folder }) => {
   const isDirty =
     normalizedTitle !== currentTitle || normalizedSubtitle !== currentSubtitle;
 
-  const setActiveTab = (tab: string) => {
+  const setActiveTab = (tab: string | null) => {
+    if (!tab) return;
     //TODO: I hate this hard coded navigation but don't know a better way :/
     navigate(`/admin/f/${folderId}/manage/${tab}`);
   };
@@ -89,13 +93,13 @@ export const ManageFolder = ({ folder }) => {
                   label="Title"
                   placeholder={folder.name ?? 'Optional folder title'}
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => setTitle(e.currentTarget.value)}
                 />
                 <TextInput
                   label="Subtitle"
                   placeholder="Optional folder subtitle"
                   value={subtitle}
-                  onChange={(e) => setSubtitle(e.target.value)}
+                  onChange={(e) => setSubtitle(e.currentTarget.value)}
                 />
                 <Button loading={saving} onClick={onSave} disabled={!isDirty}>
                   Save
@@ -133,15 +137,17 @@ export const ManageFolder = ({ folder }) => {
   );
 };
 
-const BrandingSelector = ({ folder }) => {
+const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
   const [brandingsResult] = useQuery({ query: viewBrandingsQuery });
   const [, setFolderBranding] = useMutation(setFolderBrandingMutation);
-  const [modalBranding, setModalBranding] = useState<Branding | null>(null);
+  const [modalBranding, setModalBranding] = useState<BrandingItem | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const brandings = brandingsResult.data?.brandings ?? [];
+  const brandings = (brandingsResult.data?.brandings ?? []).filter(
+    (b): b is BrandingItem => b != null,
+  );
   const currentBrandingId = folder.brandingId?.toString() ?? null;
-  const inheritedBranding = folder.branding;
+  const inheritedBranding = folder.branding ?? null;
   const isInherited = !folder.brandingId && inheritedBranding?.id !== '0';
 
   const options = [
@@ -152,7 +158,7 @@ const BrandingSelector = ({ folder }) => {
 
   const handleChange = async (value: string | null) => {
     if (value === '__create__') {
-      setModalBranding({ ...defaultBranding });
+      setModalBranding({ ...defaultBranding } as BrandingItem);
       return;
     }
 

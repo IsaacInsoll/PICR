@@ -3,7 +3,7 @@ import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { Stack } from '@mantine/core';
 import { CommentHistory } from '../components/FileListView/Review/CommentHistory';
 
-export const FolderActivity = ({ folderId }: { folderId: number }) => {
+export const FolderActivity = ({ folderId }: { folderId: string }) => {
   const [result] = useQuery({
     query: commentHistoryQuery,
     variables: { folderId },
@@ -20,7 +20,7 @@ export const FolderActivity = ({ folderId }: { folderId: number }) => {
   //   if (!result.error) setText('');
   // };
 
-  const comments = result.data.comments;
+  const comments = result.data?.comments ?? [];
 
   return (
     <Stack pt="md">

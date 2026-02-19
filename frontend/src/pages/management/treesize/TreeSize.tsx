@@ -17,12 +17,12 @@ import { FolderSummary, treeSizeTabAtom } from './FolderSummary';
 import { prettyBytes } from '@shared/prettyBytes';
 import { useSetAtom } from 'jotai';
 
-export const TreeSize = () => {
+export const TreeSize = ({ rootId }: { rootId?: string }) => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const setTreeSizeTab = useSetAtom(treeSizeTabAtom);
 
-  const setFolderId = (id) => {
+  const setFolderId = (id: string) => {
     //todo: URL state instead of atom
     if (id == 'files') {
       setTreeSizeTab('files');
@@ -33,7 +33,10 @@ export const TreeSize = () => {
   return (
     <Box>
       <Suspense fallback={<LoadingIndicator />}>
-        <TreeSizeNode folderId={slug} setFolderId={setFolderId} />
+        <TreeSizeNode
+          folderId={slug ?? rootId ?? '1'}
+          setFolderId={setFolderId}
+        />
       </Suspense>
     </Box>
   );
@@ -51,7 +54,7 @@ const TreeSizeNode = ({
 
   // i was passing this to FolderSummary so you got sweet mouseover of subfolder but it feels kinda clunky.
   // it was still good though so feel free to revert this
-  // const hoveredFolder: MinimalFolder =
+  // const hoveredFolder: PicrFolder =
   //   folder?.subFolders.find(({ id }) => id == hover) ?? folder;
 
   const crumbs = [
@@ -72,20 +75,24 @@ const TreeSizeNode = ({
       </Group>
       <Divider />
       <Group style={{ alignItems: 'start' }}>
-        <PicrPie
-          key={folder.id}
-          slices={slices}
-          setHover={setHover}
-          setFolderId={setFolderId}
-          hover={hover}
-        />
-        <FolderSummary
-          slices={slices}
-          folder={folder}
-          setFolderId={setFolderId}
-          hover={hover}
-          setHover={setHover}
-        />
+        {folder ? (
+          <>
+            <PicrPie
+              key={folder.id}
+              slices={slices}
+              setHover={setHover}
+              setFolderId={setFolderId}
+              hover={hover}
+            />
+            <FolderSummary
+              slices={slices}
+              folder={folder}
+              setFolderId={setFolderId}
+              hover={hover}
+              setHover={setHover}
+            />
+          </>
+        ) : null}
       </Group>
     </Stack>
   );

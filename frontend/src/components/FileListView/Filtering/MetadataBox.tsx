@@ -34,7 +34,7 @@ export const MetadataBox = ({
             <MetadataSelect
               key={title}
               title={title as AnyMetadataKey}
-              options={options}
+              options={options ?? []}
             />
           );
         })}
@@ -42,7 +42,7 @@ export const MetadataBox = ({
           <Button
             variant="default"
             onClick={() => {
-              resetFilters(null);
+              resetFilters();
               close();
             }}
           >

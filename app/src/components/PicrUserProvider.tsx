@@ -66,6 +66,7 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
     console.log('PicrUserProvider: not logged in, redirecting');
     return <Redirect href="/login" />;
   }
+  if (!client) return <PText>Loading...</PText>;
 
   console.log('PicrUserProvider: returning URQL client');
   return <Provider value={client}>{children}</Provider>;

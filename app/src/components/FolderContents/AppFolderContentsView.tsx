@@ -1,4 +1,3 @@
-import { Folder, File } from '@shared/gql/graphql';
 import { AppFolderFeed } from '@/src/components/FolderContents/AppFolderFeed';
 import { useAtomValue } from 'jotai';
 import { folderViewModeAtom } from '@/src/atoms/atoms';
@@ -6,14 +5,14 @@ import { AppFolderFileList } from '@/src/components/FolderContents/AppFolderFile
 import { AppFolderGalleryList } from '@/src/components/FolderContents/AppFolderGalleryList';
 
 interface AppFolderContentsViewProps {
-  items: (File | Folder)[];
+  items: any[];
   width: number;
   refresh: () => void;
   ListHeaderComponent?: React.ReactElement | null;
 }
 
 export interface AppFolderContentsViewChildProps {
-  items: (File | Folder)[];
+  items: any[];
   width: number;
   refresh: () => void;
   ListHeaderComponent?: React.ReactElement | null;

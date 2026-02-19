@@ -1,10 +1,10 @@
-import { MinimalFile } from '../../../types';
+import { PicrFile } from '../../../types';
 import { Badge, MantineSize, MantineStyleProp } from '@mantine/core';
 import { VideoIcon } from '../../PicrIcons';
 import formatDuration from 'format-duration';
 
 interface VideoBadgeProps {
-  file: MinimalFile;
+  file: PicrFile;
   size?: MantineSize;
   percent?: number;
 }

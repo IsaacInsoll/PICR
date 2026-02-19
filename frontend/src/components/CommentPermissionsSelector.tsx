@@ -36,7 +36,11 @@ export const CommentPermissionsSelector = ({
   );
 };
 
-const options: CommentPermissions[] = ['none', 'read', 'edit'];
+const options: CommentPermissions[] = [
+  CommentPermissions.None,
+  CommentPermissions.Read,
+  CommentPermissions.Edit,
+];
 
 const description = {
   none: 'Users cannot see or edit ratings/comments',

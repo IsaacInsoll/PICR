@@ -6,14 +6,16 @@ import { imageURL } from '@/src/components/AppImage';
 export const AppVideo = ({ file, width }: { file: Video; width?: number }) => {
   //todo: lots of overlap with PBigVideo, refactor?
 
-  const baseUrl = useLoginDetails()?.server;
+  const baseUrl = useLoginDetails()?.server ?? '';
+  const safeWidth = width ?? 0;
+  const safeRatio = file.imageRatio ?? 1;
   const videoSource = baseUrl + imageURL(file, 'raw');
   const player = useVideoPlayer(videoSource, (player) => {
     player.loop = false;
   });
   return (
     <VideoView
-      style={{ width, height: width / file?.imageRatio }}
+      style={{ width: safeWidth, height: safeWidth / safeRatio }}
       player={player}
       allowsFullscreen
       allowsPictureInPicture

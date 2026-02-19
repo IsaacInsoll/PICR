@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { Comment, File, FileFlag } from '@shared/gql/graphql';
+import { CommentHistoryQueryQuery, FileFlag } from '@shared/gql/graphql';
 import { PText } from '@/src/components/PText';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
@@ -37,7 +37,7 @@ export const FileCommentsBottomSheet = ({
   open,
   onClose,
 }: {
-  file: File;
+  file: { id: string; name: string };
   open: boolean;
   onClose: () => void;
 }) => {
@@ -198,23 +198,27 @@ const FileCommentsBody = ({ id }: { id: string }) => {
     requestPolicy: 'cache-and-network',
   });
 
-  const comments = result.data?.comments;
+  const comments = result.data?.comments ?? [];
   if (comments?.length === 0)
     return <PText variant="dimmed">No Comments (yet!)</PText>;
   return (
     <>
-      {comments.map((c) => (
+      {comments.map((c: CommentHistoryQueryQuery['comments'][number]) => (
         <AppComment comment={c} key={c.id} />
       ))}
     </>
   );
 };
 
-const AppComment = ({ comment }: { comment: Comment }) => {
+const AppComment = ({
+  comment,
+}: {
+  comment: CommentHistoryQueryQuery['comments'][number];
+}) => {
   const { user, timestamp, systemGenerated } = comment;
   return (
     <View style={styles.commentContainer}>
-      <AppAvatar user={user} size={32} />
+      <AppAvatar user={user ?? { name: 'Unknown', gravatar: null }} size={32} />
       <View style={{ gap: 8 }}>
         <View style={styles.comment}>
           <PText variant="dimmed">{user?.name}</PText>
@@ -230,8 +234,12 @@ const AppComment = ({ comment }: { comment: Comment }) => {
   );
 };
 
-const CommentAction = ({ comment }: { comment: Comment }) => {
-  const json = JSON.parse(comment?.comment);
+const CommentAction = ({
+  comment,
+}: {
+  comment: CommentHistoryQueryQuery['comments'][number];
+}) => {
+  const json = JSON.parse(comment?.comment ?? '{}');
   if (!json) return null;
   return (
     <View>

@@ -19,18 +19,19 @@ import * as WebBrowser from 'expo-web-browser';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useKeyboardVisible } from '@/src/hooks/useKeyboardVisible';
-import { z, ZodType } from 'zod';
+import { z } from 'zod';
 import { useState } from 'react';
 import { LoginDetails, useSetLoginDetails } from '@/src/hooks/useLoginDetails';
 import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
 import { PTitle } from '@/src/components/PTitle';
 import { appLogin } from '@/src/helpers/appLogin';
 
-const loginFormSchema: ZodType<LoginDetails> = z.object({
+const loginFormSchema = z.object({
   server: z.string().url(),
   username: z.string().email(),
   password: z.string().min(8),
 });
+type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export default function Index() {
   const keyboardVisible = useKeyboardVisible();
@@ -77,16 +78,18 @@ const LoginForm = () => {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<LoginDetails>({ resolver: zodResolver(loginFormSchema) });
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginFormSchema),
+  });
 
-  const onSubmit = async (data: LoginDetails) => {
+  const onSubmit = async (data: LoginFormValues) => {
     setStep('loading');
     const { token, error } = await appLogin(data);
     if (token) {
       setStep('success');
       console.log('[login/index.tsx] redirecting to dashboard??');
       router.replace('/');
-      setLogin({ ...data, token });
+      setLogin({ ...(data as LoginDetails), token });
     } else {
       setStep(
         error === 'Incorrect username or password'

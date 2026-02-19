@@ -21,14 +21,14 @@ export const FileFlagButtons = ({
   const id = useId();
   const { reward } = useReward(id, 'balloons', greenBaloonsOptions);
   const setFlag = async (flag: FileFlag) => {
-    if (flag == 'approved') reward();
+    if (flag === FileFlag.Approved) reward();
     setLoading(true);
     await onChange(flag);
     setLoading(false);
   };
 
-  const isApproved = flag == 'approved';
-  const isRejected = flag == 'rejected';
+  const isApproved = flag === FileFlag.Approved;
+  const isRejected = flag === FileFlag.Rejected;
 
   return (
     <>
@@ -36,7 +36,9 @@ export const FileFlagButtons = ({
       <Tooltip label="Approve (Thumbs Up)">
         <ActionIcon
           variant={isApproved ? 'filled' : 'default'}
-          onClick={() => setFlag(!isApproved ? 'approved' : 'none')}
+          onClick={() =>
+            setFlag(!isApproved ? FileFlag.Approved : FileFlag.None)
+          }
           title="Approve"
           color={approvedFlagStyle.color}
           loading={loading}
@@ -47,7 +49,9 @@ export const FileFlagButtons = ({
       <Tooltip label="Reject (Thumbs Down)">
         <ActionIcon
           variant={isRejected ? 'filled' : 'default'}
-          onClick={() => setFlag(!isRejected ? 'rejected' : 'none')}
+          onClick={() =>
+            setFlag(!isRejected ? FileFlag.Rejected : FileFlag.None)
+          }
           title="Reject"
           color={rejectedFlagStyle.color}
           loading={loading}

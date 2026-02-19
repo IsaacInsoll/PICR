@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai/index';
-import { filterOptions } from '@shared/filterAtom';
+import { FilterOptionsInterface, filterOptions } from '@shared/filterAtom';
 import { formatMetadataValues } from '../../../metadata/formatMetadataValues';
 import { MultiSelect } from '@mantine/core';
 import { metadataIcons } from '../metadataIcons';
@@ -14,7 +14,8 @@ export const MetadataSelect = ({
   options: (string | number)[];
 }) => {
   const [fo, setFo] = useAtom(filterOptions);
-  const value = options.length === 1 ? options : (fo.metadata[title] ?? []);
+  const metadata = fo.metadata as Record<string, (string | number)[]>;
+  const value = options.length === 1 ? options : (metadata[title] ?? []);
   const data = formatMetadataValues(title, options);
 
   const label = title === 'ExposureTime' ? 'Shutter Speed' : title;
@@ -31,15 +32,15 @@ export const MetadataSelect = ({
       description={
         solo ? 'Not available as all images are ' + options[0] : undefined
       }
-      leftSection={metadataIcons[title]}
+      leftSection={metadataIcons[title as keyof typeof metadataIcons]}
       label={label}
       // placeholder={}
-      value={value.map((v) => v.toString())}
+      value={value.map((v: string | number) => v.toString())}
       onChange={(strs) => {
         const newVals = data
           .filter((x) => strs.includes(x.value))
           .map((x) => x.raw);
-        setFo((e) => ({
+        setFo((e: FilterOptionsInterface) => ({
           ...e,
           metadata: {
             ...e.metadata,

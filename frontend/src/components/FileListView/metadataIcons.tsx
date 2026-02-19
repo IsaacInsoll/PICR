@@ -1,9 +1,5 @@
 import { ReactNode } from 'react';
 import {
-  ImageMetadataSummary,
-  VideoMetadataSummary,
-} from '../../../../graphql-types';
-import {
   ApertureIcon,
   ArtistIcon,
   AspectRatioIcon,
@@ -24,10 +20,7 @@ import {
   WidthIcon,
 } from '../../PicrIcons';
 
-export const metadataIcons: Record<
-  keyof ImageMetadataSummary | keyof VideoMetadataSummary,
-  ReactNode
-> = {
+export const metadataIcons: Record<string, ReactNode> = {
   __typename: null,
   //PHOTO
   Camera: <CameraIcon />,

@@ -1,4 +1,4 @@
-import { MinimalFolder } from '../../../types';
+import { PicrFolder } from '../../../types';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import {
@@ -16,7 +16,7 @@ import { FolderSelector } from '../../components/FolderSelector';
 import {
   CommentPermissions,
   MutationEditAdminUserArgs,
-} from '../../../../graphql-types';
+} from '@shared/gql/graphql';
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { ErrorAlert } from '../../components/ErrorAlert';
@@ -37,17 +37,17 @@ export const ManageUser = ({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [name, setName] = useState(user?.name ?? '');
-  const [username, setUsername] = useState(user?.username);
+  const [username, setUsername] = useState<string>(user?.username ?? '');
   const [password, setPassword] = useState<string | null>(null);
-  const [ntfy, setNtfy] = useState<string | null>(user?.ntfy);
+  const [ntfy, setNtfy] = useState<string | null>(user?.ntfy ?? null);
   const [ntfyEmail, setNtfyEmail] = useState<boolean>(user?.ntfyEmail ?? false);
   const [enabled, setEnabled] = useState(user?.enabled ?? true);
   const [commentPermissions, setCommentPermissions] =
     useState<CommentPermissions>(
       user?.commentPermissions ?? CommentPermissions.Edit,
     );
-  const [folder, setFolder] = useState<MinimalFolder>(
-    user?.folder ?? { id: '1' },
+  const [folder, setFolder] = useState<PicrFolder>(
+    user?.folder ?? { id: '1', name: 'Root', parents: [] },
   );
   const [error, setError] = useState('');
 
@@ -101,7 +101,7 @@ export const ManageUser = ({
           placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
           value={name}
           label="Name"
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => setName(e.currentTarget.value)}
         />
 
         <TextInput
@@ -109,7 +109,7 @@ export const ManageUser = ({
           placeholder="EG: kimk or kim@k.com"
           value={username}
           label="Email"
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => setUsername(e.currentTarget.value)}
         />
 
         <PasswordInput
@@ -117,7 +117,7 @@ export const ManageUser = ({
           // placeholder="randomchars"
           value={password ?? ''}
           label="Password"
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.currentTarget.value)}
         />
 
         <FolderSelector folder={folder} setFolder={setFolder} />
@@ -130,10 +130,10 @@ export const ManageUser = ({
         <TextInput
           leftSection={<NotificationIcon />}
           placeholder="EG: https://ntfy.sh/xyz"
-          value={ntfy}
+          value={ntfy ?? ''}
           label="NTFY Notifications URL"
           description="Get notifications on your phone"
-          onChange={(e) => setNtfy(e.target.value)}
+          onChange={(e) => setNtfy(e.currentTarget.value)}
         />
 
         <Checkbox

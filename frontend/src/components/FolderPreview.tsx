@@ -1,9 +1,9 @@
-import { MinimalFolder } from '../../types';
+import { PicrFolder } from '../../types';
 import { Blurhash } from 'react-blurhash';
 
-export const FolderPreview = ({ folder }: { folder: MinimalFolder }) => {
+export const FolderPreview = ({ folder }: { folder: PicrFolder }) => {
   const hero = folder?.heroImage;
-  if (!hero) return null;
+  if (!hero || hero.__typename !== 'Image' || !hero.blurHash) return null;
   return (
     <Blurhash
       hash={hero.blurHash}
@@ -12,7 +12,7 @@ export const FolderPreview = ({ folder }: { folder: MinimalFolder }) => {
       punch={1}
       width={16 * (hero.imageRatio ?? 1)}
       height={16}
-      title={hero.name}
+      title={hero.name ?? undefined}
     />
   );
 };

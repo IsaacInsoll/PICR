@@ -18,6 +18,12 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: 'npm'
+      - name: Show Node & npm versions
+        run: |
+          node -v
+          npm -v
+          which node
+          which npm
       - name: '📦 [root] Install Dependencies'
         run: npm ci
       - name: '🎨 [format] Prettier check'
@@ -47,6 +53,8 @@ jobs:
         run: cd frontend && npm ci
       - name: '💄 [frontend] Lint'
         run: cd frontend && npm run lint
+      - name: '💄 [frontend] Type check'
+        run: cd frontend && npx tsc --noEmit
       - name: '💄 [frontend] Build (vite)'
         run: cd frontend && npm run build -- --logLevel error
 
@@ -59,6 +67,9 @@ jobs:
       - name: '📱 [app] Lint'
         if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: cd app && npm run lint
+      - name: '📱 [app] Type check'
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
+        run: cd app && npm run typecheck
       - name: '📱 [app] Build (expo export)'
         if: ${{ matrix.os == 'ubuntu-24.04' }}
         shell: bash

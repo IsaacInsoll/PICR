@@ -17,12 +17,13 @@ import {
   useState,
 } from 'react';
 import type { MouseEvent } from 'react';
-import { MinimalFolder } from '../../types';
+import { PicrFolder } from '../../types';
 import { LoadingIndicator } from './LoadingIndicator';
 import { values } from 'lodash';
 import { FolderIcon } from '../PicrIcons';
+import type { ReadAllFoldersQueryQuery } from '@shared/gql/graphql';
 
-const prettyFolderPath = (folder: MinimalFolder) => {
+const prettyFolderPath = (folder: PicrFolder) => {
   const chev = ' › ';
 
   const parents = folder.parents
@@ -40,8 +41,8 @@ export const FolderSelector = ({
   label = 'Folder',
   description = 'This user can control public links and other users under this folder',
 }: {
-  folder: MinimalFolder;
-  setFolder: (folder: MinimalFolder) => void;
+  folder: PicrFolder;
+  setFolder: (folder: PicrFolder) => void;
   label?: string;
   description?: string;
 }) => {
@@ -85,9 +86,9 @@ const FolderTreeView = ({
   setFolder,
   open,
 }: {
-  folder: MinimalFolder;
+  folder: PicrFolder;
   rootId: string; // the most parent folder available to select
-  setFolder: (f: MinimalFolder) => void;
+  setFolder: (f: PicrFolder) => void;
   open: boolean;
 }) => {
   const [result] = useQuery({
@@ -101,7 +102,11 @@ const FolderTreeView = ({
   });
 
   const folders = useMemo(
-    () => (result?.data?.allFolders ?? []).filter(Boolean),
+    () =>
+      (result?.data?.allFolders ?? []).filter(
+        (f): f is NonNullable<ReadAllFoldersQueryQuery['allFolders'][number]> =>
+          f != null,
+      ),
     [result?.data?.allFolders],
   );
 
@@ -110,15 +115,17 @@ const FolderTreeView = ({
       id: f.id, // buildTree
       value: f.id, // <Tree> view
       label: f.name,
-      parentId: f.parentId,
+      parentId: f.parentId ?? undefined,
     }));
-    return buildTreeArray(treeRaw, rootId);
+    return buildTreeArray(treeRaw, rootId).filter(
+      (node): node is treeNode => node != null,
+    );
   }, [folders, rootId]);
 
   const foldersById = useMemo(() => {
-    const map = new Map<string, MinimalFolder>();
+    const map = new Map<string, PicrFolder>();
     folders.forEach((f) => {
-      if (f?.id) map.set(f.id, f);
+      if (f.id) map.set(f.id, f);
     });
     return map;
   }, [folders]);
@@ -147,6 +154,7 @@ const FolderTreeView = ({
     if (open && !values(tree.expandedState).includes(true)) {
       tree.setExpandedState(expandedParents(folder));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only trigger when opening; folder/tree changes are handled by dedicated sync effect below
   }, [open]);
 
   const lastFolderId = useRef<string | undefined>(folder?.id);
@@ -159,6 +167,7 @@ const FolderTreeView = ({
       lastFolderId.current = folder.id;
       lastSelectedId.current = folder.id;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by folder id to avoid rerunning on object identity churn
   }, [folder?.id]);
 
   if (!open) return null;
@@ -200,8 +209,10 @@ const FolderTreeView = ({
   );
 };
 
-const expandedParents = (folder: MinimalFolder) => {
-  const ex = { [folder.id]: true };
-  folder.parents?.forEach((p) => (ex[p.id] = true));
+const expandedParents = (folder: PicrFolder) => {
+  const ex: Record<string, boolean> = { [folder.id]: true };
+  folder.parents?.forEach((p) => {
+    ex[p.id] = true;
+  });
   return ex;
 };

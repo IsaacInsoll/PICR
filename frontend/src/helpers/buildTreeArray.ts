@@ -6,8 +6,10 @@ type nMap = { [key: nodeId]: treeNode };
 
 export interface treeNode {
   id: nodeId;
+  value: string;
+  label: string;
   parentId?: nodeId;
-  children?: (treeNode | null)[];
+  children?: treeNode[];
 }
 
 export function buildTreeArray(flatArray: treeNode[], rootId?: nodeId) {
@@ -25,7 +27,8 @@ export function buildTreeArray(flatArray: treeNode[], rootId?: nodeId) {
     // Filter flatArray for items with parentId === id
     node.children = flatArray
       .filter((item) => item.parentId === id)
-      .map((item) => buildNode(item.id));
+      .map((item) => buildNode(item.id))
+      .filter((child): child is treeNode => child != null);
     return node;
   };
 

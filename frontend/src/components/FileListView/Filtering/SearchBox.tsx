@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai/index';
-import { filterOptions } from '@shared/filterAtom';
+import { FilterOptionsInterface, filterOptions } from '@shared/filterAtom';
 import { TextInput } from '@mantine/core';
 import { SearchIcon } from '../../../PicrIcons';
 
@@ -11,7 +11,10 @@ export const SearchBox = () => {
       placeholder="Search"
       value={options.searchText}
       onChange={(e) =>
-        setOptions((o) => ({ ...o, searchText: e.target.value }))
+        setOptions((o: FilterOptionsInterface) => ({
+          ...o,
+          searchText: e.target.value,
+        }))
       }
     />
   );

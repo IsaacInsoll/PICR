@@ -1,9 +1,9 @@
-import { MinimalFile } from '../../types.js';
+import { PicrFile } from '../../types.js';
 import { AllSize } from './thumbnailSize.js';
 import { withBasePath } from './baseHref';
 
 export const imageURL = (
-  file: Partial<Pick<MinimalFile, 'id' | 'fileHash' | 'name' | 'type'>>,
+  file: Partial<Pick<PicrFile, 'id' | 'fileHash' | 'name' | 'type'>>,
   size: AllSize,
   extension?: string,
   // frame?: number,
@@ -17,7 +17,7 @@ export const imageURL = (
   return path + (extension ? name + extension : name);
 };
 
-// export const imageDimensions = (file: MinimalFile, size: ThumbnailSize) => {
+// export const imageDimensions = (file: PicrFile, size: ThumbnailSize) => {
 //   const { imageRatio } = file;
 //   const long = thumbnailDimensions[size];
 //   return { width: long, height: (long / (imageRatio ?? 1)).toFixed(0) };

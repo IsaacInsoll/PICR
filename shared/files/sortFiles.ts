@@ -1,5 +1,5 @@
-import type { FilterOptionsInterface } from '@/filterAtom';
-import type { ViewFolderQuery } from '@/gql/graphql';
+import type { FilterOptionsInterface } from '@shared/filterAtom';
+import type { ViewFolderQuery } from '@shared/gql/graphql';
 import { DefaultFilterOptions, filterFiles } from './filterFiles';
 
 export type FileSortType =
@@ -15,6 +15,7 @@ export interface FileSort {
 }
 
 type SortableItem = {
+  __typename?: string;
   name?: string | null;
   fileLastModified?: string | null;
   folderLastModified?: string | null;
@@ -126,7 +127,7 @@ export const sortFolderContents = (
     ? filterFiles(folder.files, filters)
     : folder.files;
   const sortedFiles = sortFiles(filteredFiles, sort);
-  const folderSort =
+  const folderSort: FileSort =
     sort.type === 'LastModified'
       ? sort
       : { type: 'Filename', direction: sort.direction };

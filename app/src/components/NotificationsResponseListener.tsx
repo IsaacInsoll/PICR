@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
-import { Router, useRouter } from 'expo-router';
+import { Href, Router, useRouter } from 'expo-router';
 
 export const NotificationsResponseListener = () => {
   const router = useRouter();
@@ -29,9 +29,9 @@ const notificationResponseReceived = (
   router: Router,
 ) => {
   const data = event.notification.request.content.data;
-  if (data.url) {
+  if (typeof data.url === 'string') {
     console.log('navigate to ' + data.url);
-    router.push(data.url);
+    router.push(data.url as Href);
   }
   console.log('[notification response]');
   console.log(data);

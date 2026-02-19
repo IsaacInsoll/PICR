@@ -24,17 +24,15 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
 
   const [zips, setZips] = useAtom(linksToDownloadAtom);
 
-  useRequery(requery, 1000);
+  useRequery(requery as Parameters<typeof useRequery>[0], 1000);
 
   const tasks = result.data?.tasks;
   const complete = tasks?.filter((t) => t.status == 'Complete');
 
   useEffect(() => {
-    zips.map((fh) => {
+    zips.forEach((fh) => {
       const task = complete?.find(({ id }) => id === fh.folder?.id + fh.hash);
       if (task) {
-        console.log(task);
-        console.log(fh);
         const url = withBasePath(
           `/zip/${fh.folder?.id}/${fh.hash}/${fh.folder?.name}`,
         );
@@ -42,7 +40,7 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
         setZips((list) => list.filter((zz) => zz !== fh));
       }
     });
-  }, [zips, complete]);
+  }, [zips, complete, setZips]);
   const remaining = tasks?.filter((t) => t.status != 'Complete');
 
   // //TODO: remove this testing line

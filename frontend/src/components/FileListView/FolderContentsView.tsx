@@ -14,7 +14,6 @@ import { Tabs, Transition } from '@mantine/core';
 import { Page } from '../Page';
 import { useParams } from 'react-router';
 import { useSetFolder } from '../../hooks/useSetFolder';
-import { FolderRouteParams } from '../../Router';
 import { FileListView } from './FileListView';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import {
@@ -24,6 +23,7 @@ import {
   folderContentsItems,
   isFolderContentsFile,
 } from '@shared/files/folderContentsViewModel';
+import { ViewFolder } from '@shared/files/sortFiles';
 import {
   moveRenameFolderAtom,
   useCloseMoveRenameFolderModal,
@@ -40,10 +40,10 @@ export interface FileListViewStyleComponentProps {
   folderId: string;
 }
 
-export const FolderContentsView = ({ folder }) => {
+export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
   const files = folder.files;
   const folderId = folder.id;
-  const { fileId } = useParams<FolderRouteParams>();
+  const { fileId } = useParams();
   const setFolder = useSetFolder();
   const [view, setView] = useAtom(selectedViewAtom);
   const filtering = useAtomValue(filterAtom);
@@ -59,7 +59,7 @@ export const FolderContentsView = ({ folder }) => {
     setFolder({ id: folderId }, file);
   };
 
-  useEffect(() => resetFilters(null), [resetFilters, folderId]);
+  useEffect(() => resetFilters(), [resetFilters, folderId]);
 
   const handleContextMenu = useCallback(
     (event: MouseEvent<HTMLElement>) => {
@@ -128,7 +128,13 @@ export const FolderContentsView = ({ folder }) => {
           />
         </>
       ) : null}
-      <Tabs value={view} onChange={setView} keepMounted={false}>
+      <Tabs
+        value={view}
+        onChange={(next) => {
+          if (next) setView(next as typeof view);
+        }}
+        keepMounted={false}
+      >
         <Page>
           <Tabs.List grow mb="xs">
             {viewOptions.map((v) => (

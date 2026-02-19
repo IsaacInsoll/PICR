@@ -1,4 +1,4 @@
-import { MinimalFolder } from '../../types';
+import { PicrFolder } from '../../types';
 import { Code, Tooltip } from '@mantine/core';
 import { ChevronRightIcon, HomeIcon } from '../PicrIcons';
 import { PrettyFolderPath } from './PrettyFolderPath';
@@ -6,7 +6,7 @@ import { useSetFolder } from '../hooks/useSetFolder';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 import { PicrLink } from './PicrLink';
 
-export const FolderName = ({ folder }: { folder: MinimalFolder }) => {
+export const FolderName = ({ folder }: { folder: PicrFolder }) => {
   const setFolder = useSetFolder();
   const baseURL = useBaseViewFolderURL();
 

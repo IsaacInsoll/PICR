@@ -3,7 +3,7 @@ import { useQuery } from 'urql';
 import { manageFolderQuery } from '@shared/urql/queries/manageFolderQuery';
 import QueryFeedback from '../../components/QueryFeedback';
 import { ManagePublicLink } from './ManagePublicLink';
-import { MinimalFolder, MinimalSharedFolder } from '../../../types';
+import { PicrFolder } from '../../../types';
 import { DisconnectedIcon } from '../../PicrIcons';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { Button, Divider, Group, Stack, Switch } from '@mantine/core';
@@ -14,9 +14,10 @@ import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { Tips } from '../../components/Tips';
 import { publicLinkColumns } from './userColumns';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import type { ManageFolderQueryQuery } from '@shared/gql/graphql';
 
 interface ManagePublicLinksProps {
-  folder: MinimalFolder;
+  folder: PicrFolder;
   children?: ReactNode;
   disableAddingLinks?: boolean;
   relations: 'none' | 'parents' | 'children' | 'options';
@@ -51,15 +52,15 @@ export const ManagePublicLinks = ({
       {relations == 'options' ? (
         <Stack>
           <Divider />
-          <Tips type="PublicLink" m={0} />
+          <Tips type="PublicLink" />
           <Group justify="flex-end" pb="xs">
             <Switch
-              value={includeParents}
+              checked={includeParents}
               onChange={(e) => setIncludeParents(e.currentTarget.checked)}
               label={isMobile ? 'Include Parents' : 'Include Parent Folders'}
             />
             <Switch
-              value={includeChildren}
+              checked={includeChildren}
               onChange={(e) => setIncludeChildren(e.currentTarget.checked)}
               label={isMobile ? 'Include Children' : 'Include Child Folders'}
             />
@@ -87,12 +88,24 @@ export const ManagePublicLinks = ({
   );
 };
 
-const Body = ({ folderId, includeParents, includeChildren, setLinkId }) => {
+const Body = ({
+  folderId,
+  includeParents,
+  includeChildren,
+  setLinkId,
+}: {
+  folderId: string;
+  includeParents: boolean;
+  includeChildren: boolean;
+  setLinkId: (id: string | null) => void;
+}) => {
   const [result, reQuery] = useQuery({
     query: manageFolderQuery,
     variables: { folderId, includeParents, includeChildren },
   });
-  const users = result.data?.users ?? [];
+  const users = (result.data?.users ?? []).filter(
+    (u): u is NonNullable<ManageFolderQueryQuery['users'][number]> => u != null,
+  );
   return (
     <>
       <QueryFeedback result={result} reQuery={reQuery} />
@@ -108,7 +121,7 @@ const SharedFolderDataGrid = ({
   sharedFolders,
   setSharedFolderId,
 }: {
-  sharedFolders: MinimalSharedFolder[];
+  sharedFolders: NonNullable<ManageFolderQueryQuery['users'][number]>[];
   setSharedFolderId: (id: string) => void;
 }) => {
   return (
@@ -122,7 +135,9 @@ const SharedFolderDataGrid = ({
         <PicrDataGrid
           columns={publicLinkColumns}
           data={sharedFolders}
-          onClick={(row) => setSharedFolderId(row.id)}
+          onClick={(row) => {
+            if (row.id) setSharedFolderId(row.id);
+          }}
         />
       )}
     </>

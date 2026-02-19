@@ -29,7 +29,8 @@ export const Settings = () => {
   const navigate = useNavigate();
   const me = useMe();
 
-  const onTabChange = (newTab) => {
+  const onTabChange = (newTab: string | null) => {
+    if (!newTab) return;
     navigate('/admin/settings/' + newTab);
   };
 
@@ -39,9 +40,9 @@ export const Settings = () => {
     <>
       <LoggedInHeader />
       <Page>
-        <QuickFind folder={me.folder} />
+        <QuickFind folder={me?.folder ?? undefined} />
         <TopBar title={title} />
-        <TaskSummary folderId={me?.folderId} />
+        {me?.folderId ? <TaskSummary folderId={me.folderId} /> : null}
         <Tabs value={tab ?? 'users'} onChange={onTabChange} keepMounted={false}>
           <Tabs.List>
             {tabList.map(({ title, slug, icon }) => (
@@ -62,7 +63,7 @@ export const Settings = () => {
             <Suspense fallback={<LoadingIndicator />}>
               <PicrTitle title={['Links', title]} />
               <ManagePublicLinks
-                folder={me.folder}
+                folder={me?.folder ?? { id: me?.folderId ?? '1', name: 'Root' }}
                 disableAddingLinks={true}
                 relations="children"
               />
@@ -72,7 +73,9 @@ export const Settings = () => {
             <Tips type="Logs" />
             <Suspense fallback={<LoadingIndicator />}>
               <PicrTitle title={['Logs', title]} />
-              <AccessLogs folderId={me?.folderId} includeChildren={true} />
+              {me?.folderId ? (
+                <AccessLogs folderId={me.folderId} includeChildren={true} />
+              ) : null}
             </Suspense>
           </Tabs.Panel>
           <Tabs.Panel value="branding">
@@ -89,7 +92,7 @@ export const Settings = () => {
             </Suspense>
           </Tabs.Panel>
           <Tabs.Panel value="treesize">
-            <TreeSize rootId={me?.folderId} />
+            {me?.folderId ? <TreeSize rootId={me.folderId} /> : null}
           </Tabs.Panel>
         </Tabs>
       </Page>

@@ -6,10 +6,10 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./*"],
+      "@shared/*": ["./*"],
       "@frontend/*": ["../frontend/src/*"],
       "@app/*": ["../app/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"]
 }

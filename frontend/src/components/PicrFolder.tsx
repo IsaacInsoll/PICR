@@ -1,9 +1,10 @@
-import { MinimalFolder } from '../../types';
-import { BackgroundImage, Box, Button, ButtonProps } from '@mantine/core';
+import type { PicrFile, PicrFolder as PicrFolderType } from '../../types';
+import { BackgroundImage, Box, Button } from '@mantine/core';
 import { FileIcon, FolderIcon } from '../PicrIcons';
 import { imageURL } from '../helpers/imageURL';
 import { useHover } from '@mantine/hooks';
 import { useIsDarkMode } from '../hooks/useIsDarkMode';
+import type { CSSProperties } from 'react';
 // This import doesn't work with vite :/
 // import { getInitialsColor } from '@mantine/core/lib/components/Avatar/get-initials-color/get-initials-color';
 
@@ -12,14 +13,26 @@ export const PicrFolder = ({
   folder,
   ...props
 }: {
-  folder: MinimalFolder;
-} & ButtonProps) => {
-  const src = folder.heroImage ? imageURL(folder.heroImage, 'md') : undefined;
+  folder: PicrFolderType;
+} & {
+  onClick?: () => void;
+  style?: CSSProperties;
+  disabled?: boolean;
+  title?: string;
+}) => {
+  const src =
+    folder.heroImage && folder.heroImage.__typename === 'Image'
+      ? imageURL(folder.heroImage, 'md')
+      : undefined;
   const { hovered, ref } = useHover();
 
   const dark = useIsDarkMode();
   return (
-    <BackgroundImage src={src?.replace(' ', '%20')} radius={0} ref={ref}>
+    <BackgroundImage
+      src={src ? src.replace(' ', '%20') : ''}
+      radius={0}
+      ref={ref}
+    >
       <Box
         style={{
           backdropFilter: hovered ? 'blur(2px)' : 'blur(5px)',
@@ -44,7 +57,13 @@ export const PicrFolder = ({
 export const PicrGenericFile = ({
   file,
   ...props
-}: ButtonProps & { file: MinimalFolder }) => {
+}: {
+  file: PicrFile;
+  onClick?: () => void;
+  style?: CSSProperties;
+  disabled?: boolean;
+  title?: string;
+}) => {
   const { hovered, ref } = useHover();
 
   return (

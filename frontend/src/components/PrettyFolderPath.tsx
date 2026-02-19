@@ -1,17 +1,18 @@
-import { MinimalFolder } from '../../types';
+import { PicrFolder } from '../../types';
 import { Code, Group, MantineColor } from '@mantine/core';
 import { Joiner } from './FolderName';
+import { MouseEvent } from 'react';
 
 export const PrettyFolderPath = ({
   folder,
   subColor,
   onClick,
 }: {
-  folder: MinimalFolder;
+  folder: PicrFolder;
   subColor?: MantineColor;
-  onClick?: (e: MouseEvent, f: MinimalFolder) => void;
+  onClick?: (e: MouseEvent, f: PicrFolder) => void;
 }) => {
-  const handleClick = (f, e) => {
+  const handleClick = (e: MouseEvent, f: PicrFolder) => {
     if (onClick) {
       onClick(e, f);
     }
@@ -33,7 +34,11 @@ export const PrettyFolderPath = ({
           <Joiner />
         </>
       ))}
-      <Code color="blue.7" style={style} onClick={(e) => handleClick(e, f)}>
+      <Code
+        color="blue.7"
+        style={style}
+        onClick={(e) => handleClick(e, folder)}
+      >
         {folder.name}
       </Code>
     </Group>

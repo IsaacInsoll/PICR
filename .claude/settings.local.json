@@ -6,7 +6,14 @@
       "Bash(npx expo export:*)",
       "Bash(ls:*)",
       "Bash(npx tsx:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node -e:*)",
+      "Bash(git show:*)",
+      "Bash(else)",
+      "Bash(echo:*)",
+      "Bash(fi)",
+      "Bash(done)"
     ]
   }
 }

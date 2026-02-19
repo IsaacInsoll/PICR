@@ -16,7 +16,7 @@ const loadedFontKeys = new Set<FontKey>(['default', 'signika']);
 
 const resolveAssetKey = (key: FontKey) => (key === 'default' ? 'signika' : key);
 
-const getWeightForLevel = (weights: number[], level: TitleLevel) => {
+const getWeightForLevel = (weights: readonly number[], level: TitleLevel) => {
   const sorted = [...weights].sort((a, b) => a - b);
   const maxIndex = sorted.length - 1;
   if (maxIndex <= 0) return sorted[0] ?? 400;

@@ -30,8 +30,9 @@ container user.
 
 ## Short Version
 
-Set the `CAN_WRITE=true` then run PICR. You will get a "you tried to enable write access but we can't actually write" warning with exact IDs to add to docker compose. 
-Add those, then restart the container. 
+- Set the `CAN_WRITE=true` then run PICR.
+- You will get a "you tried to enable write access but we can't actually write" warning with exact IDs to add to docker compose.
+- Add those, then restart the container.
 
 ## Long Version
 

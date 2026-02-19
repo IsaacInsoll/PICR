@@ -7,8 +7,9 @@ import { closeModalAtom } from '../../../atoms/modalAtom';
 import { FilePreview } from '../FilePreview';
 import { prettyBytes } from '@shared/prettyBytes';
 import { prettyDate } from '@shared/prettyDate';
+import { PicrFile } from '../../../../types';
 
-export const FileInfoModal = ({ file }) => {
+export const FileInfoModal = ({ file }: { file: PicrFile }) => {
   const onClose = useSetAtom(closeModalAtom);
   const isMobile = useIsSmallScreen();
 
@@ -29,15 +30,15 @@ export const FileInfoModal = ({ file }) => {
         </Box>
       ) : null}
       <Group style={{ width: '100%' }}>
-        <StatCard label="File size" value={prettyBytes(file.fileSize)} />
+        <StatCard label="File size" value={prettyBytes(file.fileSize ?? 0)} />
         <StatCard label="File type" value={file.type} />
         <StatCard
           label="Last modified"
-          value={prettyDate(file.fileLastModified)}
+          value={prettyDate(file.fileLastModified ?? '')}
         />
-        <StatCard label="Created" value={prettyDate(file.fileCreated)} />
+        <StatCard label="Created" value={prettyDate(file.fileCreated ?? '')} />
       </Group>
-      {file.metadata ? (
+      {file.metadata != null ? (
         <Table>
           <Table.Thead>
             <Table.Tr>

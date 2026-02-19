@@ -1,6 +1,7 @@
-import { MinimalFile } from '../../../../types';
+import { PicrFile } from '../../../../types';
 import { ReactNode, useMemo } from 'react';
 import { metadataForFiltering } from '@shared/files/metadataForFiltering';
+import { Image } from '@shared/gql/graphql';
 import { AspectSelector } from './AspectSelector';
 import { SearchBox } from './SearchBox';
 import { MetadataBox } from './MetadataBox';
@@ -34,7 +35,7 @@ export const FilteringOptions = ({
   style,
   totalFiltered,
 }: {
-  files: MinimalFile[];
+  files: PicrFile[];
   style: MantineStyleProp;
   totalFiltered: number;
 }) => {
@@ -53,10 +54,22 @@ export const FilteringOptions = ({
   );
 };
 
-const FilterTable = ({ files, totalFiltered }) => {
+const FilterTable = ({
+  files,
+  totalFiltered,
+}: {
+  files: PicrFile[];
+  totalFiltered: number;
+}) => {
   const setFiltering = useSetAtom(filterAtom);
   const { canView } = useCommentPermissions();
-  const meta = useMemo(() => metadataForFiltering(files), [files]);
+  const meta = useMemo(
+    () =>
+      metadataForFiltering(
+        files.filter((f) => f.type === 'Image') as unknown as Image[],
+      ),
+    [files],
+  );
   const totalFilters = useAtomValue(totalFilterOptionsSelected);
   const resetFilters = useSetAtom(resetFilterOptions);
   return (
@@ -69,7 +82,7 @@ const FilterTable = ({ files, totalFiltered }) => {
           <Group justify="space-between">
             <AspectSelector />
             <Box>
-              <MetadataBox files={files} metadata={meta} />
+              <MetadataBox metadata={meta} />
             </Box>
           </Group>
         </Row>

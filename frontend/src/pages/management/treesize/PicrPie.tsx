@@ -9,7 +9,7 @@ export const PicrPie = ({
   hover,
 }: {
   slices: PieSlice[];
-  setHover: (id: string) => void;
+  setHover: (id: string | null) => void;
   setFolderId: (id: string) => void;
   hover: string | null;
 }) => {

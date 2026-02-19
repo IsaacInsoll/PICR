@@ -1,4 +1,4 @@
-import type { ViewFolderQuery } from '@/gql/graphql';
+import type { ViewFolderQuery } from '@shared/gql/graphql';
 import type {
   SortFolderContentsOptions,
   SortFolderContentsResult,
@@ -12,7 +12,7 @@ type HasType = { type: string };
 export const isFolderContentsFile = <T>(
   item: T | null | undefined,
 ): item is Extract<T, HasType> =>
-  !!item && typeof (item as HasType).type === 'string';
+  !!item && typeof (item as unknown as HasType).type === 'string';
 
 export const folderContentsViewModel = (
   folder: ViewFolderQuery['folder'],

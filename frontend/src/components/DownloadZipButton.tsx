@@ -1,10 +1,14 @@
 import { Button } from '@mantine/core';
 import { useState } from 'react';
 import { atom } from 'jotai/index';
-import { Folder } from '../../../graphql-types';
-import { FolderHash } from '../../../backend/helpers/zip';
 import { DownloadIcon } from '../PicrIcons';
 import { useGenerateZip } from '../hooks/useGenerateZip';
+import type { PicrFolder } from '../../types';
+
+export type FolderHash = {
+  folder: PicrFolder;
+  hash: string;
+};
 
 // list of URLs we have requested to download that are currently generating.
 // delete from list once you have triggered it's download
@@ -14,7 +18,7 @@ export const DownloadZipButton = ({
   folder,
   disabled,
 }: {
-  folder: Folder;
+  folder: PicrFolder;
   disabled?: boolean;
 }) => {
   const generateZip = useGenerateZip(folder, () => setTempDisabled(false));

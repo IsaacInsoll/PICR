@@ -75,7 +75,7 @@ export const FolderCsvExportModal = ({
 
   const folderFilesVariables = useMemo(
     () => ({
-      folderId: folder?.id,
+      folderId: folder?.id ?? '',
       includeSubfolders: true,
       limit: MAX_EXPORT_FILES,
     }),
@@ -127,6 +127,7 @@ export const FolderCsvExportModal = ({
         return `${name},${rating},${flag}`;
       })
       .join('\n');
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- exclude includeSubfolders to avoid recomputing while folderFilesQuery is still stabilizing
   }, [files, format, excludeExtensions]);
 
   const fileCount = files.length;

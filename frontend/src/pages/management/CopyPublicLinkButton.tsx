@@ -12,10 +12,10 @@ export const CopyPublicLinkButton = ({
 }: {
   disabled: boolean;
   hash: string;
-  folderId: number;
+  folderId: string;
 } & ButtonProps) => {
   const baseUrl = useBaseUrl();
-  const url = publicURLFor(baseUrl, hash, folderId);
+  const url = publicURLFor(baseUrl ?? '', hash, folderId);
   const notif = {
     title: 'Link copied to clipboard',
     message: url,

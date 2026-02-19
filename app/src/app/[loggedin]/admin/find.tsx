@@ -5,7 +5,10 @@ import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useQuery } from 'urql';
 import { searchQuery } from '@shared/urql/queries/searchQuery';
-import { File, Folder } from '@shared/gql/graphql';
+import {
+  AppSearchFileFragmentFragment,
+  AppSearchFolderFragmentFragment,
+} from '@shared/gql/graphql';
 import {
   buildSearchResultList,
   formatFileFolderName,
@@ -151,11 +154,14 @@ const SearchResults = ({
     pause: !queryEnabled,
   });
 
-  const folders = useMemo(
+  const folders = useMemo<AppSearchFolderFragmentFragment[]>(
     () => result.data?.searchFolders ?? [],
     [result.data],
   );
-  const files = useMemo(() => result.data?.searchFiles ?? [], [result.data]);
+  const files = useMemo<AppSearchFileFragmentFragment[]>(
+    () => result.data?.searchFiles ?? [],
+    [result.data],
+  );
   const list = useMemo(
     () => buildSearchResultList(files, folders, type),
     [files, folders, type],
@@ -170,7 +176,6 @@ const SearchResults = ({
   return (
     <FlashList
       data={list}
-      estimatedItemSize={96}
       keyExtractor={(item) => item.__typename + item.id}
       keyboardShouldPersistTaps="handled"
       contentContainerStyle={{
@@ -200,11 +205,16 @@ const SearchResults = ({
   );
 };
 
-const SearchResultRow = ({ item }: { item: File | Folder }) => {
+type SearchResultItem =
+  | AppSearchFileFragmentFragment
+  | AppSearchFolderFragmentFragment;
+
+const SearchResultRow = ({ item }: { item: SearchResultItem }) => {
   const isFolder = isFolderResult(item);
   const secondary = isFolder
     ? formatFolderPath(item)
     : formatFileFolderName(item);
+  const file = isFolder ? null : (item as AppSearchFileFragmentFragment);
 
   return (
     <AppLink item={item} asChild>
@@ -227,10 +237,12 @@ const SearchResultRow = ({ item }: { item: File | Folder }) => {
               <PText variant="dimmed">Folder</PText>
             ) : (
               <View style={styles.fileMetaRow}>
-                <PText variant="dimmed">{(item as File).type}</PText>
-                <AppFileFlagChip flag={(item as File).flag} hideIfNone />
-                <AppFileRatingChip rating={(item as File).rating} />
-                <AppCommentsChip totalComments={(item as File).totalComments} />
+                <PText variant="dimmed">{file?.type}</PText>
+                <AppFileFlagChip flag={file?.flag ?? undefined} hideIfNone />
+                <AppFileRatingChip rating={file?.rating ?? undefined} />
+                <AppCommentsChip
+                  totalComments={file?.totalComments ?? undefined}
+                />
               </View>
             )}
           </View>

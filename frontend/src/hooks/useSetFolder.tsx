@@ -6,7 +6,7 @@ import {
 } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder';
-import { MinimalFile, MinimalFolder } from '../../types';
+import { PicrFile, PicrFolder } from '../../types';
 
 import { useBaseViewFolderURL } from './useBaseViewFolderURL';
 
@@ -16,21 +16,22 @@ export const useSetFolder = () => {
   const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const baseUrl = useBaseViewFolderURL();
   return (
-    folder: MinimalFolder,
-    file?: Pick<MinimalFile, 'id'> | string,
+    folder: Pick<PicrFolder, 'id'> & Partial<PicrFolder>,
+    file?: Pick<PicrFile, 'id'> | string,
     options?: NavigateOptions,
   ) => {
-    setPlaceholderFolder({ ...folder });
+    setPlaceholderFolder(folder as PicrFolder);
     const base = baseUrl + folder.id;
-    const f = file && file.id ? `/${file.id}` : file ? '/' + file : '';
+    const fileId = typeof file === 'string' ? file : file?.id;
+    const f = fileId ? `/${fileId}` : '';
     navigate(base + f + location.hash, options);
   };
 };
 
 // converts any Mantine component to a link that preloads (placeholder) and behaves like a real link (IE: open in new tab)
 export const useFolderLink = (
-  folder: MinimalFolder,
-  file?: Pick<MinimalFile, 'id'> | string,
+  folder: Pick<PicrFolder, 'id'> & Partial<PicrFolder>,
+  file?: Pick<PicrFile, 'id'> | string,
 ) => {
   const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const baseUrl = useBaseViewFolderURL();
@@ -39,10 +40,10 @@ export const useFolderLink = (
   const to =
     baseUrl +
     folder.id +
-    (file && file?.id ? `/${file?.id}` : file ? '/' + file : '') +
+    (typeof file === 'string' ? `/${file}` : file?.id ? `/${file.id}` : '') +
     location.hash;
 
-  const onClick = () => setPlaceholderFolder(folder);
+  const onClick = () => setPlaceholderFolder(folder as PicrFolder);
 
   return { to, onClick, component: NavLink };
 };
