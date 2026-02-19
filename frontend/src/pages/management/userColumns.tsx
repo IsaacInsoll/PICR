@@ -37,6 +37,12 @@ export const publicLinkColumns: PicrColumns<PicrUser>[] = [
       folder ? <FolderName folder={folder} /> : undefined,
   },
   {
+    accessorKey: 'enabled',
+    maxSize: 50,
+    header: 'Enabled',
+    accessorFn: ({ enabled }) => <BooleanIcon value={!!enabled} />,
+  },
+  {
     header: 'Comments',
     maxSize: 75,
     accessorFn: (user: PicrUser) => (

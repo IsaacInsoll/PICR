@@ -70,12 +70,18 @@ export const GridGallery = ({
         enableImageSelection={false}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         thumbnailImageComponent={(p: any) => {
+          const title =
+            typeof p.imageProps?.title === 'string' ? p.imageProps.title : '';
+          const style = p.imageProps?.style;
+
           if (p.item.folder) {
-            return <PicrFolder folder={p.item.folder} {...p.imageProps} />;
+            return <PicrFolder folder={p.item.folder} title={title} style={style} />;
           }
 
           if (p.item.file.type == 'File') {
-            return <PicrGenericFile file={p.item.file} {...p.imageProps} />;
+            return (
+              <PicrGenericFile file={p.item.file} title={title} style={style} />
+            );
           }
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
