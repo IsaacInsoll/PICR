@@ -75,7 +75,9 @@ export const GridGallery = ({
           const style = p.imageProps?.style;
 
           if (p.item.folder) {
-            return <PicrFolder folder={p.item.folder} title={title} style={style} />;
+            return (
+              <PicrFolder folder={p.item.folder} title={title} style={style} />
+            );
           }
 
           if (p.item.file.type == 'File') {
