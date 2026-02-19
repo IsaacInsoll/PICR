@@ -6,7 +6,7 @@ import { User } from '../../../graphql-types';
 export const useMe = (): Pick<
   User,
   'id' | 'name' | 'folderId' | 'commentPermissions' | 'linkMode'
-> => {
+> | null => {
   const [result] = useQuery({ query: meQuery });
   // if result.error == No Permissions then your token expired, reauth?
   const data = result.data;
@@ -16,5 +16,8 @@ export const useMe = (): Pick<
     // ...extraUserProps(data?.me),
     clientInfo: data.clientInfo,
   };
-  return me;
+  return me as Pick<
+    User,
+    'id' | 'name' | 'folderId' | 'commentPermissions' | 'linkMode'
+  >;
 };

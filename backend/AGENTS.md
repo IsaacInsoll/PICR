@@ -481,6 +481,30 @@ logger.error('Failed to process', { error: err.message });
 
 ---
 
+## Validation Commands
+
+Run these after backend changes:
+
+```bash
+cd backend && npm run lint
+cd backend && npx tsc --noEmit
+cd backend && npm run build
+```
+
+Also run repo-wide formatting checks:
+
+```bash
+npm run format:check
+```
+
+For test validation, ask the user to run:
+
+```bash
+npm run workflow
+```
+
+---
+
 ## Troubleshooting
 
 ### `npm run gql` fails with network error

@@ -1,6 +1,6 @@
 import { prettyBytes } from './prettyBytes';
 import formatDuration from 'format-duration';
-import { AnyMetadataKey } from '@/fileMetadata';
+import { AnyMetadataKey } from '@shared/fileMetadata';
 import { tz } from 'moment-timezone';
 
 export interface formattedValue {
@@ -27,23 +27,25 @@ export const formatMetadataValue = (
 
   if (title === 'Aperture') data.label = 'ƒ' + value;
 
-  if (title === 'ExposureTime')
+  if (title === 'ExposureTime' && typeof value === 'number') {
     data.label =
       value > 1 ? value.toFixed(1) + ' sec' : '¹/' + (1 / value).toString();
+  }
 
-  if (title.startsWith('DateTime')) {
+  if (title.startsWith('DateTime') && typeof value === 'string') {
     data.value = value;
     data.label = prettyDateNoTZ(value);
   }
 
-  if (title === 'Bitrate')
+  if (title === 'Bitrate' && typeof value === 'number') {
     data.label = value ? prettyBytes(value, { bits: true }) : '';
+  }
 
-  if (title === 'Duration' && value) {
+  if (title === 'Duration' && typeof value === 'number' && value) {
     data.label = formatDuration(value * 1000);
   }
 
-  if (title === 'Framerate') data.label = value ? value + '/s' : null;
+  if (title === 'Framerate') data.label = value ? value + '/s' : '';
 
   return data;
 };

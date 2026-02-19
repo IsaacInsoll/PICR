@@ -9,8 +9,8 @@ export const AccessLogsUsersSelector = ({
   includeChildren = false,
 }: {
   folderId: string;
-  userId: string;
-  setUserId: (userId: string) => void;
+  userId?: string;
+  setUserId: (userId?: string) => void;
   includeChildren?: boolean;
 }) => {
   const [result] = useQuery({
@@ -25,9 +25,11 @@ export const AccessLogsUsersSelector = ({
       clearable
       label="Filter by Link"
       placeholder="<Any user or link>"
-      value={userId}
-      onChange={(e) => setUserId(e)}
-      data={users.map((u) => ({ value: u.id, label: u.name }))}
+      value={userId ?? null}
+      onChange={(e) => setUserId(e ?? undefined)}
+      data={users
+        .filter((u) => u.id != null)
+        .map((u) => ({ value: u.id as string, label: u.name ?? 'Unnamed' }))}
     />
   );
 };

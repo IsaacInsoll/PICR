@@ -10,17 +10,17 @@ export const PView = ({
   row,
 }: PropsWithChildren<{
   gap?: Padding;
-  style?: any | undefined;
+  style?: StyleProp<ViewStyle>;
   row?: boolean;
   onWidthChange?: (width: number) => void;
 }>) => {
   const s: StyleProp<ViewStyle> = {
-    gap: PaddingSize[gap],
+    gap: gap ? PaddingSize[gap] : undefined,
     flexDirection: row ? 'row' : 'column',
   };
   return (
     <View
-      style={!!style ? { ...style, ...s } : s}
+      style={[style, s]}
       onLayout={(e) => {
         if (onWidthChange) onWidthChange(e.nativeEvent.layout.width);
       }}

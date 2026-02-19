@@ -1,4 +1,4 @@
-import { MinimalFile } from '../../../types';
+import { PicrFile } from '../../../types';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import {
@@ -15,7 +15,7 @@ import {
   InfoIcon,
 } from '../../PicrIcons';
 
-export const FileMenu = ({ file }: { file: MinimalFile }) => {
+export const FileMenu = ({ file }: { file: PicrFile }) => {
   const setFolder = useSetFolder();
   const { canView } = useCommentPermissions();
 
@@ -28,6 +28,7 @@ export const FileMenu = ({ file }: { file: MinimalFile }) => {
         leftSection={<FileIcon size="20" />}
         key={1}
         onClick={() => {
+          if (!file.folderId) return;
           setFolder({ id: file.folderId }, file);
         }}
       >

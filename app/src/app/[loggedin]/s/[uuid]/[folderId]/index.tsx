@@ -25,8 +25,11 @@ import { FolderBrandingProvider } from '@/src/components/FolderBrandingProvider'
 
 export default function PublicFolderView() {
   const theme = useAppTheme();
-  const { folderId } = useLocalSearchParams();
-  const skeleton = folderCache[folderId];
+  const params = useLocalSearchParams<{ folderId?: string | string[] }>();
+  const folderId = Array.isArray(params.folderId)
+    ? params.folderId[0]
+    : params.folderId;
+  const skeleton = folderId ? folderCache[folderId] : undefined;
   const [width, setViewWidth] = useState(0);
 
   return (
@@ -44,7 +47,11 @@ export default function PublicFolderView() {
       >
         <PView style={{ width: '100%', flex: 1 }} onWidthChange={setViewWidth}>
           <Suspense fallback={<AppLoadingIndicator />}>
-            <FolderBody folderId={folderId} key={folderId} width={width} />
+            {folderId ? (
+              <FolderBody folderId={folderId} key={folderId} width={width} />
+            ) : (
+              <PText>Folder Not Found</PText>
+            )}
           </Suspense>
         </PView>
       </View>

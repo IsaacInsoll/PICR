@@ -4,7 +4,10 @@ import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
-import { FolderContentsItem } from '@shared/files/folderContentsViewModel';
+import {
+  FolderContentsItem,
+  isFolderContentsFile,
+} from '@shared/files/folderContentsViewModel';
 import {
   ActionIcon,
   Avatar,
@@ -30,6 +33,8 @@ import { PicrAvatar } from '../PicrAvatar';
 import { prettyBytes } from '@shared/prettyBytes';
 import { pluralize } from '@shared/pluralize';
 import { prettyDate } from '@shared/prettyDate';
+import { PicrUser } from '../../../types';
+import { FileFlag } from '@shared/gql/graphql';
 
 export const FileListView = ({
   files,
@@ -43,7 +48,7 @@ export const FileListView = ({
   const loadedFiles = orderedItems.slice(0, lazyLoaded);
 
   return (
-    <Page style={{}}>
+    <Page>
       <Table highlightOnHover>
         <Table.Tbody>
           {loadedFiles.map((f, i) => (
@@ -65,29 +70,36 @@ const Row = ({
   file,
   onBecomeVisible,
 }: {
+  setSelectedFileId: (id: string | undefined) => void;
   file: FolderContentsItem;
   onBecomeVisible: () => void;
 }) => {
   const { canView } = useCommentPermissions();
   const setFolder = useSetFolder();
   const isMobile = useIsMobile();
-  const isFolder = file.__typename == 'Folder';
+  const isFile = isFolderContentsFile(file);
+  const isFolder = !isFile;
   const modifiedDate = isFolder
     ? file.folderLastModified
     : file.fileLastModified;
+  const latestComment = isFile ? file.latestComment : null;
+  const totalComments = isFile ? file.totalComments : null;
+  const rating = isFile ? (file.rating ?? 0) : 0;
+  const flag = isFile ? file.flag : null;
+  const fileSize = isFile ? file.fileSize : null;
 
   // if filtering by RecentlyCommented or LastModified then lets show that data
   const { type } = useAtomValue(fileSortAtom);
   const descriptionOverride =
     type == 'RecentlyCommented' ? (
       <>
-        {file.latestComment ? (
+        {latestComment ? (
           <>
             <Badge color="gray" size="xs">
-              {file.totalComments}
+              {totalComments}
             </Badge>
             <Text c="dimmed" fz="xs">
-              Latest: {prettyDate(file.latestComment)}
+              Latest: {prettyDate(latestComment)}
             </Text>
           </>
         ) : null}
@@ -128,7 +140,7 @@ const Row = ({
             <Text
               fz="md"
               fw={500}
-              title={`Modified: ${modifiedDate ? prettyDate(modifiedDate) : 'N/A'}\nLast Comment: ${file.latestComment ? prettyDate(file.latestComment) : 'N/A'}`}
+              title={`Modified: ${modifiedDate ? prettyDate(modifiedDate) : 'N/A'}\nLast Comment: ${latestComment ? prettyDate(latestComment) : 'N/A'}`}
             >
               {file.name}
             </Text>
@@ -146,20 +158,20 @@ const Row = ({
                   <>
                     {isMobile ? (
                       <>
-                        {file.flag && file.flag != 'None'
-                          ? fileFlagStyles[file.flag].icon
+                        {flag && flag !== 'none'
+                          ? fileFlagStyles[flag].icon
                           : null}
-                        {file.rating ? (
+                        {rating ? (
                           <Text c="dimmed" fz="xs">
-                            {pluralize(file.rating, 'Star')}
+                            {pluralize(rating, 'Star')}
                             {/*{file.fileSize ? ', ' + prettyBytes(file.fileSize) : null}*/}
                           </Text>
                         ) : null}
                       </>
                     ) : null}
-                    {file.totalComments ? (
+                    {totalComments ? (
                       <Text c="dimmed" fz="xs">
-                        {pluralize(file.totalComments, 'Comment')}
+                        {pluralize(totalComments, 'Comment')}
                         {/*{file.fileSize ? ', ' + prettyBytes(file.fileSize) : null}*/}
                       </Text>
                     ) : null}
@@ -173,27 +185,25 @@ const Row = ({
       {canView && !isMobile ? (
         <Table.Td onClick={onClick}>
           <Stack align="end">
-            {file.rating > 0 ? (
-              <Rating readOnly value={file.rating} size="xs" />
-            ) : null}
-            <FileFlagBadge flag={file.flag} />
+            {rating > 0 ? <Rating readOnly value={rating} size="xs" /> : null}
+            <FileFlagBadge flag={flag ?? FileFlag.None} />
           </Stack>
         </Table.Td>
       ) : null}
       {!isMobile ? (
         <Table.Td onClick={onClick}>
-          {file.users ? (
+          {isFolder && file.users ? (
             <Avatar.Group spacing="xs" style={{ justifyContent: 'flex-end' }}>
-              {file.users.map((u) => (
+              {file.users.map((u: PicrUser) => (
                 <PicrAvatar user={u} size="sm" key={u.id} />
               ))}
             </Avatar.Group>
           ) : null}
           <Text fz="sm" ta="right">
-            {file.fileSize ? prettyBytes(file.fileSize) : null}
+            {fileSize ? prettyBytes(fileSize) : null}
           </Text>
           <Text fz="xs" ta="right" c="dimmed">
-            {file.type ?? 'Folder'}
+            {isFolder ? 'Folder' : file.type}
           </Text>
         </Table.Td>
       ) : null}

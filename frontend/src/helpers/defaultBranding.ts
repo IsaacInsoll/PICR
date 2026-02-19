@@ -1,9 +1,9 @@
-import { Branding, PrimaryColor, ThemeMode } from '../../../graphql-types';
+import { HeadingFontKey, PrimaryColor, ThemeMode } from '@shared/gql/graphql';
 
-export const defaultBranding: Branding = {
+export const defaultBranding = {
   id: '0',
   name: '',
   mode: ThemeMode.Auto,
   primaryColor: PrimaryColor.Blue,
-  folders: [],
+  headingFontKey: HeadingFontKey.Default,
 };

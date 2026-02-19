@@ -1,13 +1,13 @@
-import { MinimalFile } from '../../../../types';
+import { PicrFile } from '../../../../types';
 import { Slide } from 'yet-another-react-lightbox';
 import { thumbnailSizes } from '../../../helpers/thumbnailSize';
-import { ImageSource } from 'yet-another-react-lightbox/dist/types';
+import { ImageSource } from 'yet-another-react-lightbox';
 import { thumbnailDimensions } from '@shared/thumbnailDimensions';
 import { imageURL } from '../../../helpers/imageURL';
 
-export const filesForLightbox = (files: MinimalFile[]): Slide[] => {
+export const filesForLightbox = (files: PicrFile[]): Slide[] => {
   return files.map((file) => {
-    const title = file.name;
+    const title = file.name ?? '';
     const props =
       file.type == 'Image'
         ? {
@@ -33,6 +33,6 @@ export const filesForLightbox = (files: MinimalFile[]): Slide[] => {
       alt: title,
       title, //requires caption plugin
       ...props,
-    };
+    } as Slide;
   });
 };

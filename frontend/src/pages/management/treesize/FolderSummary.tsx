@@ -1,4 +1,4 @@
-import { Folder } from '../../../../../graphql-types';
+import type { TreeSizeQueryQuery } from '@shared/gql/graphql';
 import {
   Alert,
   Box,
@@ -25,18 +25,19 @@ export const FolderSummary = ({
   hover,
   slices,
 }: {
-  folder: Folder;
+  folder: NonNullable<TreeSizeQueryQuery['folder']>;
   setFolderId: (id: string) => void;
-  setHover: (id: string) => void;
+  setHover: (id: string | null) => void;
   hover: string | null;
   slices: PieSlice[];
 }) => {
   const [treeSizeTab, setTreeSizeTab] = useAtom(treeSizeTabAtom);
   if (!folder) return null;
-  const data = folder.subFolders.map((f) => ({
-    ...f,
-    size: parseInt(f.totalSize),
-  }));
+  const data: { id: string; name: string; size: number; color?: string }[] =
+    folder.subFolders.map((f) => ({
+      ...f,
+      size: parseInt(f.totalSize),
+    }));
   data.push({
     id: 'files',
     name: '(Files)',
@@ -54,7 +55,14 @@ export const FolderSummary = ({
         //   hover && !['rest', 'files'].includes(hover ?? '') ? 0.5 : undefined,
       }}
     >
-      <Tabs value={treeSizeTab} onChange={setTreeSizeTab}>
+      <Tabs
+        value={treeSizeTab}
+        onChange={(value) => {
+          if (value === 'subfolders' || value === 'files') {
+            setTreeSizeTab(value);
+          }
+        }}
+      >
         <Tabs.List>
           <Tabs.Tab value="subfolders" leftSection={<FolderIcon />}>
             {pluralize(folder?.subFolders.length, 'folder', true)}
@@ -84,9 +92,16 @@ export const FolderSummary = ({
   );
 };
 
-export const FileTable = ({ files }) => {
+export const FileTable = ({
+  files,
+}: {
+  files: { id: string; name: string; fileSize: string }[];
+}) => {
   const limit = 20;
-  const top = files.sort((a, b) => b.fileSize - a.fileSize).slice(0, limit);
+  const top = files
+    .slice()
+    .sort((a, b) => parseInt(b.fileSize) - parseInt(a.fileSize))
+    .slice(0, limit);
   return (
     <Stack>
       {files.length > limit ? (
@@ -108,7 +123,7 @@ export const FileTable = ({ files }) => {
               <Table.Tr key={f.id}>
                 <Table.Td style={{ fontStyle: 'italic' }}>{f.name}</Table.Td>
                 <Table.Td align="right">
-                  <Bytes bytes={f.fileSize} />
+                  <Bytes bytes={parseInt(f.fileSize)} />
                 </Table.Td>
               </Table.Tr>
             );
@@ -126,6 +141,13 @@ export const FolderTable = ({
   setFolderId,
   hover,
   slices,
+}: {
+  sorted: { id: string; name: string; size: number; color?: string }[];
+  largest: number | null;
+  setHover: (id: string | null) => void;
+  setFolderId: (id: string) => void;
+  hover: string | null;
+  slices: PieSlice[];
 }) => {
   return (
     <Table>

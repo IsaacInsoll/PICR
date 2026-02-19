@@ -379,6 +379,28 @@ npx expo start --dev-client
 npx expo start --clear  # Clear cache first
 ```
 
+## Validation Commands
+
+Run these after app changes:
+
+```bash
+cd app && npm run lint
+cd app && npx tsc --noEmit
+cd app && npx expo export --platform android
+```
+
+Also run repo-wide formatting checks:
+
+```bash
+npm run format:check
+```
+
+For test validation, ask the user to run:
+
+```bash
+npm run workflow
+```
+
 ## Troubleshooting
 
 ### Metro bundler errors

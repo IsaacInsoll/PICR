@@ -1,7 +1,7 @@
 //https://benhowell.github.io/react-grid-gallery/examples/custom-overlay
 // TODO: Could use Skeleton as placeholders before content loads?
 import { imageURL } from '../../helpers/imageURL';
-import { Gallery, ThumbnailImageProps } from './react-grid-gallery';
+import { Gallery } from './react-grid-gallery';
 import { FileListViewStyleComponentProps } from './FolderContentsView';
 import 'yet-another-react-lightbox/styles.css';
 import './GridGallery.css';
@@ -13,6 +13,12 @@ import {
   isFolderContentsFile,
   ViewFolderFileWithHero,
 } from '@shared/files/folderContentsViewModel';
+import { Image as GridImage } from './react-grid-gallery/types';
+
+type GalleryItem = GridImage & {
+  file?: ViewFolderFileWithHero;
+  folder?: FolderContentsItem;
+};
 
 export const GridGallery = ({
   files,
@@ -31,23 +37,30 @@ export const GridGallery = ({
       setFolder(item);
     }
   };
-  const galleryItems = orderedItems.map((item: FolderContentsItem) => {
-    if (isFolderContentsFile(item)) {
+  const galleryItems: GalleryItem[] = orderedItems.map(
+    (item: FolderContentsItem) => {
+      if (isFolderContentsFile(item)) {
+        const imageRatio =
+          'imageRatio' in item && typeof item.imageRatio === 'number'
+            ? item.imageRatio
+            : 1;
+        return {
+          key: item.id,
+          src: imageURL(item, 'md'),
+          width: size,
+          height: size / imageRatio,
+          file: item,
+        };
+      }
       return {
-        key: item.id,
-        src: imageURL(item, 'md'),
-        width: size,
-        height: size / (item.imageRatio ?? 1),
-        file: item,
+        key: 'f' + item.id,
+        src: '',
+        width: size * 2,
+        height: size,
+        folder: item,
       };
-    }
-    return {
-      key: 'f' + item.id,
-      width: size * 2,
-      height: size,
-      folder: item,
-    };
-  });
+    },
+  );
   return (
     <>
       <Gallery
@@ -55,14 +68,18 @@ export const GridGallery = ({
         images={galleryItems}
         onClick={handleClick}
         enableImageSelection={false}
-        thumbnailImageComponent={(p) => {
-          if (p.item.folder)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        thumbnailImageComponent={(p: any) => {
+          if (p.item.folder) {
             return <PicrFolder folder={p.item.folder} {...p.imageProps} />;
+          }
 
-          if (p.item.file.type == 'File')
+          if (p.item.file.type == 'File') {
             return <PicrGenericFile file={p.item.file} {...p.imageProps} />;
+          }
 
-          return <GalleryImage {...p} />;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return <GalleryImage {...(p as any)} />;
         }}
       />
     </>
@@ -70,7 +87,9 @@ export const GridGallery = ({
 };
 const size = 250;
 
-type GalleryImageProps = ThumbnailImageProps & {
+type GalleryImageProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  imageProps: any;
   item: { file: ViewFolderFileWithHero };
 };
 

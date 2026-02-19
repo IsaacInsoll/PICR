@@ -1,11 +1,11 @@
 import { useQuery } from 'urql';
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import {
   FolderHeader,
   PlaceholderFolderHeader,
 } from '../components/FolderHeader/FolderHeader';
 import { folderSubtitle } from '../helpers/folderSubtitle';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
@@ -14,16 +14,14 @@ import { ActionIcon, Button, Center, Group, Menu, Title } from '@mantine/core';
 import { useSetFolder } from '../hooks/useSetFolder';
 import { FolderModalManager } from '../components/FolderModalManager';
 import { Page } from '../components/Page';
-import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 import { QuickFind } from '../components/QuickFind/QuickFind';
 import { useRequery } from '@shared/hooks/useRequery';
 import { LoggedInHeader } from '../components/Header/LoggedInHeader';
 import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
 import { useSetAtom } from 'jotai';
-import { MinimalFolder } from '../../types';
+import { PicrFolder } from '../../types';
 import { DotsIcon, FilterIcon, FolderIcon } from '../PicrIcons';
-import { FolderRouteParams } from '../Router';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
@@ -39,31 +37,29 @@ export const ViewFolder = () => {
   return (
     <>
       <Suspense fallback={<PlaceholderFolderHeader />}>
-        <ViewFolderBody key={folderId ?? '1'} folderId={folderId ?? '1'} />
+        <ViewFolderBody key={folderId ?? '1'} />
       </Suspense>
     </>
   );
 };
 
 const ViewFolderBody = () => {
-  const navigate = useNavigate();
-  const { folderId, fileId } = useParams<FolderRouteParams>();
-  const baseUrl = useBaseViewFolderURL();
+  const { folderId, fileId } = useParams();
   const setFolder = useSetFolder();
   const setThemeMode = useSetAtom(themeModeAtom);
   const [csvExportOpen, setCsvExportOpen] = useState(false);
 
-  const mode: ViewFolderMode = ['manage', 'activity'].includes(fileId)
-    ? fileId
+  const mode: ViewFolderMode = ['manage', 'activity'].includes(fileId ?? '')
+    ? (fileId as ViewFolderMode)
     : 'files';
   const managing = mode === 'manage';
   const activity = mode === 'activity';
 
   const [data, reQuery] = useQuery({
     query: viewFolderQuery,
-    variables: { folderId },
+    variables: { folderId: folderId ?? '1' },
   });
-  useRequery(reQuery, 20000);
+  useRequery(reQuery as Parameters<typeof useRequery>[0], 20000);
 
   const branding = data?.data?.folder?.branding;
   // Create a stable key from the branding values to avoid re-running effect on object reference changes
@@ -77,28 +73,22 @@ const ViewFolderBody = () => {
   );
 
   useEffect(() => {
-    console.log('viewfolder setThemeMode effect');
     setThemeMode(theme);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [brandingKey]);
-
-  const toggleManaging = useCallback(() => {
-    navigate(baseUrl + folderId + (managing ? '' : '/manage'));
-  }, [navigate, baseUrl, folderId, managing]);
+  }, [setThemeMode, theme]);
 
   const folder = data.data?.folder;
   const hasFiles = folder && folder.files.length > 0;
 
   // redirect to 'no file selected' if you are in a valid folder but the file isn't found
   useEffect(() => {
-    const fileIds = folder?.files.map((f) => f.id);
+    const fileIds = folder?.files?.map((f) => f.id) ?? [];
     if (fileId && fileIds && fileIds.length > 0 && !managing && !activity) {
       if (!fileIds.includes(fileId)) {
-        console.log('File not found in folder, redirecting to folder');
-        setFolder(folder);
+        if (folder) setFolder(folder);
       }
     }
-  }, [folderId, fileId, managing]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally omitting folder/setFolder to avoid spurious redirects on query refresh
+  }, [activity, fileId, managing]);
 
   const actions = [];
 
@@ -109,17 +99,21 @@ const ViewFolderBody = () => {
 
   if (mode === 'files') {
     actions.push(
-      <FolderOverflowMenu
-        folder={folder}
-        key="Overflow"
-        onCsvExport={() => setCsvExportOpen(true)}
-      />,
+      folder ? (
+        <FolderOverflowMenu
+          folder={folder}
+          key="Overflow"
+          onCsvExport={() => setCsvExportOpen(true)}
+        />
+      ) : null,
     );
   } else {
     actions.push(
       <Button
         variant="default"
-        onClick={() => setFolder(folder)}
+        onClick={() => {
+          if (folder) setFolder(folder);
+        }}
         leftSection={<FolderIcon />}
         key="BackToFolder"
       >
@@ -141,12 +135,14 @@ const ViewFolderBody = () => {
     <>
       <LoggedInHeader folder={folder} managing={managing} />
       <QuickFind folder={folder} />
-      <FolderModalManager folder={folder} />
-      <FolderCsvExportModal
-        folder={folder}
-        opened={csvExportOpen}
-        onClose={() => setCsvExportOpen(false)}
-      />
+      {folder ? <FolderModalManager folder={folder} /> : null}
+      {folder ? (
+        <FolderCsvExportModal
+          folder={folder}
+          opened={csvExportOpen}
+          onClose={() => setCsvExportOpen(false)}
+        />
+      ) : null}
       <QueryFeedback result={data} reQuery={reQuery} />
       {!folder ? (
         <Title order={1}>Folder Not Found</Title>
@@ -168,9 +164,7 @@ const ViewFolderBody = () => {
               </Page>
             }
           >
-            {managing ? (
-              <ManageFolder folder={folder} toggleManaging={toggleManaging} />
-            ) : null}
+            {managing ? <ManageFolder folder={folder} /> : null}
             {activity ? (
               <Page>
                 <FolderActivity folderId={folder.id} />
@@ -193,7 +187,7 @@ const FolderOverflowMenu = ({
   folder,
   onCsvExport,
 }: {
-  folder: MinimalFolder;
+  folder: PicrFolder;
   onCsvExport: () => void;
 }) => {
   const setFiltering = useSetAtom(filterAtom);

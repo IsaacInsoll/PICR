@@ -1,4 +1,3 @@
-import { MinimalFile } from '../../../types';
 import { FileListViewStyleComponentProps } from './FolderContentsView';
 import { prettyBytes } from '@shared/prettyBytes';
 import { PicrColumns, PicrDataGrid } from '../PicrDataGrid';
@@ -11,6 +10,10 @@ import { DateDisplay } from './Filtering/PrettyDate';
 import { useIsMobile, useIsSmallScreen } from '../../hooks/useIsMobile';
 import { FolderMenu } from './FolderMenu';
 import { useSetFolder } from '../../hooks/useSetFolder';
+import {
+  FolderContentsItem,
+  isFolderContentsFile,
+} from '@shared/files/folderContentsViewModel';
 
 export const FileDataListView = ({
   files,
@@ -37,14 +40,14 @@ export const FileDataListView = ({
     <Page>
       <PicrDataGrid
         columns={cols}
-        data={items ?? [...folders, ...files]}
+        data={(items ?? [...folders, ...files]) as FolderContentsItem[]}
         onClick={(row) =>
-          row.__typename == 'Folder'
+          !isFolderContentsFile(row)
             ? setFolder(row)
             : setSelectedFileId(row.id)
         }
         menuItems={({ row }) =>
-          row.original.__typename == 'Folder' ? (
+          !isFolderContentsFile(row.original) ? (
             <FolderMenu folder={row.original} />
           ) : (
             <FileMenu file={row.original} />
@@ -55,17 +58,24 @@ export const FileDataListView = ({
   );
 };
 
-const columns: (PicrColumns<MinimalFile> & {
+const columns: (PicrColumns<FolderContentsItem> & {
   isComment: boolean;
   visibleFor: MantineSize;
 })[] = [
-  { accessorKey: 'name', header: 'Name', size: 10, visibleFor: 'xs' },
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    size: 10,
+    visibleFor: 'xs',
+    isComment: false,
+  },
   {
     header: 'Type',
     size: 10,
     visibleFor: 'md',
+    isComment: false,
     accessorFn: (row) => {
-      return row.type ?? 'Folder';
+      return isFolderContentsFile(row) ? row.type : 'Folder';
     },
   },
   {
@@ -74,7 +84,7 @@ const columns: (PicrColumns<MinimalFile> & {
     isComment: true,
     size: 10,
     Cell: ({ cell }) => {
-      const rating = cell.getValue();
+      const rating = Number(cell.getValue() ?? 0);
       return rating > 0 ? <Rating readOnly value={rating} /> : null;
     },
     visibleFor: 'xs',
@@ -84,7 +94,7 @@ const columns: (PicrColumns<MinimalFile> & {
     header: 'Flag',
     size: 10,
     isComment: true,
-    Cell: ({ cell }) => <FileFlagBadge flag={cell.getValue()} />,
+    Cell: ({ cell }) => <FileFlagBadge flag={cell.getValue() as never} />,
     visibleFor: 'xs',
   },
   {
@@ -92,7 +102,7 @@ const columns: (PicrColumns<MinimalFile> & {
     header: 'Comments',
     size: 7,
     Cell: ({ cell }) => {
-      const totalComments = cell.getValue();
+      const totalComments = Number(cell.getValue() ?? 0);
       return totalComments > 0 ? totalComments : '';
     },
     isComment: true,
@@ -103,7 +113,8 @@ const columns: (PicrColumns<MinimalFile> & {
     header: 'Latest Action',
     size: 10,
     Cell: ({ cell }) => {
-      return <DateDisplay dateString={cell.getValue()} />;
+      const value = cell.getValue();
+      return <DateDisplay dateString={value ? String(value) : undefined} />;
     },
     isComment: true,
     visibleFor: 'sm',
@@ -112,10 +123,11 @@ const columns: (PicrColumns<MinimalFile> & {
     accessorKey: 'fileSize',
     header: 'File Size',
     Cell: ({ cell }) => {
-      const fileSize = cell.getValue();
+      const fileSize = Number(cell.getValue() ?? 0);
       return <>{fileSize ? prettyBytes(fileSize) : null}</>;
     },
     size: 10,
     visibleFor: 'md',
+    isComment: false,
   },
 ];

@@ -7,7 +7,7 @@ import { generateThumbnailsQuery } from '@shared/urql/queries/generateThumbnails
 export const GenerateThumbnailsButton = ({
   folderId,
 }: {
-  folderId: number;
+  folderId: string;
 }) => {
   const [result] = useQuery({
     query: generateThumbnailsQuery,

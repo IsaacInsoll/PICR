@@ -1,4 +1,4 @@
-import { Slot, useRouter } from 'expo-router';
+import { Href, Slot, useRouter } from 'expo-router';
 import { ThemeProvider } from '@/src/components/themeProvider';
 
 import { CacheManager } from '@georstat/react-native-image-cache';
@@ -42,12 +42,12 @@ export default function AppLayout() {
     // if (lastNotification);
     const url = lastNotification?.notification.request.content.data.url;
 
-    if (url) {
+    if (typeof url === 'string') {
       console.log([
         'AppLayout',
         'redirecting because of cold boot URL: ' + url,
       ]);
-      setTimeout(() => router.push(url), 300);
+      setTimeout(() => router.push(url as Href), 300);
     }
   }, [lastNotification, router]);
 

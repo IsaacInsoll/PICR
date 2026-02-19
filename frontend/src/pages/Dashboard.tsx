@@ -27,7 +27,7 @@ import { EmptyPlaceholder } from './EmptyPlaceholder';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { ManageFolderIconButton } from '../components/ManageFolderButton';
 import { recentUsersQuery } from '@shared/urql/queries/recentUsersQuery';
-import { FoldersSortType } from '@shared/gql/graphql';
+import { FoldersSortType, ReadAllFoldersQueryQuery } from '@shared/gql/graphql';
 
 export const Dashboard = () => {
   const me = useMe();
@@ -35,9 +35,9 @@ export const Dashboard = () => {
     <>
       <LoggedInHeader />
       <Page>
-        <QuickFind folder={me?.folder} />
+        <QuickFind folder={me?.folder ?? undefined} />
         <TopBar title="PICR Media Delivery" />
-        <TaskSummary folderId={me?.folderId} />
+        {me?.folderId ? <TaskSummary folderId={me.folderId} /> : null}
         <Body />
       </Page>
     </>
@@ -76,7 +76,8 @@ const RecentUsers = () => {
   const mobile = useIsMobile();
   const [result] = useQuery({
     query: recentUsersQuery,
-    variables: { folderId: me?.folderId },
+    variables: { folderId: me?.folderId ?? '1' },
+    pause: !me?.folderId,
   });
   if (result.data?.users.length == 0)
     return (
@@ -101,7 +102,7 @@ const RecentUsers = () => {
             </Table.Td>
             {!mobile ? (
               <Table.Td>
-                <FolderName folder={user.folder} />
+                {user.folder ? <FolderName folder={user.folder} /> : null}
               </Table.Td>
             ) : null}
           </Table.Tr>
@@ -149,28 +150,37 @@ const RecentlyModifiedFolders = () => {
   const [result] = useQuery({
     query: readAllFoldersQuery,
     variables: {
-      id: me?.folderId,
+      id: me?.folderId ?? '1',
       limit: 10,
       sort: FoldersSortType.FolderLastModified,
     },
+    pause: !me?.folderId,
   });
 
   return (
     <Table width="100%">
       <Table.Tbody>
-        {result.data?.allFolders.map((f) => (
-          <Table.Tr key={f.id}>
-            <Table.Td>
-              <DateDisplay dateString={f?.folderLastModified} />
-            </Table.Td>
-            <Table.Td>
-              <FolderName folder={f} />
-            </Table.Td>
-            <Table.Td align="right">
-              <ManageFolderIconButton folder={f} />
-            </Table.Td>
-          </Table.Tr>
-        ))}
+        {(result.data?.allFolders ?? [])
+          .filter(
+            (
+              f,
+            ): f is NonNullable<
+              ReadAllFoldersQueryQuery['allFolders'][number]
+            > => f != null,
+          )
+          .map((f) => (
+            <Table.Tr key={f.id}>
+              <Table.Td>
+                <DateDisplay dateString={f.folderLastModified} />
+              </Table.Td>
+              <Table.Td>
+                <FolderName folder={f} />
+              </Table.Td>
+              <Table.Td align="right">
+                <ManageFolderIconButton folder={f} />
+              </Table.Td>
+            </Table.Tr>
+          ))}
       </Table.Tbody>
     </Table>
   );

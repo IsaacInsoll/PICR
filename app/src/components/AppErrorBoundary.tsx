@@ -14,6 +14,7 @@ export const AppErrorBoundary = ({ children }: { children: ReactNode }) => {
 function fallbackRender({ error }: FallbackProps) {
   // const theme = useAppTheme();
   console.log(error.stack);
+  const stackLines = (error.stack ?? '').split('\n').slice(0, 4);
 
   return (
     <LinearGradient
@@ -29,17 +30,14 @@ function fallbackRender({ error }: FallbackProps) {
         />
         <Text style={styles.header}>Whoops, an error occured :(</Text>
         <Text style={styles.errorMessage}>{error.message}</Text>
-        {error.stack
-          .split('\n')
-          .slice(0, 4)
-          .map((line, index) => (
-            <Text
-              key={`${index}-${line}`}
-              style={[styles.stack, { opacity: 0.8 - index * 0.2 }]}
-            >
-              {line}
-            </Text>
-          ))}
+        {stackLines.map((line: string, index: number) => (
+          <Text
+            key={`${index}-${line}`}
+            style={[styles.stack, { opacity: 0.8 - index * 0.2 }]}
+          >
+            {line}
+          </Text>
+        ))}
       </SafeAreaView>
     </LinearGradient>
   );

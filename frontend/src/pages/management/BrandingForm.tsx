@@ -1,4 +1,4 @@
-import { Branding, PrimaryColor, ThemeMode } from '../../../../graphql-types';
+import { HeadingFontKey, PrimaryColor, ThemeMode } from '@shared/gql/graphql';
 import {
   ActionIcon,
   Badge,
@@ -21,6 +21,8 @@ import {
 } from '../../PicrIcons';
 import {
   fontRegistry,
+  normalizeFontKey,
+  toHeadingFontKeyEnumValue,
   type FontDefinition,
   type FontKey,
 } from '@shared/branding/fontRegistry';
@@ -31,8 +33,8 @@ export const BrandingForm = ({
   onChange,
   showName = false,
 }: {
-  branding: Branding;
-  onChange: (branding: Branding) => void;
+  branding: BrandingInput;
+  onChange: (branding: BrandingInput) => void;
   showName?: boolean;
 }) => {
   return (
@@ -47,15 +49,20 @@ export const BrandingForm = ({
         />
       ) : null}
       <HeadingFontSelector
-        value={branding.headingFontKey ?? 'default'}
-        onChange={(headingFontKey) => onChange({ ...branding, headingFontKey })}
+        value={normalizeFontKey(branding.headingFontKey)}
+        onChange={(headingFontKey) =>
+          onChange({
+            ...branding,
+            headingFontKey: toHeadingFontKeyEnumValue(headingFontKey),
+          })
+        }
       />
       <ModeSelector
-        value={branding.mode}
+        value={branding.mode ?? ThemeMode.Auto}
         onChange={(mode) => onChange({ ...branding, mode })}
       />
       <ColorSelector
-        color={branding.primaryColor}
+        color={branding.primaryColor ?? PrimaryColor.Blue}
         onChange={(primaryColor) => onChange({ ...branding, primaryColor })}
       />
     </Stack>
@@ -122,7 +129,6 @@ const HeadingFontSelector = ({
           <Stack
             gap="xs"
             pb="sm"
-            wrap="nowrap"
             style={{
               fontFamily:
                 fontFamilies[option.value as keyof typeof fontFamilies] ??
@@ -130,17 +136,21 @@ const HeadingFontSelector = ({
             }}
           >
             <div>{option.label}</div>
-            {option.description ? (
-              <InputDescription>{option.description}</InputDescription>
+            {(option as { description?: string }).description ? (
+              <InputDescription>
+                {(option as { description?: string }).description}
+              </InputDescription>
             ) : null}
-            {option.suitableFor?.length ? (
+            {(option as { suitableFor?: string[] }).suitableFor?.length ? (
               <InputDescription>
                 <Group gap={4} wrap="wrap">
-                  {option.suitableFor.map((tag) => (
-                    <Badge key={tag} size="xs" variant="light" color="gray">
-                      {tag}
-                    </Badge>
-                  ))}
+                  {(option as { suitableFor?: string[] }).suitableFor?.map(
+                    (tag: string) => (
+                      <Badge key={tag} size="xs" variant="light" color="gray">
+                        {tag}
+                      </Badge>
+                    ),
+                  )}
                 </Group>
               </InputDescription>
             ) : null}
@@ -245,3 +255,12 @@ const ColorSelector = ({
     </>
   );
 };
+
+export interface BrandingInput {
+  id?: string;
+  name?: string | null;
+  mode?: ThemeMode | null;
+  primaryColor?: PrimaryColor | null;
+  logoUrl?: string | null;
+  headingFontKey?: HeadingFontKey | null;
+}

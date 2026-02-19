@@ -1,12 +1,15 @@
 import { useQuery } from 'urql';
 import { chartColorFiles, chartColorRest, chartColors } from './chartColors';
-import { Folder } from '../../../../../graphql-types';
 import { treeSizeQuery } from '@shared/urql/fragments/treeSizeQuery';
+import type { TreeSizeQueryQuery } from '@shared/gql/graphql';
+
+type TreeFolder = NonNullable<TreeSizeQueryQuery['folder']>;
+type TreeSubFolder = TreeFolder['subFolders'][number];
 
 // Queries server then formats data with colors for presentation
 export const useTreeSize = (
   folderId: string,
-): { slices: PieSlice[]; folder: Folder | null } => {
+): { slices: PieSlice[]; folder: TreeFolder | null } => {
   const [result] = useQuery({ query: treeSizeQuery, variables: { folderId } });
   const folder = result.data?.folder;
   if (!folder) return { slices: [], folder: null };
@@ -16,7 +19,7 @@ export const useTreeSize = (
       ...f,
       color: chartColors[parseInt(f.id) % chartColors.length],
     }))
-    .sort((a, b) => b.size - a.size);
+    .sort((a, b) => parseInt(b.totalSize) - parseInt(a.totalSize));
 
   return {
     slices: folderToSlices({ ...folder, subFolders }),
@@ -24,11 +27,25 @@ export const useTreeSize = (
   };
 };
 
-const folderToSlices = (folder): PieSlice[] => {
+const folderToSlices = (
+  folder: TreeFolder & { subFolders: (TreeSubFolder & { color: string })[] },
+): PieSlice[] => {
   const slices: PieSlice[] =
-    folder?.subFolders.map(({ id, name, totalSize, color }) => {
-      return { x: id, y: parseInt(totalSize), label: name, color };
-    }) ?? [];
+    folder?.subFolders.map(
+      ({
+        id,
+        name,
+        totalSize,
+        color,
+      }: {
+        id: string;
+        name: string;
+        totalSize: string;
+        color: string;
+      }) => {
+        return { x: id, y: parseInt(totalSize), label: name, color };
+      },
+    ) ?? [];
 
   const minSize = parseInt(folder?.totalSize) / 50;
 
@@ -43,7 +60,7 @@ const folderToSlices = (folder): PieSlice[] => {
     list.push({ x: 'rest', y: rest, label: '(Other)', color: chartColorRest });
   }
 
-  if (folder.totalDirectSize > 0) {
+  if (parseInt(folder.totalDirectSize) > 0) {
     list.push({
       x: 'files',
       y: parseInt(folder.totalDirectSize),

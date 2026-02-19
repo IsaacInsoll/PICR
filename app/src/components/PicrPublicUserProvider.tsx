@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import { Provider } from 'urql';
 import { atom, useSetAtom } from 'jotai';
 import { picrUrqlClient } from '@shared/urql/urqlClient';
@@ -6,6 +6,7 @@ import * as Application from 'expo-application';
 import { Platform } from 'react-native';
 import { usePathname } from 'expo-router/build/hooks';
 import { pushGlobalError } from '@shared/globalErrorAtom';
+import { PText } from '@/src/components/PText';
 
 let publicUserPath: false | { uuid: string; server: string } = false;
 export const isPublicLinkAtom = atom(false);
@@ -34,6 +35,10 @@ export const PicrPublicUserProvider = ({
   const isPublic = useIsPublicUserPath();
   const setPublic = useSetAtom(isPublicLinkAtom);
 
+  useEffect(() => {
+    setPublic(!!isPublic);
+  }, [isPublic, setPublic]);
+
   const client = useMemo(() => {
     if (isPublic) {
       console.log(
@@ -42,7 +47,6 @@ export const PicrPublicUserProvider = ({
           ' at ' +
           isPublic.server,
       );
-      setPublic(true);
       return picrUrqlClient(
         isPublic.server,
         {
@@ -54,7 +58,10 @@ export const PicrPublicUserProvider = ({
         },
       );
     }
-  }, [isPublic, setPublic]);
+    return null;
+  }, [isPublic]);
+
+  if (!isPublic || !client) return <PText>Loading...</PText>;
 
   console.log('PicrPublicUserProvider: returning URQL client');
   return <Provider value={client}>{children}</Provider>;

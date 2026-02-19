@@ -1,6 +1,5 @@
-import { Link, LinkProps } from 'expo-router';
+import { Href, Link, LinkProps } from 'expo-router';
 import { useHostname, useUuid } from '@/src/hooks/useHostname';
-import { File, Folder } from '@shared/gql/graphql';
 import {
   addToFileCache,
   addToFolderCache,
@@ -9,18 +8,28 @@ import {
 } from '@/src/helpers/folderCache';
 import { ReactNode } from 'react';
 
+type LinkableFolder = {
+  __typename: 'Folder';
+  id: string;
+  name: string;
+  title?: string | null;
+};
+
+type LinkableFile = {
+  __typename?: string;
+  id: string;
+  name: string;
+  folderId: string;
+};
+
 export const AppFolderLink = ({
   folder,
   children,
   ...props
 }: { folder: FolderIDandName } & Omit<LinkProps, 'href'>) => {
-  const pathname = useAppFolderLink(folder);
+  const href = useAppFolderLink(folder);
   return (
-    <Link
-      href={{ pathname }}
-      {...props}
-      onPress={() => addToFolderCache(folder)}
-    >
+    <Link href={href} {...props} onPress={() => addToFolderCache(folder)}>
       {children}
     </Link>
   );
@@ -32,10 +41,10 @@ export const AppFileLink = ({
   isDisabled,
   ...props
 }: { file: FileIDandName; isDisabled?: boolean } & Omit<LinkProps, 'href'>) => {
-  const pathname = useAppFileLink(file);
+  const href = useAppFileLink(file);
   if (isDisabled) return children;
   return (
-    <Link href={{ pathname }} {...props} onPress={() => addToFileCache(file)}>
+    <Link href={href} {...props} onPress={() => addToFileCache(file)}>
       {children}
     </Link>
   );
@@ -47,7 +56,7 @@ export const AppLink = ({
   children,
   asChild,
 }: {
-  item: File | Folder;
+  item: LinkableFolder | LinkableFile;
   children: ReactNode;
   asChild?: boolean;
 }) => {
@@ -57,25 +66,51 @@ export const AppLink = ({
         {children}
       </AppFolderLink>
     );
-  } else {
+  }
+
+  if ('folderId' in item) {
     return (
       <AppFileLink file={item} asChild={asChild}>
         {children}
       </AppFileLink>
     );
   }
+
+  return <>{children}</>;
 };
 
-export const useAppFolderLink = (folder: { id: string }) => {
+export const useAppFolderLink = (folder: { id: string }): Href => {
   const hostname = useHostname();
   const uuid = useUuid();
+  const loggedin = hostname ?? '';
+
   if (uuid) {
-    return hostname + '/s/' + uuid + '/' + folder.id;
+    return {
+      pathname: '/[loggedin]/s/[uuid]/[folderId]',
+      params: { loggedin, uuid, folderId: folder.id },
+    };
   }
 
-  return hostname + '/admin/f/' + folder.id;
+  return {
+    pathname: '/[loggedin]/admin/f/[folderId]',
+    params: { loggedin, folderId: folder.id },
+  };
 };
 
-export const useAppFileLink = (file: FileIDandName) => {
-  return useAppFolderLink({ id: file.folderId }) + '/' + file.id;
+export const useAppFileLink = (file: FileIDandName): Href => {
+  const hostname = useHostname();
+  const uuid = useUuid();
+  const loggedin = hostname ?? '';
+
+  if (uuid) {
+    return {
+      pathname: '/[loggedin]/s/[uuid]/[folderId]/[fileId]',
+      params: { loggedin, uuid, folderId: file.folderId, fileId: file.id },
+    };
+  }
+
+  return {
+    pathname: '/[loggedin]/admin/f/[folderId]/[fileId]',
+    params: { loggedin, folderId: file.folderId, fileId: file.id },
+  };
 };

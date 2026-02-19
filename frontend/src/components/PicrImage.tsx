@@ -1,17 +1,17 @@
 import { imageURL } from '../helpers/imageURL';
-import { Image, MantineStyleProps } from '@mantine/core';
+import { Image } from '@mantine/core';
 import { ThumbnailSize } from '../helpers/thumbnailSize';
 import { Blurhash } from 'react-blurhash';
-import { useState } from 'react';
-import { MinimalFile } from '../../types';
+import { CSSProperties, useState } from 'react';
+import { PicrFile } from '../../types';
 import { useAvifEnabled } from '../hooks/useMe';
 
 interface PicrImageProps {
-  file: MinimalFile;
+  file: PicrFile;
   size: ThumbnailSize;
-  onClick?: (file: MinimalFile) => void;
-  onImageLoaded?: (file: MinimalFile) => void;
-  style?: MantineStyleProps;
+  onClick?: (file: PicrFile) => void;
+  onImageLoaded?: (file: PicrFile) => void;
+  style?: CSSProperties;
   clickable?: boolean; // for some reason onClick existing doesn't work
 }
 export const PicrImage = ({
@@ -53,7 +53,7 @@ export const PicrImage = ({
         <Image
           src={imageURL(file, size)}
           fit="contain"
-          alt={file.name}
+          alt={file.name ?? ''}
           onLoad={() => {
             setLoaded(true);
             if (onImageLoaded) onImageLoaded(file);

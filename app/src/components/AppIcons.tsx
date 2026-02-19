@@ -1,13 +1,11 @@
 import { ComponentProps } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { TextStyle } from 'react-native';
+import { StyleSheet, TextStyle } from 'react-native';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import {
-  ImageMetadataSummary,
-  VideoMetadataSummary,
-} from '@shared/gql/graphql';
 
 type IIconProps = Omit<ComponentProps<typeof Ionicons>, 'name'>;
+type IIconButtonProps = ComponentProps<typeof Ionicons.Button>;
+type IoniconName = ComponentProps<typeof Ionicons>['name'];
 
 export const ApprovedIcon = (props: IIconProps) => {
   return <Ionicons name="thumbs-up-outline" {...props} />;
@@ -43,23 +41,15 @@ export const CommentIcon = ({
   );
 };
 
-export const AppIconButton = ({ style, ...props }: IIconProps) => {
+export const AppIconButton = ({ style, ...props }: IIconButtonProps) => {
   const theme = useAppTheme();
   const defaultStyles: TextStyle = { backgroundColor: theme.brandColor };
-  return (
-    <Ionicons.Button
-      size={16}
-      style={{ ...defaultStyles, ...style }}
-      {...props}
-    />
-  );
+  const mergedStyle = StyleSheet.flatten([defaultStyles, style]);
+  return <Ionicons.Button size={16} style={mergedStyle} {...props} />;
 };
 
-export const appMetadataIcons: Record<
-  keyof ImageMetadataSummary | keyof VideoMetadataSummary,
-  string
-> = {
-  __typename: null,
+export const appMetadataIcons: Record<string, IoniconName> = {
+  __typename: 'information-circle-outline',
   //   //PHOTO
   Camera: 'camera-outline',
   Lens: 'telescope-outline',

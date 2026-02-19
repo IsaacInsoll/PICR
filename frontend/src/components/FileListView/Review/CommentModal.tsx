@@ -4,7 +4,7 @@ import { useSetAtom } from 'jotai/index';
 import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
-import { MinimalFile } from '../../../../types';
+import { PicrFile } from '../../../../types';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
@@ -17,7 +17,7 @@ export const CommentModal = ({
   file,
   highlight,
 }: {
-  file: MinimalFile;
+  file: PicrFile;
   highlight?: string;
 }) => {
   const onClose = useSetAtom(closeModalAtom);
@@ -43,7 +43,7 @@ const CommentBody = ({
   file,
   highlight,
 }: {
-  file: MinimalFile;
+  file: PicrFile;
   highlight?: string;
 }) => {
   const [result, requery] = useQuery({
@@ -52,7 +52,7 @@ const CommentBody = ({
     requestPolicy: 'cache-and-network',
   });
 
-  const comments = result.data?.comments;
+  const comments = result.data?.comments ?? [];
 
   return (
     <Stack>
@@ -63,7 +63,7 @@ const CommentBody = ({
         singleFile={true}
         highlight={highlight}
       />
-      <AddCommentBox fileId={file.id} onComplete={requery} />
+      <AddCommentBox fileId={file.id} onComplete={() => requery()} />
     </Stack>
   );
 };
@@ -88,7 +88,10 @@ const AddCommentBox = ({
 
   const onSubmit = async () => {
     setSubmitting(true);
-    const payload: MutationAddCommentArgs = { id: fileId, comment: text };
+    const payload: MutationAddCommentArgs = {
+      id: fileId ?? folderId!,
+      comment: text,
+    };
     const result = await mutate(payload);
     await onComplete();
     setSubmitting(false);

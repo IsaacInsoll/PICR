@@ -14,6 +14,13 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+    "\n  fragment AppCommentHistoryCommentFragment on Comment {\n    id\n    comment\n    systemGenerated\n    timestamp\n    userId\n    file {\n      ...FileFragment\n    }\n    user {\n      ...AppCommentHistoryUserFragment\n    }\n  }\n": typeof types.AppCommentHistoryCommentFragmentFragmentDoc,
+    "\n  fragment AppCommentHistoryUserFragment on User {\n    id\n    gravatar\n    name\n  }\n": typeof types.AppCommentHistoryUserFragmentFragmentDoc,
+    "\n  fragment AppRecentUserFragment on User {\n    id\n    name\n    folderId\n    lastAccess\n    gravatar\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n      ...HeroImageFragment\n    }\n  }\n": typeof types.AppRecentUserFragmentFragmentDoc,
+    "\n  fragment AppSearchFileFragment on FileInterface {\n    ...FileFragment\n    folder {\n      ...MinimumFolderFragment\n    }\n  }\n": typeof types.AppSearchFileFragmentFragmentDoc,
+    "\n  fragment AppSearchFolderFragment on Folder {\n    ...FolderFragment\n  }\n": typeof types.AppSearchFolderFragmentFragmentDoc,
+    "\n  fragment AppViewFolderFileFragment on FileInterface {\n    ...FileFragment\n  }\n": typeof types.AppViewFolderFileFragmentFragmentDoc,
+    "\n  fragment AppViewFolderSubFolderFragment on Folder {\n    ...MinimumFolderFragment\n    users {\n      id\n      name\n      enabled\n      commentPermissions\n      gravatar\n    }\n  }\n": typeof types.AppViewFolderSubFolderFragmentFragmentDoc,
     "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileCreated\n    fileLastModified\n    flag\n    rating\n    totalComments\n    latestComment\n    folderId\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": typeof types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    __typename\n    name\n    title\n    subtitle\n    parentId\n    brandingId\n    permissions\n    folderLastModified\n    parents {\n      id\n      name\n    }\n    branding {\n      id\n      name\n      mode\n      primaryColor\n      logoUrl\n      headingFontKey\n    }\n    ...HeroImageFragment\n  }\n": typeof types.FolderFragmentFragmentDoc,
     "\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n      type\n    }\n  }\n": typeof types.HeroImageFragmentFragmentDoc,
@@ -37,14 +44,14 @@ type Documents = {
     "\n  mutation RenameFolder($folderId: ID!, $oldPath: String!, $newPath: String!) {\n    renameFolder(folderId: $folderId, oldPath: $oldPath, newPath: $newPath) {\n      ...FolderFragment\n    }\n  }\n": typeof types.RenameFolderDocument,
     "\n  mutation SetFolderBrandingMutation($folderId: ID!, $brandingId: ID) {\n    setFolderBranding(folderId: $folderId, brandingId: $brandingId) {\n      ...FolderFragment\n    }\n  }\n": typeof types.SetFolderBrandingMutationDocument,
     "\n  query AccessLogsQuery(\n    $folderId: ID!\n    $userId: ID\n    $includeChildren: Boolean\n    $userType: UserType\n  ) {\n    accessLogs(\n      folderId: $folderId\n      userId: $userId\n      includeChildren: $includeChildren\n      userType: $userType\n    ) {\n      id\n      timestamp\n      type\n      userId\n      folderId\n      ipAddress\n      userAgent\n      folder {\n        ...FolderFragment\n      }\n    }\n  }\n": typeof types.AccessLogsQueryDocument,
-    "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      userId\n      file {\n        ...FileFragment\n      }\n      user {\n        id\n        gravatar\n        name\n      }\n    }\n  }\n": typeof types.CommentHistoryQueryDocument,
+    "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      ...AppCommentHistoryCommentFragment\n    }\n  }\n": typeof types.CommentHistoryQueryDocument,
     "\n  query FolderFiles($folderId: ID!, $includeSubfolders: Boolean, $limit: Int) {\n    folderFiles(\n      folderId: $folderId\n      includeSubfolders: $includeSubfolders\n      limit: $limit\n    ) {\n      totalAvailable\n      totalReturned\n      truncated\n      files {\n        relativePath\n        file {\n          ...FileFragment\n        }\n      }\n    }\n  }\n": typeof types.FolderFilesDocument,
     "\n    query generateThumbnailsStats($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n            totalImages\n        }\n    }\n": typeof types.GenerateThumbnailsStatsDocument,
     "\n    query ManageFolderQuery($folderId: ID!, $includeParents: Boolean!, $includeChildren: Boolean!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n        }\n        users(folderId:$folderId, includeParents: $includeParents, includeChildren: $includeChildren) {\n           ...UserFragment\n           folderId\n            folder {\n                ...FolderFragment\n            }\n        }\n    }\n": typeof types.ManageFolderQueryDocument,
     "\n  query MeQuery {\n    me {\n      id\n      userType\n      name\n      folderId\n      uuid\n      commentPermissions\n      linkMode\n      folder {\n        id\n        name\n      }\n    }\n    clientInfo {\n      baseUrl\n      avifEnabled\n      canWrite\n    }\n  }\n": typeof types.MeQueryDocument,
     "\n  query readAllFoldersQuery($id: ID!, $sort: FoldersSortType, $limit: Int) {\n    allFolders(id: $id, sort: $sort, limit: $limit) {\n      ...FolderFragment\n    }\n  }\n": typeof types.ReadAllFoldersQueryDocument,
-    "\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      id\n      name\n      folderId\n      lastAccess\n      gravatar\n      folder {\n        id\n        name\n        parents {\n          id\n          name\n        }\n        ...HeroImageFragment\n      }\n    }\n  }\n": typeof types.RecentUsersQueryDocument,
-    "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n": typeof types.SearchQueryDocument,
+    "\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      ...AppRecentUserFragment\n    }\n  }\n": typeof types.RecentUsersQueryDocument,
+    "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...AppSearchFolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...AppSearchFileFragment\n    }\n  }\n": typeof types.SearchQueryDocument,
     "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n": typeof types.ServerInfoQueryDocument,
     "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n": typeof types.ExpensiveServerFileSizeQueryDocument,
     "\n  query TaskQuery($folderId: ID!) {\n    tasks(folderId: $folderId) {\n      id\n      name\n      step\n      totalSteps\n      status\n    }\n  }\n": typeof types.TaskQueryDocument,
@@ -52,10 +59,17 @@ type Documents = {
     "\n    query ViewAdminsQuery {\n        admins {\n            ...UserFragment\n        }\n    }\n": typeof types.ViewAdminsQueryDocument,
     "\n    query ViewBrandingsQuery {\n        brandings {\n            id\n            name\n            logoUrl\n            primaryColor\n            mode\n            headingFontKey\n            folders {\n               ...MinimumFolderFragment\n            }\n        }\n    }\n": typeof types.ViewBrandingsQueryDocument,
     "\n    query ViewFile($fileId: ID!) {\n        file(id:$fileId) {\n            ...FileFragment\n            ...ImageMetadataFragment\n        }\n    }\n": typeof types.ViewFileDocument,
-    "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n            }\n            subFolders {\n                ...MinimumFolderFragment\n                users {\n                    id\n                    name\n                    enabled\n                    commentPermissions\n                    gravatar\n                }\n            }\n        }\n    }\n": typeof types.ViewFolderDocument,
+    "\n  query ViewFolder($folderId: ID!) {\n    folder(id: $folderId) {\n      ...FolderFragment\n      files {\n        ...AppViewFolderFileFragment\n      }\n      subFolders {\n        ...AppViewFolderSubFolderFragment\n      }\n    }\n  }\n": typeof types.ViewFolderDocument,
     "\n    query ViewUserQuery($id: ID!) {\n        user(id:$id) {\n            ...UserFragment\n            \n        }\n    }\n": typeof types.ViewUserQueryDocument,
 };
 const documents: Documents = {
+    "\n  fragment AppCommentHistoryCommentFragment on Comment {\n    id\n    comment\n    systemGenerated\n    timestamp\n    userId\n    file {\n      ...FileFragment\n    }\n    user {\n      ...AppCommentHistoryUserFragment\n    }\n  }\n": types.AppCommentHistoryCommentFragmentFragmentDoc,
+    "\n  fragment AppCommentHistoryUserFragment on User {\n    id\n    gravatar\n    name\n  }\n": types.AppCommentHistoryUserFragmentFragmentDoc,
+    "\n  fragment AppRecentUserFragment on User {\n    id\n    name\n    folderId\n    lastAccess\n    gravatar\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n      ...HeroImageFragment\n    }\n  }\n": types.AppRecentUserFragmentFragmentDoc,
+    "\n  fragment AppSearchFileFragment on FileInterface {\n    ...FileFragment\n    folder {\n      ...MinimumFolderFragment\n    }\n  }\n": types.AppSearchFileFragmentFragmentDoc,
+    "\n  fragment AppSearchFolderFragment on Folder {\n    ...FolderFragment\n  }\n": types.AppSearchFolderFragmentFragmentDoc,
+    "\n  fragment AppViewFolderFileFragment on FileInterface {\n    ...FileFragment\n  }\n": types.AppViewFolderFileFragmentFragmentDoc,
+    "\n  fragment AppViewFolderSubFolderFragment on Folder {\n    ...MinimumFolderFragment\n    users {\n      id\n      name\n      enabled\n      commentPermissions\n      gravatar\n    }\n  }\n": types.AppViewFolderSubFolderFragmentFragmentDoc,
     "\n  fragment FileFragment on FileInterface {\n    __typename\n    id\n    name\n    type\n    fileHash\n    fileSize\n    fileCreated\n    fileLastModified\n    flag\n    rating\n    totalComments\n    latestComment\n    folderId\n    ... on Video {\n      imageRatio\n      duration\n      ...VideoMetadataFragment\n    }\n    ... on Image {\n      imageRatio\n      blurHash\n      ...ImageMetadataFragment\n    }\n  }\n": types.FileFragmentFragmentDoc,
     "\n  fragment FolderFragment on Folder {\n    id\n    __typename\n    name\n    title\n    subtitle\n    parentId\n    brandingId\n    permissions\n    folderLastModified\n    parents {\n      id\n      name\n    }\n    branding {\n      id\n      name\n      mode\n      primaryColor\n      logoUrl\n      headingFontKey\n    }\n    ...HeroImageFragment\n  }\n": types.FolderFragmentFragmentDoc,
     "\n  fragment HeroImageFragment on Folder {\n    heroImage {\n      id\n      name\n      fileHash\n      imageRatio\n      blurHash\n      type\n    }\n  }\n": types.HeroImageFragmentFragmentDoc,
@@ -79,14 +93,14 @@ const documents: Documents = {
     "\n  mutation RenameFolder($folderId: ID!, $oldPath: String!, $newPath: String!) {\n    renameFolder(folderId: $folderId, oldPath: $oldPath, newPath: $newPath) {\n      ...FolderFragment\n    }\n  }\n": types.RenameFolderDocument,
     "\n  mutation SetFolderBrandingMutation($folderId: ID!, $brandingId: ID) {\n    setFolderBranding(folderId: $folderId, brandingId: $brandingId) {\n      ...FolderFragment\n    }\n  }\n": types.SetFolderBrandingMutationDocument,
     "\n  query AccessLogsQuery(\n    $folderId: ID!\n    $userId: ID\n    $includeChildren: Boolean\n    $userType: UserType\n  ) {\n    accessLogs(\n      folderId: $folderId\n      userId: $userId\n      includeChildren: $includeChildren\n      userType: $userType\n    ) {\n      id\n      timestamp\n      type\n      userId\n      folderId\n      ipAddress\n      userAgent\n      folder {\n        ...FolderFragment\n      }\n    }\n  }\n": types.AccessLogsQueryDocument,
-    "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      userId\n      file {\n        ...FileFragment\n      }\n      user {\n        id\n        gravatar\n        name\n      }\n    }\n  }\n": types.CommentHistoryQueryDocument,
+    "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      ...AppCommentHistoryCommentFragment\n    }\n  }\n": types.CommentHistoryQueryDocument,
     "\n  query FolderFiles($folderId: ID!, $includeSubfolders: Boolean, $limit: Int) {\n    folderFiles(\n      folderId: $folderId\n      includeSubfolders: $includeSubfolders\n      limit: $limit\n    ) {\n      totalAvailable\n      totalReturned\n      truncated\n      files {\n        relativePath\n        file {\n          ...FileFragment\n        }\n      }\n    }\n  }\n": types.FolderFilesDocument,
     "\n    query generateThumbnailsStats($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n            totalImages\n        }\n    }\n": types.GenerateThumbnailsStatsDocument,
     "\n    query ManageFolderQuery($folderId: ID!, $includeParents: Boolean!, $includeChildren: Boolean!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n        }\n        users(folderId:$folderId, includeParents: $includeParents, includeChildren: $includeChildren) {\n           ...UserFragment\n           folderId\n            folder {\n                ...FolderFragment\n            }\n        }\n    }\n": types.ManageFolderQueryDocument,
     "\n  query MeQuery {\n    me {\n      id\n      userType\n      name\n      folderId\n      uuid\n      commentPermissions\n      linkMode\n      folder {\n        id\n        name\n      }\n    }\n    clientInfo {\n      baseUrl\n      avifEnabled\n      canWrite\n    }\n  }\n": types.MeQueryDocument,
     "\n  query readAllFoldersQuery($id: ID!, $sort: FoldersSortType, $limit: Int) {\n    allFolders(id: $id, sort: $sort, limit: $limit) {\n      ...FolderFragment\n    }\n  }\n": types.ReadAllFoldersQueryDocument,
-    "\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      id\n      name\n      folderId\n      lastAccess\n      gravatar\n      folder {\n        id\n        name\n        parents {\n          id\n          name\n        }\n        ...HeroImageFragment\n      }\n    }\n  }\n": types.RecentUsersQueryDocument,
-    "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n": types.SearchQueryDocument,
+    "\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      ...AppRecentUserFragment\n    }\n  }\n": types.RecentUsersQueryDocument,
+    "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...AppSearchFolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...AppSearchFileFragment\n    }\n  }\n": types.SearchQueryDocument,
     "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n": types.ServerInfoQueryDocument,
     "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n": types.ExpensiveServerFileSizeQueryDocument,
     "\n  query TaskQuery($folderId: ID!) {\n    tasks(folderId: $folderId) {\n      id\n      name\n      step\n      totalSteps\n      status\n    }\n  }\n": types.TaskQueryDocument,
@@ -94,7 +108,7 @@ const documents: Documents = {
     "\n    query ViewAdminsQuery {\n        admins {\n            ...UserFragment\n        }\n    }\n": types.ViewAdminsQueryDocument,
     "\n    query ViewBrandingsQuery {\n        brandings {\n            id\n            name\n            logoUrl\n            primaryColor\n            mode\n            headingFontKey\n            folders {\n               ...MinimumFolderFragment\n            }\n        }\n    }\n": types.ViewBrandingsQueryDocument,
     "\n    query ViewFile($fileId: ID!) {\n        file(id:$fileId) {\n            ...FileFragment\n            ...ImageMetadataFragment\n        }\n    }\n": types.ViewFileDocument,
-    "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n            }\n            subFolders {\n                ...MinimumFolderFragment\n                users {\n                    id\n                    name\n                    enabled\n                    commentPermissions\n                    gravatar\n                }\n            }\n        }\n    }\n": types.ViewFolderDocument,
+    "\n  query ViewFolder($folderId: ID!) {\n    folder(id: $folderId) {\n      ...FolderFragment\n      files {\n        ...AppViewFolderFileFragment\n      }\n      subFolders {\n        ...AppViewFolderSubFolderFragment\n      }\n    }\n  }\n": types.ViewFolderDocument,
     "\n    query ViewUserQuery($id: ID!) {\n        user(id:$id) {\n            ...UserFragment\n            \n        }\n    }\n": types.ViewUserQueryDocument,
 };
 
@@ -112,6 +126,34 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment AppCommentHistoryCommentFragment on Comment {\n    id\n    comment\n    systemGenerated\n    timestamp\n    userId\n    file {\n      ...FileFragment\n    }\n    user {\n      ...AppCommentHistoryUserFragment\n    }\n  }\n"): (typeof documents)["\n  fragment AppCommentHistoryCommentFragment on Comment {\n    id\n    comment\n    systemGenerated\n    timestamp\n    userId\n    file {\n      ...FileFragment\n    }\n    user {\n      ...AppCommentHistoryUserFragment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment AppCommentHistoryUserFragment on User {\n    id\n    gravatar\n    name\n  }\n"): (typeof documents)["\n  fragment AppCommentHistoryUserFragment on User {\n    id\n    gravatar\n    name\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment AppRecentUserFragment on User {\n    id\n    name\n    folderId\n    lastAccess\n    gravatar\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n      ...HeroImageFragment\n    }\n  }\n"): (typeof documents)["\n  fragment AppRecentUserFragment on User {\n    id\n    name\n    folderId\n    lastAccess\n    gravatar\n    folder {\n      id\n      name\n      parents {\n        id\n        name\n      }\n      ...HeroImageFragment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment AppSearchFileFragment on FileInterface {\n    ...FileFragment\n    folder {\n      ...MinimumFolderFragment\n    }\n  }\n"): (typeof documents)["\n  fragment AppSearchFileFragment on FileInterface {\n    ...FileFragment\n    folder {\n      ...MinimumFolderFragment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment AppSearchFolderFragment on Folder {\n    ...FolderFragment\n  }\n"): (typeof documents)["\n  fragment AppSearchFolderFragment on Folder {\n    ...FolderFragment\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment AppViewFolderFileFragment on FileInterface {\n    ...FileFragment\n  }\n"): (typeof documents)["\n  fragment AppViewFolderFileFragment on FileInterface {\n    ...FileFragment\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment AppViewFolderSubFolderFragment on Folder {\n    ...MinimumFolderFragment\n    users {\n      id\n      name\n      enabled\n      commentPermissions\n      gravatar\n    }\n  }\n"): (typeof documents)["\n  fragment AppViewFolderSubFolderFragment on Folder {\n    ...MinimumFolderFragment\n    users {\n      id\n      name\n      enabled\n      commentPermissions\n      gravatar\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -207,7 +249,7 @@ export function graphql(source: "\n  query AccessLogsQuery(\n    $folderId: ID!\
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      userId\n      file {\n        ...FileFragment\n      }\n      user {\n        id\n        gravatar\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      id\n      comment\n      systemGenerated\n      timestamp\n      userId\n      file {\n        ...FileFragment\n      }\n      user {\n        id\n        gravatar\n        name\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      ...AppCommentHistoryCommentFragment\n    }\n  }\n"): (typeof documents)["\n  query commentHistoryQuery($fileId: ID, $folderId: ID) {\n    comments(fileId: $fileId, folderId: $folderId) {\n      ...AppCommentHistoryCommentFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -231,11 +273,11 @@ export function graphql(source: "\n  query readAllFoldersQuery($id: ID!, $sort: 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      id\n      name\n      folderId\n      lastAccess\n      gravatar\n      folder {\n        id\n        name\n        parents {\n          id\n          name\n        }\n        ...HeroImageFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      id\n      name\n      folderId\n      lastAccess\n      gravatar\n      folder {\n        id\n        name\n        parents {\n          id\n          name\n        }\n        ...HeroImageFragment\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      ...AppRecentUserFragment\n    }\n  }\n"): (typeof documents)["\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      ...AppRecentUserFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...FolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...FileFragment\n      folder {\n        ...MinimumFolderFragment\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...AppSearchFolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...AppSearchFileFragment\n    }\n  }\n"): (typeof documents)["\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...AppSearchFolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...AppSearchFileFragment\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -267,7 +309,7 @@ export function graphql(source: "\n    query ViewFile($fileId: ID!) {\n        f
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n            }\n            subFolders {\n                ...MinimumFolderFragment\n                users {\n                    id\n                    name\n                    enabled\n                    commentPermissions\n                    gravatar\n                }\n            }\n        }\n    }\n"): (typeof documents)["\n    query ViewFolder($folderId: ID!) {\n        folder(id:$folderId) {\n            ...FolderFragment\n            files {\n                ...FileFragment\n            }\n            subFolders {\n                ...MinimumFolderFragment\n                users {\n                    id\n                    name\n                    enabled\n                    commentPermissions\n                    gravatar\n                }\n            }\n        }\n    }\n"];
+export function graphql(source: "\n  query ViewFolder($folderId: ID!) {\n    folder(id: $folderId) {\n      ...FolderFragment\n      files {\n        ...AppViewFolderFileFragment\n      }\n      subFolders {\n        ...AppViewFolderSubFolderFragment\n      }\n    }\n  }\n"): (typeof documents)["\n  query ViewFolder($folderId: ID!) {\n    folder(id: $folderId) {\n      ...FolderFragment\n      files {\n        ...AppViewFolderFileFragment\n      }\n      subFolders {\n        ...AppViewFolderSubFolderFragment\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

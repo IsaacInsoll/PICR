@@ -1,14 +1,14 @@
 import { Button } from '@mantine/core';
 import { fileFlags } from '../Review/fileFlagStyles';
 import { useAtom } from 'jotai/index';
-import { filterOptions } from '@shared/filterAtom';
+import { FilterOptionsInterface, filterOptions } from '@shared/filterAtom';
 
 export const FlagFilterBox = () => {
   const [options, setOptions] = useAtom(filterOptions);
 
   const selected = options.flag;
   const onChange = (flag: typeof selected) => {
-    setOptions((o) => ({ ...o, flag }));
+    setOptions((o: FilterOptionsInterface) => ({ ...o, flag }));
   };
 
   return (

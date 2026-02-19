@@ -5,21 +5,10 @@ export const invalidateQueries = (
   cache: Cache,
   queryNames: (keyof Query)[],
 ) => {
-  if (import.meta.env.DEV) {
-    console.log('Invalidating Queries: ' + queryNames.toString());
-    console.log(
-      'cache includes: ' +
-        cache
-          .inspectFields('Query')
-          .map((field) => field.fieldName)
-          .join(','),
-    );
-  }
   cache
     .inspectFields('Query')
-    .filter((field) => queryNames.includes(field.fieldName))
+    .filter((field) => queryNames.includes(field.fieldName as keyof Query))
     .forEach((field) => {
-      if (import.meta.env.DEV) console.log(' - Invalidated ' + field.fieldName);
       cache.invalidate('Query', field.fieldName, field.arguments);
     });
 };
@@ -28,9 +17,12 @@ export function invalidateQueryObjects(cache: Cache, queryNames: string[]) {
   cache
     .inspectFields('Query')
     .filter((field) => queryNames.includes(field.fieldName))
-    .forEach((field) =>
-      cache
-        .resolve('Query', field.fieldName, field.arguments)
-        ?.forEach((key) => cache.invalidate(key)),
-    );
+    .forEach((field) => {
+      const resolved = cache.resolve('Query', field.fieldName, field.arguments);
+      if (Array.isArray(resolved)) {
+        resolved.forEach((key) => {
+          if (typeof key === 'string') cache.invalidate(key);
+        });
+      }
+    });
 }

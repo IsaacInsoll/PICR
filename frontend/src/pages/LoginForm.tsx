@@ -23,7 +23,7 @@ export const LoginForm = () => {
   const [, mutate] = useMutation(loginMutation);
   const set = useSetAtom(authKeyAtom);
 
-  const doLogin = (e) => {
+  const doLogin = (e: React.FormEvent) => {
     mutate({ username: user, password: pass }).then((result) => {
       const token = result?.data?.auth ?? '';
       set(token);

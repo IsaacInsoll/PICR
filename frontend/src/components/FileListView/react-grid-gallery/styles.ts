@@ -8,7 +8,8 @@ import {
 
 export const getStyle = (
   styleProp: StyleProp | undefined,
-  fallback: StyleFunction,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fallback: StyleFunction<any>,
   context: StyleFunctionContext,
 ): CSSProperties => {
   if (typeof styleProp === 'function') {
@@ -38,7 +39,8 @@ export const gallery: CSSProperties = {
 };
 
 export const thumbnail = ({ item }: { item: ImageExtended }): CSSProperties => {
-  const rotationTransformValue = rotationTransformMap[item.orientation];
+  const rotationTransformValue =
+    rotationTransformMap[item.orientation ?? 1] ?? undefined;
 
   const style = {
     cursor: 'pointer',

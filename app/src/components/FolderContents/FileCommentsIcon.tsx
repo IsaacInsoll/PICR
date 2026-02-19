@@ -20,7 +20,7 @@ export const FileCommentsIcon = ({
       }}
     >
       <CommentIcon
-        totalComments={file.totalComments}
+        totalComments={file.totalComments ?? undefined}
         size={16}
         color={theme.textColor}
       />

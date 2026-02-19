@@ -1,4 +1,4 @@
-import { MinimalFolder } from '../../../types';
+import { PicrFolder } from '../../../types';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { Menu } from '@mantine/core';
 import {
@@ -15,7 +15,7 @@ import { useOpenMoveRenameFolderModal } from '../../atoms/modalAtom';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 
 type FolderMenuItemsProps = {
-  folder: MinimalFolder;
+  folder: PicrFolder;
   showFolderLabel?: boolean;
   showOpenItem?: boolean;
   onCsvExport?: () => void;
@@ -98,6 +98,6 @@ export const FolderMenuItems = ({
   );
 };
 
-export const FolderMenu = ({ folder }: { folder: MinimalFolder }) => (
+export const FolderMenu = ({ folder }: { folder: PicrFolder }) => (
   <FolderMenuItems folder={folder} showOpenItem />
 );

@@ -1,5 +1,5 @@
-import { MinimalFile } from '../../../types';
-import { ThumbnailImageComponentImageProps } from 'react-grid-gallery';
+import { PicrFile } from '../../../types';
+import { ThumbnailImageComponentImageProps } from './react-grid-gallery';
 import { PicrVideoPreview } from './PicrVideoPreview';
 import { PicrImage } from '../PicrImage';
 
@@ -7,7 +7,7 @@ export const FilePreview = ({
   file,
   imageProps,
 }: {
-  file: MinimalFile;
+  file: PicrFile;
   imageProps?: ThumbnailImageComponentImageProps;
 }) => {
   if (file.type == 'Video') {

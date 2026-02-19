@@ -25,7 +25,9 @@ export const FileFlagIcon = ({
       }}
     >
       <TouchableOpacity
-        onPress={() => onChange(!isApproved ? 'approved' : 'none')}
+        onPress={() =>
+          onChange(!isApproved ? FileFlag.Approved : FileFlag.None)
+        }
       >
         <ApprovedIcon
           size={16}
@@ -33,7 +35,9 @@ export const FileFlagIcon = ({
         />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => onChange(!isRejected ? 'rejected' : 'none')}
+        onPress={() =>
+          onChange(!isRejected ? FileFlag.Rejected : FileFlag.None)
+        }
       >
         <RejectedIcon
           size={16}

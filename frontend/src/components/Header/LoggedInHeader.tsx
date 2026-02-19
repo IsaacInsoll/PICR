@@ -29,20 +29,21 @@ import {
 } from '../../PicrIcons';
 import { atom, useSetAtom } from 'jotai';
 import { authKeyAtom } from '../../atoms/authAtom';
-import { MinimalFolder } from '../../../types';
+import { PicrFolder } from '../../../types';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
 import { UAParser } from 'ua-parser-js';
-import { User } from '@shared/gql/graphql';
 import { useAtom } from 'jotai/index';
 import { appStoreLinks } from '@shared/consts';
+
+type MeUser = NonNullable<ReturnType<typeof useMe>>;
 
 export const LoggedInHeader = ({
   folder,
   managing,
 }: {
-  folder?: MinimalFolder;
+  folder?: PicrFolder;
   managing?: boolean;
 }) => {
   const me = useMe();
@@ -62,8 +63,7 @@ export const LoggedInHeader = ({
   );
 };
 
-const PublicUser = ({ me, folder }) => {
-  console.log(folder);
+const PublicUser = ({ me }: { me: MeUser; folder?: PicrFolder }) => {
   return (
     <Group>
       <Box style={{ flexGrow: 1 }}></Box>
@@ -82,18 +82,21 @@ const LeftSide = ({
   folder,
   managing,
 }: {
-  me: User;
-  folder?: MinimalFolder;
+  me: MeUser;
+  folder?: PicrFolder;
   managing?: boolean;
 }) => {
   const isMobile = useIsMobile();
-  const homeFolderLink = useFolderLink(me.folder);
+  const homeFolder = me.folder
+    ? (me.folder as PicrFolder)
+    : ({ id: me.folderId, name: 'Home', parents: [] } as PicrFolder);
+  const homeFolderLink = useFolderLink(homeFolder);
   const [, setOpened] = useQuickFind();
   return (
     <Box style={{ flexGrow: 1 }}>
       <Group gap="md">
         {folder ? (
-          <ManageFolderButton folder={folder} managing={managing} />
+          <ManageFolderButton folder={folder} managing={managing ?? false} />
         ) : null}
         {!folder || !isMobile ? (
           <Button
@@ -124,8 +127,11 @@ const LeftSide = ({
   );
 };
 
-const RightSide = ({ me }) => {
-  const homeFolderLink = useFolderLink(me.folder);
+const RightSide = ({ me }: { me: MeUser }) => {
+  const homeFolder = me.folder
+    ? (me.folder as PicrFolder)
+    : ({ id: me.folderId, name: 'Home', parents: [] } as PicrFolder);
+  const homeFolderLink = useFolderLink(homeFolder);
   const [, setOpened] = useQuickFind();
   const logOut = useLogout();
 
@@ -155,7 +161,11 @@ const RightSide = ({ me }) => {
           <PicrMenuItem leftSection={<DashboardIcon />} to="/admin">
             Dashboard
           </PicrMenuItem>
-          <PicrMenuItem leftSection={<HomeIcon />} {...homeFolderLink}>
+          <PicrMenuItem
+            leftSection={<HomeIcon />}
+            to={homeFolderLink.to}
+            onClick={homeFolderLink.onClick}
+          >
             {me.folder?.name ?? 'Home'}
           </PicrMenuItem>
           <Menu.Item
@@ -216,7 +226,7 @@ const OpenInAppModal = () => {
   return (
     <Modal
       size="xs"
-      opened={open}
+      opened={!!open}
       onClose={() => setOpen(undefined)}
       title="Download the PICR App"
       centered={true}
@@ -231,7 +241,7 @@ const OpenInAppModal = () => {
         <a href={appStoreLinks.android} target="_blank" rel="noreferrer">
           <Image src="/google-play.png" style={imgProps} />
         </a>
-        <Anchor href={open} size="sm" c="dimmed">
+        <Anchor href={open ?? '#'} size="sm" c="dimmed">
           Open App
         </Anchor>
       </Stack>

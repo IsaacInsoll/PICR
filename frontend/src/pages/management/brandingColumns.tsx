@@ -1,8 +1,14 @@
 import { PicrColumns } from '../../components/PicrDataGrid';
-import { Branding, ThemeMode } from '../../../../graphql-types';
+import {
+  PrimaryColor,
+  ThemeMode,
+  ViewBrandingsQueryQuery,
+} from '@shared/gql/graphql';
 import { Badge, DefaultMantineColor, Text } from '@mantine/core';
 
-export const brandingColumns: PicrColumns<Branding>[] = [
+type BrandingRow = NonNullable<ViewBrandingsQueryQuery['brandings'][number]>;
+
+export const brandingColumns: PicrColumns<BrandingRow>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
@@ -23,13 +29,15 @@ export const brandingColumns: PicrColumns<Branding>[] = [
     accessorKey: 'mode',
     header: 'Mode',
     minSize: 20,
-    accessorFn: ({ mode }) => <ModeChip mode={mode} />,
+    accessorFn: ({ mode }) => <ModeChip mode={mode ?? ThemeMode.Auto} />,
   },
   {
     accessorKey: 'primaryColor',
     header: 'Color',
     minSize: 20,
-    accessorFn: ({ primaryColor }) => <PrimaryColorChip color={primaryColor} />,
+    accessorFn: ({ primaryColor }) => (
+      <PrimaryColorChip color={primaryColor ?? PrimaryColor.Blue} />
+    ),
   },
 ];
 

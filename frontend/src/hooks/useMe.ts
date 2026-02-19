@@ -1,7 +1,7 @@
 import { useAtomValue } from 'jotai';
 import { authKeyAtom } from '../atoms/authAtom';
 import { useQuery } from 'urql';
-import { User } from '../../../graphql-types';
+import type { MeQueryQuery } from '@shared/gql/graphql';
 
 import { getUUID } from '../helpers/getUUID';
 import { meQuery } from '@shared/urql/queries/meQuery';
@@ -11,10 +11,7 @@ import {
 } from '../../../backend/helpers/extraUserProps';
 
 export const useMe = ():
-  | (Pick<
-      User,
-      'id' | 'name' | 'folderId' | 'commentPermissions' | 'linkMode'
-    > &
+  | (NonNullable<MeQueryQuery['me']> &
       ExtraUserProps & {
         clientInfo: {
           avifEnabled?: boolean;
@@ -29,10 +26,10 @@ export const useMe = ():
   const [result] = useQuery({ query: meQuery, pause: !token && !uuid });
   if (!token && !uuid) return null;
   const data = result.data;
-  if (!data) return null;
+  if (!data?.me || !data?.clientInfo) return null;
   const me = {
     ...data.me,
-    ...extraUserProps(data?.me),
+    ...extraUserProps(data.me),
     clientInfo: data.clientInfo,
   };
   // console.log(me);

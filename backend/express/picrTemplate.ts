@@ -4,7 +4,6 @@ import { folderStatsSummaryText } from '../graphql/helpers/folderStats.js';
 import { Request, Response } from 'express';
 import { joinTitles } from '../helpers/joinTitle.js';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder.js';
-import { MinimalFile } from '../../frontend/types.js';
 import { dbFolderForId, FileFields } from '../db/picrDb.js';
 import { getUserFromUUID } from '../auth/getUserFromUUID.js';
 import { picrConfig } from '../config/picrConfig.js';
@@ -20,6 +19,13 @@ interface ITemplateFields {
   url: string;
   base: string;
 }
+
+type TemplateMediaFile = {
+  id: string;
+  fileHash?: string;
+  name: string;
+  type: 'File' | 'Image' | 'Video';
+};
 
 // Build basic template, mainly so there are metadata fields if sharing this link online so you get a 'rich link'
 export const picrTemplate = async (req: Request, res: Response) => {
@@ -58,7 +64,7 @@ export const picrTemplate = async (req: Request, res: Response) => {
           title: joinTitles([folder.name, fields.title]),
           description: summary,
           image: thumb
-            ? strippedBase + imagePathFor(fileFieldsToMinimalFile(thumb), 'md')
+            ? strippedBase + imagePathFor(fileFieldsToTemplateFile(thumb), 'md')
             : fields.image,
         };
       }
@@ -84,19 +90,17 @@ const fieldDefaults: ITemplateFields = {
   base: '/',
 };
 
-const fileFieldsToMinimalFile = (
-  f: FileFields,
-): Pick<MinimalFile, 'id' | 'fileHash' | 'name' | 'type'> => {
+const fileFieldsToTemplateFile = (f: FileFields): TemplateMediaFile => {
   return {
     id: f.id.toString(),
     fileHash: f.fileHash ?? undefined,
     name: f.name,
-    type: f.type as MinimalFile['type'],
+    type: f.type as TemplateMediaFile['type'],
   };
 };
 
 const imagePathFor = (
-  file: Pick<MinimalFile, 'id' | 'fileHash' | 'name' | 'type'>,
+  file: TemplateMediaFile,
   size: 'raw' | 'sm' | 'md' | 'lg',
 ) => {
   const path = `/image/${file.id}/${size}/${file.fileHash}/`;

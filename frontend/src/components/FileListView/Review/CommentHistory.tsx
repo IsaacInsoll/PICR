@@ -1,4 +1,4 @@
-import { Comment } from '../../../../../graphql-types';
+import { AppCommentHistoryCommentFragmentFragment } from '@shared/gql/graphql';
 import { CommentBodyItem } from './CommentBodyItem';
 import { Group, SegmentedControl, Timeline } from '@mantine/core';
 import { atom, useAtom } from 'jotai/index';
@@ -13,7 +13,7 @@ export const CommentHistory = ({
   comments,
   ...p
 }: {
-  comments: Comment[];
+  comments: AppCommentHistoryCommentFragmentFragment[];
 } & CommentHistoryProps) => {
   const filter = useAtomValue(commentFilterAtom);
   const sort = useAtomValue(commentSortAtom);
@@ -45,7 +45,7 @@ const CommentFilter = () => {
     <Group>
       <SegmentedControl
         value={value}
-        onChange={setValue}
+        onChange={(next) => setValue(next as CommentFilter)}
         size="xs"
         data={[
           { label: 'All', value: 'all' },
@@ -62,7 +62,7 @@ const CommentSort = () => {
     <Group>
       <SegmentedControl
         value={value}
-        onChange={setValue}
+        onChange={(next) => setValue(next as CommentSort)}
         size="xs"
         data={[
           { label: 'Newest First', value: 'desc' },

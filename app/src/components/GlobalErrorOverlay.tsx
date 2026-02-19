@@ -2,7 +2,7 @@ import { clearGlobalError, globalErrorAtom } from '@shared/globalErrorAtom';
 import { PText } from '@/src/components/PText';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { useAtomValue } from 'jotai';
-import { usePathname, useRouter } from 'expo-router';
+import { Href, usePathname, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 export const GlobalErrorOverlay = () => {
@@ -28,7 +28,7 @@ export const GlobalErrorOverlay = () => {
     const retryPath = route.includes('?')
       ? `${route}&retry=${Date.now()}`
       : `${route}?retry=${Date.now()}`;
-    router.replace(retryPath);
+    router.replace(retryPath as Href);
   };
 
   return (

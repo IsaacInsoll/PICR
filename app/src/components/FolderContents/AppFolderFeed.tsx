@@ -39,7 +39,15 @@ export const AppFolderFeed = ({
   );
 };
 
-const renderItem = ({ item, index, width }) => {
+const renderItem = ({
+  item,
+  index,
+  width,
+}: {
+  item: any;
+  index: number;
+  width: number;
+}) => {
   const isFolder = item['__typename'] === 'Folder';
 
   return isFolder ? (
@@ -49,7 +57,7 @@ const renderItem = ({ item, index, width }) => {
   );
 };
 
-const FlashFolder = ({ folder, width }) => {
+const FlashFolder = ({ folder, width }: { folder: any; width: number }) => {
   return (
     <AppFolderLink folder={folder} asChild>
       <TouchableOpacity>
@@ -66,7 +74,13 @@ const FlashFolder = ({ folder, width }) => {
   );
 };
 
-const FlashFile = ({ file, width }: { file: File | Image; width: number }) => {
+const FlashFile = ({
+  file,
+  width,
+}: {
+  file: File | Image | any;
+  width: number;
+}) => {
   const { isImage, isVideo } = fileProps(file);
   const { id } = file;
   const [, mutate] = useMutation(addCommentMutation);

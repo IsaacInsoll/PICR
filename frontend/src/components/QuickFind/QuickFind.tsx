@@ -2,7 +2,6 @@ import { useDebouncedValue, useHotkeys } from '@mantine/hooks';
 import {
   Alert,
   Button,
-  ButtonProps,
   Code,
   Divider,
   Drawer,
@@ -12,10 +11,19 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useMe } from '../../hooks/useMe';
-import { MinimalFolder } from '../../../types';
+import { PicrFolder } from '../../../types';
+import { AppSearchFileFragmentFragment } from '@shared/gql/graphql';
 import { atom, useAtomValue } from 'jotai';
 import { useAtom, useSetAtom } from 'jotai/index';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import {
+  CSSProperties,
+  MouseEvent,
+  ReactNode,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { LoadingIndicator } from '../LoadingIndicator';
 import { useQuery } from 'urql';
 import { PrettyFolderPath } from '../PrettyFolderPath';
@@ -36,11 +44,12 @@ const scopeAtom = atom<Scope>('current');
 const scopeTypeAtom = atom<SearchResultType>('all');
 const queryAtom = atom('');
 
-export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
+export const QuickFind = ({ folder }: { folder?: PicrFolder }) => {
   const [opened, setOpened] = useQuickFind();
   const [query, setQuery] = useAtom(queryAtom);
   const ref = useRef<HTMLInputElement | null>(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- stable enough for this global keybinding usage
   const toggle = () => setOpened((o) => !o);
   const close = () => setOpened(false);
 
@@ -50,7 +59,7 @@ export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
   // or don't allow it to activate while they are up because it's shit UI to open up underneath
 
   useEffect(() => {
-    const handler = (e) => {
+    const handler = (e: KeyboardEvent) => {
       if (e.code == 'Backquote') {
         toggle();
         e.stopPropagation();
@@ -90,8 +99,9 @@ export const QuickFind = ({ folder }: { folder?: MinimalFolder }) => {
             value={query}
             data-autofocus
             onChange={(e) => {
-              if (e.nativeEvent.data == '`') return; //don't allow entry of the backtick
-              setQuery(e.target.value);
+              const nativeEvent = e.nativeEvent as InputEvent;
+              if (nativeEvent.data == '`') return; //don't allow entry of the backtick
+              setQuery(e.currentTarget.value);
             }}
             // size="lg"
           />
@@ -108,7 +118,7 @@ const Results = ({
   folder,
   close,
 }: {
-  folder?: MinimalFolder;
+  folder?: PicrFolder;
   close: () => void;
 }) => {
   const setFolder = useSetFolder();
@@ -123,7 +133,7 @@ const Results = ({
   // if query = '' return nothing
   const [results] = useQuery({
     query: searchQuery,
-    variables: { query: debouncedQuery, folderId },
+    variables: { query: debouncedQuery, folderId: folderId ?? '' },
     pause: debouncedQuery == '' || !folderId,
   });
 
@@ -136,7 +146,11 @@ const Results = ({
     folders,
   );
 
-  const handleClick = (e, folder, file) => {
+  const handleClick = (
+    e: React.MouseEvent | KeyboardEvent | undefined,
+    folder: PicrFolder,
+    file?: AppSearchFileFragmentFragment,
+  ) => {
     close();
     e?.preventDefault();
     e?.stopPropagation();
@@ -144,10 +158,11 @@ const Results = ({
   };
 
   useEffect(() => {
-    const handler = (e) => {
+    const handler = (e: KeyboardEvent) => {
       if (e.code == 'ArrowUp') {
         e.stopPropagation();
         setIndex((i) => {
+          if (i == null) return null;
           return i > 0 ? i - 1 : null;
         });
       }
@@ -164,6 +179,7 @@ const Results = ({
         if (isFolderResult(item)) {
           handleClick(e, item);
         } else {
+          if (!item.folder) return;
           handleClick(e, item.folder, item);
         }
       }
@@ -182,26 +198,28 @@ const Results = ({
           return (
             <ResultButton
               key={'folder' + item.id}
-              onClick={(e) => handleClick(e, item)}
+              onClick={(e: React.MouseEvent) => handleClick(e, item)}
               onMouseOver={() => setIndex(i)}
               selected={i == index}
             >
               <PrettyFolderPath
                 folder={item}
-                onClick={(e) => handleClick(e, item)}
+                onClick={(e: React.MouseEvent) => handleClick(e, item)}
               />
             </ResultButton>
           );
         }
         const file = item;
+        if (!file.folder) return null;
+        const fileFolder = file.folder;
         return (
           <ResultButton
             key={file.id}
-            onClick={(e) => handleClick(e, file.folder, file)}
+            onClick={(e: React.MouseEvent) => handleClick(e, fileFolder, file)}
             onMouseOver={() => setIndex(i)}
             selected={i == index}
           >
-            <PrettyFilePath file={file} />
+            <PrettyFilePath file={file} handleClick={handleClick} />
           </ResultButton>
         );
       })}
@@ -216,15 +234,26 @@ const Results = ({
   );
 };
 
-const PrettyFilePath = ({ file, handleClick }) => {
+const PrettyFilePath = ({
+  file,
+  handleClick,
+}: {
+  file: AppSearchFileFragmentFragment;
+  handleClick: (
+    e: React.MouseEvent | KeyboardEvent | undefined,
+    folder: PicrFolder,
+    file?: AppSearchFileFragmentFragment,
+  ) => void;
+}) => {
   const folder = file.folder;
+  if (!folder) return null;
   return (
     <Group
       onClick={(e) => handleClick(e, folder, file)}
       style={{ cursor: 'pointer' }}
       gap={1}
     >
-      <Code onClick={(e) => handleClick(e, folder)}>{file.folder.name}</Code>
+      <Code onClick={(e) => handleClick(e, folder)}>{folder.name}</Code>
       <Joiner />
       <Code color="green.7" onClick={(e) => handleClick(e, folder, file)}>
         {file.name}
@@ -236,11 +265,21 @@ const PrettyFilePath = ({ file, handleClick }) => {
 const ResultButton = ({
   selected,
   children,
+  onClick,
+  onMouseOver,
   ...props
-}: { selected: boolean } & ButtonProps) => {
+}: {
+  selected: boolean;
+  children: ReactNode;
+  onClick?: (e: MouseEvent) => void;
+  onMouseOver?: () => void;
+  style?: CSSProperties;
+}) => {
   return (
     <>
       <Button
+        onClick={onClick}
+        onMouseOver={onMouseOver}
         style={!selected ? { backgroundColor: 'transparent' } : undefined}
         variant={selected ? 'light' : 'subtle'}
         fullWidth
@@ -306,7 +345,7 @@ const QuickFindFooter = ({
   );
 };
 
-const ScopeSelector = ({ folder }: { folder?: MinimalFolder }) => {
+const ScopeSelector = ({ folder }: { folder?: PicrFolder }) => {
   const me = useMe();
   const [selectedScope, setSelectedScope] = useAtom(scopeAtom);
 
@@ -316,7 +355,7 @@ const ScopeSelector = ({ folder }: { folder?: MinimalFolder }) => {
   return (
     <SegmentedControl
       value={selectedScope}
-      onChange={setSelectedScope}
+      onChange={(next) => setSelectedScope(next as Scope)}
       data={[
         { label: folder?.name ?? 'This Folder', value: 'current' },
         { label: 'All Folders', value: 'all' },
@@ -329,7 +368,7 @@ const TypeSelector = () => {
   return (
     <SegmentedControl
       value={selectedType}
-      onChange={setSelectedType}
+      onChange={(next) => setSelectedType(next as SearchResultType)}
       data={[
         { label: 'Everything', value: 'all' },
         { label: 'Files', value: 'file' },

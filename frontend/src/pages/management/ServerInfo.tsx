@@ -13,8 +13,8 @@ import {
 
 export const ServerInfo = () => {
   const [result] = useQuery({ query: serverInfoQuery });
-  console.log(result);
   const server = result?.data?.serverInfo;
+  if (!server) return null;
   return (
     <Table striped highlightOnHover withTableBorder>
       <TableHeader />
@@ -48,7 +48,7 @@ export const ServerInfo = () => {
           <Bool value={server.usePolling} />
         </Row>
         <Row title="Can write">
-          <Bool value={server?.canWrite} />
+          <Bool value={server.canWrite} />
         </Row>
         <Suspense>
           <AvifEnabled />
@@ -67,7 +67,7 @@ const AvifEnabled = () => {
   );
 };
 
-const Version = ({ version, latest }) => {
+const Version = ({ version, latest }: { version: string; latest: string }) => {
   const isLatest = latest == version;
   return (
     <Row title="PICR Version">
@@ -91,14 +91,16 @@ const Version = ({ version, latest }) => {
 
 const TreesizeLink = () => {
   const me = useMe();
+  const folderId = me?.folderId;
+  if (!folderId) return null;
   return (
-    <PicrLink to={'/admin/settings/treesize/' + me?.folderId} size="xs">
+    <PicrLink to={'/admin/settings/treesize/' + folderId} size="xs">
       <StorageIcon /> Storage Analytics
     </PicrLink>
   );
 };
 
-const Bool = ({ value }: { value: boolean }) => {
+const Bool = ({ value }: { value?: boolean }) => {
   return <Code c={value ? 'green' : 'red'}>{value ? 'YES' : 'NO'}</Code>;
 };
 
@@ -126,16 +128,15 @@ const TableHeader = () => {
 
 const ServerFolderSize = () => {
   const [result] = useQuery({ query: expensiveServerFileSizeQuery });
-  console.log(result);
+  const server = result?.data?.serverInfo;
+  if (!server) return null;
   return (
     <>
       <Row title="Media Size">
-        {prettyBytes(result?.data?.serverInfo.mediaSize)}
+        {prettyBytes(server.mediaSize)}
         <TreesizeLink />
       </Row>
-      <Row title="Cache Size">
-        {prettyBytes(result?.data?.serverInfo.cacheSize)}
-      </Row>
+      <Row title="Cache Size">{prettyBytes(server.cacheSize)}</Row>
     </>
   );
 };

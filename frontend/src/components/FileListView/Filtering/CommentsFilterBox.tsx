@@ -1,14 +1,15 @@
 import { Button } from '@mantine/core';
 import { useAtom } from 'jotai/index';
-import { CommentsFilterOptions, filterOptions } from '@shared/filterAtom';
+import {
+  CommentsFilterOptions,
+  FilterOptionsInterface,
+  filterOptions,
+} from '@shared/filterAtom';
 import { ReactNode } from 'react';
 import { CommentIcon, CommentsIcon } from '../../../PicrIcons';
 
 export const CommentsFilterBox = () => {
   const [options, setOptions] = useAtom(filterOptions);
-
-  const onChange = (comments: CommentsFilterOptions) =>
-    setOptions((o) => ({ ...o, comments }));
 
   const value = options.comments;
 
@@ -21,7 +22,12 @@ export const CommentsFilterBox = () => {
             style={{ flexGrow: 1 }}
             title={title}
             variant={isSelected ? 'filled' : 'default'}
-            onClick={() => onChange(isSelected ? null : v)}
+            onClick={() =>
+              setOptions((o: FilterOptionsInterface) => ({
+                ...o,
+                comments: isSelected ? null : v,
+              }))
+            }
             key={title}
             size="xs"
             leftSection={icon}

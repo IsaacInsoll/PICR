@@ -1,20 +1,44 @@
-import { File, Folder } from '../gql/graphql';
-
 export type SearchResultType = 'all' | 'file' | 'folder';
 
-export const buildSearchResultList = (
-  files: File[],
-  folders: Folder[],
+type SearchFolderParent = { name?: string | null } | null | undefined;
+
+export type SearchFolderResult = {
+  __typename: 'Folder';
+  id: string;
+  name: string;
+  parents?: SearchFolderParent[] | null;
+};
+
+export type SearchFileResult = {
+  __typename: string;
+  id: string;
+  name: string;
+  folder?: { name?: string | null } | null;
+  type?: string | null;
+  flag?: string | null;
+  rating?: number | null;
+  totalComments?: number | null;
+};
+
+export const buildSearchResultList = <
+  TFile extends SearchFileResult,
+  TFolder extends SearchFolderResult,
+>(
+  files: TFile[],
+  folders: TFolder[],
   type: SearchResultType,
-): Array<File | Folder> => {
+): Array<TFile | TFolder> => {
   if (type === 'file') return files;
   if (type === 'folder') return folders;
   return [...folders, ...files];
 };
 
-export const getSearchResultMeta = (
-  files: File[],
-  folders: Folder[],
+export const getSearchResultMeta = <
+  TFile extends SearchFileResult,
+  TFolder extends SearchFolderResult,
+>(
+  files: TFile[],
+  folders: TFolder[],
 ): {
   totalFiles: number;
   totalFolders: number;
@@ -31,19 +55,18 @@ export const getSearchResultMeta = (
   };
 };
 
-export const isFolderResult = (
-  item: File | Folder,
-): item is Folder & { __typename: 'Folder' } => item.__typename === 'Folder';
+export const isFolderResult = <
+  TItem extends SearchFileResult | SearchFolderResult,
+>(
+  item: TItem,
+): item is Extract<TItem, SearchFolderResult> => item.__typename === 'Folder';
 
-export const isFileResult = (item: File | Folder): item is File =>
-  item.__typename === 'File';
-
-export const formatFolderPath = (folder: Folder) => {
+export const formatFolderPath = (folder: SearchFolderResult) => {
   const parents = folder.parents ?? [];
   const names = parents.map((p) => p?.name).filter(Boolean);
   if (!names.length) return '';
   return [...names, folder.name].join(' / ');
 };
 
-export const formatFileFolderName = (file: File) =>
+export const formatFileFolderName = (file: SearchFileResult) =>
   file.folder?.name ? file.folder.name : '';

@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AppLink } from '@/src/components/AppFolderLink';
 import { PText } from '@/src/components/PText';
-import { File, Folder, Image, Video } from '@shared/gql/graphql';
+import { Folder } from '@shared/gql/graphql';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { BlurView } from 'expo-blur';
 import { memo, useState } from 'react';
@@ -60,7 +60,7 @@ const MasonryItemComponent = ({
   colCount,
   borderColor,
 }: {
-  item: File | Image | Video;
+  item: any;
   width: number;
   colCount: number;
   borderColor: string;
@@ -108,7 +108,7 @@ const FolderName = ({
   folder,
   intensity,
 }: {
-  folder: Folder;
+  folder: Folder | any;
   intensity: number;
 }) => {
   //this blur doesn't always render (EG: toggle from 2 column to 3 column and it disappears for most items

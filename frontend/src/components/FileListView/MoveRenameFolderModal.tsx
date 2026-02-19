@@ -1,13 +1,14 @@
 import { Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
-import { MinimalFolder } from '../../../types';
+import { PicrFolder } from '../../../types';
 import { useIsSmallScreen } from '../../hooks/useIsMobile';
 import { FolderSelector } from '../FolderSelector';
 import { renameFolderMutation } from '@shared/urql/mutations/renameFolderMutation';
 import { ModalLoadingIndicator } from '../ModalLoadingIndicator';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { useMe } from '../../hooks/useMe';
+import type { ReadAllFoldersQueryQuery } from '@shared/gql/graphql';
 import {
   validateFolderName,
   validateRelativePath,
@@ -18,7 +19,7 @@ export const MoveRenameFolderModal = ({
   opened,
   onClose,
 }: {
-  folder: MinimalFolder;
+  folder: PicrFolder;
   opened: boolean;
   onClose: () => void;
 }) => {
@@ -48,7 +49,7 @@ const MoveRenameFolderModalBody = ({
   opened,
   onClose,
 }: {
-  folder: MinimalFolder;
+  folder: PicrFolder;
   opened: boolean;
   onClose: () => void;
 }) => {
@@ -56,23 +57,27 @@ const MoveRenameFolderModalBody = ({
   const me = useMe();
   const [result] = useQuery({
     query: readAllFoldersQuery,
-    variables: { id: me?.folderId },
+    variables: { id: me?.folderId ?? '' },
     pause: !opened,
   });
   const [name, setName] = useState(folder.name ?? '');
-  const [parentFolder, setParentFolder] = useState<MinimalFolder>(folder);
+  const [parentFolder, setParentFolder] = useState<PicrFolder>(folder);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const foldersList = useMemo(
-    () => (result.data?.allFolders ?? []).filter(Boolean),
+    () =>
+      (result.data?.allFolders ?? []).filter(
+        (f): f is NonNullable<ReadAllFoldersQueryQuery['allFolders'][number]> =>
+          f != null,
+      ),
     [result.data],
   );
 
   const foldersById = useMemo(() => {
-    const map = new Map<string, MinimalFolder>();
+    const map = new Map<string, PicrFolder>();
     foldersList.forEach((f) => {
-      if (f?.id) map.set(f.id, f as MinimalFolder);
+      if (f.id) map.set(f.id, f);
     });
     return map;
   }, [foldersList]);
@@ -103,7 +108,7 @@ const MoveRenameFolderModalBody = ({
 
   const oldPath = buildRelativePath(currentFolder);
   const trimmedName = name.trim();
-  const parentPath = buildRelativePath(parentFolder, true);
+  const parentPath = buildRelativePath(parentFolder);
   const newPath = parentPath ? `${parentPath}/${trimmedName}` : trimmedName;
   const validationError = useMemo(
     () =>
@@ -146,7 +151,7 @@ const MoveRenameFolderModalBody = ({
     onClose();
   };
 
-  const handleParentChange = (selected: MinimalFolder) => {
+  const handleParentChange = (selected: PicrFolder) => {
     const resolved = foldersById.get(selected.id) ?? selected;
     setParentFolder(withParents(resolved, foldersById));
   };
@@ -191,10 +196,10 @@ const MoveRenameFolderModalBody = ({
 };
 
 const withParents = (
-  folder: MinimalFolder,
-  foldersById: Map<string, MinimalFolder>,
+  folder: PicrFolder,
+  foldersById: Map<string, PicrFolder>,
 ) => {
-  const parents: MinimalFolder[] = [];
+  const parents: PicrFolder[] = [];
   let current = folder;
   while (current?.parentId) {
     const parent = foldersById.get(current.parentId);
@@ -205,7 +210,7 @@ const withParents = (
   return { ...folder, parents };
 };
 
-const buildRelativePath = (folder?: MinimalFolder) => {
+const buildRelativePath = (folder?: PicrFolder) => {
   if (!folder?.name) return '';
   if (folder.parentId == null) return '';
   const parents = folder.parents ?? [];
@@ -228,9 +233,9 @@ const validateMoveRename = ({
   trimmedName,
   me,
 }: {
-  foldersList: MinimalFolder[];
-  currentFolder: MinimalFolder;
-  parentFolder: MinimalFolder | null;
+  foldersList: PicrFolder[];
+  currentFolder: PicrFolder;
+  parentFolder: PicrFolder | null;
   oldPath: string;
   newPath: string;
   trimmedName: string;

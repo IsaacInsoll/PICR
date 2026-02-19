@@ -20,7 +20,7 @@ When working on a GitHub issue:
 1. **Reference the issue** in commits: `✨ #42 add feature description`
 2. **Understand the full context** - fetch the issue URL to read all comments and discussion
 3. **Check for labels** - `currently working on` means it's in progress
-4. **Test thoroughly** - run `npm test` before considering work complete
+4. **Test thoroughly** - ask the user to run `npm run workflow` before considering work complete
 5. **Update related docs** if the change affects user-facing behavior
 
 ### Fetching Issue Details
@@ -125,6 +125,12 @@ npm run workflow             # Full CI workflow (user runs this manually)
 # Code Generation
 npm run gql                  # Regenerate GraphQL types (safe to run anytime)
 
+# Type Checking
+cd backend && npx tsc --noEmit   # Backend type-check
+cd frontend && npx tsc --noEmit  # Frontend type-check
+cd shared && npx tsc --noEmit    # Shared type-check
+cd app && npx tsc --noEmit       # App type-check
+
 # Formatting
 npm run format               # Apply Prettier formatting across the repo
 npm run format:check         # Verify formatting only (same check used in CI)
@@ -144,6 +150,13 @@ Run lint for each touched subsystem before finalizing changes:
 - Backend changes → `cd backend && npm run lint`
 - Frontend changes → `cd frontend && npm run lint`
 - App changes → `cd app && npm run lint`
+
+Run TypeScript checks for each touched subsystem before finalizing changes:
+
+- Shared changes → `cd shared && npx tsc --noEmit`
+- Backend changes → `cd backend && npx tsc --noEmit`
+- Frontend changes → `cd frontend && npx tsc --noEmit`
+- App changes → `cd app && npx tsc --noEmit`
 
 Run formatting checks before finalizing:
 

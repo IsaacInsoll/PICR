@@ -11,7 +11,7 @@ import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/counter.css';
 import 'yet-another-react-lightbox/plugins/thumbnails.css';
 import './SelectedFileView.css';
-import { FileListViewStyleComponentProps } from '../FolderContentsView';
+import { ViewFolderFileWithHero } from '@shared/files/sortFiles';
 import { theme } from '../../../theme';
 import { useSetFolder } from '../../../hooks/useSetFolder';
 import { useEffect, useRef, useMemo, useState } from 'react';
@@ -26,16 +26,22 @@ import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
 import { useCanDownload } from '../../../hooks/useMe';
 import { Thumbnails } from 'yet-another-react-lightbox/plugins';
 import { ThumbnailsIcon } from '../../../PicrIcons';
+import { PicrFile } from '../../../../types';
 
 export const SelectedFileView = ({
   files,
   selectedFileId,
   setSelectedFileId,
   folderId,
-}: FileListViewStyleComponentProps) => {
+}: {
+  files: ViewFolderFileWithHero[];
+  selectedFileId?: string;
+  setSelectedFileId: (id: string | undefined) => void;
+  folderId: string;
+}) => {
   const selectedImageIndex = files.findIndex(({ id }) => id === selectedFileId);
   const selectedImage = files.find(({ id }) => id === selectedFileId);
-  const ref = useRef<ControllerRef>(null);
+  const ref = useRef<ControllerRef | null>(null);
   const { fileId } = useParams();
   const portal = useAtomValue(lightboxRefAtom);
   const [showThumbnails, setShowThumbnails] = useState(false);
@@ -50,7 +56,9 @@ export const SelectedFileView = ({
   const canDownload = useCanDownload();
 
   const toolbarButtons = [
-    <LightboxInfoButton file={selectedImage} key="InfoButton" />,
+    selectedImage ? (
+      <LightboxInfoButton file={selectedImage} key="InfoButton" />
+    ) : null,
     <button
       key="thumbnails-toggle"
       type="button"
@@ -72,6 +80,7 @@ export const SelectedFileView = ({
         (plugin) => showThumbnails || plugin !== Thumbnails,
       ),
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- toolbarButtons is rebuilt from local constants and intentionally not a memo dependency
   }, [canDownload, showThumbnails]);
 
   return (
@@ -88,9 +97,12 @@ export const SelectedFileView = ({
       video={videoProps}
       toolbar={{ buttons: config.buttons }}
       render={{
-        slideFooter: ({ slide }) => (
-          <LightboxFileRating slide={slide} selected={selectedImage} />
-        ),
+        slideFooter: () =>
+          selectedImage ? (
+            <LightboxFileRating
+              selected={selectedImage as unknown as PicrFile}
+            />
+          ) : null,
       }}
       carousel={carouselProps}
       thumbnails={showThumbnails ? { position: 'bottom' } : undefined}
@@ -127,6 +139,8 @@ const unInert = () => {
 };
 
 const carouselProps: CarouselSettings = {
+  finite: false,
+  preload: 2,
   imageFit: 'cover' as const, // we want 'cover' otherwise there is too much padding on mobile
   padding: 0,
   spacing: 0,

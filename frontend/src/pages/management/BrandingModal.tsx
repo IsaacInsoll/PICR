@@ -1,5 +1,5 @@
 import { Button, Group, Modal } from '@mantine/core';
-import { BrandingForm } from './BrandingForm';
+import { BrandingForm, type BrandingInput } from './BrandingForm';
 import { useEffect, useState } from 'react';
 import { useSetAtom } from 'jotai';
 import {
@@ -10,17 +10,22 @@ import { useMutation } from 'urql';
 import { DeleteIcon } from '../../PicrIcons';
 import { editBrandingMutation } from '@shared/urql/mutations/editBrandingMutation';
 import { deleteBrandingMutation } from '@shared/urql/mutations/deleteBrandingMutation';
-import { toHeadingFontKeyEnumValue } from '@shared/branding/fontRegistry';
-import { Branding } from '../../../../graphql-types';
+import {
+  normalizeFontKey,
+  toHeadingFontKeyEnumValue,
+} from '@shared/branding/fontRegistry';
+import type { ViewBrandingsQueryQuery } from '@shared/gql/graphql';
+
+type BrandingRow = NonNullable<ViewBrandingsQueryQuery['brandings'][number]>;
 
 export const BrandingModal = ({
   branding: brandingProp,
   onClose,
 }: {
-  branding: Branding;
+  branding: BrandingRow;
   onClose: () => void;
 }) => {
-  const [branding, setBranding] = useState<Branding>(
+  const [branding, setBranding] = useState<BrandingInput>(
     applyBrandingDefaults(brandingProp),
   );
   const setThemeMode = useSetAtom(themeModeAtom);
@@ -33,7 +38,7 @@ export const BrandingModal = ({
   useEffect(() => {
     // Only update theme when mode is defined to prevent flickering
     if (branding.mode) {
-      setThemeMode(branding);
+      setThemeMode(branding as Parameters<typeof setThemeMode>[0]);
     }
   }, [branding, setThemeMode]);
 
@@ -45,7 +50,9 @@ export const BrandingModal = ({
       mode: branding.mode,
       primaryColor: branding.primaryColor,
       logoUrl: branding.logoUrl,
-      headingFontKey: toHeadingFontKeyEnumValue(branding.headingFontKey),
+      headingFontKey: toHeadingFontKeyEnumValue(
+        normalizeFontKey(branding.headingFontKey),
+      ),
     }).then(() => {
       setSubmitting(false);
       onClose();
@@ -53,6 +60,7 @@ export const BrandingModal = ({
   };
 
   const onDelete = () => {
+    if (!branding.id) return;
     setSubmitting(true);
     deleteBranding({ id: branding.id }).then(() => {
       setSubmitting(false);

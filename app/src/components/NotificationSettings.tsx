@@ -11,13 +11,13 @@ import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { useIsDev } from '@/src/app/[loggedin]/admin/settings';
 
 export const NotificationSettings = () => {
-  const [token, setToken] = useState<string | undefined>(undefined);
+  const [token, setToken] = useState<string>('');
   const me = useMe();
   const isDev = useIsDev();
   const [result, requery] = useQuery({
     query: userDeviceQuery,
-    variables: { userId: me.id, token: token },
-    pause: !token || !me.id,
+    variables: { userId: me?.id ?? '', token },
+    pause: !token || !me?.id,
   });
 
   const [, mutate] = useMutation(editUserDeviceMutation);
@@ -27,14 +27,14 @@ export const NotificationSettings = () => {
   //TODO: refactor to check notif permissions locally, rather than requesting notif access right away
   useEffect(() => {
     registerForPushNotificationsAsync().then((t) => {
-      setToken(isDev ? t + ' DEV' : t);
+      setToken(isDev ? `${t ?? ''} DEV` : (t ?? ''));
     });
     // now get existing value from server
   }, [isDev]);
 
   const onChange = async (enabled: boolean) => {
     console.log(1);
-    if (!token || !me.id) return;
+    if (!token || !me?.id) return;
     console.log(2);
     await mutate({
       enabled,
@@ -59,7 +59,7 @@ export const NotificationSettings = () => {
       }}
     >
       <PText>Allow Notifications</PText>
-      {token === undefined ? (
+      {token === '' ? (
         <Switch disabled={true} />
       ) : allow === undefined ? (
         <AppLoadingIndicator size="small" />

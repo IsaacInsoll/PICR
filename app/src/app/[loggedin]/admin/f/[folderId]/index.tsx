@@ -3,7 +3,6 @@ import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { View } from 'react-native';
 import { PText } from '@/src/components/PText';
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
-import { usePathname } from 'expo-router/build/hooks';
 import { Suspense, useState } from 'react';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { useQuery } from 'urql';
@@ -25,17 +24,28 @@ import {
 } from '@/src/components/FolderView/FolderViewShared';
 import { FolderListHeader } from '@/src/components/FolderView/FolderListHeader';
 import { FolderBrandingProvider } from '@/src/components/FolderBrandingProvider';
+import { useHostname } from '@/src/hooks/useHostname';
 
 export default function FolderMasterView() {
   const me = useMe();
   const theme = useAppTheme();
-  const pathname = usePathname();
-  const { folderId } = useLocalSearchParams();
-  const skeleton = folderCache[folderId];
+  const hostname = useHostname();
+  const params = useLocalSearchParams<{ folderId?: string | string[] }>();
+  const folderId = Array.isArray(params.folderId)
+    ? params.folderId[0]
+    : params.folderId;
+  const skeleton = folderId ? folderCache[folderId] : undefined;
   const [width, setViewWidth] = useState(0);
 
   if (!folderId) {
-    return <Redirect href={pathname + '/' + me.folderId} />;
+    return (
+      <Redirect
+        href={{
+          pathname: '/[loggedin]/admin/f/[folderId]',
+          params: { loggedin: hostname ?? '', folderId: me?.folderId ?? '1' },
+        }}
+      />
+    );
   }
 
   return (

@@ -97,11 +97,15 @@ const FeedItem = ({
 
   //we know image ratios and viewport width, so size things correctly before images have loaded
   const dimensions = useMemo(() => {
+    const ratio =
+      'imageRatio' in file && typeof file.imageRatio === 'number'
+        ? file.imageRatio
+        : 1;
     return {
       width: width,
-      height: file.imageRatio ? width / file.imageRatio : 75,
+      height: ratio ? width / ratio : 75,
     };
-  }, [width, file.imageRatio]);
+  }, [width, file]);
 
   const { type } = file;
   return (
@@ -125,7 +129,6 @@ const FeedItem = ({
             <PicrImage
               file={file}
               size="lg"
-              src={imageURL(file, 'lg')}
               onClick={() => onClick(file.id)}
               clickable={true}
               style={dimensions}
@@ -185,12 +188,7 @@ const FeedFolderItem = ({
   return (
     <Box ref={ref}>
       <Page key={folder.id}>
-        <PicrFolder
-          folder={folder}
-          mb="md"
-          style={{ height: 75 }}
-          onClick={onClick}
-        />
+        <PicrFolder folder={folder} style={{ height: 75 }} onClick={onClick} />
       </Page>
     </Box>
   );

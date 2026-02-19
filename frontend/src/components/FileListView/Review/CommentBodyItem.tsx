@@ -8,8 +8,11 @@ import {
   Text,
   Timeline,
 } from '@mantine/core';
-import { Comment } from '../../../../../graphql-types';
-import { MinimalFile } from '../../../../types';
+import {
+  AppCommentHistoryCommentFragmentFragment,
+  FileFlag,
+} from '@shared/gql/graphql';
+import { PicrFile } from '../../../../types';
 import { PicrImage } from '../../PicrImage';
 import { FileFlagBadge } from './FileFlagBadge';
 import { useOpenCommentsModal } from '../../../atoms/modalAtom';
@@ -21,9 +24,12 @@ import { prettyDate } from '@shared/prettyDate';
 export const CommentBodyItem = ({
   comment,
   ...p
-}: { comment: Comment } & CommentHistoryProps) => {
+}: {
+  comment: AppCommentHistoryCommentFragmentFragment;
+} & CommentHistoryProps) => {
   const { id, timestamp, user, systemGenerated, file } = comment;
   const openCommentModal = useOpenCommentsModal();
+  const displayUser = user ?? { id: 'system', name: 'System' };
 
   const showFile = file && !p?.singleFile;
 
@@ -34,7 +40,7 @@ export const CommentBodyItem = ({
   return (
     <Timeline.Item
       // bullet={<LazyPicrAvatar size={24} userId={userId} />}
-      bullet={<PicrAvatar size={24} user={user} />}
+      bullet={<PicrAvatar size={24} user={displayUser} />}
       lineVariant={systemGenerated ? 'dashed' : 'solid'}
     >
       <Paper
@@ -50,8 +56,10 @@ export const CommentBodyItem = ({
         >
           {showFile ? (
             <FilePreview
-              file={file}
-              onClick={() => openCommentModal(file.id, id)}
+              file={file as PicrFile}
+              onClick={() => {
+                if (file?.id && id) openCommentModal(file.id, id);
+              }}
             />
           ) : null}
           <Stack style={{ flexGrow: 1 }} gap="xs">
@@ -82,7 +90,7 @@ const FilePreview = ({
   file,
   onClick,
 }: {
-  file: MinimalFile;
+  file: PicrFile;
   onClick?: () => void;
 }) => {
   return (
@@ -105,8 +113,21 @@ const FilePreview = ({
   );
 };
 
-const CommentAction = ({ comment }: { comment: Comment }) => {
-  const json = JSON.parse(comment?.comment);
+const isFileFlag = (value: string): value is FileFlag =>
+  value === FileFlag.Approved ||
+  value === FileFlag.Rejected ||
+  value === FileFlag.None;
+
+const CommentAction = ({
+  comment,
+}: {
+  comment: AppCommentHistoryCommentFragmentFragment;
+}) => {
+  if (!comment.comment) return null;
+  const json = JSON.parse(comment.comment) as {
+    rating?: number;
+    flag?: string;
+  };
   if (!json) return null;
   return (
     <Stack>
@@ -121,7 +142,7 @@ const CommentAction = ({ comment }: { comment: Comment }) => {
           />
         </Group>
       ) : null}
-      {json.flag ? (
+      {json.flag && isFileFlag(json.flag) ? (
         <Group gap="xs">
           <Text size="xs">Flag</Text>
           <FileFlagBadge flag={json.flag} />

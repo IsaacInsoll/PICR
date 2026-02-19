@@ -8,9 +8,11 @@ export default function Index() {
   console.log('[app index.tsx]');
   const me = useLoginDetails();
   if (me?.hostname) {
-    const destination = '/' + me?.hostname + 'admin';
+    const destination = {
+      pathname: '/[loggedin]/admin' as const,
+      params: { loggedin: me.hostname },
+    };
     console.log('[app/index.tsx] redirecting from base URL to ' + destination);
-    // router.replace('/' + me?.hostname);
     return <Redirect href={destination} withAnchor />;
   }
 

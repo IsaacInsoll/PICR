@@ -25,7 +25,8 @@ export const AppImage = ({
 
   const sourceSize: ThumbnailSize = size ?? (w > 250 ? 'lg' : 'md');
 
-  const source = w === 0 ? null : baseUrl + imageURL(file, sourceSize);
+  const source =
+    w === 0 || !baseUrl ? undefined : baseUrl + imageURL(file, sourceSize);
 
   // console.log(width, viewWidth, height, file.fileHash);
 
@@ -40,12 +41,11 @@ export const AppImage = ({
     >
       {/*TODO: this is only instance of CachedImage in entire codebase, refactor to be Expo Image powered by the cache like we are doing elsewhere? */}
       <CachedImage
-        source={source}
+        source={source ?? ''}
         style={{ width: w, height }}
-        thumbnailSource={baseUrl + imageURL(file, 'sm')}
-        onError={(e) => {
+        thumbnailSource={baseUrl ? baseUrl + imageURL(file, 'sm') : ''}
+        onError={() => {
           console.log('Error getting image: ' + source);
-          console.log(e);
         }}
       />
     </View>

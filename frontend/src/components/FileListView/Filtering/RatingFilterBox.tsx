@@ -1,6 +1,10 @@
 import { ActionIcon, Group } from '@mantine/core';
 import { useAtom } from 'jotai/index';
-import { filterOptions, RatingsComparisonOptions } from '@shared/filterAtom';
+import {
+  FilterOptionsInterface,
+  filterOptions,
+  RatingsComparisonOptions,
+} from '@shared/filterAtom';
 import { ReactNode } from 'react';
 import {
   EqualIcon,
@@ -16,8 +20,8 @@ export const RatingFilterBox = () => {
     <Group gap="sm">
       <RatingComparisonSelector
         value={options.ratingComparison}
-        onChange={(ratingComparison) =>
-          setOptions((o) => ({
+        onChange={(ratingComparison: RatingsComparisonOptions | null) =>
+          setOptions((o: FilterOptionsInterface) => ({
             ...o,
             ratingComparison,
             // rating: ratingComparison ? o.rating : 0,
@@ -26,8 +30,8 @@ export const RatingFilterBox = () => {
       />
       <FileRating
         value={options.ratingComparison ? options.rating : 0}
-        onChange={(rating) =>
-          setOptions((o) => ({
+        onChange={(rating: number) =>
+          setOptions((o: FilterOptionsInterface) => ({
             ...o,
             rating,
             ratingComparison: o.ratingComparison ?? 'equal',
@@ -38,7 +42,13 @@ export const RatingFilterBox = () => {
   );
 };
 
-const RatingComparisonSelector = ({ value, onChange }) => {
+const RatingComparisonSelector = ({
+  value,
+  onChange,
+}: {
+  value: RatingsComparisonOptions | null;
+  onChange: (v: RatingsComparisonOptions | null) => void;
+}) => {
   return (
     <ActionIcon.Group>
       {options.map(({ title, icon }) => {

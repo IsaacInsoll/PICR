@@ -17,7 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { AppFolderLink } from '@/src/components/AppFolderLink';
 import { HeaderButton } from '@react-navigation/elements';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
-import { FolderFragmentFragment, FoldersSortType } from '@shared/gql/graphql';
+import { FoldersSortType, RecentUsersQueryQuery } from '@shared/gql/graphql';
 import { useHostname } from '@/src/hooks/useHostname';
 import { navBarIconProps } from '@/src/constants';
 import { AppFileListItem } from '@/src/components/FolderContents/AppFolderFileList';
@@ -51,9 +51,13 @@ const HomeFolderButton = () => {
 const SettingsButton = () => {
   const theme = useAppTheme();
   const hostname = useHostname();
+  const href = {
+    pathname: '/[loggedin]/admin/settings' as const,
+    params: { loggedin: hostname ?? '' },
+  };
   return (
     <HeaderButton>
-      <Link href={hostname + '/admin/settings'} asChild={true}>
+      <Link href={href} asChild={true}>
         <Ionicons
           name="settings"
           size={25}
@@ -93,23 +97,27 @@ export default function index() {
 const DashboardBody = () => {
   const me = useMe();
   const theme = useAppTheme();
+  const folderId = me?.folderId;
 
   const [recentUsersResult, requery] = useQuery({
     query: recentUsersQuery,
-    variables: { folderId: me?.folderId },
+    variables: { folderId: folderId ?? '1' },
+    pause: !folderId,
     // context: { suspense: false },
   });
 
   const [recentFoldersResult, requery2] = useQuery({
     query: readAllFoldersQuery,
     variables: {
-      id: me?.folderId,
+      id: folderId ?? '1',
       limit: 10,
       sort: FoldersSortType.FolderLastModified,
     },
+    pause: !folderId,
   });
 
   const doRefresh = () => {
+    if (!folderId) return;
     requery({ requestPolicy: 'network-only' });
     requery2({ requestPolicy: 'network-only' });
   };
@@ -138,10 +146,12 @@ const DashboardBody = () => {
       >
         <AppHeaderPadding />
         <Suspense>
-          <AppTaskSummary folderId={me?.folderId} />
+          {folderId ? <AppTaskSummary folderId={folderId} /> : null}
         </Suspense>
         {recentUsersResult.data ? (
-          <RecentUsers users={recentUsersResult.data?.users.slice(0, 5)} />
+          <RecentUsers
+            users={(recentUsersResult.data?.users ?? []).slice(0, 5)}
+          />
         ) : null}
         {recentFoldersResult.data ? (
           <RecentFolders folders={recentFoldersResult.data.allFolders} />
@@ -152,44 +162,46 @@ const DashboardBody = () => {
   );
 };
 
-const RecentUsers = ({ users }) => {
+const RecentUsers = ({ users }: { users: RecentUsersQueryQuery['users'] }) => {
   return (
     <View style={{ gap: 8, width: '100%' }}>
       <PTitle level={2}>Recent Clients</PTitle>
       <View style={[styles.indent]}>
-        {users.map((user, index) => (
-          <AppFolderLink folder={user.folder} key={user.id} asChild>
-            <TouchableOpacity>
-              <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
-                <PFileView
-                  file={user.folder.heroImage}
-                  variant="rounded-fit"
-                  size="sm"
-                />
-                <View style={{ justifyContent: 'center', gap: 4 }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      gap: 8,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <AppAvatar user={user} size={24} />
-                    <View style={{ gap: 4 }}>
-                      <PTitle level={4}>{user.name}</PTitle>
-                      <AppDateDisplay dateString={user.lastAccess} />
+        {users.map((user, index: number) =>
+          user.folder ? (
+            <AppFolderLink folder={user.folder} key={user.id} asChild>
+              <TouchableOpacity>
+                <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
+                  <PFileView
+                    file={user.folder.heroImage}
+                    variant="rounded-fit"
+                    size="sm"
+                  />
+                  <View style={{ justifyContent: 'center', gap: 4 }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        gap: 8,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <AppAvatar user={user} size={24} />
+                      <View style={{ gap: 4 }}>
+                        <PTitle level={4}>{user.name}</PTitle>
+                        <AppDateDisplay dateString={user.lastAccess} />
+                      </View>
                     </View>
                   </View>
                 </View>
-              </View>
-            </TouchableOpacity>
-          </AppFolderLink>
-        ))}
+              </TouchableOpacity>
+            </AppFolderLink>
+          ) : null,
+        )}
       </View>
     </View>
   );
 };
-const RecentFolders = ({ folders }: { folders: FolderFragmentFragment[] }) => {
+const RecentFolders = ({ folders }: { folders: any[] }) => {
   return (
     <View style={{ gap: 8, width: '100%' }}>
       <PTitle level={2}>Recently Modified Folders</PTitle>

@@ -34,17 +34,22 @@ const getRow = <T extends Image = Image>(
   images: T[],
   { containerWidth, rowHeight, margin }: BuildLayoutOptions,
 ): [ImageExtendedRow<T>, T[]] => {
+  const effectiveRowHeight = rowHeight ?? 180;
+  const effectiveMargin = margin ?? 2;
   const row: ImageExtendedRow<T> = [];
-  const imgMargin = 2 * margin;
+  const imgMargin = 2 * effectiveMargin;
   const items = [...images];
 
   let totalRowWidth = 0;
   while (items.length > 0 && totalRowWidth < containerWidth) {
     const item = items.shift();
-    const scaledWidth = Math.floor(rowHeight * (item.width / item.height));
+    if (!item) break;
+    const scaledWidth = Math.floor(
+      effectiveRowHeight * (item.width / item.height),
+    );
     const extendedItem: ImageExtended<T> = {
       ...item,
-      scaledHeight: rowHeight,
+      scaledHeight: effectiveRowHeight,
       scaledWidth,
       viewportWidth: scaledWidth,
       marginLeft: 0,
@@ -59,6 +64,7 @@ const getRow = <T extends Image = Image>(
     for (const i in row) {
       const pixelsToRemove = cutoff[i];
       const item = row[i];
+      if (!item) continue;
       item.marginLeft = -Math.abs(Math.floor(pixelsToRemove / 2));
       item.viewportWidth = item.scaledWidth - pixelsToRemove;
     }

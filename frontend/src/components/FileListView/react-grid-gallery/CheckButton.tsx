@@ -9,7 +9,7 @@ export const CheckButton = ({
   color = '#FFFFFFB2',
   selectedColor = '#4285F4FF',
   hoverColor = '#FFFFFFFF',
-}: CheckButtonProps): JSX.Element => {
+}: CheckButtonProps) => {
   const [hover, setHover] = useState(false);
 
   const circleStyle = { display: isSelected ? 'block' : 'none' };

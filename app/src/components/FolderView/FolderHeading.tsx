@@ -1,12 +1,17 @@
 import { StyleSheet } from 'react-native';
-import { Folder } from '@shared/gql/graphql';
+import type { ViewFolderQuery } from '@shared/gql/graphql';
 import { PView } from '@/src/components/PView';
 import { PTitle } from '@/src/components/PTitle';
 import { PText } from '@/src/components/PText';
 import { PaddingSize } from '@/src/constants';
 import { folderSubtitle } from '@/src/helpers/folderSubtitle';
 
-export const FolderHeading = ({ folder }: { folder: Folder }) => {
+type FolderHeadingData = Pick<
+  ViewFolderQuery['folder'],
+  'name' | 'title' | 'subtitle' | 'subFolders' | 'files'
+>;
+
+export const FolderHeading = ({ folder }: { folder: FolderHeadingData }) => {
   const title = folder.title ?? folder.name ?? 'Folder';
   const customSubtitle = folder.subtitle?.trim() ?? '';
   return (

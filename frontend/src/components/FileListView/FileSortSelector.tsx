@@ -14,6 +14,7 @@ import {
   SortDescIcon,
   StarIcon,
 } from '../../PicrIcons';
+import { FileSortDirection, FileSortType } from '@shared/files/sortFiles';
 
 export const FileSortSelector = () => {
   const { canView } = useCommentPermissions();
@@ -21,7 +22,9 @@ export const FileSortSelector = () => {
   const [dropdownOpened, { toggle, close }] = useDisclosure();
   const { type, direction } = sort;
   const sortIcon = sortIcons[direction];
-  const { icon } = sortOptions.find((s) => s.value == type);
+  const selectedSortOption =
+    sortOptions.find((s) => s.value === type) ?? sortOptions[0];
+  const { icon } = selectedSortOption;
 
   const options = sortOptions.filter((s) => !s.requiresComments || canView);
 
@@ -29,10 +32,10 @@ export const FileSortSelector = () => {
     option,
     checked,
   }) => {
-    const { icon } = sortOptions.find((s) => s.value == option.value);
+    const optionIcon = sortOptions.find((s) => s.value === option.value)?.icon;
     return (
       <Group flex="1" gap="xs">
-        <Box>{icon}</Box>
+        <Box>{optionIcon}</Box>
         <Box style={{ flexGrow: 1 }}>{option.label}</Box>
         <Box>
           {checked ? (
@@ -46,10 +49,11 @@ export const FileSortSelector = () => {
     );
   };
 
-  const handleClick = (v) => {
-    if (v && v != type) {
+  const handleClick = (v: string | null) => {
+    const selectedOption = sortOptions.find((s) => s.value === v);
+    if (selectedOption && selectedOption.value !== type) {
       setSort({
-        type: v,
+        type: selectedOption.value,
         direction: 'Asc',
         // direction: v == 'Filename' ? 'Asc' : 'Desc',
       });
@@ -96,9 +100,14 @@ export const FileSortSelector = () => {
   );
 };
 
-const sortOptions: [
-  { value: FileSortType; label: string; requiresComments: boolean },
-] = [
+type SortOption = {
+  value: FileSortType;
+  label: string;
+  icon: ReactNode;
+  requiresComments: boolean;
+};
+
+const sortOptions: SortOption[] = [
   {
     value: 'Filename',
     label: 'Filename',
@@ -125,9 +134,10 @@ const sortOptions: [
   },
 ];
 
-const sortIcons: {
-  [key: keyof FileSortDirection]: { icon: ReactNode; chevron: ReactNode };
-} = {
+const sortIcons: Record<
+  FileSortDirection,
+  { icon: ReactNode; chevron: ReactNode }
+> = {
   Asc: { icon: <SortDescIcon />, chevron: <ChevronDownIcon /> },
   Desc: { icon: <SortAscIcon />, chevron: <ChevronUpIcon /> },
 } as const;

@@ -1,6 +1,6 @@
 import { Badge, Code, Group, Rating, Table, Text } from '@mantine/core';
 import { metadataIcons } from '../metadataIcons';
-import { MinimalFile } from '../../../../types';
+import { PicrFile } from '../../../../types';
 import {
   metadataForPresentation,
   MetadataPresentationResult,
@@ -8,20 +8,19 @@ import {
 import { toReadableFraction } from 'readable-fractions';
 
 // get all keys, remove nulls, add/merge others as expected
-export const MetadataTableRows = (file: MinimalFile) => {
+export const MetadataTableRows = (file: PicrFile) => {
   const list = metadataForPresentation(file);
-  if (!list) return null;
+  if (!list.length) return null;
 
   return (
     <>
       {list.map((res) => {
         const { subLabel, description, icon } = res;
         const label = formatValue(res);
+        const iconKey = (icon ?? description) as keyof typeof metadataIcons;
         return (
           <Table.Tr key={description}>
-            <Table.Td>
-              {icon ? metadataIcons[icon] : metadataIcons[description]}
-            </Table.Td>
+            <Table.Td>{metadataIcons[iconKey] ?? null}</Table.Td>
             <Table.Td>
               <Text c="dimmed" style={{ fontSize: 11 }}>
                 {description}
@@ -49,7 +48,7 @@ export const MetadataTableRows = (file: MinimalFile) => {
 };
 
 const formatValue = (res: MetadataPresentationResult) => {
-  if (res.description == 'Aspect Ratio') {
+  if (res.description == 'Aspect Ratio' && typeof res.data === 'number') {
     const { denominator, numerator } = toReadableFraction(res.data);
     return (
       <>
@@ -59,7 +58,8 @@ const formatValue = (res: MetadataPresentationResult) => {
   }
 
   if (res.description == 'Original Rating') {
-    return <Rating value={res.label} readOnly />;
+    const rating = Number(res.label);
+    return <Rating value={Number.isFinite(rating) ? rating : 0} readOnly />;
   }
 
   if (res.description == 'Framerate')

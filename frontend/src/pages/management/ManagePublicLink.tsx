@@ -1,4 +1,4 @@
-import { MinimalFolder } from '../../../types';
+import { PicrFolder } from '../../../types';
 import { randomString } from '../../helpers/randomString';
 import { useState } from 'react';
 import { useMutation } from 'urql';
@@ -20,7 +20,7 @@ import {
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { LinkModeSelector } from '../../components/LinkModeSelector';
-import { CommentPermissions, LinkMode } from '../../../../graphql-types';
+import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
 import {
   DeleteIcon,
   EmailIcon,
@@ -40,7 +40,7 @@ export const ManagePublicLink = ({
   onClose,
 }: {
   id?: string;
-  folder?: MinimalFolder; //if creating a new public link
+  folder?: PicrFolder; //if creating a new public link
   onClose: () => void;
 }) => {
   const [user, exists] = useViewUser(id);
@@ -53,23 +53,26 @@ export const ManagePublicLink = ({
   const [link, setLink] = useState(user?.uuid ?? randomString());
   const [enabled, setEnabled] = useState(user?.enabled ?? true);
   const [commentPermissions, setCommentPermissions] =
-    useState<CommentPermissions>(user?.commentPermissions ?? 'none');
+    useState<CommentPermissions>(
+      user?.commentPermissions ?? CommentPermissions.None,
+    );
   const [linkMode, setLinkMode] = useState<LinkMode>(
     user?.linkMode ?? LinkMode.FinalDelivery,
   );
   const [error, setError] = useState('');
 
   //get folder from user if they exist as it may be a parent or child
-  const f: MinimalFolder = user?.folder ?? folder;
+  const f = user?.folder ?? folder;
 
   const onSave = () => {
+    if (!f?.id) return;
     setError('');
     const data: MutationEditUserArgs = {
       id: id ?? '',
       name,
       uuid: link,
       enabled,
-      folderId: f?.id,
+      folderId: f.id,
       commentPermissions,
       linkMode,
       username,
@@ -114,7 +117,7 @@ export const ManagePublicLink = ({
           placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
           value={name}
           label="Name"
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => setName(e.currentTarget.value)}
           error={name.length == 0 ? 'Name is required' : undefined}
         />
         <TextInput
@@ -122,7 +125,7 @@ export const ManagePublicLink = ({
           label="Email Address"
           value={username}
           description="(optional)"
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => setUsername(e.currentTarget.value)}
         />
 
         <Group gap="xs" style={{ alignItems: 'center' }}>
@@ -133,7 +136,7 @@ export const ManagePublicLink = ({
             value={link}
             label="Public Link"
             description="this should be impossible to guess"
-            onChange={(e) => setLink(e.target.value)}
+            onChange={(e) => setLink(e.currentTarget.value)}
             error={
               badLink.length > 0 ? (
                 <Group gap="xs">
@@ -190,7 +193,7 @@ export const ManagePublicLink = ({
           <Group>
             <CopyPublicLinkButton
               disabled={invalidLink}
-              folderId={f!.id}
+              folderId={f?.id ?? ''}
               hash={link}
             />
             <Button disabled={invalidLink} onClick={onSave}>

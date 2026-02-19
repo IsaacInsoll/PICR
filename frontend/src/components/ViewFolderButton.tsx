@@ -1,4 +1,4 @@
-import { MinimalFolder } from '../../types';
+import { PicrFolder } from '../../types';
 import { Button, ButtonProps } from '@mantine/core';
 import { useSetFolder } from '../hooks/useSetFolder';
 import { FolderIcon } from '../PicrIcons';
@@ -6,7 +6,7 @@ import { FolderIcon } from '../PicrIcons';
 export const ViewFolderButton = ({
   folder,
   ...props
-}: { folder: MinimalFolder } & ButtonProps) => {
+}: { folder: PicrFolder } & ButtonProps) => {
   const setFolder = useSetFolder();
   const onClick = () => {
     setFolder(folder);

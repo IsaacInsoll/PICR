@@ -453,6 +453,34 @@ npm run gql
 npm run start:server
 ```
 
+## Validation Commands
+
+Run these after shared changes:
+
+```bash
+cd shared && npm run lint
+cd shared && npx tsc --noEmit
+```
+
+If shared changes affect frontend or app types, also run:
+
+```bash
+cd frontend && npx tsc --noEmit
+cd app && npx tsc --noEmit
+```
+
+Also run repo-wide formatting checks:
+
+```bash
+npm run format:check
+```
+
+For test validation, ask the user to run:
+
+```bash
+npm run workflow
+```
+
 ### "useEffect on null" in app
 
 This usually means a React hook is being imported from shared. Move the hook to `app/src/app-shared/` or use it only in the consumer.

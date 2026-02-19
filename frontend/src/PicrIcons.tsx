@@ -63,7 +63,7 @@ import {
   TbVolume,
 } from 'react-icons/tb';
 import { CiAt, CiDark, CiLight } from 'react-icons/ci';
-import { IconBaseProps } from 'react-icons/lib/iconBase';
+import { IconBaseProps } from 'react-icons';
 import { MdOutlineThumbsUpDown } from 'react-icons/md';
 import {
   MdBrightnessAuto,

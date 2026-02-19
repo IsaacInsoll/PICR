@@ -1,4 +1,4 @@
-import { MinimalFolder } from '../../types';
+import { PicrFolder } from '../../types';
 import { NavLink } from 'react-router';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 import { FolderIcon, ManageFolderIcon } from '../PicrIcons';
@@ -10,7 +10,7 @@ export const ManageFolderButton = ({
   folder,
   managing,
 }: {
-  folder: MinimalFolder;
+  folder: PicrFolder;
   managing: boolean;
 }) => {
   const baseUrl = useBaseViewFolderURL();
@@ -33,11 +33,7 @@ export const ManageFolderButton = ({
   );
 };
 
-export const ManageFolderIconButton = ({
-  folder,
-}: {
-  folder: MinimalFolder;
-}) => {
+export const ManageFolderIconButton = ({ folder }: { folder: PicrFolder }) => {
   const baseUrl = useBaseViewFolderURL();
   const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const onClick = () => {

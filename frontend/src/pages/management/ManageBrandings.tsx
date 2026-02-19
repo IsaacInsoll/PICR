@@ -11,11 +11,12 @@ import { themeModeAtom } from '../../atoms/themeModeAtom';
 import { BrandingModal } from './BrandingModal';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { defaultBranding } from '../../helpers/defaultBranding';
-import { Branding } from '../../../../graphql-types';
+import type { ViewBrandingsQueryQuery } from '@shared/gql/graphql';
 
 export const ManageBrandings = () => {
   const [result, reQuery] = useQuery({ query: viewBrandingsQuery });
-  const [branding, setBranding] = useState<Branding | null>(null);
+  type BrandingRow = NonNullable<ViewBrandingsQueryQuery['brandings'][number]>;
+  const [branding, setBranding] = useState<BrandingRow | null>(null);
   const setThemeMode = useSetAtom(themeModeAtom);
 
   const mouseover = false;
@@ -39,14 +40,20 @@ export const ManageBrandings = () => {
       {result.data?.brandings ? (
         <PicrDataGrid
           columns={brandingColumns}
-          data={result.data?.brandings}
+          data={result.data.brandings.filter(
+            (b): b is BrandingRow => b != null,
+          )}
           onClick={(row) => setBranding(row)}
-          onMouseover={(row) => (mouseover ? setThemeMode(row) : null)}
+          onMouseover={(row) =>
+            mouseover
+              ? setThemeMode(row as Parameters<typeof setThemeMode>[0])
+              : null
+          }
         />
       ) : undefined}
       <Box pt="md">
         <Button
-          onClick={() => setBranding({ ...defaultBranding })}
+          onClick={() => setBranding({ ...defaultBranding, folders: [] })}
           leftSection={<BrandingIcon />}
         >
           Add Branding
