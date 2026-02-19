@@ -104,6 +104,7 @@ export const useAppFileLink = (file: FileIDandName): Href => {
 
   if (uuid) {
     return {
+      // @ts-ignore coming soon :)
       pathname: '/[loggedin]/s/[uuid]/[folderId]/[fileId]',
       params: { loggedin, uuid, folderId: file.folderId, fileId: file.id },
     };
