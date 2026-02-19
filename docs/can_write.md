@@ -23,6 +23,45 @@ services:
       - CAN_WRITE=true
 ```
 
+## Synology / NAS note (common issue)
+
+If `CAN_WRITE=true` but PICR still reports `canWrite: false`, your media mount is readable but not writable for the
+container user.
+
+## Short Version
+
+Set the `CAN_WRITE=true` then run PICR. You will get a "you tried to enable write access but we can't actually write" warning with exact IDs to add to docker compose. 
+Add those, then restart the container. 
+
+## Long Version
+
+PICR runs as a non-root user by default. On NAS systems (especially Synology DSM), the mounted folder often belongs to
+different UID/GID values than the container user.
+
+Recommended approach:
+
+1. Keep PICR non-root.
+2. Run `picr` container with `user: "<media-owner-uid>:<media-owner-gid>"`.
+3. Ensure that UID/GID has write permissions in DSM folder ACLs.
+
+Example:
+
+```yaml
+services:
+  picr:
+    user: '1026:100'
+    volumes:
+      - /volume1/photos:/home/node/app/media:rw
+    environment:
+      - CAN_WRITE=true
+```
+
+You can quickly test from inside the container:
+
+```bash
+docker exec -it picr sh -lc 'id; ls -ld /home/node/app/media; touch /home/node/app/media/.picr-write-test && rm /home/node/app/media/.picr-write-test'
+```
+
 ## Why this is risky
 
 Write access means PICR can change your files and folders. If your admin password is leaked, or the server is hacked, an

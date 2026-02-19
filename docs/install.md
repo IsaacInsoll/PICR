@@ -21,6 +21,7 @@ services:
   picr:
     container_name: 'picr'
     image: 'isaacinsoll/picr'
+    # user: "<uid>:<gid>" # if enabling write access on NAS, see can_write.md to find exact IDs
     volumes:
       - <path-to-your-shared-images>:/home/node/app/media:ro # read only access to your 'files i give to clients' folder
       - ./cache:/home/node/app/cache #where PICR will store thumbnails it generates, no need to back it up
@@ -83,6 +84,8 @@ There are lots of environment variables you can use, but only a few are needed:
   found to be useful when you have a large number of files.
 
 - `CAN_WRITE` [optional] You can turn this on later if needed, see [can_write.md](can_write.md)
+  Note: write support needs both `CAN_WRITE=true` and real filesystem write permission on `/home/node/app/media`
+  inside the container.
 
 ## Run PICR
 
