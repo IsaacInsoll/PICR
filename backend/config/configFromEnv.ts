@@ -1,10 +1,11 @@
 import { config } from 'dotenv';
-import { accessSync, constants, existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { addDevLogger, log } from '../logger.js';
 import { picrConfig } from './picrConfig.js';
 import { IPicrConfiguration } from './IPicrConfiguration.js';
 import path from 'path';
 import { envSchema } from './envSchema.js';
+import { buildCanWriteWarning, testWriteAccess } from './mediaWriteAccess.js';
 
 export const configFromEnv = () => {
   config(); // read .ENV
@@ -20,6 +21,7 @@ export const configFromEnv = () => {
   const cachePath = path.join(process.cwd(), 'cache');
 
   const d = env.data;
+  const canWriteToMediaPath = testWriteAccess(mediaPath);
   const baseUrl = new URL(d.BASE_URL);
   const baseUrlPathname =
     baseUrl.pathname === '/'
@@ -46,7 +48,7 @@ export const configFromEnv = () => {
 
     mediaPath,
     cachePath,
-    canWrite: d.CAN_WRITE && testWriteAccess(mediaPath),
+    canWrite: d.CAN_WRITE && canWriteToMediaPath,
   };
 
   log('info', '#️⃣  Version: ' + (c.dev ? '[DEV] ' : '') + c.version, true);
@@ -59,6 +61,10 @@ export const configFromEnv = () => {
     addDevLogger();
   }
   Object.assign(picrConfig, c);
+
+  if (d.CAN_WRITE && !canWriteToMediaPath) {
+    log('warning', buildCanWriteWarning(mediaPath), true);
+  }
 };
 
 const getVersion = () => {
@@ -67,14 +73,5 @@ const getVersion = () => {
     return readFileSync(p, 'utf8').trim();
   } else {
     return 'DEV';
-  }
-};
-
-const testWriteAccess = (path: string): boolean => {
-  try {
-    accessSync(path, constants.R_OK | constants.W_OK);
-    return true;
-  } catch {
-    return false;
   }
 };
