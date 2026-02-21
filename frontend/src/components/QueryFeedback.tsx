@@ -1,5 +1,5 @@
 import { CombinedError, UseQueryState } from 'urql';
-import { useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai';
 import { authKeyAtom } from '../atoms/authAtom';
 import { LoadingIndicator } from './LoadingIndicator';
 import { Alert, Button } from '@mantine/core';

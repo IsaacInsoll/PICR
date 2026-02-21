@@ -1,4 +1,4 @@
-import { atom, useSetAtom } from 'jotai/index';
+import { atom, useSetAtom } from 'jotai';
 import { atomWithHash } from 'jotai-location';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 import { lightboxControllerRefAtom } from './lightboxControllerRefAtom';

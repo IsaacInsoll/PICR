@@ -1,6 +1,6 @@
 import { Button, Divider, Group, Modal, Stack, Textarea } from '@mantine/core';
 import { closeModalAtom } from '../../../atoms/modalAtom';
-import { useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai';
 import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
 import { useMutation, useQuery } from 'urql';

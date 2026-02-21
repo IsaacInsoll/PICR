@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai/index';
+import { useAtom } from 'jotai';
 import { FilterOptionsInterface, filterOptions } from '@shared/filterAtom';
 import { formatMetadataValues } from '../../../metadata/formatMetadataValues';
 import { MultiSelect } from '@mantine/core';

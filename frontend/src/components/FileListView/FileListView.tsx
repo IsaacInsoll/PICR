@@ -186,7 +186,7 @@ const Row = ({
         <Table.Td onClick={onClick}>
           <Stack align="end">
             {rating > 0 ? <Rating readOnly value={rating} size="xs" /> : null}
-            <FileFlagBadge flag={flag ?? FileFlag.None} />
+            <FileFlagBadge flag={flag} />
           </Stack>
         </Table.Td>
       ) : null}

@@ -6,7 +6,7 @@ import { PicrDataGrid } from '../../components/PicrDataGrid';
 import { viewBrandingsQuery } from '@shared/urql/queries/viewBrandingsQuery';
 import { BrandingIcon } from '../../PicrIcons';
 import { brandingColumns } from './brandingColumns';
-import { useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai';
 import { themeModeAtom } from '../../atoms/themeModeAtom';
 import { BrandingModal } from './BrandingModal';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';

@@ -1,4 +1,4 @@
-import { useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai';
 import { useMutation } from 'urql';
 import { generateZipMutation } from '@shared/urql/mutations/generateZipMutation';
 import {

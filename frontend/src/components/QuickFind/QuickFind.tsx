@@ -14,7 +14,7 @@ import { useMe } from '../../hooks/useMe';
 import { PicrFolder } from '../../../types';
 import { AppSearchFileFragmentFragment } from '@shared/gql/graphql';
 import { atom, useAtomValue } from 'jotai';
-import { useAtom, useSetAtom } from 'jotai/index';
+import { useAtom, useSetAtom } from 'jotai';
 import {
   CSSProperties,
   MouseEvent,

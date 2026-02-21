@@ -1,4 +1,4 @@
-import { useAtom } from 'jotai/index';
+import { useAtom } from 'jotai';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import { Avatar, Box, Button, Group, Select, SelectProps } from '@mantine/core';
 import { ReactNode } from 'react';

@@ -27,7 +27,7 @@ import {
   totalFilterOptionsSelected,
 } from '@shared/filterAtom';
 import { useAtomValue } from 'jotai';
-import { useSetAtom } from 'jotai/index';
+import { useSetAtom } from 'jotai';
 import { InfoIcon } from '../../../PicrIcons';
 
 export const FilteringOptions = ({

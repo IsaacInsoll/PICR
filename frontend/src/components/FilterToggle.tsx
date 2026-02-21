@@ -1,4 +1,4 @@
-import { useAtom, useAtomValue } from 'jotai/index';
+import { useAtom, useAtomValue } from 'jotai';
 import { filterAtom, totalFilterOptionsSelected } from '@shared/filterAtom';
 import { Badge, Button } from '@mantine/core';
 import { useIsMobile } from '../hooks/useIsMobile';

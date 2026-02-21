@@ -1,4 +1,4 @@
-import { atom, useAtom } from 'jotai/index';
+import { atom, useAtom } from 'jotai';
 
 const quickFindOpenAtom = atom(false);
 

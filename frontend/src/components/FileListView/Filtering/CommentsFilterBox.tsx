@@ -1,5 +1,5 @@
 import { Button } from '@mantine/core';
-import { useAtom } from 'jotai/index';
+import { useAtom } from 'jotai';
 import {
   CommentsFilterOptions,
   FilterOptionsInterface,

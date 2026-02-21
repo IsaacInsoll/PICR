@@ -1,6 +1,5 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import tsConfigPaths from 'vite-plugin-tsconfig-paths';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -54,7 +53,6 @@ export default defineConfig(({ command, mode }) => {
     base: command === 'build' ? './' : '/',
     plugins: [
       ...(command === 'serve' ? [picrIndexVarsDev(env)] : []),
-      tsConfigPaths(),
       react({
         babel: {
           plugins: [
@@ -70,8 +68,9 @@ export default defineConfig(({ command, mode }) => {
       }),
     ],
     resolve: {
-      dedupe: ['react', 'react-dom'],
+      dedupe: ['react', 'react-dom', 'jotai'],
       alias: {
+        '@shared': path.resolve(repoRoot, 'shared'),
         // /esm/icons/index.mjs only exports the icons statically, so no separate chunks are created
         '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
       },

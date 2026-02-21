@@ -1,5 +1,5 @@
 import { ActionIcon, Group } from '@mantine/core';
-import { useAtom } from 'jotai/index';
+import { useAtom } from 'jotai';
 import {
   FilterOptionsInterface,
   filterOptions,

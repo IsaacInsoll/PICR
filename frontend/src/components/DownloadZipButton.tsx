@@ -1,6 +1,6 @@
 import { Button } from '@mantine/core';
 import { useState } from 'react';
-import { atom } from 'jotai/index';
+import { atom } from 'jotai';
 import { DownloadIcon } from '../PicrIcons';
 import { useGenerateZip } from '../hooks/useGenerateZip';
 import type { PicrFolder } from '../../types';

@@ -34,7 +34,7 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
 import { UAParser } from 'ua-parser-js';
-import { useAtom } from 'jotai/index';
+import { useAtom } from 'jotai';
 import { appStoreLinks } from '@shared/consts';
 
 type MeUser = NonNullable<ReturnType<typeof useMe>>;

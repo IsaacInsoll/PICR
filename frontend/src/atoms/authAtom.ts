@@ -1,5 +1,5 @@
 import { atomWithStorage } from 'jotai/utils';
-import { atom, useAtom } from 'jotai/index';
+import { atom, useAtom } from 'jotai';
 
 export const authKeyAtom = atomWithStorage('authKey', '', undefined, {
   getOnInit: true,
