@@ -2,15 +2,15 @@ import { expect, test, describe } from 'vitest';
 import {
   createTestGraphqlClient,
   getUserHeader,
-} from '../frontend/testGraphqlClient';
-import { defaultCredentials } from '../backend/auth/defaultCredentials';
-import { editBrandingMutation } from '../shared/urql/mutations/editBrandingMutation';
-import { deleteBrandingMutation } from '../shared/urql/mutations/deleteBrandingMutation';
-import { setFolderBrandingMutation } from '../shared/urql/mutations/setFolderBrandingMutation';
-import { viewBrandingsQuery } from '../shared/urql/queries/viewBrandingsQuery';
-import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
+} from '../../frontend/testGraphqlClient';
+import { defaultCredentials } from '../../backend/auth/defaultCredentials';
+import { editBrandingMutation } from '../../shared/urql/mutations/editBrandingMutation';
+import { deleteBrandingMutation } from '../../shared/urql/mutations/deleteBrandingMutation';
+import { setFolderBrandingMutation } from '../../shared/urql/mutations/setFolderBrandingMutation';
+import { viewBrandingsQuery } from '../../shared/urql/queries/viewBrandingsQuery';
+import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
 import { photoFolderId, videoFolderId } from './testVariables';
-import { ThemeMode, PrimaryColor } from '../graphql-types';
+import { ThemeMode, PrimaryColor } from '../../graphql-types';
 
 let createdBrandingId: string;
 

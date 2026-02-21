@@ -1,36 +1,33 @@
-import type { GlobalSetupContext } from 'vitest/node';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
 import decompress from 'decompress';
-import path from 'path';
 import {
   buildOne,
   downMany,
-  IDockerComposeOptions,
+  type IDockerComposeOptions,
   upMany,
 } from 'docker-compose';
-import fs from 'fs';
-import https from 'https';
+import fs from 'node:fs';
+import https from 'node:https';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-// WE RUN TESTS IN DOCKER AS THERE HAVE BEEN MULTIPLE "WORKED IN DEV BUT NOT IN DOCKER" ISSUES WE WANT TO CATCH
-// AND DOCKER IS OUR ONLY SUPPORTED PRODUCTION ENVIRONMENT
-
-// note: service[0] is built, rest are just started
 const services = ['test-picr', 'test-db'];
+const testApiDir = path.dirname(fileURLToPath(import.meta.url));
 
 const composeOpts: IDockerComposeOptions = {
-  cwd: __dirname,
+  cwd: testApiDir,
   log: false,
 };
-export async function setup({ provide }: GlobalSetupContext) {
-  // provide('wsPort', 3000)
+
+export async function setupTestEnvironment() {
   console.log('🧪 Test Setup Starting');
   const sampleFiles = 'https://photosummaryapp.com/picr-demo-data.zip';
-  const samplePath = './tests/env/sample.zip';
-  const media = './tests/env/media';
-  const cache = './tests/env/cache';
+  const samplePath = './tests/api/env/sample.zip';
+  const media = './tests/api/env/media';
+  const cache = './tests/api/env/cache';
   if (!existsSync(samplePath)) {
     console.log('\t⬇️ Sample files not found, downloading from ' + sampleFiles);
-    mkdirSync('./tests/env', { recursive: true });
+    mkdirSync('./tests/api/env', { recursive: true });
     await download(sampleFiles, samplePath);
   }
   rmSync(media, { recursive: true, force: true });
@@ -43,26 +40,20 @@ export async function setup({ provide }: GlobalSetupContext) {
   await buildOne(services[0], composeOpts);
   await upMany(services, composeOpts);
   console.log('\t🐋 Docker Startup Complete');
-  //we need to wait a bit longer for everything to finish booting
   await new Promise((r) => setTimeout(r, 2000));
-
-  // setupTestEnv();
-  // console.log(picrConfig); #seems fine :)
-  //server(); # Errors on this line because of sequelize-typescript missing decorators or something?
-
   console.log('🧪 Test Setup Complete');
 }
 
-export async function teardown() {
+export async function teardownTestEnvironment() {
   console.log('🧪 Test Teardown Starting');
   await downMany(services, composeOpts);
   console.log('🧪 Test Teardown Complete');
 }
 
-function download(url, dest) {
+function download(url: string, dest: string) {
   const file = fs.createWriteStream(dest);
   return new Promise((resolve, reject) => {
-    let responseSent = false; // flag to make sure that response is sent only once.
+    let responseSent = false;
     https
       .get(url, (response) => {
         response.pipe(file);

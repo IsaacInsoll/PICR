@@ -35,15 +35,15 @@ Or use `gh issue view <number>` if the GitHub CLI is available.
 
 ## Project Structure
 
-| Directory    | Purpose                                                           | Has AGENTS.md |
-| ------------ | ----------------------------------------------------------------- | ------------- |
-| `backend/`   | Node/Express/Drizzle GraphQL API, media processing, notifications | Yes           |
-| `frontend/`  | Vite + React 19 admin UI                                          | Yes           |
-| `shared/`    | Code shared between frontend and app (types, queries, utilities)  | Yes           |
-| `app/`       | Expo/React Native mobile client                                   | Yes           |
-| `tests/`     | Vitest e2e test suites with Docker                                | Yes           |
-| `lightroom/` | Lightroom Classic plugin prototype (Lua)                          | Yes           |
-| `docs/`      | GitHub Pages documentation site                                   | No            |
+| Directory    | Purpose                                                            | Has AGENTS.md |
+| ------------ | ------------------------------------------------------------------ | ------------- |
+| `backend/`   | Node/Express/Drizzle GraphQL API, media processing, notifications  | Yes           |
+| `frontend/`  | Vite + React 19 admin UI                                           | Yes           |
+| `shared/`    | Code shared between frontend and app (types, queries, utilities)   | Yes           |
+| `app/`       | Expo/React Native mobile client                                    | Yes           |
+| `tests/`     | API integration tests (Vitest) + frontend smoke tests (Playwright) | Yes           |
+| `lightroom/` | Lightroom Classic plugin prototype (Lua)                           | Yes           |
+| `docs/`      | GitHub Pages documentation site                                    | No            |
 
 **Read the subsystem AGENTS.md files when working in those directories** - they contain detailed patterns, code examples, and troubleshooting guides.
 
@@ -164,7 +164,11 @@ Run formatting checks before finalizing:
 
 Test scope note:
 
-- The root `tests/` Vitest suite is for backend API e2e coverage only. Do not add frontend/app unit tests there.
+- `tests/api/` is the Vitest suite for backend API e2e coverage.
+- `tests/e2e/` is for basic frontend browser smoke tests.
+- Do not add frontend/app unit tests to these integration suites.
+- In `tests/api/`, prefer shared GraphQL operations from `shared/urql/*` and existing GraphQL test helpers over inline query strings.
+- In `tests/e2e/` Playwright smoke tests, keep GraphQL operations local to `tests/e2e/` and avoid importing enums from `graphql-types.ts`.
 
 **Never run tests or `npm run workflow` directly.** When testing is needed, ask the user to run `npm run workflow` themselves.
 

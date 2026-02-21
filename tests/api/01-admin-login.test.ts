@@ -2,11 +2,11 @@ import { expect, test } from 'vitest';
 import {
   createTestGraphqlClient,
   getUserHeader,
-} from '../frontend/testGraphqlClient';
-import { loginMutation } from '../shared/urql/mutations/loginMutation';
-import { defaultCredentials } from '../backend/auth/defaultCredentials';
-import { meQuery } from '../shared/urql/queries/meQuery';
-import { serverInfoQuery } from '../shared/urql/queries/serverInfoQuery';
+} from '../../frontend/testGraphqlClient';
+import { loginMutation } from '../../shared/urql/mutations/loginMutation';
+import { defaultCredentials } from '../../backend/auth/defaultCredentials';
+import { meQuery } from '../../shared/urql/queries/meQuery';
+import { serverInfoQuery } from '../../shared/urql/queries/serverInfoQuery';
 import { gte } from 'semver';
 
 test('Login Mutation Works', async () => {

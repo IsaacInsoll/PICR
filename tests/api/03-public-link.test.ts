@@ -3,15 +3,15 @@ import {
   createTestGraphqlClient,
   getLinkHeader,
   getUserHeader,
-} from '../frontend/testGraphqlClient';
-import { defaultCredentials } from '../backend/auth/defaultCredentials';
-import { editUserMutation } from '../shared/urql/mutations/editUserMutation';
-import { deleteUserMutation } from '../shared/urql/mutations/deleteUserMutation';
-import { accessLogQuery } from '../shared/urql/queries/accessLogQuery';
+} from '../../frontend/testGraphqlClient';
+import { defaultCredentials } from '../../backend/auth/defaultCredentials';
+import { editUserMutation } from '../../shared/urql/mutations/editUserMutation';
+import { deleteUserMutation } from '../../shared/urql/mutations/deleteUserMutation';
+import { accessLogQuery } from '../../shared/urql/queries/accessLogQuery';
 
 import { photoFolderId, videoFolderId } from './testVariables';
-import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
-import { CommentPermissions, LinkMode } from '../graphql-types';
+import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
+import { CommentPermissions, LinkMode } from '../../graphql-types';
 
 // Generate unique suffix for this test run to avoid conflicts
 const testSuffix = Math.random().toString(36).slice(2, 8);

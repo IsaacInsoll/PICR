@@ -4,26 +4,43 @@
 
 > Pro Tip: Run all the build commands first before testing (EG: `npm run build`)
 
-Currently the testing is only targeted at the **backend**. You can run a test by `npm run test` which:
+Testing now has two integration suites:
+
+- `tests/api`: backend API coverage (Vitest + Docker)
+- `tests/e2e`: basic frontend smoke coverage (Playwright + Docker)
+
+Run everything with `npm run test`, or run suites individually:
+
+- `npm run test:api`
+- `npm run test:e2e:install` (browser binaries)
+- `npm run test:e2e`
+
+`npm run test:api`:
 
 - Builds docker image from existing `dist` folder
 - Download example files (if not already downloaded) and extract into `/media` folder
-- Start `test-picr` container on port `9001` and `test-db` image with temporary storage (so it's wiped every run)
-- Run all tests in `/tests` folder (see below) targeting the `test-picr` container
+- Start `test-picr` container on port `6901` and `test-db` image with temporary storage (so it's wiped every run)
+- Run all tests in `tests/api` targeting the `test-picr` container
 - Stop docker containers
 
-## Current Tests
+`npm run test:e2e`:
 
-Currently we don't have much test coverage so this is more a "you didn't completely break it" rather than "perfect in every way"
-You can see all the tests in the `tests` folder. They must end in `.test.ts`
+- Starts the same Dockerized test backend via `tests/api/testEnvironment.ts`
+- Runs frontend browser smoke tests in `tests/e2e`
+- Fails on browser console errors for core route smoke checks
+- Stops docker containers
 
-Obviously this is not exhaustive coverage so the short term plan is to cover all the GraphQL
-endpoints on the backend, and if we have more developer time in future we may add front end testing.
+## Current Coverage
+
+Current testing is still integration-focused and intentionally lightweight:
+
+- Backend: broad GraphQL endpoint behavior checks
+- Frontend: basic "page loads cleanly" smoke checks for public links
 
 ## Troubleshooting 'ALL TESTS FAILING'
 
 If every test fails then it's probably because the `test-picr` container isn't booting up okay.
-You can troubleshoot this with `cd tests && docker compose build && docker compose up`
+You can troubleshoot this with `cd tests/api && docker compose build && docker compose up`
 
 This will build the container then start it, with all output going to the terminal (rather than hidden like when running tests)
 
@@ -34,9 +51,9 @@ Common faults include:
 
 ## Creating Tests
 
-You can find tests in the `tests` folder and the files should be named starting with a 2 digit number as the existing tests are.
-You are welcome to rename them to change the order if it makes sense to you
-(EG: 'create shared folder' happens before 'can access shared folder').
+- Add backend API integration tests in `tests/api` (numbered `.test.ts` files).
+- Add frontend browser smoke tests in `tests/e2e` (`*.smoke.spec.ts`).
+- Keep frontend smoke tests self-contained (create their own test data and clean up).
 
 ## When are tests run?
 

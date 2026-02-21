@@ -84,10 +84,24 @@ jobs:
           '
 
       # TESTS
-      - name: '🧪  [tests] download sample files'
-        run: mkdir -p ./tests/env && wget --no-verbose https://photosummaryapp.com/picr-demo-data.zip --output-document=./tests/env/sample.zip
-      - name: '🧪 [test] run backend tests (vitest)'
-        run: npm run test
+      - name: '🧪 [tests/api] download sample files'
+        run: mkdir -p ./tests/api/env && wget --no-verbose https://photosummaryapp.com/picr-demo-data.zip --output-document=./tests/api/env/sample.zip
+      - name: '🧪 [tests/api] run backend tests (vitest)'
+        run: npm run test:api
+      - name: '🧪 [tests/e2e] install playwright browser'
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Installing Playwright Chromium..."
+          if npm run test:e2e:install > /tmp/playwright-install.log 2>&1; then
+            echo "Playwright Chromium install succeeded."
+          else
+            echo "Playwright Chromium install failed. Full output:"
+            cat /tmp/playwright-install.log
+            exit 1
+          fi
+      - name: '🧪 [tests/e2e] run frontend smoke tests'
+        run: npm run test:e2e
 
       # ARTIFACT
       - uses: actions/upload-artifact@v4

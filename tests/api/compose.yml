@@ -2,7 +2,7 @@ name: picr-test
 services:
   test-picr:
     container_name: test-picr
-    build: ..
+    build: ../..
     volumes:
       - ./env/media:/home/node/app/media:ro
     # intentionally leaving the cache inside the container as we can't write to the host when running in docker ?

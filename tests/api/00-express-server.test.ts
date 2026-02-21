@@ -2,10 +2,10 @@ import { expect, test } from 'vitest';
 import {
   createTestGraphqlClient,
   getUserHeader,
-} from '../frontend/testGraphqlClient';
-import { defaultCredentials } from '../backend/auth/defaultCredentials';
-import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
-import { AllSize } from '../frontend/src/helpers/thumbnailSize';
+} from '../../frontend/testGraphqlClient';
+import { defaultCredentials } from '../../backend/auth/defaultCredentials';
+import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
+import { AllSize } from '../../frontend/src/helpers/thumbnailSize';
 import { photoFolderId, testUrl } from './testVariables';
 
 test('Express Server Online', async () => {

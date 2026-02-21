@@ -15,7 +15,10 @@ This will run the following commands in order. You can run any of these individu
 | `cd dist && npm ci`            | 🗃️ Install runtime deps for artifact   | Installs the backend runtime deps into `dist/node_modules`    |
 | `cd frontend && npm ci`        | 💄 Install front end deps              |                                                               |
 | `cd frontend && npm run build` | 💄 Build frontend (vite)               | Finds any frontend 'build blockers'                           |
-| `npm run test`                 | 🧪 Create docker image, run tests      | Have everything built first! (IE: commands above)             |
+| `npm run test:api`             | 🧪 Run backend API integration tests   | Vitest + Docker (`tests/api`)                                 |
+| `npm run test:e2e:install`     | 🧪 Install Playwright browsers         | Needed before frontend smoke tests                            |
+| `npm run test:e2e`             | 🧪 Run frontend smoke tests            | Playwright + Docker (`tests/e2e`)                             |
+| `npm run test`                 | 🧪 Run all tests                       | Runs `test:api` then `test:e2e`                               |
 | _build artifact_               | 🗜️ Do locally with `npm run workflow`  |                                                               |
 
 ## Local DX helper commands

@@ -3,33 +3,33 @@ import {
   createTestGraphqlClient,
   getLinkHeader,
   getUserHeader,
-} from '../frontend/testGraphqlClient';
-import { defaultCredentials } from '../backend/auth/defaultCredentials';
-import { editUserMutation } from '../shared/urql/mutations/editUserMutation';
-import { deleteUserMutation } from '../shared/urql/mutations/deleteUserMutation';
-import { generateZipMutation } from '../shared/urql/mutations/generateZipMutation';
-import { commentHistoryQuery } from '../shared/urql/queries/commentHistoryQuery';
-import { addCommentMutation } from '../shared/urql/mutations/addCommentMutation';
-import { viewFolderQuery } from '../shared/urql/queries/viewFolderQuery';
-import { accessLogQuery } from '../shared/urql/queries/accessLogQuery';
-import { recentUsersQuery } from '../shared/urql/queries/recentUsersQuery';
-import { viewUserQuery } from '../shared/urql/queries/viewUserQuery';
-import { viewAdminsQuery } from '../shared/urql/queries/viewAdminsQuery';
-import { viewBrandingsQuery } from '../shared/urql/queries/viewBrandingsQuery';
-import { serverInfoQuery } from '../shared/urql/queries/serverInfoQuery';
-import { readAllFoldersQuery } from '../shared/urql/queries/readAllFoldersQuery';
-import { editAdminUserMutation } from '../shared/urql/mutations/editAdminUserMutation';
-import { renameFolderMutation } from '../shared/urql/mutations/renameFolderMutation';
-import { editFolderMutation } from '../shared/urql/mutations/editFolderMutation';
-import { editBrandingMutation } from '../shared/urql/mutations/editBrandingMutation';
-import { deleteBrandingMutation } from '../shared/urql/mutations/deleteBrandingMutation';
-import { generateThumbnailsMutation } from '../shared/urql/mutations/generateThumbnailsMutation';
-import { userDeviceQuery } from '../shared/urql/queries/userDeviceQuery';
-import { editUserDeviceMutation } from '../shared/urql/mutations/editUserDeviceMutation';
-import { viewFileQuery } from '../shared/urql/queries/viewFileQuery';
-import { searchQuery } from '../shared/urql/queries/searchQuery';
+} from '../../frontend/testGraphqlClient';
+import { defaultCredentials } from '../../backend/auth/defaultCredentials';
+import { editUserMutation } from '../../shared/urql/mutations/editUserMutation';
+import { deleteUserMutation } from '../../shared/urql/mutations/deleteUserMutation';
+import { generateZipMutation } from '../../shared/urql/mutations/generateZipMutation';
+import { commentHistoryQuery } from '../../shared/urql/queries/commentHistoryQuery';
+import { addCommentMutation } from '../../shared/urql/mutations/addCommentMutation';
+import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
+import { accessLogQuery } from '../../shared/urql/queries/accessLogQuery';
+import { recentUsersQuery } from '../../shared/urql/queries/recentUsersQuery';
+import { viewUserQuery } from '../../shared/urql/queries/viewUserQuery';
+import { viewAdminsQuery } from '../../shared/urql/queries/viewAdminsQuery';
+import { viewBrandingsQuery } from '../../shared/urql/queries/viewBrandingsQuery';
+import { serverInfoQuery } from '../../shared/urql/queries/serverInfoQuery';
+import { readAllFoldersQuery } from '../../shared/urql/queries/readAllFoldersQuery';
+import { editAdminUserMutation } from '../../shared/urql/mutations/editAdminUserMutation';
+import { renameFolderMutation } from '../../shared/urql/mutations/renameFolderMutation';
+import { editFolderMutation } from '../../shared/urql/mutations/editFolderMutation';
+import { editBrandingMutation } from '../../shared/urql/mutations/editBrandingMutation';
+import { deleteBrandingMutation } from '../../shared/urql/mutations/deleteBrandingMutation';
+import { generateThumbnailsMutation } from '../../shared/urql/mutations/generateThumbnailsMutation';
+import { userDeviceQuery } from '../../shared/urql/queries/userDeviceQuery';
+import { editUserDeviceMutation } from '../../shared/urql/mutations/editUserDeviceMutation';
+import { viewFileQuery } from '../../shared/urql/queries/viewFileQuery';
+import { searchQuery } from '../../shared/urql/queries/searchQuery';
 import { photoFolderId, videoFolderId } from './testVariables';
-import { CommentPermissions, LinkMode } from '../graphql-types';
+import { CommentPermissions, LinkMode } from '../../graphql-types';
 
 const expectGraphqlError = (result: { error?: unknown }) => {
   expect(result.error).toBeDefined();

@@ -8,7 +8,10 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "vitest run",
+    "test": "npm run test:api && npm run test:e2e",
+    "test:api": "vitest run",
+    "test:e2e": "playwright test --config tests/e2e/playwright.config.ts",
+    "test:e2e:install": "playwright install --with-deps chromium",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "ci:check": "npm run format:check && npm run lint",
@@ -33,6 +36,7 @@
     "@graphql-codegen/cli": "^5.0.5",
     "@graphql-codegen/client-preset": "^4.8.0",
     "@graphql-codegen/introspection": "^4.0.3",
+    "@playwright/test": "^1.51.1",
     "@release-it/bumper": "^7.0.2",
     "concurrently": "^9.2.1",
     "decompress": "^4.2.1",

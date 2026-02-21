@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 import type { CombinedError } from 'urql';
-import { AUTH_REASON } from '../shared/auth/authErrorContract';
-import { classifyGlobalUrqlError } from '../shared/urql/errorClassification';
+import { AUTH_REASON } from '../../shared/auth/authErrorContract';
+import { classifyGlobalUrqlError } from '../../shared/urql/errorClassification';
 
 const makeError = (value: Partial<CombinedError>) => value as CombinedError;
 

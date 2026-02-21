@@ -2,9 +2,9 @@ import { expect, test } from 'vitest';
 import {
   createTestGraphqlClient,
   getUserHeader,
-} from '../frontend/testGraphqlClient';
-import { defaultCredentials } from '../backend/auth/defaultCredentials';
-import { editFolderMutation } from '../shared/urql/mutations/editFolderMutation';
+} from '../../frontend/testGraphqlClient';
+import { defaultCredentials } from '../../backend/auth/defaultCredentials';
+import { editFolderMutation } from '../../shared/urql/mutations/editFolderMutation';
 import { photoFolderId } from './testVariables';
 
 test('Admin can set folder title and subtitle', async () => {
