@@ -34,7 +34,6 @@ import { prettyBytes } from '@shared/prettyBytes';
 import { pluralize } from '@shared/pluralize';
 import { prettyDate } from '@shared/prettyDate';
 import { PicrUser } from '../../../types';
-import { FileFlag } from '@shared/gql/graphql';
 
 export const FileListView = ({
   files,

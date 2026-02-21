@@ -3,7 +3,7 @@ import { Badge } from '@mantine/core';
 import { fileFlagStyles } from './fileFlagStyles';
 
 interface FileFlagBadgeProps {
-  flag?: FileFlag;
+  flag?: FileFlag | null;
   hideIfNone?: boolean;
 }
 
