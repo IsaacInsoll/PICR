@@ -6,12 +6,24 @@ import { and, eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import {
+  isLoginBlocked,
+  recordFailedLoginAttempt,
+  recordSuccessfulLogin,
+} from '../../auth/loginRateLimit.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
   params,
+  context,
 ) => {
   const p: string | undefined = params.password;
+  const identity = {
+    ipAddress: context.headers?.ipAddress,
+    username: params.user,
+  };
+
+  if (isLoginBlocked(identity)) return '';
   if (!p || p === '') return '';
 
   const user = await db.query.dbUser.findFirst({
@@ -21,7 +33,11 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
       eq(dbUser.enabled, true),
     ),
   });
-  if (!user) return '';
+  if (!user) {
+    recordFailedLoginAttempt(identity);
+    return '';
+  }
+  recordSuccessfulLogin(identity);
   return generateAccessToken({
     userId: user.id,
     hashedPassword: user.hashedPassword!,

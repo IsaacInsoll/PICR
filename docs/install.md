@@ -87,6 +87,10 @@ There are lots of environment variables you can use, but only a few are needed:
   Note: write support needs both `CAN_WRITE=true` and real filesystem write permission on `/home/node/app/media`
   inside the container.
 
+- `LOGIN_RATE_LIMIT_*` [optional] Login brute-force protection controls.
+  Defaults are sensible for most setups (15-minute window, per-IP and per-user/IP limits, temporary block on abuse),
+  so you can usually leave these unset.
+
 ## Run PICR
 
 Start the docker compose stack and it should start PICR and the postgres database.

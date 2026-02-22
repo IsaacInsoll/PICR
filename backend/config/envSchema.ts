@@ -56,4 +56,18 @@ export const envSchema = z.object({
   CONSOLE_LOGGING: castStringToBool,
   USE_POLLING: castStringToBool,
   CAN_WRITE: castStringToBool,
+  LOGIN_RATE_LIMIT_ENABLED: castStringToBool.default(true),
+  LOGIN_RATE_LIMIT_WINDOW_MINUTES: z.coerce.number().positive().default(15),
+  LOGIN_RATE_LIMIT_IP_MAX_ATTEMPTS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(30),
+  LOGIN_RATE_LIMIT_USER_IP_MAX_ATTEMPTS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(5),
+  LOGIN_RATE_LIMIT_BLOCK_MINUTES: z.coerce.number().positive().default(15),
+  LOGIN_RATE_LIMIT_MAX_BLOCK_MINUTES: z.coerce.number().positive().default(60),
 });

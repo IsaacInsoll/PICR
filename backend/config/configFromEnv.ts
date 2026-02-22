@@ -41,6 +41,12 @@ export const configFromEnv = () => {
     usePolling: d.USE_POLLING,
     pollingInterval: d.POLLING_INTERVAL,
     tokenSecret: d.TOKEN_SECRET,
+    loginRateLimitEnabled: d.LOGIN_RATE_LIMIT_ENABLED,
+    loginRateLimitWindowMinutes: d.LOGIN_RATE_LIMIT_WINDOW_MINUTES,
+    loginRateLimitIpMaxAttempts: d.LOGIN_RATE_LIMIT_IP_MAX_ATTEMPTS,
+    loginRateLimitUserIpMaxAttempts: d.LOGIN_RATE_LIMIT_USER_IP_MAX_ATTEMPTS,
+    loginRateLimitBlockMinutes: d.LOGIN_RATE_LIMIT_BLOCK_MINUTES,
+    loginRateLimitMaxBlockMinutes: d.LOGIN_RATE_LIMIT_MAX_BLOCK_MINUTES,
 
     dev: d.NODE_ENV === 'development',
     debugSql: d.DEBUG_SQL,

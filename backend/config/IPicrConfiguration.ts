@@ -15,4 +15,10 @@ export interface IPicrConfiguration {
   cachePath: string;
   mediaPath: string;
   canWrite?: boolean;
+  loginRateLimitEnabled?: boolean;
+  loginRateLimitWindowMinutes?: number;
+  loginRateLimitIpMaxAttempts?: number;
+  loginRateLimitUserIpMaxAttempts?: number;
+  loginRateLimitBlockMinutes?: number;
+  loginRateLimitMaxBlockMinutes?: number;
 }

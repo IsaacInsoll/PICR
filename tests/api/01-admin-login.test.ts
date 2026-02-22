@@ -31,6 +31,40 @@ test('Incorrect Login Fails', async () => {
   expect(result?.data?.auth).toBe('');
 });
 
+test('Login is temporarily rate limited after repeated failures from same IP', async () => {
+  const ipA = `203.0.113.${Math.floor(Math.random() * 200) + 1}`;
+  const ipB = `203.0.114.${Math.floor(Math.random() * 200) + 1}`;
+  const badLogin = { ...defaultCredentials, password: 'incorrectPassword' };
+
+  const blockedClient = await createTestGraphqlClient({
+    'x-forwarded-for': ipA,
+  });
+
+  for (let i = 0; i < 5; i++) {
+    const failResult = await blockedClient
+      .mutation(loginMutation, badLogin)
+      .toPromise();
+    expect(failResult.error).toBeUndefined();
+    expect(failResult.data?.auth).toBe('');
+  }
+
+  const blockedValidResult = await blockedClient
+    .mutation(loginMutation, defaultCredentials)
+    .toPromise();
+  expect(blockedValidResult.error).toBeUndefined();
+  expect(blockedValidResult.data?.auth).toBe('');
+
+  const differentIpClient = await createTestGraphqlClient({
+    'x-forwarded-for': ipB,
+  });
+  const allowedResult = await differentIpClient
+    .mutation(loginMutation, defaultCredentials)
+    .toPromise();
+  expect(allowedResult.error).toBeUndefined();
+  expect(allowedResult.data?.auth).toBeDefined();
+  expect(allowedResult.data?.auth.startsWith('ey')).toBe(true);
+});
+
 test('Admin has correct user config', async () => {
   const headers = await getUserHeader(defaultCredentials);
   const client = await createTestGraphqlClient(headers);
