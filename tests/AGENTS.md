@@ -44,7 +44,15 @@ tests/
 - `npm run test:api`: run backend API Vitest suite
 - `npm run test:e2e:install`: install Playwright browser binaries
 - `npm run test:e2e`: run frontend Playwright smoke suite
+- `npm run test:e2e:fresh`: rebuild local `dist` artifacts, then run frontend Playwright smoke suite
 - `npm run test`: run both suites in order (`api` then `e2e`)
+
+## Local Build Requirement For E2E
+
+- Local Playwright runs start Docker from prebuilt `dist` outputs.
+- This means local `npm run test:e2e` can miss recent `frontend/src` changes if `dist` is stale.
+- For meaningful frontend runtime validation, run a fresh local build first.
+- Preferred command: `npm run test:e2e:fresh`.
 
 ## CI Expectations
 

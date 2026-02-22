@@ -119,8 +119,11 @@ cd backend && npm run build  # TypeScript → dist/server (for Docker image)
 cd frontend && npm run build # Vite production build
 cd app && npx expo export --platform android  # or --platform ios on macOS
 
-# Testing (DO NOT run tests yourself - ask the user to run them)
+# Testing
 npm run workflow             # Full CI workflow (user runs this manually)
+npm run test:api             # Backend Vitest integration suite (AI may run locally)
+npm run test:e2e             # Playwright smoke tests (AI may run locally)
+npm run test:e2e:fresh       # Rebuild dist artifacts, then run Playwright smoke tests
 
 # Code Generation
 npm run gql                  # Regenerate GraphQL types (safe to run anytime)
@@ -169,8 +172,11 @@ Test scope note:
 - Do not add frontend/app unit tests to these integration suites.
 - In `tests/api/`, prefer shared GraphQL operations from `shared/urql/*` and existing GraphQL test helpers over inline query strings.
 - In `tests/e2e/` Playwright smoke tests, keep GraphQL operations local to `tests/e2e/` and avoid importing enums from `graphql-types.ts`.
+- Local E2E runs use Docker images built from `dist` output artifacts, not live `frontend/src` files.
+- Run a fresh local build before E2E when validating frontend code changes (`npm run test:e2e:fresh` is preferred).
 
-**Never run tests or `npm run workflow` directly.** When testing is needed, ask the user to run `npm run workflow` themselves.
+**Do not run `npm run workflow` directly.** Ask the user to run it themselves.
+**`npm run test:api` and `npm run test:e2e` may be run by AI locally anytime.**
 
 ## Coding Style & Conventions
 

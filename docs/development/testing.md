@@ -2,7 +2,7 @@
 
 ## Current test procedure
 
-> Pro Tip: Run all the build commands first before testing (EG: `npm run build`)
+> Pro Tip: run a fresh local build before E2E smoke tests so Docker uses current artifacts.
 
 Testing now has two integration suites:
 
@@ -14,6 +14,7 @@ Run everything with `npm run test`, or run suites individually:
 - `npm run test:api`
 - `npm run test:e2e:install` (browser binaries)
 - `npm run test:e2e`
+- `npm run test:e2e:fresh` (recommended for frontend changes: rebuild + e2e)
 
 `npm run test:api`:
 
@@ -29,6 +30,13 @@ Run everything with `npm run test`, or run suites individually:
 - Runs frontend browser smoke tests in `tests/e2e`
 - Fails on browser console errors for core route smoke checks
 - Stops docker containers
+- Uses Docker images built from local `dist` output artifacts
+
+`npm run test:e2e:fresh`:
+
+- Rebuilds local `dist` artifacts (`backend` + `frontend`)
+- Then runs `npm run test:e2e`
+- Best choice when validating recent frontend source changes
 
 ## Current Coverage
 

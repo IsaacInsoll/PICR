@@ -11,6 +11,7 @@
     "test": "npm run test:api && npm run test:e2e",
     "test:api": "vitest run",
     "test:e2e": "playwright test --config tests/e2e/playwright.config.ts",
+    "test:e2e:fresh": "npm run build:local && npm run test:e2e",
     "test:e2e:install": "playwright install --with-deps chromium",
     "format": "prettier . --write",
     "format:check": "prettier . --check",

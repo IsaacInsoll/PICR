@@ -71,7 +71,7 @@ function expectNoBrowserFailures(failures: BrowserFailureSignals) {
   expect(failures.requestFailures).toEqual([]);
 }
 
-test('public link page loads with no browser console errors', async ({
+test('public link and login routes load with no browser/runtime errors', async ({
   page,
 }) => {
   const suffix = Math.random().toString(36).slice(2, 8);
@@ -121,15 +121,18 @@ test('public link page loads with no browser console errors', async ({
     await page.waitForTimeout(1500);
     await expect(page).toHaveTitle(/PICR/i);
     await expect(page.locator('#root')).toBeVisible();
+    await expect(page.getByText('Something went wrong')).toHaveCount(0);
     await expect(page).toHaveURL(new RegExp(`/s/${uuid}/${folderId}`));
     expectNoBrowserFailures(failures);
 
     await page.goto('/route-that-should-hit-login', {
       waitUntil: 'domcontentloaded',
     });
-    await expect(page.getByText('Login to PICR')).toBeVisible();
+    await expect(page.getByText(/^Login to PICR$/)).toBeVisible();
     await expect(page.getByLabel('Username')).toBeVisible();
     await expect(page.getByLabel('Password')).toBeVisible();
+    await expect(page.getByText('Something went wrong')).toHaveCount(0);
+    await page.waitForTimeout(300);
     expectNoBrowserFailures(failures);
   } finally {
     if (createdUserId) {
