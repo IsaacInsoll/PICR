@@ -35,7 +35,7 @@ export async function contextPermissions(
 
   const folder = await dbFolderForId(folderId);
 
-  if (user && user.userType == 'Admin' && folder && folder.exists) {
+  if (user && user.userType === 'Admin' && folder && folder.exists) {
     if (folderIsUnderFolder(folder, userHomeFolder)) {
       return { permissions: 'Admin', user, folder };
     }
@@ -43,12 +43,12 @@ export async function contextPermissions(
 
   if (
     user &&
-    (user.userType == 'Link' || user.userType == 'User') &&
+    (user.userType === 'Link' || user.userType === 'User') &&
     folder &&
     folder.exists
   ) {
     if (folderIsUnderFolder(folder, userHomeFolder)) {
-      if (requires == 'Admin') doAuthError('ACCESS_DENIED');
+      if (requires === 'Admin') doAuthError('ACCESS_DENIED');
       return {
         permissions: 'View',
         user: user,
@@ -58,7 +58,7 @@ export async function contextPermissions(
   }
 
   if (requires) {
-    if (user?.userType == 'Link') {
+    if (user?.userType === 'Link') {
       doAuthError('INVALID_LINK');
     } else {
       if (!user) doAuthError('NOT_LOGGED_IN');

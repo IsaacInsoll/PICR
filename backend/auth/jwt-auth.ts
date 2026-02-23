@@ -23,7 +23,8 @@ export async function getUserFromToken(
 ): Promise<UserFields | undefined> {
   const token = context?.['auth']?.split(' ')?.[1];
   if (token == null || token === '') return undefined;
-  const secret = picrConfig.tokenSecret as string;
+  const secret = picrConfig.tokenSecret;
+  if (!secret) return undefined;
 
   try {
     const decoded = jwt.verify(token, secret) as CustomJwtPayload;
@@ -32,7 +33,7 @@ export async function getUserFromToken(
     const user = await dbUserForId(userId);
     if (
       user &&
-      user.hashedPassword == decoded.hashedPassword &&
+      user.hashedPassword === decoded.hashedPassword &&
       user.enabled &&
       !user.deleted
     )

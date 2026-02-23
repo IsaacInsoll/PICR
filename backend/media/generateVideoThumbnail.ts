@@ -46,7 +46,7 @@ const processVideoThumbnail = async (
     .fill(0)
     .map((_, index) => (index / numberOfVideoSnapshots) * Duration);
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const p = thumbnailPath(file, size);
     mkdirSync(p, { recursive: true });
 
@@ -54,7 +54,7 @@ const processVideoThumbnail = async (
       ffmpegForFile(file)
         .on('end', () => {
           // console.log('⏸️ Screenshots done for ' + file.name + ' ' + size);
-          mergeImages(file, size).then(() => resolve());
+          mergeImages(file, size).then(() => resolve()).catch(reject);
         })
         .on('error', (e) => {
           console.log(

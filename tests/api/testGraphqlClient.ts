@@ -22,7 +22,7 @@ export const createTestGraphqlClient = async (headers: HeadersInit) => {
 export const getUserHeader = async (credentials: ICredentials) => {
   const client = await createTestGraphqlClient({});
   const result = await client.mutation(loginMutation, credentials).toPromise();
-  if (result.error || !result.data.auth || !result.data.auth.startsWith('ey'))
+  if (result.error || !result.data?.auth || !result.data.auth.startsWith('ey'))
     throw new Error('Authentication failed');
   return { authorization: `Bearer ${result.data.auth}` };
 };

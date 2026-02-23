@@ -58,7 +58,7 @@ export const dbUserForId = async (
   id: number | undefined,
 ): Promise<UserFields | undefined> => {
   if (!id) return undefined;
-  return db.query.dbUser.findFirst({ where: eq(dbFolder.id, id) });
+  return db.query.dbUser.findFirst({ where: eq(dbUser.id, id) });
 };
 
 // TODO: better organisation of these functions
