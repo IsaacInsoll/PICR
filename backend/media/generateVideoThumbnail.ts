@@ -54,7 +54,9 @@ const processVideoThumbnail = async (
       ffmpegForFile(file)
         .on('end', () => {
           // console.log('⏸️ Screenshots done for ' + file.name + ' ' + size);
-          mergeImages(file, size).then(() => resolve()).catch(reject);
+          mergeImages(file, size)
+            .then(() => resolve())
+            .catch(reject);
         })
         .on('error', (e) => {
           console.log(
