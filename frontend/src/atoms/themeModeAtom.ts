@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
+import type { Branding } from '../../../graphql-types';
 import {
-  Branding,
   HeadingFontKey,
   PrimaryColor,
   ThemeMode,

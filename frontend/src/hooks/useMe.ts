@@ -5,10 +5,8 @@ import type { MeQueryQuery } from '@shared/gql/graphql';
 
 import { getUUID } from '../helpers/getUUID';
 import { meQuery } from '@shared/urql/queries/meQuery';
-import {
-  extraUserProps,
-  ExtraUserProps,
-} from '../../../backend/helpers/extraUserProps';
+import type { ExtraUserProps } from '@shared/extraUserProps';
+import { extraUserProps } from '@shared/extraUserProps';
 
 export const useMe = ():
   | (NonNullable<MeQueryQuery['me']> &

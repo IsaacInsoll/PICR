@@ -1,4 +1,5 @@
-import { Text, TextProps, TextStyle } from 'react-native';
+import type { TextProps, TextStyle } from 'react-native';
+import { Text } from 'react-native';
 import { typographyScale } from '@/src/constants';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { getHeadingFontFamilyForLevel } from '@/src/helpers/headingFont';

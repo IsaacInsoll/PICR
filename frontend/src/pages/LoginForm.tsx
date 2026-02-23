@@ -3,12 +3,12 @@ import { useMutation } from 'urql';
 import { useSetAtom } from 'jotai';
 import { authKeyAtom } from '../atoms/authAtom';
 import { loginMutation } from '@shared/urql/mutations/loginMutation';
+import type { MantineStyleProp } from '@mantine/core';
 import {
   Button,
   Center,
   Container,
   Image,
-  MantineStyleProp,
   Paper,
   PasswordInput,
   Stack,

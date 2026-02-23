@@ -2,7 +2,7 @@ import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-import { NotificationChannelInput } from 'expo-notifications';
+import type { NotificationChannelInput } from 'expo-notifications';
 
 // Get expo push notification token and ask user for permissions (if required)
 export async function registerForPushNotificationsAsync() {
@@ -27,8 +27,12 @@ export async function registerForPushNotificationsAsync() {
   }
 
   try {
-    const projectId = Constants?.expoConfig?.extra?.eas?.projectId;
-    if (!projectId) {
+    const easConfig = Constants.expoConfig?.extra?.['eas'];
+    const projectId =
+      easConfig && typeof easConfig === 'object'
+        ? (easConfig as Record<string, unknown>)['projectId']
+        : undefined;
+    if (typeof projectId !== 'string' || projectId === '') {
       throw new Error('Project ID not found');
     }
     token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;

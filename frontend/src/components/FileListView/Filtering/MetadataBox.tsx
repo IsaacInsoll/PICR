@@ -1,4 +1,4 @@
-import { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
+import type { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
 import { MetadataIcon } from '../../../PicrIcons';
 import { useAtomValue, useSetAtom } from 'jotai';
 import {
@@ -8,7 +8,7 @@ import {
 import { Button, Group, Indicator, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { MetadataSelect } from './MetadataSelect';
-import { AnyMetadataKey } from '@shared/fileMetadata';
+import type { AnyMetadataKey } from '@shared/fileMetadata';
 
 export const MetadataBox = ({
   metadata,

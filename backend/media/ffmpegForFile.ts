@@ -1,6 +1,6 @@
 import ffmpeg from 'fluent-ffmpeg';
 import { fullPathForFile } from '../filesystem/fileManager.js';
-import { FileFields } from '../db/picrDb.js';
+import type { FileFields } from '../db/picrDb.js';
 
 export const ffmpegForFile = (file: FileFields): ffmpeg.FfmpegCommand => {
   //TODO: fix this not working in dev server as it needs prefix of `dist/`

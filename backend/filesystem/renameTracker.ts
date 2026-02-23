@@ -1,4 +1,4 @@
-import { Stats } from 'node:fs';
+import type { Stats } from 'node:fs';
 
 type RenameKind = 'file' | 'dir';
 

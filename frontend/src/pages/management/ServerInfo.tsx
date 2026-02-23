@@ -1,6 +1,7 @@
 import { useQuery } from 'urql';
 import { Anchor, Code, Group, Table } from '@mantine/core';
-import { ReactNode, Suspense } from 'react';
+import type { ReactNode } from 'react';
+import { Suspense } from 'react';
 import { prettyBytes } from '@shared/prettyBytes';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { useAvifEnabled, useMe } from '../../hooks/useMe';

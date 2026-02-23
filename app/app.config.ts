@@ -1,6 +1,6 @@
-import { ExpoConfig, ConfigContext } from 'expo/config';
+import type { ExpoConfig, ConfigContext } from 'expo/config';
 
-const IS_DEV = process.env.APP_VARIANT === 'development';
+const IS_DEV = process.env['APP_VARIANT'] === 'development';
 
 const appName = 'PICR' + (IS_DEV ? ' [Dev]' : '');
 const bundle = 'com.isaacinsoll.picr' + (IS_DEV ? '.dev' : '');
@@ -43,7 +43,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     blockedPermissions: [
       'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
     ],
-    googleServicesFile: process.env.GOOGLE_SERVICES_JSON, // ?? './google-services.json',
+    googleServicesFile: process.env['GOOGLE_SERVICES_JSON'],
   },
   web: {
     bundler: 'metro',

@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Box, Text } from '@mantine/core';
 
 export const EmptyPlaceholder = ({

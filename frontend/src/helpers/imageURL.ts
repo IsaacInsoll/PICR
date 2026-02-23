@@ -1,5 +1,5 @@
-import { PicrFile } from '../../types.js';
-import { AllSize } from './thumbnailSize.js';
+import type { PicrFile } from '../../types.js';
+import type { AllSize } from '../../../shared/thumbnailSize.js';
 import { withBasePath } from './baseHref';
 
 export const imageURL = (

@@ -2,13 +2,13 @@ import { addFile } from './events/addFile.js';
 import { addFolder } from './events/addFolder.js';
 import { removeFolder } from './events/removeFolder.js';
 import { renameFolder } from './events/renameFolder.js';
-import { Task } from '../../graphql-types.js';
+import type { Task } from '../../graphql-types.js';
 import { generateAllThumbs } from '../media/generateImageThumbnail.js';
 import { log } from '../logger.js';
 import { db, dbFileForId } from '../db/picrDb.js';
 import { and, count, eq, isNotNull } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../db/models/index.js';
-import { Stats } from 'node:fs';
+import type { Stats } from 'node:fs';
 import { removeFile } from './events/removeFile.js';
 
 type QueueAction =
@@ -33,6 +33,17 @@ interface QueuePayload {
   stats?: Stats;
   renameFromPath?: string;
 }
+
+const requirePayloadPath = (
+  payload: QueuePayload,
+  key: 'path' | 'renameFromPath',
+  action: QueueAction,
+): string => {
+  const value = payload[key];
+  if (!value)
+    throw new Error(`Missing "${key}" for fileQueue action "${action}"`);
+  return value;
+};
 
 export const addToQueue = (
   action: QueueAction,
@@ -75,24 +86,31 @@ const runQueueItem = async (action: QueueAction, payload: QueuePayload) => {
 const processQueue = async (action: QueueAction, payload: QueuePayload) => {
   switch (action) {
     case 'addDir':
-      await addFolder(payload.path!, payload.stats);
+      await addFolder(
+        requirePayloadPath(payload, 'path', action),
+        payload.stats,
+      );
       break;
     case 'renameDir':
-      await renameFolder(payload.renameFromPath!, payload.path!, payload.stats);
+      await renameFolder(
+        requirePayloadPath(payload, 'renameFromPath', action),
+        requirePayloadPath(payload, 'path', action),
+        payload.stats,
+      );
       break;
     case 'unlinkDir':
-      await removeFolder(payload.path!);
+      await removeFolder(requirePayloadPath(payload, 'path', action));
       break;
     case 'add':
       await addFile(
-        payload.path!,
+        requirePayloadPath(payload, 'path', action),
         payload.generateThumbs ?? false,
         payload.stats,
         payload.renameFromPath,
       );
       break;
     case 'unlink':
-      await removeFile(payload.path!);
+      await removeFile(requirePayloadPath(payload, 'path', action));
       break;
     case 'generateThumbnails': {
       // lol, we pass an ID to this function, not a path, but it's fine, trust me!

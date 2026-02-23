@@ -1,4 +1,5 @@
-import { ReactNode, useEffect, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Provider } from 'urql';
 import { atom, useSetAtom } from 'jotai';
 import { picrUrqlClient } from '@shared/urql/urqlClient';

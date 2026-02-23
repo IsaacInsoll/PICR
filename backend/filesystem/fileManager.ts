@@ -1,12 +1,12 @@
 import { picrConfig } from '../config/picrConfig.js';
 import { sep } from 'path';
-import { FileFields } from '../db/picrDb.js';
+import type { FileFields } from '../db/picrDb.js';
 
 // BASIC PATH FUNCTIONS
 export const relativePath = (path: string) =>
-  path.replace(picrConfig.mediaPath!, '').replace(/^\//, '');
+  path.replace(picrConfig.mediaPath, '').replace(/^\//, '');
 export const fullPath = (relativePath: string) => {
-  if (relativePath == '') return picrConfig.mediaPath!;
+  if (relativePath == '') return picrConfig.mediaPath;
   return picrConfig.mediaPath + '/' + relativePath;
 };
 export const pathSplit = (path: string) => relativePath(path).split('/');

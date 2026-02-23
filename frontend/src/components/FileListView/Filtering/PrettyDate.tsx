@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { Text, Tooltip } from '@mantine/core';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { useAtom } from 'jotai';
 import { dateDisplayRelativeAtom } from '@shared/uiAtoms';

@@ -1,5 +1,5 @@
-import { CSSProperties } from 'react';
-import {
+import type { CSSProperties } from 'react';
+import type {
   ImageExtended,
   StyleFunction,
   StyleFunctionContext,

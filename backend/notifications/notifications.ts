@@ -1,5 +1,6 @@
-import { db, FileFields, FolderFields, UserFields } from '../db/picrDb.js';
-import { AccessType } from '../../graphql-types.js';
+import type { FileFields, FolderFields, UserFields } from '../db/picrDb.js';
+import { db } from '../db/picrDb.js';
+import type { AccessType } from '../../graphql-types.js';
 import { folderAndAllParentIds } from '../helpers/folderAndAllParentIds.js';
 import { usersForFolders } from '../helpers/usersForFolders.js';
 import { sendNtfyNotification } from './sendNtfyNotification.js';
@@ -10,10 +11,8 @@ import {
 } from '../helpers/url.js';
 import { dbUserDevice } from '../db/models/index.js';
 import { and, eq, inArray, isNotNull } from 'drizzle-orm';
-import {
-  ExpoNotifications,
-  sendExpoNotifications,
-} from './sendExpoNotification.js';
+import type { ExpoNotifications } from './sendExpoNotification.js';
+import { sendExpoNotifications } from './sendExpoNotification.js';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder.js';
 
 export type NotificationType =
@@ -76,13 +75,16 @@ const sendNotification = async (
   const folderIds = await folderAndAllParentIds(folder);
   const users = await usersForFolders(folderIds);
   const ntfys = users
-    .filter((u) => !!u.ntfy && payload.userId != u.id)
+    .filter(
+      (u): u is UserFields & { ntfy: string } =>
+        !!u.ntfy && payload.userId != u.id,
+    )
     .map((u) => {
       const email =
         u.ntfyEmail && u.username && u.username.includes('@')
           ? u.username
           : undefined;
-      return sendNtfyNotification(u.ntfy!, payload, { email });
+      return sendNtfyNotification(u.ntfy, payload, { email });
     });
 
   const userIds = users.map((u) => u.id).filter((i) => i != payload.userId);

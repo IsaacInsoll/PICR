@@ -1,4 +1,4 @@
-import { PicrFolder } from '../../../types';
+import type { PicrFolder } from '../../../types';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { Menu } from '@mantine/core';
 import {

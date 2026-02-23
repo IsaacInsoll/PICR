@@ -1,11 +1,6 @@
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-import { FontKey } from '@shared/branding/fontRegistry';
+import type { ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import type { FontKey } from '@shared/branding/fontRegistry';
 import {
   isHeadingFontLoaded,
   loadHeadingFont,

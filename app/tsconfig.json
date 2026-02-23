@@ -4,7 +4,6 @@
     "strict": true,
     "paths": {
       "@/*": ["./*"],
-      "@frontend/*": ["../frontend/src/*"],
       "@shared/*": ["../shared/*"]
     }
   },

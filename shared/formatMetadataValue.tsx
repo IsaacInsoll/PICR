@@ -1,6 +1,6 @@
 import { prettyBytes } from './prettyBytes';
 import formatDuration from 'format-duration';
-import { AnyMetadataKey } from '@shared/fileMetadata';
+import type { AnyMetadataKey } from '@shared/fileMetadata';
 import { tz } from 'moment-timezone';
 
 export interface formattedValue {

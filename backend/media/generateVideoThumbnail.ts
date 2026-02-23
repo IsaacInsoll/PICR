@@ -1,7 +1,7 @@
-import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize.js';
+import type { ThumbnailSize } from '../../shared/thumbnailSize.js';
 import { thumbnailPath } from './thumbnailPath.js';
 import { ffmpegForFile } from './ffmpegForFile.js';
-import { VideoMetadata } from '../types/MetadataSummary.js';
+import type { VideoMetadata } from '../types/MetadataSummary.js';
 import { thumbnailDimensions } from '../../shared/thumbnailDimensions.js';
 import { existsSync, mkdirSync } from 'node:fs';
 import { log } from '../logger.js';
@@ -9,7 +9,7 @@ import { log } from '../logger.js';
 import * as ji from 'join-images';
 import lodash from 'lodash';
 import { fullPathForFile } from '../filesystem/fileManager.js';
-import { FileFields } from '../db/picrDb.js';
+import type { FileFields } from '../db/picrDb.js';
 
 const numberOfVideoSnapshots = 10;
 
@@ -67,7 +67,7 @@ const processVideoThumbnail = async (
           filename: size + '.jpg',
           timemarks,
           folder: outFile,
-          size: px + 'x' + Math.round(px / file.imageRatio!), //size eg: '150x100',
+          size: px + 'x' + Math.round(px / (file.imageRatio ?? 1)), //size eg: '150x100',
         });
     } catch (e) {
       console.log(

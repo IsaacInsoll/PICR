@@ -3,7 +3,7 @@ import { atomWithStorage } from 'jotai/utils';
 import { atomWithHash } from 'jotai-location';
 import { actionIconSize } from '../theme';
 import { GridViewIcon, ListViewIcon, PhotoViewIcon } from '../PicrIcons';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 
 export type SelectedView = 'list' | 'gallery' | 'feed';

@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Href, Link } from 'expo-router';
+import type { Href } from 'expo-router';
+import { Link } from 'expo-router';
 import { HeaderButton } from '@react-navigation/elements';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { navBarIconProps } from '@/src/constants';

@@ -1,4 +1,5 @@
-import { ActivityIndicator, ActivityIndicatorProps } from 'react-native';
+import type { ActivityIndicatorProps } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // For showing "inline"

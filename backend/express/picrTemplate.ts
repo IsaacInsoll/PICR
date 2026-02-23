@@ -1,10 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { contextPermissions } from '../auth/contextPermissions.js';
 import { folderStatsSummaryText } from '../graphql/helpers/folderStats.js';
-import { Request, Response } from 'express';
-import { joinTitles } from '../helpers/joinTitle.js';
+import type { Request, Response } from 'express';
+import { joinTitles } from '../../shared/joinTitle.js';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder.js';
-import { dbFolderForId, FileFields } from '../db/picrDb.js';
+import type { FileFields } from '../db/picrDb.js';
+import { dbFolderForId } from '../db/picrDb.js';
 import { getUserFromUUID } from '../auth/getUserFromUUID.js';
 import { picrConfig } from '../config/picrConfig.js';
 import { resolvePublicDir } from './resolvePublicDir.js';

@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { RefObject } from 'react';
+import type { RefObject } from 'react';
 
 export const lightboxRefAtom = atom<RefObject<HTMLDivElement | null> | null>(
   null,

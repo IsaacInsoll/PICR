@@ -1,4 +1,4 @@
-import { File } from '@shared/gql/graphql';
+import type { File } from '@shared/gql/graphql';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { View } from 'react-native';
 import { PText } from '@/src/components/PText';

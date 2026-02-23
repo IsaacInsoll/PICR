@@ -7,7 +7,8 @@ import {
 } from '../PicrIcons';
 import { useQuery } from 'urql';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
-import { buildTreeArray, treeNode } from '../helpers/buildTreeArray';
+import type { treeNode } from '../helpers/buildTreeArray';
+import { buildTreeArray } from '../helpers/buildTreeArray';
 import {
   Suspense,
   useCallback,
@@ -17,7 +18,7 @@ import {
   useState,
 } from 'react';
 import type { MouseEvent } from 'react';
-import { PicrFolder } from '../../types';
+import type { PicrFolder } from '../../types';
 import { LoadingIndicator } from './LoadingIndicator';
 import { values } from 'lodash';
 import { FolderIcon } from '../PicrIcons';

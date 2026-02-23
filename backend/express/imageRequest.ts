@@ -1,5 +1,6 @@
-import { Request, Response } from 'express';
-import { AllSize, allSizes } from '../../frontend/src/helpers/thumbnailSize.js';
+import type { Request, Response } from 'express';
+import type { AllSize } from '../../shared/thumbnailSize.js';
+import { allSizes } from '../../shared/thumbnailSize.js';
 import { extname } from 'path';
 import {
   fullPathFor,

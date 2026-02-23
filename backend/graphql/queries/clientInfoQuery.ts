@@ -1,7 +1,7 @@
 import { clientInfoType } from '../types/clientInfoType.js';
 import { getServerOptions } from '../../db/picrDb.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 

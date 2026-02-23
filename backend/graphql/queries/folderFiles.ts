@@ -1,12 +1,13 @@
 import { GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull } from 'graphql';
 import { and, asc, count, eq, inArray } from 'drizzle-orm';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { folderFilesResultType } from '../types/folderFilesResultType.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { allSubfolderIds } from '../../helpers/allSubfolders.js';
-import { db, FolderFields } from '../../db/picrDb.js';
+import type { FolderFields } from '../../db/picrDb.js';
+import { db } from '../../db/picrDb.js';
 import { dbFile } from '../../db/models/index.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const MAX_FOLDER_FILES = 10000;
 

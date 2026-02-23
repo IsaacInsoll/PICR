@@ -1,4 +1,5 @@
-import { HeadingFontKey, PrimaryColor, ThemeMode } from '@shared/gql/graphql';
+import type { HeadingFontKey } from '@shared/gql/graphql';
+import { PrimaryColor, ThemeMode } from '@shared/gql/graphql';
 import {
   ActionIcon,
   Badge,

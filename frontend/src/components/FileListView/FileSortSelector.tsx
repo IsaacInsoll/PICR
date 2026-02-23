@@ -1,7 +1,8 @@
 import { useAtom } from 'jotai';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
-import { Avatar, Box, Button, Group, Select, SelectProps } from '@mantine/core';
-import { ReactNode } from 'react';
+import type { SelectProps } from '@mantine/core';
+import { Avatar, Box, Button, Group, Select } from '@mantine/core';
+import type { ReactNode } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import {
@@ -14,7 +15,7 @@ import {
   SortDescIcon,
   StarIcon,
 } from '../../PicrIcons';
-import { FileSortDirection, FileSortType } from '@shared/files/sortFiles';
+import type { FileSortDirection, FileSortType } from '@shared/files/sortFiles';
 
 export const FileSortSelector = () => {
   const { canView } = useCommentPermissions();

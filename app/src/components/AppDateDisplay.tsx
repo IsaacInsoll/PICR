@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import moment from 'moment';
 import { finePrint } from '@/src/constants';
 import { PText } from '@/src/components/PText';

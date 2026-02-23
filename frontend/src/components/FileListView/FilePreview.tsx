@@ -1,5 +1,5 @@
-import { PicrFile } from '../../../types';
-import { ThumbnailImageComponentImageProps } from './react-grid-gallery';
+import type { PicrFile } from '../../../types';
+import type { ThumbnailImageComponentImageProps } from './react-grid-gallery';
 import { PicrVideoPreview } from './PicrVideoPreview';
 import { PicrImage } from '../PicrImage';
 

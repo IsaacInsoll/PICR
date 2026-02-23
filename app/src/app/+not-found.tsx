@@ -1,5 +1,6 @@
 import { Button } from 'react-native';
-import { Href, Redirect, useNavigation, useRouter } from 'expo-router';
+import type { Href } from 'expo-router';
+import { Redirect, useNavigation, useRouter } from 'expo-router';
 import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
 import { PTitle } from '@/src/components/PTitle';
 import { usePathname } from 'expo-router/build/hooks';

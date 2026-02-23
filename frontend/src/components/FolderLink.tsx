@@ -1,5 +1,5 @@
 import { Anchor } from '@mantine/core';
-import { PicrFolder } from '../../types';
+import type { PicrFolder } from '../../types';
 import { useSetFolder } from '../hooks/useSetFolder';
 
 export const FolderLink = ({ folder }: { folder: PicrFolder }) => {

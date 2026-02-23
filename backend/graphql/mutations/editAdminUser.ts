@@ -10,13 +10,14 @@ import {
 } from 'graphql';
 import { userType } from '../types/userType.js';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId.js';
-import { db, dbFolderForId, dbUserForId, UserFields } from '../../db/picrDb.js';
+import type { UserFields } from '../../db/picrDb.js';
+import { db, dbFolderForId, dbUserForId } from '../../db/picrDb.js';
 import { and, eq, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { UserType } from '../../../graphql-types.js';
 import { commentPermissionsEnum } from '../types/enums.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,

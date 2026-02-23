@@ -1,8 +1,5 @@
 import { expect, test } from 'vitest';
-import {
-  createTestGraphqlClient,
-  getUserHeader,
-} from '../../frontend/testGraphqlClient';
+import { createTestGraphqlClient, getUserHeader } from './testGraphqlClient';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { editFolderMutation } from '../../shared/urql/mutations/editFolderMutation';
 import { photoFolderId } from './testVariables';

@@ -1,10 +1,10 @@
-import {
-  Expo,
+import type {
   ExpoPushMessage,
   ExpoPushReceiptId,
   ExpoPushToken,
 } from 'expo-server-sdk';
-import { NotificationPayload } from './notifications.js';
+import { Expo } from 'expo-server-sdk';
+import type { NotificationPayload } from './notifications.js';
 import { db } from '../db/picrDb.js';
 import { dbUserDevice } from '../db/models/index.js';
 import { eq } from 'drizzle-orm';

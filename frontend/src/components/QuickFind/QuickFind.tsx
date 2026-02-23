@@ -11,19 +11,12 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useMe } from '../../hooks/useMe';
-import { PicrFolder } from '../../../types';
-import { AppSearchFileFragmentFragment } from '@shared/gql/graphql';
+import type { PicrFolder } from '../../../types';
+import type { AppSearchFileFragmentFragment } from '@shared/gql/graphql';
 import { atom, useAtomValue } from 'jotai';
 import { useAtom, useSetAtom } from 'jotai';
-import {
-  CSSProperties,
-  MouseEvent,
-  ReactNode,
-  Suspense,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import type { CSSProperties, MouseEvent, ReactNode } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { LoadingIndicator } from '../LoadingIndicator';
 import { useQuery } from 'urql';
 import { PrettyFolderPath } from '../PrettyFolderPath';
@@ -32,11 +25,11 @@ import { InfoIcon } from '../../PicrIcons';
 import { Joiner } from '../FolderName';
 import { useQuickFind } from './useQuickFind';
 import { searchQuery } from '@shared/urql/queries/searchQuery';
+import type { SearchResultType } from '@shared/search/searchResults';
 import {
   buildSearchResultList,
   getSearchResultMeta,
   isFolderResult,
-  SearchResultType,
 } from '@shared/search/searchResults';
 
 type Scope = 'all' | 'current';

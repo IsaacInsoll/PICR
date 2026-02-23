@@ -8,11 +8,11 @@ import {
   DropdownMenuRoot,
   DropdownMenuTrigger,
 } from '@/src/components/Menus/dropdownMenu';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useAtom } from 'jotai';
 import { fileSortAtom } from '@/src/atoms/atoms';
-import { FileSortDirection, FileSortType } from '@shared/files/sortFiles';
-import { SFSymbol } from 'expo-symbols';
+import type { FileSortDirection, FileSortType } from '@shared/files/sortFiles';
+import type { SFSymbol } from 'expo-symbols';
 
 export const FileSortMenu = ({ children }: { children: ReactNode }) => {
   const [sort, setSort] = useAtom(fileSortAtom);

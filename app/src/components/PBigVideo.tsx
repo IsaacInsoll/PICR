@@ -1,5 +1,6 @@
-import { View, ViewStyle, StyleSheet } from 'react-native';
-import { Video } from '@shared/gql/graphql';
+import type { ViewStyle } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import type { Video } from '@shared/gql/graphql';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEvent } from 'expo';
 import { imageURL } from '@/src/components/AppImage';

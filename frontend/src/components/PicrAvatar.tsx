@@ -1,5 +1,6 @@
-import { PicrUser } from '../../types';
-import { Avatar, AvatarProps, Tooltip } from '@mantine/core';
+import type { PicrUser } from '../../types';
+import type { AvatarProps } from '@mantine/core';
+import { Avatar, Tooltip } from '@mantine/core';
 
 export const PicrAvatar = ({
   user,

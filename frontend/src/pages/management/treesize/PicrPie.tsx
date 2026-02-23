@@ -1,4 +1,4 @@
-import { PieSlice } from './useTreeSize';
+import type { PieSlice } from './useTreeSize';
 import { Box } from '@mantine/core';
 import { VictoryPie, VictoryTheme } from 'victory';
 

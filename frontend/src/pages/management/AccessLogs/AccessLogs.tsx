@@ -1,11 +1,13 @@
 import { useQuery } from 'urql';
-import { PicrColumns, PicrDataGrid } from '../../../components/PicrDataGrid';
+import type { PicrColumns } from '../../../components/PicrDataGrid';
+import { PicrDataGrid } from '../../../components/PicrDataGrid';
 import { UserType } from '../../../../../graphql-types';
 import { DateDisplay } from '../../../components/FileListView/Filtering/PrettyDate';
 import { LazyPicrAvatar } from '../../../components/LazyPicrAvatar';
 import { UAParser } from 'ua-parser-js';
-import { Badge, BadgeProps, Code, Group, Stack } from '@mantine/core';
-import { PicrUser } from '../../../../types';
+import type { BadgeProps } from '@mantine/core';
+import { Badge, Code, Group, Stack } from '@mantine/core';
+import type { PicrUser } from '../../../../types';
 import { Suspense, useState } from 'react';
 import { LoadingIndicator } from '../../../components/LoadingIndicator';
 import { AccessLogsUsersSelector } from './AccessLogsUsersSelector';
@@ -13,7 +15,7 @@ import { FolderName } from '../../../components/FolderName';
 import { EmptyPlaceholder } from '../../EmptyPlaceholder';
 import { UnlinkIcon } from '../../../PicrIcons';
 import { accessLogQuery } from '@shared/urql/queries/accessLogQuery';
-import { AccessLogsQueryQuery } from '@shared/gql/graphql';
+import type { AccessLogsQueryQuery } from '@shared/gql/graphql';
 
 export const AccessLogs = ({
   folderId,

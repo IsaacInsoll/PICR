@@ -9,7 +9,8 @@ import { allSubfolderIds } from './allSubfolders.js';
 import { fullPathForFile, fullPathMinus } from '../filesystem/fileManager.js';
 import { and, eq, inArray } from 'drizzle-orm';
 import { dbFile } from '../db/models/index.js';
-import { db, FolderFields } from '../db/picrDb.js';
+import type { FolderFields } from '../db/picrDb.js';
+import { db } from '../db/picrDb.js';
 
 export interface FolderHash {
   folder: FolderFields;

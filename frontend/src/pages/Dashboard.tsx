@@ -14,7 +14,8 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { ReactNode, Suspense } from 'react';
+import type { ReactNode } from 'react';
+import { Suspense } from 'react';
 import { AccessLogsIcon, FolderIcon, UnlinkIcon } from '../PicrIcons';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { useQuery } from 'urql';
@@ -27,7 +28,8 @@ import { EmptyPlaceholder } from './EmptyPlaceholder';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { ManageFolderIconButton } from '../components/ManageFolderButton';
 import { recentUsersQuery } from '@shared/urql/queries/recentUsersQuery';
-import { FoldersSortType, ReadAllFoldersQueryQuery } from '@shared/gql/graphql';
+import type { ReadAllFoldersQueryQuery } from '@shared/gql/graphql';
+import { FoldersSortType } from '@shared/gql/graphql';
 
 export const Dashboard = () => {
   const me = useMe();

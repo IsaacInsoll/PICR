@@ -1,8 +1,8 @@
 import { userType } from '../types/userType.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import { dbFolderForId, updateUserLastAccess } from '../../db/picrDb.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,

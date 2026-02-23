@@ -1,7 +1,8 @@
-import { PicrFolder } from '../../types';
-import { Code, Group, MantineColor } from '@mantine/core';
+import type { PicrFolder } from '../../types';
+import type { MantineColor } from '@mantine/core';
+import { Code, Group } from '@mantine/core';
 import { Joiner } from './FolderName';
-import { MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 
 export const PrettyFolderPath = ({
   folder,

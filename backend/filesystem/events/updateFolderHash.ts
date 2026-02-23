@@ -3,14 +3,17 @@ import { readdirSync } from 'node:fs';
 import { fullPath } from '../fileManager.js';
 import crypto from 'crypto';
 import { log } from '../../logger.js';
-import { db, FolderFields } from '../../db/picrDb.js';
+import type { FolderFields } from '../../db/picrDb.js';
+import { db } from '../../db/picrDb.js';
 import { dbFolder } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
 
 export const updateFolderHash = (folder: FolderFields) => {
   // I observed that creating a folder on a network volume from a mac temporarily makes a 'New Folder' folder which disappears before we can query it
   try {
-    const fileNames = readdirSync(fullPath(folder.relativePath!)).join('#');
+    const fileNames = readdirSync(fullPath(folder.relativePath ?? '')).join(
+      '#',
+    );
     const hash = crypto.createHash('md5').update(fileNames).digest('hex');
     if (folder.folderHash != hash) {
       log(

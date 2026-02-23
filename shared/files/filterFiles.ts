@@ -1,9 +1,9 @@
-import {
+import type {
   AspectFilterOptions,
   FilterOptionsInterface,
 } from '@shared/filterAtom';
-import { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
-import { FileFlag } from '@shared/gql/graphql';
+import type { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
+import type { FileFlag } from '@shared/gql/graphql';
 
 export const DefaultFilterOptions: FilterOptionsInterface = {
   ratio: 'Any Ratio',

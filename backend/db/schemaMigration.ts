@@ -10,8 +10,10 @@ export async function schemaMigration() {
   // console.log('🗃️  Migrations Starting');
   // This is same as picrDB but with a max: 1 because drizzle says to do that for migrations
 
+  const dbUrl = process.env['DATABASE_URL'];
+  if (!dbUrl) throw new Error('DATABASE_URL environment variable is required');
   const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL!,
+    connectionString: dbUrl,
     max: 1,
   });
   const migrationClient = drizzle(pool);

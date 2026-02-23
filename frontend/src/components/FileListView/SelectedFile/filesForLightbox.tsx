@@ -1,7 +1,7 @@
-import { PicrFile } from '../../../../types';
-import { Slide } from 'yet-another-react-lightbox';
-import { thumbnailSizes } from '../../../helpers/thumbnailSize';
-import { ImageSource } from 'yet-another-react-lightbox';
+import type { PicrFile } from '../../../../types';
+import type { Slide } from 'yet-another-react-lightbox';
+import { thumbnailSizes } from '@shared/thumbnailSize';
+import type { ImageSource } from 'yet-another-react-lightbox';
 import { thumbnailDimensions } from '@shared/thumbnailDimensions';
 import { imageURL } from '../../../helpers/imageURL';
 

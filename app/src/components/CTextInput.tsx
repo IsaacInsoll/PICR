@@ -1,5 +1,7 @@
-import { Control, Controller, FieldValues, Path } from 'react-hook-form';
-import { TextInput, TextInputProps } from 'react-native';
+import type { Control, FieldValues, Path } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
+import type { TextInputProps } from 'react-native';
+import { TextInput } from 'react-native';
 
 // TextInput wrapped in a React Hook Form Controller
 export const CTextInput = <TFieldValues extends FieldValues>({

@@ -1,13 +1,13 @@
 import { TouchableOpacity, View } from 'react-native';
 import { AppLink } from '@/src/components/AppFolderLink';
 import { PText } from '@/src/components/PText';
-import { File, Image } from '@shared/gql/graphql';
+import type { File, Image } from '@shared/gql/graphql';
 import { PTitle } from '@/src/components/PTitle';
 import { AppFileFlagChip } from '@/src/components/chips/AppFileFlagChip';
 import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
 import { AppCommentsChip } from '@/src/components/chips/AppCommentsChip';
 import { FlashList } from '@shopify/flash-list';
-import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
+import type { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
 import { PFileView } from '@/src/components/PFileView';
 import { AppFooterPadding } from '@/src/components/AppHeaderPadding';
 

@@ -4,8 +4,8 @@ import { GraphQLNonNull, GraphQLString } from 'graphql';
 import { db } from '../../db/picrDb.js';
 import { and, eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 import {
   isLoginBlocked,
   recordFailedLoginAttempt,
@@ -37,10 +37,14 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
     recordFailedLoginAttempt(identity);
     return '';
   }
+  if (!user.hashedPassword) {
+    recordFailedLoginAttempt(identity);
+    return '';
+  }
   recordSuccessfulLogin(identity);
   return generateAccessToken({
     userId: user.id,
-    hashedPassword: user.hashedPassword!,
+    hashedPassword: user.hashedPassword,
   });
 };
 

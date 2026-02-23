@@ -1,9 +1,10 @@
 import { imageURL } from '../helpers/imageURL';
 import { Image } from '@mantine/core';
-import { ThumbnailSize } from '../helpers/thumbnailSize';
+import type { ThumbnailSize } from '@shared/thumbnailSize';
 import { Blurhash } from 'react-blurhash';
-import { CSSProperties, useState } from 'react';
-import { PicrFile } from '../../types';
+import type { CSSProperties } from 'react';
+import { useState } from 'react';
+import type { PicrFile } from '../../types';
 import { useAvifEnabled } from '../hooks/useMe';
 
 interface PicrImageProps {

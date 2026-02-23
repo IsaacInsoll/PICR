@@ -1,10 +1,11 @@
 import { useAtom } from 'jotai';
-import { FilterOptionsInterface, filterOptions } from '@shared/filterAtom';
+import type { FilterOptionsInterface } from '@shared/filterAtom';
+import { filterOptions } from '@shared/filterAtom';
 import { formatMetadataValues } from '../../../metadata/formatMetadataValues';
 import { MultiSelect } from '@mantine/core';
 import { metadataIcons } from '../metadataIcons';
 
-import { AnyMetadataKey } from '@shared/fileMetadata';
+import type { AnyMetadataKey } from '@shared/fileMetadata';
 
 export const MetadataSelect = ({
   title,

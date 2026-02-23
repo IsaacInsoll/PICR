@@ -1,4 +1,4 @@
-import { FileListViewStyleComponentProps } from './FolderContentsView';
+import type { FileListViewStyleComponentProps } from './FolderContentsView';
 import { imageURL } from '../../helpers/imageURL';
 import { useEffect, useMemo } from 'react';
 import useMeasure from 'react-use-measure';
@@ -22,12 +22,12 @@ import { CloudDownloadIcon, InfoIcon, SlideshowIcon } from '../../PicrIcons';
 import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { useInView } from 'react-intersection-observer';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
-import {
+import type {
   FolderContentsItem,
-  isFolderContentsFile,
   ViewFolderFileWithHero,
   ViewFolderSubFolder,
 } from '@shared/files/folderContentsViewModel';
+import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 

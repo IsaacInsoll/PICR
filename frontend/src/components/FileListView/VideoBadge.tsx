@@ -1,5 +1,6 @@
-import { PicrFile } from '../../../types';
-import { Badge, MantineSize, MantineStyleProp } from '@mantine/core';
+import type { PicrFile } from '../../../types';
+import type { MantineSize, MantineStyleProp } from '@mantine/core';
+import { Badge } from '@mantine/core';
 import { VideoIcon } from '../../PicrIcons';
 import formatDuration from 'format-duration';
 

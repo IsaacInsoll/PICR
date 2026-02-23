@@ -1,4 +1,5 @@
-import { AvatarProps, Group, Text } from '@mantine/core';
+import type { AvatarProps } from '@mantine/core';
+import { Group, Text } from '@mantine/core';
 import { useQuery } from 'urql';
 import { viewUserQuery } from '@shared/urql/queries/viewUserQuery';
 import { PicrAvatar } from './PicrAvatar';

@@ -1,6 +1,7 @@
-import { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, TextStyle } from 'react-native';
+import type { TextStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 
 type IIconProps = Omit<ComponentProps<typeof Ionicons>, 'name'>;

@@ -1,12 +1,10 @@
 import { useSetAtom } from 'jotai';
 import { useMutation } from 'urql';
 import { generateZipMutation } from '@shared/urql/mutations/generateZipMutation';
-import {
-  FolderHash,
-  linksToDownloadAtom,
-} from '../components/DownloadZipButton';
+import type { FolderHash } from '../components/DownloadZipButton';
+import { linksToDownloadAtom } from '../components/DownloadZipButton';
 import { useCanDownload } from './useMe';
-import { PicrFolder } from '../../types';
+import type { PicrFolder } from '../../types';
 
 export const useGenerateZip = (folder: PicrFolder, onComplete?: () => void) => {
   const canDownload = useCanDownload();

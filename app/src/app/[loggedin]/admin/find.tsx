@@ -5,17 +5,17 @@ import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useQuery } from 'urql';
 import { searchQuery } from '@shared/urql/queries/searchQuery';
-import {
+import type {
   AppSearchFileFragmentFragment,
   AppSearchFolderFragmentFragment,
 } from '@shared/gql/graphql';
+import type { SearchResultType } from '@shared/search/searchResults';
 import {
   buildSearchResultList,
   formatFileFolderName,
   formatFolderPath,
   getSearchResultMeta,
   isFolderResult,
-  SearchResultType,
 } from '@shared/search/searchResults';
 import { useMe } from '@/src/hooks/useMe';
 import { useAppTheme } from '@/src/hooks/useAppTheme';

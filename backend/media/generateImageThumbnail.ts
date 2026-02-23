@@ -1,17 +1,20 @@
-import { AvifOptions, JpegOptions, OutputInfo, ResizeOptions } from 'sharp';
+import type {
+  AvifOptions,
+  JpegOptions,
+  OutputInfo,
+  ResizeOptions,
+} from 'sharp';
 import { openSharp } from './openSharp.js';
 import { fullPath, fullPathForFile } from '../filesystem/fileManager.js';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'path';
 import { thumbnailDimensions } from '../../shared/thumbnailDimensions.js';
-import {
-  AllSize,
-  ThumbnailSize,
-} from '../../frontend/src/helpers/thumbnailSize.js';
+import type { AllSize, ThumbnailSize } from '../../shared/thumbnailSize.js';
 import { log } from '../logger.js';
 import { thumbnailPath } from './thumbnailPath.js';
 import { generateVideoThumbnail } from './generateVideoThumbnail.js';
-import { FileFields, getServerOptions } from '../db/picrDb.js';
+import type { FileFields } from '../db/picrDb.js';
+import { getServerOptions } from '../db/picrDb.js';
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
 export const generateAllThumbs = async (file: FileFields) => {

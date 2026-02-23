@@ -13,7 +13,21 @@
       "Bash(else)",
       "Bash(echo:*)",
       "Bash(fi)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(tail:*)",
+      "Bash(cd /home/isaac/picr/backend && npm run lint 2>&1)",
+      "Bash(cd /home/isaac/picr/frontend && npm run lint 2>&1)",
+      "Bash(cd /home/isaac/picr/app && npm run lint 2>&1)",
+      "Bash(cd /home/isaac/picr/shared && npm run lint 2>&1)",
+      "Bash(grep:*)",
+      "Bash(grep problems:*)",
+      "Bash(grep error:*)",
+      "Bash(head:*)",
+      "Bash(echo tsc OK:*)",
+      "Bash(grep eqeqeq:*)",
+      "Bash(grep no-non-null-assertion:*)",
+      "Bash(npm run lint --prefix backend)",
+      "Bash(grep changed:*)"
     ]
   }
 }

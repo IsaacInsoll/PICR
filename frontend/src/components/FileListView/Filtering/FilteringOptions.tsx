@@ -1,17 +1,18 @@
-import { PicrFile } from '../../../../types';
-import { ReactNode, useMemo } from 'react';
+import type { PicrFile } from '../../../../types';
+import type { ReactNode } from 'react';
+import { useMemo } from 'react';
 import { metadataForFiltering } from '@shared/files/metadataForFiltering';
-import { Image } from '@shared/gql/graphql';
+import type { Image } from '@shared/gql/graphql';
 import { AspectSelector } from './AspectSelector';
 import { SearchBox } from './SearchBox';
 import { MetadataBox } from './MetadataBox';
+import type { MantineStyleProp } from '@mantine/core';
 import {
   Alert,
   Box,
   Button,
   Container,
   Group,
-  MantineStyleProp,
   Paper,
   Table,
   Text,

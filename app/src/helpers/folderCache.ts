@@ -1,4 +1,4 @@
-import { File, Folder } from '../../../graphql-types';
+import type { File, Folder } from '../../../graphql-types';
 
 export type FolderIDandName = Pick<Folder, 'id' | 'name' | 'title'>;
 export type FileIDandName = Pick<File, 'id' | 'name' | 'folderId'>;

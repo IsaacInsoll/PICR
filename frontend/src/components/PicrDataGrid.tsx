@@ -1,14 +1,14 @@
 // I've already moved from grommet-datatable to mantine-react-table so lets try to minimise future burden...
-import {
-  MantineReactTable,
+import type {
   MRT_ColumnDef,
   MRT_Row,
   MRT_RowData,
   MRT_TableInstance,
   MRT_TableOptions,
-  useMantineReactTable,
 } from 'mantine-react-table';
-import { ReactNode, useMemo } from 'react';
+import { MantineReactTable, useMantineReactTable } from 'mantine-react-table';
+import type { ReactNode } from 'react';
+import { useMemo } from 'react';
 
 export type PicrColumns<TData extends MRT_RowData> = MRT_ColumnDef<TData>;
 

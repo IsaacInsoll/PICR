@@ -1,12 +1,12 @@
 import { memo } from 'react';
-import { ImageProps } from 'expo-image';
-import { ThumbnailSize } from '@frontend/helpers/thumbnailSize';
+import type { ImageProps } from 'expo-image';
+import type { ThumbnailSize } from '@shared/thumbnailSize';
 import { PFileVideo } from '@/src/components/PFileVideo';
 import { StyleSheet, View } from 'react-native';
 import { PFileImage } from '@/src/components/PFileImage';
 import { FolderIcon } from '@/src/components/AppIcons';
 import { getInitialsColor } from '@/src/helpers/get-initials-color';
-import { FileType } from '@shared/gql/graphql';
+import type { FileType } from '@shared/gql/graphql';
 
 type ThumbnailMedia = {
   __typename?: string;

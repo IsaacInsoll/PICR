@@ -1,5 +1,6 @@
-import { Alert, AlertProps } from '@mantine/core';
-import { ReactNode } from 'react';
+import type { AlertProps } from '@mantine/core';
+import { Alert } from '@mantine/core';
+import type { ReactNode } from 'react';
 import {
   AccessLogsIcon,
   BrandingIcon,

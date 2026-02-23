@@ -1,4 +1,4 @@
-import { LinkMode } from '../../../graphql-types';
+import type { LinkMode } from '../../../graphql-types';
 import { Badge } from '@mantine/core';
 import { linkModeStyle } from './LinkModeStyle';
 

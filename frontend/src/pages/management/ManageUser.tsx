@@ -1,4 +1,4 @@
-import { PicrFolder } from '../../../types';
+import type { PicrFolder } from '../../../types';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import {
@@ -13,10 +13,8 @@ import {
 } from '@mantine/core';
 import { DeleteIcon, SaveIcon, UserIcon } from '../../PicrIcons';
 import { FolderSelector } from '../../components/FolderSelector';
-import {
-  CommentPermissions,
-  MutationEditAdminUserArgs,
-} from '@shared/gql/graphql';
+import type { MutationEditAdminUserArgs } from '@shared/gql/graphql';
+import { CommentPermissions } from '@shared/gql/graphql';
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { ErrorAlert } from '../../components/ErrorAlert';

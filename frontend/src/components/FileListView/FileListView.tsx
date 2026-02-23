@@ -1,13 +1,11 @@
-import { FileListViewStyleComponentProps } from './FolderContentsView';
+import type { FileListViewStyleComponentProps } from './FolderContentsView';
 import { Page } from '../Page';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
-import {
-  FolderContentsItem,
-  isFolderContentsFile,
-} from '@shared/files/folderContentsViewModel';
+import type { FolderContentsItem } from '@shared/files/folderContentsViewModel';
+import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 import {
   ActionIcon,
   Avatar,
@@ -33,7 +31,7 @@ import { PicrAvatar } from '../PicrAvatar';
 import { prettyBytes } from '@shared/prettyBytes';
 import { pluralize } from '@shared/pluralize';
 import { prettyDate } from '@shared/prettyDate';
-import { PicrUser } from '../../../types';
+import type { PicrUser } from '../../../types';
 
 export const FileListView = ({
   files,

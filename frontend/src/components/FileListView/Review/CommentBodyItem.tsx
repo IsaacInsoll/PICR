@@ -8,15 +8,13 @@ import {
   Text,
   Timeline,
 } from '@mantine/core';
-import {
-  AppCommentHistoryCommentFragmentFragment,
-  FileFlag,
-} from '@shared/gql/graphql';
-import { PicrFile } from '../../../../types';
+import type { AppCommentHistoryCommentFragmentFragment } from '@shared/gql/graphql';
+import { FileFlag } from '@shared/gql/graphql';
+import type { PicrFile } from '../../../../types';
 import { PicrImage } from '../../PicrImage';
 import { FileFlagBadge } from './FileFlagBadge';
 import { useOpenCommentsModal } from '../../../atoms/modalAtom';
-import { CommentHistoryProps } from './CommentHistory';
+import type { CommentHistoryProps } from './CommentHistory';
 import { PicrAvatar } from '../../PicrAvatar';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { prettyDate } from '@shared/prettyDate';

@@ -1,8 +1,6 @@
 import * as Font from 'expo-font';
-import {
-  FontKey,
-  normalizeFontKey as normalizeHeadingFontKey,
-} from '@shared/branding/fontRegistry';
+import type { FontKey } from '@shared/branding/fontRegistry';
+import { normalizeFontKey as normalizeHeadingFontKey } from '@shared/branding/fontRegistry';
 import { fontFiles, fontWeightsByKey } from '@/src/fonts.generated';
 
 export { normalizeHeadingFontKey };

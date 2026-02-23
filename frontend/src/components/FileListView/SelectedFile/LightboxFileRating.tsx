@@ -1,4 +1,4 @@
-import { PicrFile } from '../../../../types';
+import type { PicrFile } from '../../../../types';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { Paper } from '@mantine/core';
 import { FileReview } from '../Review/FileReview';

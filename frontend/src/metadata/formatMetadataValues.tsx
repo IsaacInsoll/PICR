@@ -1,8 +1,6 @@
-import {
-  formatMetadataValue,
-  formattedValue,
-} from '@shared/formatMetadataValue';
-import { AnyMetadataKey } from '@shared/fileMetadata';
+import type { formattedValue } from '@shared/formatMetadataValue';
+import { formatMetadataValue } from '@shared/formatMetadataValue';
+import type { AnyMetadataKey } from '@shared/fileMetadata';
 
 export const formatMetadataValues = (
   title: AnyMetadataKey,

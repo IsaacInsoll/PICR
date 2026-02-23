@@ -1,8 +1,8 @@
-import { ThumbnailSize } from '../../frontend/src/helpers/thumbnailSize.js';
+import type { ThumbnailSize } from '../../shared/thumbnailSize.js';
 import { basename, dirname, extname } from 'path';
 import { fullPathForFile, relativePath } from '../filesystem/fileManager.js';
 import { picrConfig } from '../config/picrConfig.js';
-import { FileFields } from '../db/picrDb.js';
+import type { FileFields } from '../db/picrDb.js';
 
 export const thumbnailPath = (
   file: FileFields,

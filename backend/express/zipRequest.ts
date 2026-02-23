@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { zipPath } from '../helpers/zip.js';
 import { existsSync } from 'node:fs';
 import { zipInProgress } from '../helpers/zipQueue.js';

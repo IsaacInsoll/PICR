@@ -12,8 +12,8 @@ import { db, getAccessLogs } from '../../db/picrDb.js';
 import { and, eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { userTypeEnum } from '../types/enums.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
@@ -25,10 +25,10 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
     params.folderId,
     'Admin',
   );
-  const ids = [folder!.id];
+  const ids = [folder.id];
 
   if (params.includeChildren) {
-    const children = await allSubfolders(folder!.id);
+    const children = await allSubfolders(folder.id);
     const childIds = children.map(({ id }) => id);
     ids.push(...childIds);
   }

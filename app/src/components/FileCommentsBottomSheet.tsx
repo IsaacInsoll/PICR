@@ -1,32 +1,27 @@
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
 import { PTitle } from '@/src/components/PTitle';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  ReactNode,
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import type { ReactNode } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { CommentHistoryQueryQuery, FileFlag } from '@shared/gql/graphql';
+import type { CommentHistoryQueryQuery } from '@shared/gql/graphql';
+import { FileFlag } from '@shared/gql/graphql';
 import { PText } from '@/src/components/PText';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { useMutation, useQuery } from 'urql';
+import type { TextStyle } from 'react-native';
 import {
   Keyboard,
   StyleSheet,
   TextInput,
-  TextStyle,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { AppAvatar } from '@/src/components/AppAvatar';
 import { prettyDate } from '@shared/prettyDate';
 import { Rating } from '@kolking/react-native-rating';
-import { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { AppIconButton } from '@/src/components/AppIcons';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';

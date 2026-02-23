@@ -5,8 +5,8 @@ import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId.js';
 import { db, dbFolderForId, dbUserForId } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 
 /**

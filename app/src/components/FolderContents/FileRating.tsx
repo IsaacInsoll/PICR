@@ -1,4 +1,4 @@
-import { File } from '@shared/gql/graphql';
+import type { File } from '@shared/gql/graphql';
 import { Rating } from '@kolking/react-native-rating';
 
 export const FileRating = ({

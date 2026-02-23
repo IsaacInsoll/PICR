@@ -1,10 +1,8 @@
 import { Badge, Code, Group, Rating, Table, Text } from '@mantine/core';
 import { metadataIcons } from '../metadataIcons';
-import { PicrFile } from '../../../../types';
-import {
-  metadataForPresentation,
-  MetadataPresentationResult,
-} from '@shared/fileMetadata';
+import type { PicrFile } from '../../../../types';
+import type { MetadataPresentationResult } from '@shared/fileMetadata';
+import { metadataForPresentation } from '@shared/fileMetadata';
 import { toReadableFraction } from 'readable-fractions';
 
 // get all keys, remove nulls, add/merge others as expected

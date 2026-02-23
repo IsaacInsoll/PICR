@@ -1,5 +1,5 @@
-import { PicrColumns } from '../../components/PicrDataGrid';
-import { PicrUser } from '../../../types';
+import type { PicrColumns } from '../../components/PicrDataGrid';
+import type { PicrUser } from '../../../types';
 import { FolderName } from '../../components/FolderName';
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
 import { CommentChip } from '../../components/CommentChip';

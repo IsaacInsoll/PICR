@@ -6,9 +6,9 @@ import { useQuery } from 'urql';
 import { PBigImage, useLocalImageUrl } from '@/src/components/PBigImage';
 import { atom, useAtom, useSetAtom } from 'jotai';
 import * as MediaLibrary from 'expo-media-library';
+import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
   Easing,
-  SharedValue,
   interpolate,
   interpolateColor,
   useAnimatedStyle,
@@ -21,7 +21,7 @@ import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { HeaderButton } from '@react-navigation/elements';
 import { Ionicons } from '@expo/vector-icons';
 import { navBarIconProps } from '@/src/constants';
-import { ViewFolderQuery } from '@shared/gql/graphql';
+import type { ViewFolderQuery } from '@shared/gql/graphql';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 import {
   getHeadingFontFamilyForLevel,

@@ -1,8 +1,5 @@
-import {
-  GraphQLFieldResolver,
-  GraphQLID,
-  GraphQLNonNull,
-} from 'graphql/type/index.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import { GraphQLID, GraphQLNonNull } from 'graphql/type/index.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 import { fileToJSON } from '../helpers/fileToJSON.js';
@@ -14,8 +11,8 @@ import { dbFile } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
 import { fileFlagEnum } from '../types/enums.js';
 import { sendCommentAddedNotification } from '../../notifications/notifications.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { Comment } from '../../../graphql-types.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { Comment } from '../../../graphql-types.js';
 
 const resolver: GraphQLFieldResolver<Comment, PicrRequestContext> = async (
   _,

@@ -27,7 +27,7 @@ import { setFolderBrandingMutation } from '@shared/urql/mutations/setFolderBrand
 import { viewBrandingsQuery } from '@shared/urql/queries/viewBrandingsQuery';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { defaultBranding } from '../helpers/defaultBranding';
-import { PicrFolder } from '../../types';
+import type { PicrFolder } from '../../types';
 import type { ViewBrandingsQueryQuery } from '@shared/gql/graphql';
 
 type BrandingItem = ViewBrandingsQueryQuery['brandings'][number];

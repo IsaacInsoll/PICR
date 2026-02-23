@@ -1,4 +1,5 @@
-import { File, FileFlag } from '@shared/gql/graphql';
+import type { File } from '@shared/gql/graphql';
+import { FileFlag } from '@shared/gql/graphql';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { TouchableOpacity, View } from 'react-native';
 import { ApprovedIcon, RejectedIcon } from '@/src/components/AppIcons';

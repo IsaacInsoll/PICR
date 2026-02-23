@@ -1,4 +1,5 @@
-import { Button, ButtonProps } from '@mantine/core';
+import type { ButtonProps } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { copyToClipboard, publicURLFor } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
 import { ClipboardIcon } from '../../PicrIcons';

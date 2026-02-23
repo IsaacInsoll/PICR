@@ -1,4 +1,4 @@
-import { CommentPermissions } from '../../../graphql-types';
+import type { CommentPermissions } from '../../../graphql-types';
 import { Badge } from '@mantine/core';
 import { commentPermissionsStyle } from './CommentPermissionsStyle';
 

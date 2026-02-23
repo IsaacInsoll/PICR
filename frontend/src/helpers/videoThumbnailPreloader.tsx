@@ -1,5 +1,5 @@
-import { PicrFile } from '../../types';
-import { AllSize } from './thumbnailSize';
+import type { PicrFile } from '../../types';
+import type { AllSize } from '@shared/thumbnailSize';
 import { imageURL } from './imageURL';
 
 export const videoThumbnailPreloader = (file: PicrFile, size: AllSize) => {

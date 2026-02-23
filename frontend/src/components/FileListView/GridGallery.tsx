@@ -2,18 +2,18 @@
 // TODO: Could use Skeleton as placeholders before content loads?
 import { imageURL } from '../../helpers/imageURL';
 import { Gallery } from './react-grid-gallery';
-import { FileListViewStyleComponentProps } from './FolderContentsView';
+import type { FileListViewStyleComponentProps } from './FolderContentsView';
 import 'yet-another-react-lightbox/styles.css';
 import './GridGallery.css';
 import { FilePreview } from './FilePreview';
 import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { useSetFolder } from '../../hooks/useSetFolder';
-import {
+import type {
   FolderContentsItem,
-  isFolderContentsFile,
   ViewFolderFileWithHero,
 } from '@shared/files/folderContentsViewModel';
-import { Image as GridImage } from './react-grid-gallery/types';
+import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
+import type { Image as GridImage } from './react-grid-gallery/types';
 
 type GalleryItem = GridImage & {
   file?: ViewFolderFileWithHero;

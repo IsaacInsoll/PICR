@@ -1,8 +1,10 @@
-import { FileListViewStyleComponentProps } from './FolderContentsView';
+import type { FileListViewStyleComponentProps } from './FolderContentsView';
 import { prettyBytes } from '@shared/prettyBytes';
-import { PicrColumns, PicrDataGrid } from '../PicrDataGrid';
+import type { PicrColumns } from '../PicrDataGrid';
+import { PicrDataGrid } from '../PicrDataGrid';
 import { Page } from '../Page';
-import { MantineSize, Rating } from '@mantine/core';
+import type { MantineSize } from '@mantine/core';
+import { Rating } from '@mantine/core';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { FileFlagBadge } from './Review/FileFlagBadge';
 import { FileMenu } from './FileMenu';
@@ -10,10 +12,8 @@ import { DateDisplay } from './Filtering/PrettyDate';
 import { useIsMobile, useIsSmallScreen } from '../../hooks/useIsMobile';
 import { FolderMenu } from './FolderMenu';
 import { useSetFolder } from '../../hooks/useSetFolder';
-import {
-  FolderContentsItem,
-  isFolderContentsFile,
-} from '@shared/files/folderContentsViewModel';
+import type { FolderContentsItem } from '@shared/files/folderContentsViewModel';
+import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 
 export const FileDataListView = ({
   files,

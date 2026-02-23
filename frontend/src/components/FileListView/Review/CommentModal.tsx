@@ -4,14 +4,14 @@ import { useSetAtom } from 'jotai';
 import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
-import { PicrFile } from '../../../../types';
+import type { PicrFile } from '../../../../types';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { CommentHistory } from './CommentHistory';
 import { FilePreview } from '../FilePreview';
-import { MutationAddCommentArgs } from '../../../../../graphql-types';
+import type { MutationAddCommentArgs } from '../../../../../graphql-types';
 
 export const CommentModal = ({
   file,
@@ -87,9 +87,11 @@ const AddCommentBox = ({
     throw new Error('AddCommentBox requires either a fileId or folderId!');
 
   const onSubmit = async () => {
+    const targetId = fileId ?? folderId;
+    if (targetId === undefined) return;
     setSubmitting(true);
     const payload: MutationAddCommentArgs = {
-      id: fileId ?? folderId!,
+      id: targetId,
       comment: text,
     };
     const result = await mutate(payload);

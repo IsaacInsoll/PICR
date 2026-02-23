@@ -6,8 +6,8 @@ import { allSubfolderIds } from '../../helpers/allSubfolders.js';
 import { and, eq, ilike, inArray } from 'drizzle-orm';
 import { db } from '../../db/picrDb.js';
 import { dbFile, dbFolder } from '../../db/models/index.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
@@ -20,7 +20,7 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
     'View',
   );
 
-  const folderIds = await allSubfolderIds(folder!);
+  const folderIds = await allSubfolderIds(folder);
 
   const lower: string[] = params.query.toLowerCase().split(' ');
 

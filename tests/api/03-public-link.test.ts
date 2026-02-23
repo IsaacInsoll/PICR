@@ -3,7 +3,7 @@ import {
   createTestGraphqlClient,
   getLinkHeader,
   getUserHeader,
-} from '../../frontend/testGraphqlClient';
+} from './testGraphqlClient';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { editUserMutation } from '../../shared/urql/mutations/editUserMutation';
 import { deleteUserMutation } from '../../shared/urql/mutations/deleteUserMutation';

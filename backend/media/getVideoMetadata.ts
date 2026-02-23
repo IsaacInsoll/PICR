@@ -1,9 +1,9 @@
 import ffmpeg from 'fluent-ffmpeg';
 //{ ffprobe, FfprobeData, setFfprobePath }
 import util from 'node:util';
-import { VideoMetadata } from '../types/MetadataSummary.js';
+import type { VideoMetadata } from '../types/MetadataSummary.js';
 import { fullPathForFile } from '../filesystem/fileManager.js';
-import { FileFields } from '../db/picrDb.js';
+import type { FileFields } from '../db/picrDb.js';
 
 export const getVideoMetadata = async (file: FileFields) => {
   //PROBLEM when not running in docker: need to prefix this with `dist/`

@@ -1,6 +1,7 @@
 import { contextPermissions } from '../auth/contextPermissions.js';
-import { dbFolderForId, FolderFields } from '../db/picrDb.js';
-import { PicrRequestContext } from '../types/PicrRequestContext.js';
+import type { FolderFields } from '../db/picrDb.js';
+import { dbFolderForId } from '../db/picrDb.js';
+import type { PicrRequestContext } from '../types/PicrRequestContext.js';
 
 export const parentFolders = async (
   folder: FolderFields,

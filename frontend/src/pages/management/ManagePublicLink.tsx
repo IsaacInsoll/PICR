@@ -1,4 +1,4 @@
-import { PicrFolder } from '../../../types';
+import type { PicrFolder } from '../../../types';
 import { randomString } from '../../helpers/randomString';
 import { useState } from 'react';
 import { useMutation } from 'urql';
@@ -32,7 +32,7 @@ import {
 } from '../../PicrIcons';
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
 import { ErrorAlert } from '../../components/ErrorAlert';
-import { badChars } from '../../../../backend/graphql/helpers/badChars';
+import { badChars } from '@shared/badChars';
 
 export const ManagePublicLink = ({
   id,

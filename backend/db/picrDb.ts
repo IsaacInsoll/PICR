@@ -10,18 +10,21 @@ import {
   dbServerOptions,
   dbUser,
 } from './models/index.js';
-import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { and, asc, desc, eq, gte, inArray } from 'drizzle-orm';
-import { AccessType } from '../../graphql-types.js';
+import type { AccessType } from '../../graphql-types.js';
 import { fileToJSON } from '../graphql/helpers/fileToJSON.js';
 import { picrConfig } from '../config/picrConfig.js';
 import { sendFolderViewedNotification } from '../notifications/notifications.js';
-import { PicrRequestContext } from '../types/PicrRequestContext.js';
+import type { PicrRequestContext } from '../types/PicrRequestContext.js';
 
 export let db: NodePgDatabase<typeof schema>;
 
 export const initDb = () => {
-  db = drizzle(process.env.DATABASE_URL!, {
+  const url = process.env['DATABASE_URL'];
+  if (!url) throw new Error('DATABASE_URL environment variable is required');
+  db = drizzle(url, {
     schema,
     logger: picrConfig.debugSql,
   });
@@ -112,9 +115,9 @@ export const createAccessLog = async (
     userId: user.id,
     folderId: folder.id,
     type: type,
-    ipAddress: h.ipAddress!,
-    sessionId: h.sessionId!,
-    userAgent: h.userAgent!,
+    ipAddress: h.ipAddress ?? '',
+    sessionId: h.sessionId ?? '',
+    userAgent: h.userAgent ?? '',
   };
 
   const recent = await db.query.dbAccessLog.findFirst({

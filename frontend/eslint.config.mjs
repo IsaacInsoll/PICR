@@ -25,6 +25,25 @@ export default tseslint.config(
       'react/destructuring-assignment': ['error', 'always'],
       'react/no-unescaped-entities': 'off',
       'no-console': 'warn',
+      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/no-non-null-assertion': 'error',
+      'react/no-array-index-key': 'warn',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['../**/backend/**'],
+              message:
+                'Do not import from backend. Move shared code to shared/.',
+            },
+            {
+              group: ['../**/app/**'],
+              message: 'Do not import from app. Move shared code to shared/.',
+            },
+          ],
+        },
+      ],
     },
   },
 );

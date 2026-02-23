@@ -1,8 +1,5 @@
 import { expect, test, describe } from 'vitest';
-import {
-  createTestGraphqlClient,
-  getUserHeader,
-} from '../../frontend/testGraphqlClient';
+import { createTestGraphqlClient, getUserHeader } from './testGraphqlClient';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { editBrandingMutation } from '../../shared/urql/mutations/editBrandingMutation';
 import { deleteBrandingMutation } from '../../shared/urql/mutations/deleteBrandingMutation';

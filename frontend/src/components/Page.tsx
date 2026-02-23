@@ -1,5 +1,6 @@
-import { Container, ContainerProps } from '@mantine/core';
-import { ReactNode } from 'react';
+import type { ContainerProps } from '@mantine/core';
+import { Container } from '@mantine/core';
+import type { ReactNode } from 'react';
 
 export const Page = ({
   children,

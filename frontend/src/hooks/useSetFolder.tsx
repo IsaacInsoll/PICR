@@ -1,12 +1,8 @@
-import {
-  NavigateOptions,
-  NavLink,
-  useLocation,
-  useNavigate,
-} from 'react-router';
+import type { NavigateOptions } from 'react-router';
+import { NavLink, useLocation, useNavigate } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder';
-import { PicrFile, PicrFolder } from '../../types';
+import type { PicrFile, PicrFolder } from '../../types';
 
 import { useBaseViewFolderURL } from './useBaseViewFolderURL';
 

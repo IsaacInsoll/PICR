@@ -1,6 +1,8 @@
-import { ReactNode } from 'react';
-import { Anchor, AnchorProps, Menu, MenuItemProps } from '@mantine/core';
-import { NavLink, NavLinkProps } from 'react-router';
+import type { ReactNode } from 'react';
+import type { AnchorProps, MenuItemProps } from '@mantine/core';
+import { Anchor, Menu } from '@mantine/core';
+import type { NavLinkProps } from 'react-router';
+import { NavLink } from 'react-router';
 
 //These override Mantine components with NavLink stuff so we get proper links that work with router
 

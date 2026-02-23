@@ -1,4 +1,4 @@
-import { LoginDetails } from '@/src/hooks/useLoginDetails';
+import type { LoginDetails } from '@/src/hooks/useLoginDetails';
 import { loginMutation } from '@shared/urql/mutations/loginMutation';
 import { picrUrqlClient } from '@shared/urql/urqlClient';
 

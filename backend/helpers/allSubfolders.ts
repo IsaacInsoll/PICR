@@ -1,4 +1,5 @@
-import { db, dbFolderForId, FolderFields } from '../db/picrDb.js';
+import type { FolderFields } from '../db/picrDb.js';
+import { db, dbFolderForId } from '../db/picrDb.js';
 import { dbFolder } from '../db/models/index.js';
 import { and, asc, desc, eq, like, or } from 'drizzle-orm';
 import { FoldersSortType } from '../../graphql-types.js';

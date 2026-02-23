@@ -1,4 +1,4 @@
-import { Video } from '@shared/gql/graphql';
+import type { Video } from '@shared/gql/graphql';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { imageURL } from '@/src/components/AppImage';

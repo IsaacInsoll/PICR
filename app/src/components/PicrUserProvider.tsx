@@ -1,4 +1,5 @@
-import { ReactNode, useEffect, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   getLoginDetailsFromLocalDevice,
   useLoginDetails,

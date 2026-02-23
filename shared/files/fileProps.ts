@@ -1,4 +1,4 @@
-import { File, Folder } from '@shared/gql/graphql';
+import type { File, Folder } from '@shared/gql/graphql';
 
 // TODO: replace all occurrences of file.type == <something> with this :)
 export const fileProps = (file: File | Folder) => {

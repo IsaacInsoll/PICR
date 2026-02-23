@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { FileFlag } from '../../../../../graphql-types';
 import { ApproveIcon, NoFlagIcon, RejectIcon } from '../../../PicrIcons';
 

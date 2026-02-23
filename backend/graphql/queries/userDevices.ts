@@ -1,7 +1,7 @@
 import { GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql';
 import { db } from '../../db/picrDb.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { userDeviceType } from '../types/userDeviceType.js';
 import { GraphQLID } from 'graphql/index.js';
 import { and, eq } from 'drizzle-orm';

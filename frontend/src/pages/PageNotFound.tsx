@@ -1,4 +1,5 @@
-import { Center, MantineStyleProp, Stack, Text, Title } from '@mantine/core';
+import type { MantineStyleProp } from '@mantine/core';
+import { Center, Stack, Text, Title } from '@mantine/core';
 
 export const PageNotFound = () => {
   const center: MantineStyleProp = { textAlign: 'center' };

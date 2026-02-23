@@ -1,9 +1,10 @@
-import { ReactNode, Suspense, useState } from 'react';
+import type { ReactNode } from 'react';
+import { Suspense, useState } from 'react';
 import { useQuery } from 'urql';
 import { manageFolderQuery } from '@shared/urql/queries/manageFolderQuery';
 import QueryFeedback from '../../components/QueryFeedback';
 import { ManagePublicLink } from './ManagePublicLink';
-import { PicrFolder } from '../../../types';
+import type { PicrFolder } from '../../../types';
 import { DisconnectedIcon } from '../../PicrIcons';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { Button, Divider, Group, Stack, Switch } from '@mantine/core';

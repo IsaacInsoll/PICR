@@ -8,8 +8,8 @@ import { addUserRelationship } from '../helpers/addUserRelationship.js';
 import { db, dbFileForId } from '../../db/picrDb.js';
 import { dbComment } from '../../db/models/index.js';
 import { desc, eq } from 'drizzle-orm';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
@@ -25,13 +25,14 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
 
   if (params.fileId) {
     const file = await dbFileForId(params.fileId);
-    const { user } = await contextPermissions(context, file?.folderId, 'View');
+    if (!file) throw new GraphQLError('File not found');
+    const { user } = await contextPermissions(context, file.folderId, 'View');
     if (user?.commentPermissions === 'none') {
       doAuthError('COMMENTS_HIDDEN');
     }
 
     const list = await db.query.dbComment.findMany({
-      where: eq(dbComment.fileId, file!.id),
+      where: eq(dbComment.fileId, file.id),
       orderBy: desc(dbComment.createdAt),
     });
 

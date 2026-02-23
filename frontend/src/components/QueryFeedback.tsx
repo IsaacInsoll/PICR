@@ -1,4 +1,4 @@
-import { CombinedError, UseQueryState } from 'urql';
+import type { CombinedError, UseQueryState } from 'urql';
 import { useSetAtom } from 'jotai';
 import { authKeyAtom } from '../atoms/authAtom';
 import { LoadingIndicator } from './LoadingIndicator';

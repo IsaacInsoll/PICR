@@ -1,12 +1,9 @@
-import { Href, Link, LinkProps } from 'expo-router';
+import type { Href, LinkProps } from 'expo-router';
+import { Link } from 'expo-router';
 import { useHostname, useUuid } from '@/src/hooks/useHostname';
-import {
-  addToFileCache,
-  addToFolderCache,
-  FileIDandName,
-  FolderIDandName,
-} from '@/src/helpers/folderCache';
-import { ReactNode } from 'react';
+import type { FileIDandName, FolderIDandName } from '@/src/helpers/folderCache';
+import { addToFileCache, addToFolderCache } from '@/src/helpers/folderCache';
+import type { ReactNode } from 'react';
 
 type LinkableFolder = {
   __typename: 'Folder';

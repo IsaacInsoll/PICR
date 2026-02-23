@@ -1,4 +1,4 @@
-import { NotificationPayload, NotificationType } from './notifications.js';
+import type { NotificationPayload, NotificationType } from './notifications.js';
 
 export const sendNtfyNotification = async (
   topic: string,

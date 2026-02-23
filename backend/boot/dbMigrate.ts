@@ -11,7 +11,7 @@ import {
   or,
   sql,
 } from 'drizzle-orm';
-import { IPicrConfiguration } from '../config/IPicrConfiguration.js';
+import type { IPicrConfiguration } from '../config/IPicrConfiguration.js';
 import { dirname } from 'path';
 import { randomBytes } from 'node:crypto';
 import {
@@ -41,18 +41,19 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
     config.tokenSecret = opts.tokenSecret;
   }
 
-  if (valid(opts.lastBootedVersion)) {
-    if (lt(opts.lastBootedVersion!, '0.7.0')) {
+  const lastBootedVersion = opts.lastBootedVersion;
+  if (lastBootedVersion && valid(lastBootedVersion)) {
+    if (lt(lastBootedVersion, '0.7.0')) {
       await removeDuplicates();
     }
-    if (lt(opts.lastBootedVersion!, '0.8.19')) {
+    if (lt(lastBootedVersion, '0.8.19')) {
       console.log(' ℹ️ Enabling metadata refresh for upgrade to 0.8.19+');
       config.updateMetadata = true;
     }
-    if (lt(opts.lastBootedVersion!, '0.9.4')) {
+    if (lt(lastBootedVersion, '0.9.4')) {
       await fixImageTypesForExtensions();
     }
-    if (lt(opts.lastBootedVersion!, '0.9.6')) {
+    if (lt(lastBootedVersion, '0.9.6')) {
       await migrateBrandingRelationship();
     }
   }
@@ -71,9 +72,13 @@ const removeDuplicates = async () => {
     .having(sql`count(*) > 1`);
 
   await Promise.all(
-    duplicateFolders.map(({ relativePath }) =>
-      processDuplicateFolder(relativePath!),
-    ),
+    duplicateFolders.map(({ relativePath }) => {
+      if (!relativePath) {
+        console.log('Skipping duplicate-folder migration row with no path');
+        return Promise.resolve();
+      }
+      return processDuplicateFolder(relativePath);
+    }),
   );
 
   //TODO: fix the parentId on each folder (EG: sub-sub-folder has parentId of 1 due to bugs)
@@ -85,10 +90,14 @@ const removeDuplicates = async () => {
   });
 
   const fMap: { [key: string]: number } = { '.': 1 };
-  folders.forEach(({ id, relativePath }) => (fMap[relativePath!] = id));
+  folders.forEach(({ id, relativePath }) => {
+    if (!relativePath) return;
+    fMap[relativePath] = id;
+  });
 
   folders.forEach((f) => {
-    const parentPath = dirname(f.relativePath!);
+    if (!f.relativePath) return;
+    const parentPath = dirname(f.relativePath);
     //TODO: set f.id to have parentId of fMap[parentPath]`
     db.update(dbFolder)
       .set({ parentId: fMap[parentPath] })
@@ -106,9 +115,15 @@ const removeDuplicates = async () => {
     .having(sql`count(*) > 1`);
 
   await Promise.all(
-    duplicateFiles.map(({ relativePath, name }) =>
-      processDuplicateFile(relativePath!, name!),
-    ),
+    duplicateFiles.map(({ relativePath, name }) => {
+      if (!relativePath || !name) {
+        console.log(
+          'Skipping duplicate-file migration row with missing fields',
+        );
+        return Promise.resolve();
+      }
+      return processDuplicateFile(relativePath, name);
+    }),
   );
 
   console.log('🔂 PICR Migration complete');

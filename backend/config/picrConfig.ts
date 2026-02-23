@@ -1,4 +1,4 @@
-import { IPicrConfiguration } from './IPicrConfiguration.js';
+import type { IPicrConfiguration } from './IPicrConfiguration.js';
 
 export const picrConfig: IPicrConfiguration = {
   baseUrl: '',

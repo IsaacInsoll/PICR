@@ -161,9 +161,10 @@ Run TypeScript checks for each touched subsystem before finalizing changes:
 - Frontend changes → `cd frontend && npx tsc --noEmit`
 - App changes → `cd app && npx tsc --noEmit`
 
-Run formatting checks before finalizing:
+Run formatting before finalizing changes, then verify:
 
-- `npm run format:check`
+- `npm run format` — apply Prettier formatting
+- `npm run format:check` — verify (this is what CI runs)
 
 Test scope note:
 
@@ -177,6 +178,14 @@ Test scope note:
 
 **Do not run `npm run workflow` directly.** Ask the user to run it themselves.
 **`npm run test:api` and `npm run test:e2e` may be run by AI locally anytime.**
+
+## Subsystem Boundaries
+
+ESLint enforces that `frontend`, `backend`, and `app` do not import from each other — only from `shared`. The rule uses relative path patterns (`../**/backend/**` etc.) and runs automatically on `npm run lint`.
+
+**The rule has one blind spot:** TypeScript path aliases (e.g. `@shared/*`) are not matched by the relative-path patterns. If you add a new alias to a tsconfig `paths`, ensure it does not point across subsystem boundaries. The `@frontend/*` alias was removed from `app/tsconfig.json` for this reason.
+
+**When moving or deleting a file:** search for references using both `.ts` and `.tsx` extensions, and check for alias-based imports (`@shared/`, `@frontend/`) in addition to relative paths. Always run `npx tsc --noEmit` for each touched subsystem — lint alone is not sufficient.
 
 ## Coding Style & Conventions
 

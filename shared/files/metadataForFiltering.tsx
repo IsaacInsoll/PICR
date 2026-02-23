@@ -1,4 +1,4 @@
-import { Image, ImageMetadataSummary } from '@shared/gql/graphql';
+import type { Image, ImageMetadataSummary } from '@shared/gql/graphql';
 
 export type MetadataOptionsForFiltering = Partial<
   Record<keyof ImageMetadataSummary, (string | number)[]>

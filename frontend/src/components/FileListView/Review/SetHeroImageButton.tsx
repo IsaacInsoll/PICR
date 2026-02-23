@@ -1,4 +1,4 @@
-import { PicrFile } from '../../../../types';
+import type { PicrFile } from '../../../../types';
 import { useMe } from '../../../hooks/useMe';
 import { ActionIcon, Tooltip } from '@mantine/core';
 import { HeroImageIcon } from '../../../PicrIcons';

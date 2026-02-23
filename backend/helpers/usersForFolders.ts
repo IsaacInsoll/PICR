@@ -1,4 +1,5 @@
-import { db, UserFields } from '../db/picrDb.js';
+import type { UserFields } from '../db/picrDb.js';
+import { db } from '../db/picrDb.js';
 import { inArray } from 'drizzle-orm';
 import { dbUser } from '../db/models/index.js';
 

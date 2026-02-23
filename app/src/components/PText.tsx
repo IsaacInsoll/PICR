@@ -1,4 +1,5 @@
-import { StyleProp, Text as RNText, TextProps, TextStyle } from 'react-native';
+import type { StyleProp, TextProps, TextStyle } from 'react-native';
+import { Text as RNText } from 'react-native';
 import { useAppTheme } from '../hooks/useAppTheme';
 
 type TextVariant = 'dimmed' | 'bold' | 'code';

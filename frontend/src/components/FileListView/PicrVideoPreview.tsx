@@ -1,10 +1,11 @@
 import { useElementSize, useMouse } from '@mantine/hooks';
-import { PicrFile } from '../../../types';
+import type { PicrFile } from '../../../types';
 import { Box, Image, LoadingOverlay } from '@mantine/core';
 import { VideoBadge } from './VideoBadge';
 import { VideoProgressIndicator } from './VideoProgressIndicator';
-import { ThumbnailImageComponentImageProps } from './react-grid-gallery';
-import { CSSProperties, useEffect, useState } from 'react';
+import type { ThumbnailImageComponentImageProps } from './react-grid-gallery';
+import type { CSSProperties } from 'react';
+import { useEffect, useState } from 'react';
 import { imageURL } from '../../helpers/imageURL';
 
 // Video 'scrubber' image preview. Requires either a `style` prop for dimensions or will work it out based on container width

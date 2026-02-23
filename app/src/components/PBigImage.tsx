@@ -2,16 +2,17 @@
 import { ZOOM_TYPE, Zoomable } from '@likashefqet/react-native-image-zoom';
 import { memo, useEffect, useRef, useState } from 'react';
 import { CacheManager } from '@georstat/react-native-image-cache';
-import { Image } from '../../../graphql-types';
+import type { Image } from '../../../graphql-types';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { Image as ExpoImage } from 'expo-image';
 import { imageURL } from '@/src/components/AppImage';
-import { Platform, StyleSheet, ViewStyle } from 'react-native';
+import type { ViewStyle } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { useAtom } from 'jotai';
-import { AllSize } from '@frontend/helpers/thumbnailSize';
+import type { AllSize } from '@shared/thumbnailSize';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
-import { File } from '@shared/gql/graphql';
+import type { File } from '@shared/gql/graphql';
 
 const PBigImageComponent = ({
   file,

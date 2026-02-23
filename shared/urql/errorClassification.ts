@@ -32,8 +32,8 @@ export const isAuthExpiredError = (error?: CombinedError): boolean => {
   if (!error) return false;
   return error.graphQLErrors.some(
     (entry) =>
-      entry.extensions?.code === 'UNAUTHENTICATED' &&
-      entry.extensions?.reason === AUTH_REASON.NOT_LOGGED_IN,
+      entry.extensions?.['code'] === 'UNAUTHENTICATED' &&
+      entry.extensions?.['reason'] === AUTH_REASON.NOT_LOGGED_IN,
   );
 };
 
@@ -59,14 +59,14 @@ export const classifyGlobalUrqlError = (
 
   const extensionCodes = new Set(
     graphQLErrors
-      .map((entry) => entry.extensions?.code)
+      .map((entry) => entry.extensions?.['code'])
       .filter((value): value is string => typeof value === 'string'),
   );
   const hasForbiddenCode = extensionCodes.has('FORBIDDEN');
   const hasUnauthenticatedCode = extensionCodes.has('UNAUTHENTICATED');
   const reasonCodes = new Set(
     graphQLErrors
-      .map((entry) => entry.extensions?.reason)
+      .map((entry) => entry.extensions?.['reason'])
       .filter(isAuthErrorReason),
   );
 

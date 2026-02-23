@@ -2,7 +2,7 @@ import { delay } from '../../helpers/delay.js';
 import { folderList, relativePath } from '../fileManager.js';
 import { log } from '../../logger.js';
 import { db } from '../../db/picrDb.js';
-import { and, eq, gte } from 'drizzle-orm';
+import { and, eq, gte, isNull } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
 
 export const removeFolder = async (path: string) => {
@@ -18,7 +18,9 @@ export const removeFolder = async (path: string) => {
   if (!folder) return;
   const newFolder = await db.query.dbFolder.findFirst({
     where: and(
-      eq(dbFolder.folderHash, folder.folderHash!),
+      folder.folderHash
+        ? eq(dbFolder.folderHash, folder.folderHash)
+        : isNull(dbFolder.folderHash),
       gte(dbFolder.createdAt, new Date(Date.now() - 5000)),
     ),
   });

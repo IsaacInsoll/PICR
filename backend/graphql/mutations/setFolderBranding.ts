@@ -4,8 +4,8 @@ import { folderType } from '../types/folderType.js';
 import { db, dbFolderForId } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { GraphQLError } from 'graphql/error/index.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (

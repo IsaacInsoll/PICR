@@ -1,4 +1,5 @@
-import { Href, Slot, useRouter } from 'expo-router';
+import type { Href } from 'expo-router';
+import { Slot, useRouter } from 'expo-router';
 import { ThemeProvider } from '@/src/components/themeProvider';
 
 import { CacheManager } from '@georstat/react-native-image-cache';
@@ -40,7 +41,7 @@ export default function AppLayout() {
   const router = useRouter();
   useEffect(() => {
     // if (lastNotification);
-    const url = lastNotification?.notification.request.content.data.url;
+    const url = lastNotification?.notification.request.content.data['url'];
 
     if (typeof url === 'string') {
       console.log([

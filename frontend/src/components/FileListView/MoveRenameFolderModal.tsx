@@ -1,7 +1,7 @@
 import { Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
-import { PicrFolder } from '../../../types';
+import type { PicrFolder } from '../../../types';
 import { useIsSmallScreen } from '../../hooks/useIsMobile';
 import { FolderSelector } from '../FolderSelector';
 import { renameFolderMutation } from '@shared/urql/mutations/renameFolderMutation';

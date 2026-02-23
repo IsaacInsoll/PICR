@@ -1,5 +1,6 @@
 import { useAtom } from 'jotai';
-import { FilterOptionsInterface, filterOptions } from '@shared/filterAtom';
+import type { FilterOptionsInterface } from '@shared/filterAtom';
+import { filterOptions } from '@shared/filterAtom';
 import { TextInput } from '@mantine/core';
 import { SearchIcon } from '../../../PicrIcons';
 

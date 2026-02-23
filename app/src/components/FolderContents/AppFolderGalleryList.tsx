@@ -1,12 +1,12 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AppLink } from '@/src/components/AppFolderLink';
 import { PText } from '@/src/components/PText';
-import { Folder } from '@shared/gql/graphql';
+import type { Folder } from '@shared/gql/graphql';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { BlurView } from 'expo-blur';
 import { memo, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
-import { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
+import type { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
 import { fileProps } from '@shared/files/fileProps';
 import { PFileFolderThumbnail, PFileView } from '@/src/components/PFileView';
 import { AppFooterPadding } from '@/src/components/AppHeaderPadding';

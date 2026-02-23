@@ -1,11 +1,11 @@
 import { ActionIcon, Group } from '@mantine/core';
 import { useAtom } from 'jotai';
-import {
+import type {
   FilterOptionsInterface,
-  filterOptions,
   RatingsComparisonOptions,
 } from '@shared/filterAtom';
-import { ReactNode } from 'react';
+import { filterOptions } from '@shared/filterAtom';
+import type { ReactNode } from 'react';
 import {
   EqualIcon,
   GreaterThanEqualIcon,

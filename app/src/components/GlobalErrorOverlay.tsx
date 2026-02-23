@@ -2,7 +2,8 @@ import { clearGlobalError, globalErrorAtom } from '@shared/globalErrorAtom';
 import { PText } from '@/src/components/PText';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { useAtomValue } from 'jotai';
-import { Href, usePathname, useRouter } from 'expo-router';
+import type { Href } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 export const GlobalErrorOverlay = () => {

@@ -1,17 +1,17 @@
 // The "Lightbox" appears when an individual image is selected
-import {
+import type {
   CarouselSettings,
   ControllerRef,
-  Lightbox,
   SlotStyles,
 } from 'yet-another-react-lightbox';
+import { Lightbox } from 'yet-another-react-lightbox';
 
 import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/counter.css';
 import 'yet-another-react-lightbox/plugins/thumbnails.css';
 import './SelectedFileView.css';
-import { ViewFolderFileWithHero } from '@shared/files/sortFiles';
+import type { ViewFolderFileWithHero } from '@shared/files/sortFiles';
 import { theme } from '../../../theme';
 import { useSetFolder } from '../../../hooks/useSetFolder';
 import { useEffect, useRef, useMemo, useState } from 'react';
@@ -26,7 +26,7 @@ import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
 import { useCanDownload } from '../../../hooks/useMe';
 import { Thumbnails } from 'yet-another-react-lightbox/plugins';
 import { ThumbnailsIcon } from '../../../PicrIcons';
-import { PicrFile } from '../../../../types';
+import type { PicrFile } from '../../../../types';
 
 export const SelectedFileView = ({
   files,

@@ -1,5 +1,6 @@
 import { allSubfolderIds } from '../../helpers/allSubfolders.js';
-import { db, dbFileForId, FileFields, FolderFields } from '../../db/picrDb.js';
+import type { FileFields, FolderFields } from '../../db/picrDb.js';
+import { db, dbFileForId } from '../../db/picrDb.js';
 import { and, asc, eq, inArray, ne } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 

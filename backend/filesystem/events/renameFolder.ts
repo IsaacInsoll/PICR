@@ -1,5 +1,5 @@
 import { basename, dirname } from 'path';
-import { Stats } from 'node:fs';
+import type { Stats } from 'node:fs';
 import { addFolder } from './addFolder.js';
 import { folderList, relativePath } from '../fileManager.js';
 import { db } from '../../db/picrDb.js';

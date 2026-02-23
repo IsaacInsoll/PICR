@@ -1,16 +1,17 @@
 import { useAtom } from 'jotai';
-import {
+import type {
   AspectFilterOptions,
   FilterOptionsInterface,
-  filterOptions,
 } from '@shared/filterAtom';
+import { filterOptions } from '@shared/filterAtom';
 import {
   AspectAnyIcon,
   AspectLandscapeIcon,
   AspectPortraitIcon,
   AspectSquareIcon,
 } from '../../../PicrIcons';
-import { Group, Select, SelectProps } from '@mantine/core';
+import type { SelectProps } from '@mantine/core';
+import { Group, Select } from '@mantine/core';
 
 export const AspectSelector = () => {
   const [options, setOptions] = useAtom(filterOptions);

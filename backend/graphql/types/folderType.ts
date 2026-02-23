@@ -18,11 +18,12 @@ import { allSubfolderIds } from '../../helpers/allSubfolders.js';
 import { userType } from './userType.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
-import { db, FolderFields, getFilesForFolder } from '../../db/picrDb.js';
+import type { FolderFields } from '../../db/picrDb.js';
+import { db, getFilesForFolder } from '../../db/picrDb.js';
 import { and, count, eq, inArray, sum } from 'drizzle-orm';
 import { dbFile, dbUser } from '../../db/models/index.js';
 import { GraphQLDateTime } from 'graphql-scalars';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 export const folderType: GraphQLObjectType<FolderFields, PicrRequestContext> =
   new GraphQLObjectType({

@@ -1,11 +1,11 @@
 import { Button } from '@mantine/core';
 import { useAtom } from 'jotai';
-import {
+import type {
   CommentsFilterOptions,
   FilterOptionsInterface,
-  filterOptions,
 } from '@shared/filterAtom';
-import { ReactNode } from 'react';
+import { filterOptions } from '@shared/filterAtom';
+import type { ReactNode } from 'react';
 import { CommentIcon, CommentsIcon } from '../../../PicrIcons';
 
 export const CommentsFilterBox = () => {

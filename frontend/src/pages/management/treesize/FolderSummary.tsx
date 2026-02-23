@@ -1,17 +1,9 @@
 import type { TreeSizeQueryQuery } from '@shared/gql/graphql';
-import {
-  Alert,
-  Box,
-  Code,
-  MantineStyleProp,
-  Progress,
-  Stack,
-  Table,
-  Tabs,
-} from '@mantine/core';
+import type { MantineStyleProp } from '@mantine/core';
+import { Alert, Box, Code, Progress, Stack, Table, Tabs } from '@mantine/core';
 import { prettyBytes } from '@shared/prettyBytes';
 import { chartColorFiles } from './chartColors';
-import { PieSlice } from './useTreeSize';
+import type { PieSlice } from './useTreeSize';
 import { FileIcon, FolderIcon, InfoIcon } from '../../../PicrIcons';
 import { atom, useAtom } from 'jotai';
 import { pluralize } from '@shared/pluralize';

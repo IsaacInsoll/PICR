@@ -1,5 +1,5 @@
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
-import { Folder as GqlFolder, Folder } from '../../../graphql-types.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { Folder as GqlFolder, Folder } from '../../../graphql-types.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { allSubfolders } from '../../helpers/allSubfolders.js';
 import {
@@ -10,7 +10,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { folderType } from '../types/folderType.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver: GraphQLFieldResolver<Folder, PicrRequestContext> = async (
   _,

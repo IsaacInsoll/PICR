@@ -4,8 +4,8 @@ import { GraphQLError } from 'graphql/error/index.js';
 import { brandingForId, db } from '../../db/picrDb.js';
 import { dbBranding, dbFolder } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,

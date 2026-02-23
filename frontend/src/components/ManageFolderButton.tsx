@@ -1,4 +1,4 @@
-import { PicrFolder } from '../../types';
+import type { PicrFolder } from '../../types';
 import { NavLink } from 'react-router';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 import { FolderIcon, ManageFolderIcon } from '../PicrIcons';

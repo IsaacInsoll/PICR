@@ -1,6 +1,7 @@
-import { useState, MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
+import { useState } from 'react';
 import { CheckButton } from './CheckButton';
-import { ImageExtended, ImageProps } from './types';
+import type { ImageExtended, ImageProps } from './types';
 import * as styles from './styles';
 import { getStyle } from './styles';
 

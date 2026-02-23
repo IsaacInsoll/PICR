@@ -2,7 +2,7 @@ import { atom, useSetAtom } from 'jotai';
 import { atomWithHash } from 'jotai-location';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 import { lightboxControllerRefAtom } from './lightboxControllerRefAtom';
-import { PicrFolder } from '../../types';
+import type { PicrFolder } from '../../types';
 
 export type FileViewType = 'info' | 'comments' | undefined;
 

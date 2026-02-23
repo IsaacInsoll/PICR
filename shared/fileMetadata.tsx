@@ -40,20 +40,20 @@ export const metadataForPresentation = (
 
   const remove: string[] = [];
 
-  if (metadata.VideoCodec && metadata.VideoCodecDescription) {
+  if (metadata['VideoCodec'] && metadata['VideoCodecDescription']) {
     remove.push('VideoCodec', 'VideoCodecDescription');
     list.push({
       description: 'Video',
-      label: String(metadata.VideoCodec),
-      subLabel: String(metadata.VideoCodecDescription),
+      label: String(metadata['VideoCodec']),
+      subLabel: String(metadata['VideoCodecDescription']),
     });
   }
-  if (metadata.AudioCodec && metadata.AudioCodecDescription) {
+  if (metadata['AudioCodec'] && metadata['AudioCodecDescription']) {
     remove.push('AudioCodec', 'AudioCodecDescription');
     list.push({
       description: 'Audio',
-      label: String(metadata.AudioCodec),
-      subLabel: String(metadata.AudioCodecDescription),
+      label: String(metadata['AudioCodec']),
+      subLabel: String(metadata['AudioCodecDescription']),
     });
   }
 
@@ -66,21 +66,21 @@ export const metadataForPresentation = (
     });
   }
 
-  if (metadata.Width && metadata.Height) {
+  if (metadata['Width'] && metadata['Height']) {
     remove.push('Width', 'Height');
     list.push({
       icon: 'AspectRatio',
       description: 'Dimensions',
-      label: `${metadata.Width} x ${metadata.Height} px`,
+      label: `${metadata['Width']} x ${metadata['Height']} px`,
     });
   }
 
-  if (metadata.Rating) {
+  if (metadata['Rating']) {
     remove.push('Rating');
     list.push({
       icon: 'Rating',
       description: 'Original Rating',
-      label: String(metadata.Rating),
+      label: String(metadata['Rating']),
     });
   }
 

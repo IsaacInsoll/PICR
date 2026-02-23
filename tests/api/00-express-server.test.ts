@@ -1,11 +1,8 @@
 import { expect, test } from 'vitest';
-import {
-  createTestGraphqlClient,
-  getUserHeader,
-} from '../../frontend/testGraphqlClient';
+import { createTestGraphqlClient, getUserHeader } from './testGraphqlClient';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
-import { AllSize } from '../../frontend/src/helpers/thumbnailSize';
+import { AllSize } from '../../shared/thumbnailSize';
 import { photoFolderId, testUrl } from './testVariables';
 
 test('Express Server Online', async () => {

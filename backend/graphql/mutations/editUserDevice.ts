@@ -7,8 +7,8 @@ import {
 import { db } from '../../db/picrDb.js';
 import { and, eq } from 'drizzle-orm';
 import { dbUserDevice } from '../../db/models/index.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { userDeviceType } from '../types/userDeviceType.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 

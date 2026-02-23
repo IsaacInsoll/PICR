@@ -1,5 +1,5 @@
 import { LinkMode } from '../../../graphql-types';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { DownloadIcon, FileIcon } from '../PicrIcons';
 
 export const linkModeStyle: {

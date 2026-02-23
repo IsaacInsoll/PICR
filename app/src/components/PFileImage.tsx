@@ -1,9 +1,10 @@
 import { memo } from 'react';
-import { Image as ExpoImage, ImageProps } from 'expo-image';
+import type { ImageProps } from 'expo-image';
+import { Image as ExpoImage } from 'expo-image';
 import { useLocalImageUrl } from '@/src/components/PBigImage';
-import { ThumbnailSize } from '@frontend/helpers/thumbnailSize';
+import type { ThumbnailSize } from '@shared/thumbnailSize';
 import { View } from 'react-native';
-import { FileType } from '@shared/gql/graphql';
+import type { FileType } from '@shared/gql/graphql';
 
 type ThumbnailImageLike = {
   id?: string;

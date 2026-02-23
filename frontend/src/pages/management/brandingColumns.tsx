@@ -1,10 +1,8 @@
-import { PicrColumns } from '../../components/PicrDataGrid';
-import {
-  PrimaryColor,
-  ThemeMode,
-  ViewBrandingsQueryQuery,
-} from '@shared/gql/graphql';
-import { Badge, DefaultMantineColor, Text } from '@mantine/core';
+import type { PicrColumns } from '../../components/PicrDataGrid';
+import type { ViewBrandingsQueryQuery } from '@shared/gql/graphql';
+import { PrimaryColor, ThemeMode } from '@shared/gql/graphql';
+import type { DefaultMantineColor } from '@mantine/core';
+import { Badge, Text } from '@mantine/core';
 
 type BrandingRow = NonNullable<ViewBrandingsQueryQuery['brandings'][number]>;
 

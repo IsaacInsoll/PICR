@@ -6,7 +6,7 @@ import { picrConfig } from '../config/picrConfig.js';
 import { db } from '../db/picrDb.js';
 import { dbFile, dbFolder } from '../db/models/index.js';
 import { isNotNull } from 'drizzle-orm';
-import { IPicrConfiguration } from '../config/IPicrConfiguration.js';
+import type { IPicrConfiguration } from '../config/IPicrConfiguration.js';
 import { createRenameTracker } from './renameTracker.js';
 
 export const fileWatcher = async (config: IPicrConfiguration) => {
@@ -28,7 +28,7 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
 
   const renameTracker = createRenameTracker();
 
-  const watcher = chokidar.watch(picrConfig.mediaPath!, {
+  const watcher = chokidar.watch(picrConfig.mediaPath, {
     ignored: ignored,
     persistent: true,
     awaitWriteFinish: true,

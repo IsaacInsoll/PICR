@@ -8,12 +8,12 @@ import {
 } from 'graphql';
 import { folderType } from '../types/folderType.js';
 import { db, dbFileForId, dbFolderForId } from '../../db/picrDb.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { setHeroImage } from './setHeroImage.js';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds.js';
 import { and, eq, inArray } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 
 const maxFolderTextLength = 255;
 
@@ -54,15 +54,14 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
       return;
     }
     if (heroImage.type != 'Image') doAuthError('INVALID_HERO_IMAGE_TYPE');
-    if (heroImage.folderId != folder!.id)
-      doAuthError('HERO_IMAGE_OUT_OF_SCOPE');
+    if (heroImage.folderId != folder.id) doAuthError('HERO_IMAGE_OUT_OF_SCOPE');
 
-    await setHeroImage(heroImage.id, folder!.id);
+    await setHeroImage(heroImage.id, folder.id);
 
     //for all parent folders: if they don't have their own in-folder hero image, update it to be this one too
     const allParentIds = await folderAndAllParentIds(
       folder,
-      context.userHomeFolder!.id,
+      context.userHomeFolder?.id ?? 1,
     );
     const parents = await db.query.dbFolder.findMany({
       where: and(
@@ -98,10 +97,10 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
     await db
       .update(dbFolder)
       .set({ ...updates, updatedAt: new Date() })
-      .where(eq(dbFolder.id, folder!.id));
+      .where(eq(dbFolder.id, folder.id));
   }
 
-  const updatedFolder = await dbFolderForId(folder!.id);
+  const updatedFolder = await dbFolderForId(folder.id);
   return {
     ...(updatedFolder ?? folder),
     ...(heroImage ? { heroImage, heroImageId: heroImage.id } : {}),

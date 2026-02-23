@@ -1,4 +1,5 @@
-import { View, ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
+import { View } from 'react-native';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 
 export const AppView = ({ children, style, ...props }: ViewProps) => {

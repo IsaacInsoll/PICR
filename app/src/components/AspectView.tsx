@@ -1,6 +1,7 @@
 // returns a view matching the aspect ratio.
 // width can be specified or implied
-import { ReactNode, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { View } from 'react-native';
 import { PText } from '@/src/components/PText';
 

@@ -1,4 +1,5 @@
-import { FileFields, getFilesForFolder } from '../../db/picrDb.js';
+import type { FileFields } from '../../db/picrDb.js';
+import { getFilesForFolder } from '../../db/picrDb.js';
 
 export const subFilesMap = async (folderId: number) => {
   const files = await getFilesForFolder(folderId);

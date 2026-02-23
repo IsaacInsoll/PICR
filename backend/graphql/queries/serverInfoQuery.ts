@@ -2,8 +2,8 @@ import { serverInfoType } from '../types/serverInfoType.js';
 import { requireFullAdmin } from './admins.js';
 import fastFolderSizeSync from 'fast-folder-size/sync.js';
 import { picrConfig } from '../../config/picrConfig.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,

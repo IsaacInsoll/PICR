@@ -1,4 +1,5 @@
-import { Image, ImageProps } from 'expo-image';
+import type { ImageProps } from 'expo-image';
+import { Image } from 'expo-image';
 
 export const PicrLogo = (props: ImageProps) => {
   return (

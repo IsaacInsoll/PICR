@@ -1,12 +1,12 @@
 import { queueTaskStatus } from '../../filesystem/fileQueue.js';
-import { Task } from '../../../shared/gql/graphql.js';
+import type { Task } from '../../../shared/gql/graphql.js';
 import { queueZipTaskStatus } from '../../helpers/zipQueue.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { taskType } from '../types/taskType.js';
 import { allSubfolderIds } from '../../helpers/allSubfolders.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,

@@ -29,7 +29,7 @@ import {
 } from '../../PicrIcons';
 import { atom, useSetAtom } from 'jotai';
 import { authKeyAtom } from '../../atoms/authAtom';
-import { PicrFolder } from '../../../types';
+import type { PicrFolder } from '../../../types';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
@@ -49,7 +49,7 @@ export const LoggedInHeader = ({
   const me = useMe();
 
   return (
-    <header className={classes.header}>
+    <header className={classes['header']}>
       <Page>
         {me?.isUser ? (
           <Group>

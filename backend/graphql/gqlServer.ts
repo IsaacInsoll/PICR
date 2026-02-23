@@ -1,11 +1,11 @@
 import { createHandler } from 'graphql-http/lib/use/express';
 import { schema } from './schema.js';
-import { IncomingCustomHeaders } from '../types/incomingCustomHeaders.js';
+import type { IncomingCustomHeaders } from '../types/incomingCustomHeaders.js';
 import { getUserFromToken } from '../auth/jwt-auth.js';
-import { PicrRequestContext } from '../types/PicrRequestContext.js';
+import type { PicrRequestContext } from '../types/PicrRequestContext.js';
 import { getUserFromUUID } from '../auth/getUserFromUUID.js';
 import { dbFolderForId } from '../db/picrDb.js';
-import { extraUserProps } from '../helpers/extraUserProps.js';
+import { extraUserProps } from '../../shared/extraUserProps.js';
 import { UserType } from '../../graphql-types.js';
 
 export const gqlServer = createHandler({
@@ -23,7 +23,7 @@ export const gqlServer = createHandler({
       auth: headers.authorization ?? '',
       uuid: headers.uuid,
       host: headers.host,
-      sessionId: headers.sessionid as string, //note: header field is lower case
+      sessionId: headers['sessionid'] as string, //note: header field is lower case
       userAgent: headers['user-agent'],
       ipAddress,
     };

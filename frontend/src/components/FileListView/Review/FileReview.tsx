@@ -1,5 +1,5 @@
 import { Divider, Group } from '@mantine/core';
-import { PicrFile } from '../../../../types';
+import type { PicrFile } from '../../../../types';
 import { FileFlagButtons } from './FileFlagButtons';
 import { useMutation } from 'urql';
 import { CommentButton } from './CommentButton';

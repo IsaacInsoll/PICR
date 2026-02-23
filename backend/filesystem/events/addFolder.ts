@@ -2,10 +2,12 @@ import { folderList, pathSplit, relativePath } from '../fileManager.js';
 import { updateFolderHash } from './updateFolderHash.js';
 import { log } from '../../logger.js';
 import { sep } from 'path';
-import { db, FolderFields } from '../../db/picrDb.js';
+import type { FolderFields } from '../../db/picrDb.js';
+import { db } from '../../db/picrDb.js';
 import { and, eq, isNull } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
-import { Stats, statSync } from 'node:fs';
+import type { Stats } from 'node:fs';
+import { statSync } from 'node:fs';
 import { picrConfig } from '../../config/picrConfig.js';
 import type { QueryResult, QueryResultRow } from 'pg';
 
@@ -45,7 +47,9 @@ export const setupRootFolder = async () => {
 
 export const addFolder = async (path: string, statsProp?: Stats) => {
   const relative = relativePath(path);
-  const root = rootFolder!;
+  if (!rootFolder)
+    throw new Error('rootFolder not initialized — call setupRootFolder first');
+  const root = rootFolder;
   if (relative === '') return root.id;
 
   const stats = statsProp ?? statSync(path);
@@ -101,9 +105,10 @@ export const addFolder = async (path: string, statsProp?: Stats) => {
         .then(firstReturnedRow);
     }
 
-    folderList[p] = newFolder!.id; // for caching
-    updateFolderHash(newFolder!);
-    f = newFolder!.id;
+    if (!newFolder) throw new Error('Failed to create/find folder');
+    folderList[p] = newFolder.id; // for caching
+    updateFolderHash(newFolder);
+    f = newFolder.id;
     log('info', `📁➕ ${relativePath(path)}`);
   }
   // console.log('finished addFolder: ' + path);

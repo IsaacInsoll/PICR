@@ -4,8 +4,8 @@ import { addToZipQueue } from '../../helpers/zipQueue.js';
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
 import { AccessType, LinkMode } from '../../../graphql-types.js';
 import { createAccessLog } from '../../db/picrDb.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 import { GraphQLError } from 'graphql/error/index.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (

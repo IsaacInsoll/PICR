@@ -1,6 +1,6 @@
 import { useQuery } from 'urql';
 import { viewUserQuery } from '@shared/urql/queries/viewUserQuery';
-import { PicrUser } from '../../../types';
+import type { PicrUser } from '../../../types';
 
 export const useViewUser = (id?: string): [PicrUser | undefined, boolean] => {
   const [response] = useQuery({

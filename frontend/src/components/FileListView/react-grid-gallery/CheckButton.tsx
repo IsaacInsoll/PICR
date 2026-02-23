@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import * as styles from './styles';
-import { CheckButtonProps } from './types';
+import type { CheckButtonProps } from './types';
 
 export const CheckButton = ({
   isSelected = false,

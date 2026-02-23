@@ -14,7 +14,8 @@ import { and, eq } from 'drizzle-orm';
 import { db } from '../../db/picrDb.js';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 import { delay } from '../../helpers/delay.js';
-import { existsSync, Stats, statSync } from 'node:fs';
+import type { Stats } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 
 export const addFile = async (
   filePath: string,
@@ -98,8 +99,8 @@ export const addFile = async (
   const previousCreated = created ? null : file.fileCreated;
   const modified =
     !created &&
-    (previousLastModified!.getTime() != stats.mtime.getTime() ||
-      previousCreated!.getTime() != stats.birthtime.getTime() ||
+    (previousLastModified?.getTime() !== stats.mtime.getTime() ||
+      previousCreated?.getTime() !== stats.birthtime.getTime() ||
       wasRenamed);
 
   if (created || !file.fileHash || modified) {

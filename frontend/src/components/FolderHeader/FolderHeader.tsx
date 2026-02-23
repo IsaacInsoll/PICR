@@ -1,6 +1,6 @@
-import { PicrFolder } from '../../../types';
+import type { PicrFolder } from '../../../types';
 import { FolderLink } from '../FolderLink';
-import { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { placeholderFolder } from './PlaceholderFolder';
 import { Page } from '../Page';

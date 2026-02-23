@@ -2,7 +2,8 @@ import { Tabs } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router';
 import { ManageUsers } from './ManageUsers';
 import { Page } from '../../components/Page';
-import { ReactNode, Suspense } from 'react';
+import type { ReactNode } from 'react';
+import { Suspense } from 'react';
 import { ServerInfo } from './ServerInfo';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import {

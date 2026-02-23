@@ -1,8 +1,8 @@
-import { PicrFile, PicrFolder } from '../../../types';
+import type { PicrFile, PicrFolder } from '../../../types';
 import { Avatar, Box } from '@mantine/core';
 import { PicrImage } from '../PicrImage';
 import { FileIcon, FolderIcon, VideoIcon } from '../../PicrIcons';
-import { CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 
 export const SmallPreview = ({
   file,

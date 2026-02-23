@@ -1,10 +1,10 @@
 import { CachedImage } from '@georstat/react-native-image-cache';
-import { File } from '@shared/gql/graphql';
-import { AllSize, ThumbnailSize } from '@frontend/helpers/thumbnailSize';
+import type { File } from '@shared/gql/graphql';
+import type { AllSize, ThumbnailSize } from '@shared/thumbnailSize';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { View } from 'react-native';
 import { useState } from 'react';
-import { Image } from '../../../graphql-types';
+import type { Image } from '../../../graphql-types';
 
 // Show an image but cache it to device
 //TODO: copy PBIGImage and use ExpoImage so we can do BlurRadius prop, and progressively load higher res images?

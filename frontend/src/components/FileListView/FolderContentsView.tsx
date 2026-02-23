@@ -16,14 +16,16 @@ import { useParams } from 'react-router';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { FileListView } from './FileListView';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
-import {
+import type {
   ViewFolderFileWithHero,
   ViewFolderSubFolder,
   FolderContentsItem,
+} from '@shared/files/folderContentsViewModel';
+import {
   folderContentsItems,
   isFolderContentsFile,
 } from '@shared/files/folderContentsViewModel';
-import { ViewFolder } from '@shared/files/sortFiles';
+import type { ViewFolder } from '@shared/files/sortFiles';
 import {
   moveRenameFolderAtom,
   useCloseMoveRenameFolderModal,

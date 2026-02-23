@@ -20,7 +20,7 @@ import { LoggedInHeader } from '../components/Header/LoggedInHeader';
 import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
 import { useSetAtom } from 'jotai';
-import { PicrFolder } from '../../types';
+import type { PicrFolder } from '../../types';
 import { DotsIcon, FilterIcon, FolderIcon } from '../PicrIcons';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';

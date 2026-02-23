@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 import { existsSync, readFileSync } from 'node:fs';
 import { addDevLogger, log } from '../logger.js';
 import { picrConfig } from './picrConfig.js';
-import { IPicrConfiguration } from './IPicrConfiguration.js';
+import type { IPicrConfiguration } from './IPicrConfiguration.js';
 import path from 'path';
 import { envSchema } from './envSchema.js';
 import { buildCanWriteWarning, testWriteAccess } from './mediaWriteAccess.js';

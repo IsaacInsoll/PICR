@@ -5,8 +5,8 @@ import { allSubfolderIds } from '../../helpers/allSubfolders.js';
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import { dbFile } from '../../db/models/index.js';
 import { db } from '../../db/picrDb.js';
-import { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { GraphQLFieldResolver } from 'graphql/type/index.js';
 
 const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   _,
@@ -18,7 +18,7 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
     params.folderId,
     'Admin',
   );
-  const folderIds = await allSubfolderIds(folder!);
+  const folderIds = await allSubfolderIds(folder);
 
   const files = await db.query.dbFile.findMany({
     columns: { id: true },
