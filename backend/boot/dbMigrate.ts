@@ -22,6 +22,7 @@ import {
   dbFolder,
   dbUser,
 } from '../db/models/index.js';
+import { log } from '../logger.js';
 
 // This does the "picr" side of migrations, for the DB side see schemaMigration.ts
 export const dbMigrate = async (config: IPicrConfiguration) => {
@@ -29,8 +30,10 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
 
   if (!opts.tokenSecret) {
     if (config.tokenSecret) {
-      console.log(
+      log(
+        'info',
         " ℹ️ Updating token secret in database. You don't need it in .ENV anymore\n",
+        true,
       );
       await setServerOptions({ tokenSecret: config.tokenSecret });
     } else {
@@ -47,7 +50,7 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
       await removeDuplicates();
     }
     if (lt(lastBootedVersion, '0.8.19')) {
-      console.log(' ℹ️ Enabling metadata refresh for upgrade to 0.8.19+');
+      log('info', ' ℹ️ Enabling metadata refresh for upgrade to 0.8.19+', true);
       config.updateMetadata = true;
     }
     if (lt(lastBootedVersion, '0.9.4')) {
@@ -62,7 +65,11 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
 };
 
 const removeDuplicates = async () => {
-  console.log('🔂 PICR Migration: cleanup duplicate file and folder entries');
+  log(
+    'info',
+    '🔂 PICR Migration: cleanup duplicate file and folder entries',
+    true,
+  );
   // NOTE: this runs before FileWatcher has started
 
   const duplicateFolders = await db
@@ -74,7 +81,11 @@ const removeDuplicates = async () => {
   await Promise.all(
     duplicateFolders.map(({ relativePath }) => {
       if (!relativePath) {
-        console.log('Skipping duplicate-folder migration row with no path');
+        log(
+          'warning',
+          'Skipping duplicate-folder migration row with no path',
+          true,
+        );
         return Promise.resolve();
       }
       return processDuplicateFolder(relativePath);
@@ -117,8 +128,10 @@ const removeDuplicates = async () => {
   await Promise.all(
     duplicateFiles.map(({ relativePath, name }) => {
       if (!relativePath || !name) {
-        console.log(
+        log(
+          'warning',
           'Skipping duplicate-file migration row with missing fields',
+          true,
         );
         return Promise.resolve();
       }
@@ -126,12 +139,16 @@ const removeDuplicates = async () => {
     }),
   );
 
-  console.log('🔂 PICR Migration complete');
+  log('info', '🔂 PICR Migration complete', true);
   // process.exit();
 };
 
 const fixImageTypesForExtensions = async () => {
-  console.log('🖼️  PICR Migration: update file types for image extensions');
+  log(
+    'info',
+    '🖼️  PICR Migration: update file types for image extensions',
+    true,
+  );
 
   const imageExtensions = ['.webp', '.tiff', '.tif', '.svg'];
   const extensionFilters = imageExtensions.map((ext) =>
@@ -145,7 +162,11 @@ const fixImageTypesForExtensions = async () => {
 };
 
 const migrateBrandingRelationship = async () => {
-  console.log('🎨 PICR Migration: inverting branding ↔ folder relationship');
+  log(
+    'info',
+    '🎨 PICR Migration: inverting branding ↔ folder relationship',
+    true,
+  );
 
   // Fetch all brandings with their associated folders
   const brandings = await db.query.dbBranding.findMany({
@@ -174,7 +195,11 @@ const migrateBrandingRelationship = async () => {
     migrated++;
   }
 
-  console.log(`🎨 PICR Migration complete: migrated ${migrated} brandings`);
+  log(
+    'info',
+    `🎨 PICR Migration complete: migrated ${migrated} brandings`,
+    true,
+  );
 };
 
 const processDuplicateFolder = async (relativePath: string) => {
@@ -184,7 +209,11 @@ const processDuplicateFolder = async (relativePath: string) => {
   const firstId = matching.shift()?.id;
   const otherIds = matching.map((id) => id.id);
 
-  console.log('Removing dupes for ' + relativePath, firstId, otherIds);
+  log(
+    'info',
+    `Removing dupes for ${relativePath} firstId=${String(firstId)} otherIds=${otherIds.join(',')}`,
+    true,
+  );
 
   await db
     .update(dbAccessLog)

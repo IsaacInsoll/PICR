@@ -1,4 +1,4 @@
-import type { PicrFolder } from '../../types';
+import type { PicrFolder } from '@shared/types/picr';
 import { Code, Tooltip } from '@mantine/core';
 import { ChevronRightIcon, HomeIcon } from '../PicrIcons';
 import { PrettyFolderPath } from './PrettyFolderPath';

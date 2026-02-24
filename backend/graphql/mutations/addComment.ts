@@ -1,4 +1,5 @@
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationAddCommentArgs } from '../../../shared/gql/graphql.js';
 import { GraphQLID, GraphQLNonNull } from 'graphql/type/index.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { doAuthError } from '../../auth/doAuthError.js';
@@ -11,10 +12,8 @@ import { dbFile } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
 import { fileFlagEnum } from '../types/enums.js';
 import { sendCommentAddedNotification } from '../../notifications/notifications.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { Comment } from '../../../graphql-types.js';
 
-const resolver: GraphQLFieldResolver<Comment, PicrRequestContext> = async (
+const resolver: PicrResolver<object, MutationAddCommentArgs> = async (
   _,
   params,
   context,
@@ -27,8 +26,9 @@ const resolver: GraphQLFieldResolver<Comment, PicrRequestContext> = async (
   );
   if (!file?.exists) throw new GraphQLError('File not found');
 
-  if (user?.commentPermissions != 'edit') doAuthError('COMMENTS_NOT_ALLOWED');
-  if (!user) return; // not needed, just for typescript to know it's not null at this point
+  if (!user || user.commentPermissions != 'edit') {
+    doAuthError('COMMENTS_NOT_ALLOWED');
+  }
 
   //TODO: set rating, flag
   if (params.rating != null) {

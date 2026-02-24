@@ -36,6 +36,8 @@ jobs:
         run: cd backend && npm ci
       - name: '🗃️ [shared] Lint'
         run: cd shared && npm run lint
+      - name: '🗃️ [shared] Type check'
+        run: cd shared && npx tsc --noEmit
       - name: '🗃️ [backend] Lint'
         run: cd backend && npm run lint
       - name: '🗃️ [backend] Build (TSC + artifact files)'

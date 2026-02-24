@@ -31,7 +31,7 @@ export const addDevLogger = () => {
 };
 
 export const log = (level: LevelType, message: string, important?: boolean) => {
-  if (important) console.log(message); //basic "server running" type messages
+  if (important) process.stdout.write(message + '\n'); // basic "server running" type messages
   logger.log(level, message);
 };
 

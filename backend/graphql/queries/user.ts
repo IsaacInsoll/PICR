@@ -6,10 +6,10 @@ import { userToJSON } from '../helpers/userToJSON.js';
 import { db } from '../../db/picrDb.js';
 import { dbUser } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { QueryUserArgs } from '../../../shared/gql/graphql.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, QueryUserArgs> = async (
   _,
   params,
   context,

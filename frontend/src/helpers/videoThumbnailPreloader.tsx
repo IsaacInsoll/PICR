@@ -1,4 +1,4 @@
-import type { PicrFile } from '../../types';
+import type { PicrFile } from '@shared/types/picr';
 import type { AllSize } from '@shared/thumbnailSize';
 import { imageURL } from './imageURL';
 

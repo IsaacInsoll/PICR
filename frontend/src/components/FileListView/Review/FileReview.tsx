@@ -1,5 +1,5 @@
 import { Divider, Group } from '@mantine/core';
-import type { PicrFile } from '../../../../types';
+import type { PicrFile } from '@shared/types/picr';
 import { FileFlagButtons } from './FileFlagButtons';
 import { useMutation } from 'urql';
 import { CommentButton } from './CommentButton';
@@ -9,10 +9,21 @@ import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { FileFlagBadge } from './FileFlagBadge';
 import { FileRating } from './FileRating';
 import { SetHeroImageButton } from './SetHeroImageButton';
-import { FileFlag } from '../../../../../graphql-types';
+import { FileFlag } from '@shared/gql/graphql';
+
+export type ReviewableFile = Pick<
+  PicrFile,
+  | 'id'
+  | 'flag'
+  | 'rating'
+  | 'totalComments'
+  | 'type'
+  | 'folderId'
+  | 'isHeroImage'
+>;
 
 // Horizontal component containing Flag, Rating and Comment buttons
-export const FileReview = ({ file }: { file: PicrFile }) => {
+export const FileReview = ({ file }: { file: ReviewableFile }) => {
   const { readOnly, isNone } = useCommentPermissions();
   const [, mutate] = useMutation(addCommentMutation);
   const openComment = useOpenCommentsModal();

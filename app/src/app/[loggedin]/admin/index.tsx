@@ -17,8 +17,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { AppFolderLink } from '@/src/components/AppFolderLink';
 import { HeaderButton } from '@react-navigation/elements';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
-import type { RecentUsersQueryQuery } from '@shared/gql/graphql';
+import type {
+  ReadAllFoldersQueryQuery,
+  RecentUsersQueryQuery,
+} from '@shared/gql/graphql';
 import { FoldersSortType } from '@shared/gql/graphql';
+import type { AllFoldersRow } from '@shared/types/queryRows';
 import { useHostname } from '@/src/hooks/useHostname';
 import { navBarIconProps } from '@/src/constants';
 import { AppFileListItem } from '@/src/components/FolderContents/AppFolderFileList';
@@ -99,10 +103,11 @@ const DashboardBody = () => {
   const me = useMe();
   const theme = useAppTheme();
   const folderId = me?.folderId;
+  const dashboardFolderId = folderId as string;
 
   const [recentUsersResult, requery] = useQuery({
     query: recentUsersQuery,
-    variables: { folderId: folderId ?? '1' },
+    variables: { folderId: dashboardFolderId },
     pause: !folderId,
     // context: { suspense: false },
   });
@@ -110,7 +115,7 @@ const DashboardBody = () => {
   const [recentFoldersResult, requery2] = useQuery({
     query: readAllFoldersQuery,
     variables: {
-      id: folderId ?? '1',
+      id: dashboardFolderId,
       limit: 10,
       sort: FoldersSortType.FolderLastModified,
     },
@@ -189,7 +194,9 @@ const RecentUsers = ({ users }: { users: RecentUsersQueryQuery['users'] }) => {
                       <AppAvatar user={user} size={24} />
                       <View style={{ gap: 4 }}>
                         <PTitle level={4}>{user.name}</PTitle>
-                        <AppDateDisplay dateString={user.lastAccess} />
+                        <AppDateDisplay
+                          dateString={user.lastAccess ?? undefined}
+                        />
                       </View>
                     </View>
                   </View>
@@ -202,12 +209,19 @@ const RecentUsers = ({ users }: { users: RecentUsersQueryQuery['users'] }) => {
     </View>
   );
 };
-const RecentFolders = ({ folders }: { folders: any[] }) => {
+const RecentFolders = ({
+  folders,
+}: {
+  folders: ReadAllFoldersQueryQuery['allFolders'];
+}) => {
+  const validFolders = folders.filter(
+    (folder): folder is AllFoldersRow => folder != null,
+  );
   return (
     <View style={{ gap: 8, width: '100%' }}>
       <PTitle level={2}>Recently Modified Folders</PTitle>
       <View style={styles.indent}>
-        {folders.map((f, index) => (
+        {validFolders.map((f, index) => (
           <AppFileListItem item={f} key={index}>
             <AppDateDisplay dateString={f.folderLastModified} />
           </AppFileListItem>

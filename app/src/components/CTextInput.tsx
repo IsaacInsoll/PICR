@@ -9,7 +9,7 @@ export const CTextInput = <TFieldValues extends FieldValues>({
   name,
   ...props
 }: {
-  control: Control<TFieldValues, any, TFieldValues>;
+  control: Control<TFieldValues, unknown, TFieldValues>;
   name: Path<TFieldValues>;
 } & TextInputProps) => {
   return (

@@ -63,7 +63,7 @@ const AppDetails = () => {
   const [cacheSize, setCacheSize] = useState(0);
 
   useEffect(() => {
-    console.log('getting cache size');
+    // console.log('getting cache size');
     //note, this always returns a tiny value and is useless, see https://github.com/georstat/react-native-image-cache/issues/81
     CacheManager.getCacheSize().then((size) => setCacheSize(size));
   }, []);

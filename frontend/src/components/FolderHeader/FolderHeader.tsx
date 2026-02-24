@@ -1,4 +1,4 @@
-import type { PicrFolder } from '../../../types';
+import type { PicrFolder } from '@shared/types/picr';
 import { FolderLink } from '../FolderLink';
 import type { ReactElement, ReactNode } from 'react';
 import { useAtomValue } from 'jotai';

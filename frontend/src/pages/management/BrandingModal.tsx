@@ -14,15 +14,12 @@ import {
   normalizeFontKey,
   toHeadingFontKeyEnumValue,
 } from '@shared/branding/fontRegistry';
-import type { ViewBrandingsQueryQuery } from '@shared/gql/graphql';
-
-type BrandingRow = NonNullable<ViewBrandingsQueryQuery['brandings'][number]>;
 
 export const BrandingModal = ({
   branding: brandingProp,
   onClose,
 }: {
-  branding: BrandingRow;
+  branding: BrandingInput;
   onClose: () => void;
 }) => {
   const [branding, setBranding] = useState<BrandingInput>(

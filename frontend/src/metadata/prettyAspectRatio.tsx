@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { toReadableFraction } from 'readable-fractions';
-import type { PicrFile } from '../../types';
+import type { PicrFile } from '@shared/types/picr';
 
 export const prettyAspectRatio = (file: PicrFile): ReactNode | null => {
   if (!('imageRatio' in file)) return null;

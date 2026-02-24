@@ -47,7 +47,7 @@ export const picrTemplate = async (req: Request, res: Response) => {
   // Replace metadata on public links
   const sub = requestPath.split('/');
   if (sub[1] == 's' && sub.length >= 3) {
-    const folderId = parseInt(sub[3]);
+    const folderId = parseInt(sub[3], 10);
     if (!isNaN(folderId)) {
       // the following two lines are copy-pasta'd from gqlServer.ts, consider refactoring or less dodgy hacks here
       const user = await getUserFromUUID({ uuid: sub[2], auth: '' });

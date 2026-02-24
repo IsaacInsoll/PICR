@@ -17,7 +17,7 @@ Testing is split into two suites under `tests/`:
 - In `tests/api`, import shared operations from `shared/urql/queries/*` and `shared/urql/mutations/*` so tests validate real client documents.
 - In `tests/e2e`, keep browser-smoke GraphQL operations local to `tests/e2e/` (for example `tests/e2e/mutations.ts`) to avoid Playwright TypeScript loader issues with generated GraphQL enum files.
 - Reuse existing GraphQL test helpers where compatible with the runner.
-- In `tests/e2e` Playwright tests, avoid importing enums from `graphql-types.ts` (Playwright TS loading can fail on enums).
+- In `tests/e2e` Playwright tests, avoid importing enums from generated GraphQL type files (for example `shared/gql/graphql`) because Playwright TS loading can fail on enums.
 - For GraphQL enum inputs in Playwright tests, pass the enum literal string value (for example `'Read'`) instead.
 
 ## Directory Layout

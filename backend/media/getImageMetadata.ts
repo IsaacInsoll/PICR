@@ -1,9 +1,10 @@
-import type { MetadataSummary } from '../types/MetadataSummary.js';
+import type { PicrImageMetadata } from '../../shared/types/metadata.js';
 import { default as ex } from 'exif-reader';
 import { XMLParser } from 'fast-xml-parser';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import type { FileFields } from '../db/picrDb.js';
 import { openSharp } from './openSharp.js';
+import { log } from '../logger.js';
 
 export const getImageMetadata = async (file: FileFields) => {
   try {
@@ -16,12 +17,12 @@ export const getImageMetadata = async (file: FileFields) => {
     const camera = joinDefined(x?.Image?.Make, x?.Image?.Model);
     const lens = joinDefined(x?.Photo?.LensMake, x?.Photo?.LensModel);
     // const et = x?.Photo?.ExposureTime;
-    const result: MetadataSummary = {
+    const result: PicrImageMetadata = {
       Camera: camera,
       Lens: lens,
       Artist: x?.Image?.Artist,
-      DateTimeEdit: x?.Image?.DateTime,
-      DateTimeOriginal: x?.Photo?.DateTimeOriginal,
+      DateTimeEdit: toISODateTime(x?.Image?.DateTime),
+      DateTimeOriginal: toISODateTime(x?.Photo?.DateTimeOriginal),
       Aperture: x?.Photo?.FNumber,
       ExposureTime: x?.Photo?.ExposureTime,
       Width: width,
@@ -31,8 +32,8 @@ export const getImageMetadata = async (file: FileFields) => {
     };
     return result;
   } catch (e) {
-    console.log('Error getting metadata for file: ' + fullPathForFile(file));
-    console.log(e);
+    log('error', 'Error getting metadata for file: ' + fullPathForFile(file));
+    log('error', String(e));
     return null;
   }
 };
@@ -60,6 +61,7 @@ const getImageRating = (xmp: Buffer | undefined): number => {
     const xml = xmlParser.parse(xmp.toString());
     const rating = parseInt(
       xml['x:xmpmeta']['rdf:RDF']['rdf:Description']['@_xmp:Rating'],
+      10,
     );
     return !isNaN(rating) ? rating : 0;
   } catch {
@@ -67,4 +69,10 @@ const getImageRating = (xmp: Buffer | undefined): number => {
     // console.log(error);
     return 0;
   }
+};
+
+const toISODateTime = (value: unknown): string | null => {
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string') return value;
+  return null;
 };

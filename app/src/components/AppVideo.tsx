@@ -1,9 +1,20 @@
-import type { Video } from '@shared/gql/graphql';
+import type { PicrFile } from '@shared/types/picr';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { imageURL } from '@/src/components/AppImage';
 
-export const AppVideo = ({ file, width }: { file: Video; width?: number }) => {
+type AppVideoFile = Pick<
+  PicrFile,
+  'id' | 'fileHash' | 'name' | 'type' | 'imageRatio'
+>;
+
+export const AppVideo = ({
+  file,
+  width,
+}: {
+  file: AppVideoFile;
+  width?: number;
+}) => {
   //todo: lots of overlap with PBigVideo, refactor?
 
   const baseUrl = useLoginDetails()?.server ?? '';

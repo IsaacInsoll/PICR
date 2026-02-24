@@ -1,5 +1,5 @@
 import type { PicrColumns } from '../../components/PicrDataGrid';
-import type { PicrUser } from '../../../types';
+import type { PicrUser } from '@shared/types/picr';
 import { FolderName } from '../../components/FolderName';
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
 import { CommentChip } from '../../components/CommentChip';
@@ -7,7 +7,7 @@ import { Group } from '@mantine/core';
 import { ViewFolderButton } from '../../components/ViewFolderButton';
 import { BooleanIcon } from './BooleanIcon';
 import { LinkModeChip } from '../../components/LinkModeChip';
-import { CommentPermissions, LinkMode } from '../../../../graphql-types';
+import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
 
 export const userColumns: PicrColumns<PicrUser>[] = [
   { accessorKey: 'name', header: 'Name', minSize: 25 },
@@ -65,8 +65,8 @@ export const publicLinkColumns: PicrColumns<PicrUser>[] = [
       <Group gap={1}>
         <CopyPublicLinkButton
           disabled={!enabled || !uuid || !folderId}
-          hash={uuid ?? ''}
-          folderId={folderId ?? ''}
+          hash={uuid ?? undefined}
+          folderId={folderId ?? undefined}
           variant="subtle"
           size="compact-sm"
         />

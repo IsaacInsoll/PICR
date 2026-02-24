@@ -8,12 +8,12 @@ import {
 } from 'graphql';
 import { folderType } from '../types/folderType.js';
 import { db, dbFileForId, dbFolderForId } from '../../db/picrDb.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
 import { setHeroImage } from './setHeroImage.js';
 import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds.js';
 import { and, eq, inArray } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationEditFolderArgs } from '../../../shared/gql/graphql.js';
 
 const maxFolderTextLength = 255;
 
@@ -35,7 +35,7 @@ const validateOptionalText = (
   }
 };
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, MutationEditFolderArgs> = async (
   _,
   params,
   context,

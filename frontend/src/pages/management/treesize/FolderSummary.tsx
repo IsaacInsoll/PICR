@@ -28,12 +28,12 @@ export const FolderSummary = ({
   const data: { id: string; name: string; size: number; color?: string }[] =
     folder.subFolders.map((f) => ({
       ...f,
-      size: parseInt(f.totalSize),
+      size: parseInt(f.totalSize, 10),
     }));
   data.push({
     id: 'files',
     name: '(Files)',
-    size: parseInt(folder.totalDirectSize),
+    size: parseInt(folder.totalDirectSize, 10),
     color: chartColorFiles,
   });
   const sorted = data.sort((a, b) => b.size - a.size);
@@ -92,7 +92,7 @@ export const FileTable = ({
   const limit = 20;
   const top = files
     .slice()
-    .sort((a, b) => parseInt(b.fileSize) - parseInt(a.fileSize))
+    .sort((a, b) => parseInt(b.fileSize, 10) - parseInt(a.fileSize, 10))
     .slice(0, limit);
   return (
     <Stack>
@@ -115,7 +115,7 @@ export const FileTable = ({
               <Table.Tr key={f.id}>
                 <Table.Td style={{ fontStyle: 'italic' }}>{f.name}</Table.Td>
                 <Table.Td align="right">
-                  <Bytes bytes={parseInt(f.fileSize)} />
+                  <Bytes bytes={parseInt(f.fileSize, 10)} />
                 </Table.Td>
               </Table.Tr>
             );

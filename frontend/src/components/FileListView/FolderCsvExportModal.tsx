@@ -14,16 +14,15 @@ import { useQuery } from 'urql';
 import { useAtomValue } from 'jotai';
 import { filterOptions } from '@shared/filterAtom';
 import { filterFiles } from '@shared/files/filterFiles';
+import type { ViewFolder } from '@shared/files/sortFiles';
 import { sortFiles } from '@shared/files/sortFiles';
 import { folderFilesQuery } from '@shared/urql/queries/folderFilesQuery';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import { copyToClipboard } from '../../helpers/copyToClipboard';
-import type { ViewFolderQuery } from '@shared/gql/graphql';
 import { ClipboardIcon, DownloadIcon } from '../../PicrIcons';
 
-type Folder = ViewFolderQuery['folder'];
 type ExportFormat = 'picr' | 'comma' | 'space';
-type ExportFile = ViewFolderQuery['folder']['files'][number] & {
+type ExportFile = ViewFolder['files'][number] & {
   relativePath?: string | null;
 };
 
@@ -62,7 +61,7 @@ export const FolderCsvExportModal = ({
   opened,
   onClose,
 }: {
-  folder: Folder | null | undefined;
+  folder: ViewFolder | null | undefined;
   opened: boolean;
   onClose: () => void;
 }) => {
@@ -72,14 +71,16 @@ export const FolderCsvExportModal = ({
   const [excludeExtensions, setExcludeExtensions] = useState(false);
   const [useFilters, setUseFilters] = useState(true);
   const [includeSubfolders, setIncludeSubfolders] = useState(false);
+  const folderId = folder?.id;
+  const exportFolderId = folderId as string;
 
   const folderFilesVariables = useMemo(
     () => ({
-      folderId: folder?.id ?? '',
+      folderId: exportFolderId,
       includeSubfolders: true,
       limit: MAX_EXPORT_FILES,
     }),
-    [folder?.id],
+    [exportFolderId],
   );
   const folderFilesContext = useMemo(() => ({ suspense: false }), []);
 
@@ -88,7 +89,7 @@ export const FolderCsvExportModal = ({
       query: folderFilesQuery,
       variables: folderFilesVariables,
       context: folderFilesContext,
-      pause: !opened || !includeSubfolders || !folder?.id,
+      pause: !opened || !includeSubfolders || !folderId,
     });
 
   const folderFilesResult = includeSubfolders

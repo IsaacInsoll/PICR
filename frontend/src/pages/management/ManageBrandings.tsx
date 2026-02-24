@@ -11,11 +11,10 @@ import { themeModeAtom } from '../../atoms/themeModeAtom';
 import { BrandingModal } from './BrandingModal';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { defaultBranding } from '../../helpers/defaultBranding';
-import type { ViewBrandingsQueryQuery } from '@shared/gql/graphql';
+import type { BrandingRow } from '@shared/types/queryRows';
 
 export const ManageBrandings = () => {
   const [result, reQuery] = useQuery({ query: viewBrandingsQuery });
-  type BrandingRow = NonNullable<ViewBrandingsQueryQuery['brandings'][number]>;
   const [branding, setBranding] = useState<BrandingRow | null>(null);
   const setThemeMode = useSetAtom(themeModeAtom);
 

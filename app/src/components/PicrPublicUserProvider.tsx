@@ -42,12 +42,12 @@ export const PicrPublicUserProvider = ({
 
   const client = useMemo(() => {
     if (isPublic) {
-      console.log(
-        'PicrPublicUserProvider: _creating_ public URQL client for ' +
-          isPublic.uuid +
-          ' at ' +
-          isPublic.server,
-      );
+      // console.log(
+      //   'PicrPublicUserProvider: _creating_ public URQL client for ' +
+      //     isPublic.uuid +
+      //     ' at ' +
+      //     isPublic.server,
+      // );
       return picrUrqlClient(
         isPublic.server,
         {
@@ -64,6 +64,6 @@ export const PicrPublicUserProvider = ({
 
   if (!isPublic || !client) return <PText>Loading...</PText>;
 
-  console.log('PicrPublicUserProvider: returning URQL client');
+  // console.log('PicrPublicUserProvider: returning URQL client');
   return <Provider value={client}>{children}</Provider>;
 };

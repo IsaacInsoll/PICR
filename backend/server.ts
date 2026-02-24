@@ -8,6 +8,7 @@ import { log } from './logger.js';
 import { picrConfig } from './config/picrConfig.js';
 import { initDb } from './db/picrDb.js';
 import { schemaMigration } from './db/schemaMigration.js';
+import { logger } from './logger.js';
 
 export const server = async () => {
   try {
@@ -15,11 +16,11 @@ export const server = async () => {
     initDb();
     await dbMigrate(picrConfig);
   } catch (e) {
-    console.error(
+    logger.error(
       `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\`. 
    Please ensure configuration is correct and database server is running`,
     );
-    console.log(e);
+    logger.error(String(e));
     process.exit();
   }
 

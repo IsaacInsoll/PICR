@@ -1,9 +1,9 @@
-import type { PicrFile } from '../../types.js';
+import type { ImageUrlFileInput } from '@shared/types/ui';
 import type { AllSize } from '../../../shared/thumbnailSize.js';
 import { withBasePath } from './baseHref';
 
 export const imageURL = (
-  file: Partial<Pick<PicrFile, 'id' | 'fileHash' | 'name' | 'type'>>,
+  file: ImageUrlFileInput,
   size: AllSize,
   extension?: string,
   // frame?: number,

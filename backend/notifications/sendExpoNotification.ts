@@ -8,6 +8,7 @@ import type { NotificationPayload } from './notifications.js';
 import { db } from '../db/picrDb.js';
 import { dbUserDevice } from '../db/models/index.js';
 import { eq } from 'drizzle-orm';
+import { logger } from '../logger.js';
 
 const expo = new Expo({
   // we will enable this if there is abuse of notifications :)
@@ -26,7 +27,7 @@ export const sendExpoNotifications = async (
   const messages: ExpoPushMessage[] = [];
   for (const { token, payload } of notifications) {
     if (!Expo.isExpoPushToken(token)) {
-      console.error(`Push token ${token} is not a valid Expo push token`);
+      logger.error(`Push token ${token} is not a valid Expo push token`);
       continue;
     }
 
@@ -62,12 +63,13 @@ export const sendExpoNotifications = async (
             disableToken(messageTarget as ExpoPushToken);
           }
         } else if (ticket.details?.error == 'InvalidCredentials') {
-          console.log(
+          logger.error(
             `InvalidCredentials error when sending push notification to ${String(messageTarget)}`,
           );
         } else {
-          console.log('ticket.status==error');
-          console.log(ticket.details);
+          logger.error(
+            `Expo push ticket error for ${String(messageTarget)}: ${JSON.stringify(ticket.details)}`,
+          );
         }
       }
       if (receiptIds.length > 0) {
@@ -75,24 +77,26 @@ export const sendExpoNotifications = async (
       }
     });
   } catch (error) {
-    console.error(error);
+    logger.error(`Error sending Expo push notifications: ${String(error)}`);
   }
 };
 
 const checkReceipts = async (receiptIds: ExpoPushReceiptId[]) => {
   const receipts = await expo.getPushNotificationReceiptsAsync(receiptIds);
-  console.log('checking receipts', receipts);
+  logger.info(
+    `Checking Expo push receipts for ${receiptIds.length} receipt id(s)`,
+  );
   try {
     for (const receiptId in receipts) {
       const receipt = receipts[receiptId];
       if (receipt.status === 'ok') {
         continue;
       } else if (receipt.status === 'error') {
-        console.error(
+        logger.error(
           `There was an error sending a notification: ${receipt?.message}`,
         );
         if (receipt.details && receipt.details.error) {
-          console.error(`The error code is ${receipt.details.error}`);
+          logger.error(`The error code is ${receipt.details.error}`);
           if (
             disableList.includes(receipt.details.error) &&
             receipt.details.expoPushToken
@@ -103,13 +107,13 @@ const checkReceipts = async (receiptIds: ExpoPushReceiptId[]) => {
       }
     }
   } catch (error) {
-    console.error(error);
+    logger.error(`Error checking Expo push receipts: ${String(error)}`);
   }
 };
 
 // turn off notifications for this token because they are bouncing back and we don't want to get banned
 const disableToken = async (token: ExpoPushToken) => {
-  console.log(`Disable token: ${token}`);
+  logger.info(`Disabling Expo push token: ${token}`);
   await db
     .update(dbUserDevice)
     .set({ enabled: false })

@@ -58,7 +58,7 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
       renameTracker.markUnlink('file', path);
       addToQueue('unlink', { path });
     })
-    .on('error', (error) => console.log('⚠️ Error happened: ' + error))
+    .on('error', (error) => log('error', '⚠️ Error happened: ' + error))
     .on('addDir', (path, stats) => {
       log('info', `📁➕ ${relativePath(path)}`);
       const renameFromPath = renameTracker.consumeRename('dir', stats);

@@ -4,20 +4,7 @@ import { useHostname, useUuid } from '@/src/hooks/useHostname';
 import type { FileIDandName, FolderIDandName } from '@/src/helpers/folderCache';
 import { addToFileCache, addToFolderCache } from '@/src/helpers/folderCache';
 import type { ReactNode } from 'react';
-
-type LinkableFolder = {
-  __typename: 'Folder';
-  id: string;
-  name: string;
-  title?: string | null;
-};
-
-type LinkableFile = {
-  __typename?: string;
-  id: string;
-  name: string;
-  folderId: string;
-};
+import type { LinkableItem } from '@shared/types/ui';
 
 export const AppFolderLink = ({
   folder,
@@ -53,7 +40,7 @@ export const AppLink = ({
   children,
   asChild,
 }: {
-  item: LinkableFolder | LinkableFile;
+  item: LinkableItem;
   children: ReactNode;
   asChild?: boolean;
 }) => {
@@ -100,11 +87,7 @@ export const useAppFileLink = (file: FileIDandName): Href => {
   const loggedin = hostname ?? '';
 
   if (uuid) {
-    return {
-      // @ts-ignore coming soon :)
-      pathname: '/[loggedin]/s/[uuid]/[folderId]/[fileId]',
-      params: { loggedin, uuid, folderId: file.folderId, fileId: file.id },
-    };
+    return `/${loggedin}/s/${uuid}/${file.folderId}/${file.id}`;
   }
 
   return {

@@ -12,23 +12,25 @@ export const CopyPublicLinkButton = ({
   ...props
 }: {
   disabled: boolean;
-  hash: string;
-  folderId: string;
+  hash?: string;
+  folderId?: string;
 } & ButtonProps) => {
   const baseUrl = useBaseUrl();
-  const url = publicURLFor(baseUrl ?? '', hash, folderId);
+  const url =
+    hash && folderId ? publicURLFor(baseUrl ?? '', hash, folderId) : undefined;
   const notif = {
     title: 'Link copied to clipboard',
-    message: url,
+    message: url ?? '',
     icon: <ClipboardIcon />,
   };
   return (
     <Button
       {...props}
-      disabled={disabled}
+      disabled={disabled || !url}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
+        if (!url) return;
         copyToClipboard(url);
         notifications.show(notif);
       }}

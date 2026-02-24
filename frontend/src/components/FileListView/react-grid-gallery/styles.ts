@@ -6,11 +6,10 @@ import type {
   StyleProp,
 } from './types';
 
-export const getStyle = (
-  styleProp: StyleProp | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fallback: StyleFunction<any>,
-  context: StyleFunctionContext,
+export const getStyle = <T extends ImageExtended>(
+  styleProp: StyleProp<T> | undefined,
+  fallback: StyleFunction<T>,
+  context: StyleFunctionContext<T>,
 ): CSSProperties => {
   if (typeof styleProp === 'function') {
     return styleProp(context);

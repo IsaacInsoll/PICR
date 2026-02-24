@@ -1,4 +1,4 @@
-import type { PicrFile } from '../../../types';
+import type { PicrFile } from '@shared/types/picr';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import {

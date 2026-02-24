@@ -4,7 +4,7 @@ import type { ThumbnailSize } from '@shared/thumbnailSize';
 import { Blurhash } from 'react-blurhash';
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
-import type { PicrFile } from '../../types';
+import type { PicrFile } from '@shared/types/picr';
 import { useAvifEnabled } from '../hooks/useMe';
 
 interface PicrImageProps {

@@ -1,4 +1,4 @@
-import { FileFlag } from '../../../../../graphql-types';
+import { FileFlag } from '@shared/gql/graphql';
 import { Badge } from '@mantine/core';
 import { fileFlagStyles } from './fileFlagStyles';
 

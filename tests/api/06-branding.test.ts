@@ -7,7 +7,7 @@ import { setFolderBrandingMutation } from '../../shared/urql/mutations/setFolder
 import { viewBrandingsQuery } from '../../shared/urql/queries/viewBrandingsQuery';
 import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
 import { photoFolderId, videoFolderId } from './testVariables';
-import { ThemeMode, PrimaryColor } from '../../graphql-types';
+import { ThemeMode, PrimaryColor } from '../../shared/gql/graphql';
 
 let createdBrandingId: string;
 

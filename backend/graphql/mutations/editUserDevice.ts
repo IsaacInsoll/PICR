@@ -7,16 +7,16 @@ import {
 import { db } from '../../db/picrDb.js';
 import { and, eq } from 'drizzle-orm';
 import { dbUserDevice } from '../../db/models/index.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationEditUserDeviceArgs } from '../../../shared/gql/graphql.js';
 import { userDeviceType } from '../types/userDeviceType.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 
-const resolver: GraphQLFieldResolver<
-  unknown,
-  PicrRequestContext,
-  { userId: number; enabled: boolean; notificationToken: string; name: string }
-> = async (_, params, context) => {
+const resolver: PicrResolver<object, MutationEditUserDeviceArgs> = async (
+  _,
+  params,
+  context,
+) => {
   const { user, isUser } = context;
   if (!user || !isUser) {
     return doAuthError('NOT_A_USER');

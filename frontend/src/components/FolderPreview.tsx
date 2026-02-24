@@ -1,4 +1,4 @@
-import type { PicrFolder } from '../../types';
+import type { PicrFolder } from '@shared/types/picr';
 import { Blurhash } from 'react-blurhash';
 
 export const FolderPreview = ({ folder }: { folder: PicrFolder }) => {

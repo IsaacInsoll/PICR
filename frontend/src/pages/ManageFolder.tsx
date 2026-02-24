@@ -27,10 +27,9 @@ import { setFolderBrandingMutation } from '@shared/urql/mutations/setFolderBrand
 import { viewBrandingsQuery } from '@shared/urql/queries/viewBrandingsQuery';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { defaultBranding } from '../helpers/defaultBranding';
-import type { PicrFolder } from '../../types';
-import type { ViewBrandingsQueryQuery } from '@shared/gql/graphql';
-
-type BrandingItem = ViewBrandingsQueryQuery['brandings'][number];
+import type { PicrFolder } from '@shared/types/picr';
+import type { BrandingRow } from '@shared/types/queryRows';
+import type { BrandingInput } from './management/BrandingForm';
 
 export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
   const { folderId, tab } = useParams();
@@ -140,11 +139,13 @@ export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
 const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
   const [brandingsResult] = useQuery({ query: viewBrandingsQuery });
   const [, setFolderBranding] = useMutation(setFolderBrandingMutation);
-  const [modalBranding, setModalBranding] = useState<BrandingItem | null>(null);
+  const [modalBranding, setModalBranding] = useState<BrandingInput | null>(
+    null,
+  );
   const [saving, setSaving] = useState(false);
 
   const brandings = (brandingsResult.data?.brandings ?? []).filter(
-    (b): b is BrandingItem => b != null,
+    (b): b is BrandingRow => b != null,
   );
   const currentBrandingId = folder.brandingId?.toString() ?? null;
   const inheritedBranding = folder.branding ?? null;
@@ -158,7 +159,7 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
 
   const handleChange = async (value: string | null) => {
     if (value === '__create__') {
-      setModalBranding({ ...defaultBranding } as BrandingItem);
+      setModalBranding({ ...defaultBranding });
       return;
     }
 

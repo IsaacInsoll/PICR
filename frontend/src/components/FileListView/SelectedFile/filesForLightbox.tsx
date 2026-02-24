@@ -1,4 +1,4 @@
-import type { PicrFile } from '../../../../types';
+import type { PicrFile } from '@shared/types/picr';
 import type { Slide } from 'yet-another-react-lightbox';
 import { thumbnailSizes } from '@shared/thumbnailSize';
 import type { ImageSource } from 'yet-another-react-lightbox';

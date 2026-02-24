@@ -14,7 +14,8 @@
 
 Quick contributor checks:
 
-- `npm run format:check`
-- `npm run lint`
+- `npm run check` (format, lint, and TypeScript across all subsystems)
+- `npm run test:api`
+- `npm run test:e2e:fresh` (for frontend changes)
 
 <img src="https://api.star-history.com/svg?repos=IsaacInsoll/PICR&type=date&legend=bottom-right" alt="GitHub Star History" width="350" />

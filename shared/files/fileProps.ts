@@ -1,7 +1,10 @@
-import type { File, Folder } from '@shared/gql/graphql';
+import type { PicrFile, PicrFolder } from '@shared/types/picr';
+
+type FileOrFolderLike = Pick<PicrFile, '__typename' | 'type'> &
+  Pick<PicrFolder, 'heroImage'>;
 
 // TODO: replace all occurrences of file.type == <something> with this :)
-export const fileProps = (file: File | Folder) => {
+export const fileProps = (file: FileOrFolderLike) => {
   const isFolder = file.__typename === 'Folder';
   return {
     isFolder,

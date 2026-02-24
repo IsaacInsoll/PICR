@@ -11,9 +11,15 @@ import { eq } from 'drizzle-orm';
 export const updateFolderHash = (folder: FolderFields) => {
   // I observed that creating a folder on a network volume from a mac temporarily makes a 'New Folder' folder which disappears before we can query it
   try {
-    const fileNames = readdirSync(fullPath(folder.relativePath ?? '')).join(
-      '#',
-    );
+    if (folder.relativePath == null && folder.id !== 1) {
+      log(
+        'error',
+        `Skipping folder hash update for non-root folder with missing relativePath: ${folder.id}`,
+      );
+      return;
+    }
+    const basePath = folder.relativePath == null ? '' : folder.relativePath;
+    const fileNames = readdirSync(fullPath(basePath)).join('#');
     const hash = crypto.createHash('md5').update(fileNames).digest('hex');
     if (folder.folderHash != hash) {
       log(
@@ -25,7 +31,7 @@ export const updateFolderHash = (folder: FolderFields) => {
         .where(eq(dbFolder.id, folder.id));
     }
   } catch (err) {
-    console.log('Error doing updateFolderHash');
-    console.log(err);
+    log('error', 'Error doing updateFolderHash');
+    log('error', String(err));
   }
 };

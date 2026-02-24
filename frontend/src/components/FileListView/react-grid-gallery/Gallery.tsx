@@ -53,12 +53,9 @@ export const Gallery = <T extends ImageInterface>({
             isSelectable={enableImageSelection}
             onClick={handleClick}
             onSelect={handleSelect}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            tagStyle={tagStyle as any}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            tileViewportStyle={tileViewportStyle as any}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            thumbnailStyle={thumbnailStyle as any}
+            tagStyle={tagStyle}
+            tileViewportStyle={tileViewportStyle}
+            thumbnailStyle={thumbnailStyle}
             thumbnailImageComponent={thumbnailImageComponent}
           />
         ))}

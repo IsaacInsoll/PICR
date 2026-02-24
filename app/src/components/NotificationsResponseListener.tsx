@@ -22,7 +22,7 @@ export const NotificationsResponseListener = () => {
 };
 
 const notificationReceived = (event: Notifications.Notification) => {
-  console.log('[notificationreceived]', event);
+  // console.log('[notificationreceived]', event);
 };
 
 const notificationResponseReceived = (
@@ -32,9 +32,9 @@ const notificationResponseReceived = (
   const data = event.notification.request.content.data;
   const url = data['url'];
   if (typeof url === 'string') {
-    console.log('navigate to ' + url);
+    // console.log('navigate to ' + url);
     router.push(url as Href);
   }
-  console.log('[notification response]');
-  console.log(data);
+  // console.log('[notification response]');
+  // console.log(data);
 };

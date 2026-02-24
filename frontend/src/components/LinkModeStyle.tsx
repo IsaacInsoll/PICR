@@ -1,4 +1,4 @@
-import { LinkMode } from '../../../graphql-types';
+import { LinkMode } from '@shared/gql/graphql';
 import type { ReactNode } from 'react';
 import { DownloadIcon, FileIcon } from '../PicrIcons';
 

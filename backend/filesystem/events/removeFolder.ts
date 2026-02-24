@@ -27,9 +27,6 @@ export const removeFolder = async (path: string) => {
 
   if (newFolder) {
     //TODO: Handle folder rename (move data across?)
-    console.log(
-      `🔀 Appears to be folder Rename from ${folder.relativePath} to ${newFolder.relativePath}`,
-    );
     log(
       'info',
       `🔀 Appears to be folder Rename from ${folder.relativePath} to ${newFolder.relativePath}`,

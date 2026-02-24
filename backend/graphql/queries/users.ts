@@ -12,10 +12,10 @@ import { userToJSON } from '../helpers/userToJSON.js';
 import { db, dbFolderForId } from '../../db/picrDb.js';
 import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { QueryUsersArgs } from '../../../shared/gql/graphql.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, QueryUsersArgs> = async (
   _,
   params,
   context,

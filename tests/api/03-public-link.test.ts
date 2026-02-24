@@ -11,7 +11,9 @@ import { accessLogQuery } from '../../shared/urql/queries/accessLogQuery';
 
 import { photoFolderId, videoFolderId } from './testVariables';
 import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
-import { CommentPermissions, LinkMode } from '../../graphql-types';
+import { commentHistoryQuery } from '../../shared/urql/queries/commentHistoryQuery';
+import { addCommentMutation } from '../../shared/urql/mutations/addCommentMutation';
+import { CommentPermissions, LinkMode } from '../../shared/gql/graphql';
 
 // Generate unique suffix for this test run to avoid conflicts
 const testSuffix = Math.random().toString(36).slice(2, 8);
@@ -142,7 +144,7 @@ test('Open Graph: social media friendly links', async () => {
   // the hash changes so lets accept any 64 characters :)
   expect(text).toMatch(
     /<meta property="og:image" content="https?:\/\/(.){5,}\/image\/2\/md\/(.){64}\/XH2A2139.jpg" \/>/gm,
-  ); //TODO: full URL
+  );
 });
 
 test('Admin can see access log entry for public link visit', async () => {
@@ -165,6 +167,35 @@ test('Admin can see access log entry for public link visit', async () => {
   const log = testUserLogs[0];
   expect(log.folderId).toBe(photoFolderId);
   expect(log.timestamp).toBeDefined();
+});
+
+test('Public Link with Read permissions can view comments', async () => {
+  const headers = await getLinkHeader(testPublicLink.uuid);
+  const client = await createTestGraphqlClient(headers);
+
+  const result = await client
+    .query(commentHistoryQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+
+  expect(result.error).toBeUndefined();
+  expect(result.data?.comments).toBeDefined();
+});
+
+test("Public Link with Read permissions can't add comments", async () => {
+  const headers = await getLinkHeader(testPublicLink.uuid);
+  const client = await createTestGraphqlClient(headers);
+
+  const folderResult = await client
+    .query(viewFolderQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+  const fileId = folderResult.data!.folder.files[0].id;
+
+  const result = await client
+    .mutation(addCommentMutation, { id: fileId, comment: 'Test comment' })
+    .toPromise();
+
+  expect(result.error).toBeDefined();
+  expect(result.data?.addComment).toBeUndefined();
 });
 
 test('Disabled public link cannot access folder', async () => {
@@ -255,6 +286,3 @@ test('Access logs no longer show deleted user', async () => {
   const deletedUserLogs = logs.filter((log) => log.userId === createdUserId);
   expect(deletedUserLogs.length).toBe(0);
 });
-
-//TODO: can view comments
-//TODO: can't add comment

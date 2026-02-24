@@ -1,10 +1,10 @@
 import { useSetAtom } from 'jotai';
 import { useMutation } from 'urql';
 import { generateZipMutation } from '@shared/urql/mutations/generateZipMutation';
-import type { FolderHash } from '../components/DownloadZipButton';
+import type { PendingZipDownload } from '../components/DownloadZipButton';
 import { linksToDownloadAtom } from '../components/DownloadZipButton';
 import { useCanDownload } from './useMe';
-import type { PicrFolder } from '../../types';
+import type { PicrFolder } from '@shared/types/picr';
 
 export const useGenerateZip = (folder: PicrFolder, onComplete?: () => void) => {
   const canDownload = useCanDownload();
@@ -16,7 +16,7 @@ export const useGenerateZip = (folder: PicrFolder, onComplete?: () => void) => {
   return async () => {
     return mutate({ folderId: folder.id }).then((res) => {
       if (res?.data) {
-        const fh: FolderHash = { folder, hash: res.data.generateZip };
+        const fh: PendingZipDownload = { folder, hash: res.data.generateZip };
         setLinks((l) => [...l, fh]);
         if (onComplete) onComplete();
       }

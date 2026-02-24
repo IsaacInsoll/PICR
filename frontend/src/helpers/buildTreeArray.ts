@@ -1,26 +1,26 @@
 // from https://www.geeksforgeeks.org/build-tree-array-from-flat-array-in-javascript/
 // modified to add typescript and optional `rootId` param
 
-export type nodeId = string | number;
-type nMap = { [key: nodeId]: treeNode };
+export type NodeId = string | number;
+type NodeMap = { [key: NodeId]: TreeNode };
 
-export interface treeNode {
-  id: nodeId;
+export interface TreeNode {
+  id: NodeId;
   value: string;
   label: string;
-  parentId?: nodeId;
-  children?: treeNode[];
+  parentId?: NodeId;
+  children?: TreeNode[];
 }
 
-export function buildTreeArray(flatArray: treeNode[], rootId?: nodeId) {
+export function buildTreeArray(flatArray: TreeNode[], rootId?: NodeId) {
   // Use reduce to create a nodeMap
-  const nodeMap: nMap = flatArray.reduce((acc: nMap, item) => {
+  const nodeMap: NodeMap = flatArray.reduce((acc: NodeMap, item) => {
     acc[item.id] = { ...item, children: [] };
     return acc;
   }, {});
 
   // Recursive function to build nodes
-  const buildNode = (id: nodeId) => {
+  const buildNode = (id: NodeId) => {
     const node = nodeMap[id];
     if (!node) return null;
 
@@ -28,7 +28,7 @@ export function buildTreeArray(flatArray: treeNode[], rootId?: nodeId) {
     node.children = flatArray
       .filter((item) => item.parentId === id)
       .map((item) => buildNode(item.id))
-      .filter((child): child is treeNode => child != null);
+      .filter((child): child is TreeNode => child != null);
     return node;
   };
 

@@ -4,11 +4,11 @@ import { folderType } from '../types/folderType.js';
 import { db, dbFolderForId } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationSetFolderBrandingArgs } from '../../../shared/gql/graphql.js';
 import { GraphQLError } from 'graphql/error/index.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, MutationSetFolderBrandingArgs> = async (
   _,
   params,
   context,

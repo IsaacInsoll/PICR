@@ -29,7 +29,8 @@ import {
 } from '../../PicrIcons';
 import { atom, useSetAtom } from 'jotai';
 import { authKeyAtom } from '../../atoms/authAtom';
-import type { PicrFolder } from '../../../types';
+import type { PicrFolder } from '@shared/types/picr';
+import type { FolderNavigationTarget } from '@shared/types/ui';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
@@ -87,9 +88,9 @@ const LeftSide = ({
   managing?: boolean;
 }) => {
   const isMobile = useIsMobile();
-  const homeFolder = me.folder
-    ? (me.folder as PicrFolder)
-    : ({ id: me.folderId, name: 'Home', parents: [] } as PicrFolder);
+  const homeFolder: FolderNavigationTarget = me.folder
+    ? me.folder
+    : { id: me.folderId, name: 'Home', parents: [] };
   const homeFolderLink = useFolderLink(homeFolder);
   const [, setOpened] = useQuickFind();
   return (
@@ -128,9 +129,9 @@ const LeftSide = ({
 };
 
 const RightSide = ({ me }: { me: MeUser }) => {
-  const homeFolder = me.folder
-    ? (me.folder as PicrFolder)
-    : ({ id: me.folderId, name: 'Home', parents: [] } as PicrFolder);
+  const homeFolder: FolderNavigationTarget = me.folder
+    ? me.folder
+    : { id: me.folderId, name: 'Home', parents: [] };
   const homeFolderLink = useFolderLink(homeFolder);
   const [, setOpened] = useQuickFind();
   const logOut = useLogout();

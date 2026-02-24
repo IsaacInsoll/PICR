@@ -4,8 +4,7 @@ import { typographyScale } from '@/src/constants';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { getHeadingFontFamilyForLevel } from '@/src/helpers/headingFont';
 import { useFolderHeadingFont } from '@/src/components/FolderBrandingProvider';
-
-type TitleLevel = 1 | 2 | 3 | 4;
+import type { TitleLevel } from '@shared/types/ui';
 
 export const PTitle = ({
   children,

@@ -4,7 +4,7 @@ import { picrUrqlClient } from '@shared/urql/urqlClient';
 
 export const appLogin = async (data: LoginDetails) => {
   const { server, username, password } = data;
-  console.log(data);
+  // console.log(data);
 
   const newClient = picrUrqlClient(server, {});
   // TODO: Fix this await mutation crashing on iOS 16.4

@@ -6,6 +6,8 @@ shared/urql/graphql.schema.json
 frontend/src/fonts.generated.ts
 app/src/fonts.generated.ts
 app/src/graphql.schema.json
+app/.expo/*
+app/expo-env.d.ts
 lightroom/*
 app/ios/*
 app/android/*

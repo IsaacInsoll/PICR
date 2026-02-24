@@ -1,4 +1,4 @@
-import type { User } from '../graphql-types.js';
+import type { User } from './gql/graphql.js';
 
 export interface ExtraUserProps {
   isUser?: boolean;

@@ -1,5 +1,5 @@
 import { useElementSize, useMouse } from '@mantine/hooks';
-import type { PicrFile } from '../../../types';
+import type { PicrFile } from '@shared/types/picr';
 import { Box, Image, LoadingOverlay } from '@mantine/core';
 import { VideoBadge } from './VideoBadge';
 import { VideoProgressIndicator } from './VideoProgressIndicator';

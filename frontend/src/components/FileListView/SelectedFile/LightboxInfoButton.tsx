@@ -1,6 +1,6 @@
 import { useOpenFileInfoModal } from '../../../atoms/modalAtom';
 import { InfoIcon } from '../../../PicrIcons';
-import type { PicrFile } from '../../../../types';
+import type { PicrFile } from '@shared/types/picr';
 
 export const LightboxInfoButton = ({ file }: { file: PicrFile }) => {
   const openFileInfo = useOpenFileInfoModal();

@@ -5,10 +5,10 @@ import { allSubfolderIds, allSubfolders } from '../../helpers/allSubfolders.js';
 import { and, asc, eq, ilike, inArray } from 'drizzle-orm';
 import { dbFile } from '../../db/models/index.js';
 import { db } from '../../db/picrDb.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { QuerySearchFilesArgs } from '../../../shared/gql/graphql.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, QuerySearchFilesArgs> = async (
   _,
   params,
   context,

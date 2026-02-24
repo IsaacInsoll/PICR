@@ -5,10 +5,10 @@ import { contextPermissions } from '../../auth/contextPermissions.js';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { taskType } from '../types/taskType.js';
 import { allSubfolderIds } from '../../helpers/allSubfolders.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { QueryTasksArgs } from '../../../shared/gql/graphql.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, QueryTasksArgs> = async (
   _,
   params,
   context,

@@ -2,7 +2,7 @@
 import { ZOOM_TYPE, Zoomable } from '@likashefqet/react-native-image-zoom';
 import { memo, useEffect, useRef, useState } from 'react';
 import { CacheManager } from '@georstat/react-native-image-cache';
-import type { Image } from '../../../graphql-types';
+import type { File, Image } from '@shared/gql/graphql';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { Image as ExpoImage } from 'expo-image';
 import { imageURL } from '@/src/components/AppImage';
@@ -12,7 +12,6 @@ import { useAtom } from 'jotai';
 import type { AllSize } from '@shared/thumbnailSize';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
-import type { File } from '@shared/gql/graphql';
 
 const PBigImageComponent = ({
   file,
@@ -23,7 +22,7 @@ const PBigImageComponent = ({
   style?: ViewStyle;
   setIsZoomed: (z: boolean) => void;
 }) => {
-  console.log('PBIGImage rendering ' + file.name);
+  // console.log('PBIGImage rendering ' + file.name);
   const ref = useRef(null);
   const uri = useLocalImageUrl(file, 'lg');
   const [, setFullScreen] = useAtom(fileViewFullscreenAtom);
@@ -70,7 +69,9 @@ const PBigImageComponent = ({
           backgroundColor: theme.tabColor, //'#000', // theme.backgroundColor we want absolute black, not dark grey
         }}
         contentFit="contain"
-        onError={console.log}
+        onError={(_e) => {
+          /* console.log(_e) */
+        }}
       />
     </Zoomable>
   );

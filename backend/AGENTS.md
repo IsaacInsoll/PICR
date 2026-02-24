@@ -276,9 +276,8 @@ When denying access from GraphQL resolvers, use `doAuthError(...)` so clients ca
 
 AI agents CAN run `npm run gql` freely - it regenerates:
 
-- `./graphql-types.ts` - TypeScript types
+- `shared/gql/*` - TypeScript GraphQL types/documents
 - `./schema.graphql` - SDL schema
-- `shared/gql/*` - URQL client code
 - `shared/urql/graphql.schema.json` - Schema for caching
 
 Run after any schema changes.
@@ -473,11 +472,21 @@ Uses Winston with file destinations:
 - `cache/info.log` - All info+ messages
 
 ```typescript
-import { logger } from './logger.js';
+import { logger, log } from './logger.js';
 
 logger.info('Processing file', { filename, folderId });
 logger.error('Failed to process', { error: err.message });
+
+// Use this for startup/boot messages that must appear in Docker/container logs
+log('info', 'Server started', true);
 ```
+
+### Logging Policy
+
+- Do not add new `console.*` calls in backend runtime code.
+- Use `logger.*` for normal operational and error logging.
+- Use `log(level, message, true)` for boot/startup/migration messages that must be visible in terminal output (`docker logs`).
+- For temporary developer traces while debugging, prefer commented-out logs or `log('debug', ...)` and remove before merging.
 
 ---
 

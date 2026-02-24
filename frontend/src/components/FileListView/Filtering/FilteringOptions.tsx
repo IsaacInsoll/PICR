@@ -1,8 +1,7 @@
-import type { PicrFile } from '../../../../types';
+import type { PicrFile } from '@shared/types/picr';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { metadataForFiltering } from '@shared/files/metadataForFiltering';
-import type { Image } from '@shared/gql/graphql';
 import { AspectSelector } from './AspectSelector';
 import { SearchBox } from './SearchBox';
 import { MetadataBox } from './MetadataBox';
@@ -65,10 +64,7 @@ const FilterTable = ({
   const setFiltering = useSetAtom(filterAtom);
   const { canView } = useCommentPermissions();
   const meta = useMemo(
-    () =>
-      metadataForFiltering(
-        files.filter((f) => f.type === 'Image') as unknown as Image[],
-      ),
+    () => metadataForFiltering(files.filter((f) => f.type === 'Image')),
     [files],
   );
   const totalFilters = useAtomValue(totalFilterOptionsSelected);

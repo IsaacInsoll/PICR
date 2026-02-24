@@ -2,7 +2,6 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AppFileLink, AppFolderLink } from '@/src/components/AppFolderLink';
 import { AppImage } from '@/src/components/AppImage';
 import { PText } from '@/src/components/PText';
-import type { File, Image } from '@shared/gql/graphql';
 import { AspectView } from '@/src/components/AspectView';
 import { Suspense } from 'react';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
@@ -14,10 +13,15 @@ import { FileRating } from '@/src/components/FolderContents/FileRating';
 import { PTitle } from '@/src/components/PTitle';
 import { FlashList } from '@shopify/flash-list';
 import type { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
-import { fileProps } from '@shared/files/fileProps';
 import { AppVideo } from '@/src/components/AppVideo';
 import { PFileFolderThumbnail } from '@/src/components/PFileView';
 import { AppFooterPadding } from '@/src/components/AppHeaderPadding';
+import type {
+  FolderContentsItem,
+  ViewFolderFileWithHero,
+  ViewFolderSubFolder,
+} from '@shared/files/folderContentsViewModel';
+import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 
 export const AppFolderFeed = ({
   items,
@@ -33,7 +37,7 @@ export const AppFolderFeed = ({
       ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={<AppFooterPadding />}
       numColumns={1}
-      keyExtractor={(item) => item['__typename'] + item.id}
+      keyExtractor={(item) => item.__typename + item.id}
       renderItem={(props) => renderItem({ ...props, width })}
     />
   );
@@ -41,14 +45,12 @@ export const AppFolderFeed = ({
 
 const renderItem = ({
   item,
-  index,
   width,
 }: {
-  item: any;
-  index: number;
+  item: FolderContentsItem;
   width: number;
 }) => {
-  const isFolder = item['__typename'] === 'Folder';
+  const isFolder = !isFolderContentsFile(item);
 
   return isFolder ? (
     <FlashFolder folder={item} key={item.id} width={width} />
@@ -57,7 +59,13 @@ const renderItem = ({
   );
 };
 
-const FlashFolder = ({ folder, width }: { folder: any; width: number }) => {
+const FlashFolder = ({
+  folder,
+  width,
+}: {
+  folder: ViewFolderSubFolder;
+  width: number;
+}) => {
   return (
     <AppFolderLink folder={folder} asChild>
       <TouchableOpacity>
@@ -78,25 +86,26 @@ const FlashFile = ({
   file,
   width,
 }: {
-  file: File | Image | any;
+  file: ViewFolderFileWithHero;
   width: number;
 }) => {
-  const { isImage, isVideo } = fileProps(file);
+  const isImage = file.__typename === 'Image';
+  const isVideoFile = file.__typename === 'Video';
   const { id } = file;
   const [, mutate] = useMutation(addCommentMutation);
 
   return (
-    <AppFileLink file={file} asChild disabled={isVideo}>
+    <AppFileLink file={file} asChild isDisabled={isVideoFile}>
       <TouchableOpacity>
         {isImage ? (
-          <AspectView ratio={file.imageRatio} width={width}>
+          <AspectView ratio={file.imageRatio ?? undefined} width={width}>
             <Suspense fallback={<AppLoadingIndicator />}>
               <AppImage file={file} width={width} />
             </Suspense>
           </AspectView>
         ) : null}
-        {isVideo ? (
-          <AspectView ratio={file.imageRatio} width={width}>
+        {isVideoFile ? (
+          <AspectView ratio={file.imageRatio ?? undefined} width={width}>
             <Suspense fallback={<AppLoadingIndicator />}>
               <AppVideo file={file} width={width} />
             </Suspense>

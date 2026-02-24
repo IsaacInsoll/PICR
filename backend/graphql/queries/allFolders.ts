@@ -1,7 +1,8 @@
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
-import type { Folder as GqlFolder, Folder } from '../../../graphql-types.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { QueryAllFoldersArgs } from '../../../shared/gql/graphql.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { allSubfolders } from '../../helpers/allSubfolders.js';
+import type { FolderFields } from '../../db/picrDb.js';
 import {
   GraphQLEnumType,
   GraphQLID,
@@ -10,20 +11,18 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 import { folderType } from '../types/folderType.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
-const resolver: GraphQLFieldResolver<Folder, PicrRequestContext> = async (
+const resolver: PicrResolver<object, QueryAllFoldersArgs> = async (
   _,
   params,
   context,
-): Promise<Folder[]> => {
+): Promise<FolderFields[]> => {
   await contextPermissions(context, params.id, 'Admin');
-  const folders = (await allSubfolders(
+  return allSubfolders(
     params.id,
-    params.sort,
-    params.limit,
-  )) as unknown;
-  return folders as GqlFolder[];
+    params.sort ?? undefined,
+    params.limit ?? undefined,
+  );
 };
 
 const allFoldersSortEnum = new GraphQLEnumType({

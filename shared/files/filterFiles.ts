@@ -4,6 +4,7 @@ import type {
 } from '@shared/filterAtom';
 import type { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
 import type { FileFlag } from '@shared/gql/graphql';
+import type { PicrMetadataMap } from '@shared/types/metadata';
 
 export const DefaultFilterOptions: FilterOptionsInterface = {
   ratio: 'Any Ratio',
@@ -19,7 +20,7 @@ type FilterableFile = {
   __typename: string;
   name?: string | null;
   imageRatio?: number | null;
-  metadata?: Record<string, string | number | null | undefined> | null;
+  metadata?: PicrMetadataMap | null;
   flag?: FileFlag | null;
   rating?: number | null;
   totalComments?: number | null;

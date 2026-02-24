@@ -1,13 +1,12 @@
 import type { ThumbnailSize } from '../../shared/thumbnailSize.js';
 import { thumbnailPath } from './thumbnailPath.js';
 import { ffmpegForFile } from './ffmpegForFile.js';
-import type { VideoMetadata } from '../types/MetadataSummary.js';
+import type { PicrVideoMetadata } from '../../shared/types/metadata.js';
 import { thumbnailDimensions } from '../../shared/thumbnailDimensions.js';
 import { existsSync, mkdirSync } from 'node:fs';
 import { log } from '../logger.js';
 // import joinImages from 'join-images'; TODO: find ES6 modules compatible alternative?
 import * as ji from 'join-images';
-import lodash from 'lodash';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import type { FileFields } from '../db/picrDb.js';
 
@@ -24,9 +23,10 @@ const processVideoThumbnail = async (
   // lets only do medium thumbnails as large can just be 'embedded video' and small is probably useless?
   if (size != 'md') return;
   if (!file.metadata) return;
-  const { Duration } = JSON.parse(file.metadata) as VideoMetadata;
+  const { Duration } = JSON.parse(file.metadata) as PicrVideoMetadata;
   if (!Duration || Duration <= 0 || !file.imageRatio || file.imageRatio == 0) {
-    console.log(
+    log(
+      'error',
       'Error generating video thumbnails for: ' + fullPathForFile(file),
     );
     return;
@@ -59,10 +59,11 @@ const processVideoThumbnail = async (
             .catch(reject);
         })
         .on('error', (e) => {
-          console.log(
+          log(
+            'error',
             'Error generating video thumbnails for ' + file.name + ' ' + size,
           );
-          console.log(e);
+          log('error', String(e));
           resolve();
         })
         .takeScreenshots({
@@ -72,13 +73,14 @@ const processVideoThumbnail = async (
           size: px + 'x' + Math.round(px / (file.imageRatio ?? 1)), //size eg: '150x100',
         });
     } catch (e) {
-      console.log(
+      log(
+        'error',
         'Caught error generating video thumbnails for ' +
           file.name +
           ' ' +
           size,
       );
-      console.log(e);
+      log('error', String(e));
     }
   });
 };
@@ -86,7 +88,10 @@ const processVideoThumbnail = async (
 const mergeImages = async (file: FileFields, size: ThumbnailSize) => {
   const outFile = thumbnailPath(file, size);
 
-  const files = lodash.range(1, 11).map((r) => `${outFile}/${size}_${r}.jpg`);
+  const files = Array.from(
+    { length: numberOfVideoSnapshots },
+    (_, index) => `${outFile}/${size}_${index + 1}.jpg`,
+  );
   const img = await ji.joinImages(files, { direction: 'vertical' });
   await img.toFile(outFile + '/joined.jpg');
 };

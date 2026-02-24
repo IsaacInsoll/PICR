@@ -1,4 +1,4 @@
-import { CommentPermissions } from '../../../graphql-types';
+import { CommentPermissions } from '@shared/gql/graphql';
 import type { ReactNode } from 'react';
 import { CommentAddIcon, CommentDisabledIcon, CommentIcon } from '../PicrIcons';
 

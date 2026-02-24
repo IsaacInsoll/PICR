@@ -9,7 +9,7 @@ export const useScreenOrientation = (): [
   const [orientation, setOrientation] = useState<Orientation>(
     Orientation.UNKNOWN,
   );
-  console.log('useScreenOrientation', orientation);
+  // console.log('useScreenOrientation', orientation);
 
   useEffect(() => {
     // set initial orientation

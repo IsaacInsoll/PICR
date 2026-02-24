@@ -5,8 +5,8 @@ import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId.js';
 import { db, dbFolderForId, dbUserForId } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationDeleteUserArgs } from '../../../shared/gql/graphql.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 
 /**
@@ -16,7 +16,7 @@ import { doAuthError } from '../../auth/doAuthError.js';
  * - Deleted users are hidden from all user listings
  * - Cannot delete user ID 1 (root admin)
  */
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, MutationDeleteUserArgs> = async (
   _,
   params,
   context,

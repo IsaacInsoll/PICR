@@ -2,7 +2,11 @@ import type { NavigateOptions } from 'react-router';
 import { NavLink, useLocation, useNavigate } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder';
-import type { PicrFile, PicrFolder } from '../../types';
+import type { PicrFolder } from '@shared/types/picr';
+import type {
+  FileNavigationTarget,
+  FolderNavigationTarget,
+} from '@shared/types/ui';
 
 import { useBaseViewFolderURL } from './useBaseViewFolderURL';
 
@@ -12,11 +16,11 @@ export const useSetFolder = () => {
   const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const baseUrl = useBaseViewFolderURL();
   return (
-    folder: Pick<PicrFolder, 'id'> & Partial<PicrFolder>,
-    file?: Pick<PicrFile, 'id'> | string,
+    folder: FolderNavigationTarget,
+    file?: FileNavigationTarget,
     options?: NavigateOptions,
   ) => {
-    setPlaceholderFolder(folder as PicrFolder);
+    setPlaceholderFolder(toPlaceholderFolder(folder));
     const base = baseUrl + folder.id;
     const fileId = typeof file === 'string' ? file : file?.id;
     const f = fileId ? `/${fileId}` : '';
@@ -26,8 +30,8 @@ export const useSetFolder = () => {
 
 // converts any Mantine component to a link that preloads (placeholder) and behaves like a real link (IE: open in new tab)
 export const useFolderLink = (
-  folder: Pick<PicrFolder, 'id'> & Partial<PicrFolder>,
-  file?: Pick<PicrFile, 'id'> | string,
+  folder: FolderNavigationTarget,
+  file?: FileNavigationTarget,
 ) => {
   const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const baseUrl = useBaseViewFolderURL();
@@ -39,7 +43,14 @@ export const useFolderLink = (
     (typeof file === 'string' ? `/${file}` : file?.id ? `/${file.id}` : '') +
     location.hash;
 
-  const onClick = () => setPlaceholderFolder(folder as PicrFolder);
+  const onClick = () => setPlaceholderFolder(toPlaceholderFolder(folder));
 
   return { to, onClick, component: NavLink };
 };
+
+const toPlaceholderFolder = (folder: FolderNavigationTarget): PicrFolder => ({
+  ...folder,
+  id: folder.id,
+  name: folder.name ?? 'Loading...',
+  parents: folder.parents ?? [],
+});

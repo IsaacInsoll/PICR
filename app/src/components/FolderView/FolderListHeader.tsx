@@ -1,13 +1,9 @@
 import { memo } from 'react';
-import type { ViewFolderQuery } from '@shared/gql/graphql';
+import type { ViewFolder } from '@shared/files/sortFiles';
 import { AppHeaderPadding } from '@/src/components/AppHeaderPadding';
 import { FolderHeading } from '@/src/components/FolderView/FolderHeading';
 
-const FolderListHeaderComponent = ({
-  folder,
-}: {
-  folder: ViewFolderQuery['folder'];
-}) => {
+const FolderListHeaderComponent = ({ folder }: { folder: ViewFolder }) => {
   return (
     <>
       <AppHeaderPadding />

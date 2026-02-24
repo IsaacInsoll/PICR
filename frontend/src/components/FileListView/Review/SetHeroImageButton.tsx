@@ -1,4 +1,4 @@
-import type { PicrFile } from '../../../../types';
+import type { PicrFile } from '@shared/types/picr';
 import { useMe } from '../../../hooks/useMe';
 import { ActionIcon, Tooltip } from '@mantine/core';
 import { HeroImageIcon } from '../../../PicrIcons';
@@ -8,7 +8,12 @@ import { useReward } from 'react-rewards';
 import { confettiOptions } from './ConfettiOptions';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 
-export const SetHeroImageButton = ({ file }: { file: PicrFile }) => {
+type HeroImageCandidate = Pick<
+  PicrFile,
+  'id' | 'type' | 'folderId' | 'isHeroImage'
+>;
+
+export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
   const me = useMe();
   const [, mutate] = useMutation(editFolderMutation);
   const [loading, setLoading] = useState(false);

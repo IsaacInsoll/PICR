@@ -1,7 +1,7 @@
 import { meQuery } from '@shared/urql/queries/meQuery';
 // import { extraUserProps } from '../../../backend/helpers/extraUserProps';
 import { useQuery } from 'urql';
-import type { User } from '../../../graphql-types';
+import type { User } from '@shared/gql/graphql';
 
 export const useMe = (): Pick<
   User,
@@ -9,15 +9,13 @@ export const useMe = (): Pick<
 > | null => {
   const [result] = useQuery({ query: meQuery });
   // if result.error == No Permissions then your token expired, reauth?
-  const data = result.data;
-  if (!data) return null;
-  const me = {
-    ...data.me,
-    // ...extraUserProps(data?.me),
-    clientInfo: data.clientInfo,
+  const me = result.data?.me;
+  if (!me) return null;
+  return {
+    id: me.id,
+    name: me.name,
+    folderId: me.folderId,
+    commentPermissions: me.commentPermissions,
+    linkMode: me.linkMode,
   };
-  return me as Pick<
-    User,
-    'id' | 'name' | 'folderId' | 'commentPermissions' | 'linkMode'
-  >;
 };

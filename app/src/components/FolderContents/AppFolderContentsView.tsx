@@ -3,19 +3,14 @@ import { useAtomValue } from 'jotai';
 import { folderViewModeAtom } from '@/src/atoms/atoms';
 import { AppFolderFileList } from '@/src/components/FolderContents/AppFolderFileList';
 import { AppFolderGalleryList } from '@/src/components/FolderContents/AppFolderGalleryList';
-
-interface AppFolderContentsViewProps {
-  items: any[];
-  width: number;
-  refresh: () => void;
-  ListHeaderComponent?: React.ReactElement | null;
-}
+import type { ReactElement } from 'react';
+import type { FolderContentsItem } from '@shared/files/folderContentsViewModel';
 
 export interface AppFolderContentsViewChildProps {
-  items: any[];
+  items: FolderContentsItem[];
   width: number;
   refresh: () => void;
-  ListHeaderComponent?: React.ReactElement | null;
+  ListHeaderComponent?: ReactElement | null;
 }
 
 export const AppFolderContentsView = ({
@@ -23,7 +18,7 @@ export const AppFolderContentsView = ({
   width,
   refresh,
   ListHeaderComponent,
-}: AppFolderContentsViewProps) => {
+}: AppFolderContentsViewChildProps) => {
   const view = useAtomValue(folderViewModeAtom);
   /*
   This is what the frontend has currently and we should support similar:
@@ -70,5 +65,7 @@ export const AppFolderContentsView = ({
           ListHeaderComponent={ListHeaderComponent}
         />
       );
+    default:
+      return null;
   }
 };

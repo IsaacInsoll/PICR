@@ -5,10 +5,10 @@ import { GraphQLID, GraphQLNonNull } from 'graphql';
 import { fileInterface } from '../interfaces/fileInterface.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { dbFileForId } from '../../db/picrDb.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { QueryFileArgs } from '../../../shared/gql/graphql.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, QueryFileArgs> = async (
   _,
   params,
   context,

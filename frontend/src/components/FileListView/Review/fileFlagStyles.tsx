@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { FileFlag } from '../../../../../graphql-types';
+import { FileFlag } from '@shared/gql/graphql';
 import { ApproveIcon, NoFlagIcon, RejectIcon } from '../../../PicrIcons';
 
 interface FlagStyle {

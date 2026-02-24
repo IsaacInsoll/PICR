@@ -20,7 +20,7 @@ import { LoggedInHeader } from '../components/Header/LoggedInHeader';
 import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
 import { useSetAtom } from 'jotai';
-import type { PicrFolder } from '../../types';
+import type { PicrFolder } from '@shared/types/picr';
 import { DotsIcon, FilterIcon, FolderIcon } from '../PicrIcons';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
@@ -54,10 +54,11 @@ const ViewFolderBody = () => {
     : 'files';
   const managing = mode === 'manage';
   const activity = mode === 'activity';
+  const currentFolderId = folderId && folderId !== '' ? folderId : '1';
 
   const [data, reQuery] = useQuery({
     query: viewFolderQuery,
-    variables: { folderId: folderId ?? '1' },
+    variables: { folderId: currentFolderId },
   });
   useRequery(reQuery as Parameters<typeof useRequery>[0], 20000);
 

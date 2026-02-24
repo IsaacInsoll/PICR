@@ -5,13 +5,13 @@ import { allSubfolderIds } from '../../helpers/allSubfolders.js';
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import { dbFile } from '../../db/models/index.js';
 import { db } from '../../db/picrDb.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationGenerateThumbnailsArgs } from '../../../shared/gql/graphql.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, MutationGenerateThumbnailsArgs> = async (
   _,
   params,
-  context: PicrRequestContext,
+  context,
 ) => {
   const { folder } = await contextPermissions(
     context,

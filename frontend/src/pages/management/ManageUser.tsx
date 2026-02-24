@@ -1,4 +1,4 @@
-import type { PicrFolder } from '../../../types';
+import type { PicrFolder } from '@shared/types/picr';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import {
@@ -67,7 +67,7 @@ export const ManageUser = ({
     //TODO: not pass password if it's null or ''
     setError('');
     const data: MutationEditAdminUserArgs = {
-      id: id ?? '',
+      ...(id ? { id } : {}),
       name,
       username: username,
       password: password,

@@ -19,21 +19,16 @@ export const PicrLink = ({
 export const PicrMenuItem = ({
   children,
   to,
+  onClick,
   ...props
 }: {
   children: ReactNode;
   to: string;
-} & Omit<MenuItemProps, 'component'> &
-  Partial<NavLinkProps>) => {
+  onClick?: () => void;
+} & Omit<MenuItemProps, 'component'>) => {
   return (
-    <Menu.Item
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      component={NavLink as any}
-      to={to}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      {...(props as any)}
-    >
-      {children}
-    </Menu.Item>
+    <NavLink to={to} onClick={onClick}>
+      <Menu.Item {...props}>{children}</Menu.Item>
+    </NavLink>
   );
 };

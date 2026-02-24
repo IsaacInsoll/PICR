@@ -17,9 +17,9 @@ export const useTreeSize = (
   const subFolders = folder.subFolders
     .map((f) => ({
       ...f,
-      color: chartColors[parseInt(f.id) % chartColors.length],
+      color: chartColors[parseInt(f.id, 10) % chartColors.length],
     }))
-    .sort((a, b) => parseInt(b.totalSize) - parseInt(a.totalSize));
+    .sort((a, b) => parseInt(b.totalSize, 10) - parseInt(a.totalSize, 10));
 
   return {
     slices: folderToSlices({ ...folder, subFolders }),
@@ -43,11 +43,11 @@ const folderToSlices = (
         totalSize: string;
         color: string;
       }) => {
-        return { x: id, y: parseInt(totalSize), label: name, color };
+        return { x: id, y: parseInt(totalSize, 10), label: name, color };
       },
     ) ?? [];
 
-  const minSize = parseInt(folder?.totalSize) / 50;
+  const minSize = parseInt(folder?.totalSize, 10) / 50;
 
   const { big, small } = Object.groupBy(slices, ({ y }) =>
     y < minSize ? 'small' : 'big',
@@ -60,10 +60,10 @@ const folderToSlices = (
     list.push({ x: 'rest', y: rest, label: '(Other)', color: chartColorRest });
   }
 
-  if (parseInt(folder.totalDirectSize) > 0) {
+  if (parseInt(folder.totalDirectSize, 10) > 0) {
     list.push({
       x: 'files',
-      y: parseInt(folder.totalDirectSize),
+      y: parseInt(folder.totalDirectSize, 10),
       label: '(Files)',
       color: chartColorFiles,
     });

@@ -78,7 +78,10 @@ export const generateThumbnail = async (
     }
     return await Promise.all(promises);
   } catch (e) {
-    console.log(e);
+    log(
+      'error',
+      `Error generating ${size} thumbnail for ${file.name}: ${String(e)}`,
+    );
   }
   return null;
 };
@@ -97,7 +100,10 @@ export const fullPathFor = (
   extension?: string,
 ): string => {
   if (!file.relativePath) {
-    console.log(file);
+    log(
+      'error',
+      `File missing relativePath while resolving fullPathFor: ${file.id}`,
+    );
   }
   const path = fullPath(file.relativePath) + '/' + file.name;
   if (size == 'raw') {

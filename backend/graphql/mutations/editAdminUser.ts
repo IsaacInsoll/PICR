@@ -14,18 +14,25 @@ import type { UserFields } from '../../db/picrDb.js';
 import { db, dbFolderForId, dbUserForId } from '../../db/picrDb.js';
 import { and, eq, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
-import { UserType } from '../../../graphql-types.js';
+import { UserType } from '../../../shared/gql/graphql.js';
 import { commentPermissionsEnum } from '../types/enums.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationEditAdminUserArgs } from '../../../shared/gql/graphql.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, MutationEditAdminUserArgs> = async (
   _,
   params,
   context,
 ) => {
+  if (params.folderId == null) {
+    throw new GraphQLError('Missing required folderId');
+  }
+  if (!params.name) {
+    throw new GraphQLError('Missing required name');
+  }
+
   const { user } = await contextPermissions(context, params.folderId, 'Admin');
-  let adminUser: UserFields | undefined = undefined;
+  let adminUser: UserFields | undefined;
 
   const pass = params.password;
   const username = params.username;
@@ -62,39 +69,53 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
       );
     }
   } else {
-    if (pass && username) {
-      adminUser = {} as UserFields;
-    } else {
+    if (!pass || !username) {
       throw new GraphQLError(
         'Cannot create new user without username and password',
       );
     }
   }
 
-  if (!adminUser) return; // just to fix the "adminUser might be undefined" error below in typescript, not needed
-
-  adminUser.folderId = params.folderId;
-  adminUser.name = params.name;
-
-  adminUser.username = params.username;
-  adminUser.enabled = params.enabled;
-  adminUser.ntfy = params.ntfy;
-  adminUser.ntfyEmail = params.ntfyEmail ?? adminUser.ntfyEmail ?? false;
-  adminUser.commentPermissions = params.commentPermissions;
-  adminUser.updatedAt = new Date();
-  if (pass) adminUser.hashedPassword = hashPassword(pass);
-
-  if (adminUser.id) {
+  if (adminUser) {
+    adminUser.folderId = params.folderId;
+    adminUser.name = params.name;
+    adminUser.username = params.username ?? null;
+    adminUser.enabled = params.enabled ?? adminUser.enabled ?? true;
+    adminUser.ntfy = params.ntfy ?? null;
+    adminUser.ntfyEmail = params.ntfyEmail ?? adminUser.ntfyEmail ?? false;
+    adminUser.commentPermissions =
+      params.commentPermissions ?? adminUser.commentPermissions ?? 'edit';
+    adminUser.updatedAt = new Date();
+    if (pass) adminUser.hashedPassword = hashPassword(pass);
     await db.update(dbUser).set(adminUser).where(eq(dbUser.id, adminUser.id));
-  } else {
-    await db.insert(dbUser).values({
-      ...adminUser,
-      createdAt: new Date(),
-      userType: UserType.Admin,
-    });
+    return { ...adminUser, folder: dbFolderForId(adminUser.folderId) };
   }
 
-  return { ...adminUser, folder: dbFolderForId(adminUser.folderId) };
+  const createPassword = params.password;
+  if (!createPassword) {
+    throw new GraphQLError(
+      'Cannot create new user without username and password',
+    );
+  }
+  const newAdminUser = await db
+    .insert(dbUser)
+    .values({
+      folderId: params.folderId,
+      name: params.name,
+      username: params.username ?? null,
+      hashedPassword: hashPassword(createPassword),
+      enabled: params.enabled ?? true,
+      ntfy: params.ntfy ?? null,
+      ntfyEmail: params.ntfyEmail ?? false,
+      commentPermissions: params.commentPermissions ?? 'edit',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      userType: UserType.Admin,
+    })
+    .returning();
+
+  const created = newAdminUser[0];
+  return { ...created, folder: dbFolderForId(created.folderId) };
 };
 
 export const editAdminUser = {

@@ -1,5 +1,5 @@
 import { Box, Button, InputDescription, InputLabel } from '@mantine/core';
-import { LinkMode } from '../../../graphql-types';
+import { LinkMode } from '@shared/gql/graphql';
 import { linkModeStyle } from './LinkModeStyle';
 
 const options: Array<{

@@ -1,18 +1,18 @@
 import { GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql';
 import { db } from '../../db/picrDb.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { QueryUserDevicesArgs } from '../../../shared/gql/graphql.js';
 import { userDeviceType } from '../types/userDeviceType.js';
 import { GraphQLID } from 'graphql/index.js';
 import { and, eq } from 'drizzle-orm';
 import { dbUserDevice } from '../../db/models/index.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 
-const resolver: GraphQLFieldResolver<
-  unknown,
-  PicrRequestContext,
-  { userId: number; notificationToken?: string }
-> = async (_, params, context) => {
+const resolver: PicrResolver<object, QueryUserDevicesArgs> = async (
+  _,
+  params,
+  context,
+) => {
   const { user, isUser } = context;
   if (!user || !isUser) {
     return doAuthError('NOT_A_USER');

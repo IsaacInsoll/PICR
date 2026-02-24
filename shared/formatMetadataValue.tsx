@@ -3,7 +3,7 @@ import formatDuration from 'format-duration';
 import type { AnyMetadataKey } from '@shared/fileMetadata';
 import { tz } from 'moment-timezone';
 
-export interface formattedValue {
+export interface FormattedValue {
   label: string;
   value: string;
   raw: string | number;
@@ -17,7 +17,7 @@ export const prettyDateNoTZ = (dateString: string): string => {
 export const formatMetadataValue = (
   title: AnyMetadataKey,
   value: string | number,
-): formattedValue => {
+): FormattedValue => {
   // set default return, which can be overridden below
   const data = {
     value: value ? value.toString() : '',

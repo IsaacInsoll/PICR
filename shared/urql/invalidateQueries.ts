@@ -22,3 +22,18 @@ export const invalidateQueries = (
       cache.invalidate('Query', field.fieldName, field.arguments);
     });
 };
+
+export const invalidateQueryObjects = (cache: Cache, queryNames: string[]) => {
+  const queryNameSet = new Set<string>(queryNames);
+  cache
+    .inspectFields('Query')
+    .filter((field) => queryNameSet.has(field.fieldName))
+    .forEach((field) => {
+      const resolved = cache.resolve('Query', field.fieldName, field.arguments);
+      if (Array.isArray(resolved)) {
+        resolved.forEach((key) => {
+          if (typeof key === 'string') cache.invalidate(key);
+        });
+      }
+    });
+};

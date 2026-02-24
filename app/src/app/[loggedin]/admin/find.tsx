@@ -148,9 +148,10 @@ const SearchResults = ({
   queryEnabled: boolean;
   type: SearchResultType;
 }) => {
+  const searchFolderId = activeFolderId || '1';
   const [result] = useQuery({
     query: searchQuery,
-    variables: { folderId: activeFolderId ?? '', query: trimmedQuery },
+    variables: { folderId: searchFolderId, query: trimmedQuery },
     pause: !queryEnabled,
   });
 

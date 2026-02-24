@@ -4,13 +4,13 @@ import { GraphQLError } from 'graphql/error/index.js';
 import { brandingForId, db } from '../../db/picrDb.js';
 import { dbBranding, dbFolder } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationDeleteBrandingArgs } from '../../../shared/gql/graphql.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, MutationDeleteBrandingArgs> = async (
   _,
   params,
-  context: PicrRequestContext,
+  context,
 ) => {
   await requireFullAdmin(context);
 

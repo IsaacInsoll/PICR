@@ -11,6 +11,14 @@ const config: CodegenConfig = {
       documents: ['./shared/**/*.tsx', './shared/**/*.ts'],
       presetConfig: { fragmentMasking: false },
       plugins: [],
+      config: {
+        strictScalars: true,
+        defaultScalarType: 'unknown',
+        scalars: {
+          DateTime: 'string',
+          BigInt: 'string',
+        },
+      },
     },
     //graphql.schema.json used by URQL for caching
     'shared/urql/graphql.schema.json': {
@@ -20,11 +28,6 @@ const config: CodegenConfig = {
     './schema.graphql': {
       schema: 'http://localhost:6900/graphql',
       plugins: ['schema-ast'],
-    },
-    // for importing types into server TS files
-    './graphql-types.ts': {
-      plugins: ['typescript', 'typescript-operations'],
-      config: {},
     },
   },
 };

@@ -26,7 +26,6 @@ import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
 import { useCanDownload } from '../../../hooks/useMe';
 import { Thumbnails } from 'yet-another-react-lightbox/plugins';
 import { ThumbnailsIcon } from '../../../PicrIcons';
-import type { PicrFile } from '../../../../types';
 
 export const SelectedFileView = ({
   files,
@@ -99,9 +98,7 @@ export const SelectedFileView = ({
       render={{
         slideFooter: () =>
           selectedImage ? (
-            <LightboxFileRating
-              selected={selectedImage as unknown as PicrFile}
-            />
+            <LightboxFileRating selected={selectedImage} />
           ) : null,
       }}
       carousel={carouselProps}

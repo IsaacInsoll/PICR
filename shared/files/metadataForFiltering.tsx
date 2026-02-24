@@ -1,11 +1,16 @@
-import type { Image, ImageMetadataSummary } from '@shared/gql/graphql';
+import type { ImageMetadataSummary } from '@shared/gql/graphql';
+import type { PicrMetadataMap } from '@shared/types/metadata';
 
 export type MetadataOptionsForFiltering = Partial<
   Record<keyof ImageMetadataSummary, (string | number)[]>
 >;
 
-export const metadataForFiltering = (
-  files: Image[],
+type ImageMetadataCarrier = {
+  metadata?: Partial<PicrMetadataMap> | null;
+};
+
+export const metadataForFiltering = <T extends ImageMetadataCarrier>(
+  files: T[],
 ): MetadataOptionsForFiltering => {
   const metas = files.map((f) => f.metadata);
   const unique = (key: keyof ImageMetadataSummary): (string | number)[] => {

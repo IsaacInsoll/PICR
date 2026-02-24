@@ -1,23 +1,6 @@
 import { atom } from 'jotai';
-import type { Branding } from '../../../graphql-types';
-import {
-  HeadingFontKey,
-  PrimaryColor,
-  ThemeMode,
-} from '../../../graphql-types';
-
-type BrandingInput = Partial<
-  Pick<
-    Branding,
-    | 'id'
-    | 'folderId'
-    | 'name'
-    | 'logoUrl'
-    | 'mode'
-    | 'primaryColor'
-    | 'headingFontKey'
-  >
->;
+import type { Branding } from '@shared/gql/graphql';
+import { HeadingFontKey, PrimaryColor, ThemeMode } from '@shared/gql/graphql';
 
 export const defaultBranding: Branding = {
   id: '',
@@ -31,7 +14,7 @@ export const defaultBranding: Branding = {
 export const themeModeAtom = atom<Branding>(defaultBranding);
 
 export const applyBrandingDefaults = (
-  branding?: BrandingInput | null,
+  branding?: Partial<Branding> | null,
 ): Branding => ({
   ...defaultBranding,
   ...branding,

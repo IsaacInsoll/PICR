@@ -1,6 +1,6 @@
 import { Badge, Code, Group, Rating, Table, Text } from '@mantine/core';
 import { metadataIcons } from '../metadataIcons';
-import type { PicrFile } from '../../../../types';
+import type { PicrFile } from '@shared/types/picr';
 import type { MetadataPresentationResult } from '@shared/fileMetadata';
 import { metadataForPresentation } from '@shared/fileMetadata';
 import { toReadableFraction } from 'readable-fractions';

@@ -4,7 +4,7 @@ import { useQuery } from 'urql';
 import { manageFolderQuery } from '@shared/urql/queries/manageFolderQuery';
 import QueryFeedback from '../../components/QueryFeedback';
 import { ManagePublicLink } from './ManagePublicLink';
-import type { PicrFolder } from '../../../types';
+import type { PicrFolder } from '@shared/types/picr';
 import { DisconnectedIcon } from '../../PicrIcons';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { Button, Divider, Group, Stack, Switch } from '@mantine/core';
@@ -15,7 +15,7 @@ import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { Tips } from '../../components/Tips';
 import { publicLinkColumns } from './userColumns';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import type { ManageFolderQueryQuery } from '@shared/gql/graphql';
+import type { ManageFolderUserRow } from '@shared/types/queryRows';
 
 interface ManagePublicLinksProps {
   folder: PicrFolder;
@@ -105,7 +105,7 @@ const Body = ({
     variables: { folderId, includeParents, includeChildren },
   });
   const users = (result.data?.users ?? []).filter(
-    (u): u is NonNullable<ManageFolderQueryQuery['users'][number]> => u != null,
+    (u): u is ManageFolderUserRow => u != null,
   );
   return (
     <>
@@ -122,7 +122,7 @@ const SharedFolderDataGrid = ({
   sharedFolders,
   setSharedFolderId,
 }: {
-  sharedFolders: NonNullable<ManageFolderQueryQuery['users'][number]>[];
+  sharedFolders: ManageFolderUserRow[];
   setSharedFolderId: (id: string) => void;
 }) => {
   return (

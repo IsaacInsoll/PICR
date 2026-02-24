@@ -2,7 +2,7 @@ import type { FolderFields } from '../db/picrDb.js';
 import { db, dbFolderForId } from '../db/picrDb.js';
 import { dbFolder } from '../db/models/index.js';
 import { and, asc, desc, eq, like, or } from 'drizzle-orm';
-import { FoldersSortType } from '../../graphql-types.js';
+import { FoldersSortType } from '../../shared/gql/graphql.js';
 
 // Recursively find all subfolders
 // NOTE: no permissions done here, if you can see parent you can see the children
@@ -10,7 +10,7 @@ export const allSubfolders = async (
   folderId: number,
   sort?: FoldersSortType,
   limit?: number,
-) => {
+): Promise<FolderFields[]> => {
   const orderBy =
     sort == FoldersSortType.FolderLastModified
       ? desc(dbFolder.folderLastModified)

@@ -1,15 +1,18 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { AppLink } from '@/src/components/AppFolderLink';
 import { PText } from '@/src/components/PText';
-import type { Folder } from '@shared/gql/graphql';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { BlurView } from 'expo-blur';
 import { memo, useState } from 'react';
 import { FlashList } from '@shopify/flash-list';
 import type { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
-import { fileProps } from '@shared/files/fileProps';
-import { PFileFolderThumbnail, PFileView } from '@/src/components/PFileView';
+import { PFileView } from '@/src/components/PFileView';
 import { AppFooterPadding } from '@/src/components/AppHeaderPadding';
+import type {
+  FolderContentsItem,
+  ViewFolderSubFolder,
+} from '@shared/files/folderContentsViewModel';
+import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 
 const border = 2;
 const defaultHeight = 200; //EG: non-images
@@ -41,7 +44,7 @@ export const AppFolderGalleryList = ({
       numColumns={cols}
       ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={<AppFooterPadding />}
-      keyExtractor={(item) => item['__typename'] + item.id}
+      keyExtractor={(item) => item.__typename + item.id}
       renderItem={(props) => (
         <MasonryItem
           {...props}
@@ -60,17 +63,25 @@ const MasonryItemComponent = ({
   colCount,
   borderColor,
 }: {
-  item: any;
+  item: FolderContentsItem;
   width: number;
   colCount: number;
   borderColor: string;
 }) => {
-  const { isFolder, heroImage, isImage, isVideo } = fileProps(item);
-  const image = heroImage != null ? heroImage : item;
+  const isFolder = !isFolderContentsFile(item);
+  const folder = isFolder ? item : null;
+  const file = !isFolder ? item : null;
+  const image =
+    folder?.heroImage ??
+    (file && file.__typename !== 'File' ? file : undefined);
+  const canRenderMedia =
+    file?.__typename === 'Image' ||
+    file?.__typename === 'Video' ||
+    folder?.heroImage != null;
 
   const style = {
     width: width / colCount - border * 2,
-    height: image.imageRatio
+    height: image?.imageRatio
       ? width / colCount / image.imageRatio
       : defaultHeight,
   };
@@ -79,7 +90,7 @@ const MasonryItemComponent = ({
     <View style={[styles.imageContainer, { borderColor }]}>
       <AppLink item={item} asChild={true}>
         <TouchableOpacity>
-          {isImage || heroImage || isVideo ? (
+          {canRenderMedia && image ? (
             <PFileView
               file={image}
               size="md"
@@ -89,12 +100,13 @@ const MasonryItemComponent = ({
               // blurRadius={isFolder ? 0 : undefined}
             />
           ) : (
-            <PFileFolderThumbnail
-              folder={item}
+            <PFileView
+              file={item}
+              size="md"
               style={{ height: width / colCount }}
             />
           )}
-          {isFolder ? <FolderName folder={item} intensity={colCount} /> : null}
+          {folder ? <FolderName folder={folder} intensity={colCount} /> : null}
         </TouchableOpacity>
       </AppLink>
     </View>
@@ -108,7 +120,7 @@ const FolderName = ({
   folder,
   intensity,
 }: {
-  folder: Folder | any;
+  folder: ViewFolderSubFolder;
   intensity: number;
 }) => {
   //this blur doesn't always render (EG: toggle from 2 column to 3 column and it disappears for most items

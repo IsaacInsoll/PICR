@@ -65,8 +65,9 @@ Common faults include:
 
 ## When are tests run?
 
-- Tests are run before each release as part of the `release-it` configuration.
-- Tests are no run before each commit.
-- You can manually run a `npm run test` before commit to make sure it works\*
+- Tests are run in GitHub Actions on `push` and `pull_request` (except docs/lightroom/markdown-only changes) via `.github/workflows/on-push.yml`.
+- Tests are also run for release workflows before Docker images are pushed.
+- Tests are not run before each local commit by default.
+- You can manually run `npm run test` before commit to verify locally\*
 
 \* I didn't want to force this on you as it's a bit of time "wasted" doing builds/tests if just commiting a small change.

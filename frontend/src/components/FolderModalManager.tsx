@@ -2,7 +2,7 @@ import { CommentModal } from './FileListView/Review/CommentModal';
 import { FileInfoModal } from './FileListView/FileInfo/FileInfoModal';
 import { modalTypeAtom } from '../atoms/modalAtom';
 import { useAtomValue } from 'jotai';
-import type { PicrFolder } from '../../types';
+import type { PicrFolder } from '@shared/types/picr';
 
 export const FolderModalManager = ({ folder }: { folder: PicrFolder }) => {
   const a = useAtomValue(modalTypeAtom);

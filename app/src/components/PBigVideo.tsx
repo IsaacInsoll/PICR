@@ -23,7 +23,7 @@ export const PBigVideo = ({
 
   const baseUrl = useLoginDetails()?.server;
   const videoSource = baseUrl + imageURL(file, 'raw');
-  console.log('videoSource', file.imageRatio, videoSource);
+  // console.log('videoSource', file.imageRatio, videoSource);
   const player = useVideoPlayer(videoSource, (player) => {
     player.loop = false;
   });

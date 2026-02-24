@@ -13,7 +13,7 @@ import {
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { and, asc, desc, eq, gte, inArray } from 'drizzle-orm';
-import type { AccessType } from '../../graphql-types.js';
+import type { AccessType } from '../../shared/gql/graphql.js';
 import { fileToJSON } from '../graphql/helpers/fileToJSON.js';
 import { picrConfig } from '../config/picrConfig.js';
 import { sendFolderViewedNotification } from '../notifications/notifications.js';
@@ -110,14 +110,19 @@ export const createAccessLog = async (
   //Check if sessionId/ipAddress/user already accessed this in last hour and don't create if so
 
   const h = context.headers;
+  const normalizeText = (value: string | undefined): string => {
+    if (value == null) return '';
+    const trimmed = value.trim();
+    return trimmed === '' ? '' : trimmed;
+  };
 
   const props = {
     userId: user.id,
     folderId: folder.id,
     type: type,
-    ipAddress: h.ipAddress ?? '',
-    sessionId: h.sessionId ?? '',
-    userAgent: h.userAgent ?? '',
+    ipAddress: normalizeText(h.ipAddress),
+    sessionId: normalizeText(h.sessionId),
+    userAgent: normalizeText(h.userAgent),
   };
 
   const recent = await db.query.dbAccessLog.findFirst({

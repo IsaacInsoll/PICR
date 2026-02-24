@@ -45,7 +45,7 @@ export const FileCommentsBottomSheet = ({
 
   const [addComment, setAddComment] = useState(false);
   const [commentText, setCommentText] = useState('');
-  console.log({ commentText }, commentText.length);
+  // console.log({ commentText }, commentText.length);
   const onShowAddComment = () => {
     setAddComment(true);
     setTimeout(() => textInputRef.current?.focus(), 100);
@@ -74,7 +74,7 @@ export const FileCommentsBottomSheet = ({
   }, [addComment, bottomSheetRef, open]);
 
   const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
+    // console.log('handleSheetChanges', index);
   }, []);
 
   const handleClose = () => {

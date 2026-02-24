@@ -5,8 +5,7 @@ import { actionIconSize } from '../theme';
 import { GridViewIcon, ListViewIcon, PhotoViewIcon } from '../PicrIcons';
 import type { ReactNode } from 'react';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
-
-export type SelectedView = 'list' | 'gallery' | 'feed';
+import type { SelectedView } from '@shared/types/ui';
 
 const selectedViewStorageAtom = atomWithStorage<SelectedView>(
   'SelectedView',

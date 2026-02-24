@@ -54,8 +54,8 @@ We want to update all the stuff that needs to know about this, so run `npm run g
 which should then show some updated auto-generated files:
 
 - `schema.graphql` this is what your IDE uses to autocomplete/validate the GraphQL queries you write in the frontend
-- `graphql-types.ts` this is typescript types of what is in graphQL which we can use to type things we are working with
-- `graphql.schema.json` used by URQL to do amazing caching work
+- `shared/gql/graphql.ts` this contains generated TypeScript GraphQL types and operation result types
+- `shared/urql/graphql.schema.json` used by URQL to do amazing caching work
 
 You can check `codegen.ts` if you want to learn more.
 You will never need to edit these files manually but they should be commited when you make changes to graphql.

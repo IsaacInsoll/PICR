@@ -7,7 +7,7 @@ import type { NotificationChannelInput } from 'expo-notifications';
 // Get expo push notification token and ask user for permissions (if required)
 export async function registerForPushNotificationsAsync() {
   if (!Device.isDevice) {
-    console.log('[pushNotifications] skipping because not real device');
+    // console.log('[pushNotifications] skipping because not real device');
     return;
   }
   let token;
@@ -36,7 +36,7 @@ export async function registerForPushNotificationsAsync() {
       throw new Error('Project ID not found');
     }
     token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-    console.log(token);
+    // console.log(token);
   } catch (e) {
     console.error(e);
     token = `${e}`;

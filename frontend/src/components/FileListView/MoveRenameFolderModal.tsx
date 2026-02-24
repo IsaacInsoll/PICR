@@ -1,14 +1,14 @@
 import { Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
-import type { PicrFolder } from '../../../types';
+import type { PicrFolder } from '@shared/types/picr';
 import { useIsSmallScreen } from '../../hooks/useIsMobile';
 import { FolderSelector } from '../FolderSelector';
 import { renameFolderMutation } from '@shared/urql/mutations/renameFolderMutation';
 import { ModalLoadingIndicator } from '../ModalLoadingIndicator';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { useMe } from '../../hooks/useMe';
-import type { ReadAllFoldersQueryQuery } from '@shared/gql/graphql';
+import type { AllFoldersRow } from '@shared/types/queryRows';
 import {
   validateFolderName,
   validateRelativePath,
@@ -55,10 +55,11 @@ const MoveRenameFolderModalBody = ({
 }) => {
   const [, mutate] = useMutation(renameFolderMutation);
   const me = useMe();
+  const homeFolderId = me?.folderId;
   const [result] = useQuery({
     query: readAllFoldersQuery,
-    variables: { id: me?.folderId ?? '' },
-    pause: !opened,
+    variables: { id: homeFolderId || folder.id },
+    pause: !opened || !homeFolderId,
   });
   const [name, setName] = useState(folder.name ?? '');
   const [parentFolder, setParentFolder] = useState<PicrFolder>(folder);
@@ -68,8 +69,7 @@ const MoveRenameFolderModalBody = ({
   const foldersList = useMemo(
     () =>
       (result.data?.allFolders ?? []).filter(
-        (f): f is NonNullable<ReadAllFoldersQueryQuery['allFolders'][number]> =>
-          f != null,
+        (f): f is AllFoldersRow => f != null,
       ),
     [result.data],
   );

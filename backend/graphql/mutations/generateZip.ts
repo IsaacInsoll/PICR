@@ -2,16 +2,16 @@ import { contextPermissions } from '../../auth/contextPermissions.js';
 import { hashFolderContents } from '../../helpers/zip.js';
 import { addToZipQueue } from '../../helpers/zipQueue.js';
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
-import { AccessType, LinkMode } from '../../../graphql-types.js';
+import { AccessType, LinkMode } from '../../../shared/gql/graphql.js';
 import { createAccessLog } from '../../db/picrDb.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationGenerateZipArgs } from '../../../shared/gql/graphql.js';
 import { GraphQLError } from 'graphql/error/index.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, MutationGenerateZipArgs> = async (
   _,
   params,
-  context: PicrRequestContext,
+  context,
 ) => {
   const { user, folder } = await contextPermissions(
     context,

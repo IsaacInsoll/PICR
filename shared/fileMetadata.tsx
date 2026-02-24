@@ -1,5 +1,6 @@
 import { formatMetadataValue } from './formatMetadataValue';
 import { toReadableFraction } from 'readable-fractions';
+import type { PicrMetadataMap } from './types/metadata.js';
 
 export type AnyMetadataKey = string;
 
@@ -17,10 +18,8 @@ export interface MetadataPresentationResult {
   data?: unknown; // if it's something that needs bespoke custom rendering
 }
 
-type MetadataObject = Record<string, string | number | null | undefined>;
-
 type MetadataFile = {
-  metadata?: MetadataObject | null;
+  metadata?: PicrMetadataMap | null;
   imageRatio?: number | null;
 };
 

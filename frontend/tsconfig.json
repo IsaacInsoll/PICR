@@ -15,5 +15,5 @@
       "jotai/*": ["./node_modules/jotai/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "../shared/readable-fractions.d.ts"]
 }

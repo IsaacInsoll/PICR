@@ -13,20 +13,36 @@ import type { UserFields } from '../../db/picrDb.js';
 import { db, dbFolderForId, dbUserForId } from '../../db/picrDb.js';
 import { and, eq, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
-import { LinkMode, UserType } from '../../../graphql-types.js';
+import { LinkMode, UserType } from '../../../shared/gql/graphql.js';
 import { commentPermissionsEnum, linkModeEnum } from '../types/enums.js';
 import { userToJSON } from '../helpers/userToJSON.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationEditUserArgs } from '../../../shared/gql/graphql.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, MutationEditUserArgs> = async (
   _,
   params,
   context,
 ) => {
+  if (params.folderId == null) {
+    throw new GraphQLError('Missing required folderId');
+  }
+  if (!params.name) {
+    throw new GraphQLError('Missing required name');
+  }
+  if (params.enabled == null) {
+    throw new GraphQLError('Missing required enabled');
+  }
+  if (!params.commentPermissions) {
+    throw new GraphQLError('Missing required commentPermissions');
+  }
+  if (!params.uuid) {
+    throw new GraphQLError('Missing required uuid');
+  }
+
   await contextPermissions(context, params.folderId, 'Admin');
 
-  let user: UserFields | undefined = undefined;
+  let user: UserFields | undefined;
   if (params.id) {
     user = await dbUserForId(params.id);
     if (!user) throw new GraphQLError('No user found for ID: ' + params.id);
@@ -42,23 +58,9 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
       throw new GraphQLError(
         "You don't have access to edit users in folder " + userFolder.id,
       );
-  } else {
-    user = {} as UserFields;
   }
 
-  const existingUuid = await db.query.dbUser.findFirst({
-    where: and(
-      eq(dbUser.uuid, params.uuid),
-      ne(dbUser.id, user?.id ?? 0),
-      eq(dbUser.deleted, false),
-    ),
-  });
-
-  if (existingUuid) {
-    throw new GraphQLError('Public Link Address already used');
-  }
-
-  if (!params.uuid || params.uuid.length < 6) {
+  if (params.uuid.length < 6) {
     throw new GraphQLError('Public Link Address must be at least 6 characters');
   }
 
@@ -69,32 +71,49 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
     );
   }
 
-  if (!user) return; // just to fix the "adminUser might be undefined" error below in typescript, not needed
+  const existingUuid = await db.query.dbUser.findFirst({
+    where: and(
+      eq(dbUser.uuid, params.uuid),
+      ne(dbUser.id, user ? user.id : 0),
+      eq(dbUser.deleted, false),
+    ),
+  });
 
-  user.folderId = params.folderId;
-  user.name = params.name;
-  user.username = params.username;
-  user.uuid = params.uuid;
-  user.enabled = params.enabled;
-  user.commentPermissions = params.commentPermissions;
-  user.linkMode = params.linkMode ?? LinkMode.FinalDelivery;
-  user.updatedAt = new Date();
+  if (existingUuid) {
+    throw new GraphQLError('Public Link Address already used');
+  }
 
-  if (user.id) {
+  if (user) {
+    user.folderId = params.folderId;
+    user.name = params.name;
+    user.username = params.username ?? null;
+    user.uuid = params.uuid;
+    user.enabled = params.enabled;
+    user.commentPermissions = params.commentPermissions;
+    user.linkMode = params.linkMode ?? LinkMode.FinalDelivery;
+    user.updatedAt = new Date();
     await db.update(dbUser).set(user).where(eq(dbUser.id, user.id));
     return { ...userToJSON(user), folder: dbFolderForId(user.folderId) };
-  } else {
-    const newUser = await db
-      .insert(dbUser)
-      .values({
-        ...user,
-        createdAt: new Date(),
-        userType: UserType.Link,
-      })
-      .returning();
-
-    return { ...userToJSON(newUser[0]), folder: dbFolderForId(user.folderId) };
   }
+
+  const newUser = await db
+    .insert(dbUser)
+    .values({
+      folderId: params.folderId,
+      name: params.name,
+      username: params.username ?? null,
+      uuid: params.uuid,
+      enabled: params.enabled,
+      commentPermissions: params.commentPermissions,
+      linkMode: params.linkMode ?? LinkMode.FinalDelivery,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      userType: UserType.Link,
+    })
+    .returning();
+
+  const created = newUser[0];
+  return { ...userToJSON(created), folder: dbFolderForId(created.folderId) };
 };
 
 export const editUser = {

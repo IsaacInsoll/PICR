@@ -8,10 +8,10 @@ import { addUserRelationship } from '../helpers/addUserRelationship.js';
 import { db, dbFileForId } from '../../db/picrDb.js';
 import { dbComment } from '../../db/models/index.js';
 import { desc, eq } from 'drizzle-orm';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { QueryCommentsArgs } from '../../../shared/gql/graphql.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, QueryCommentsArgs> = async (
   _,
   params,
   context,
@@ -47,6 +47,9 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
     );
   } else {
     const folderId = params.folderId;
+    if (folderId == null) {
+      throw new GraphQLError('Missing folderId');
+    }
     const { user } = await contextPermissions(context, folderId, 'View');
     if (user?.commentPermissions === 'none') {
       doAuthError('COMMENTS_HIDDEN');

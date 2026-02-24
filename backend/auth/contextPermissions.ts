@@ -8,22 +8,22 @@ import { folderIsUnderFolder } from '../helpers/folderIsUnderFolderId.js';
 import { dbFolderForId } from '../db/picrDb.js';
 import type { PicrRequestContext } from '../types/PicrRequestContext.js';
 
-type fid = number | null | undefined;
+type FolderIdInput = number | null | undefined;
 
 // Will return `folder` only if you have access to it.
 // Will throw error if you don't have at least `requires` permissions
 export async function contextPermissions(
   context: PicrRequestContext,
-  folderId: fid,
+  folderId: FolderIdInput,
   requires: FolderPermissions,
 ): Promise<ContextualPermissions>;
 export async function contextPermissions(
   context: PicrRequestContext,
-  folderId: fid,
+  folderId: FolderIdInput,
 ): Promise<Partial<ContextualPermissions>>;
 export async function contextPermissions(
   context: Pick<PicrRequestContext, 'user' | 'userHomeFolder'>,
-  folderId: fid,
+  folderId: FolderIdInput,
   requires?: FolderPermissions,
 ): Promise<Partial<ContextualPermissions>> {
   const { user, userHomeFolder } = context;

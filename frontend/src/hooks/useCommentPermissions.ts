@@ -1,5 +1,5 @@
 import { useMe } from './useMe';
-import { CommentPermissions } from '../../../graphql-types';
+import { CommentPermissions } from '@shared/gql/graphql';
 
 export const useCommentPermissions = (): UseCommentPermissionsResult => {
   const me = useMe();

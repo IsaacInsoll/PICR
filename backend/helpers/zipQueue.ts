@@ -1,8 +1,9 @@
 import type { FolderHash } from './zip.js';
 import { zipFolder, zipPath } from './zip.js';
 import { existsSync } from 'node:fs';
-import type { Task } from '../../graphql-types.js';
+import type { Task } from '../../shared/gql/graphql.js';
 import type { FolderFields } from '../db/picrDb.js';
+import { log } from '../logger.js';
 
 interface ZipQueueItem {
   folder: FolderFields;
@@ -20,19 +21,22 @@ const zipQueue: { [key: string]: ZipQueueItem } = {};
 export const addToZipQueue = (folderHash: FolderHash) => {
   // already in progress (maybe a double tap of download button?)
   if (zipInProgress(folderHash)) {
-    console.log('in progress');
+    log('info', `ZIP already in progress for folder ${folderHash.folder.id}`);
     return;
   }
   //check if file exists and 'instant finish' if it already exists
   const zPath = zipPath(folderHash);
   if (existsSync(zPath)) {
-    console.log('Returning existing ZIP file 🔥');
+    log(
+      'info',
+      `Returning existing ZIP file for folder ${folderHash.folder.id}`,
+    );
     zipQueue[folderHash.key] = {
       status: 'Complete',
       folder: folderHash.folder,
     };
   } else {
-    console.log('queuing');
+    log('info', `Queueing ZIP generation for folder ${folderHash.folder.id}`);
     zipQueue[folderHash.key] = {
       status: 'Queued',
       folder: folderHash.folder,
@@ -71,25 +75,26 @@ export const zipInProgress = (
   // we don't know key as this could be a previous download or something
   // const q = zipQueue[folderHash.key];
   // return !q || q.status == 'Complete';
-  console.log('starting ZipInProgress');
+  // Developer debugging:
+  // log('debug', 'Starting zipInProgress check');
 
   let inProgress = false;
 
   Object.keys(zipQueue).forEach((k) => {
     const q = zipQueue[k];
-    console.log([
-      q.hash,
-      folderHash.hash,
-      q.folder.id,
-      folderHash.folder.id,
-      q.status,
-    ]);
+    // Developer debugging:
+    // log(
+    //   'debug',
+    //   `zipInProgress item hash=${String(q.hash)} targetHash=${folderHash.hash} folder=${q.folder.id} targetFolder=${folderHash.folder.id} status=${q.status}`,
+    // );
     if (q.hash == folderHash.hash && q.folder.id == folderHash.folder.id) {
       if (q.status != 'Complete') {
-        console.log('allegedly currently zipping');
+        // Developer debugging:
+        // log('debug', `ZIP currently in progress for folder ${q.folder.id}`);
         inProgress = true;
       } else {
-        console.log('deleting zipQueue k');
+        // Developer debugging:
+        // log('debug', `ZIP queue item already complete for folder ${q.folder.id}`);
         // delete zipQueue[k];
         inProgress = false;
       }

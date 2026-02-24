@@ -1,11 +1,10 @@
 import * as Font from 'expo-font';
 import type { FontKey } from '@shared/branding/fontRegistry';
 import { normalizeFontKey as normalizeHeadingFontKey } from '@shared/branding/fontRegistry';
+import type { TitleLevel } from '@shared/types/ui';
 import { fontFiles, fontWeightsByKey } from '@/src/fonts.generated';
 
 export { normalizeHeadingFontKey };
-
-export type TitleLevel = 1 | 2 | 3 | 4;
 
 // Track which fonts we've attempted to load this session.
 // Note: During hot reload in dev, this resets but fonts remain loaded in Expo.

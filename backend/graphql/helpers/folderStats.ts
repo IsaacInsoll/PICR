@@ -1,5 +1,4 @@
 import { allSubfolders } from '../../helpers/allSubfolders.js';
-import lodash from 'lodash';
 import { db } from '../../db/picrDb.js';
 import { and, count, eq, inArray } from 'drizzle-orm';
 import { dbFile } from '../../db/models/index.js';
@@ -53,7 +52,7 @@ export const folderStats = async (folderId: number): Promise<FolderStat[]> => {
   // Object.values(FileType).forEach((t) => {
   //   result[t] = await File.count({ where: { folderId: childIds, type: t } });
   // });
-  return lodash.sortBy(result, 'total').reverse();
+  return result.sort((a, b) => b.total - a.total);
 };
 
 interface FolderStat {

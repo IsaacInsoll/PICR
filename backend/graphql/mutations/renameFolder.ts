@@ -2,8 +2,8 @@ import { contextPermissions } from '../../auth/contextPermissions.js';
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
 import { folderType } from '../types/folderType.js';
 import { GraphQLError } from 'graphql/error/index.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationRenameFolderArgs } from '../../../shared/gql/graphql.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import { accessSync, constants, existsSync, renameSync } from 'node:fs';
 import { db } from '../../db/picrDb.js';
@@ -14,11 +14,12 @@ import { moveThumbnailFolder } from '../../media/moveThumbnailFolder.js';
 import { validateRelativePath } from '../../../shared/validation/folderPath.js';
 import { folderIsUnderFolder } from '../../helpers/folderIsUnderFolderId.js';
 import { doAuthError } from '../../auth/doAuthError.js';
+import { log } from '../../logger.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, MutationRenameFolderArgs> = async (
   _,
   params,
-  context: PicrRequestContext,
+  context,
 ) => {
   const { folder } = await contextPermissions(
     context,
@@ -67,7 +68,7 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
   const [shortName] = pathParts.slice(-1);
   const newParentPath = pathParts.slice(0, -1).join('/');
 
-  console.log(`renamed [${shortName}] ${fullOld} => ${fullNew}`);
+  log('info', `renaming [${shortName}] ${fullOld} => ${fullNew}`);
 
   const newParentFolder = newParentPath
     ? await db.query.dbFolder.findFirst({
@@ -100,9 +101,9 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
 
   try {
     renameSync(fullOld, fullNew);
-    console.log('Folder renamed successfully!');
+    log('info', 'Folder renamed successfully!');
   } catch (err) {
-    console.error('Error renaming folder:', err);
+    log('error', 'Error renaming folder: ' + String(err));
     throw new GraphQLError('Failed to rename folder');
   }
 
@@ -159,7 +160,7 @@ const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
     try {
       renameSync(fullNew, fullOld);
     } catch (rollbackErr) {
-      console.error('Error rolling back folder rename:', rollbackErr);
+      log('error', 'Error rolling back folder rename: ' + String(rollbackErr));
     }
     throw err;
   }

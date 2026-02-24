@@ -1,9 +1,10 @@
 import ffmpeg from 'fluent-ffmpeg';
 //{ ffprobe, FfprobeData, setFfprobePath }
 import util from 'node:util';
-import type { VideoMetadata } from '../types/MetadataSummary.js';
+import type { PicrVideoMetadata } from '../../shared/types/metadata.js';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import type { FileFields } from '../db/picrDb.js';
+import { log } from '../logger.js';
 
 export const getVideoMetadata = async (file: FileFields) => {
   //PROBLEM when not running in docker: need to prefix this with `dist/`
@@ -16,7 +17,7 @@ export const getVideoMetadata = async (file: FileFields) => {
     const fullPath = fullPathForFile(file);
     const metadata = (await ffprobePromise(fullPath)) as ffmpeg.FfprobeData;
 
-    const m: VideoMetadata = {};
+    const m: PicrVideoMetadata = {};
 
     // if (err) {
     //   console.log('Error reading metadata for: ' + file.fullPath());
@@ -45,7 +46,7 @@ export const getVideoMetadata = async (file: FileFields) => {
     }
     return m;
   } catch (e) {
-    console.log(e);
+    log('error', `Error reading video metadata for ${file.name}: ${String(e)}`);
     return {};
   }
 };

@@ -7,7 +7,7 @@ import {
 } from '../PicrIcons';
 import { useQuery } from 'urql';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
-import type { treeNode } from '../helpers/buildTreeArray';
+import type { TreeNode } from '../helpers/buildTreeArray';
 import { buildTreeArray } from '../helpers/buildTreeArray';
 import {
   Suspense,
@@ -18,11 +18,10 @@ import {
   useState,
 } from 'react';
 import type { MouseEvent } from 'react';
-import type { PicrFolder } from '../../types';
+import type { PicrFolder } from '@shared/types/picr';
 import { LoadingIndicator } from './LoadingIndicator';
-import { values } from 'lodash';
 import { FolderIcon } from '../PicrIcons';
-import type { ReadAllFoldersQueryQuery } from '@shared/gql/graphql';
+import type { AllFoldersRow } from '@shared/types/queryRows';
 
 const prettyFolderPath = (folder: PicrFolder) => {
   const chev = ' › ';
@@ -105,21 +104,20 @@ const FolderTreeView = ({
   const folders = useMemo(
     () =>
       (result?.data?.allFolders ?? []).filter(
-        (f): f is NonNullable<ReadAllFoldersQueryQuery['allFolders'][number]> =>
-          f != null,
+        (f): f is AllFoldersRow => f != null,
       ),
     [result?.data?.allFolders],
   );
 
   const treeData = useMemo(() => {
-    const treeRaw: treeNode[] = folders.map((f) => ({
+    const treeRaw: TreeNode[] = folders.map((f) => ({
       id: f.id, // buildTree
       value: f.id, // <Tree> view
       label: f.name,
       parentId: f.parentId ?? undefined,
     }));
     return buildTreeArray(treeRaw, rootId).filter(
-      (node): node is treeNode => node != null,
+      (node): node is TreeNode => node != null,
     );
   }, [folders, rootId]);
 
@@ -152,7 +150,7 @@ const FolderTreeView = ({
 
   //expand the selected parents if we have nothing expanded (IE: first open) {
   useEffect(() => {
-    if (open && !values(tree.expandedState).includes(true)) {
+    if (open && !Object.values(tree.expandedState).includes(true)) {
       tree.setExpandedState(expandedParents(folder));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only trigger when opening; folder/tree changes are handled by dedicated sync effect below

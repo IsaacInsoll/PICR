@@ -1,12 +1,8 @@
 import { loginMutation } from '../../shared/urql/mutations/loginMutation';
 import { Client, fetchExchange } from 'urql';
+import type { ICredentials } from '../../shared/types/credentials';
 
 import { testUrl } from './testVariables';
-
-interface ICredentials {
-  username: string;
-  password: string;
-}
 
 export const createTestGraphqlClient = async (headers: HeadersInit) => {
   return new Client({

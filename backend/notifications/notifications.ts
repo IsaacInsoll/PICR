@@ -1,6 +1,6 @@
 import type { FileFields, FolderFields, UserFields } from '../db/picrDb.js';
 import { db } from '../db/picrDb.js';
-import type { AccessType } from '../../graphql-types.js';
+import type { AccessType } from '../../shared/gql/graphql.js';
 import { folderAndAllParentIds } from '../helpers/folderAndAllParentIds.js';
 import { usersForFolders } from '../helpers/usersForFolders.js';
 import { sendNtfyNotification } from './sendNtfyNotification.js';

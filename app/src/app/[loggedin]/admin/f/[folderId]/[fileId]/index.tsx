@@ -21,7 +21,6 @@ import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { HeaderButton } from '@react-navigation/elements';
 import { Ionicons } from '@expo/vector-icons';
 import { navBarIconProps } from '@/src/constants';
-import type { ViewFolderQuery } from '@shared/gql/graphql';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 import {
   getHeadingFontFamilyForLevel,
@@ -34,14 +33,13 @@ import { PTitle } from '@/src/components/PTitle';
 import { PBigVideo } from '@/src/components/PBigVideo';
 import { useNavigationScreenOptions } from '@/src/hooks/useNavigationScreenOptions';
 import { FileInfoBottomSheet } from '@/src/components/FileInfoBottomSheet';
+import type { ViewFolderFile } from '@shared/files/sortFiles';
 
 interface ItemProps {
   index: number;
   animationValue: SharedValue<number>;
   setIsZoomed: (value: boolean) => void;
 }
-
-type ViewFolderFile = ViewFolderQuery['folder']['files'][number];
 
 const showCommentsAtom = atom(false);
 const showFileInfoAtom = atom(false);
@@ -266,12 +264,12 @@ const AppDownloadFileButton = ({
         );
       } else {
         await MediaLibrary.createAssetAsync(uri);
-        console.log('Saved!!');
+        // console.log('Saved!!');
       }
       // MediaLibrary.saveToLibraryAsync(uri).then(() => console.log('Saved!!'));
-    } catch (e) {
-      console.log('error saving file');
-      console.log(e);
+    } catch {
+      // console.log('error saving file');
+      // console.log(e);
     }
   };
   return (

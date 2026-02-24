@@ -6,25 +6,41 @@ import type { PicrRequestContext } from '../types/PicrRequestContext.js';
 import { getUserFromUUID } from '../auth/getUserFromUUID.js';
 import { dbFolderForId } from '../db/picrDb.js';
 import { extraUserProps } from '../../shared/extraUserProps.js';
-import { UserType } from '../../graphql-types.js';
+import { UserType } from '../../shared/gql/graphql.js';
+
+type GraphqlHttpContextRequest = {
+  headers: IncomingCustomHeaders;
+  raw?: { ip?: string };
+};
+
+const firstHeader = (
+  value: string | string[] | undefined,
+): string | undefined => (Array.isArray(value) ? value[0] : value);
+
+const normalizedHeader = (value: string | undefined): string | undefined => {
+  if (value == null) return undefined;
+  const trimmed = value.trim();
+  return trimmed === '' ? undefined : trimmed;
+};
 
 export const gqlServer = createHandler({
   schema: schema,
-  // @ts-expect-error graphq-http express typings don't match runtime request shape
-  context: async (req): Promise<PicrRequestContext> => {
-    const headers = req.headers as IncomingCustomHeaders;
+  context: async (req, params) => {
+    void params;
+    const request = req as GraphqlHttpContextRequest;
+    const headers = request.headers;
+    const forwarded = firstHeader(headers['x-forwarded-for']);
+    const realIp = firstHeader(headers['x-real-ip']);
 
     // `req.raw.ip` works fine unless we are behind a reverse proxy
-    // @ts-expect-error req.raw exists at runtime in this server integration
-    const ipAddress: string =
-      headers['x-real-ip'] ?? headers['x-forwarded-for'] ?? req.raw.ip ?? '';
+    const ipAddress = normalizedHeader(realIp ?? forwarded ?? request.raw?.ip);
 
-    const h = {
-      auth: headers.authorization ?? '',
+    const h: PicrRequestContext['headers'] = {
+      auth: normalizedHeader(firstHeader(headers.authorization)),
       uuid: headers.uuid,
-      host: headers.host,
-      sessionId: headers['sessionid'] as string, //note: header field is lower case
-      userAgent: headers['user-agent'],
+      host: firstHeader(headers.host),
+      sessionId: normalizedHeader(firstHeader(headers['sessionid'])), //note: header field is lower case
+      userAgent: firstHeader(headers['user-agent']),
       ipAddress,
     };
 
@@ -34,6 +50,9 @@ export const gqlServer = createHandler({
       user?.userType ? { userType: UserType[user?.userType] } : undefined,
     );
 
-    return { headers: h, user, userHomeFolder, ...extra };
+    return { headers: h, user, userHomeFolder, ...extra } as Record<
+      string,
+      unknown
+    >;
   },
 });

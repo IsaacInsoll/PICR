@@ -36,7 +36,7 @@ Notifications.setNotificationHandler({
 
 export default function AppLayout() {
   // This is the 'entrypoint' for the app :)
-  console.log('PICR App Booting');
+  // console.log('PICR App Booting');
   const lastNotification = useLastNotificationResponse();
   const router = useRouter();
   useEffect(() => {
@@ -44,10 +44,10 @@ export default function AppLayout() {
     const url = lastNotification?.notification.request.content.data['url'];
 
     if (typeof url === 'string') {
-      console.log([
-        'AppLayout',
-        'redirecting because of cold boot URL: ' + url,
-      ]);
+      // console.log([
+      //   'AppLayout',
+      //   'redirecting because of cold boot URL: ' + url,
+      // ]);
       setTimeout(() => router.push(url as Href), 300);
     }
   }, [lastNotification, router]);

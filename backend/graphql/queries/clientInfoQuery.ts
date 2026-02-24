@@ -1,15 +1,10 @@
 import { clientInfoType } from '../types/clientInfoType.js';
 import { getServerOptions } from '../../db/picrDb.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
-  _,
-  _params,
-  context,
-) => {
+const resolver: PicrResolver = async (_, _params, context) => {
   //TODO: fix this doesn't work when accessing as public user
   const user = context.user;
   if (!user) return doAuthError('NOT_LOGGED_IN');

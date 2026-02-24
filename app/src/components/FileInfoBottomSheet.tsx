@@ -8,6 +8,13 @@ import { Keyboard, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { appMetadataIcons } from '@/src/components/AppIcons';
 import { metadataForPresentation } from '@shared/fileMetadata';
+import type { PicrMetadataMap } from '@shared/types/metadata';
+
+type FileInfoBottomSheetFile = {
+  name?: string | null;
+  imageRatio?: number | null;
+  metadata?: PicrMetadataMap | null;
+};
 
 // This must be the bottom most element in the view
 export const FileInfoBottomSheet = ({
@@ -15,7 +22,7 @@ export const FileInfoBottomSheet = ({
   open,
   onClose,
 }: {
-  file: any;
+  file: FileInfoBottomSheetFile;
   open: boolean;
   onClose: () => void;
 }) => {
@@ -33,9 +40,7 @@ export const FileInfoBottomSheet = ({
     }
   }, [bottomSheetRef, open]);
 
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
+  const handleSheetChanges = useCallback((_index: number) => {}, []);
 
   const handleClose = () => {
     Keyboard.dismiss();
@@ -74,7 +79,7 @@ export const FileInfoBottomSheet = ({
         }}
       >
         <PTitle level={3} style={{ flexGrow: 1, maxWidth: '60%' }}>
-          {file.name}
+          {file.name ?? ''}
         </PTitle>
         {!file.metadata ? (
           <PText>No Metadata Available</PText>

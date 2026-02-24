@@ -6,29 +6,11 @@ import { StyleSheet, View } from 'react-native';
 import { PFileImage } from '@/src/components/PFileImage';
 import { FolderIcon } from '@/src/components/AppIcons';
 import { getInitialsColor } from '@/src/helpers/get-initials-color';
-import type { FileType } from '@shared/gql/graphql';
-
-type ThumbnailMedia = {
-  __typename?: string;
-  id?: string;
-  fileHash?: string;
-  name?: string;
-  type?: FileType | null;
-  folderId?: string;
-  imageRatio?: number | null;
-  blurHash?: string | null;
-};
-
-type ThumbnailFolder = {
-  __typename: 'Folder';
-  id: string;
-  name: string;
-  heroImage?: ThumbnailMedia | null;
-};
+import type { ThumbnailFolderItem, ThumbnailItem } from '@shared/types/ui';
 
 const isThumbnailFolder = (
-  file: ThumbnailMedia | ThumbnailFolder | null | undefined,
-): file is ThumbnailFolder => file?.__typename === 'Folder';
+  file: ThumbnailItem | null | undefined,
+): file is ThumbnailFolderItem => file?.__typename === 'Folder';
 
 // Used for thumbnails and gallery, presents image/video/folder thumbnail
 const PFileViewComponent = ({
@@ -37,7 +19,7 @@ const PFileViewComponent = ({
   variant,
   ...props
 }: {
-  file?: ThumbnailMedia | ThumbnailFolder | null;
+  file?: ThumbnailItem | null;
   size: ThumbnailSize;
   variant?: 'rounded-fit';
 } & ImageProps) => {
@@ -63,7 +45,13 @@ const PFileViewComponent = ({
   }
 
   if (isFolder && file.heroImage?.type === 'Image') {
-    return <PFileImage size={size} {...p} file={file.heroImage} />;
+    return (
+      <PFileImage
+        size={size}
+        {...p}
+        file={{ ...file.heroImage, name: file.heroImage.name ?? undefined }}
+      />
+    );
   }
 
   if (isFolder) return <PFileFolderThumbnail {...p} folder={file} />;
@@ -78,7 +66,7 @@ export const PFileFolderThumbnail = ({
   folder,
   ...props
 }: {
-  folder: ThumbnailFolder;
+  folder: ThumbnailFolderItem;
 } & ImageProps) => {
   const color = getInitialsColor(folder.name);
   return (

@@ -9,12 +9,12 @@ import {
   primaryColorEnum,
   themeModeEnum,
 } from '../types/enums.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { MutationEditBrandingArgs } from '../../../shared/gql/graphql.js';
 import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 import { GraphQLError } from 'graphql/error/index.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, MutationEditBrandingArgs> = async (
   _,
   params,
   context,

@@ -1,4 +1,4 @@
-import type { PicrFolder } from '../../types';
+import type { PicrFolder } from '@shared/types/picr';
 import type { MantineColor } from '@mantine/core';
 import { Code, Group } from '@mantine/core';
 import { Joiner } from './FolderName';

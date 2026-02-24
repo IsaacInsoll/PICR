@@ -29,14 +29,14 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (initComplete) return;
-    console.log('getting login details from local storage');
+    // console.log('getting login details from local storage');
     getLoginDetailsFromLocalDevice().then((login) => {
       if (login) {
         setLogin(login);
         //this could be a super old token, so lets trigger a non-inline refresh just in case
         appLogin(login).then(({ token, error }) => {
           if (token) {
-            console.log('[PicrUserProvider] Updating token');
+            // console.log('[PicrUserProvider] Updating token');
             setLogin({ ...login, token });
           } else {
             logout();
@@ -48,7 +48,7 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
   }, [initComplete, logout, setInitComplete, setLogin]);
   const client = useMemo(() => {
     if (!me) return null;
-    console.log('PicrUserProvider: _creating_ URQL client');
+    // console.log('PicrUserProvider: _creating_ URQL client');
     return picrUrqlClient(
       me.server,
       {
@@ -64,11 +64,11 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
 
   if (!initComplete) return <PText>Loading...</PText>;
   if (!me) {
-    console.log('PicrUserProvider: not logged in, redirecting');
+    // console.log('PicrUserProvider: not logged in, redirecting');
     return <Redirect href="/login" />;
   }
   if (!client) return <PText>Loading...</PText>;
 
-  console.log('PicrUserProvider: returning URQL client');
+  // console.log('PicrUserProvider: returning URQL client');
   return <Provider value={client}>{children}</Provider>;
 };

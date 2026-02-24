@@ -1,7 +1,6 @@
 import { TouchableOpacity, View } from 'react-native';
 import { AppLink } from '@/src/components/AppFolderLink';
 import { PText } from '@/src/components/PText';
-import type { File, Image } from '@shared/gql/graphql';
 import { PTitle } from '@/src/components/PTitle';
 import { AppFileFlagChip } from '@/src/components/chips/AppFileFlagChip';
 import { AppFileRatingChip } from '@/src/components/chips/AppFileRatingChip';
@@ -10,10 +9,15 @@ import { FlashList } from '@shopify/flash-list';
 import type { AppFolderContentsViewChildProps } from '@/src/components/FolderContents/AppFolderContentsView';
 import { PFileView } from '@/src/components/PFileView';
 import { AppFooterPadding } from '@/src/components/AppHeaderPadding';
+import type {
+  FolderContentsItem,
+  ViewFolderFileWithHero,
+  ViewFolderSubFolder,
+} from '@shared/files/folderContentsViewModel';
+import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 
 export const AppFolderFileList = ({
   items,
-  width,
   refresh,
   ListHeaderComponent,
 }: AppFolderContentsViewChildProps) => {
@@ -25,9 +29,9 @@ export const AppFolderFileList = ({
       numColumns={1}
       ListHeaderComponent={ListHeaderComponent}
       ListFooterComponent={<AppFooterPadding />}
-      keyExtractor={(item) => item['__typename'] + item.id}
+      keyExtractor={(item) => item.__typename + item.id}
       renderItem={({ item, index }) => (
-        <AppFileListItem item={item} key={index} width={width} />
+        <AppFileListItem item={item} key={index} />
       )}
     />
   );
@@ -35,14 +39,12 @@ export const AppFolderFileList = ({
 
 export const AppFileListItem = ({
   item,
-  width,
   children,
 }: {
-  item: any;
-  width?: number;
+  item: FolderContentsItem;
   children?: React.ReactNode;
 }) => {
-  const isFolder = item['__typename'] === 'Folder';
+  const isFolder = !isFolderContentsFile(item);
   return (
     <AppLink item={item} asChild={true}>
       <TouchableOpacity>
@@ -71,11 +73,12 @@ export const AppFileListItem = ({
   );
 };
 
-const FolderDetails = ({ folder }: { folder: any }) => {
+const FolderDetails = ({ folder }: { folder: ViewFolderSubFolder }) => {
+  void folder;
   return <PText variant="dimmed">Folder</PText>;
 };
 
-const FileDetails = ({ file }: { file: File | Image | any }) => {
+const FileDetails = ({ file }: { file: ViewFolderFileWithHero }) => {
   return (
     <View style={{ flexDirection: 'row', gap: 8 }}>
       <PText variant="dimmed">{file.type}</PText>

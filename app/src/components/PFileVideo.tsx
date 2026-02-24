@@ -4,22 +4,22 @@ import { Image as ExpoImage } from 'expo-image';
 import { useLocalImageUrl } from '@/src/components/PBigImage';
 import { StyleSheet, View } from 'react-native';
 import { aspectFit } from '@shared/files/aspectFit';
-import type { FileType } from '@shared/gql/graphql';
+import type { PicrFile } from '@shared/types/picr';
 
-type VideoThumbnailFile = {
-  id?: string;
-  fileHash?: string;
-  name?: string;
-  type?: FileType | null;
-  imageRatio?: number | null;
-};
+type VideoThumbnailFile = Pick<
+  PicrFile,
+  'id' | 'fileHash' | 'name' | 'type' | 'imageRatio'
+>;
 
 // Basically an Video Thumbnail
 const PFileVideoComponent = ({
   file,
   ...props
 }: { file: VideoThumbnailFile } & ImageProps) => {
-  const uri = useLocalImageUrl({ ...file, type: file.type ?? undefined }, 'md');
+  const uri = useLocalImageUrl(
+    { ...file, name: file.name ?? undefined, type: file.type ?? undefined },
+    'md',
+  );
   // const second = useSecond();
   if (!uri) return null;
 
@@ -58,7 +58,9 @@ const PFileVideoComponent = ({
           {...props}
           source={{ uri }}
           contentFit="contain"
-          onError={console.log}
+          onError={(_e) => {
+            /* console.log(_e) */
+          }}
           style={{
             position: 'absolute',
             top: af.height * -frame,

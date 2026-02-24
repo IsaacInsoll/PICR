@@ -6,9 +6,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@shared/*": ["./*"],
-      "@frontend/*": ["../frontend/src/*"],
-      "@app/*": ["../app/*"]
+      "@shared/*": ["./*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"]

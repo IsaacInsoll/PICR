@@ -1,4 +1,4 @@
-import type { PicrUser } from '../../types';
+import type { PicrUser } from '@shared/types/picr';
 import type { AvatarProps } from '@mantine/core';
 import { Avatar, Tooltip } from '@mantine/core';
 

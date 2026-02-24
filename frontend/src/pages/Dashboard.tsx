@@ -75,11 +75,23 @@ const Body = () => {
 
 const RecentUsers = () => {
   const me = useMe();
+  const folderId = me?.folderId;
+  if (!folderId) {
+    return (
+      <EmptyPlaceholder
+        text="No public links have been used (yet!)"
+        icon={<UnlinkIcon />}
+      />
+    );
+  }
+  return <RecentUsersForFolder folderId={folderId} />;
+};
+
+const RecentUsersForFolder = ({ folderId }: { folderId: string }) => {
   const mobile = useIsMobile();
   const [result] = useQuery({
     query: recentUsersQuery,
-    variables: { folderId: me?.folderId ?? '1' },
-    pause: !me?.folderId,
+    variables: { folderId },
   });
   if (result.data?.users.length == 0)
     return (
@@ -94,7 +106,7 @@ const RecentUsers = () => {
         {result.data?.users.map((user) => (
           <Table.Tr key={user.id}>
             <Table.Td>
-              <DateDisplay dateString={user.lastAccess} />
+              <DateDisplay dateString={user.lastAccess ?? undefined} />
             </Table.Td>
             <Table.Td>
               <Group>
@@ -148,15 +160,23 @@ const BodyComponent = ({
 
 const RecentlyModifiedFolders = () => {
   const me = useMe();
+  const folderId = me?.folderId;
+  if (!folderId) return null;
+  return <RecentlyModifiedFoldersForFolder folderId={folderId} />;
+};
 
+const RecentlyModifiedFoldersForFolder = ({
+  folderId,
+}: {
+  folderId: string;
+}) => {
   const [result] = useQuery({
     query: readAllFoldersQuery,
     variables: {
-      id: me?.folderId ?? '1',
+      id: folderId,
       limit: 10,
       sort: FoldersSortType.FolderLastModified,
     },
-    pause: !me?.folderId,
   });
 
   return (

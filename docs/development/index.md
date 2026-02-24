@@ -1,15 +1,15 @@
 # Development
 
-| Doc                                      | Notes                                         |
-| ---------------------------------------- | --------------------------------------------- |
-| 🎉 [Contributing](../CONTRIBUTING.md)    | Contribution Guidelines                       |
-| 🎉 [Initial Setup](initial-setup.md)     | How to setup development environment          |
-| 📱 [App Development](app.md)             | React Native (Expo) App Development           |
-| 👷 [Build Process](build.md)             | How backend build process works               |
-| 📃 [Basic Tutorial](basic-tutorial.md)   | Basic tutorial on front/backend feature dev   |
-| 🧪 [Testing](testing.md)                 | Create and run tests (currently backend only) |
-| 🚀 [Releases](release.md)                | How to do releases                            |
-| 🐛 [Troubleshooting](troubleshooting.md) | Troubleshooting tips                          |
+| Doc                                      | Notes                                       |
+| ---------------------------------------- | ------------------------------------------- |
+| 🎉 [Contributing](../CONTRIBUTING.md)    | Contribution Guidelines                     |
+| 🎉 [Initial Setup](initial-setup.md)     | How to setup development environment        |
+| 📱 [App Development](app.md)             | React Native (Expo) App Development         |
+| 👷 [Build Process](build.md)             | How backend build process works             |
+| 📃 [Basic Tutorial](basic-tutorial.md)   | Basic tutorial on front/backend feature dev |
+| 🧪 [Testing](testing.md)                 | Run API + E2E integration tests             |
+| 🚀 [Releases](release.md)                | How to do releases                          |
+| 🐛 [Troubleshooting](troubleshooting.md) | Troubleshooting tips                        |
 
 ## Folders
 
@@ -20,17 +20,6 @@
 | `shared`   | Client logic shared by `frontend` and `app`      |
 | `app`      | iOS/Android App (Expo / React Native)            |
 | `dist`     | _Compiled_ source (frontend/backend/extra files) |
-
-> **TODO: MONOLITH REFACTOR NOTES**
->
-> I'm currently moving the node backend from being in `.` to `./backend`
-> Current problems unaddressed is:
->
-> 1. need to do `npm install` in dist folder
-> 2. need an `.env` in dist folder
->
-> We are doing this because the server should be self contained in `backend` and not have it's `package.json` etc in
-> the actual root (like it has been since the beginning).
 
 ## Development CLI Commands
 
@@ -51,3 +40,35 @@ Ports are exposed during development:
 | http://localhost:6901 | Testing Server        | When running tests we build a container using this port for running tests against                                     |
 
 For front end development you definitely want to use the 6969 address. For backend either would be fine but I typically just use 6969 anyway.
+
+## Local Quality Gate
+
+Before opening a PR, run these checks locally:
+
+1. `npm run check` (format, lint, and TypeScript across all subsystems)
+2. `npm run test:api`
+3. `npm run test:e2e:fresh` (when frontend behavior changes)
+
+For full CI parity, run:
+
+- `npm run workflow`
+
+## Current Warning Budget
+
+Warnings are not blockers today, but should not grow:
+
+- `backend`: avoid introducing new warnings; backend `no-console` cleanup is complete and should stay that way.
+- `frontend` and `app`: `react/no-array-index-key` warnings are currently tolerated in a few components.
+
+Rule of thumb:
+
+- New code should not introduce additional warnings.
+- If you touch a file with existing warnings, prefer cleaning up that warning in the same change.
+
+## Logging Policy
+
+For backend logging:
+
+- Use `logger.info/error/...` for normal runtime logging.
+- Use `log(level, message, true)` for boot/startup/migration messages that must appear in container logs.
+- Avoid adding `console.*` in backend runtime code.

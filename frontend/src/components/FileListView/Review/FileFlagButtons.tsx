@@ -1,5 +1,5 @@
 import { ActionIcon, Tooltip } from '@mantine/core';
-import { FileFlag } from '../../../../../graphql-types';
+import { FileFlag } from '@shared/gql/graphql';
 import { useId, useState } from 'react';
 
 import { approvedFlagStyle, rejectedFlagStyle } from './fileFlagStyles';

@@ -11,9 +11,13 @@ export const configFromEnv = () => {
   config(); // read .ENV
   const env = envSchema.safeParse(process.env);
   if (!env.success) {
-    console.log('\n⚠️ Environment (ENV) Misconfiguration\n');
-    env.error.errors.forEach(({ message }) => console.log(`\t${message}\n`));
-    console.log('Update your environment configuration and try again 😐\n\n');
+    process.stderr.write('\n⚠️ Environment (ENV) Misconfiguration\n\n');
+    env.error.errors.forEach(({ message }) =>
+      process.stderr.write(`\t${message}\n\n`),
+    );
+    process.stderr.write(
+      'Update your environment configuration and try again 😐\n\n',
+    );
     process.exit();
   }
 

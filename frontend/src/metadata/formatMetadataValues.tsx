@@ -1,10 +1,10 @@
-import type { formattedValue } from '@shared/formatMetadataValue';
+import type { FormattedValue } from '@shared/formatMetadataValue';
 import { formatMetadataValue } from '@shared/formatMetadataValue';
 import type { AnyMetadataKey } from '@shared/fileMetadata';
 
 export const formatMetadataValues = (
   title: AnyMetadataKey,
   options: (string | number)[],
-): formattedValue[] => {
+): FormattedValue[] => {
   return options.map((o) => formatMetadataValue(title, o));
 };

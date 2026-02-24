@@ -14,15 +14,6 @@ export const NotificationSettings = () => {
   const [token, setToken] = useState<string>('');
   const me = useMe();
   const isDev = useIsDev();
-  const [result, requery] = useQuery({
-    query: userDeviceQuery,
-    variables: { userId: me?.id ?? '', token },
-    pause: !token || !me?.id,
-  });
-
-  const [, mutate] = useMutation(editUserDeviceMutation);
-
-  const allow = result.data?.userDevices[0]?.enabled ?? false;
 
   //TODO: refactor to check notif permissions locally, rather than requesting notif access right away
   useEffect(() => {
@@ -32,22 +23,8 @@ export const NotificationSettings = () => {
     // now get existing value from server
   }, [isDev]);
 
-  const onChange = async (enabled: boolean) => {
-    console.log(1);
-    if (!token || !me?.id) return;
-    console.log(2);
-    await mutate({
-      enabled,
-      token,
-      userId: me.id,
-      name: Device.modelName ?? 'Mobile Device',
-    }).then((x) => {
-      console.log(x);
-      requery({ requestPolicy: 'cache-and-network' });
-    });
-  };
-
-  console.log({ token, allow });
+  const userId = me?.id;
+  const canEditNotifications = token !== '' && !!userId;
 
   return (
     <View
@@ -59,16 +36,47 @@ export const NotificationSettings = () => {
       }}
     >
       <PText>Allow Notifications</PText>
-      {token === '' ? (
+      {!canEditNotifications ? (
         <Switch disabled={true} />
-      ) : allow === undefined ? (
-        <AppLoadingIndicator size="small" />
       ) : (
-        <Switch
-          value={allow}
-          onChange={(event) => onChange(event.nativeEvent.value)}
-        />
+        <NotificationToggle token={token} userId={userId} />
       )}
     </View>
+  );
+};
+
+const NotificationToggle = ({
+  token,
+  userId,
+}: {
+  token: string;
+  userId: string;
+}) => {
+  const [result, requery] = useQuery({
+    query: userDeviceQuery,
+    variables: { userId, token },
+  });
+  const [, mutate] = useMutation(editUserDeviceMutation);
+  const allow = result.data?.userDevices[0]?.enabled;
+
+  const onChange = async (enabled: boolean) => {
+    await mutate({
+      enabled,
+      token,
+      userId,
+      name: Device.modelName ?? 'Mobile Device',
+    });
+    requery({ requestPolicy: 'cache-and-network' });
+  };
+
+  if (allow === undefined) {
+    return <AppLoadingIndicator size="small" />;
+  }
+
+  return (
+    <Switch
+      value={allow}
+      onChange={(event) => onChange(event.nativeEvent.value)}
+    />
   );
 };

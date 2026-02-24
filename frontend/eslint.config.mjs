@@ -25,8 +25,17 @@ export default tseslint.config(
       'react/destructuring-assignment': ['error', 'always'],
       'react/no-unescaped-entities': 'off',
       'no-console': 'warn',
+      radix: 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
+      '@typescript-eslint/ban-ts-comment': [
+        'error',
+        {
+          'ts-ignore': true,
+          'ts-expect-error': 'allow-with-description',
+          minimumDescriptionLength: 8,
+        },
+      ],
       'react/no-array-index-key': 'warn',
       'no-restricted-imports': [
         'error',
@@ -41,7 +50,38 @@ export default tseslint.config(
               group: ['../**/app/**'],
               message: 'Do not import from app. Move shared code to shared/.',
             },
+            {
+              group: [
+                '../types',
+                '../types.*',
+                '../../types',
+                '../../types.*',
+                '../../../types',
+                '../../../types.*',
+                '../../../../types',
+                '../../../../types.*',
+                '../../../../../types',
+                '../../../../../types.*',
+              ],
+              message:
+                'Do not import frontend root types. Use @shared/types/picr or other shared/types modules.',
+            },
           ],
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "TSPropertySignature[key.name='metadata'] TSTypeReference[typeName.name='Record']",
+          message:
+            'Use PicrMetadataMap from @shared/types/metadata for metadata maps instead of ad-hoc Record types.',
+        },
+        {
+          selector:
+            "TSAsExpression[expression.type='TSAsExpression'][expression.typeAnnotation.type='TSUnknownKeyword']",
+          message:
+            'Avoid double assertions (`as unknown as`). Fix the type or add a typed adapter.',
         },
       ],
     },

@@ -6,6 +6,14 @@ import { dbFile, dbFolder } from '../../db/models/index.js';
 
 import { setHeroImage } from '../mutations/setHeroImage.js';
 
+const isFileWithinFolderPath = (
+  fileRelativePath: string,
+  folderRelativePath?: string | null,
+) => {
+  if (folderRelativePath == null) return true; // root folder
+  return fileRelativePath.startsWith(folderRelativePath);
+};
+
 export const heroImageForFolder = async (
   f: FolderFields & { heroImage?: FileFields },
 ) => {
@@ -13,7 +21,7 @@ export const heroImageForFolder = async (
   if (
     f.heroImage &&
     f.heroImage.exists &&
-    f.heroImage.relativePath.startsWith(f.relativePath ?? '')
+    isFileWithinFolderPath(f.heroImage.relativePath, f.relativePath)
   ) {
     return f.heroImage;
   }
@@ -25,7 +33,7 @@ export const heroImageForFolder = async (
   if (
     heroImage &&
     heroImage.exists &&
-    heroImage.relativePath.startsWith(f.relativePath ?? '')
+    isFileWithinFolderPath(heroImage.relativePath, f.relativePath)
   ) {
     return heroImage;
   }

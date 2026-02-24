@@ -1,7 +1,12 @@
 import type { MouseEvent } from 'react';
 import { useState } from 'react';
 import { CheckButton } from './CheckButton';
-import type { ImageExtended, ImageProps } from './types';
+import type {
+  ImageExtended,
+  ImageProps,
+  StyleFunction,
+  ThumbnailImageProps,
+} from './types';
 import * as styles from './styles';
 import { getStyle } from './styles';
 
@@ -18,6 +23,11 @@ export const Image = <T extends ImageExtended>({
   onClick,
 }: ImageProps<T>) => {
   const styleContext = { item };
+  const thumbnailFallback: StyleFunction<T> = (context) =>
+    styles.thumbnail({ item: context.item });
+  const tagFallback: StyleFunction<T> = () => styles.tagItem();
+  const tileViewportFallback: StyleFunction<T> = (context) =>
+    styles.tileViewport({ item: context.item });
 
   const [hover, setHover] = useState(false);
 
@@ -27,13 +37,7 @@ export const Image = <T extends ImageExtended>({
     src: item.src,
     alt: item.alt ? item.alt : '',
     title: typeof item.caption === 'string' ? item.caption : null,
-    style: getStyle(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      thumbnailStyle as any,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      styles.thumbnail as any,
-      styleContext,
-    ),
+    style: getStyle(thumbnailStyle, thumbnailFallback, styleContext),
   };
 
   const handleCheckButtonClick = (event: MouseEvent<HTMLElement>) => {
@@ -47,7 +51,7 @@ export const Image = <T extends ImageExtended>({
     onClick(index, event);
   };
 
-  const thumbnailImageProps = {
+  const thumbnailImageProps: Omit<ThumbnailImageProps<T>, 'imageProps'> = {
     item,
     index,
     margin,
@@ -88,15 +92,7 @@ export const Image = <T extends ImageExtended>({
               title={tag.title}
               style={styles.tagItemBlock}
             >
-              <span
-                style={getStyle(
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  tagStyle as any,
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  styles.tagItem as any,
-                  styleContext,
-                )}
-              >
+              <span style={getStyle(tagStyle, tagFallback, styleContext)}>
                 {tag.value}
               </span>
             </div>
@@ -123,19 +119,12 @@ export const Image = <T extends ImageExtended>({
       <div
         className="ReactGridGallery_tile-viewport"
         data-testid="grid-gallery-item_viewport"
-        style={getStyle(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          tileViewportStyle as any,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          styles.tileViewport as any,
-          styleContext,
-        )}
+        style={getStyle(tileViewportStyle, tileViewportFallback, styleContext)}
         onClick={handleViewportClick}
       >
         {ThumbnailImageComponent ? (
           <ThumbnailImageComponent
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            {...(thumbnailImageProps as any)}
+            {...thumbnailImageProps}
             imageProps={thumbnailProps}
           />
         ) : (

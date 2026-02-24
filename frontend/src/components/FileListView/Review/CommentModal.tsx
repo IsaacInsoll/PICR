@@ -4,14 +4,14 @@ import { useSetAtom } from 'jotai';
 import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
-import type { PicrFile } from '../../../../types';
+import type { PicrFile } from '@shared/types/picr';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { CommentHistory } from './CommentHistory';
 import { FilePreview } from '../FilePreview';
-import type { MutationAddCommentArgs } from '../../../../../graphql-types';
+import type { MutationAddCommentArgs } from '@shared/gql/graphql';
 
 export const CommentModal = ({
   file,

@@ -10,16 +10,19 @@ import type {
   FolderFragmentFragment,
   MinimumFolderFragmentFragment,
   UserFragmentFragment,
-} from '../shared/gql/graphql.js';
+} from '../gql/graphql.js';
+import type { PicrFileMetadata } from './metadata.js';
 
 type CommentFile = NonNullable<
   AppCommentHistoryCommentFragmentFragment['file']
 >;
+
 type GqlFile =
   | FileFragmentFragment
   | AppSearchFileFragmentFragment
   | AppViewFolderFileFragmentFragment
   | CommentFile;
+
 type GqlFolder =
   | FolderFragmentFragment
   | MinimumFolderFragmentFragment
@@ -27,19 +30,20 @@ type GqlFolder =
   | AppViewFolderSubFolderFragmentFragment
   | NonNullable<AppRecentUserFragmentFragment['folder']>
   | NonNullable<UserFragmentFragment['folder']>;
+
 type GqlUser =
   | UserFragmentFragment
   | AppRecentUserFragmentFragment
   | NonNullable<AppViewFolderSubFolderFragmentFragment['users']>[number];
 
-export interface PicrFile {
+export type PicrFile = {
   id: GqlFile['id'];
   type: FileType;
   __typename?: string;
   name?: string | null;
   folderId?: string;
   fileHash?: string;
-  fileSize?: number | null;
+  fileSize?: GqlFile['fileSize'] | null;
   fileCreated?: string | null;
   fileLastModified?: string | null;
   latestComment?: string | null;
@@ -49,12 +53,12 @@ export interface PicrFile {
   blurHash?: string;
   imageRatio?: number | null;
   duration?: number | null;
-  metadata?: Record<string, string | number | null | undefined> | null;
   isHeroImage?: boolean;
   folder?: PicrFolder | null;
-}
+  metadata?: PicrFileMetadata | null;
+};
 
-export interface PicrFolder {
+export type PicrFolder = {
   id: GqlFolder['id'];
   __typename?: string;
   name?: string | null;
@@ -63,15 +67,15 @@ export interface PicrFolder {
   parentId?: string | null;
   parents?: PicrFolder[];
   relativePath?: string;
-  folderLastModified?: unknown;
+  folderLastModified?: string | null;
   heroImage?: PicrFile | null;
   files?: PicrFile[];
   users?: PicrUser[] | null;
   brandingId?: string | null;
   branding?: FolderFragmentFragment['branding'] | null;
-}
+};
 
-export interface PicrUser {
+export type PicrUser = {
   id?: GqlUser['id'] | null;
   name?: GqlUser['name'] | null;
   username?: string | null;
@@ -84,4 +88,4 @@ export interface PicrUser {
   ntfy?: string | null;
   ntfyEmail?: boolean | null;
   folder?: PicrFolder | null;
-}
+};

@@ -29,7 +29,7 @@ import { editUserDeviceMutation } from '../../shared/urql/mutations/editUserDevi
 import { viewFileQuery } from '../../shared/urql/queries/viewFileQuery';
 import { searchQuery } from '../../shared/urql/queries/searchQuery';
 import { photoFolderId, videoFolderId } from './testVariables';
-import { CommentPermissions, LinkMode } from '../../graphql-types';
+import { CommentPermissions, LinkMode } from '../../shared/gql/graphql';
 
 const expectGraphqlError = (result: { error?: unknown }) => {
   expect(result.error).toBeDefined();

@@ -13,7 +13,12 @@ import type {
   ViewFolderFileWithHero,
 } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
-import type { Image as GridImage } from './react-grid-gallery/types';
+import type {
+  ImageExtended,
+  Image as GridImage,
+  ThumbnailImageComponentImageProps,
+  ThumbnailImageProps,
+} from './react-grid-gallery/types';
 
 type GalleryItem = GridImage & {
   file?: ViewFolderFileWithHero;
@@ -68,8 +73,9 @@ export const GridGallery = ({
         images={galleryItems}
         onClick={handleClick}
         enableImageSelection={false}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        thumbnailImageComponent={(p: any) => {
+        thumbnailImageComponent={(
+          p: ThumbnailImageProps<ImageExtended<GalleryItem>>,
+        ) => {
           const title =
             typeof p.imageProps?.title === 'string' ? p.imageProps.title : '';
           const style = p.imageProps?.style;
@@ -80,14 +86,15 @@ export const GridGallery = ({
             );
           }
 
+          if (!p.item.file) return null;
+
           if (p.item.file.type == 'File') {
             return (
               <PicrGenericFile file={p.item.file} title={title} style={style} />
             );
           }
 
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          return <GalleryImage {...(p as any)} />;
+          return <GalleryImage {...p} />;
         }}
       />
     </>
@@ -96,12 +103,12 @@ export const GridGallery = ({
 const size = 250;
 
 type GalleryImageProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  imageProps: any;
-  item: { file: ViewFolderFileWithHero };
+  imageProps: ThumbnailImageComponentImageProps;
+  item: { file?: ViewFolderFileWithHero };
 };
 
 const GalleryImage = ({ imageProps, item }: GalleryImageProps) => {
+  if (!item.file) return null;
   const file: ViewFolderFileWithHero = item.file;
   return <FilePreview file={file} imageProps={imageProps} />;
   // if (file.type == 'Video') {

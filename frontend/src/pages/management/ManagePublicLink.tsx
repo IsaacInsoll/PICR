@@ -1,4 +1,4 @@
-import type { PicrFolder } from '../../../types';
+import type { PicrFolder } from '@shared/types/picr';
 import { randomString } from '../../helpers/randomString';
 import { useState } from 'react';
 import { useMutation } from 'urql';
@@ -68,7 +68,7 @@ export const ManagePublicLink = ({
     if (!f?.id) return;
     setError('');
     const data: MutationEditUserArgs = {
-      id: id ?? '',
+      ...(id ? { id } : {}),
       name,
       uuid: link,
       enabled,
@@ -193,7 +193,7 @@ export const ManagePublicLink = ({
           <Group>
             <CopyPublicLinkButton
               disabled={invalidLink}
-              folderId={f?.id ?? ''}
+              folderId={f?.id}
               hash={link}
             />
             <Button disabled={invalidLink} onClick={onSave}>

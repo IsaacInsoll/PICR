@@ -10,7 +10,7 @@ import {
 } from '@mantine/core';
 import type { AppCommentHistoryCommentFragmentFragment } from '@shared/gql/graphql';
 import { FileFlag } from '@shared/gql/graphql';
-import type { PicrFile } from '../../../../types';
+import type { PicrFile } from '@shared/types/picr';
 import { PicrImage } from '../../PicrImage';
 import { FileFlagBadge } from './FileFlagBadge';
 import { useOpenCommentsModal } from '../../../atoms/modalAtom';

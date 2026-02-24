@@ -1,10 +1,15 @@
 import { CachedImage } from '@georstat/react-native-image-cache';
-import type { File } from '@shared/gql/graphql';
 import type { AllSize, ThumbnailSize } from '@shared/thumbnailSize';
+import type { PicrFile } from '@shared/types/picr';
+import type { ImageUrlFileInput } from '@shared/types/ui';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { View } from 'react-native';
 import { useState } from 'react';
-import type { Image } from '../../../graphql-types';
+
+type AppImageFile = Pick<
+  PicrFile,
+  'id' | 'fileHash' | 'name' | 'type' | 'imageRatio'
+>;
 
 // Show an image but cache it to device
 //TODO: copy PBIGImage and use ExpoImage so we can do BlurRadius prop, and progressively load higher res images?
@@ -13,7 +18,7 @@ export const AppImage = ({
   size,
   width,
 }: {
-  file: Image;
+  file: AppImageFile;
   size?: ThumbnailSize;
   width?: number;
 }) => {
@@ -45,7 +50,7 @@ export const AppImage = ({
         style={{ width: w, height }}
         thumbnailSource={baseUrl ? baseUrl + imageURL(file, 'sm') : ''}
         onError={() => {
-          console.log('Error getting image: ' + source);
+          // console.log('Error getting image: ' + source);
         }}
       />
     </View>
@@ -55,7 +60,7 @@ export const AppImage = ({
 // copied from imageURL in frontend because we were having import issues
 // but then I had to add the base URL anyway so whatever
 export const imageURL = (
-  file: Partial<Pick<File, 'id' | 'fileHash' | 'name' | 'type'>>,
+  file: ImageUrlFileInput,
   size: AllSize,
   extension?: string,
 ) => {

@@ -1,9 +1,10 @@
 import { atom } from 'jotai';
 import type { FileSort } from '@shared/files/sortFiles';
+import type { MobileSelectedView } from '@shared/types/ui';
 
 export const fileViewFullscreenAtom = atom(false);
 
-export type SelectedView = 'list' | 'gallery' | 'gallery2' | 'feed'; // copied from 'frontend' but it might end up evolving?
+export type SelectedView = MobileSelectedView;
 export const folderViewModeAtom = atom<SelectedView>('list');
 
 export const fileSortAtom = atom<FileSort>({

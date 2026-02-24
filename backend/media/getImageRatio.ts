@@ -9,7 +9,7 @@ export const getImageRatio = async (filePath: string) => {
     return height > 0 ? width / height : 0;
   } catch (error) {
     logger.error('getImageRatio failed for ' + filePath);
-    console.error(error);
+    logger.error(String(error));
     return 0;
   }
 };

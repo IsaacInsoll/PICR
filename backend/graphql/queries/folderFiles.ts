@@ -1,13 +1,14 @@
 import { GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull } from 'graphql';
+import { GraphQLError } from 'graphql/error/index.js';
 import { and, asc, count, eq, inArray } from 'drizzle-orm';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { QueryFolderFilesArgs } from '../../../shared/gql/graphql.js';
 import { folderFilesResultType } from '../types/folderFilesResultType.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { allSubfolderIds } from '../../helpers/allSubfolders.js';
 import type { FolderFields } from '../../db/picrDb.js';
 import { db } from '../../db/picrDb.js';
 import { dbFile } from '../../db/models/index.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
 const MAX_FOLDER_FILES = 10000;
 
@@ -18,7 +19,7 @@ type FileWithPath = {
 
 const relativeFilePath = (file: FileWithPath, basePath?: string | null) => {
   const base = basePath ?? '';
-  const fileDir = file.relativePath ?? '';
+  const fileDir = file.relativePath;
   let relativeDir = fileDir;
   if (base && fileDir === base) {
     relativeDir = '';
@@ -29,17 +30,19 @@ const relativeFilePath = (file: FileWithPath, basePath?: string | null) => {
   return relativeDir ? `${relativeDir}/${file.name}` : file.name;
 };
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, QueryFolderFilesArgs> = async (
   _,
   params,
   context,
 ) => {
-  const { folder } = await contextPermissions(
-    context,
-    params.folderId ?? 1,
-    'View',
-  );
-  const baseFolder = folder as FolderFields;
+  if (params.folderId == null) {
+    throw new GraphQLError('Missing required folderId');
+  }
+  const { folder } = await contextPermissions(context, params.folderId, 'View');
+  if (!folder) {
+    throw new GraphQLError('Folder not found');
+  }
+  const baseFolder: FolderFields = folder;
   const includeSubfolders = !!params.includeSubfolders;
   const requestedLimit = params.limit ?? MAX_FOLDER_FILES;
   const limit = Math.min(requestedLimit, MAX_FOLDER_FILES);

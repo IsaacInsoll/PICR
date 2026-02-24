@@ -2,6 +2,7 @@ import { hashPassword } from '../helpers/hashPassword.js';
 import { defaultCredentials } from '../auth/defaultCredentials.js';
 import { db } from '../db/picrDb.js';
 import { dbUser } from '../db/models/index.js';
+import { log } from '../logger.js';
 
 export const envPassword = async () => {
   const totalUsers = await db.$count(dbUser);
@@ -21,8 +22,10 @@ export const envPassword = async () => {
         userType: 'Admin',
       })
       .then(() =>
-        console.log(
+        log(
+          'info',
           `🔐 No users found so "${defaultCredentials.username}" user created with password "${defaultCredentials.password}"`,
+          true,
         ),
       );
   }

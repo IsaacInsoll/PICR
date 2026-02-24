@@ -3,16 +3,16 @@ import { useState } from 'react';
 import { atom } from 'jotai';
 import { DownloadIcon } from '../PicrIcons';
 import { useGenerateZip } from '../hooks/useGenerateZip';
-import type { PicrFolder } from '../../types';
+import type { PicrFolder } from '@shared/types/picr';
 
-export type FolderHash = {
+// list of URLs we have requested to download that are currently generating.
+// delete from list once you have triggered it's download
+export type PendingZipDownload = {
   folder: PicrFolder;
   hash: string;
 };
 
-// list of URLs we have requested to download that are currently generating.
-// delete from list once you have triggered it's download
-export const linksToDownloadAtom = atom<FolderHash[]>([]);
+export const linksToDownloadAtom = atom<PendingZipDownload[]>([]);
 
 export const DownloadZipButton = ({
   folder,

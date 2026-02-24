@@ -21,12 +21,12 @@ export default function NotFound() {
     //the router has resolved eg: picr://mysite.com/123 as /123 rather than /mysite.com/123 so lets redirect
     if (hostname && !path?.includes(hostname)) {
       const target = `/${hostname}/${path}`;
-      console.log('[not-found] redirecting to add hostname: ', target);
+      // console.log('[not-found] redirecting to add hostname: ', target);
       return <Redirect href={target as Href} />;
     }
   }
 
-  console.log(navigation.getState());
+  // console.log(navigation.getState());
   return (
     <AppBrandedBackground>
       <SafeAreaView

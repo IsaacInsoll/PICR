@@ -45,7 +45,7 @@ export const zipFolder = async (folderHash: FolderHash) => {
   updateZipQueue(folderHash, { status: 'Queued', hash });
 
   const onError = (err: unknown) => {
-    console.log('🗜️ ZIP ERROR: ', err);
+    log('error', '🗜️ ZIP ERROR: ' + String(err));
     updateZipQueue(folderHash, { status: 'Error' });
   };
   archive.pipe(output);
@@ -82,8 +82,16 @@ export const zipFolder = async (folderHash: FolderHash) => {
     where: and(inArray(dbFile.folderId, folderIds), eq(dbFile.exists, true)),
   });
 
+  if (folder.relativePath == null && folder.id !== 1) {
+    throw new Error(
+      `Cannot generate ZIP for non-root folder ${folder.id} with missing relativePath`,
+    );
+  }
+  const zipRootRelativePath =
+    folder.relativePath == null ? '' : folder.relativePath;
+
   files.forEach((f) => {
-    const name = fullPathMinus(f, folder.relativePath ?? ''); // f.relativePath + sep + f.name,
+    const name = fullPathMinus(f, zipRootRelativePath); // f.relativePath + sep + f.name,
     archive.file(fullPathForFile(f), { name });
   });
 

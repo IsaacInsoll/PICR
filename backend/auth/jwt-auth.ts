@@ -3,6 +3,7 @@ import type { CustomJwtPayload } from '../types/CustomJwtPayload.js';
 import { picrConfig } from '../config/picrConfig.js';
 import type { UserFields } from '../db/picrDb.js';
 import { dbUserForId } from '../db/picrDb.js';
+import { logger } from '../logger.js';
 
 export function generateAccessToken(obj: {
   userId: number;
@@ -29,7 +30,7 @@ export async function getUserFromToken(
   try {
     const decoded = jwt.verify(token, secret) as CustomJwtPayload;
     if (!decoded.userId) return undefined;
-    const userId = parseInt(decoded.userId);
+    const userId = parseInt(decoded.userId, 10);
     const user = await dbUserForId(userId);
     if (
       user &&
@@ -39,7 +40,12 @@ export async function getUserFromToken(
     )
       return user;
     return undefined;
-  } catch {
-    return undefined; //doAuthError('Invalid Token: ' + token);
+  } catch (err) {
+    if (!(err instanceof jwt.TokenExpiredError)) {
+      logger.warn('JWT verification failed', {
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+    return undefined;
   }
 }

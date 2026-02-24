@@ -12,10 +12,10 @@ import { db, getAccessLogs } from '../../db/picrDb.js';
 import { and, eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { userTypeEnum } from '../types/enums.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
+import type { QueryAccessLogsArgs } from '../../../shared/gql/graphql.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
+const resolver: PicrResolver<object, QueryAccessLogsArgs> = async (
   _,
   params,
   context,

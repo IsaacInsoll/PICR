@@ -31,7 +31,7 @@ import { PicrAvatar } from '../PicrAvatar';
 import { prettyBytes } from '@shared/prettyBytes';
 import { pluralize } from '@shared/pluralize';
 import { prettyDate } from '@shared/prettyDate';
-import type { PicrUser } from '../../../types';
+import type { PicrUser } from '@shared/types/picr';
 
 export const FileListView = ({
   files,

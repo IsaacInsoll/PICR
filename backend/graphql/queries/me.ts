@@ -1,14 +1,9 @@
 import { userType } from '../types/userType.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import { dbFolderForId, updateUserLastAccess } from '../../db/picrDb.js';
-import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
-import type { GraphQLFieldResolver } from 'graphql/type/index.js';
+import type { PicrResolver } from '../helpers/picrResolver.js';
 
-const resolver: GraphQLFieldResolver<unknown, PicrRequestContext> = async (
-  _,
-  params,
-  context,
-) => {
+const resolver: PicrResolver = async (_, params, context) => {
   const user = context.user;
   if (user) {
     const folder = await dbFolderForId(user.folderId);

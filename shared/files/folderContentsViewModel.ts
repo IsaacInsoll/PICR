@@ -11,8 +11,11 @@ export type FolderContentsItem = FolderContentsViewModel['items'][number];
 type HasType = { type: string };
 export const isFolderContentsFile = <T>(
   item: T | null | undefined,
-): item is Extract<T, HasType> =>
-  !!item && typeof (item as unknown as HasType).type === 'string';
+): item is Extract<T, HasType> => {
+  if (!item || typeof item !== 'object') return false;
+  if (!('type' in item)) return false;
+  return typeof (item as HasType).type === 'string';
+};
 
 export const folderContentsViewModel = (
   folder: ViewFolderQuery['folder'],

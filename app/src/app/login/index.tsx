@@ -89,7 +89,7 @@ const LoginForm = () => {
     const { token, error } = await appLogin(data);
     if (token) {
       setStep('success');
-      console.log('[login/index.tsx] redirecting to dashboard??');
+      // console.log('[login/index.tsx] redirecting to dashboard??');
       router.replace('/');
       setLogin({ ...(data as LoginDetails), token });
     } else {
@@ -174,7 +174,7 @@ const LoginForm = () => {
 
 const ErrorMessage = ({ error }: { error: FieldError | undefined }) => {
   if (!error) return null;
-  console.log(error);
+  // console.log(error);
   return <Text style={{ color: 'red' }}>{error.message}</Text>;
 };
 

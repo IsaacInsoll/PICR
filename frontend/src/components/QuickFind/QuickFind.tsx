@@ -11,7 +11,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useMe } from '../../hooks/useMe';
-import type { PicrFolder } from '../../../types';
+import type { PicrFolder } from '@shared/types/picr';
 import type { AppSearchFileFragmentFragment } from '@shared/gql/graphql';
 import { atom, useAtomValue } from 'jotai';
 import { useAtom, useSetAtom } from 'jotai';
@@ -120,13 +120,14 @@ const Results = ({
   const scope = useAtomValue(scopeAtom);
   const type = useAtomValue(scopeTypeAtom);
   const folderId = scope == 'all' || !folder?.id ? me?.folderId : folder.id;
+  const queryFolderId = folderId as string;
   const [debouncedQuery] = useDebouncedValue(query, 200);
   const [index, setIndex] = useState<number | null>(null);
 
   // if query = '' return nothing
   const [results] = useQuery({
     query: searchQuery,
-    variables: { query: debouncedQuery, folderId: folderId ?? '' },
+    variables: { query: debouncedQuery, folderId: queryFolderId },
     pause: debouncedQuery == '' || !folderId,
   });
 

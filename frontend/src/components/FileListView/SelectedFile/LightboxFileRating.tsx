@@ -1,9 +1,13 @@
-import type { PicrFile } from '../../../../types';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { Paper } from '@mantine/core';
 import { FileReview } from '../Review/FileReview';
+import type { ReviewableFile } from '../Review/FileReview';
 
-export const LightboxFileRating = ({ selected }: { selected: PicrFile }) => {
+export const LightboxFileRating = ({
+  selected,
+}: {
+  selected: ReviewableFile;
+}) => {
   const { isNone } = useCommentPermissions();
   if (isNone) return null;
   return (

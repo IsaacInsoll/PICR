@@ -7,7 +7,7 @@ import { closeModalAtom } from '../../../atoms/modalAtom';
 import { FilePreview } from '../FilePreview';
 import { prettyBytes } from '@shared/prettyBytes';
 import { prettyDate } from '@shared/prettyDate';
-import type { PicrFile } from '../../../../types';
+import type { PicrFile } from '@shared/types/picr';
 
 export const FileInfoModal = ({ file }: { file: PicrFile }) => {
   const onClose = useSetAtom(closeModalAtom);

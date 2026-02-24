@@ -1,4 +1,4 @@
-import type { PicrFile, PicrFolder } from '../../../types';
+import type { PicrFile, PicrFolder } from '@shared/types/picr';
 import { Avatar, Box } from '@mantine/core';
 import { PicrImage } from '../PicrImage';
 import { FileIcon, FolderIcon, VideoIcon } from '../../PicrIcons';
