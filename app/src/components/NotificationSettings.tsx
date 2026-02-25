@@ -8,7 +8,7 @@ import * as Device from 'expo-device';
 import { Switch, View } from 'react-native';
 import { PText } from '@/src/components/PText';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
-import { useIsDev } from '@/src/app/[loggedin]/admin/settings';
+import { useIsDev } from '@/src/helpers/useIsDev';
 
 export const NotificationSettings = () => {
   const [token, setToken] = useState<string>('');

@@ -13,7 +13,6 @@ import { prettyBytes } from '@shared/prettyBytes';
 // import Constants from 'expo-constants';
 import * as Application from 'expo-application';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
-import Constants from 'expo-constants';
 import { NotificationSettings } from '@/src/components/NotificationSettings';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -90,7 +89,3 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 });
-
-export const useIsDev = () => {
-  return !!Constants.expoConfig?.extra?.['isDev'];
-};
