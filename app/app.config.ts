@@ -16,7 +16,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: appName,
   slug: 'picr',
-  version: '1.0.3',
+  version: '1.0.4',
   orientation: 'default',
   icon: icon,
   scheme: scheme,
