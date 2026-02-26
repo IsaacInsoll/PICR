@@ -55,7 +55,6 @@
     "start": "concurrently -c \"gray,blue,magenta,cyan\" npm:start:*"
   },
   "devDependencies": {
-    "urql": "^4.2.2",
     "@graphql-codegen/cli": "^5.0.5",
     "@graphql-codegen/client-preset": "^4.8.0",
     "@graphql-codegen/introspection": "^4.0.3",
@@ -69,7 +68,8 @@
     "prettier": "^3.8",
     "release-it": "^19.2.4",
     "typescript": "^5.9.3",
-    "vitest": "^3.1.1"
+    "urql": "^4.2.2",
+    "vitest": "^4.0.18"
   },
   "release-it": {
     "npm": {
