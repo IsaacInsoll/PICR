@@ -80,7 +80,7 @@
       "commitMessage": "🚀 Release ${version}",
       "commit": true,
       "tag": true,
-      "push": true
+      "push": false
     },
     "github": {
       "release": true
@@ -95,6 +95,10 @@
       }
     },
     "hooks": {
+      "after:git:release": [
+        "git push origin master",
+        "git push origin ${tagName}"
+      ],
       "before:bump": "node lightroom/scripts/update-info-lua.js ${version}"
     }
   },
