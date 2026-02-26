@@ -5,7 +5,7 @@ import { db } from '../../db/picrDb.js';
 import { and, eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { MutationAuthArgs } from '../../../shared/gql/graphql.js';
+import type { MutationAuthArgs } from '@shared/gql/graphql.js';
 import {
   isLoginBlocked,
   recordFailedLoginAttempt,

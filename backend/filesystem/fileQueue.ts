@@ -2,7 +2,7 @@ import { addFile } from './events/addFile.js';
 import { addFolder } from './events/addFolder.js';
 import { removeFolder } from './events/removeFolder.js';
 import { renameFolder } from './events/renameFolder.js';
-import type { Task } from '../../shared/gql/graphql.js';
+import type { Task } from '@shared/gql/graphql.js';
 import { generateAllThumbs } from '../media/generateImageThumbnail.js';
 import { log } from '../logger.js';
 import { db, dbFileForId } from '../db/picrDb.js';

@@ -1,4 +1,4 @@
-import type { ThumbnailSize } from '../../shared/thumbnailSize.js';
+import type { ThumbnailSize } from '@shared/thumbnailSize.js';
 import { basename, dirname, extname } from 'path';
 import { fullPathForFile, relativePath } from '../filesystem/fileManager.js';
 import { picrConfig } from '../config/picrConfig.js';

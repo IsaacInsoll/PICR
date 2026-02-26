@@ -13,7 +13,7 @@ import { and, eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { userTypeEnum } from '../types/enums.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { QueryAccessLogsArgs } from '../../../shared/gql/graphql.js';
+import type { QueryAccessLogsArgs } from '@shared/gql/graphql.js';
 
 const resolver: PicrResolver<object, QueryAccessLogsArgs> = async (
   _,

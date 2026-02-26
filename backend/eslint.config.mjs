@@ -39,6 +39,11 @@ export default tseslint.config(
               message:
                 'Do not import from backend. Move shared code to shared/.',
             },
+            {
+              group: ['../**/shared/**'],
+              message:
+                'Import from shared using @shared/* instead of relative paths.',
+            },
           ],
         },
       ],

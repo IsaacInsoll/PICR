@@ -2,7 +2,7 @@ import { allSubfolders } from '../../helpers/allSubfolders.js';
 import { db } from '../../db/picrDb.js';
 import { and, count, eq, inArray } from 'drizzle-orm';
 import { dbFile } from '../../db/models/index.js';
-import { pluralize } from '../../../shared/pluralize.js';
+import { pluralize } from '@shared/pluralize.js';
 
 export const folderStats = async (folderId: number): Promise<FolderStat[]> => {
   const children = await allSubfolders(folderId);

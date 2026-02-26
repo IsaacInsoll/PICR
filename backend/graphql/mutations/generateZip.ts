@@ -2,10 +2,10 @@ import { contextPermissions } from '../../auth/contextPermissions.js';
 import { hashFolderContents } from '../../helpers/zip.js';
 import { addToZipQueue } from '../../helpers/zipQueue.js';
 import { GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
-import { AccessType, LinkMode } from '../../../shared/gql/graphql.js';
+import { AccessType, LinkMode } from '@shared/gql/graphql.js';
 import { createAccessLog } from '../../db/picrDb.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { MutationGenerateZipArgs } from '../../../shared/gql/graphql.js';
+import type { MutationGenerateZipArgs } from '@shared/gql/graphql.js';
 import { GraphQLError } from 'graphql/error/index.js';
 
 const resolver: PicrResolver<object, MutationGenerateZipArgs> = async (

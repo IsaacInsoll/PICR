@@ -3,7 +3,7 @@ import { addFolder } from './addFolder.js';
 import { folderList, relativePath } from '../fileManager.js';
 import { log } from '../../logger.js';
 import { fastHash } from '../fileHash.js';
-import { FileType } from '../../../shared/gql/graphql.js';
+import { FileType } from '@shared/gql/graphql.js';
 import { getImageRatio } from '../../media/getImageRatio.js';
 import { getImageMetadata } from '../../media/getImageMetadata.js';
 import { getVideoMetadata } from '../../media/getVideoMetadata.js';

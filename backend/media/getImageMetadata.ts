@@ -1,4 +1,4 @@
-import type { PicrImageMetadata } from '../../shared/types/metadata.js';
+import type { PicrImageMetadata } from '@shared/types/metadata.js';
 import { default as ex } from 'exif-reader';
 import { XMLParser } from 'fast-xml-parser';
 import { fullPathForFile } from '../filesystem/fileManager.js';

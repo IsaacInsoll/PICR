@@ -8,16 +8,16 @@ import {
 } from 'graphql';
 import { userType } from '../types/userType.js';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId.js';
-import { badChars } from '../../../shared/badChars.js';
+import { badChars } from '@shared/badChars.js';
 import type { UserFields } from '../../db/picrDb.js';
 import { db, dbFolderForId, dbUserForId } from '../../db/picrDb.js';
 import { and, eq, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
-import { LinkMode, UserType } from '../../../shared/gql/graphql.js';
+import { LinkMode, UserType } from '@shared/gql/graphql.js';
 import { commentPermissionsEnum, linkModeEnum } from '../types/enums.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { MutationEditUserArgs } from '../../../shared/gql/graphql.js';
+import type { MutationEditUserArgs } from '@shared/gql/graphql.js';
 
 const resolver: PicrResolver<object, MutationEditUserArgs> = async (
   _,

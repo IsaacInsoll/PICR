@@ -6,7 +6,7 @@ import { and, asc, eq, inArray } from 'drizzle-orm';
 import { dbFile } from '../../db/models/index.js';
 import { db } from '../../db/picrDb.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { MutationGenerateThumbnailsArgs } from '../../../shared/gql/graphql.js';
+import type { MutationGenerateThumbnailsArgs } from '@shared/gql/graphql.js';
 
 const resolver: PicrResolver<object, MutationGenerateThumbnailsArgs> = async (
   _,

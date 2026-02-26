@@ -1,7 +1,11 @@
 {
   "name": "picr-shared",
+  "version": "0.9.6",
   "description": "Functionality shared between PICR web and app",
   "type": "module",
+  "exports": {
+    "./*": "./*"
+  },
   "scripts": {
     "lint": "eslint . --ext .ts,.tsx",
     "typecheck": "tsc --noEmit"

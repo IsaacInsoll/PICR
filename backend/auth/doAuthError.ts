@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql/error/index.js';
 import {
   authErrorCatalog,
   type AuthErrorReason,
-} from '../../shared/auth/authErrorContract.js';
+} from '@shared/auth/authErrorContract.js';
 
 export const doAuthError = (
   authCode: AuthErrorReason,

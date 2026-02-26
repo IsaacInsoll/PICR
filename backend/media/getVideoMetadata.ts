@@ -1,7 +1,7 @@
 import ffmpeg from 'fluent-ffmpeg';
 //{ ffprobe, FfprobeData, setFfprobePath }
 import util from 'node:util';
-import type { PicrVideoMetadata } from '../../shared/types/metadata.js';
+import type { PicrVideoMetadata } from '@shared/types/metadata.js';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import type { FileFields } from '../db/picrDb.js';
 import { log } from '../logger.js';

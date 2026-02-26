@@ -13,7 +13,7 @@ import { folderAndAllParentIds } from '../../helpers/folderAndAllParentIds.js';
 import { and, eq, inArray } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { MutationEditFolderArgs } from '../../../shared/gql/graphql.js';
+import type { MutationEditFolderArgs } from '@shared/gql/graphql.js';
 
 const maxFolderTextLength = 255;
 

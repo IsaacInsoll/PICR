@@ -10,7 +10,7 @@ import {
   themeModeEnum,
 } from '../types/enums.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { MutationEditBrandingArgs } from '../../../shared/gql/graphql.js';
+import type { MutationEditBrandingArgs } from '@shared/gql/graphql.js';
 import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 import { GraphQLError } from 'graphql/error/index.js';
 

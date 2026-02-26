@@ -7,7 +7,7 @@ import { and, eq, ilike, inArray } from 'drizzle-orm';
 import { db } from '../../db/picrDb.js';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { QuerySearchFoldersArgs } from '../../../shared/gql/graphql.js';
+import type { QuerySearchFoldersArgs } from '@shared/gql/graphql.js';
 
 const resolver: PicrResolver<object, QuerySearchFoldersArgs> = async (
   _,

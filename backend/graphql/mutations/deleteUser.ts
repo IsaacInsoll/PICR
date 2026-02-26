@@ -6,7 +6,7 @@ import { db, dbFolderForId, dbUserForId } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { MutationDeleteUserArgs } from '../../../shared/gql/graphql.js';
+import type { MutationDeleteUserArgs } from '@shared/gql/graphql.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 
 /**

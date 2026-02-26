@@ -1,5 +1,5 @@
 import type { ImageUrlFileInput } from '@shared/types/ui';
-import type { AllSize } from '../../../shared/thumbnailSize.js';
+import type { AllSize } from '@shared/thumbnailSize';
 import { withBasePath } from './baseHref';
 
 export const imageURL = (

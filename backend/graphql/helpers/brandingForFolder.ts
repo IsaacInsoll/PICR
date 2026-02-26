@@ -1,5 +1,5 @@
-import type { Branding as BrandingType } from '../../../shared/gql/graphql.js';
-import { PrimaryColor, ThemeMode } from '../../../shared/gql/graphql.js';
+import type { Branding as BrandingType } from '@shared/gql/graphql.js';
+import { PrimaryColor, ThemeMode } from '@shared/gql/graphql.js';
 import type { FolderFields } from '../../db/picrDb.js';
 import { brandingForId, dbFolderForId } from '../../db/picrDb.js';
 

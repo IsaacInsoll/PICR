@@ -13,7 +13,7 @@ import {
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { and, asc, desc, eq, gte, inArray } from 'drizzle-orm';
-import type { AccessType } from '../../shared/gql/graphql.js';
+import type { AccessType } from '@shared/gql/graphql.js';
 import { fileToJSON } from '../graphql/helpers/fileToJSON.js';
 import { picrConfig } from '../config/picrConfig.js';
 import { sendFolderViewedNotification } from '../notifications/notifications.js';

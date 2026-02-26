@@ -8,7 +8,7 @@ import { db } from '../../db/picrDb.js';
 import { and, eq } from 'drizzle-orm';
 import { dbUserDevice } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { MutationEditUserDeviceArgs } from '../../../shared/gql/graphql.js';
+import type { MutationEditUserDeviceArgs } from '@shared/gql/graphql.js';
 import { userDeviceType } from '../types/userDeviceType.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 

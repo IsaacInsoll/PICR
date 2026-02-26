@@ -6,7 +6,7 @@ import { fileInterface } from '../interfaces/fileInterface.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import { dbFileForId } from '../../db/picrDb.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { QueryFileArgs } from '../../../shared/gql/graphql.js';
+import type { QueryFileArgs } from '@shared/gql/graphql.js';
 
 const resolver: PicrResolver<object, QueryFileArgs> = async (
   _,

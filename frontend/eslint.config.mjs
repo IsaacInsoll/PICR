@@ -51,6 +51,11 @@ export default tseslint.config(
               message: 'Do not import from app. Move shared code to shared/.',
             },
             {
+              group: ['../**/shared/**'],
+              message:
+                'Do not use relative imports to shared/. Use @shared/* imports instead.',
+            },
+            {
               group: [
                 '../types',
                 '../types.*',

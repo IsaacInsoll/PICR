@@ -28,7 +28,10 @@
       "Bash(grep no-non-null-assertion:*)",
       "Bash(npm run lint --prefix backend)",
       "Bash(grep changed:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(find:*)",
+      "Bash(npm run:*)",
+      "Bash(npm:*)"
     ]
   }
 }

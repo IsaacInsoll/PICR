@@ -35,6 +35,11 @@ export default defineConfig([
               message:
                 'Do not import from backend. Move shared code to shared/.',
             },
+            {
+              group: ['../**/shared/**'],
+              message:
+                'Do not use relative imports to shared/. Use @shared/* imports instead.',
+            },
           ],
         },
       ],

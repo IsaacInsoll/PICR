@@ -1,5 +1,5 @@
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { MutationAddCommentArgs } from '../../../shared/gql/graphql.js';
+import type { MutationAddCommentArgs } from '@shared/gql/graphql.js';
 import { GraphQLID, GraphQLNonNull } from 'graphql/type/index.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { doAuthError } from '../../auth/doAuthError.js';

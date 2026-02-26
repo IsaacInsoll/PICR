@@ -9,7 +9,7 @@ import { db, dbFileForId } from '../../db/picrDb.js';
 import { dbComment } from '../../db/models/index.js';
 import { desc, eq } from 'drizzle-orm';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { QueryCommentsArgs } from '../../../shared/gql/graphql.js';
+import type { QueryCommentsArgs } from '@shared/gql/graphql.js';
 
 const resolver: PicrResolver<object, QueryCommentsArgs> = async (
   _,

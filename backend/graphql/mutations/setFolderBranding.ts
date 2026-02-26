@@ -5,7 +5,7 @@ import { db, dbFolderForId } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { MutationSetFolderBrandingArgs } from '../../../shared/gql/graphql.js';
+import type { MutationSetFolderBrandingArgs } from '@shared/gql/graphql.js';
 import { GraphQLError } from 'graphql/error/index.js';
 
 const resolver: PicrResolver<object, MutationSetFolderBrandingArgs> = async (

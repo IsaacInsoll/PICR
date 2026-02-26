@@ -1,12 +1,12 @@
 import { queueTaskStatus } from '../../filesystem/fileQueue.js';
-import type { Task } from '../../../shared/gql/graphql.js';
+import type { Task } from '@shared/gql/graphql.js';
 import { queueZipTaskStatus } from '../../helpers/zipQueue.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { taskType } from '../types/taskType.js';
 import { allSubfolderIds } from '../../helpers/allSubfolders.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { QueryTasksArgs } from '../../../shared/gql/graphql.js';
+import type { QueryTasksArgs } from '@shared/gql/graphql.js';
 
 const resolver: PicrResolver<object, QueryTasksArgs> = async (
   _,

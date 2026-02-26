@@ -5,8 +5,8 @@ import { getUserFromToken } from '../auth/jwt-auth.js';
 import type { PicrRequestContext } from '../types/PicrRequestContext.js';
 import { getUserFromUUID } from '../auth/getUserFromUUID.js';
 import { dbFolderForId } from '../db/picrDb.js';
-import { extraUserProps } from '../../shared/extraUserProps.js';
-import { UserType } from '../../shared/gql/graphql.js';
+import { extraUserProps } from '@shared/extraUserProps.js';
+import { UserType } from '@shared/gql/graphql.js';
 
 type GraphqlHttpContextRequest = {
   headers: IncomingCustomHeaders;

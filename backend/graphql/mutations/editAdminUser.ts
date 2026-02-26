@@ -14,10 +14,10 @@ import type { UserFields } from '../../db/picrDb.js';
 import { db, dbFolderForId, dbUserForId } from '../../db/picrDb.js';
 import { and, eq, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
-import { UserType } from '../../../shared/gql/graphql.js';
+import { UserType } from '@shared/gql/graphql.js';
 import { commentPermissionsEnum } from '../types/enums.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { MutationEditAdminUserArgs } from '../../../shared/gql/graphql.js';
+import type { MutationEditAdminUserArgs } from '@shared/gql/graphql.js';
 
 const resolver: PicrResolver<object, MutationEditAdminUserArgs> = async (
   _,

@@ -13,7 +13,7 @@ import { db, dbFolderForId } from '../../db/picrDb.js';
 import { and, desc, eq, inArray, isNotNull } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { QueryUsersArgs } from '../../../shared/gql/graphql.js';
+import type { QueryUsersArgs } from '@shared/gql/graphql.js';
 
 const resolver: PicrResolver<object, QueryUsersArgs> = async (
   _,

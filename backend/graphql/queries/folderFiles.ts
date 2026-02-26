@@ -2,7 +2,7 @@ import { GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull } from 'graphql';
 import { GraphQLError } from 'graphql/error/index.js';
 import { and, asc, count, eq, inArray } from 'drizzle-orm';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { QueryFolderFilesArgs } from '../../../shared/gql/graphql.js';
+import type { QueryFolderFilesArgs } from '@shared/gql/graphql.js';
 import { folderFilesResultType } from '../types/folderFilesResultType.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { allSubfolderIds } from '../../helpers/allSubfolders.js';

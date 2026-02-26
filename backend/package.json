@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "build": "rm -rf ../dist/server && tsc && cd .. && bash ./copy-backend-files.sh",
+    "build": "rm -rf ../dist/server && tsc && tsc-alias && cd .. && bash ./copy-backend-files.sh",
     "start": " node ../dist/server/backend/app.js",
     "server": "nodemon --delay 0.5 --watch .env --watch server server/backend/app.js",
     "dk": "NODE_OPTIONS='--import tsx' drizzle-kit"
@@ -50,6 +50,7 @@
     "drizzle-kit": "^0.31",
     "eslint": "^9.25.0",
     "nodemon": "^3.1.11",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.21",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.19.0"

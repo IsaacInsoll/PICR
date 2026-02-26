@@ -1,5 +1,5 @@
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import type { QueryAllFoldersArgs } from '../../../shared/gql/graphql.js';
+import type { QueryAllFoldersArgs } from '@shared/gql/graphql.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { allSubfolders } from '../../helpers/allSubfolders.js';
 import type { FolderFields } from '../../db/picrDb.js';

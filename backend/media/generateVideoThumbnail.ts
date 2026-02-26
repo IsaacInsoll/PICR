@@ -1,8 +1,8 @@
-import type { ThumbnailSize } from '../../shared/thumbnailSize.js';
+import type { ThumbnailSize } from '@shared/thumbnailSize.js';
 import { thumbnailPath } from './thumbnailPath.js';
 import { ffmpegForFile } from './ffmpegForFile.js';
-import type { PicrVideoMetadata } from '../../shared/types/metadata.js';
-import { thumbnailDimensions } from '../../shared/thumbnailDimensions.js';
+import type { PicrVideoMetadata } from '@shared/types/metadata.js';
+import { thumbnailDimensions } from '@shared/thumbnailDimensions.js';
 import { existsSync, mkdirSync } from 'node:fs';
 import { log } from '../logger.js';
 // import joinImages from 'join-images'; TODO: find ES6 modules compatible alternative?

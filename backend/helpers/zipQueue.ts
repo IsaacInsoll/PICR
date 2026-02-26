@@ -1,7 +1,7 @@
 import type { FolderHash } from './zip.js';
 import { zipFolder, zipPath } from './zip.js';
 import { existsSync } from 'node:fs';
-import type { Task } from '../../shared/gql/graphql.js';
+import type { Task } from '@shared/gql/graphql.js';
 import type { FolderFields } from '../db/picrDb.js';
 import { log } from '../logger.js';
 

@@ -6,7 +6,10 @@
     "moduleResolution": "NodeNext",
     "outDir": "../dist/server",
     "sourceMap": true,
-    "lib": ["ES2024"]
+    "lib": ["ES2024"],
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    }
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules"]

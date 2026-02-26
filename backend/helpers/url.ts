@@ -1,6 +1,6 @@
 import { picrConfig } from '../config/picrConfig.js';
 import type { FileFields } from '../db/picrDb.js';
-import type { ThumbnailSize } from '../../shared/thumbnailSize.js';
+import type { ThumbnailSize } from '@shared/thumbnailSize.js';
 
 export const userUrlForFolder = (folderId: number) => {
   return picrConfig.baseUrl + 'admin/f/' + folderId;
