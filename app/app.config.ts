@@ -1,6 +1,10 @@
 import type { ExpoConfig, ConfigContext } from 'expo/config';
+import { readFileSync } from 'node:fs';
 
 const IS_DEV = process.env['APP_VARIANT'] === 'development';
+const { version: appVersion } = JSON.parse(
+  readFileSync('./package.json', 'utf8'),
+) as { version: string };
 
 const appName = 'PICR' + (IS_DEV ? ' [Dev]' : '');
 const bundle = 'com.isaacinsoll.picr' + (IS_DEV ? '.dev' : '');
@@ -16,7 +20,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: appName,
   slug: 'picr',
-  version: '1.0.4',
+  version: appVersion,
   orientation: 'default',
   icon: icon,
   scheme: scheme,

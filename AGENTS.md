@@ -137,6 +137,11 @@ cd app && npm run typecheck      # App only
 # Formatting
 npm run format               # Apply Prettier formatting across the repo
 npm run format:check         # Verify formatting only (same check used in CI)
+
+# Releases (human only, except for dry runs)
+npm run release              # GitHub/Docker release version bump/tag flow
+npm run release:app          # App preflight + version bump + EAS iOS/Android auto-submit
+npm run release:app:dry      # App preflight only (no bump/build), AI LLM can run this anytime as a check before
 ```
 
 ### After Making Changes
@@ -234,7 +239,7 @@ Common gitmoji:
 
 ### Important Rules
 
-- **Releases**: Must be done by human running `npm run release` - AI may only suggest the command
+- **Releases**: Must be done by human running `npm run release` or `npm run release:app` - AI may only suggest these commands
 - **Migrations**: Call out DB migrations, GraphQL schema changes, or new env vars in PR descriptions
 - **Codegen**: Run `npm run gql` after schema changes and commit the generated files
 

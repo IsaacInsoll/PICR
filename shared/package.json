@@ -3,7 +3,8 @@
   "description": "Functionality shared between PICR web and app",
   "type": "module",
   "scripts": {
-    "lint": "npm --prefix ../backend exec -- eslint . --ext .ts,.tsx --config ../backend/eslint.config.mjs"
+    "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
@@ -14,7 +15,11 @@
     "readable-fractions": "^0.1.1"
   },
   "devDependencies": {
-    "@types/react": "^19.1.10"
+    "@eslint/js": "^9.25.0",
+    "@types/react": "^19.1.10",
+    "eslint": "^9.25.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.19.0"
   },
   "peerDependencies": {
     "@urql/exchange-graphcache": "^7.2.3",

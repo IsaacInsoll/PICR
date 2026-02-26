@@ -1,5 +1,6 @@
 {
   "name": "app",
+  "version": "1.0.3",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
@@ -9,7 +10,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "postinstall": "cd ../shared && npm install"
+    "postinstall": "cd ../shared && npm install",
+    "release:version": "node ../node_modules/release-it/bin/release-it.js --config package.json"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -87,6 +89,20 @@
       "@react-native-menu/menu": "2.0.0",
       "react-native-ios-context-menu": "3.2",
       "react-native-ios-utilities": "5.2"
+    }
+  },
+  "release-it": {
+    "npm": {
+      "publish": false
+    },
+    "github": false,
+    "git": {
+      "requireBranch": "master",
+      "commitMessage": "🚀📱 App release ${version}",
+      "tagName": "app-v${version}",
+      "commit": true,
+      "tag": true,
+      "push": true
     }
   },
   "private": true
