@@ -31,6 +31,7 @@ Notes:
 - App release versioning is decoupled from backend/frontend release versioning.
 - `app/app.config.ts` reads version from `app/package.json`.
 - App release tags are created as `app-v<version>`.
+- App release push is scoped to `master` and `app-v<version>` only (does not push unrelated local tags).
 
 ### Dry run (no version bump, no EAS build)
 

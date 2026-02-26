@@ -96,13 +96,19 @@
       "publish": false
     },
     "github": false,
+    "hooks": {
+      "after:git:release": [
+        "git push origin master",
+        "git push origin app-v${version}"
+      ]
+    },
     "git": {
       "requireBranch": "master",
       "commitMessage": "🚀📱 App release ${version}",
       "tagName": "app-v${version}",
       "commit": true,
       "tag": true,
-      "push": true
+      "push": false
     }
   },
   "private": true
