@@ -23,13 +23,13 @@
 
 ## Development CLI Commands
 
-| Command                                                     | Description                                            | When to use                                                                                             |
-| ----------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| `npm start`                                                 | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. <br /> Uses nodemon/vite to reload on changes                              |
-| `npm run gql`                                               | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br />or after updating a query on client side |
-| `cd backend && MIGRATION_NAME=<yodawg> npm run dk:generate` | generate migration files                               | Run when db schema modified and you want to commit changes                                              |
-| `cd backend && npm run dk -- push`                          | Apply schema directly (no migration file)              | Fast local prototyping before a feature is ready to ship                                                |
-| `cd backend && npm run dk -- migrate`                       | Manually apply committed migration files               | Optional: useful for debugging/recovery. Backend startup usually applies these automatically.           |
+| Command                                                                              | Description                                            | When to use                                                                                             |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `npm start`                                                                          | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. <br /> Uses nodemon/vite to reload on changes                              |
+| `npm run gql`                                                                        | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br />or after updating a query on client side |
+| `cd backend && MIGRATION_NAME=<yodawg> npm run dk:generate`                         | generate migration files                                | Run when db schema modified and you want to commit changes                                              |
+| `cd backend && npm run dk -- push`                                                   | Apply schema directly (no migration file)              | Fast local prototyping before a feature is ready to ship                                                |
+| `cd backend && npm run dk -- migrate`                                                | Manually apply committed migration files               | Optional: useful for debugging/recovery. Backend startup usually applies these automatically.           |
 
 ## Drizzle Common Workflows
 

@@ -8,7 +8,8 @@
     "build": "rm -rf ../dist/server && tsc && tsc-alias && cd .. && bash ./copy-backend-files.sh",
     "start": " node ../dist/server/backend/app.js",
     "server": "nodemon --delay 0.5 --watch .env --watch server server/backend/app.js",
-    "dk": "NODE_OPTIONS='--import tsx' drizzle-kit"
+    "dk": "DOTENV_CONFIG_PATH=../.env NODE_OPTIONS='--import tsx' drizzle-kit",
+    "dk:generate": "sh -c 'if [ -z \"$MIGRATION_NAME\" ]; then echo \"MIGRATION_NAME is required. Example: MIGRATION_NAME=branding-upgrades npm run dk:generate\"; exit 1; fi; npm run dk -- generate --name=\"$MIGRATION_NAME\"'"
   },
   "author": "Isaac Insoll",
   "license": "ISC",

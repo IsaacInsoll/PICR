@@ -5,7 +5,7 @@ import { picrConfig } from '../config/picrConfig.js';
 import { log } from '../logger.js';
 
 // This handles SQL/ORM DB changes, see dbMigrate.ts for "picr" DB changes
-// Pro Tip: if this is failing, run `npx drizzle-kit migrate` to do the same thing as this, but with epic debug output
+// Pro Tip: if this is failing, run `npm run dk -- migrate` to do the same thing as this, but with epic debug output
 
 export async function schemaMigration() {
   // console.log('🗃️  Migrations Starting');

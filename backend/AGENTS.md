@@ -140,7 +140,7 @@ const user = await dbUserForId(userId); // throws if not found
 2. Export from `db/models/index.ts` if new
 3. **IMPORTANT**: AI agents must NOT run migrations directly. Prompt the user:
    ```
-   Please run: cd backend && npx drizzle-kit generate --name=<suggest-a-name>
+   Please run: cd backend && MIGRATION_NAME=<suggest-a-name> npm run dk:generate
    Then review the migration in backend/db/drizzle/ and commit it
    ```
 4. Server auto-migrates on startup (dev and production)
@@ -545,7 +545,7 @@ When debugging migration issues manually:
 
 ```bash
 cd backend
-npx drizzle-kit migrate   # Same migration chain with verbose CLI output
+npm run dk -- migrate   # Same migration chain with verbose CLI output
 ```
 
 ### Auth errors in GraphQL
