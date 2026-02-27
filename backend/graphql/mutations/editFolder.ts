@@ -14,6 +14,12 @@ import { and, eq, inArray } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationEditFolderArgs } from '@shared/gql/graphql.js';
+import { AUTH_REASON } from '@shared/auth/authErrorContract.js';
+
+// Extends generated args with bannerImageId until next codegen run
+type EditFolderArgs = MutationEditFolderArgs & {
+  bannerImageId?: string | null;
+};
 
 const maxFolderTextLength = 255;
 
@@ -35,7 +41,7 @@ const validateOptionalText = (
   }
 };
 
-const resolver: PicrResolver<object, MutationEditFolderArgs> = async (
+const resolver: PicrResolver<object, EditFolderArgs> = async (
   _,
   params,
   context,
@@ -85,6 +91,27 @@ const resolver: PicrResolver<object, MutationEditFolderArgs> = async (
       );
   }
 
+  if (params.bannerImageId !== undefined) {
+    const bannerImageId = params.bannerImageId
+      ? parseInt(params.bannerImageId, 10)
+      : null;
+    if (bannerImageId !== null) {
+      const bannerImage = await dbFileForId(bannerImageId);
+      if (!bannerImage) {
+        doAuthError(AUTH_REASON.INVALID_BANNER_IMAGE);
+        return;
+      }
+      if (bannerImage.type != 'Image')
+        doAuthError(AUTH_REASON.INVALID_BANNER_IMAGE_TYPE);
+      if (bannerImage.folderId != folder.id)
+        doAuthError(AUTH_REASON.BANNER_IMAGE_OUT_OF_SCOPE);
+    }
+    await db
+      .update(dbFolder)
+      .set({ bannerImageId, updatedAt: new Date() })
+      .where(eq(dbFolder.id, folder.id));
+  }
+
   const updates: Partial<typeof dbFolder.$inferInsert> = {};
   const title = normalizeOptionalText(params.title);
   const subtitle = normalizeOptionalText(params.subtitle);
@@ -113,6 +140,7 @@ export const editFolder = {
   args: {
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     heroImageId: { type: GraphQLID },
+    bannerImageId: { type: GraphQLID },
     title: { type: GraphQLString },
     subtitle: { type: GraphQLString },
   },

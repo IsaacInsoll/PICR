@@ -1,10 +1,12 @@
 import {
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
+import { GraphQLJSON } from 'graphql-scalars';
 import { folderType } from './folderType.js';
 import {
   headingFontKeyEnum,
@@ -28,6 +30,18 @@ export const brandingType = new GraphQLObjectType({
       type: headingFontKeyEnum,
       resolve: (branding) => normalizeHeadingFontKey(branding?.headingFontKey),
     },
+    availableViews: {
+      type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
+    },
+    defaultView: { type: GraphQLString },
+    thumbnailSize: { type: GraphQLInt },
+    thumbnailSpacing: { type: GraphQLInt },
+    thumbnailBorderRadius: { type: GraphQLInt },
+    headingFontSize: { type: GraphQLInt },
+    headingAlignment: { type: GraphQLString },
+    footerTitle: { type: GraphQLString },
+    footerUrl: { type: GraphQLString },
+    socialLinks: { type: GraphQLJSON },
     // TODO: Remove folderId in a future release - kept for backwards compatibility
     folderId: { type: GraphQLID },
     folder: { type: folderType },

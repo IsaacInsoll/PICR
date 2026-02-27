@@ -27,7 +27,7 @@
     "tsc:frontend": "cd frontend && npx tsc --noEmit",
     "tsc:app": "cd app && npm run typecheck",
     "workflow": "act push --pull=false --artifact-server-path $PWD/.artifacts -P ubuntu-24.04=catthehacker/ubuntu:act-latest",
-    "install-all": "npm ci && npm --prefix shared ci && npm --prefix backend ci && npm --prefix frontend ci && npm --prefix app ci",
+    "install-all": "npm ci && npm --prefix shared ci && npm --prefix backend ci && npm --prefix frontend ci && npm --prefix app ci && bash ./copy-backend-files.sh && npm --prefix dist ci",
     "build:local": "npm --prefix backend run build && npm run build:lightroom && npm --prefix frontend run build && npm --prefix dist ci",
     "gql": "graphql-codegen --config codegen.ts && prettier --write shared/urql/graphql.schema.json frontend/src/fonts.generated.ts app/src/fonts.generated.ts app/src/graphql.schema.json",
     "release": "dotenv -- release-it --only-version",

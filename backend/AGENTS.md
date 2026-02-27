@@ -141,9 +141,9 @@ const user = await dbUserForId(userId); // throws if not found
 3. **IMPORTANT**: AI agents must NOT run migrations directly. Prompt the user:
    ```
    Please run: cd backend && npx drizzle-kit generate --name=<suggest-a-name>
-   Then review the migration in backend/db/drizzle/ and run: npx drizzle-kit migrate
+   Then review the migration in backend/db/drizzle/ and commit it
    ```
-4. Server auto-migrates on startup in dev mode
+4. Server auto-migrates on startup (dev and production)
 
 ---
 
@@ -539,12 +539,13 @@ npm run gql           # In another terminal
 
 ### Database migration issues
 
-Never run migrations automatically. Always:
+PICR runs committed migrations automatically when backend boots (`schemaMigration.ts`).
+
+When debugging migration issues manually:
 
 ```bash
 cd backend
-npx drizzle-kit generate --name=<suggest-a-name> # Review the generated SQL
-npx drizzle-kit migrate   # Apply after review
+npx drizzle-kit migrate   # Same migration chain with verbose CLI output
 ```
 
 ### Auth errors in GraphQL

@@ -31,7 +31,9 @@
       "Bash(wc:*)",
       "Bash(find:*)",
       "Bash(npm run:*)",
-      "Bash(npm:*)"
+      "Bash(npm:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(cat:*)"
     ]
   }
 }

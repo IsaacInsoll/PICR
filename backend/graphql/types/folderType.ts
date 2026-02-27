@@ -19,7 +19,7 @@ import { userType } from './userType.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import type { FolderFields } from '../../db/picrDb.js';
-import { db, getFilesForFolder } from '../../db/picrDb.js';
+import { db, dbFileForId, getFilesForFolder } from '../../db/picrDb.js';
 import { and, count, eq, inArray, sum } from 'drizzle-orm';
 import { dbFile, dbUser } from '../../db/models/index.js';
 import { GraphQLDateTime } from 'graphql-scalars';
@@ -59,6 +59,18 @@ export const folderType: GraphQLObjectType<FolderFields, PicrRequestContext> =
       heroImage: {
         type: imageFileType,
         resolve: async (f: FolderFields) => heroImageForFolder(f),
+      },
+      bannerImage: {
+        type: imageFileType,
+        resolve: async (f: FolderFields) => {
+          if (!f.bannerImageId) return null;
+          try {
+            const file = await dbFileForId(f.bannerImageId);
+            return file?.exists ? file : null;
+          } catch {
+            return null;
+          }
+        },
       },
       permissions: { type: folderPermissionsType },
       branding: {

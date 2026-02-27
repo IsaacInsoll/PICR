@@ -41,6 +41,9 @@ export const dbFolder = pgTable('Folders', {
   heroImageId: integer('heroImageId')
     // .notNull()
     .references((): AnyPgColumn => dbFile.id),
+  bannerImageId: integer('bannerImageId').references(
+    (): AnyPgColumn => dbFile.id,
+  ),
   brandingId: integer('brandingId').references(
     (): AnyPgColumn => dbBranding.id,
   ),
@@ -53,6 +56,10 @@ export const dbFolderRelations = relations(dbFolder, ({ one, many }) => ({
   }),
   heroImage: one(dbFile, {
     fields: [dbFolder.heroImageId],
+    references: [dbFile.id],
+  }),
+  bannerImage: one(dbFile, {
+    fields: [dbFolder.bannerImageId],
     references: [dbFile.id],
   }),
   branding: one(dbBranding, {

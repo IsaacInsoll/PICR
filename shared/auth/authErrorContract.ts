@@ -24,6 +24,9 @@ export const AUTH_REASON = {
   INVALID_HERO_IMAGE: 'INVALID_HERO_IMAGE',
   INVALID_HERO_IMAGE_TYPE: 'INVALID_HERO_IMAGE_TYPE',
   HERO_IMAGE_OUT_OF_SCOPE: 'HERO_IMAGE_OUT_OF_SCOPE',
+  INVALID_BANNER_IMAGE: 'INVALID_BANNER_IMAGE',
+  INVALID_BANNER_IMAGE_TYPE: 'INVALID_BANNER_IMAGE_TYPE',
+  BANNER_IMAGE_OUT_OF_SCOPE: 'BANNER_IMAGE_OUT_OF_SCOPE',
 } as const;
 
 export const authErrorCatalog = {
@@ -70,6 +73,21 @@ export const authErrorCatalog = {
   [AUTH_REASON.HERO_IMAGE_OUT_OF_SCOPE]: {
     code: 'BAD_USER_INPUT',
     message: 'Hero image is outside this folder',
+    globalAction: 'local_only',
+  },
+  [AUTH_REASON.INVALID_BANNER_IMAGE]: {
+    code: 'BAD_USER_INPUT',
+    message: 'Banner image does not exist',
+    globalAction: 'local_only',
+  },
+  [AUTH_REASON.INVALID_BANNER_IMAGE_TYPE]: {
+    code: 'BAD_USER_INPUT',
+    message: 'Banner image must be an image file',
+    globalAction: 'local_only',
+  },
+  [AUTH_REASON.BANNER_IMAGE_OUT_OF_SCOPE]: {
+    code: 'BAD_USER_INPUT',
+    message: 'Banner image is outside this folder',
     globalAction: 'local_only',
   },
 } as const satisfies Record<
