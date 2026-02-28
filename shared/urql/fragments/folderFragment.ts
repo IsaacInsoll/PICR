@@ -22,6 +22,16 @@ export const folderFragment = gql(/* GraphQL */ `
       primaryColor
       logoUrl
       headingFontKey
+      availableViews
+      defaultView
+      thumbnailSize
+      thumbnailSpacing
+      thumbnailBorderRadius
+      headingFontSize
+      headingAlignment
+      footerTitle
+      footerUrl
+      socialLinks
     }
     ...HeroImageFragment
   }

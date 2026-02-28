@@ -87,7 +87,10 @@ export const sortFiles = <T extends SortableItem>(
 export type ViewFolder = ViewFolderQuery['folder'];
 export type ViewFolderFile = ViewFolder['files'][number];
 export type ViewFolderSubFolder = ViewFolder['subFolders'][number];
-export type ViewFolderFileWithHero = ViewFolderFile & { isHeroImage?: boolean };
+export type ViewFolderFileWithHero = ViewFolderFile & {
+  isHeroImage?: boolean;
+  isBannerImage?: boolean;
+};
 
 export interface SortFolderContentsOptions {
   sort: FileSort;
@@ -107,10 +110,12 @@ export interface SortFolderContentsResult {
 const withHeroImageFlag = (
   files: ViewFolderFile[],
   heroImageId?: string | null,
+  bannerImageId?: string | null,
 ): ViewFolderFileWithHero[] =>
   files.map((file) => ({
     ...file,
     isHeroImage: !!heroImageId && file.id === heroImageId,
+    isBannerImage: !!bannerImageId && file.id === bannerImageId,
   }));
 
 export const sortFolderContents = (
@@ -135,6 +140,7 @@ export const sortFolderContents = (
   const filesWithHero = withHeroImageFlag(
     sortedFiles,
     heroImageId ?? folder.heroImage?.id,
+    folder.bannerImage?.id,
   );
   const items = foldersFirst
     ? [...sortedFolders, ...filesWithHero]

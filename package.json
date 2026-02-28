@@ -48,11 +48,11 @@
     "release:app:android": "npm run release:app:preflight && npm run release:app:version && npm run release:app:eas:android",
     "release:app": "npm run release:app:preflight && npm run release:app:version && npm run release:app:eas",
     "build:lightroom": "cd lightroom/picr.lrplugin && zip -rq ../../frontend/public/picr-lightroom-plugin.zip .",
-    "start:server-ts": "cd backend && tsc -w",
-    "start:server": "nodemon --delay 0.5 --watch .env --watch dist/server dist/server/backend/app.js",
+    "start:server-ts": "cd backend && npx tsc --noEmit -w",
+    "start:server": "TSX_TSCONFIG_PATH=backend/tsconfig.json backend/node_modules/.bin/tsx watch backend/app.ts",
     "start:client": "cd frontend && npm start",
     "start:db": "docker compose up -d",
-    "start": "concurrently -c \"gray,blue,magenta,cyan\" npm:start:*"
+    "start": "concurrently -c \"gray,blue,magenta,cyan,yellow\" npm:start:*"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.5",

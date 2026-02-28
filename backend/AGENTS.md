@@ -525,6 +525,28 @@ npm run start:server  # In one terminal
 npm run gql           # In another terminal
 ```
 
+### `npm run gql` succeeds but generated files don't include new fields
+
+Codegen introspects the **live server** at `http://localhost:6900/graphql`. If a
+server was already running before your schema changes (e.g. a previous `npm start`
+session that wasn't fully killed), that old process will still be on port 6900 and
+codegen will silently introspect the stale schema.
+
+Fix:
+
+1. Kill **all** running server processes — check for any leftover `node` processes
+   on port 6900: `lsof -ti:6900 | xargs kill -9`
+2. Run `npm start` fresh and wait until you see `🗃️ Migrations Complete` in the
+   output (confirms the new server is up and compiled code is loaded)
+3. Verify the new fields are live before running codegen:
+   ```bash
+   curl -s -X POST http://localhost:6900/graphql \
+     -H "Content-Type: application/json" \
+     -d '{"query":"{ __type(name: \"Branding\") { fields { name } } }"}' \
+     | grep -o '"name":"[^"]*"'
+   ```
+4. Then run `npm run gql`
+
 ### File watcher not detecting changes
 
 1. Check `USE_POLLING=true` is set (required for Docker/NAS)

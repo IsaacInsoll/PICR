@@ -1,8 +1,10 @@
 import type { PicrFolder } from '@shared/types/picr';
 import { FolderLink } from '../FolderLink';
+import type React from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
 import { placeholderFolder } from './PlaceholderFolder';
+import { themeModeAtom } from '../../atoms/themeModeAtom';
 import { Page } from '../Page';
 import {
   Box,
@@ -22,11 +24,13 @@ export const FolderHeader = ({
   subtitle,
   customSubtitle,
   actions,
+  hideTitleAndCustomSubtitle,
 }: {
   folder: PicrFolder;
   subtitle?: string;
   customSubtitle?: string | null;
   actions?: ReactElement;
+  hideTitleAndCustomSubtitle?: boolean;
 }) => {
   return (
     <HeaderWrapper
@@ -35,6 +39,7 @@ export const FolderHeader = ({
       subtitle={subtitle}
       actions={actions}
       parent={folder.parents}
+      hideTitleAndCustomSubtitle={hideTitleAndCustomSubtitle}
     />
   );
 };
@@ -65,6 +70,7 @@ const HeaderWrapper = ({
   children,
   actions,
   parent,
+  hideTitleAndCustomSubtitle,
 }: {
   title?: string;
   customSubtitle?: string;
@@ -72,7 +78,13 @@ const HeaderWrapper = ({
   children?: ReactNode;
   actions?: ReactNode;
   parent?: PicrFolder[];
+  hideTitleAndCustomSubtitle?: boolean;
 }) => {
+  const theme = useAtomValue(themeModeAtom);
+  const headingFontSize = theme.headingFontSize ?? undefined;
+  const headingAlignment = theme.headingAlignment ?? undefined;
+  const normalizedCustomSubtitle = customSubtitle?.trim();
+
   //let's populate each parent folder with a list of its parents so when we click one the placeholder has its parent hierachy for good UI
   const filledParents: PicrFolder[] | undefined = parent?.map((f, i) => {
     return { ...f, parents: parent.slice(i + 1) };
@@ -94,8 +106,40 @@ const HeaderWrapper = ({
       </Box>
       <Grid>
         <Grid.Col span={{ xs: 12, sm: 6 }}>
-          <Title order={1}>{title}</Title>
-          {customSubtitle ? <Title order={3}>{customSubtitle}</Title> : null}
+          {!hideTitleAndCustomSubtitle ? (
+            <>
+              <Title
+                order={1}
+                style={{
+                  fontSize: headingFontSize ?? undefined,
+                  textAlign:
+                    (headingAlignment as React.CSSProperties['textAlign']) ??
+                    undefined,
+                }}
+              >
+                {title}
+              </Title>
+              {normalizedCustomSubtitle ? (
+                <Title
+                  order={3}
+                  style={{
+                    paddingTop: headingFontSize
+                      ? headingFontSize * 0.1
+                      : undefined,
+                    fontSize: headingFontSize
+                      ? headingFontSize * 0.5
+                      : undefined,
+                    opacity: 0.5,
+                    textAlign:
+                      (headingAlignment as React.CSSProperties['textAlign']) ??
+                      undefined,
+                  }}
+                >
+                  {normalizedCustomSubtitle}
+                </Title>
+              ) : null}
+            </>
+          ) : null}
           <Text>{subtitle}</Text>
         </Grid.Col>
         <Grid.Col span={{ xs: 12, sm: 6 }}>

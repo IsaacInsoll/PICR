@@ -41,7 +41,13 @@ shared/
 │   ├── urqlClient.tsx      # URQL client factory
 │   ├── urqlCacheExchange.ts # Cache configuration
 │   └── graphql.schema.json # Schema for cache validation
+├── branding/               # Branding system constants and types
+│   ├── galleryPresets.ts   # Thumbnail size/spacing/radius/font-size presets + defaults
+│   ├── socialLinkTypes.ts  # SocialLink type, SOCIAL_LINK_TYPES list, detectSocialLinkType()
+│   └── fontRegistry.ts     # HeadingFontKey enum mapping and normalization helpers
 ├── files/                  # File/folder utilities
+│   ├── sortFiles.ts        # ViewFolder types, sortFolderContents, isBannerImage/isHeroImage flags
+│   └── folderContentsViewModel.ts  # FolderContentsItem, folderContentsItems()
 ├── search/                 # Search utilities
 ├── validation/             # Input validation
 ├── hooks/                  # Shared React hooks

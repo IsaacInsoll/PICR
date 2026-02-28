@@ -1,34 +1,41 @@
-import { Button, Group, Modal } from '@mantine/core';
+import { ActionIcon, Button, Group, Tooltip } from '@mantine/core';
 import { BrandingForm, type BrandingInput } from './BrandingForm';
-import { useEffect, useState } from 'react';
+import type { SocialLink } from '@shared/branding/socialLinkTypes';
+import { useEffect, useRef, useState } from 'react';
 import { useSetAtom } from 'jotai';
 import {
   themeModeAtom,
   applyBrandingDefaults,
 } from '../../atoms/themeModeAtom';
 import { useMutation } from 'urql';
-import { DeleteIcon } from '../../PicrIcons';
+import { DeleteIcon, EyeIcon, EyeOffIcon } from '../../PicrIcons';
 import { editBrandingMutation } from '@shared/urql/mutations/editBrandingMutation';
 import { deleteBrandingMutation } from '@shared/urql/mutations/deleteBrandingMutation';
 import {
   normalizeFontKey,
   toHeadingFontKeyEnumValue,
 } from '@shared/branding/fontRegistry';
+import { PicrDrawer } from '../../components/PicrDrawer';
 
-export const BrandingModal = ({
+export const BrandingDrawer = ({
   branding: brandingProp,
   onClose,
 }: {
   branding: BrandingInput;
   onClose: () => void;
 }) => {
-  const [branding, setBranding] = useState<BrandingInput>(
-    applyBrandingDefaults(brandingProp),
-  );
+  const [branding, setBranding] = useState<BrandingInput>({
+    ...applyBrandingDefaults(brandingProp),
+    socialLinks:
+      (brandingProp.socialLinks as SocialLink[] | null | undefined) ?? null,
+  });
   const setThemeMode = useSetAtom(themeModeAtom);
   const [submitting, setSubmitting] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(true);
   const [, mutate] = useMutation(editBrandingMutation);
   const [, deleteBranding] = useMutation(deleteBrandingMutation);
+
+  const originalTheme = useRef(applyBrandingDefaults(brandingProp));
 
   const isNew = !branding.id || branding.id === '0';
 
@@ -50,6 +57,16 @@ export const BrandingModal = ({
       headingFontKey: toHeadingFontKeyEnumValue(
         normalizeFontKey(branding.headingFontKey),
       ),
+      availableViews: branding.availableViews,
+      defaultView: branding.defaultView,
+      thumbnailSize: branding.thumbnailSize,
+      thumbnailSpacing: branding.thumbnailSpacing,
+      thumbnailBorderRadius: branding.thumbnailBorderRadius,
+      headingFontSize: branding.headingFontSize,
+      headingAlignment: branding.headingAlignment,
+      footerTitle: branding.footerTitle,
+      footerUrl: branding.footerUrl,
+      socialLinks: branding.socialLinks,
     }).then(() => {
       setSubmitting(false);
       onClose();
@@ -65,13 +82,35 @@ export const BrandingModal = ({
     });
   };
 
-  const title = isNew ? 'Create Branding' : `Edit Branding: ${branding.name}`;
+  const onCancel = () => {
+    setThemeMode(originalTheme.current);
+    onClose();
+  };
+
+  const titleText = isNew
+    ? 'Create Branding'
+    : `Edit Branding: ${branding.name}`;
+  const title = (
+    <Group gap="xs" wrap="nowrap">
+      <span>{titleText}</span>
+      <Tooltip label={showOverlay ? 'Preview gallery' : 'Show overlay'}>
+        <ActionIcon
+          variant="subtle"
+          size="sm"
+          color={showOverlay ? 'gray' : 'blue'}
+          onClick={() => setShowOverlay((v) => !v)}
+        >
+          {!showOverlay ? <EyeIcon /> : <EyeOffIcon />}
+        </ActionIcon>
+      </Tooltip>
+    </Group>
+  );
 
   return (
-    <Modal onClose={onClose} title={title} centered opened={true}>
+    <PicrDrawer title={title} onClose={onCancel} withOverlay={showOverlay}>
       <BrandingForm branding={branding} onChange={setBranding} showName />
       <Group justify="flex-end" mt="lg">
-        <Button variant="outline" onClick={onClose}>
+        <Button variant="outline" onClick={onCancel}>
           Cancel
         </Button>
         {!isNew ? (
@@ -93,6 +132,6 @@ export const BrandingModal = ({
           {isNew ? 'Create' : 'Save'}
         </Button>
       </Group>
-    </Modal>
+    </PicrDrawer>
   );
 };

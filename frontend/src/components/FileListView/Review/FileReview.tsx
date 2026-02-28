@@ -20,6 +20,7 @@ export type ReviewableFile = Pick<
   | 'type'
   | 'folderId'
   | 'isHeroImage'
+  | 'isBannerImage'
 >;
 
 // Horizontal component containing Flag, Rating and Comment buttons

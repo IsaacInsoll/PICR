@@ -20,6 +20,8 @@ import {
   TbDownload,
   TbEqual,
   TbExclamationCircle,
+  TbEye,
+  TbEyeOff,
   TbFile,
   TbFileTypography,
   TbFilter,
@@ -41,7 +43,9 @@ import {
   TbPhoto,
   TbPhotoCheck,
   TbPhotoHeart,
+  TbPhotoStar,
   TbPhotoVideo,
+  TbPencil,
   TbRefresh,
   TbSearch,
   TbSlideshow,
@@ -126,6 +130,7 @@ export const VideoIcon = (props: IconBaseProps) => <TbVideo {...props} />;
 export const EmailIcon = (props: IconBaseProps) => <CiAt {...props} />;
 export const BrandingIcon = (props: IconBaseProps) => <TbTypeface {...props} />;
 export const DeleteIcon = (props: IconBaseProps) => <TbTrash {...props} />;
+export const EditIcon = (props: IconBaseProps) => <TbPencil {...props} />;
 export const AccessLogsIcon = (props: IconBaseProps) => <TbSpy {...props} />;
 export const ErrorIcon = (props: IconBaseProps) => <BiSolidError {...props} />;
 export const DotsIcon = (props: IconBaseProps) => <TbDots {...props} />;
@@ -255,6 +260,9 @@ export const SlideshowIcon = (props: IconBaseProps) => (
 export const HeroImageIcon = (props: IconBaseProps) => (
   <TbPhotoHeart {...props} />
 );
+export const BannerImageIcon = (props: IconBaseProps) => (
+  <TbPhotoStar {...props} />
+);
 
 // Comments
 export const CommentAddIcon = (props: IconBaseProps) => (
@@ -317,3 +325,5 @@ export const GitHubIcon = (props: IconBaseProps) => <FaGithub {...props} />;
 export const StorageIcon = (props: IconBaseProps) => (
   <MdOutlineSdStorage {...props} />
 );
+export const EyeIcon = (props: IconBaseProps) => <TbEye {...props} />;
+export const EyeOffIcon = (props: IconBaseProps) => <TbEyeOff {...props} />;

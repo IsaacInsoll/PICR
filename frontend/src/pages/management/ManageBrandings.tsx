@@ -8,10 +8,11 @@ import { BrandingIcon } from '../../PicrIcons';
 import { brandingColumns } from './brandingColumns';
 import { useSetAtom } from 'jotai';
 import { themeModeAtom } from '../../atoms/themeModeAtom';
-import { BrandingModal } from './BrandingModal';
+import { BrandingDrawer } from './BrandingDrawer';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { defaultBranding } from '../../helpers/defaultBranding';
 import type { BrandingRow } from '@shared/types/queryRows';
+import type { SocialLink } from '@shared/branding/socialLinkTypes';
 
 export const ManageBrandings = () => {
   const [result, reQuery] = useQuery({ query: viewBrandingsQuery });
@@ -25,8 +26,13 @@ export const ManageBrandings = () => {
       <QueryFeedback result={result} reQuery={reQuery} />
       {branding != null ? (
         <Suspense fallback={<ModalLoadingIndicator />}>
-          <BrandingModal
-            branding={branding}
+          <BrandingDrawer
+            branding={{
+              ...branding,
+              socialLinks:
+                (branding.socialLinks as SocialLink[] | null | undefined) ??
+                null,
+            }}
             onClose={() => setBranding(null)}
           />
         </Suspense>

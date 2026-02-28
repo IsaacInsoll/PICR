@@ -33,7 +33,10 @@
       "Bash(npm run:*)",
       "Bash(npm:*)",
       "WebFetch(domain:github.com)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(lsof:*)",
+      "Bash(backend/node_modules/.bin/tsx:*)",
+      "Bash(gh issue:*)"
     ]
   }
 }

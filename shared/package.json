@@ -4,6 +4,7 @@
   "description": "Functionality shared between PICR web and app",
   "type": "module",
   "exports": {
+    "./*.js": "./*.ts",
     "./*": "./*"
   },
   "scripts": {

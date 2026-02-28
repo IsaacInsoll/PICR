@@ -54,6 +54,7 @@ export type PicrFile = {
   imageRatio?: number | null;
   duration?: number | null;
   isHeroImage?: boolean;
+  isBannerImage?: boolean;
   folder?: PicrFolder | null;
   metadata?: PicrFileMetadata | null;
 };

@@ -362,6 +362,59 @@ Auth handling should use structured GraphQL error metadata:
 3. Use functional components with hooks
 4. Destructure props in function signature
 
+## Branding System
+
+Branding is a named preset (stored in the `Brandings` DB table) that controls gallery appearance. It cascades from parent folders to children unless overridden.
+
+### Key Files
+
+| File                                                    | Purpose                                                                                                                   |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `atoms/themeModeAtom.ts`                                | `themeModeAtom` Jotai atom holds the active `Branding`; `applyBrandingDefaults` fills null fields                         |
+| `pages/management/BrandingDrawer.tsx`                   | Slide-out drawer that edits branding live via `themeModeAtom`; calls `editBrandingMutation` on save                       |
+| `pages/management/BrandingForm.tsx`                     | Full branding editor — `BrandingInput` interface is the canonical form state type                                         |
+| `components/GalleryFooter.tsx`                          | Renders footer title/URL + social links; reads from `themeModeAtom`                                                       |
+| `components/FolderBanner.tsx`                           | Full-width banner image at top of folder (above title); admin overlay to clear it                                         |
+| `components/SocialLinkIcon.tsx`                         | Maps `SocialLinkTypeKey` → Tabler icon                                                                                    |
+| `components/FileListView/GridGallery.tsx`               | Reads `thumbnailSize`, `thumbnailSpacing`, `thumbnailBorderRadius` from `themeModeAtom`                                   |
+| `components/FileListView/FolderContentsView.tsx`        | Enforces `availableViews` / `defaultView` for link users (reads `folder.branding` directly — access control, not display) |
+| `components/FolderHeader/FolderHeader.tsx`              | Applies `headingFontSize` and `headingAlignment` from `themeModeAtom` to `<Title>`                                        |
+| `components/FileListView/Review/SetHeroImageButton.tsx` | Purple icon button that opens a menu to set hero image or banner image                                                    |
+| `components/FileListView/FileMenu.tsx`                  | Context menu for list/table view; includes "Set as Banner Image" for admin users                                          |
+
+### Live Preview Pattern (frontend only)
+
+**Display components must read from `themeModeAtom`, not from `folder.branding` props.** This is what enables live preview in `BrandingDrawer` — the drawer updates the atom on every field change, so all visual components reflect edits instantly without a round-trip.
+
+The data flow is:
+
+1. `ViewFolder` reads GraphQL → calls `applyBrandingDefaults(branding)` → writes to `themeModeAtom`
+2. `BrandingDrawer` (while open) overrides the atom with live-edited values via its own `useEffect`
+3. On cancel, `BrandingDrawer` resets the atom to the original value from `originalTheme.current`
+4. On save, the mutation persists the change; GraphQL re-fetch updates the atom via step 1
+
+**Rule:** if a component renders a branding field visually, it reads from `themeModeAtom`. If it uses branding for access control or configuration logic (e.g. `availableViews`, `defaultView`, management UI), it may read `folder.branding` directly.
+
+The mobile app has no branding editor, so it does not use `themeModeAtom` and may read branding from GraphQL data directly.
+
+### Context Gating
+
+| Setting                                    | Admin                     | Link user |
+| ------------------------------------------ | ------------------------- | --------- |
+| `availableViews` / `defaultView`           | Ignored — all views shown | Enforced  |
+| Gallery appearance (size, spacing, radius) | Applied                   | Applied   |
+| Typography (font size, alignment)          | Applied                   | Applied   |
+| Footer / social links                      | Applied                   | Applied   |
+| Banner image                               | Applied                   | Applied   |
+
+### `isBannerImage` / `isHeroImage` Flags
+
+These booleans are computed in `shared/files/sortFiles.ts` (`withHeroImageFlag`) by comparing each file's `id` against `folder.heroImage?.id` and `folder.bannerImage?.id`. They flow through `ViewFolderFileWithHero` → `ReviewableFile` → `SetHeroImageButton` to drive the disabled state of each menu item.
+
+### JSON Scalar (socialLinks)
+
+`socialLinks` is stored as a `JSON` column and the GraphQL scalar type is `unknown` in generated types. Cast it explicitly when reading: `(branding.socialLinks as SocialLink[] | null) ?? []`.
+
 ## Troubleshooting
 
 ### URQL query not updating

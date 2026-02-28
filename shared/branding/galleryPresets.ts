@@ -4,26 +4,26 @@
 
 export const THUMBNAIL_SIZE_PRESETS = {
   xs: 150,
-  sm: 200,
-  md: 300,
-  lg: 450,
-  xl: 600,
+  sm: 180,
+  md: 210,
+  lg: 250,
+  xl: 300,
 } as const;
 
 export const SPACING_PRESETS = {
-  xs: 2,
-  sm: 6,
-  md: 12,
-  lg: 20,
-  xl: 32,
+  xs: 0,
+  sm: 2,
+  md: 6,
+  lg: 12,
+  xl: 24,
 } as const;
 
 export const BORDER_RADIUS_PRESETS = {
   xs: 0,
-  sm: 4,
-  md: 8,
-  lg: 16,
-  xl: 9999, // pill / circle
+  sm: 2,
+  md: 4,
+  lg: 8,
+  xl: 16,
 } as const;
 
 export const HEADING_FONT_SIZE_PRESETS = {
@@ -37,7 +37,7 @@ export const HEADING_FONT_SIZE_PRESETS = {
 export type PresetKey = keyof typeof THUMBNAIL_SIZE_PRESETS;
 
 export const DEFAULT_THUMBNAIL_SIZE = THUMBNAIL_SIZE_PRESETS.md;
-export const DEFAULT_SPACING = SPACING_PRESETS.md;
+export const DEFAULT_SPACING = SPACING_PRESETS.sm;
 export const DEFAULT_BORDER_RADIUS = BORDER_RADIUS_PRESETS.md;
 export const DEFAULT_HEADING_FONT_SIZE = HEADING_FONT_SIZE_PRESETS.md;
 

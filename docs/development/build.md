@@ -26,6 +26,6 @@ This will run the following commands in order. You can run any of these individu
 To avoid repeated folder hopping:
 
 | Command               | Description                                                                           |
-| --------------------- |---------------------------------------------------------------------------------------|
+| --------------------- | ------------------------------------------------------------------------------------- |
 | `npm run install-all` | Install root + shared + backend + frontend + app + dist dependencies                  |
 | `npm run build:local` | Build backend artifact, package Lightroom plugin, build frontend, install `dist` deps |

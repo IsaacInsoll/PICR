@@ -9,6 +9,16 @@ export const viewBrandingsQuery = gql(/*GraphQL*/ `
             primaryColor
             mode
             headingFontKey
+            availableViews
+            defaultView
+            thumbnailSize
+            thumbnailSpacing
+            thumbnailBorderRadius
+            headingFontSize
+            headingAlignment
+            footerTitle
+            footerUrl
+            socialLinks
             folders {
                ...MinimumFolderFragment
             }

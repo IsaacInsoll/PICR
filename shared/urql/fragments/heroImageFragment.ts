@@ -11,5 +11,14 @@ export const heroImageFragment = gql(/* GraphQL */ `
       blurHash
       type
     }
+    bannerImage {
+      __typename
+      id
+      name
+      fileHash
+      imageRatio
+      blurHash
+      type
+    }
   }
 `);

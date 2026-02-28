@@ -5,13 +5,18 @@ import {
   PlaceholderFolderHeader,
 } from '../components/FolderHeader/FolderHeader';
 import { folderSubtitle } from '../helpers/folderSubtitle';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
 import { TaskSummary } from '../components/TaskSummary';
 import { ActionIcon, Button, Center, Group, Menu, Title } from '@mantine/core';
 import { useSetFolder } from '../hooks/useSetFolder';
+import { useMe } from '../hooks/useMe';
+import { useAtom } from 'jotai';
+import { selectedViewAtom, viewOptions } from '../components/selectedViewAtom';
+import { editBrandingAtom } from '../atoms/editBrandingAtom';
+import { BrandingDrawer } from './management/BrandingDrawer';
 import { FolderModalManager } from '../components/FolderModalManager';
 import { Page } from '../components/Page';
 import { QuickFind } from '../components/QuickFind/QuickFind';
@@ -25,9 +30,11 @@ import { DotsIcon, FilterIcon, FolderIcon } from '../PicrIcons';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
-import { ManageFolder } from './ManageFolder';
+import { ManageFolderDrawer } from '../components/ManageFolderDrawer';
 import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 import { FolderCsvExportModal } from '../components/FileListView/FolderCsvExportModal';
+import { FolderBanner } from '../components/FolderBanner';
+import { GalleryFooter } from '../components/GalleryFooter';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -44,9 +51,11 @@ export const ViewFolder = () => {
 };
 
 const ViewFolderBody = () => {
-  const { folderId, fileId } = useParams();
+  const { folderId, fileId, tab } = useParams();
+  const navigate = useNavigate();
   const setFolder = useSetFolder();
   const setThemeMode = useSetAtom(themeModeAtom);
+  const [editBranding, setEditBranding] = useAtom(editBrandingAtom);
   const [csvExportOpen, setCsvExportOpen] = useState(false);
 
   const mode: ViewFolderMode = ['manage', 'activity'].includes(fileId ?? '')
@@ -91,14 +100,24 @@ const ViewFolderBody = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally omitting folder/setFolder to avoid spurious redirects on query refresh
   }, [activity, fileId, managing]);
 
+  // redirect if someone navigates directly to manage/branding without the atom being set
+  useEffect(() => {
+    if (managing && tab === 'branding' && !editBranding) {
+      navigate(`/admin/f/${currentFolderId}/manage/folder`, { replace: true });
+    }
+  }, [managing, tab, editBranding, navigate, currentFolderId]);
+
+  const closeBranding = () => {
+    setEditBranding(null);
+    if (folder) navigate(`/admin/f/${currentFolderId}/manage/folder`);
+  };
+
   const actions = [];
 
-  if (hasFiles && mode === 'files') {
-    actions.push(<FileSortSelector key="FileSortSelector" />);
-    // actions.push(<FilterToggle disabled={managing} key="filtertoggle" />);
-  }
-
-  if (mode === 'files') {
+  if (mode !== 'activity') {
+    if (folder)
+      actions.push(<ViewSelectorButton folder={folder} key="ViewSelector" />);
+    if (hasFiles) actions.push(<FileSortSelector key="FileSortSelector" />);
     actions.push(
       folder ? (
         <FolderOverflowMenu
@@ -149,11 +168,13 @@ const ViewFolderBody = () => {
         <Title order={1}>Folder Not Found</Title>
       ) : (
         <>
+          {!activity ? <FolderBanner folder={folder} /> : null}
           <FolderHeader
             folder={folder}
             customSubtitle={folder.subtitle ?? undefined}
             subtitle={folderSubtitle(folder)}
             actions={<Group>{actions}</Group>}
+            hideTitleAndCustomSubtitle={Boolean(folder.bannerImage)}
           />
           <TaskSummary folderId={folder.id} />
           <Suspense
@@ -165,22 +186,59 @@ const ViewFolderBody = () => {
               </Page>
             }
           >
-            {managing ? <ManageFolder folder={folder} /> : null}
+            {managing && !editBranding ? (
+              <ManageFolderDrawer
+                folder={folder}
+                onClose={() => setFolder(folder)}
+              />
+            ) : null}
+            {editBranding ? (
+              <BrandingDrawer branding={editBranding} onClose={closeBranding} />
+            ) : null}
             {activity ? (
               <Page>
                 <FolderActivity folderId={folder.id} />
               </Page>
             ) : null}
-            {!managing && !activity ? (
+            {!activity ? (
               <>
                 {/*<SubfolderListView folder={folder} />*/}
                 <FolderContentsView folder={folder} />
+                <GalleryFooter />
               </>
             ) : null}
           </Suspense>
         </>
       )}
     </>
+  );
+};
+
+const ViewSelectorButton = ({ folder }: { folder: PicrFolder }) => {
+  const [view, setView] = useAtom(selectedViewAtom);
+  const me = useMe();
+  const restricted = folder.branding?.availableViews;
+  const shownOptions =
+    me?.isLink && restricted?.length
+      ? viewOptions.filter((v) => restricted.includes(v.name))
+      : viewOptions;
+
+  if (shownOptions.length <= 1) return null;
+
+  return (
+    <Button.Group>
+      {shownOptions.map((v) => (
+        <Button
+          key={v.name}
+          variant={view === v.name ? 'filled' : 'default'}
+          onClick={() => setView(v.name)}
+          title={v.label}
+          px="xs"
+        >
+          {v.icon}
+        </Button>
+      ))}
+    </Button.Group>
   );
 };
 

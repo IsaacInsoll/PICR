@@ -17,6 +17,7 @@ const config: CodegenConfig = {
         scalars: {
           DateTime: 'string',
           BigInt: 'string',
+          JSON: 'unknown',
         },
       },
     },

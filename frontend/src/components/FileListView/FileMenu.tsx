@@ -8,16 +8,23 @@ import {
 import { Group, Menu, Text } from '@mantine/core';
 import { imageURL } from '../../helpers/imageURL';
 import {
+  BannerImageIcon,
   CloudDownloadIcon,
   CommentIcon,
   CommentsIcon,
   FileIcon,
+  HeroImageIcon,
   InfoIcon,
 } from '../../PicrIcons';
+import { useMe } from '../../hooks/useMe';
+import { useMutation } from 'urql';
+import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 
 export const FileMenu = ({ file }: { file: PicrFile }) => {
   const setFolder = useSetFolder();
   const { canView } = useCommentPermissions();
+  const me = useMe();
+  const [, editFolder] = useMutation(editFolderMutation);
 
   const openComment = useOpenCommentsModal();
   const openFileInfo = useOpenFileInfoModal();
@@ -56,6 +63,32 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
             </Text>
           </Group>
         </Menu.Item>
+      ) : null}
+      {me?.isUser && file.type === 'Image' ? (
+        <>
+          <Menu.Item
+            leftSection={<HeroImageIcon size="20" />}
+            key={5}
+            disabled={!!file.isHeroImage}
+            onClick={() => {
+              if (!file.folderId) return;
+              editFolder({ folderId: file.folderId, heroImageId: file.id });
+            }}
+          >
+            Set as Hero Image
+          </Menu.Item>
+          <Menu.Item
+            leftSection={<BannerImageIcon size="20" />}
+            key={6}
+            disabled={!!file.isBannerImage}
+            onClick={() => {
+              if (!file.folderId) return;
+              editFolder({ folderId: file.folderId, bannerImageId: file.id });
+            }}
+          >
+            Set as Banner Image
+          </Menu.Item>
+        </>
       ) : null}
       <Menu.Item
         component="a"

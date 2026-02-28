@@ -14,6 +14,7 @@ import type { CSSProperties } from 'react';
 // "Thumbnail Preview" of a folder so you can see it inline with images
 export const PicrFolder = ({
   folder,
+  style,
   ...props
 }: {
   folder: PicrFolderType;
@@ -35,9 +36,11 @@ export const PicrFolder = ({
       src={src ? src.replace(' ', '%20') : ''}
       radius={0}
       ref={ref}
+      style={{ height: '100%', ...style }}
     >
       <Box
         style={{
+          height: '100%',
           backdropFilter: hovered ? 'blur(2px)' : 'blur(5px)',
           backgroundColor: dark ? '#2229' : '#ddd9',
         }}
@@ -48,6 +51,7 @@ export const PicrFolder = ({
           fullWidth
           variant="transparent"
           color={hovered ? 'blue' : dark ? '#ddd' : '#333'}
+          style={{ height: '100%' }}
         >
           {folder.name}
         </Button>
@@ -59,6 +63,7 @@ export const PicrFolder = ({
 //Similar to `PicrFolder` but different enough that I didn't make it a shared component
 export const PicrGenericFile = ({
   file,
+  style,
   ...props
 }: {
   file: PicrFile;
@@ -77,6 +82,7 @@ export const PicrGenericFile = ({
       fullWidth
       variant="light"
       color={hovered ? 'blue' : 'gray'}
+      style={{ height: '100%', ...style }}
     >
       {file.name}
     </Button>

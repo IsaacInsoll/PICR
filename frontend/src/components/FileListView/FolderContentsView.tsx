@@ -1,4 +1,4 @@
-import { selectedViewAtom, viewOptions } from '../selectedViewAtom';
+import { selectedViewAtom } from '../selectedViewAtom';
 import { GridGallery } from './GridGallery';
 import { useCallback, useEffect, type MouseEvent } from 'react';
 import { ImageFeed } from './ImageFeed';
@@ -10,8 +10,7 @@ import {
 } from '@shared/filterAtom';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { FilteringOptions } from './Filtering/FilteringOptions';
-import { Tabs, Transition } from '@mantine/core';
-import { Page } from '../Page';
+import { Transition } from '@mantine/core';
 import { useParams } from 'react-router';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { FileListView } from './FileListView';
@@ -31,7 +30,7 @@ import {
   useCloseMoveRenameFolderModal,
 } from '../../atoms/modalAtom';
 import { MoveRenameFolderModal } from './MoveRenameFolderModal';
-import { useCanDownload } from '../../hooks/useMe';
+import { useCanDownload, useMe } from '../../hooks/useMe';
 
 export interface FileListViewStyleComponentProps {
   files: ViewFolderFileWithHero[];
@@ -45,9 +44,33 @@ export interface FileListViewStyleComponentProps {
 export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
   const files = folder.files;
   const folderId = folder.id;
-  const { fileId } = useParams();
+  const { fileId: fileIdParam } = useParams();
+  // 'manage' and 'activity' are route segments, not file IDs
+  const fileId = ['manage', 'activity'].includes(fileIdParam ?? '')
+    ? undefined
+    : fileIdParam;
   const setFolder = useSetFolder();
   const [view, setView] = useAtom(selectedViewAtom);
+  const me = useMe();
+  const branding = folder.branding;
+
+  // For link users: if saved view is not available, switch to defaultView or first shown
+  useEffect(() => {
+    if (!me?.isLink) return;
+    const restricted = branding?.availableViews;
+    if (!restricted?.length) return;
+    if (!restricted.includes(view)) {
+      const next = (branding?.defaultView ?? restricted[0]) as typeof view;
+      setView(next);
+    }
+  }, [
+    branding?.availableViews,
+    branding?.defaultView,
+    me?.isLink,
+    view,
+    setView,
+  ]);
+
   const filtering = useAtomValue(filterAtom);
   const filters = useAtomValue(filterOptions);
   const resetFilters = useSetAtom(resetFilterOptions);
@@ -130,33 +153,9 @@ export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
           />
         </>
       ) : null}
-      <Tabs
-        value={view}
-        onChange={(next) => {
-          if (next) setView(next as typeof view);
-        }}
-        keepMounted={false}
-      >
-        <Page>
-          <Tabs.List grow mb="xs">
-            {viewOptions.map((v) => (
-              <Tabs.Tab value={v.name} leftSection={v.icon} key={v.name}>
-                {v.label}
-              </Tabs.Tab>
-            ))}
-          </Tabs.List>
-        </Page>
-
-        <Tabs.Panel value="list">
-          <FileListView {...props} />
-        </Tabs.Panel>
-        <Tabs.Panel value="gallery">
-          <GridGallery {...props} />
-        </Tabs.Panel>
-        <Tabs.Panel value="feed">
-          <ImageFeed {...props} />
-        </Tabs.Panel>
-      </Tabs>
+      {view === 'list' && <FileListView {...props} />}
+      {view === 'gallery' && <GridGallery {...props} />}
+      {view === 'feed' && <ImageFeed {...props} />}
     </div>
   );
 };

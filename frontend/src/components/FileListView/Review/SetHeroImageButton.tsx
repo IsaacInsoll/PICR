@@ -1,7 +1,7 @@
 import type { PicrFile } from '@shared/types/picr';
 import { useMe } from '../../../hooks/useMe';
-import { ActionIcon, Tooltip } from '@mantine/core';
-import { HeroImageIcon } from '../../../PicrIcons';
+import { ActionIcon, Menu, Tooltip } from '@mantine/core';
+import { BannerImageIcon, HeroImageIcon } from '../../../PicrIcons';
 import { useMutation } from 'urql';
 import { useId, useState } from 'react';
 import { useReward } from 'react-rewards';
@@ -10,7 +10,7 @@ import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 
 type HeroImageCandidate = Pick<
   PicrFile,
-  'id' | 'type' | 'folderId' | 'isHeroImage'
+  'id' | 'type' | 'folderId' | 'isHeroImage' | 'isBannerImage'
 >;
 
 export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
@@ -22,40 +22,58 @@ export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
   const { reward } = useReward(id, 'confetti', confettiOptions);
 
   if (!me?.isUser || !file || file.type !== 'Image') return null;
-  //TODO: look different if we are looking at the current hero image :)
-  const onClick = () => {
+
+  const onSetHero = () => {
     if (!file.folderId) return;
-    // 2025: i've commented out the next line as it's already the hero image for this folder but you might want to set it again to cascade parents
-    // if (file.isHeroImage) return;
     setLoading(true);
     mutate({
       folderId: file.folderId,
-      heroImageId: file?.id,
+      heroImageId: file.id,
     }).then(() => {
       setLoading(false);
       reward();
     });
   };
+
+  const onSetBanner = () => {
+    if (!file.folderId) return;
+    mutate({ folderId: file.folderId, bannerImageId: file.id });
+  };
+
+  const isActive = file.isHeroImage || file.isBannerImage;
+
   return (
     <>
       <span id={id} />
-      <Tooltip
-        label={
-          file.isHeroImage
-            ? 'This is the Hero Image for this folder'
-            : "Use this Image as the 'Hero Image' for this folder"
-        }
-      >
-        <ActionIcon
-          variant={file.isHeroImage ? 'filled' : 'default'}
-          onClick={onClick}
-          loading={loading}
-          color="violet"
-          // disabled={file.isHeroImage}
-        >
-          <HeroImageIcon />
-        </ActionIcon>
-      </Tooltip>
+      <Menu shadow="md" width={200}>
+        <Tooltip label="Set as Hero / Banner Image">
+          <Menu.Target>
+            <ActionIcon
+              variant={isActive ? 'filled' : 'default'}
+              loading={loading}
+              color="violet"
+            >
+              <HeroImageIcon />
+            </ActionIcon>
+          </Menu.Target>
+        </Tooltip>
+        <Menu.Dropdown>
+          <Menu.Item
+            leftSection={<HeroImageIcon />}
+            disabled={!!file.isHeroImage}
+            onClick={onSetHero}
+          >
+            Set as Hero Image
+          </Menu.Item>
+          <Menu.Item
+            leftSection={<BannerImageIcon />}
+            disabled={!!file.isBannerImage}
+            onClick={onSetBanner}
+          >
+            Set as Banner Image
+          </Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
     </>
   );
 };

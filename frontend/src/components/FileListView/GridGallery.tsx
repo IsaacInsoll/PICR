@@ -2,7 +2,14 @@
 // TODO: Could use Skeleton as placeholders before content loads?
 import { imageURL } from '../../helpers/imageURL';
 import { Gallery } from './react-grid-gallery';
+import { useAtomValue } from 'jotai';
+import { themeModeAtom } from '../../atoms/themeModeAtom';
 import type { FileListViewStyleComponentProps } from './FolderContentsView';
+import {
+  DEFAULT_BORDER_RADIUS,
+  DEFAULT_SPACING,
+  DEFAULT_THUMBNAIL_SIZE,
+} from '@shared/branding/galleryPresets';
 import 'yet-another-react-lightbox/styles.css';
 import './GridGallery.css';
 import { FilePreview } from './FilePreview';
@@ -32,6 +39,10 @@ export const GridGallery = ({
   setSelectedFileId,
 }: FileListViewStyleComponentProps) => {
   const setFolder = useSetFolder();
+  const theme = useAtomValue(themeModeAtom);
+  const thumbnailSize = theme.thumbnailSize ?? DEFAULT_THUMBNAIL_SIZE;
+  const margin = theme.thumbnailSpacing ?? DEFAULT_SPACING;
+  const borderRadius = theme.thumbnailBorderRadius ?? DEFAULT_BORDER_RADIUS;
   const orderedItems = items ?? [...folders, ...files];
   const handleClick = (index: number) => {
     const item = orderedItems[index];
@@ -52,16 +63,16 @@ export const GridGallery = ({
         return {
           key: item.id,
           src: imageURL(item, 'md'),
-          width: size,
-          height: size / imageRatio,
+          width: thumbnailSize,
+          height: thumbnailSize / imageRatio,
           file: item,
         };
       }
       return {
         key: 'f' + item.id,
         src: '',
-        width: size * 2,
-        height: size,
+        width: thumbnailSize * 2,
+        height: thumbnailSize,
         folder: item,
       };
     },
@@ -69,29 +80,31 @@ export const GridGallery = ({
   return (
     <>
       <Gallery
-        // rowHeight={180}
+        rowHeight={thumbnailSize}
+        margin={margin}
         images={galleryItems}
         onClick={handleClick}
         enableImageSelection={false}
+        tileViewportStyle={(context) => ({
+          width: context.item.viewportWidth,
+          height: context.item.scaledHeight,
+          overflow: 'hidden',
+          borderRadius,
+        })}
         thumbnailImageComponent={(
           p: ThumbnailImageProps<ImageExtended<GalleryItem>>,
         ) => {
           const title =
             typeof p.imageProps?.title === 'string' ? p.imageProps.title : '';
-          const style = p.imageProps?.style;
 
           if (p.item.folder) {
-            return (
-              <PicrFolder folder={p.item.folder} title={title} style={style} />
-            );
+            return <PicrFolder folder={p.item.folder} title={title} />;
           }
 
           if (!p.item.file) return null;
 
           if (p.item.file.type == 'File') {
-            return (
-              <PicrGenericFile file={p.item.file} title={title} style={style} />
-            );
+            return <PicrGenericFile file={p.item.file} title={title} />;
           }
 
           return <GalleryImage {...p} />;
@@ -100,7 +113,6 @@ export const GridGallery = ({
     </>
   );
 };
-const size = 250;
 
 type GalleryImageProps = {
   imageProps: ThumbnailImageComponentImageProps;

@@ -23,13 +23,13 @@
 
 ## Development CLI Commands
 
-| Command                                                                              | Description                                            | When to use                                                                                             |
-| ------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| `npm start`                                                                          | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. <br /> Uses nodemon/vite to reload on changes                              |
-| `npm run gql`                                                                        | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br />or after updating a query on client side |
-| `cd backend && MIGRATION_NAME=<yodawg> npm run dk:generate`                         | generate migration files                                | Run when db schema modified and you want to commit changes                                              |
-| `cd backend && npm run dk -- push`                                                   | Apply schema directly (no migration file)              | Fast local prototyping before a feature is ready to ship                                                |
-| `cd backend && npm run dk -- migrate`                                                | Manually apply committed migration files               | Optional: useful for debugging/recovery. Backend startup usually applies these automatically.           |
+| Command                                                     | Description                                            | When to use                                                                                             |
+| ----------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `npm start`                                                 | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. <br /> Uses nodemon/vite to reload on changes                              |
+| `npm run gql`                                               | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br />or after updating a query on client side |
+| `cd backend && MIGRATION_NAME=<yodawg> npm run dk:generate` | generate migration files                               | Run when db schema modified and you want to commit changes                                              |
+| `cd backend && npm run dk -- push`                          | Apply schema directly (no migration file)              | Fast local prototyping before a feature is ready to ship                                                |
+| `cd backend && npm run dk -- migrate`                       | Manually apply committed migration files               | Optional: useful for debugging/recovery. Backend startup usually applies these automatically.           |
 
 ## Drizzle Common Workflows
 
@@ -47,13 +47,22 @@ For iterative weekly releases, many migration files are normal and not a problem
 
 Ports are exposed during development:
 
-| URL                   | Name                  | Description                                                                                                           |
-| --------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| http://localhost:6900 | PICR Server (backend) | The live updating backend (using nodemon) if you did `npm start`, or a built backend if you are running the container |
-| http://localhost:6969 | Front End             | Dynamic frontend (vite HMR) which forwards GQL/file requests to backend (above)<br/>best for front end development    |
-| http://localhost:6901 | Testing Server        | When running tests we build a container using this port for running tests against                                     |
+| URL                   | Name                  | Description                                                                                                               |
+| --------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| http://localhost:6900 | PICR Server (backend) | The live updating backend (using `tsx watch`) if you did `npm start`, or a built backend if you are running the container |
+| http://localhost:6969 | Front End             | Dynamic frontend (vite HMR) which forwards GQL/file requests to backend (above)<br/>best for front end development        |
+| http://localhost:6901 | Testing Server        | When running tests we build a container using this port for running tests against                                         |
 
 For front end development you definitely want to use the 6969 address. For backend either would be fine but I typically just use 6969 anyway.
+
+### Backend Dev Server Details
+
+The backend dev server runs via `tsx watch backend/app.ts` (TypeScript source executed directly — no compile step). Key points:
+
+- **Must run from project root** (not `cd backend`) so `.env` is found by dotenv
+- **Path aliases**: `TSX_TSCONFIG_PATH=backend/tsconfig.json` is set in `package.json` so `@shared/*` imports resolve correctly
+- **Type checking**: `start:server-ts` runs `tsc --noEmit -w` in parallel for type feedback without blocking the server
+- `shared/package.json` exports map includes `"./*.js": "./*.ts"` so tsx can resolve `@shared/*` to TypeScript source files
 
 ## Local Quality Gate
 

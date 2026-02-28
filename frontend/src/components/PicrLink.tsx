@@ -27,8 +27,8 @@ export const PicrMenuItem = ({
   onClick?: () => void;
 } & Omit<MenuItemProps, 'component'>) => {
   return (
-    <NavLink to={to} onClick={onClick}>
-      <Menu.Item {...props}>{children}</Menu.Item>
-    </NavLink>
+    <Menu.Item component={NavLink} to={to} onClick={onClick} {...props}>
+      {children}
+    </Menu.Item>
   );
 };

@@ -30,6 +30,9 @@ export const brandingForFolder = async (
     id: '0', //urql will complain otherwise
     mode: ThemeMode.Auto,
     primaryColor: PrimaryColor.Blue,
+    thumbnailSize: 250,
+    thumbnailSpacing: 2, // sm default
+    thumbnailBorderRadius: 0,
     folders: [],
   };
 };
