@@ -58,7 +58,7 @@
     "@graphql-codegen/cli": "^5.0.5",
     "@graphql-codegen/client-preset": "^4.8.0",
     "@graphql-codegen/introspection": "^4.0.3",
-    "@playwright/test": "^1.51.1",
+    "@playwright/test": "^1.58.2",
     "@release-it/bumper": "^7.0.2",
     "concurrently": "^9.2.1",
     "decompress": "^4.2.1",
