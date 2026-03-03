@@ -1,4 +1,4 @@
-import { useQuery } from 'urql';
+import { useMutation, useQuery } from 'urql';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import {
   FolderHeader,
@@ -10,12 +10,26 @@ import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
 import { TaskSummary } from '../components/TaskSummary';
-import { ActionIcon, Button, Center, Group, Menu, Title } from '@mantine/core';
+import {
+  ActionIcon,
+  Button,
+  Center,
+  Group,
+  Menu,
+  Modal,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { useSetFolder } from '../hooks/useSetFolder';
 import { useMe } from '../hooks/useMe';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { selectedViewAtom, viewOptions } from '../components/selectedViewAtom';
-import { editBrandingAtom } from '../atoms/editBrandingAtom';
+import {
+  assignBrandingToFolderAtom,
+  editBrandingAtom,
+} from '../atoms/editBrandingAtom';
 import { BrandingDrawer } from './management/BrandingDrawer';
 import { FolderModalManager } from '../components/FolderModalManager';
 import { Page } from '../components/Page';
@@ -24,9 +38,11 @@ import { useRequery } from '@shared/hooks/useRequery';
 import { LoggedInHeader } from '../components/Header/LoggedInHeader';
 import { FileSortSelector } from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
-import { useSetAtom } from 'jotai';
 import type { PicrFolder } from '@shared/types/picr';
-import { DotsIcon, FilterIcon, FolderIcon } from '../PicrIcons';
+import { DotsIcon, FolderIcon } from '../PicrIcons';
+import { setFolderBrandingMutation } from '@shared/urql/mutations/setFolderBrandingMutation';
+import { defaultBranding } from '../helpers/defaultBranding';
+import type { SocialLink } from '@shared/branding/socialLinkTypes';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
@@ -57,6 +73,10 @@ const ViewFolderBody = () => {
   const setThemeMode = useSetAtom(themeModeAtom);
   const [editBranding, setEditBranding] = useAtom(editBrandingAtom);
   const [csvExportOpen, setCsvExportOpen] = useState(false);
+  const [assignBrandingToFolderId, setAssignBrandingToFolderId] = useAtom(
+    assignBrandingToFolderAtom,
+  );
+  const [, setFolderBranding] = useMutation(setFolderBrandingMutation);
 
   const mode: ViewFolderMode = ['manage', 'activity'].includes(fileId ?? '')
     ? (fileId as ViewFolderMode)
@@ -109,7 +129,18 @@ const ViewFolderBody = () => {
 
   const closeBranding = () => {
     setEditBranding(null);
-    if (folder) navigate(`/admin/f/${currentFolderId}/manage/folder`);
+    setAssignBrandingToFolderId(null);
+    if (managing && folder) navigate(`/admin/f/${currentFolderId}/manage/folder`);
+  };
+
+  const onBrandingSaved = (savedId: string) => {
+    if (assignBrandingToFolderId) {
+      setFolderBranding({
+        folderId: assignBrandingToFolderId,
+        brandingId: savedId,
+      });
+      setAssignBrandingToFolderId(null);
+    }
   };
 
   const actions = [];
@@ -193,7 +224,11 @@ const ViewFolderBody = () => {
               />
             ) : null}
             {editBranding ? (
-              <BrandingDrawer branding={editBranding} onClose={closeBranding} />
+              <BrandingDrawer
+                branding={editBranding}
+                onClose={closeBranding}
+                onSaved={onBrandingSaved}
+              />
             ) : null}
             {activity ? (
               <Page>
@@ -250,46 +285,127 @@ const FolderOverflowMenu = ({
   onCsvExport: () => void;
 }) => {
   const setFiltering = useSetAtom(filterAtom);
+  const setEditBranding = useSetAtom(editBrandingAtom);
+  const setAssignBrandingToFolder = useSetAtom(assignBrandingToFolderAtom);
+  const [
+    inheritedDialogOpen,
+    { open: openInheritedDialog, close: closeInheritedDialog },
+  ] = useDisclosure(false);
+
+  const hasOwnBranding = !!folder.brandingId;
+  const hasInheritedBranding =
+    !hasOwnBranding && !!folder.branding && folder.branding.id !== '0';
+
+  const openBrandingForEdit = (branding: NonNullable<typeof folder.branding>) =>
+    setEditBranding({
+      ...branding,
+      socialLinks:
+        (branding.socialLinks as SocialLink[] | null | undefined) ?? null,
+    });
+
+  const handleBranding = () => {
+    if (hasOwnBranding && folder.branding) {
+      openBrandingForEdit(folder.branding);
+    } else if (hasInheritedBranding) {
+      openInheritedDialog();
+    } else {
+      setAssignBrandingToFolder(folder.id);
+      setEditBranding({ ...defaultBranding, name: folder.name ?? '' });
+    }
+  };
+
+  const handleEditInherited = () => {
+    closeInheritedDialog();
+    if (folder.branding) openBrandingForEdit(folder.branding);
+  };
+
+  const handleCreateForFolder = () => {
+    closeInheritedDialog();
+    setAssignBrandingToFolder(folder.id);
+    setEditBranding({
+      ...folder.branding,
+      socialLinks:
+        (folder.branding?.socialLinks as SocialLink[] | null | undefined) ??
+        null,
+      id: '0',
+      name: folder.name ?? '',
+    });
+  };
+
   return (
-    <Menu
-      shadow="md"
-      width={200}
-      openDelay={0}
-      trigger="hover"
-      position="bottom-end"
-    >
-      <Menu.Target>
-        <ActionIcon variant="default" color="gray" size="lg">
-          <DotsIcon />
-        </ActionIcon>
-      </Menu.Target>
+    <>
+      <Menu
+        shadow="md"
+        width={200}
+        openDelay={0}
+        trigger="hover"
+        position="bottom-end"
+      >
+        <Menu.Target>
+          <ActionIcon variant="default" color="gray" size="lg">
+            <DotsIcon />
+          </ActionIcon>
+        </Menu.Target>
 
-      <Menu.Dropdown>
-        <Menu.Label>{folder?.name}</Menu.Label>
-        <Menu.Item
-          leftSection={<FilterIcon />}
-          onClick={() => setFiltering(true)}
-        >
-          Filter Files
-        </Menu.Item>
+        <Menu.Dropdown>
+          <Menu.Label>{folder?.name}</Menu.Label>
+          <FolderMenuItems
+            folder={folder}
+            showOpenItem={false}
+            onFilterFiles={() => setFiltering(true)}
+            onCsvExport={onCsvExport}
+            onBranding={handleBranding}
+          />
+        </Menu.Dropdown>
+      </Menu>
 
-        <FolderMenuItems
-          folder={folder}
-          showOpenItem={false}
-          onCsvExport={onCsvExport}
-        />
-
-        {/*<Menu.Label>PICR</Menu.Label>*/}
-        {/*<Menu.Item*/}
-        {/*  leftSection={<UserSettingsIcon />}*/}
-        {/*  onClick={() => navigate('/admin/settings')}*/}
-        {/*>*/}
-        {/*  Settings*/}
-        {/*</Menu.Item>*/}
-        {/*<Menu.Item leftSection={<LogOutIcon />} onClick={logOut}>*/}
-        {/*  Log out*/}
-        {/*</Menu.Item>*/}
-      </Menu.Dropdown>
-    </Menu>
+      <InheritedBrandingModal
+        opened={inheritedDialogOpen}
+        onClose={closeInheritedDialog}
+        folderName={folder.name ?? 'this folder'}
+        brandingName={folder.branding?.name ?? 'Unnamed'}
+        onEditInherited={handleEditInherited}
+        onCreateForFolder={handleCreateForFolder}
+      />
+    </>
   );
 };
+
+const InheritedBrandingModal = ({
+  opened,
+  onClose,
+  folderName,
+  brandingName,
+  onEditInherited,
+  onCreateForFolder,
+}: {
+  opened: boolean;
+  onClose: () => void;
+  folderName: string;
+  brandingName: string;
+  onEditInherited: () => void;
+  onCreateForFolder: () => void;
+}) => (
+  <Modal opened={opened} onClose={onClose} title="Folder Branding" size="sm">
+    <Stack>
+      <Text>
+        <strong>{folderName}</strong> doesn&apos;t have its own branding. It
+        currently inherits <strong>{brandingName}</strong>.
+      </Text>
+      <Button onClick={onCreateForFolder}>
+        Create branding for {folderName}
+      </Button>
+      <Stack gap={4}>
+        <Button variant="default" onClick={onEditInherited}>
+          Edit {brandingName}
+        </Button>
+        <Text size="xs" c="dimmed">
+          This will affect all folders using {brandingName}.
+        </Text>
+      </Stack>
+      <Button variant="subtle" onClick={onClose}>
+        Cancel
+      </Button>
+    </Stack>
+  </Modal>
+);

@@ -10,7 +10,7 @@ import { FileFlagBadge } from './Review/FileFlagBadge';
 import { FileMenu } from './FileMenu';
 import { DateDisplay } from './Filtering/PrettyDate';
 import { useIsMobile, useIsSmallScreen } from '../../hooks/useIsMobile';
-import { FolderMenu } from './FolderMenu';
+import { FolderMenuItems } from './FolderMenu';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import type { FolderContentsItem } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
@@ -48,7 +48,7 @@ export const FileDataListView = ({
         }
         menuItems={({ row }) =>
           !isFolderContentsFile(row.original) ? (
-            <FolderMenu folder={row.original} />
+            <FolderMenuItems folder={row.original} />
           ) : (
             <FileMenu file={row.original} />
           )

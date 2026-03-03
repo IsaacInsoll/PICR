@@ -2,9 +2,11 @@ import type { PicrFolder } from '@shared/types/picr';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { Menu } from '@mantine/core';
 import {
+  BrandingIcon,
   CommentIcon,
   CsvExportIcon,
   DownloadIcon,
+  FilterIcon,
   FolderIcon,
   ManageFolderIcon,
   MoveFolderIcon,
@@ -16,15 +18,18 @@ import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 
 type FolderMenuItemsProps = {
   folder: PicrFolder;
-  showFolderLabel?: boolean;
   showOpenItem?: boolean;
+  onFilterFiles?: () => void;
   onCsvExport?: () => void;
+  onBranding?: () => void;
 };
 
 export const FolderMenuItems = ({
   folder,
   showOpenItem = true,
+  onFilterFiles,
   onCsvExport,
+  onBranding,
 }: FolderMenuItemsProps) => {
   const setFolder = useSetFolder();
   const generateZip = useGenerateZip(folder);
@@ -45,27 +50,11 @@ export const FolderMenuItems = ({
           Open {folder.name}
         </Menu.Item>
       ) : null}
-      {me?.isUser ? (
-        <Menu.Item
-          leftSection={<ManageFolderIcon size="20" />}
-          key="manage"
-          onClick={() => {
-            setFolder(folder, 'manage/links');
-          }}
-        >
-          Manage {folder.name}
+      {onFilterFiles ? (
+        <Menu.Item leftSection={<FilterIcon />} onClick={onFilterFiles}>
+          Filter Files
         </Menu.Item>
       ) : null}
-      {me?.isAdmin && me.clientInfo.canWrite ? (
-        <Menu.Item
-          leftSection={<MoveFolderIcon size="20" />}
-          key="move"
-          onClick={() => openMoveModal(folder)}
-        >
-          Move/Rename Folder
-        </Menu.Item>
-      ) : null}
-
       {generateZip ? (
         <Menu.Item
           leftSection={<DownloadIcon />}
@@ -73,14 +62,6 @@ export const FolderMenuItems = ({
           onClick={generateZip}
         >
           Download ZIP
-        </Menu.Item>
-      ) : null}
-      {me?.isUser && onCsvExport ? (
-        <Menu.Item
-          leftSection={<CsvExportIcon size={20} />}
-          onClick={onCsvExport}
-        >
-          CSV Export
         </Menu.Item>
       ) : null}
       {canView ? (
@@ -94,10 +75,48 @@ export const FolderMenuItems = ({
           </Menu.Item>
         </>
       ) : null}
+      {me?.isUser ? (
+        <>
+          <Menu.Divider />
+          <Menu.Label>Admin</Menu.Label>
+          <Menu.Item
+            leftSection={<ManageFolderIcon size="20" />}
+            key="manage"
+            onClick={() => {
+              setFolder(folder, 'manage/links');
+            }}
+          >
+            Manage {folder.name}
+          </Menu.Item>
+          {me.isAdmin && me.clientInfo.canWrite ? (
+            <Menu.Item
+              leftSection={<MoveFolderIcon size="20" />}
+              key="move"
+              onClick={() => openMoveModal(folder)}
+            >
+              Move/Rename Folder
+            </Menu.Item>
+          ) : null}
+          {onCsvExport ? (
+            <Menu.Item
+              leftSection={<CsvExportIcon size={20} />}
+              onClick={onCsvExport}
+            >
+              CSV Export
+            </Menu.Item>
+          ) : null}
+          {onBranding ? (
+            <Menu.Item
+              leftSection={<BrandingIcon size={20} />}
+              onClick={onBranding}
+            >
+              {folder.branding && folder.branding.id !== '0'
+                ? 'Edit Branding'
+                : 'Add Branding'}
+            </Menu.Item>
+          ) : null}
+        </>
+      ) : null}
     </>
   );
 };
-
-export const FolderMenu = ({ folder }: { folder: PicrFolder }) => (
-  <FolderMenuItems folder={folder} showOpenItem />
-);

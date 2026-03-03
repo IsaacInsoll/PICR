@@ -16,12 +16,14 @@ import { Tips } from '../../components/Tips';
 import { publicLinkColumns } from './userColumns';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import type { ManageFolderUserRow } from '@shared/types/queryRows';
+import { PublicLinkListItem } from '../../components/PublicLinkListItem';
 
 interface ManagePublicLinksProps {
   folder: PicrFolder;
   children?: ReactNode;
   disableAddingLinks?: boolean;
   relations: 'none' | 'parents' | 'children' | 'options';
+  variant?: 'table' | 'list';
 }
 
 export const ManagePublicLinks = ({
@@ -29,6 +31,7 @@ export const ManagePublicLinks = ({
   children,
   disableAddingLinks,
   relations,
+  variant = 'table',
 }: ManagePublicLinksProps) => {
   const isMobile = useIsMobile();
   const [includeParents, setIncludeParents] = useState(relations == 'parents');
@@ -74,6 +77,7 @@ export const ManagePublicLinks = ({
           includeParents={includeParents}
           setLinkId={setLinkId}
           folderId={folder.id}
+          variant={variant}
         />
       </Suspense>
       <Group gap="md" pt="md" justify="space-evenly">
@@ -94,11 +98,13 @@ const Body = ({
   includeParents,
   includeChildren,
   setLinkId,
+  variant,
 }: {
   folderId: string;
   includeParents: boolean;
   includeChildren: boolean;
   setLinkId: (id: string | null) => void;
+  variant: 'table' | 'list';
 }) => {
   const [result, reQuery] = useQuery({
     query: manageFolderQuery,
@@ -110,37 +116,54 @@ const Body = ({
   return (
     <>
       <QueryFeedback result={result} reQuery={reQuery} />
-      <SharedFolderDataGrid
-        sharedFolders={users}
-        setSharedFolderId={setLinkId}
+      <PublicLinksView
+        links={users}
+        onSelect={setLinkId}
+        variant={variant}
       />
     </>
   );
 };
 
-const SharedFolderDataGrid = ({
-  sharedFolders,
-  setSharedFolderId,
+const PublicLinksView = ({
+  links,
+  onSelect,
+  variant,
 }: {
-  sharedFolders: ManageFolderUserRow[];
-  setSharedFolderId: (id: string) => void;
+  links: ManageFolderUserRow[];
+  onSelect: (id: string) => void;
+  variant: 'table' | 'list';
 }) => {
+  if (links.length === 0) {
+    return (
+      <EmptyPlaceholder
+        text="You haven't created any links yet!"
+        icon={<DisconnectedIcon />}
+      />
+    );
+  }
+  if (variant === 'list') {
+    return (
+      <Stack gap="xs">
+        {links.map((link) => (
+          <PublicLinkListItem
+            key={link.id}
+            user={link}
+            onClick={() => {
+              if (link.id) onSelect(link.id);
+            }}
+          />
+        ))}
+      </Stack>
+    );
+  }
   return (
-    <>
-      {sharedFolders.length === 0 ? (
-        <EmptyPlaceholder
-          text="You haven't created any links yet!"
-          icon={<DisconnectedIcon />}
-        />
-      ) : (
-        <PicrDataGrid
-          columns={publicLinkColumns}
-          data={sharedFolders}
-          onClick={(row) => {
-            if (row.id) setSharedFolderId(row.id);
-          }}
-        />
-      )}
-    </>
+    <PicrDataGrid
+      columns={publicLinkColumns}
+      data={links}
+      onClick={(row) => {
+        if (row.id) onSelect(row.id);
+      }}
+    />
   );
 };

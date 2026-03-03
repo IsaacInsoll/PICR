@@ -20,9 +20,11 @@ import { PicrDrawer } from '../../components/PicrDrawer';
 export const BrandingDrawer = ({
   branding: brandingProp,
   onClose,
+  onSaved,
 }: {
   branding: BrandingInput;
   onClose: () => void;
+  onSaved?: (id: string) => void;
 }) => {
   const [branding, setBranding] = useState<BrandingInput>({
     ...applyBrandingDefaults(brandingProp),
@@ -67,8 +69,10 @@ export const BrandingDrawer = ({
       footerTitle: branding.footerTitle,
       footerUrl: branding.footerUrl,
       socialLinks: branding.socialLinks,
-    }).then(() => {
+    }).then(({ data }) => {
       setSubmitting(false);
+      const savedId = data?.editBranding?.id;
+      if (savedId) onSaved?.(savedId);
       onClose();
     });
   };

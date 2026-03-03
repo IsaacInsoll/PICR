@@ -16,14 +16,17 @@ import { EmptyPlaceholder } from '../../EmptyPlaceholder';
 import { UnlinkIcon } from '../../../PicrIcons';
 import { accessLogQuery } from '@shared/urql/queries/accessLogQuery';
 import type { AccessLogRow } from '@shared/types/queryRows';
+import { AccessLogListItem } from '../../../components/AccessLogListItem';
 
 export const AccessLogs = ({
   folderId,
   includeChildren,
+  variant = 'table',
 }: {
   folderId: string;
   users?: PicrUser[];
   includeChildren?: boolean;
+  variant?: 'table' | 'list';
 }) => {
   const [userId, setUserId] = useState<string | undefined>(undefined);
 
@@ -40,6 +43,7 @@ export const AccessLogs = ({
           folderId={folderId}
           userId={userId}
           includeChildren={includeChildren}
+          variant={variant}
         />
       </Suspense>
     </Stack>
@@ -50,10 +54,12 @@ const Body = ({
   folderId,
   userId,
   includeChildren,
+  variant,
 }: {
   folderId: string;
   userId?: string;
   includeChildren?: boolean;
+  variant: 'table' | 'list';
 }) => {
   const [result] = useQuery({
     query: accessLogQuery,
@@ -61,21 +67,27 @@ const Body = ({
   });
   const data = result.data?.accessLogs ?? [];
 
+  if (data.length === 0) {
+    return (
+      <EmptyPlaceholder
+        text="Nobody has used a public link to view this folder (yet!)"
+        icon={<UnlinkIcon />}
+      />
+    );
+  }
+
+  if (variant === 'list') {
+    return (
+      <Stack gap="xs">
+        {data.map((log) => (
+          <AccessLogListItem key={log?.id} log={log} />
+        ))}
+      </Stack>
+    );
+  }
+
   return (
-    <>
-      {data.length > 0 ? (
-        <PicrDataGrid
-          columns={accessLogColumns}
-          data={data}
-          onClick={() => {}}
-        />
-      ) : (
-        <EmptyPlaceholder
-          text="Nobody has used a public link to view this folder (yet!)"
-          icon={<UnlinkIcon />}
-        />
-      )}
-    </>
+    <PicrDataGrid columns={accessLogColumns} data={data} onClick={() => {}} />
   );
 };
 

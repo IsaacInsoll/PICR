@@ -26,7 +26,7 @@ import { fileFlagStyles } from './Review/fileFlagStyles';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import { useAtomValue } from 'jotai';
 import { DotsIcon } from '../../PicrIcons';
-import { FolderMenu } from './FolderMenu';
+import { FolderMenuItems } from './FolderMenu';
 import { PicrAvatar } from '../PicrAvatar';
 import { prettyBytes } from '@shared/prettyBytes';
 import { pluralize } from '@shared/pluralize';
@@ -225,7 +225,7 @@ const Row = ({
             </Menu.Target>
             <Menu.Dropdown>
               {isFolder ? (
-                <FolderMenu folder={file} />
+                <FolderMenuItems folder={file} />
               ) : (
                 <FileMenu file={file} />
               )}

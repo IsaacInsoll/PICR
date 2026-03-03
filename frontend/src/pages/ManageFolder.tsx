@@ -23,7 +23,10 @@ import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
 import { AccessLogs } from './management/AccessLogs/AccessLogs';
 import { useNavigate, useParams } from 'react-router';
 import { useSetAtom } from 'jotai';
-import { editBrandingAtom } from '../atoms/editBrandingAtom';
+import {
+  assignBrandingToFolderAtom,
+  editBrandingAtom,
+} from '../atoms/editBrandingAtom';
 import { useMutation, useQuery } from 'urql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 import { setFolderBrandingMutation } from '@shared/urql/mutations/setFolderBrandingMutation';
@@ -125,13 +128,10 @@ export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
         </Stack>
       </Tabs.Panel>
       <Tabs.Panel value="links">
-        <ManagePublicLinks
-          folder={folder}
-          relations="options"
-        ></ManagePublicLinks>
+        <ManagePublicLinks folder={folder} relations="options" variant="list" />
       </Tabs.Panel>
       <Tabs.Panel value="logs">
-        <AccessLogs folderId={folder.id} />
+        <AccessLogs folderId={folder.id} variant="list" />
       </Tabs.Panel>
     </Tabs>
   );
@@ -141,6 +141,7 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
   const { folderId } = useParams();
   const navigate = useNavigate();
   const setEditBranding = useSetAtom(editBrandingAtom);
+  const setAssignBrandingToFolder = useSetAtom(assignBrandingToFolderAtom);
   const [brandingsResult] = useQuery({ query: viewBrandingsQuery });
   const [, setFolderBranding] = useMutation(setFolderBrandingMutation);
   const [saving, setSaving] = useState(false);
@@ -169,7 +170,21 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
 
   const handleChange = async (value: string | null) => {
     if (value === '__create__') {
-      openBranding({ ...defaultBranding });
+      setAssignBrandingToFolder(folder.id);
+      openBranding({
+        ...(inheritedBranding && inheritedBranding.id !== '0'
+          ? {
+              ...inheritedBranding,
+              socialLinks:
+                (inheritedBranding.socialLinks as
+                  | SocialLink[]
+                  | null
+                  | undefined) ?? null,
+            }
+          : defaultBranding),
+        id: '0',
+        name: folder.name ?? '',
+      });
       return;
     }
 
