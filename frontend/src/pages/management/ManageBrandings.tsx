@@ -33,6 +33,7 @@ export const ManageBrandings = () => {
                 (branding.socialLinks as SocialLink[] | null | undefined) ??
                 null,
             }}
+            folders={branding.folders}
             onClose={() => setBranding(null)}
           />
         </Suspense>

@@ -16,15 +16,24 @@ import {
   toHeadingFontKeyEnumValue,
 } from '@shared/branding/fontRegistry';
 import { PicrDrawer } from '../../components/PicrDrawer';
+import { BrandingFolderChips } from '../../components/BrandingFolderChips';
+
+type FolderChip = {
+  id: string;
+  name?: string | null;
+  parents?: Array<{ id: string }> | null;
+};
 
 export const BrandingDrawer = ({
   branding: brandingProp,
   onClose,
   onSaved,
+  folders,
 }: {
   branding: BrandingInput;
   onClose: () => void;
   onSaved?: (id: string) => void;
+  folders?: FolderChip[] | null;
 }) => {
   const [branding, setBranding] = useState<BrandingInput>({
     ...applyBrandingDefaults(brandingProp),
@@ -112,6 +121,7 @@ export const BrandingDrawer = ({
 
   return (
     <PicrDrawer title={title} onClose={onCancel} withOverlay={showOverlay}>
+      <BrandingFolderChips folders={folders} />
       <BrandingForm branding={branding} onChange={setBranding} showName />
       <Group justify="flex-end" mt="lg">
         <Button variant="outline" onClick={onCancel}>

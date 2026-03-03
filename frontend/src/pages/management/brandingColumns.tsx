@@ -3,6 +3,7 @@ import { PrimaryColor, ThemeMode } from '@shared/gql/graphql';
 import type { DefaultMantineColor } from '@mantine/core';
 import { Badge, Text } from '@mantine/core';
 import type { BrandingRow } from '@shared/types/queryRows';
+import { BrandingFolderChips } from '../../components/BrandingFolderChips';
 
 export const brandingColumns: PicrColumns<BrandingRow>[] = [
   {
@@ -14,12 +15,8 @@ export const brandingColumns: PicrColumns<BrandingRow>[] = [
   {
     accessorKey: 'folders',
     header: 'Folders',
-    minSize: 20,
-    accessorFn: ({ folders }) => (
-      <Text size="sm" c="dimmed">
-        {folders?.length ?? 0} folder{folders?.length === 1 ? '' : 's'}
-      </Text>
-    ),
+    minSize: 40,
+    accessorFn: ({ folders }) => <BrandingFolderChips folders={folders} showLabel={false} />,
   },
   {
     accessorKey: 'mode',

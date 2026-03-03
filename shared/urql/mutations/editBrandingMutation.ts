@@ -56,6 +56,9 @@ export const editBrandingMutation = gql(/* GraphQL */ `
       folders {
         id
         name
+        parents {
+          id
+        }
       }
     }
   }
