@@ -46,7 +46,10 @@ import type { SocialLink } from '@shared/branding/socialLinkTypes';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
-import { ManageFolderDrawer } from '../components/ManageFolderDrawer';
+import {
+  ManageFolderDrawer,
+  ManageFolderDrawerLoading,
+} from '../components/ManageFolderDrawer';
 import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 import { FolderCsvExportModal } from '../components/FileListView/FolderCsvExportModal';
 import { FolderBanner } from '../components/FolderBanner';
@@ -207,43 +210,53 @@ const ViewFolderBody = () => {
             subtitle={folderSubtitle(folder)}
             actions={<Group>{actions}</Group>}
             hideTitleAndCustomSubtitle={Boolean(folder.bannerImage)}
+            hideBreadcrumbs={!activity && Boolean(folder.bannerImage)}
           />
           <TaskSummary folderId={folder.id} />
-          <Suspense
-            fallback={
-              <Page>
-                <Center>
-                  <LoadingIndicator />
-                </Center>
-              </Page>
-            }
-          >
-            {managing && !editBranding ? (
+          {managing && !editBranding ? (
+            <Suspense
+              fallback={
+                <ManageFolderDrawerLoading
+                  folderName={folder.name ?? 'Folder'}
+                  onClose={() => setFolder(folder)}
+                />
+              }
+            >
               <ManageFolderDrawer
                 folder={folder}
                 onClose={() => setFolder(folder)}
               />
-            ) : null}
-            {editBranding ? (
-              <BrandingDrawer
-                branding={editBranding}
-                onClose={closeBranding}
-                onSaved={onBrandingSaved}
-              />
-            ) : null}
-            {activity ? (
+            </Suspense>
+          ) : null}
+          {editBranding ? (
+            <BrandingDrawer
+              branding={editBranding}
+              onClose={closeBranding}
+              onSaved={onBrandingSaved}
+            />
+          ) : null}
+          {activity ? (
+            <Suspense
+              fallback={
+                <Page>
+                  <Center>
+                    <LoadingIndicator />
+                  </Center>
+                </Page>
+              }
+            >
               <Page>
                 <FolderActivity folderId={folder.id} />
               </Page>
-            ) : null}
-            {!activity ? (
-              <>
-                {/*<SubfolderListView folder={folder} />*/}
-                <FolderContentsView folder={folder} />
-                <GalleryFooter />
-              </>
-            ) : null}
-          </Suspense>
+            </Suspense>
+          ) : null}
+          {!activity ? (
+            <>
+              {/*<SubfolderListView folder={folder} />*/}
+              <FolderContentsView folder={folder} />
+              <GalleryFooter />
+            </>
+          ) : null}
         </>
       )}
     </>

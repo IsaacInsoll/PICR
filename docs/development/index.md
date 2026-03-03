@@ -1,15 +1,16 @@
 # Development
 
-| Doc                                      | Notes                                       |
-| ---------------------------------------- | ------------------------------------------- |
-| 🎉 [Contributing](../CONTRIBUTING.md)    | Contribution Guidelines                     |
-| 🎉 [Initial Setup](initial-setup.md)     | How to setup development environment        |
-| 📱 [App Development](app.md)             | React Native (Expo) App Development         |
-| 👷 [Build Process](build.md)             | How backend build process works             |
-| 📃 [Basic Tutorial](basic-tutorial.md)   | Basic tutorial on front/backend feature dev |
-| 🧪 [Testing](testing.md)                 | Run API + E2E integration tests             |
-| 🚀 [Releases](release.md)                | How to do releases                          |
-| 🐛 [Troubleshooting](troubleshooting.md) | Troubleshooting tips                        |
+| Doc                                        | Notes                                       |
+| ------------------------------------------ | ------------------------------------------- |
+| 🎉 [Contributing](../CONTRIBUTING.md)      | Contribution Guidelines                     |
+| 🎉 [Initial Setup](initial-setup.md)       | How to setup development environment        |
+| 📱 [App Development](app.md)               | React Native (Expo) App Development         |
+| 👷 [Build Process](build.md)               | How backend build process works             |
+| 🎨 [Frontend Styling](frontend-styling.md) | Mantine-first UI + typed CSS modules        |
+| 📃 [Basic Tutorial](basic-tutorial.md)     | Basic tutorial on front/backend feature dev |
+| 🧪 [Testing](testing.md)                   | Run API + E2E integration tests             |
+| 🚀 [Releases](release.md)                  | How to do releases                          |
+| 🐛 [Troubleshooting](troubleshooting.md)   | Troubleshooting tips                        |
 
 ## Folders
 
@@ -26,6 +27,8 @@
 | Command                                                     | Description                                            | When to use                                                                                             |
 | ----------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
 | `npm start`                                                 | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. <br /> Uses nodemon/vite to reload on changes                              |
+| `cd frontend && npm run css:types`                          | Generate typed CSS module declarations                 | Run after adding/renaming/removing CSS module class names                                               |
+| `cd frontend && npm run css:types:check`                    | Verify typed CSS module declarations are current       | Runs in frontend lint/CI guard; useful before commit                                                    |
 | `npm run gql`                                               | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br />or after updating a query on client side |
 | `cd backend && MIGRATION_NAME=<yodawg> npm run dk:generate` | generate migration files                               | Run when db schema modified and you want to commit changes                                              |
 | `cd backend && npm run dk -- push`                          | Apply schema directly (no migration file)              | Fast local prototyping before a feature is ready to ship                                                |
@@ -54,6 +57,10 @@ Ports are exposed during development:
 | http://localhost:6901 | Testing Server        | When running tests we build a container using this port for running tests against                                         |
 
 For front end development you definitely want to use the 6969 address. For backend either would be fine but I typically just use 6969 anyway.
+
+Frontend note:
+
+- `npm start` runs CSS module type generation in watch mode automatically (`start:css:types`).
 
 ### Backend Dev Server Details
 

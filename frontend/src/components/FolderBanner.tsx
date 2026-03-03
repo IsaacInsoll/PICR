@@ -1,18 +1,34 @@
 import type { FolderFragmentFragment } from '@shared/gql/graphql';
+import { ThemeMode } from '@shared/gql/graphql';
 import { imageURL } from '../helpers/imageURL';
 import { useMe } from '../hooks/useMe';
 import { useMutation } from 'urql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
-import { ActionIcon, Text, Title, Tooltip } from '@mantine/core';
+import {
+  ActionIcon,
+  alpha,
+  Box,
+  Breadcrumbs,
+  Overlay,
+  Paper,
+  Text,
+  Title,
+  Tooltip,
+  useComputedColorScheme,
+  useMantineTheme,
+} from '@mantine/core';
 import { DeleteIcon } from '../PicrIcons';
-import type React from 'react';
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from '../atoms/themeModeAtom';
+import { FolderLink } from './FolderLink';
+import { Page } from './Page';
+import type { PicrFolder } from '@shared/types/picr';
+import styles from './FolderBanner.module.css';
 
 type BannerFolder = Pick<
   FolderFragmentFragment,
-  'id' | 'bannerImage' | 'name' | 'title' | 'subtitle'
+  'id' | 'bannerImage' | 'name' | 'title' | 'subtitle' | 'parents'
 >;
 const parallaxScale = 1.2;
 const parallaxMaxShift = 80;
@@ -44,13 +60,44 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
   const bannerTitle = folder.title?.trim() || folderName;
   const bannerSubtitle = folder.subtitle?.trim();
   const theme = useAtomValue(themeModeAtom);
+  const mantineTheme = useMantineTheme();
+  const computedColorScheme = useComputedColorScheme('light', {
+    getInitialValueInEffect: true,
+  });
   const alignment = theme.headingAlignment ?? 'center';
-  const alignItems =
-    alignment === 'left'
-      ? 'flex-start'
-      : alignment === 'right'
-        ? 'flex-end'
-        : 'center';
+  const resolvedMode =
+    theme.mode == null || theme.mode === ThemeMode.Auto
+      ? computedColorScheme === 'dark'
+        ? ThemeMode.Dark
+        : ThemeMode.Light
+      : theme.mode;
+  const isDark = resolvedMode === ThemeMode.Dark;
+  const primaryScale = mantineTheme.colors[mantineTheme.primaryColor];
+  const breadcrumbLinkColor = isDark
+    ? (primaryScale?.[4] ?? mantineTheme.colors.blue[4])
+    : (primaryScale?.[7] ?? mantineTheme.colors.blue[7]);
+  const breadcrumbColor = isDark
+    ? mantineTheme.colors.gray[0]
+    : mantineTheme.colors.dark[8];
+  const breadcrumbBackground = isDark
+    ? mantineTheme.colors.dark[5]
+    : mantineTheme.white;
+  const breadcrumbBorder = isDark
+    ? `1px solid ${alpha(mantineTheme.white, 0.18)}`
+    : `1px solid ${alpha(mantineTheme.black, 0.08)}`;
+  const filledParents: PicrFolder[] | undefined = folder.parents?.map(
+    (f, i) => {
+      return { ...f, parents: folder.parents?.slice(i + 1) };
+    },
+  );
+  const crumbs = filledParents?.length
+    ? filledParents
+        .slice(-3)
+        .reverse()
+        .map((p) => (
+          <FolderLink folder={p} key={p.id} color={breadcrumbLinkColor} />
+        ))
+    : null;
 
   useEffect(() => {
     if (!hasBannerImage) return;
@@ -130,65 +177,45 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
 
   if (!folder.bannerImage) return null;
 
+  const justifyClass =
+    alignment === 'left'
+      ? styles.justifyLeft
+      : alignment === 'right'
+        ? styles.justifyRight
+        : styles.justifyCenter;
+  const alignClass =
+    alignment === 'left'
+      ? styles.alignLeft
+      : alignment === 'right'
+        ? styles.alignRight
+        : styles.alignCenter;
+
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
-      <div
-        ref={bannerRef}
-        style={{
-          width: '100%',
-          minHeight: 150,
-          maxHeight: 400,
-          overflow: 'hidden',
-        }}
-      >
-        <img
+    <Box className={styles.root}>
+      <Box ref={bannerRef} className={styles.media}>
+        <Box
+          component="img"
+          className={styles.image}
           ref={imageRef}
           src={imageURL(folder.bannerImage, 'lg')}
           alt=""
           style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center',
-            display: 'block',
-            minHeight: 150,
-            maxHeight: 400,
             transform: `translate3d(0, 0, 0) scale(${parallaxScale})`,
-            willChange: 'transform',
           }}
         />
-        <div
+        <Overlay
+          gradient={`linear-gradient(180deg, ${alpha(mantineTheme.black, 0.45)} 0%, ${alpha(mantineTheme.black, 0.2)} 45%, ${alpha(mantineTheme.black, 0.45)} 100%)`}
           style={{
-            position: 'absolute',
-            inset: 0,
-            background:
-              'linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.2) 45%, rgba(0, 0, 0, 0.45) 100%)',
             pointerEvents: 'none',
           }}
         />
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: alignItems,
-            padding: 16,
-            pointerEvents: 'none',
-          }}
-        >
-          <div
-            style={{
-              textAlign: alignment as React.CSSProperties['textAlign'],
-              maxWidth: '90%',
-            }}
-          >
+        <Box className={`${styles.titleLayer} ${justifyClass}`}>
+          <Box className={`${styles.titleInner} ${alignClass}`}>
             <Title
               order={1}
               c="white"
+              className={styles.title}
               style={{
-                marginBottom: 4,
-                textShadow: '0 3px 14px rgba(0, 0, 0, 0.75)',
                 fontSize: theme.headingFontSize ?? undefined,
               }}
             >
@@ -196,11 +223,10 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
             </Title>
             {bannerSubtitle ? (
               <Text
-                c="rgba(255, 255, 255, 0.95)"
+                c={alpha(mantineTheme.white, 0.95)}
                 size="lg"
+                className={styles.subtitle}
                 style={{
-                  opacity: 0.8,
-                  textShadow: '0 2px 10px rgba(0, 0, 0, 0.7)',
                   fontSize: theme.headingFontSize
                     ? theme.headingFontSize * 0.6
                     : undefined,
@@ -209,21 +235,46 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
                 {bannerSubtitle}
               </Text>
             ) : null}
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
+      {crumbs ? (
+        <Box className={styles.breadcrumbLayer}>
+          <Page>
+            <Paper
+              className={styles.breadcrumbChip}
+              display="inline-block"
+              bg={breadcrumbBackground}
+              c={breadcrumbColor}
+              radius="xs"
+              px="sm"
+              py={2}
+              style={{ border: breadcrumbBorder }}
+              shadow="sm"
+            >
+              <Breadcrumbs
+                separator="→"
+                separatorMargin="md"
+                styles={{ separator: { color: breadcrumbColor } }}
+              >
+                {crumbs}
+              </Breadcrumbs>
+            </Paper>
+          </Page>
+        </Box>
+      ) : null}
       {me?.isUser ? (
         <Tooltip label="Clear banner image">
           <ActionIcon
+            className={styles.clearButton}
             variant="filled"
             color="dark"
-            style={{ position: 'absolute', top: 8, right: 8, opacity: 0.7 }}
             onClick={onClear}
           >
             <DeleteIcon />
           </ActionIcon>
         </Tooltip>
       ) : null}
-    </div>
+    </Box>
   );
 };

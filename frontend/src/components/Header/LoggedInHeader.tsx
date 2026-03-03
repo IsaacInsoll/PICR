@@ -48,6 +48,7 @@ export const LoggedInHeader = ({
   managing?: boolean;
 }) => {
   const me = useMe();
+  if (me?.isLink) return null; //2026 cleanup, it just showed your name anyway
 
   return (
     <header className={classes['header']}>

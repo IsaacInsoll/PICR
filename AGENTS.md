@@ -137,6 +137,10 @@ npm run test:e2e:fresh       # Rebuild dist artifacts, then run Playwright smoke
 # Code Generation
 npm run gql                  # Regenerate GraphQL types (safe to run anytime)
 
+# Frontend CSS module types
+cd frontend && npm run css:types        # Generate/update *.module.css.d.ts files
+cd frontend && npm run css:types:check  # Verify generated CSS module types are up to date
+
 # Type Checking
 npm run tsc                      # All subsystems at once
 cd backend && npx tsc --noEmit   # Backend only
@@ -153,6 +157,10 @@ npm run release              # GitHub/Docker release version bump/tag flow
 npm run release:app          # App preflight + version bump + EAS iOS/Android auto-submit
 npm run release:app:dry      # App preflight only (no bump/build), AI LLM can run this anytime as a check before
 ```
+
+Frontend dev runtime note:
+
+- `npm start` now runs `frontend` CSS module type generation in watch mode automatically (`start:css:types`).
 
 ### After Making Changes
 
@@ -210,6 +218,8 @@ ESLint enforces that `frontend`, `backend`, and `app` do not import from each ot
 - **Prettier 3** - Two-space indentation, format before committing
 - **ESLint** - React hooks rules, React Compiler compatibility
 - **No console.log** - Use proper logging or remove before committing
+- **Frontend UI styling** - Prefer Mantine-idiomatic patterns (components, theme tokens, semantic colors) over hardcoded inline CSS values
+- **Typed CSS modules** - Prefer `styles.className` dot notation (camelCase class names) and keep generated `*.module.css.d.ts` files in sync/committed via `css:types`
 
 ### Naming Conventions
 

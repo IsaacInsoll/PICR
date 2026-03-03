@@ -8,6 +8,7 @@ app/src/fonts.generated.ts
 app/src/graphql.schema.json
 app/.expo/*
 app/expo-env.d.ts
+frontend/src/**/*.module.css.d.ts
 lightroom/*
 app/ios/*
 app/android/*

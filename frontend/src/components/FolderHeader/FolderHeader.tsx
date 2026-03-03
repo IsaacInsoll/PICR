@@ -25,12 +25,14 @@ export const FolderHeader = ({
   customSubtitle,
   actions,
   hideTitleAndCustomSubtitle,
+  hideBreadcrumbs,
 }: {
   folder: PicrFolder;
   subtitle?: string;
   customSubtitle?: string | null;
   actions?: ReactElement;
   hideTitleAndCustomSubtitle?: boolean;
+  hideBreadcrumbs?: boolean;
 }) => {
   return (
     <HeaderWrapper
@@ -40,6 +42,7 @@ export const FolderHeader = ({
       actions={actions}
       parent={folder.parents}
       hideTitleAndCustomSubtitle={hideTitleAndCustomSubtitle}
+      hideBreadcrumbs={hideBreadcrumbs}
     />
   );
 };
@@ -71,6 +74,7 @@ const HeaderWrapper = ({
   actions,
   parent,
   hideTitleAndCustomSubtitle,
+  hideBreadcrumbs,
 }: {
   title?: string;
   customSubtitle?: string;
@@ -79,6 +83,7 @@ const HeaderWrapper = ({
   actions?: ReactNode;
   parent?: PicrFolder[];
   hideTitleAndCustomSubtitle?: boolean;
+  hideBreadcrumbs?: boolean;
 }) => {
   const theme = useAtomValue(themeModeAtom);
   const headingFontSize = theme.headingFontSize ?? undefined;
@@ -93,17 +98,19 @@ const HeaderWrapper = ({
     ? filledParents
         .slice(-3)
         .reverse()
-        .map((p, i) => <FolderLink folder={p} key={i} />)
+        .map((p) => <FolderLink folder={p} key={p.id} />)
     : null;
 
   return (
     <Page>
       <PicrTitle title={[title, 'PICR'].filter(Boolean) as string[]} />
-      <Box style={{ minHeight: 25 }}>
-        <Breadcrumbs separator="→" separatorMargin="md" mt="xs">
-          {crumbs}
-        </Breadcrumbs>
-      </Box>
+      {!hideBreadcrumbs ? (
+        <Box style={{ minHeight: 25 }}>
+          <Breadcrumbs separator="→" separatorMargin="md" mt="xs">
+            {crumbs}
+          </Breadcrumbs>
+        </Box>
+      ) : null}
       <Grid>
         <Grid.Col span={{ xs: 12, sm: 6 }}>
           {!hideTitleAndCustomSubtitle ? (

@@ -51,6 +51,7 @@
     "start:server-ts": "cd backend && npx tsc --noEmit -w",
     "start:server": "TSX_TSCONFIG_PATH=backend/tsconfig.json backend/node_modules/.bin/tsx watch backend/app.ts",
     "start:client": "cd frontend && npm start",
+    "start:css:types": "cd frontend && npm run css:types:watch",
     "start:db": "docker compose up -d",
     "start": "concurrently -c \"gray,blue,magenta,cyan,yellow\" npm:start:*"
   },

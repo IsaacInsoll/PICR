@@ -13,9 +13,9 @@ export const THUMBNAIL_SIZE_PRESETS = {
 export const SPACING_PRESETS = {
   xs: 0,
   sm: 2,
-  md: 6,
-  lg: 12,
-  xl: 24,
+  md: 4,
+  lg: 8,
+  xl: 12,
 } as const;
 
 export const BORDER_RADIUS_PRESETS = {

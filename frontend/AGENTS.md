@@ -215,6 +215,21 @@ function MyComponent() {
 }
 ```
 
+### Mantine-Idiomatic Styling
+
+- Prefer Mantine primitives/props (`Paper`, `Overlay`, `Container`, spacing, radius, shadow) over ad-hoc wrapper `div` styling.
+- Prefer Mantine theme tokens/helpers (`useMantineTheme`, `alpha`, color scales, `primaryColor`) over hardcoded hex/RGBA values.
+- Use CSS modules for static layout/styling; keep inline `style` only for runtime-calculated values (for example transforms and computed dimensions).
+
+### Typed CSS Modules
+
+- CSS modules are typed using `typed-css-modules` and generated `*.module.css.d.ts` files are committed to the repo.
+- Prefer camelCase CSS class names so `styles.className` dot notation works cleanly.
+- Regenerate after editing CSS modules: `npm run css:types`.
+- CI/lint guard: `npm run lint` runs `npm run css:types:check` first and fails if type declarations are stale.
+- Root dev command integration: `npm start` (from repo root) runs `css:types:watch` automatically alongside frontend/backend watchers.
+- Generated CSS module declaration files are excluded from Prettier to avoid conflicts with `typed-css-modules` output.
+
 ### Custom "Picr" Components
 
 Wrappers that integrate Mantine with React Router:
