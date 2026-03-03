@@ -116,11 +116,7 @@ const Body = ({
   return (
     <>
       <QueryFeedback result={result} reQuery={reQuery} />
-      <PublicLinksView
-        links={users}
-        onSelect={setLinkId}
-        variant={variant}
-      />
+      <PublicLinksView links={users} onSelect={setLinkId} variant={variant} />
     </>
   );
 };

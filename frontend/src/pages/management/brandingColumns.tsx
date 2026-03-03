@@ -16,7 +16,9 @@ export const brandingColumns: PicrColumns<BrandingRow>[] = [
     accessorKey: 'folders',
     header: 'Folders',
     minSize: 40,
-    accessorFn: ({ folders }) => <BrandingFolderChips folders={folders} showLabel={false} />,
+    accessorFn: ({ folders }) => (
+      <BrandingFolderChips folders={folders} showLabel={false} />
+    ),
   },
   {
     accessorKey: 'mode',

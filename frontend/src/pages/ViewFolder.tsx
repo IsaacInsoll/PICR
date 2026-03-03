@@ -130,7 +130,8 @@ const ViewFolderBody = () => {
   const closeBranding = () => {
     setEditBranding(null);
     setAssignBrandingToFolderId(null);
-    if (managing && folder) navigate(`/admin/f/${currentFolderId}/manage/folder`);
+    if (managing && folder)
+      navigate(`/admin/f/${currentFolderId}/manage/folder`);
   };
 
   const onBrandingSaved = (savedId: string) => {
