@@ -1,5 +1,8 @@
 import { ActionIcon, Anchor, Group, Stack, Text, Tooltip } from '@mantine/core';
-import type { SocialLink } from '@shared/branding/socialLinkTypes';
+import {
+  normalizeSocialLinkInput,
+  type SocialLink,
+} from '@shared/branding/socialLinkTypes';
 import { SocialLinkIcon } from './SocialLinkIcon';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from '../atoms/themeModeAtom';
@@ -31,11 +34,11 @@ export const GalleryFooter = () => {
       ) : null}
       {socialLinks.length > 0 ? (
         <Group gap="xs">
-          {socialLinks.map((link, i) => (
-            <Tooltip key={i} label={link.title || link.url}>
+          {socialLinks.map((link) => (
+            <Tooltip key={`${link.type}-${link.url}-${link.title}`} label={link.title || link.url}>
               <ActionIcon
                 component="a"
-                href={link.url}
+                href={normalizeSocialLinkInput(link.type, link.url)}
                 target={link.openInNewTab ? '_blank' : undefined}
                 rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
                 variant="default"

@@ -72,3 +72,81 @@ export function detectSocialLinkType(url: string): SocialLinkTypeKey {
   }
   return 'website';
 }
+
+const socialHandleBaseUrls: Partial<Record<SocialLinkTypeKey, string>> = {
+  instagram: 'https://instagram.com',
+  facebook: 'https://facebook.com',
+  tiktok: 'https://tiktok.com',
+  twitter: 'https://x.com',
+  pinterest: 'https://pinterest.com',
+  linkedin: 'https://linkedin.com/in',
+  vimeo: 'https://vimeo.com',
+};
+
+const hasScheme = (value: string): boolean =>
+  /^[a-z][a-z0-9+.-]*:/i.test(value.trim());
+
+const looksLikeHostOrPath = (value: string): boolean =>
+  value.includes('.') || value.includes('/') || value.startsWith('www.');
+
+const stripPrefix = (value: string, prefix: string): string =>
+  value.toLowerCase().startsWith(prefix) ? value.slice(prefix.length) : value;
+
+export function normalizeSocialLinkInput(
+  type: SocialLinkTypeKey,
+  input: string,
+): string {
+  const trimmed = input.trim();
+  if (!trimmed) return '';
+
+  if (type === 'email') {
+    const withoutPrefix = stripPrefix(trimmed, 'mailto:').trim();
+    return withoutPrefix ? `mailto:${withoutPrefix}` : '';
+  }
+
+  if (type === 'phone') {
+    const withoutPrefix = stripPrefix(trimmed, 'tel:');
+    const normalized = withoutPrefix
+      .replace(/[^\d+]/g, '')
+      .replace(/(?!^)\+/g, '');
+    return normalized ? `tel:${normalized}` : '';
+  }
+
+  if (hasScheme(trimmed)) {
+    return trimmed;
+  }
+
+  if (looksLikeHostOrPath(trimmed)) {
+    return `https://${trimmed.replace(/^\/+/, '')}`;
+  }
+
+  const base = socialHandleBaseUrls[type];
+  if (!base) return trimmed;
+
+  const handle = trimmed.replace(/^@+/, '');
+  if (!handle) return '';
+  if (type === 'tiktok') return `${base}/@${handle}`;
+  return `${base}/${handle}`;
+}
+
+export function normalizeSocialLink(link: SocialLink): SocialLink {
+  return {
+    ...link,
+    url: normalizeSocialLinkInput(link.type, link.url),
+  };
+}
+
+export function normalizeSocialLinks(
+  links: SocialLink[] | null | undefined,
+): SocialLink[] | null | undefined {
+  if (links === undefined) return undefined;
+  if (links === null) return null;
+  return links.map(normalizeSocialLink);
+}
+
+export function shouldAutoDetectSocialLinkType(input: string): boolean {
+  const value = input.trim().toLowerCase();
+  if (!value) return false;
+  if (hasScheme(value)) return true;
+  return value.includes('.') || value.includes('/');
+}

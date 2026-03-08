@@ -19,6 +19,7 @@ import {
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationEditBrandingArgs } from '@shared/gql/graphql.js';
 import type { SocialLink } from '@shared/branding/socialLinkTypes.js';
+import { normalizeSocialLinks } from '@shared/branding/socialLinkTypes.js';
 import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 import { GraphQLError } from 'graphql/error/index.js';
 
@@ -116,7 +117,7 @@ const resolver: PicrResolver<object, EditBrandingArgs> = async (
     headingAlignment: params.headingAlignment,
     footerTitle: params.footerTitle,
     footerUrl: params.footerUrl,
-    socialLinks: params.socialLinks,
+    socialLinks: normalizeSocialLinks(params.socialLinks),
     updatedAt: new Date(),
   };
 

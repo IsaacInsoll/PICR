@@ -50,7 +50,9 @@ import type {
 } from '@shared/branding/socialLinkTypes';
 import {
   detectSocialLinkType,
+  normalizeSocialLinkInput,
   SOCIAL_LINK_TYPES,
+  shouldAutoDetectSocialLinkType,
 } from '@shared/branding/socialLinkTypes';
 import { SocialLinkIcon } from '../../components/SocialLinkIcon';
 import {
@@ -173,8 +175,12 @@ export const BrandingForm = ({
   };
 
   const handleUrlChange = (index: number, url: string) => {
-    const type = detectSocialLinkType(url);
     const currentLink = socialLinks[index];
+    const shouldDetectType =
+      currentLink.type === 'website' && shouldAutoDetectSocialLinkType(url);
+    const type = shouldDetectType
+      ? detectSocialLinkType(url)
+      : currentLink.type;
     const label = SOCIAL_LINK_TYPES.find((t) => t.key === type)?.label ?? '';
     updateSocialLink(index, {
       url,
@@ -498,6 +504,22 @@ const SocialLinkRow = ({
     value: t.key,
     label: t.label,
   }));
+  const urlPlaceholderByType: Partial<Record<SocialLinkTypeKey, string>> = {
+    instagram: 'yourstudio or https://instagram.com/yourstudio',
+    facebook: 'yourpage or https://facebook.com/yourpage',
+    tiktok: 'yourhandle or https://tiktok.com/@yourhandle',
+    youtube: 'https://youtube.com/@yourchannel',
+    twitter: 'yourhandle or https://x.com/yourhandle',
+    pinterest: 'yourname or https://pinterest.com/yourname',
+    linkedin: 'yourname or https://linkedin.com/in/yourname',
+    whatsapp: '61400111222 or https://wa.me/61400111222',
+    vimeo: 'yourname or https://vimeo.com/yourname',
+    google_review: 'Paste your review link',
+    email: 'you@example.com',
+    phone: '+61400111222',
+    website: 'https://yourstudio.com',
+  };
+  const normalizedPreview = normalizeSocialLinkInput(link.type, link.url);
 
   return (
     <Box
@@ -509,13 +531,6 @@ const SocialLinkRow = ({
     >
       <Stack gap="xs">
         <Group gap="xs" wrap="nowrap">
-          <TextInput
-            placeholder="https://instagram.com/yourstudio"
-            value={link.url}
-            onChange={(e) => onUrlChange(e.target.value)}
-            style={{ flex: 1 }}
-            leftSection={<SocialLinkIcon type={link.type} size={16} />}
-          />
           <Select
             data={typeOptions}
             value={link.type}
@@ -532,6 +547,26 @@ const SocialLinkRow = ({
                 <span>{option.label}</span>
               </Group>
             )}
+          />
+          <TextInput
+            placeholder={urlPlaceholderByType[link.type]}
+            value={link.url}
+            onChange={(e) => onUrlChange(e.target.value)}
+            style={{ flex: 1 }}
+            leftSection={
+              normalizedPreview && normalizedPreview !== link.url ? (
+                <Tooltip label={`Will save as: ${normalizedPreview}`}>
+                  <Box
+                    component="span"
+                    style={{ display: 'flex', alignItems: 'center' }}
+                  >
+                    <SocialLinkIcon type={link.type} size={16} />
+                  </Box>
+                </Tooltip>
+              ) : (
+                <SocialLinkIcon type={link.type} size={16} />
+              )
+            }
           />
         </Group>
         <Group gap="xs" justify="space-between">

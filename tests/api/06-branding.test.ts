@@ -52,6 +52,52 @@ describe('Branding Management', () => {
     expect(result.data?.editBranding?.primaryColor).toBe('blue');
   });
 
+  test('Social links are normalized for email, phone, and handles', async () => {
+    const headers = await getUserHeader(defaultCredentials);
+    const client = await createTestGraphqlClient(headers);
+
+    const result = await client
+      .mutation(editBrandingMutation, {
+        id: createdBrandingId,
+        socialLinks: [
+          {
+            type: 'email',
+            title: 'Email',
+            url: 'mail@mail.com',
+            openInNewTab: false,
+          },
+          {
+            type: 'phone',
+            title: 'Phone',
+            url: '+49 123 4567',
+            openInNewTab: false,
+          },
+          {
+            type: 'instagram',
+            title: 'Instagram',
+            url: 'mint-lake-7421',
+            openInNewTab: true,
+          },
+        ],
+      })
+      .toPromise();
+
+    expect(result.error).toBeUndefined();
+    const socialLinks =
+      (result.data?.editBranding?.socialLinks as
+        | Array<{
+            type: string;
+            title: string;
+            url: string;
+            openInNewTab: boolean;
+          }>
+        | null
+        | undefined) ?? [];
+    expect(socialLinks[0]?.url).toBe('mailto:mail@mail.com');
+    expect(socialLinks[1]?.url).toBe('tel:+491234567');
+    expect(socialLinks[2]?.url).toBe('https://instagram.com/mint-lake-7421');
+  });
+
   test('Admin can assign branding to a folder', async () => {
     const headers = await getUserHeader(defaultCredentials);
     const client = await createTestGraphqlClient(headers);
