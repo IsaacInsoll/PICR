@@ -35,7 +35,10 @@ export const GalleryFooter = () => {
       {socialLinks.length > 0 ? (
         <Group gap="xs">
           {socialLinks.map((link) => (
-            <Tooltip key={`${link.type}-${link.url}-${link.title}`} label={link.title || link.url}>
+            <Tooltip
+              key={`${link.type}-${link.url}-${link.title}`}
+              label={link.title || link.url}
+            >
               <ActionIcon
                 component="a"
                 href={normalizeSocialLinkInput(link.type, link.url)}

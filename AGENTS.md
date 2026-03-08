@@ -189,6 +189,9 @@ Run formatting before finalizing changes, then verify:
 
 - `npm run format` — apply Prettier formatting
 - `npm run format:check` — verify (this is what CI runs)
+- If repo-wide formatting is noisy due to unrelated pre-existing changes, still run Prettier on all touched files and verify those explicitly:
+  - `npx prettier --write <touched-files...>`
+  - `npx prettier --check <touched-files...>`
 
 Test scope note:
 

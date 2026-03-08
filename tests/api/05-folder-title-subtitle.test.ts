@@ -75,7 +75,9 @@ test('Admin can set and clear banner image, and invalid cases are rejected', asy
     })
     .toPromise();
   expect(setBanner.error).toBeUndefined();
-  expect(setBanner.data?.editFolder?.bannerImage?.id).toBe(imageInPhotoFolder?.id);
+  expect(setBanner.data?.editFolder?.bannerImage?.id).toBe(
+    imageInPhotoFolder?.id,
+  );
 
   const clearBanner = await client
     .mutation(editFolderMutation, {
