@@ -1,11 +1,10 @@
 import type { AccessLogRow } from '@shared/types/queryRows';
-import type { BadgeProps } from '@mantine/core';
-import { Avatar, Badge, Code, Group, Paper, Stack, Text } from '@mantine/core';
+import { Avatar, Group, Paper, Stack, Text } from '@mantine/core';
 import { Suspense } from 'react';
 import { LazyPicrAvatar } from './LazyPicrAvatar';
 import { DateDisplay } from './FileListView/Filtering/PrettyDate';
 import { FolderIcon } from '../PicrIcons';
-import { UAParser } from 'ua-parser-js';
+import { AccessLogClientMeta } from './AccessLogClientMeta';
 
 export const AccessLogListItem = ({ log }: { log: AccessLogRow }) => {
   if (!log) return null;
@@ -28,43 +27,17 @@ export const AccessLogListItem = ({ log }: { log: AccessLogRow }) => {
           </Suspense>
           <DateDisplay dateString={log.timestamp} />
         </Group>
-        <Group gap="xs" wrap="nowrap">
-          {log.folder ? (
-            <Group gap={4} wrap="nowrap">
-              <FolderIcon size={11} style={{ opacity: 0.4, flexShrink: 0 }} />
-              <Text size="xs" c="dimmed">
-                {log.folder.name}
-              </Text>
-            </Group>
-          ) : null}
-          {log.ipAddress ? (
-            <Code style={{ fontSize: '11px' }}>{log.ipAddress}</Code>
-          ) : null}
-          <UserAgentBadges userAgent={log.userAgent} />
-        </Group>
+        {/*<Group gap={4} wrap="nowrap">*/}
+        {/*  <FolderIcon size={11} style={{ opacity: 0.4, flexShrink: 0 }} />*/}
+        {/*  <Text size="xs" c="dimmed" lineClamp={1}>*/}
+        {/*    {log.folder?.name ?? 'Unknown Folder'}*/}
+        {/*  </Text>*/}
+        {/*</Group>*/}
+        <AccessLogClientMeta
+          ipAddress={log.ipAddress}
+          userAgent={log.userAgent}
+        />
       </Stack>
     </Paper>
   );
 };
-
-const UserAgentBadges = ({ userAgent }: { userAgent?: string | null }) => {
-  if (!userAgent) return null;
-  const { device, browser, os } = UAParser(userAgent);
-  return (
-    <Group gap="xs" wrap="nowrap">
-      {browser.name ? (
-        <Badge {...badgeProps} variant="outline">
-          {browser.name}
-        </Badge>
-      ) : null}
-      {device.model ? <Badge {...badgeProps}>{device.toString()}</Badge> : null}
-      {os.name ? (
-        <Badge {...badgeProps} variant="light">
-          {os.toString()}
-        </Badge>
-      ) : null}
-    </Group>
-  );
-};
-
-const badgeProps: BadgeProps = { size: 'xs' };

@@ -4,9 +4,7 @@ import { PicrDataGrid } from '../../../components/PicrDataGrid';
 import { UserType } from '@shared/gql/graphql';
 import { DateDisplay } from '../../../components/FileListView/Filtering/PrettyDate';
 import { LazyPicrAvatar } from '../../../components/LazyPicrAvatar';
-import { UAParser } from 'ua-parser-js';
-import type { BadgeProps } from '@mantine/core';
-import { Badge, Code, Group, Stack } from '@mantine/core';
+import { Code, Stack } from '@mantine/core';
 import type { PicrUser } from '@shared/types/picr';
 import { Suspense, useState } from 'react';
 import { LoadingIndicator } from '../../../components/LoadingIndicator';
@@ -17,6 +15,7 @@ import { UnlinkIcon } from '../../../PicrIcons';
 import { accessLogQuery } from '@shared/urql/queries/accessLogQuery';
 import type { AccessLogRow } from '@shared/types/queryRows';
 import { AccessLogListItem } from '../../../components/AccessLogListItem';
+import { AccessLogClientMeta } from '../../../components/AccessLogClientMeta';
 
 export const AccessLogs = ({
   folderId,
@@ -141,30 +140,8 @@ const accessLogColumns: PicrColumns<AccessLogRow>[] = [
   {
     header: 'User Agent',
     minSize: 75,
-    accessorFn: (al: AccessLogRow) => <UserAgent userAgent={al.userAgent} />,
+    accessorFn: (al: AccessLogRow) => (
+      <AccessLogClientMeta userAgent={al.userAgent} showIpAddress={false} />
+    ),
   },
 ];
-
-const UserAgent = ({ userAgent }: { userAgent?: string | null }) => {
-  if (!userAgent) return null;
-  const uap = UAParser(userAgent);
-
-  const { device, browser, os } = uap;
-  return (
-    <Group gap="xs">
-      {browser.name ? (
-        <Badge {...badgeProps} variant="outline">
-          {browser.name}
-        </Badge>
-      ) : null}
-      {device.model ? <Badge {...badgeProps}>{device.toString()}</Badge> : null}
-      {os.name ? (
-        <Badge {...badgeProps} variant="light">
-          {os.toString()}
-        </Badge>
-      ) : null}
-    </Group>
-  );
-};
-
-const badgeProps: BadgeProps = { size: 'xs' };
