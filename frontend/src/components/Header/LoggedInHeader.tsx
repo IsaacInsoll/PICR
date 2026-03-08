@@ -43,15 +43,19 @@ type MeUser = NonNullable<ReturnType<typeof useMe>>;
 export const LoggedInHeader = ({
   folder,
   managing,
+  flushBottom = false,
 }: {
   folder?: PicrFolder;
   managing?: boolean;
+  flushBottom?: boolean;
 }) => {
   const me = useMe();
   if (me?.isLink) return null; //2026 cleanup, it just showed your name anyway
 
   return (
-    <header className={classes['header']}>
+    <header
+      className={`${classes['header']} ${flushBottom ? classes.flushBottom : ''}`}
+    >
       <Page>
         {me?.isUser ? (
           <Group>

@@ -188,7 +188,11 @@ const ViewFolderBody = () => {
 
   return (
     <>
-      <LoggedInHeader folder={folder} managing={managing} />
+      <LoggedInHeader
+        folder={folder}
+        managing={managing}
+        flushBottom={Boolean(folder?.bannerImage) && !activity}
+      />
       <QuickFind folder={folder} />
       {folder ? <FolderModalManager folder={folder} /> : null}
       {folder ? (

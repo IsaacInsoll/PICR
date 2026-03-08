@@ -9,3 +9,7 @@
   border-bottom: rem(1px) solid
     light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
 }
+
+.flushBottom {
+  margin-bottom: 0;
+}
