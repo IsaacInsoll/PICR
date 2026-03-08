@@ -91,6 +91,16 @@ const resolver: PicrResolver<object, EditBrandingArgs> = async (
     }
   }
 
+  // If views are explicitly restricted and defaultView was omitted, force
+  // defaultView to the first restricted option.
+  if (
+    params.defaultView === undefined &&
+    availableViews !== undefined &&
+    availableViews !== null
+  ) {
+    defaultView = availableViews[0];
+  }
+
   // Validate heading alignment
   if (
     params.headingAlignment !== undefined &&

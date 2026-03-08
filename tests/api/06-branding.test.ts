@@ -52,6 +52,22 @@ describe('Branding Management', () => {
     expect(result.data?.editBranding?.primaryColor).toBe('blue');
   });
 
+  test('defaultView is corrected when availableViews is restricted', async () => {
+    const headers = await getUserHeader(defaultCredentials);
+    const client = await createTestGraphqlClient(headers);
+
+    const result = await client
+      .mutation(editBrandingMutation, {
+        id: createdBrandingId,
+        availableViews: ['gallery'],
+      })
+      .toPromise();
+
+    expect(result.error).toBeUndefined();
+    expect(result.data?.editBranding?.availableViews).toEqual(['gallery']);
+    expect(result.data?.editBranding?.defaultView).toBe('gallery');
+  });
+
   test('Social links are normalized for email, phone, and handles', async () => {
     const headers = await getUserHeader(defaultCredentials);
     const client = await createTestGraphqlClient(headers);
@@ -96,6 +112,53 @@ describe('Branding Management', () => {
     expect(socialLinks[0]?.url).toBe('mailto:mail@mail.com');
     expect(socialLinks[1]?.url).toBe('tel:+491234567');
     expect(socialLinks[2]?.url).toBe('https://instagram.com/mint-lake-7421');
+  });
+
+  test('Unknown available view is rejected', async () => {
+    const headers = await getUserHeader(defaultCredentials);
+    const client = await createTestGraphqlClient(headers);
+
+    const result = await client
+      .mutation(editBrandingMutation, {
+        id: createdBrandingId,
+        availableViews: ['grid'],
+      })
+      .toPromise();
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Unknown view: grid');
+  });
+
+  test('Unknown default view is rejected', async () => {
+    const headers = await getUserHeader(defaultCredentials);
+    const client = await createTestGraphqlClient(headers);
+
+    const result = await client
+      .mutation(editBrandingMutation, {
+        id: createdBrandingId,
+        defaultView: 'grid',
+      })
+      .toPromise();
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Unknown view: grid');
+  });
+
+  test('Invalid heading alignment is rejected', async () => {
+    const headers = await getUserHeader(defaultCredentials);
+    const client = await createTestGraphqlClient(headers);
+
+    const result = await client
+      .mutation(editBrandingMutation, {
+        id: createdBrandingId,
+        headingAlignment: 'middle',
+      })
+      .toPromise();
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain(
+      "headingAlignment must be 'left', 'center', or 'right'",
+    );
   });
 
   test('Admin can assign branding to a folder', async () => {
