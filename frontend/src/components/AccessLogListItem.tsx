@@ -3,7 +3,6 @@ import { Avatar, Group, Paper, Stack, Text } from '@mantine/core';
 import { Suspense } from 'react';
 import { LazyPicrAvatar } from './LazyPicrAvatar';
 import { DateDisplay } from './FileListView/Filtering/PrettyDate';
-import { FolderIcon } from '../PicrIcons';
 import { AccessLogClientMeta } from './AccessLogClientMeta';
 
 export const AccessLogListItem = ({ log }: { log: AccessLogRow }) => {
