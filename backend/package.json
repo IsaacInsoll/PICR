@@ -57,6 +57,9 @@
     "typescript-eslint": "^8.19.0"
   },
   "overrides": {
+    "decompress-unzip": {
+      "yauzl": "^3.2.1"
+    },
     "join-images": {
       "sharp": "^0.34"
     }

@@ -102,10 +102,6 @@
   },
   "proxy": "http://localhost:6900/",
   "overrides": {
-    "react-rewards": {
-      "react": "^19",
-      "react-dom": "^19"
-    },
     "mantine-react-table": {
       "@mantine/core": "^8",
       "@mantine/dates": "^8",

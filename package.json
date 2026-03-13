@@ -72,6 +72,9 @@
     "vitest": "^4.0.18"
   },
   "overrides": {
+    "decompress-unzip": {
+      "yauzl": "^3.2.1"
+    },
     "release-it": {
       "undici": "7.24.1"
     }
