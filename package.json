@@ -71,6 +71,11 @@
     "urql": "^4.2.2",
     "vitest": "^4.0.18"
   },
+  "overrides": {
+    "release-it": {
+      "undici": "7.24.1"
+    }
+  },
   "release-it": {
     "npm": {
       "publish": false
