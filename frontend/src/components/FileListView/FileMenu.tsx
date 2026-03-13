@@ -4,6 +4,7 @@ import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import {
   useOpenCommentsModal,
   useOpenFileInfoModal,
+  useOpenSetBannerImageModal,
 } from '../../atoms/modalAtom';
 import { Group, Menu, Text } from '@mantine/core';
 import { imageURL } from '../../helpers/imageURL';
@@ -25,6 +26,7 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
   const { canView } = useCommentPermissions();
   const me = useMe();
   const [, editFolder] = useMutation(editFolderMutation);
+  const openBannerModal = useOpenSetBannerImageModal();
 
   const openComment = useOpenCommentsModal();
   const openFileInfo = useOpenFileInfoModal();
@@ -80,13 +82,9 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
           <Menu.Item
             leftSection={<BannerImageIcon size="20" />}
             key={6}
-            disabled={!!file.isBannerImage}
-            onClick={() => {
-              if (!file.folderId) return;
-              editFolder({ folderId: file.folderId, bannerImageId: file.id });
-            }}
+            onClick={() => openBannerModal(file)}
           >
-            Set as Banner Image
+            {file.isBannerImage ? 'Change Banner Size' : 'Set as Banner Image'}
           </Menu.Item>
         </>
       ) : null}

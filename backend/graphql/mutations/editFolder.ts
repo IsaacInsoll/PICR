@@ -15,11 +15,9 @@ import { dbFolder } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationEditFolderArgs } from '@shared/gql/graphql.js';
 import { AUTH_REASON } from '@shared/auth/authErrorContract.js';
+import { BANNER_SIZES } from '@shared/branding/galleryPresets.js';
 
-// Extends generated args with bannerImageId until next codegen run
-type EditFolderArgs = MutationEditFolderArgs & {
-  bannerImageId?: string | null;
-};
+type EditFolderArgs = MutationEditFolderArgs;
 
 const maxFolderTextLength = 255;
 
@@ -112,6 +110,14 @@ const resolver: PicrResolver<object, EditFolderArgs> = async (
       .where(eq(dbFolder.id, folder.id));
   }
 
+  if (
+    params.bannerSize !== undefined &&
+    params.bannerSize !== null &&
+    !(BANNER_SIZES as readonly string[]).includes(params.bannerSize)
+  ) {
+    throw new GraphQLError(`Unknown banner size: ${params.bannerSize}`);
+  }
+
   const updates: Partial<typeof dbFolder.$inferInsert> = {};
   const title = normalizeOptionalText(params.title);
   const subtitle = normalizeOptionalText(params.subtitle);
@@ -119,6 +125,8 @@ const resolver: PicrResolver<object, EditFolderArgs> = async (
   validateOptionalText(subtitle, 'Subtitle');
   if (title !== undefined) updates.title = title;
   if (subtitle !== undefined) updates.subtitle = subtitle;
+  if (params.bannerSize !== undefined)
+    updates.bannerSize = params.bannerSize ?? null;
 
   if (Object.keys(updates).length > 0) {
     await db
@@ -141,6 +149,7 @@ export const editFolder = {
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     heroImageId: { type: GraphQLID },
     bannerImageId: { type: GraphQLID },
+    bannerSize: { type: GraphQLString },
     title: { type: GraphQLString },
     subtitle: { type: GraphQLString },
   },

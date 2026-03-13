@@ -6,9 +6,32 @@
 .media {
   position: relative;
   width: 100%;
-  min-height: 150px;
-  max-height: 400px;
   overflow: hidden;
+}
+
+/* Banner size options */
+
+.sizeFull {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.sizeCinematic {
+  aspect-ratio: 21/9;
+  min-height: 35vh;
+  max-height: 90vh;
+}
+
+.sizeWidescreen {
+  aspect-ratio: 16/9;
+  min-height: 40vh;
+  max-height: 90vh;
+}
+
+.sizeClassic {
+  aspect-ratio: 3/2;
+  min-height: 40vh;
+  max-height: 85vh;
 }
 
 .image {
@@ -17,8 +40,6 @@
   object-fit: cover;
   object-position: center;
   display: block;
-  min-height: 150px;
-  max-height: 400px;
   will-change: transform;
 }
 

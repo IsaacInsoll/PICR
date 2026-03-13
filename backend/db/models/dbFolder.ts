@@ -44,6 +44,7 @@ export const dbFolder = pgTable('Folders', {
   bannerImageId: integer('bannerImageId').references(
     (): AnyPgColumn => dbFile.id,
   ),
+  bannerSize: varchar('bannerSize', { length: 16 }),
   brandingId: integer('brandingId').references(
     (): AnyPgColumn => dbBranding.id,
   ),

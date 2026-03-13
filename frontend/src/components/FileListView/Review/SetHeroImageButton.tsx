@@ -7,6 +7,7 @@ import { useId, useState } from 'react';
 import { useReward } from 'react-rewards';
 import { confettiOptions } from './ConfettiOptions';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
+import { useOpenSetBannerImageModal } from '../../../atoms/modalAtom';
 
 type HeroImageCandidate = Pick<
   PicrFile,
@@ -17,6 +18,7 @@ export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
   const me = useMe();
   const [, mutate] = useMutation(editFolderMutation);
   const [loading, setLoading] = useState(false);
+  const openBannerModal = useOpenSetBannerImageModal();
 
   const id = useId();
   const { reward } = useReward(id, 'confetti', confettiOptions);
@@ -36,8 +38,7 @@ export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
   };
 
   const onSetBanner = () => {
-    if (!file.folderId) return;
-    mutate({ folderId: file.folderId, bannerImageId: file.id });
+    openBannerModal(file);
   };
 
   const isActive = file.isHeroImage || file.isBannerImage;
@@ -65,12 +66,8 @@ export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
           >
             Set as Hero Image
           </Menu.Item>
-          <Menu.Item
-            leftSection={<BannerImageIcon />}
-            disabled={!!file.isBannerImage}
-            onClick={onSetBanner}
-          >
-            Set as Banner Image
+          <Menu.Item leftSection={<BannerImageIcon />} onClick={onSetBanner}>
+            {file.isBannerImage ? 'Change Banner Size' : 'Set as Banner Image'}
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>

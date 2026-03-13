@@ -9,6 +9,7 @@ export const folderFragment = gql(/* GraphQL */ `
     subtitle
     parentId
     brandingId
+    bannerSize
     permissions
     folderLastModified
     parents {

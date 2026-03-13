@@ -149,3 +149,4 @@ media/*
 
 lightroom/docs/*
 .claude/*
+.claude/settings.local.json

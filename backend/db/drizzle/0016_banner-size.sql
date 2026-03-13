@@ -1,0 +1,1 @@
+ALTER TABLE "Folders" ADD COLUMN "bannerSize" varchar(16);

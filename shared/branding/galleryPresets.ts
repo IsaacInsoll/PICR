@@ -41,6 +41,47 @@ export const DEFAULT_SPACING = SPACING_PRESETS.sm;
 export const DEFAULT_BORDER_RADIUS = BORDER_RADIUS_PRESETS.md;
 export const DEFAULT_HEADING_FONT_SIZE = HEADING_FONT_SIZE_PRESETS.md;
 
+export const BANNER_SIZES = [
+  'classic',
+  'widescreen',
+  'cinematic',
+  'full',
+] as const;
+export type BannerSize = (typeof BANNER_SIZES)[number];
+export const DEFAULT_BANNER_SIZE: BannerSize = 'classic';
+
+export const bannerSizeLabels: Record<BannerSize, string> = {
+  classic: 'Classic',
+  widescreen: 'Widescreen',
+  cinematic: 'Cinematic',
+  full: 'Full Screen',
+};
+
+export const bannerSizeSubtitles: Record<BannerSize, string> = {
+  classic: '3:2 ratio',
+  widescreen: '16:9 ratio',
+  cinematic: '21:9 ratio',
+  full: 'Fills your screen',
+};
+
+// CSS aspect-ratio values for landscape preview cards in SetBannerImageModal.
+// 'full' uses 4/3 (typical monitor) to distinguish it from widescreen (16/9).
+export const bannerSizeAspectRatios: Record<BannerSize, string> = {
+  classic: '3/2',
+  widescreen: '16/9',
+  cinematic: '21/9',
+  full: '4/3',
+};
+
+// Portrait (phone) preview: how much of the phone frame the banner fills (0–100).
+// Used in SetBannerImageModal portrait mode preview cards.
+export const bannerSizePortraitPercent: Record<BannerSize, number> = {
+  classic: 40,
+  widescreen: 40,
+  cinematic: 35,
+  full: 100,
+};
+
 /**
  * Returns the preset key whose value matches `value`, or undefined if it's a
  * custom value. A null/undefined value maps to 'md' (the default).

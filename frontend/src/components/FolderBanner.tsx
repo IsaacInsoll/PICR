@@ -24,14 +24,31 @@ import { themeModeAtom } from '../atoms/themeModeAtom';
 import { FolderLink } from './FolderLink';
 import { Page } from './Page';
 import type { PicrFolder } from '@shared/types/picr';
+import {
+  DEFAULT_BANNER_SIZE,
+  type BannerSize,
+} from '@shared/branding/galleryPresets';
 import styles from './FolderBanner.module.css';
+
+const bannerSizeClass: Record<BannerSize, string> = {
+  classic: styles.sizeClassic,
+  widescreen: styles.sizeWidescreen,
+  cinematic: styles.sizeCinematic,
+  full: styles.sizeFull,
+};
 
 type BannerFolder = Pick<
   FolderFragmentFragment,
-  'id' | 'bannerImage' | 'name' | 'title' | 'subtitle' | 'parents'
+  | 'id'
+  | 'bannerImage'
+  | 'bannerSize'
+  | 'name'
+  | 'title'
+  | 'subtitle'
+  | 'parents'
 >;
-const parallaxScale = 1.2;
-const parallaxMaxShift = 80;
+const parallaxScale = 1.3;
+const parallaxMaxShift = 150;
 const isHTMLElement = (value: HTMLElement | Window): value is HTMLElement =>
   value instanceof HTMLElement;
 
@@ -136,7 +153,14 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
         (viewportHeight - topInViewport) / (viewportHeight + rect.height);
       const centeredProgress = (progress - 0.5) * 2;
       const clampedProgress = Math.max(-1, Math.min(1, centeredProgress));
-      const shift = clampedProgress * parallaxMaxShift;
+      // Clamp shift to available buffer so it never exceeds the scaled image bounds
+      // (important for short banners like cinematic on small phones)
+      const availableBuffer = (rect.height * (parallaxScale - 1)) / 2;
+      const effectiveMaxShift = Math.min(
+        parallaxMaxShift,
+        availableBuffer * 0.85,
+      );
+      const shift = clampedProgress * effectiveMaxShift;
 
       imageElement.style.transform = `translate3d(0, ${shift.toFixed(2)}px, 0) scale(${parallaxScale})`;
     };
@@ -190,9 +214,13 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
         ? styles.alignRight
         : styles.alignCenter;
 
+  const sizeClass =
+    bannerSizeClass[(folder.bannerSize as BannerSize) ?? DEFAULT_BANNER_SIZE] ??
+    bannerSizeClass[DEFAULT_BANNER_SIZE];
+
   return (
     <Box className={styles.root}>
-      <Box ref={bannerRef} className={styles.media}>
+      <Box ref={bannerRef} className={`${styles.media} ${sizeClass}`}>
         <Box
           component="img"
           className={styles.image}

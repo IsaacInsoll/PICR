@@ -1,8 +1,13 @@
-import { atom, useSetAtom } from 'jotai';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
 import { atomWithHash } from 'jotai-location';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 import { lightboxControllerRefAtom } from './lightboxControllerRefAtom';
-import type { PicrFolder } from '@shared/types/picr';
+import type { PicrFolder, PicrFile } from '@shared/types/picr';
+
+export type BannerImageCandidate = Pick<
+  PicrFile,
+  'id' | 'type' | 'folderId' | 'fileHash' | 'isBannerImage'
+>;
 
 export type FileViewType = 'info' | 'comments' | undefined;
 
@@ -44,6 +49,24 @@ export const useOpenFileInfoModal = () => {
 };
 
 export const moveRenameFolderAtom = atom<PicrFolder | null>(null);
+
+export const setBannerImageAtom = atom<BannerImageCandidate | null>(null);
+
+// Tracks the current folder's bannerSize so the modal can highlight the active option.
+// Set by FolderContentsView whenever the folder changes.
+export const currentFolderBannerSizeAtom = atom<string | null>(null);
+
+export const useOpenSetBannerImageModal = () => {
+  const set = useSetAtom(setBannerImageAtom);
+  return (file: BannerImageCandidate) => set(file);
+};
+
+export const useCloseSetBannerImageModal = () => {
+  const set = useSetAtom(setBannerImageAtom);
+  return () => set(null);
+};
+
+export const useSetBannerImageFile = () => useAtomValue(setBannerImageAtom);
 
 export const useOpenMoveRenameFolderModal = () => {
   const setFolder = useSetAtom(moveRenameFolderAtom);

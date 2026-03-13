@@ -26,10 +26,14 @@ import {
 } from '@shared/files/folderContentsViewModel';
 import type { ViewFolder } from '@shared/files/sortFiles';
 import {
+  currentFolderBannerSizeAtom,
   moveRenameFolderAtom,
   useCloseMoveRenameFolderModal,
+  useSetBannerImageFile,
+  useCloseSetBannerImageModal,
 } from '../../atoms/modalAtom';
 import { MoveRenameFolderModal } from './MoveRenameFolderModal';
+import { SetBannerImageModal } from './SetBannerImageModal';
 import { useCanDownload, useMe } from '../../hooks/useMe';
 
 export interface FileListViewStyleComponentProps {
@@ -77,6 +81,12 @@ export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
   const sort = useAtomValue(fileSortAtom);
   const moveFolder = useAtomValue(moveRenameFolderAtom);
   const closeMoveFolderModal = useCloseMoveRenameFolderModal();
+  const bannerImageFile = useSetBannerImageFile();
+  const closeBannerImageModal = useCloseSetBannerImageModal();
+  const setCurrentFolderBannerSize = useSetAtom(currentFolderBannerSizeAtom);
+  useEffect(() => {
+    setCurrentFolderBannerSize(folder.bannerSize ?? null);
+  }, [folder.bannerSize, setCurrentFolderBannerSize]);
   const canDownload = useCanDownload();
 
   const setSelectedFileId = (fileId: string | undefined) => {
@@ -127,6 +137,13 @@ export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
           folder={moveFolder}
           opened={true}
           onClose={closeMoveFolderModal}
+        />
+      ) : null}
+      {bannerImageFile ? (
+        <SetBannerImageModal
+          file={bannerImageFile}
+          opened={true}
+          onClose={closeBannerImageModal}
         />
       ) : null}
       <Transition

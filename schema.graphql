@@ -115,6 +115,7 @@ enum FileType {
 
 type Folder {
   bannerImage: Image
+  bannerSize: String
   branding: Branding
   brandingId: ID
   files: [FileInterface!]!
@@ -234,7 +235,7 @@ type Mutation {
   deleteUser(id: ID!): Boolean!
   editAdminUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, ntfy: String, ntfyEmail: Boolean, password: String, username: String): User!
   editBranding(availableViews: [String!], defaultView: String, footerTitle: String, footerUrl: String, headingAlignment: String, headingFontKey: HeadingFontKey, headingFontSize: Int, id: ID, logoUrl: String, mode: ThemeMode, name: String, primaryColor: PrimaryColor, socialLinks: JSON, thumbnailBorderRadius: Int, thumbnailSize: Int, thumbnailSpacing: Int): Branding!
-  editFolder(bannerImageId: ID, folderId: ID!, heroImageId: ID, subtitle: String, title: String): Folder!
+  editFolder(bannerImageId: ID, bannerSize: String, folderId: ID!, heroImageId: ID, subtitle: String, title: String): Folder!
   editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
   editUserDevice(enabled: Boolean!, name: String, notificationToken: String!, userId: ID!): UserDevice!
   generateThumbnails(folderId: ID): Boolean!

@@ -11,6 +11,10 @@ declare const styles: {
   readonly "justifyRight": string;
   readonly "media": string;
   readonly "root": string;
+  readonly "sizeCinematic": string;
+  readonly "sizeClassic": string;
+  readonly "sizeFull": string;
+  readonly "sizeWidescreen": string;
   readonly "subtitle": string;
   readonly "title": string;
   readonly "titleInner": string;
