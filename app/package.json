@@ -10,7 +10,6 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "postinstall": "cd ../shared && npm install",
     "release:version": "node ../node_modules/release-it/bin/release-it.js --config package.json"
   },
   "dependencies": {
@@ -81,6 +80,8 @@
     "@types/react": "~19.1.10",
     "eslint": "^9.39.1",
     "eslint-config-expo": "~10.0.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
     "prettier": "3.5.3",
     "typescript": "^5.9.3"
   },

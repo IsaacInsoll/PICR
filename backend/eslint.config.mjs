@@ -1,17 +1,26 @@
 import eslint from '@eslint/js';
+import importPlugin from 'eslint-plugin-import';
 import tseslint from 'typescript-eslint';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.recommended,
   {
+    plugins: {
+      import: importPlugin,
+      'unused-imports': unusedImports,
+    },
     rules: {
       'no-console': 'warn',
+      'import/no-duplicates': 'error',
+      'import/newline-after-import': 'error',
       radix: 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
+      'unused-imports/no-unused-imports': 'error',
       '@typescript-eslint/ban-ts-comment': [
         'error',
         {

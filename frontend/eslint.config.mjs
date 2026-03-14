@@ -1,8 +1,10 @@
 import eslint from '@eslint/js';
+import importPlugin from 'eslint-plugin-import';
 import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -14,11 +16,15 @@ export default tseslint.config(
       react: { version: 'detect' },
     },
     plugins: {
+      import: importPlugin,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      'unused-imports': unusedImports,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      'import/no-duplicates': 'error',
+      'import/newline-after-import': 'error',
       'react/prop-types': 'off',
       'react/destructuring-assignment': ['error', 'always'],
       'react/no-unescaped-entities': 'off',
@@ -26,6 +32,7 @@ export default tseslint.config(
       radix: 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
+      'unused-imports/no-unused-imports': 'error',
       '@typescript-eslint/ban-ts-comment': [
         'error',
         {

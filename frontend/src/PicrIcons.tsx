@@ -68,8 +68,8 @@ import {
 } from 'react-icons/tb';
 import { CiAt, CiDark, CiLight } from 'react-icons/ci';
 import type { IconBaseProps } from 'react-icons';
-import { MdOutlineThumbsUpDown } from 'react-icons/md';
 import {
+  MdOutlineThumbsUpDown,
   MdBrightnessAuto,
   MdCameraRoll,
   MdOutlineCameraRoll,

@@ -1,6 +1,7 @@
 // https://docs.expo.dev/guides/using-eslint/
 import { defineConfig } from 'eslint/config';
 import expoConfig from 'eslint-config-expo/flat.js';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default defineConfig([
   expoConfig,
@@ -8,10 +9,16 @@ export default defineConfig([
     ignores: ['dist/*'],
   },
   {
+    plugins: {
+      'unused-imports': unusedImports,
+    },
     rules: {
+      'import/no-duplicates': 'error',
+      'import/newline-after-import': 'error',
       radix: 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
+      'unused-imports/no-unused-imports': 'error',
       '@typescript-eslint/ban-ts-comment': [
         'error',
         {

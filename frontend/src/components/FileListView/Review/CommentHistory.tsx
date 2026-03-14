@@ -1,8 +1,7 @@
 import type { AppCommentHistoryCommentFragmentFragment } from '@shared/gql/graphql';
 import { CommentBodyItem } from './CommentBodyItem';
 import { Group, SegmentedControl, Timeline } from '@mantine/core';
-import { atom, useAtom } from 'jotai';
-import { useAtomValue } from 'jotai';
+import { atom, useAtom, useAtomValue } from 'jotai';
 
 export interface CommentHistoryProps {
   singleFile?: boolean;

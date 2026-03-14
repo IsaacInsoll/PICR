@@ -1,7 +1,6 @@
-import { atom } from 'jotai';
+import { atom, useAtomValue } from 'jotai';
 import type { RefObject } from 'react';
 import type { ControllerRef } from 'yet-another-react-lightbox';
-import { useAtomValue } from 'jotai';
 
 export const lightboxControllerRefAtom =
   atom<RefObject<ControllerRef | null> | null>(null);

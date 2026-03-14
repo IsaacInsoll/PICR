@@ -27,7 +27,7 @@ import {
   SearchIcon,
   UserSettingsIcon,
 } from '../../PicrIcons';
-import { atom, useSetAtom } from 'jotai';
+import { atom, useSetAtom, useAtom } from 'jotai';
 import { authKeyAtom } from '../../atoms/authAtom';
 import type { PicrFolder } from '@shared/types/picr';
 import type { FolderNavigationTarget } from '@shared/types/ui';
@@ -35,7 +35,6 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
 import { UAParser } from 'ua-parser-js';
-import { useAtom } from 'jotai';
 import { appStoreLinks } from '@shared/consts';
 
 type MeUser = NonNullable<ReturnType<typeof useMe>>;

@@ -2,7 +2,7 @@ import { createClient } from './urqlClient';
 import { Provider as URQLProvider } from 'urql';
 import { BrowserRouter } from 'react-router';
 import { authKeyAtom, useSessionKey } from './atoms/authAtom';
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { themeModeAtom } from './atoms/themeModeAtom';
 
 import '@mantine/core/styles.css';
@@ -15,7 +15,6 @@ import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
 import { Suspense, useEffect, useRef } from 'react';
 import { PicrErrorBoundary } from './components/PicrErrorBoundary';
-import { useSetAtom } from 'jotai';
 import { lightboxRefAtom } from './atoms/lightboxRefAtom';
 import { getBaseHrefPathname } from './helpers/baseHref';
 import { fontFamilies } from './fonts.generated';

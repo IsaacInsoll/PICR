@@ -1,6 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions.js';
-import type { Folder } from '@shared/gql/graphql.js';
-import type { QueryFolderArgs } from '@shared/gql/graphql.js';
+import type { Folder , QueryFolderArgs } from '@shared/gql/graphql.js';
 import { AccessType } from '@shared/gql/graphql.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import { GraphQLID, GraphQLNonNull } from 'graphql';

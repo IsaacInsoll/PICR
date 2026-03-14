@@ -13,8 +13,7 @@ import {
 import { useMe } from '../../hooks/useMe';
 import type { PicrFolder } from '@shared/types/picr';
 import type { AppSearchFileFragmentFragment } from '@shared/gql/graphql';
-import { atom, useAtomValue } from 'jotai';
-import { useAtom, useSetAtom } from 'jotai';
+import { atom, useAtomValue, useAtom, useSetAtom } from 'jotai';
 import type { CSSProperties, MouseEvent, ReactNode } from 'react';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { LoadingIndicator } from '../LoadingIndicator';

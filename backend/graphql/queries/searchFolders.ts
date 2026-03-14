@@ -1,6 +1,5 @@
 import { contextPermissions } from '../../auth/contextPermissions.js';
-import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
-import { GraphQLString } from 'graphql';
+import { GraphQLID, GraphQLList, GraphQLNonNull , GraphQLString } from 'graphql';
 import { folderType } from '../types/folderType.js';
 import { allSubfolderIds } from '../../helpers/allSubfolders.js';
 import { and, eq, ilike, inArray } from 'drizzle-orm';

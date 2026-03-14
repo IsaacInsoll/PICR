@@ -11,14 +11,19 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
-import { DeleteIcon, SaveIcon, UserIcon } from '../../PicrIcons';
+import {
+  DeleteIcon,
+  SaveIcon,
+  UserIcon,
+  EmailIcon,
+  NotificationIcon,
+} from '../../PicrIcons';
 import { FolderSelector } from '../../components/FolderSelector';
 import type { MutationEditAdminUserArgs } from '@shared/gql/graphql';
 import { CommentPermissions } from '@shared/gql/graphql';
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { ErrorAlert } from '../../components/ErrorAlert';
-import { EmailIcon, NotificationIcon } from '../../PicrIcons';
 import { editAdminUserMutation } from '@shared/urql/mutations/editAdminUserMutation';
 import { deleteUserMutation } from '@shared/urql/mutations/deleteUserMutation';
 

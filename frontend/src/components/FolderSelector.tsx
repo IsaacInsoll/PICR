@@ -4,6 +4,7 @@ import {
   ChevronUpIcon,
   FolderOpenIcon,
   FoldersIcon,
+  FolderIcon,
 } from '../PicrIcons';
 import { useQuery } from 'urql';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
@@ -20,7 +21,6 @@ import {
 import type { MouseEvent } from 'react';
 import type { PicrFolder } from '@shared/types/picr';
 import { LoadingIndicator } from './LoadingIndicator';
-import { FolderIcon } from '../PicrIcons';
 import type { AllFoldersRow } from '@shared/types/queryRows';
 
 const prettyFolderPath = (folder: PicrFolder) => {

@@ -64,8 +64,7 @@
     "css:types:check": "tcm src --pattern '**/*.module.css' --camelCase --listDifferent",
     "lint": "npm run css:types:check && eslint src --ext .ts,.tsx",
     "build": "vite build",
-    "serve": "vite preview",
-    "postinstall": "cd ../shared && npm install"
+    "serve": "vite preview"
   },
   "browserslist": {
     "production": [
@@ -87,9 +86,11 @@
     "@vitejs/plugin-react": "^5.1.4",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.1",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
+    "eslint-plugin-unused-imports": "^4.4.1",
     "postcss": "^8.4.39",
     "postcss-preset-mantine": "^1.18.0",
     "postcss-simple-vars": "^7.0.1",

@@ -5,12 +5,12 @@ import { manageFolderQuery } from '@shared/urql/queries/manageFolderQuery';
 import QueryFeedback from '../../components/QueryFeedback';
 import { ManagePublicLink } from './ManagePublicLink';
 import type { PicrFolder } from '@shared/types/picr';
-import { DisconnectedIcon } from '../../PicrIcons';
+import { DisconnectedIcon, PublicLinkIcon } from '../../PicrIcons';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import { Button, Divider, Group, Stack, Switch } from '@mantine/core';
 import { PicrDataGrid } from '../../components/PicrDataGrid';
 import { EmptyPlaceholder } from '../EmptyPlaceholder';
-import { PublicLinkIcon } from '../../PicrIcons';
+
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { Tips } from '../../components/Tips';
 import { publicLinkColumns } from './userColumns';

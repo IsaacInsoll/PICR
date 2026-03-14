@@ -4,6 +4,7 @@ import type {
   SortFolderContentsResult,
 } from './sortFiles';
 import { sortFolderContents } from './sortFiles';
+
 export type { ViewFolderFileWithHero, ViewFolderSubFolder } from './sortFiles';
 
 export type FolderContentsViewModel = SortFolderContentsResult;

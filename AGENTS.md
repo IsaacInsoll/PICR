@@ -160,6 +160,14 @@ cd frontend && npx tsc --noEmit  # Frontend only
 cd shared && npx tsc --noEmit    # Shared only
 cd app && npm run typecheck      # App only
 
+# Install sequencing
+npm run install-all              # Preferred install flow for all subsystems
+
+# Local install note
+# `frontend` and `app` both depend on `shared`, but installs are now explicit.
+# If installing subsystems manually, install `shared` first, then `frontend` / `app`.
+# Do not run `npm install` for `shared`, `frontend`, and `app` in parallel.
+
 # Formatting
 npm run format               # Apply Prettier formatting across the repo
 npm run format:check         # Verify formatting only (same check used in CI)
