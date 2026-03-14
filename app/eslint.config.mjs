@@ -6,6 +6,7 @@ import {
   picrCommonPlugins,
   picrCommonRules,
   picrRestrictedImports,
+  picrTypeScriptRules,
 } from '../eslint/picr-eslint.mjs';
 
 export default defineConfig([
@@ -20,6 +21,7 @@ export default defineConfig([
     },
     rules: {
       ...picrCommonRules,
+      ...picrTypeScriptRules,
       'react/no-array-index-key': 'warn',
       'no-restricted-imports': picrRestrictedImports([
         {

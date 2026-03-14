@@ -8,6 +8,7 @@ import {
   picrCommonPlugins,
   picrCommonRules,
   picrRestrictedImports,
+  picrTypeScriptRules,
 } from '../eslint/picr-eslint.mjs';
 
 export default tseslint.config(
@@ -28,6 +29,7 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       ...picrCommonRules,
+      ...picrTypeScriptRules,
       'react/prop-types': 'off',
       'react/destructuring-assignment': ['error', 'always'],
       'react/no-unescaped-entities': 'off',

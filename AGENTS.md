@@ -1,6 +1,6 @@
 # PICR Repository Guidelines
 
-**If a tool or command fails, stop and ask — do not work around it.**
+**If a tool or command fails, stop and ask — do not work around it. One exception: if the failure is clearly caused by an obvious command typo or shell syntax issue (for example missing quotes around a path with `[` or `]`), fix that exact mistake and retry once before checking with the user.**
 
 PICR is an open-source photo/video gallery for photographers to share media with clients. Deployed via Docker for self-hosting, with a React Native companion app.
 
