@@ -5,6 +5,7 @@ import {
   picrCommonPlugins,
   picrCommonRules,
   picrRestrictedImports,
+  picrTypeAwareAsyncRules,
   picrTypeScriptRules,
 } from '../eslint/picr-eslint.mjs';
 
@@ -26,9 +27,7 @@ export default tseslint.config(
     rules: {
       ...picrCommonRules,
       ...picrTypeScriptRules,
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      ...picrTypeAwareAsyncRules,
       'no-restricted-imports': picrRestrictedImports([
         {
           group: ['../**/frontend/**'],

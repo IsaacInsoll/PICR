@@ -38,8 +38,7 @@ export async function registerForPushNotificationsAsync() {
     token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
     // console.log(token);
   } catch (e) {
-    console.error(e);
-    token = `${e}`;
+    token = e instanceof Error ? e.message : String(e);
   }
   return token;
 }

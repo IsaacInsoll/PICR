@@ -8,6 +8,7 @@ import {
   picrCommonPlugins,
   picrCommonRules,
   picrRestrictedImports,
+  picrTypeAwareAsyncRules,
   picrTypeScriptRules,
 } from '../eslint/picr-eslint.mjs';
 
@@ -39,9 +40,7 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       ...picrCommonRules,
       ...picrTypeScriptRules,
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      ...picrTypeAwareAsyncRules,
       'react/prop-types': 'off',
       'react/destructuring-assignment': ['error', 'always'],
       'react/no-unescaped-entities': 'off',

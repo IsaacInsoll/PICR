@@ -6,6 +6,7 @@ import {
   picrCommonPlugins,
   picrCommonRules,
   picrRestrictedImports,
+  picrTypeAwareAsyncRules,
   picrTypeScriptRules,
 } from '../eslint/picr-eslint.mjs';
 
@@ -28,9 +29,7 @@ export default defineConfig([
     rules: {
       ...picrCommonRules,
       ...picrTypeScriptRules,
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/switch-exhaustiveness-check': 'error',
+      ...picrTypeAwareAsyncRules,
       'react/no-array-index-key': 'warn',
       'no-restricted-imports': picrRestrictedImports([
         {

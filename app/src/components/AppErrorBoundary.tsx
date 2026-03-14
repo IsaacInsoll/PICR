@@ -13,7 +13,6 @@ export const AppErrorBoundary = ({ children }: { children: ReactNode }) => {
 
 function fallbackRender({ error }: FallbackProps) {
   // const theme = useAppTheme();
-  console.log(error.stack);
   const stackLines = (error.stack ?? '').split('\n').slice(0, 4);
 
   return (
