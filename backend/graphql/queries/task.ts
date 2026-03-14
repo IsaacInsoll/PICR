@@ -1,5 +1,5 @@
 import { queueTaskStatus } from '../../filesystem/fileQueue.js';
-import type { Task , QueryTasksArgs } from '@shared/gql/graphql.js';
+import type { Task, QueryTasksArgs } from '@shared/gql/graphql.js';
 import { queueZipTaskStatus } from '../../helpers/zipQueue.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';

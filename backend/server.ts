@@ -4,7 +4,7 @@ import { setupRootFolder } from './filesystem/events/addFolder.js';
 import { envPassword } from './boot/envPassword.js';
 import { expressServer } from './express/express.js';
 import { dbMigrate } from './boot/dbMigrate.js';
-import { log , logger } from './logger.js';
+import { log, logger } from './logger.js';
 import { picrConfig } from './config/picrConfig.js';
 import { initDb } from './db/picrDb.js';
 import { schemaMigration } from './db/schemaMigration.js';
