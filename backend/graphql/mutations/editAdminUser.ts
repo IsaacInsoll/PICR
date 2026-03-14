@@ -18,6 +18,7 @@ import { UserType } from '@shared/gql/graphql.js';
 import { commentPermissionsEnum } from '../types/enums.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationEditAdminUserArgs } from '@shared/gql/graphql.js';
+import { parseNumericId } from '../helpers/parseNumericId.js';
 
 const resolver: PicrResolver<object, MutationEditAdminUserArgs> = async (
   _,
@@ -33,6 +34,7 @@ const resolver: PicrResolver<object, MutationEditAdminUserArgs> = async (
 
   const { user } = await contextPermissions(context, params.folderId, 'Admin');
   let adminUser: UserFields | undefined;
+  const adminUserId = params.id ? parseNumericId(params.id, 'id') : undefined;
 
   const pass = params.password;
   const username = params.username;
@@ -50,14 +52,14 @@ const resolver: PicrResolver<object, MutationEditAdminUserArgs> = async (
     });
 
     if (existingUsername) {
-      if (existingUsername.id !== params.id || !params.id) {
+      if (existingUsername.id !== adminUserId || !adminUserId) {
         throw new GraphQLError(`Username "${username} already exists`);
       }
     }
   }
 
-  if (params.id) {
-    adminUser = await dbUserForId(params.id);
+  if (adminUserId) {
+    adminUser = await dbUserForId(adminUserId);
     if (!adminUser)
       throw new GraphQLError('No user found for ID: ' + params.id);
     const userFolder = await dbFolderForId(adminUser.folderId);

@@ -7,6 +7,7 @@ import { GraphQLID } from 'graphql/index.js';
 import { and, eq } from 'drizzle-orm';
 import { dbUserDevice } from '../../db/models/index.js';
 import { doAuthError } from '../../auth/doAuthError.js';
+import { parseNumericId } from '../helpers/parseNumericId.js';
 
 const resolver: PicrResolver<object, QueryUserDevicesArgs> = async (
   _,
@@ -17,11 +18,12 @@ const resolver: PicrResolver<object, QueryUserDevicesArgs> = async (
   if (!user || !isUser) {
     return doAuthError('NOT_A_USER');
   }
-  if (user.id !== params.userId) {
+  const userId = parseNumericId(params.userId, 'userId');
+  if (user.id !== userId) {
     return doAuthError('ACCESS_DENIED');
   }
 
-  const filters = [eq(dbUserDevice.userId, params.userId)];
+  const filters = [eq(dbUserDevice.userId, userId)];
   if (params.notificationToken) {
     filters.push(eq(dbUserDevice.notificationToken, params.notificationToken));
   }

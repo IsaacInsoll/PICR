@@ -11,6 +11,7 @@ import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationEditUserDeviceArgs } from '@shared/gql/graphql.js';
 import { userDeviceType } from '../types/userDeviceType.js';
 import { doAuthError } from '../../auth/doAuthError.js';
+import { parseNumericId } from '../helpers/parseNumericId.js';
 
 const resolver: PicrResolver<object, MutationEditUserDeviceArgs> = async (
   _,
@@ -21,12 +22,13 @@ const resolver: PicrResolver<object, MutationEditUserDeviceArgs> = async (
   if (!user || !isUser) {
     return doAuthError('NOT_A_USER');
   }
-  if (user.id !== params.userId) {
+  const userId = parseNumericId(params.userId, 'userId');
+  if (user.id !== userId) {
     return doAuthError('ACCESS_DENIED');
   }
 
   const props = {
-    userId: params.userId,
+    userId,
     name: params.name,
     notificationToken: params.notificationToken,
     enabled: params.enabled,
@@ -35,7 +37,7 @@ const resolver: PicrResolver<object, MutationEditUserDeviceArgs> = async (
 
   const existing = await db.query.dbUserDevice.findFirst({
     where: and(
-      eq(dbUserDevice.userId, params.userId),
+      eq(dbUserDevice.userId, userId),
       eq(dbUserDevice.notificationToken, params.notificationToken),
     ),
   });
