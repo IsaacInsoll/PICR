@@ -14,13 +14,13 @@ export const CommentButton = ({
       inline
       label={totalComments}
       size={16}
-      disabled={!totalComments || totalComments == 0}
+      disabled={!totalComments || totalComments === 0}
     >
       <Tooltip
-        label={`${totalComments} Comment` + (totalComments != 1 ? 's' : '')}
+        label={`${totalComments} Comment` + (totalComments !== 1 ? 's' : '')}
       >
         <ActionIcon variant="default" onClick={onClick}>
-          {totalComments == 0 ? <CommentIcon /> : <CommentsIcon />}
+          {totalComments === 0 ? <CommentIcon /> : <CommentsIcon />}
         </ActionIcon>
       </Tooltip>
     </Indicator>

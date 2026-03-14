@@ -34,6 +34,6 @@ export function buildTreeArray(flatArray: TreeNode[], rootId?: NodeId) {
 
   // Filter flatArray for root nodes
   return flatArray
-    .filter((item) => (rootId ? item.id == rootId : item.parentId === null))
+    .filter((item) => (rootId ? item.id === rootId : item.parentId === null))
     .map((item) => buildNode(item.id));
 }

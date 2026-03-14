@@ -6,10 +6,10 @@ export const useCommentPermissions = (): UseCommentPermissionsResult => {
   const perms = me?.commentPermissions ?? CommentPermissions.None;
   return {
     commentPermissions: perms,
-    isNone: perms == CommentPermissions.None,
-    canView: perms != CommentPermissions.None,
-    readOnly: perms == CommentPermissions.Read,
-    canEdit: perms == CommentPermissions.Edit,
+    isNone: perms === CommentPermissions.None,
+    canView: perms !== CommentPermissions.None,
+    readOnly: perms === CommentPermissions.Read,
+    canEdit: perms === CommentPermissions.Edit,
   };
 };
 

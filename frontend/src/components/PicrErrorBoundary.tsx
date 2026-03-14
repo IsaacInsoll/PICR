@@ -35,7 +35,7 @@ function fallbackRender({ error }: FallbackProps) {
 }
 
 const prettyMessage = (errorMessage: string) => {
-  if (errorMessage == 'r.definitions is not iterable')
+  if (errorMessage === 'r.definitions is not iterable')
     return 'GraphQL Query Error. Try a build';
   return errorMessage;
 };

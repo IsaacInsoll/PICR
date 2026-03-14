@@ -74,7 +74,7 @@ export const zipInProgress = (
 ) => {
   // we don't know key as this could be a previous download or something
   // const q = zipQueue[folderHash.key];
-  // return !q || q.status == 'Complete';
+  // return !q || q.status === 'Complete';
   // Developer debugging:
   // log('debug', 'Starting zipInProgress check');
 
@@ -87,8 +87,8 @@ export const zipInProgress = (
     //   'debug',
     //   `zipInProgress item hash=${String(q.hash)} targetHash=${folderHash.hash} folder=${q.folder.id} targetFolder=${folderHash.folder.id} status=${q.status}`,
     // );
-    if (q.hash == folderHash.hash && q.folder.id == folderHash.folder.id) {
-      if (q.status != 'Complete') {
+    if (q.hash === folderHash.hash && q.folder.id === folderHash.folder.id) {
+      if (q.status !== 'Complete') {
         // Developer debugging:
         // log('debug', `ZIP currently in progress for folder ${q.folder.id}`);
         inProgress = true;

@@ -13,14 +13,14 @@ export const addFolderRelationship = async (
     .filter((v): v is number => v != null)
     .filter((v, i, a) => a.indexOf(v) === i);
 
-  if (ids.length == 0) return list;
+  if (ids.length === 0) return list;
 
   const folders = await db.query.dbFolder.findMany({
     where: inArray(dbFolder.id, ids),
   });
 
   return list.map((obj) => {
-    const folder = folders.find((f) => f.id == obj.folderId);
+    const folder = folders.find((f) => f.id === obj.folderId);
     return { ...obj, folder };
   });
 };

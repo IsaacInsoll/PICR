@@ -145,7 +145,7 @@ export const FolderTable = ({
     <Table>
       <Table.Tbody>
         {sorted.map((f) => {
-          const isFiles = f.id == 'files';
+          const isFiles = f.id === 'files';
           const percent = largest ? (f.size / largest) * 100 : 0;
           return (
             <Table.Tr
@@ -156,8 +156,8 @@ export const FolderTable = ({
               style={{
                 cursor: 'pointer',
                 backgroundColor:
-                  hover == f.id ||
-                  (hover == 'rest' && !slices.some(({ x }) => x == f.id))
+                  hover === f.id ||
+                  (hover === 'rest' && !slices.some(({ x }) => x === f.id))
                     ? f.color + '33'
                     : undefined,
               }}

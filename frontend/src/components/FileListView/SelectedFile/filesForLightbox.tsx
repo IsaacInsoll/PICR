@@ -8,7 +8,7 @@ export const filesForLightbox = (files: PicrFile[]): Slide[] => {
   return files.map((file) => {
     const title = file.name ?? '';
     const props =
-      file.type == 'Image'
+      file.type === 'Image'
         ? {
             srcSet: thumbnailSizes.map((size): ImageSource => {
               const width = thumbnailDimensions[size];
@@ -17,7 +17,7 @@ export const filesForLightbox = (files: PicrFile[]): Slide[] => {
             }),
             src: imageURL(file, 'raw'),
           }
-        : file.type == 'Video'
+        : file.type === 'Video'
           ? {
               type: 'video',
               poster: undefined, //todo: poster

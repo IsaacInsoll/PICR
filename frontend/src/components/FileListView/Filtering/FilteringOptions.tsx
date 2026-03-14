@@ -101,7 +101,7 @@ const FilterTable = ({
               <Box flex={1}>
                 {totalFilters > 0 ? (
                   <Alert variant="light" icon={<InfoIcon />} p={8}>
-                    {totalFiltered == files.length
+                    {totalFiltered === files.length
                       ? 'Showing all files'
                       : `Showing ${totalFiltered} of ${files.length} files`}
                   </Alert>
@@ -110,7 +110,7 @@ const FilterTable = ({
               <Button
                 variant="outline"
                 size="sm"
-                disabled={totalFilters == 0}
+                disabled={totalFilters === 0}
                 onClick={() => resetFilters()}
               >
                 Clear {totalFilters > 0 ? totalFilters : ''} Filters

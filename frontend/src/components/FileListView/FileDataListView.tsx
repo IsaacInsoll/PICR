@@ -31,9 +31,9 @@ export const FileDataListView = ({
     .filter(({ isComment }) => canView || !isComment)
     .filter(
       ({ visibleFor }) =>
-        visibleFor == 'xs' ||
-        (visibleFor == 'sm' && (!isMobile || isNone)) ||
-        (visibleFor == 'md' && (isNone || (!isMobile && !isSmall))),
+        visibleFor === 'xs' ||
+        (visibleFor === 'sm' && (!isMobile || isNone)) ||
+        (visibleFor === 'md' && (isNone || (!isMobile && !isSmall))),
     );
 
   return (

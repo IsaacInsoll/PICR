@@ -21,7 +21,7 @@ const resolver: PicrResolver<object, MutationEditUserDeviceArgs> = async (
   if (!user || !isUser) {
     return doAuthError('NOT_A_USER');
   }
-  if (user.id != params.userId) {
+  if (user.id !== params.userId) {
     return doAuthError('ACCESS_DENIED');
   }
 

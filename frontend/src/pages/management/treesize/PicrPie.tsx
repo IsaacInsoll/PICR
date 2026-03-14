@@ -26,7 +26,7 @@ export const PicrPie = ({
         // labelRadius={60}
         padAngle={3}
         animate={{ duration: 1000 }} //breaks when navigating to another folder,presumably because all IDs changed?
-        radius={({ datum }) => (highlightedSlice == datum.x ? 120 : 110)}
+        radius={({ datum }) => (highlightedSlice === datum.x ? 120 : 110)}
         colorScale={slices.map(({ color }) => color)}
         events={[
           {

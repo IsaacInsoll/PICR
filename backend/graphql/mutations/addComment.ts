@@ -26,7 +26,7 @@ const resolver: PicrResolver<object, MutationAddCommentArgs> = async (
   );
   if (!file?.exists) throw new GraphQLError('File not found');
 
-  if (!user || user.commentPermissions != 'edit') {
+  if (!user || user.commentPermissions !== 'edit') {
     doAuthError('COMMENTS_NOT_ALLOWED');
   }
 
@@ -43,7 +43,7 @@ const resolver: PicrResolver<object, MutationAddCommentArgs> = async (
     );
   }
   if (params.flag) {
-    file.flag = params.flag == 'none' ? null : params.flag;
+    file.flag = params.flag === 'none' ? null : params.flag;
     await addCommentDB(file, user, { flag: params.flag });
     await sendCommentAddedNotification(
       folder,

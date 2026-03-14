@@ -18,8 +18,8 @@ export const FileRating = ({
 
   const handleChange = (r: number) => {
     if (!onChange) return;
-    onChange(r == value ? 0 : r);
-    if (r != value && r == 5) reward();
+    onChange(r === value ? 0 : r);
+    if (r !== value && r === 5) reward();
   };
 
   return (

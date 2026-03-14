@@ -56,12 +56,12 @@ export const FileSortSelector = () => {
       setSort({
         type: selectedOption.value,
         direction: 'Asc',
-        // direction: v == 'Filename' ? 'Asc' : 'Desc',
+        // direction: v === 'Filename' ? 'Asc' : 'Desc',
       });
     } else {
       setSort({
         ...sort,
-        direction: sort.direction == 'Asc' ? 'Desc' : 'Asc',
+        direction: sort.direction === 'Asc' ? 'Desc' : 'Asc',
       });
     }
     close();

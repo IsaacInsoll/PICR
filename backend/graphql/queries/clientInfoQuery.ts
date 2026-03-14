@@ -12,7 +12,7 @@ const resolver: PicrResolver = async (_, _params, context) => {
 
   return {
     avifEnabled: opts.avifEnabled ?? false,
-    canWrite: user.userType == 'Admin' && picrConfig.canWrite,
+    canWrite: user.userType === 'Admin' && picrConfig.canWrite,
     baseUrl: picrConfig.baseUrl,
   };
 };

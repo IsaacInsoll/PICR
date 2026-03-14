@@ -67,7 +67,7 @@ const metadataFilter = (
   let allowed = true;
   Object.entries(metadata).forEach(([title, options]) => {
     if (options.length > 0) {
-      if (file?.__typename == 'File') {
+      if (file?.__typename === 'File') {
         allowed = false; // basic files don't have metadata
       } else {
         const val = file.metadata?.[title];
@@ -84,13 +84,13 @@ const commentsFilter = (
 ): boolean => {
   const { flag, rating, ratingComparison, comments } = filters;
   const flagOk =
-    flag == null || file.flag == flag || (flag == 'none' && !file.flag);
+    flag == null || file.flag === flag || (flag === 'none' && !file.flag);
   if (!flagOk) return false;
   if (ratingComparison) {
     const r = file.rating ?? 0;
     switch (ratingComparison) {
       case 'equal':
-        if (r != rating) return false;
+        if (r !== rating) return false;
         break;
       case 'greaterThan':
         if (!(r >= rating)) return false;
@@ -101,8 +101,8 @@ const commentsFilter = (
     }
   }
   const tc = file.totalComments ?? 0;
-  if (comments == 'None' && tc > 0) return false;
-  if (comments == 'Some' && tc == 0) return false;
+  if (comments === 'None' && tc > 0) return false;
+  if (comments === 'Some' && tc === 0) return false;
 
   return true;
 };

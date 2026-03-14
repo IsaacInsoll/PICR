@@ -39,7 +39,7 @@ const resolver: PicrResolver<object, QuerySearchFilesArgs> = async (
   return files.map((file) => {
     return {
       ...file,
-      folder: folders.find(({ id }) => id == file.folderId),
+      folder: folders.find(({ id }) => id === file.folderId),
     };
   });
 };

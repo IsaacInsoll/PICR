@@ -17,12 +17,12 @@ export const CommentHistory = ({
   const filter = useAtomValue(commentFilterAtom);
   const sort = useAtomValue(commentSortAtom);
   const filteredComments = comments.filter((c) => {
-    if (filter == 'all') return true;
-    if (filter == 'comments') return !c.systemGenerated;
-    if (filter == 'ratings') return c.systemGenerated;
+    if (filter === 'all') return true;
+    if (filter === 'comments') return !c.systemGenerated;
+    if (filter === 'ratings') return c.systemGenerated;
   });
   const sortedComments =
-    sort == 'desc' ? filteredComments : filteredComments.toReversed();
+    sort === 'desc' ? filteredComments : filteredComments.toReversed();
   return (
     <>
       <Group justify="space-between">

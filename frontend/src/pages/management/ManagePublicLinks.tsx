@@ -34,9 +34,9 @@ export const ManagePublicLinks = ({
   variant = 'table',
 }: ManagePublicLinksProps) => {
   const isMobile = useIsMobile();
-  const [includeParents, setIncludeParents] = useState(relations == 'parents');
+  const [includeParents, setIncludeParents] = useState(relations === 'parents');
   const [includeChildren, setIncludeChildren] = useState(
-    relations == 'children',
+    relations === 'children',
   );
 
   const [linkId, setLinkId] = useState<string | null>(null);
@@ -53,7 +53,7 @@ export const ManagePublicLinks = ({
           />
         </Suspense>
       ) : null}
-      {relations == 'options' ? (
+      {relations === 'options' ? (
         <Stack>
           <Divider />
           <Tips type="PublicLink" />

@@ -12,7 +12,7 @@ export const allSubfolders = async (
   limit?: number,
 ): Promise<FolderFields[]> => {
   const orderBy =
-    sort == FoldersSortType.FolderLastModified
+    sort === FoldersSortType.FolderLastModified
       ? desc(dbFolder.folderLastModified)
       : asc(dbFolder.name);
 

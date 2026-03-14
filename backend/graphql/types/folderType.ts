@@ -148,7 +148,7 @@ export const folderType: GraphQLObjectType<FolderFields, PicrRequestContext> =
         resolve: async (f: FolderFields, _params, context) => {
           //TODO: handle this better: viewing a folder with a lot of subfolders calls this query a bunch of times and slows shit down
           const { permissions } = await contextPermissions(context, f.id);
-          if (permissions != 'Admin') return null;
+          if (permissions !== 'Admin') return null;
 
           const users = await db.query.dbUser.findMany({
             where: eq(dbUser.folderId, f.id),
@@ -166,7 +166,7 @@ export const folderType: GraphQLObjectType<FolderFields, PicrRequestContext> =
             context,
             f.id,
           );
-          if (permissions != 'Admin') return null;
+          if (permissions !== 'Admin') return null;
           return folder?.relativePath;
         },
       },

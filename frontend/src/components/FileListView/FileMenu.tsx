@@ -53,7 +53,7 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
       {canView ? (
         <Menu.Item
           leftSection={
-            file.totalComments == 0 ? <CommentIcon /> : <CommentsIcon />
+            file.totalComments === 0 ? <CommentIcon /> : <CommentsIcon />
           }
           key={3}
           onClick={() => openComment(file.id)}

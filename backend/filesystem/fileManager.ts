@@ -6,7 +6,7 @@ import type { FileFields } from '../db/picrDb.js';
 export const relativePath = (path: string) =>
   path.replace(picrConfig.mediaPath, '').replace(/^\//, '');
 export const fullPath = (relativePath: string) => {
-  if (relativePath == '') return picrConfig.mediaPath;
+  if (relativePath === '') return picrConfig.mediaPath;
   return picrConfig.mediaPath + '/' + relativePath;
 };
 export const pathSplit = (path: string) => relativePath(path).split('/');

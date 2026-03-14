@@ -27,7 +27,7 @@ export const heroImageForFolder = async (
   }
   // 1. Hero Image set for current folder
   const heroImage =
-    f.heroImageId && f.heroImageId != 0
+    f.heroImageId && f.heroImageId !== 0
       ? await dbFileForId(f.heroImageId)
       : undefined;
   if (

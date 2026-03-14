@@ -157,7 +157,7 @@ export const createAccessLog = async (
     .insert(dbAccessLog)
     .values({ ...props, createdAt: new Date(), updatedAt: new Date() });
 
-  if (type == 'View' && recentSession) return;
+  if (type === 'View' && recentSession) return;
   await sendFolderViewedNotification(folder, user, type);
 };
 

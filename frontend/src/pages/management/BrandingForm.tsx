@@ -790,7 +790,7 @@ const ColorSelector = ({
               key={c}
               onClick={() => onChange(c)}
             >
-              {c == color ? <CheckIcon /> : null}
+              {c === color ? <CheckIcon /> : null}
             </ActionIcon>
           );
         })}

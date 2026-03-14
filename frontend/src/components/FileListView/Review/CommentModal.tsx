@@ -114,7 +114,7 @@ const AddCommentBox = ({
       <Group justify="end">
         <Button
           variant="filled"
-          disabled={text.length == 0}
+          disabled={text.length === 0}
           onClick={onSubmit}
           loading={submitting}
         >

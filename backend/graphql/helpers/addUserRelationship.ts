@@ -13,13 +13,13 @@ export const addUserRelationship = async (
     .map((b) => b.userId)
     .filter((v, i, a) => a.indexOf(v) === i)
     .filter((x) => x != null);
-  if (ids.length == 0) return list;
+  if (ids.length === 0) return list;
 
   const users = await db.query.dbUser.findMany({
     where: inArray(dbUser.id, ids),
   });
   return list.map((obj) => {
-    const u = users.find((f) => f.id == obj.userId);
+    const u = users.find((f) => f.id === obj.userId);
     if (!u) return obj;
     const user = userToJSON(u);
     const userLimitedDetails = {

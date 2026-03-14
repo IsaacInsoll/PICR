@@ -23,7 +23,7 @@ export const FileInfoModal = ({ file }: { file: PicrFile }) => {
       overlayProps={{ blur: 3 }}
       // transitionProps={{ transition: 'fade', duration: 200 }}
     >
-      {file.type == 'Image' || file.type == 'Video' ? (
+      {file.type === 'Image' || file.type === 'Video' ? (
         <Box mb={16}>
           {/*<PicrImage file={file} size="md" clickable={false} />*/}
           <FilePreview file={file} />

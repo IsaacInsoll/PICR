@@ -88,7 +88,7 @@ const Row = ({
   // if filtering by RecentlyCommented or LastModified then lets show that data
   const { type } = useAtomValue(fileSortAtom);
   const descriptionOverride =
-    type == 'RecentlyCommented' ? (
+    type === 'RecentlyCommented' ? (
       <>
         {latestComment ? (
           <>
@@ -101,7 +101,7 @@ const Row = ({
           </>
         ) : null}
       </>
-    ) : type == 'LastModified' ? (
+    ) : type === 'LastModified' ? (
       <>
         {modifiedDate ? (
           <Text c="dimmed" fz="xs">

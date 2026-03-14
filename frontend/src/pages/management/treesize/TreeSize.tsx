@@ -24,7 +24,7 @@ export const TreeSize = ({ rootId }: { rootId?: string }) => {
 
   const setFolderId = (id: string) => {
     //todo: URL state instead of atom
-    if (id == 'files') {
+    if (id === 'files') {
       setTreeSizeTab('files');
     } else {
       navigate('/admin/settings/treesize/' + id);
@@ -55,7 +55,7 @@ const TreeSizeNode = ({
   // i was passing this to FolderSummary so you got sweet mouseover of subfolder but it feels kinda clunky.
   // it was still good though so feel free to revert this
   // const hoveredFolder: PicrFolder =
-  //   folder?.subFolders.find(({ id }) => id == hover) ?? folder;
+  //   folder?.subFolders.find(({ id }) => id === hover) ?? folder;
 
   const crumbs = [
     ...(folder?.parents?.toReversed().map((f) => (

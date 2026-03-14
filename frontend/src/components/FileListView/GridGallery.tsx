@@ -103,7 +103,7 @@ export const GridGallery = ({
 
           if (!p.item.file) return null;
 
-          if (p.item.file.type == 'File') {
+          if (p.item.file.type === 'File') {
             return <PicrGenericFile file={p.item.file} title={title} />;
           }
 
@@ -123,7 +123,7 @@ const GalleryImage = ({ imageProps, item }: GalleryImageProps) => {
   if (!item.file) return null;
   const file: ViewFolderFileWithHero = item.file;
   return <FilePreview file={file} imageProps={imageProps} />;
-  // if (file.type == 'Video') {
+  // if (file.type === 'Video') {
   //   return <PicrVideoPreview file={file} imageProps={imageProps} />;
   // }
   // return (

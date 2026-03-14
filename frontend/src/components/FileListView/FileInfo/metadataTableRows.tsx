@@ -46,7 +46,7 @@ export const MetadataTableRows = (file: PicrFile) => {
 };
 
 const formatValue = (res: MetadataPresentationResult) => {
-  if (res.description == 'Aspect Ratio' && typeof res.data === 'number') {
+  if (res.description === 'Aspect Ratio' && typeof res.data === 'number') {
     const { denominator, numerator } = toReadableFraction(res.data);
     return (
       <>
@@ -55,12 +55,12 @@ const formatValue = (res: MetadataPresentationResult) => {
     );
   }
 
-  if (res.description == 'Original Rating') {
+  if (res.description === 'Original Rating') {
     const rating = Number(res.label);
     return <Rating value={Number.isFinite(rating) ? rating : 0} readOnly />;
   }
 
-  if (res.description == 'Framerate')
+  if (res.description === 'Framerate')
     return res.label ? (
       <>
         {res.label}

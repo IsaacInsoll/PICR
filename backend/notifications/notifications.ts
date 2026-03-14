@@ -37,7 +37,7 @@ export const sendFolderViewedNotification = async (
   type: AccessType,
 ) => {
   // only notify if it's a 'public' user
-  if (user.userType != 'Link') {
+  if (user.userType !== 'Link') {
     return;
   }
 
@@ -45,7 +45,7 @@ export const sendFolderViewedNotification = async (
   await sendNotification(folder, {
     title: user.name,
     message: `${type} ${folder.name}`,
-    type: type == 'View' ? 'viewed' : 'downloaded',
+    type: type === 'View' ? 'viewed' : 'downloaded',
     url: userUrlForFolder(folder.id),
     imageUrl: heroImage ? urlForImage(heroImage, 'sm') : undefined,
   });
@@ -77,7 +77,7 @@ const sendNotification = async (
   const ntfys = users
     .filter(
       (u): u is UserFields & { ntfy: string } =>
-        !!u.ntfy && payload.userId != u.id,
+        !!u.ntfy && payload.userId !== u.id,
     )
     .map((u) => {
       const email =
@@ -87,7 +87,7 @@ const sendNotification = async (
       return sendNtfyNotification(u.ntfy, payload, { email });
     });
 
-  const userIds = users.map((u) => u.id).filter((i) => i != payload.userId);
+  const userIds = users.map((u) => u.id).filter((i) => i !== payload.userId);
   const devices = await db.query.dbUserDevice.findMany({
     where: and(
       inArray(dbUserDevice.userId, userIds),

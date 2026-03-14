@@ -63,12 +63,12 @@ interface FolderStat {
 export const folderStatsSummaryText = async (folderId: number) => {
   const stats = await folderStats(folderId);
   let str = stats
-    .filter(({ type, total }) => type != 'Folder' && total > 0)
+    .filter(({ type, total }) => type !== 'Folder' && total > 0)
     .map(({ type, total }) => pluralize(total, type))
     .join(', ');
 
-  const folder = stats.find(({ type }) => type == 'Folder')?.total;
+  const folder = stats.find(({ type }) => type === 'Folder')?.total;
   if (folder && folder > 1)
-    str += (str != '' ? ' in ' : '') + `${folder} folders`;
+    str += (str !== '' ? ' in ' : '') + `${folder} folders`;
   return str;
 };

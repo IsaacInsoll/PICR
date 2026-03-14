@@ -52,7 +52,7 @@ export const QuickFind = ({ folder }: { folder?: PicrFolder }) => {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.code == 'Backquote') {
+      if (e.code === 'Backquote') {
         toggle();
         e.stopPropagation();
       }
@@ -92,7 +92,7 @@ export const QuickFind = ({ folder }: { folder?: PicrFolder }) => {
             data-autofocus
             onChange={(e) => {
               const nativeEvent = e.nativeEvent as InputEvent;
-              if (nativeEvent.data == '`') return; //don't allow entry of the backtick
+              if (nativeEvent.data === '`') return; //don't allow entry of the backtick
               setQuery(e.currentTarget.value);
             }}
             // size="lg"
@@ -118,7 +118,7 @@ const Results = ({
   const query = useAtomValue(queryAtom);
   const scope = useAtomValue(scopeAtom);
   const type = useAtomValue(scopeTypeAtom);
-  const folderId = scope == 'all' || !folder?.id ? me?.folderId : folder.id;
+  const folderId = scope === 'all' || !folder?.id ? me?.folderId : folder.id;
   const queryFolderId = folderId as string;
   const [debouncedQuery] = useDebouncedValue(query, 200);
   const [index, setIndex] = useState<number | null>(null);
@@ -127,7 +127,7 @@ const Results = ({
   const [results] = useQuery({
     query: searchQuery,
     variables: { query: debouncedQuery, folderId: queryFolderId },
-    pause: debouncedQuery == '' || !folderId,
+    pause: debouncedQuery === '' || !folderId,
   });
 
   const folders = results.data?.searchFolders ?? [];
@@ -152,20 +152,20 @@ const Results = ({
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.code == 'ArrowUp') {
+      if (e.code === 'ArrowUp') {
         e.stopPropagation();
         setIndex((i) => {
           if (i == null) return null;
           return i > 0 ? i - 1 : null;
         });
       }
-      if (e.code == 'ArrowDown') {
+      if (e.code === 'ArrowDown') {
         e.stopPropagation();
         setIndex((i) =>
           i == null ? 0 : i >= list.length - 1 ? list.length - 1 : i + 1,
         );
       }
-      if (e.code == 'Enter') {
+      if (e.code === 'Enter') {
         if (index == null) return;
         const item = list[index];
         if (!item) return;
@@ -193,7 +193,7 @@ const Results = ({
               key={'folder' + item.id}
               onClick={(e: React.MouseEvent) => handleClick(e, item)}
               onMouseOver={() => setIndex(i)}
-              selected={i == index}
+              selected={i === index}
             >
               <PrettyFolderPath
                 folder={item}
@@ -210,7 +210,7 @@ const Results = ({
             key={file.id}
             onClick={(e: React.MouseEvent) => handleClick(e, fileFolder, file)}
             onMouseOver={() => setIndex(i)}
-            selected={i == index}
+            selected={i === index}
           >
             <PrettyFilePath file={file} handleClick={handleClick} />
           </ResultButton>
@@ -221,7 +221,7 @@ const Results = ({
         totalFiles={totalFiles}
         totalFolders={totalFolders}
         moreResults={moreResults}
-        inHomeFolder={scope == 'current' && folderId !== me?.folderId}
+        inHomeFolder={scope === 'current' && folderId !== me?.folderId}
       />
     </Stack>
   );
@@ -302,7 +302,7 @@ const QuickFindFooter = ({
   return (
     <Stack p="lg">
       <Group gap="md">
-        {total == 0 ? (
+        {total === 0 ? (
           <Alert
             variant="transparent"
             color="orange"
@@ -343,7 +343,7 @@ const ScopeSelector = ({ folder }: { folder?: PicrFolder }) => {
   const [selectedScope, setSelectedScope] = useAtom(scopeAtom);
 
   //if we are in root folder, no point specifying "this or all folders"
-  if (me?.folderId == folder?.id) return null;
+  if (me?.folderId === folder?.id) return null;
 
   return (
     <SegmentedControl

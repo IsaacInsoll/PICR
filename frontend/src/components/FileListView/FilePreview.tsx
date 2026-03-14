@@ -10,7 +10,7 @@ export const FilePreview = ({
   file: PicrFile;
   imageProps?: ThumbnailImageComponentImageProps;
 }) => {
-  if (file.type == 'Video') {
+  if (file.type === 'Video') {
     return (
       <PicrVideoPreview file={file} {...imageProps} key={imageProps?.key} />
     );

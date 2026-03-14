@@ -55,7 +55,7 @@ export const MetadataBox = ({
         inline
         label={totalMetadataSelected}
         size={24}
-        disabled={totalMetadataSelected == 0}
+        disabled={totalMetadataSelected === 0}
       >
         <Button
           onClick={open}

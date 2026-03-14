@@ -93,7 +93,7 @@ const RecentUsersForFolder = ({ folderId }: { folderId: string }) => {
     query: recentUsersQuery,
     variables: { folderId },
   });
-  if (result.data?.users.length == 0)
+  if (result.data?.users.length === 0)
     return (
       <EmptyPlaceholder
         text="No public links have been used (yet!)"

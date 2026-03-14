@@ -8,13 +8,13 @@ export const folderAndAllParentIds = async (
   let f: FolderFields | undefined = folder;
   const ids = [f.id];
 
-  if (rootId && f.id == rootId) {
+  if (rootId && f.id === rootId) {
     return ids;
   }
 
   while (f?.parentId) {
     ids.push(f.parentId);
-    if (rootId && f.parentId == rootId) {
+    if (rootId && f.parentId === rootId) {
       return ids;
     }
     f = await dbFolderForId(f.parentId);

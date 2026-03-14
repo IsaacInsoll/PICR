@@ -11,7 +11,7 @@ export const userUrlForFile = (file: FileFields) => {
 };
 
 export const urlForImage = (file: FileFields, size: ThumbnailSize) => {
-  if (file.type != 'Image') return undefined;
+  if (file.type !== 'Image') return undefined;
   return (
     picrConfig.baseUrl +
     `image/${file.id}/${size}/${file.fileHash}/${file.name}`

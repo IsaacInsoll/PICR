@@ -46,7 +46,7 @@ export const picrTemplate = async (req: Request, res: Response) => {
 
   // Replace metadata on public links
   const sub = requestPath.split('/');
-  if (sub[1] == 's' && sub.length >= 3) {
+  if (sub[1] === 's' && sub.length >= 3) {
     const folderId = parseInt(sub[3], 10);
     if (!isNaN(folderId)) {
       // the following two lines are copy-pasta'd from gqlServer.ts, consider refactoring or less dodgy hacks here
@@ -57,7 +57,7 @@ export const picrTemplate = async (req: Request, res: Response) => {
         { user, userHomeFolder, headers: {} },
         folderId,
       );
-      if (permissions != 'None' && folder) {
+      if (permissions !== 'None' && folder) {
         const summary = await folderStatsSummaryText(folderId);
         const thumb = await heroImageForFolder(folder);
         fields = {
@@ -105,6 +105,6 @@ const imagePathFor = (
   size: 'raw' | 'sm' | 'md' | 'lg',
 ) => {
   const path = `/image/${file.id}/${size}/${file.fileHash}/`;
-  if (file.type == 'Video' && size != 'raw') return path + 'joined.jpg';
+  if (file.type === 'Video' && size !== 'raw') return path + 'joined.jpg';
   return path + file.name;
 };

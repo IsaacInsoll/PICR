@@ -126,7 +126,7 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
 };
 
 export const queueTaskStatus = (): null | Task => {
-  if (queueDone == queueTotal) return null;
+  if (queueDone === queueTotal) return null;
   return {
     name: 'Import Files and Generate Thumbnails',
     step: queueDone,

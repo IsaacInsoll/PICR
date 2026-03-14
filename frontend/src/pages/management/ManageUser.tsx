@@ -94,7 +94,7 @@ export const ManageUser = ({
   return (
     <Modal
       onClose={onClose}
-      title={`Manage User${folder?.id != '1' ? ' for: ' + folder?.name : ''}`}
+      title={`Manage User${folder?.id !== '1' ? ' for: ' + folder?.name : ''}`}
       centered
       opened={true}
     >

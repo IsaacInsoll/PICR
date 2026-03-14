@@ -9,14 +9,14 @@ export const FolderModalManager = ({ folder }: { folder: PicrFolder }) => {
   if (!a) return;
   const [type, id, highlight] = a.split('-');
 
-  const file = folder.files?.find((f) => f.id == id);
+  const file = folder.files?.find((f) => f.id === id);
   if (!file) return null;
   return (
     <>
-      {type == 'comments' ? (
+      {type === 'comments' ? (
         <CommentModal file={file} highlight={highlight} />
       ) : null}
-      {type == 'info' ? <FileInfoModal file={file} /> : null}
+      {type === 'info' ? <FileInfoModal file={file} /> : null}
     </>
   );
 };

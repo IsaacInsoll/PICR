@@ -14,7 +14,7 @@ export const FolderName = ({ folder }: { folder: PicrFolder }) => {
     <Tooltip
       withArrow={true}
       color="blue.9"
-      disabled={folder.parents?.length == 0}
+      disabled={folder.parents?.length === 0}
       label={<PrettyFolderPath folder={folder} subColor="blue.8" />}
     >
       <PicrLink
@@ -26,7 +26,7 @@ export const FolderName = ({ folder }: { folder: PicrFolder }) => {
         }}
       >
         <Code>
-          {folder.id == '1' ? (
+          {folder.id === '1' ? (
             <HomeIcon opacity={0.5} style={{ paddingTop: 3, marginRight: 2 }} />
           ) : null}
           {folder.name}

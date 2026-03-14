@@ -13,13 +13,13 @@ export const fileSortAtom = atom<FileSort, [FileSort], void>(
       ([, v]) => v === sort[0],
     );
     const type = (typeEntry?.[0] as FileSortType | undefined) ?? 'Filename';
-    const direction = sort[1] == 'a' ? 'Asc' : 'Desc';
+    const direction = sort[1] === 'a' ? 'Asc' : 'Desc';
     return { type, direction };
   },
   (get, set, args: FileSort) => {
     set(
       fileSortHashAtom,
-      fileSortEncoding[args.type] + (args.direction == 'Asc' ? 'a' : ''),
+      fileSortEncoding[args.type] + (args.direction === 'Asc' ? 'a' : ''),
     );
   },
 );

@@ -118,7 +118,7 @@ export const ManagePublicLink = ({
           value={name}
           label="Name"
           onChange={(e) => setName(e.currentTarget.value)}
-          error={name.length == 0 ? 'Name is required' : undefined}
+          error={name.length === 0 ? 'Name is required' : undefined}
         />
         <TextInput
           leftSection={<EmailIcon />}
@@ -142,7 +142,7 @@ export const ManagePublicLink = ({
                 <Group gap="xs">
                   <Text size="xs">Can't use:</Text>
                   {badLink.map((l) => (
-                    <Code key={l}>{l == ' ' ? 'space' : l}</Code>
+                    <Code key={l}>{l === ' ' ? 'space' : l}</Code>
                   ))}
                 </Group>
               ) : link.length < 6 ? (

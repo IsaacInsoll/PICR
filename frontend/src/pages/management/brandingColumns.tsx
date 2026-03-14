@@ -44,7 +44,7 @@ const ModeChip = ({ mode }: { mode: ThemeMode }) => {
   return (
     <Badge
       color={modeMap[mode]}
-      variant={mode == 'auto' ? 'default' : undefined}
+      variant={mode === 'auto' ? 'default' : undefined}
     >
       {mode}
     </Badge>

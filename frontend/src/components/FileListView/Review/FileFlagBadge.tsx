@@ -9,7 +9,7 @@ interface FileFlagBadgeProps {
 
 // A read-only representation of the current badge
 export const FileFlagBadge = ({ flag, hideIfNone }: FileFlagBadgeProps) => {
-  if (hideIfNone && (!flag || flag == FileFlag.None)) return null;
+  if (hideIfNone && (!flag || flag === FileFlag.None)) return null;
   if (!flag) return null;
   const styles = fileFlagStyles[flag];
   return (

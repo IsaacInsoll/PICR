@@ -69,7 +69,7 @@ const AvifEnabled = () => {
 };
 
 const Version = ({ version, latest }: { version: string; latest: string }) => {
-  const isLatest = latest == version;
+  const isLatest = latest === version;
   return (
     <Row title="PICR Version">
       <Code c={isLatest ? 'green' : 'red'}>{version}</Code>

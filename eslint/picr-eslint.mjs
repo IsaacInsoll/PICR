@@ -31,6 +31,7 @@ export const picrRestrictedSyntaxRules = [
 
 export const picrCommonRules = {
   'no-console': 'warn',
+  eqeqeq: ['error', 'always', { null: 'ignore' }],
   'import/no-duplicates': 'error',
   'import/newline-after-import': 'error',
   radix: 'error',

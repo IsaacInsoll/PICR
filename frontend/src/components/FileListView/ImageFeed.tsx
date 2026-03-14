@@ -47,7 +47,7 @@ export const ImageFeed = ({
   return (
     <Container>
       <Box ref={ref}></Box>
-      {bounds.width == 0 ? null : (
+      {bounds.width === 0 ? null : (
         <>
           {loadedItems.map((item, i) =>
             isFolderContentsFile(item) ? (
@@ -124,7 +124,7 @@ const FeedItem = ({
         {/*  </Skeleton>*/}
         {/*) : null}*/}
         {/*<Link to={`./${file.id}`}>*/}
-        {type == 'Image' ? (
+        {type === 'Image' ? (
           <Box style={{ ...dimensions, overflowY: 'hidden' }}>
             <PicrImage
               file={file}
@@ -136,7 +136,7 @@ const FeedItem = ({
           </Box>
         ) : null}
         {/*</Link>*/}
-        {file.type == 'Video' ? (
+        {file.type === 'Video' ? (
           <Box>
             <video controls playsInline style={{ maxWidth: '100%' }}>
               <source src={imageURL(file, 'raw')} />
@@ -144,7 +144,7 @@ const FeedItem = ({
             {/*<VideoBadge file={file} size="xl" />*/}
           </Box>
         ) : null}
-        {file.type == 'File' ? (
+        {file.type === 'File' ? (
           <PicrGenericFile file={file} style={{ height: 75 }} />
         ) : null}
       </Box>
@@ -160,7 +160,7 @@ const FeedItem = ({
         <Group gap="xs">
           <FileReview file={file} />
           {!isNone ? <Divider orientation="vertical" /> : null}
-          {file.type == 'Video' ? <OpenFileButton file={file} /> : null}
+          {file.type === 'Video' ? <OpenFileButton file={file} /> : null}
           <FileInfoButton file={file} />
           <FileDownloadButton file={file} />
         </Group>

@@ -28,7 +28,7 @@ export const getVideoMetadata = async (file: FileFields) => {
     m.Duration = format.duration;
     m.Format = format.format_long_name;
 
-    const video = streams.find(({ codec_type }) => codec_type == 'video');
+    const video = streams.find(({ codec_type }) => codec_type === 'video');
     if (video) {
       m.VideoCodec = video.codec_name;
       m.VideoCodecDescription = video.codec_long_name;
@@ -39,7 +39,7 @@ export const getVideoMetadata = async (file: FileFields) => {
         : 0; // TODO: convert "25/1" to
     }
 
-    const audio = streams.find(({ codec_type }) => codec_type == 'audio');
+    const audio = streams.find(({ codec_type }) => codec_type === 'audio');
     if (audio) {
       m.AudioCodec = audio.codec_name;
       m.AudioCodecDescription = audio.codec_long_name;

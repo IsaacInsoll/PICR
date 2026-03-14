@@ -31,7 +31,7 @@ export const SmallPreview = ({
       </Box>
     );
   }
-  if (!isFolder && fileType == 'Image') {
+  if (!isFolder && fileType === 'Image') {
     return (
       <Box style={style}>
         <PicrImage
@@ -59,7 +59,7 @@ export const SmallPreview = ({
       >
         {isFolder ? (
           <FolderIcon {...iconProps} />
-        ) : fileType == 'Video' ? (
+        ) : fileType === 'Video' ? (
           <VideoIcon {...iconProps} />
         ) : (
           <FileIcon {...iconProps} />

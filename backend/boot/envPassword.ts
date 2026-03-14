@@ -7,7 +7,7 @@ import { log } from '../logger.js';
 export const envPassword = async () => {
   const totalUsers = await db.$count(dbUser);
 
-  if (totalUsers == 0) {
+  if (totalUsers === 0) {
     await db
       .insert(dbUser)
       .values({

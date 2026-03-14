@@ -21,10 +21,10 @@ const processVideoThumbnail = async (
   size: ThumbnailSize,
 ): Promise<void> => {
   // lets only do medium thumbnails as large can just be 'embedded video' and small is probably useless?
-  if (size != 'md') return;
+  if (size !== 'md') return;
   if (!file.metadata) return;
   const { Duration } = JSON.parse(file.metadata) as PicrVideoMetadata;
-  if (!Duration || Duration <= 0 || !file.imageRatio || file.imageRatio == 0) {
+  if (!Duration || Duration <= 0 || !file.imageRatio || file.imageRatio === 0) {
     log(
       'error',
       'Error generating video thumbnails for: ' + fullPathForFile(file),

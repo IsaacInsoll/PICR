@@ -28,7 +28,7 @@ const compareNames = (
   bName: string | null | undefined,
   direction: FileSortDirection,
 ) => {
-  const positive = direction == 'Asc' ? 1 : -1;
+  const positive = direction === 'Asc' ? 1 : -1;
   const a = aName ?? '';
   const b = bName ?? '';
   if (a < b) return -positive;
@@ -44,7 +44,7 @@ const compareDates = (
   if (!aDate && !bDate) return 0;
   if (!aDate) return 1;
   if (!bDate) return -1;
-  const positive = direction == 'Asc' ? 1 : -1;
+  const positive = direction === 'Asc' ? 1 : -1;
   if (aDate < bDate) return positive;
   if (aDate > bDate) return -positive;
   return 0;
@@ -58,21 +58,21 @@ export const sortFiles = <T extends SortableItem>(
   sort: FileSort,
 ): T[] => {
   const { type, direction } = sort;
-  const positive = direction == 'Asc' ? 1 : -1;
-  if (type == 'Filename') {
+  const positive = direction === 'Asc' ? 1 : -1;
+  if (type === 'Filename') {
     return [...items].sort((a, b) => compareNames(a.name, b.name, direction));
   }
-  if (type == 'LastModified') {
+  if (type === 'LastModified') {
     return [...items].sort((a, b) =>
       compareDates(lastModifiedFor(a), lastModifiedFor(b), direction),
     );
   }
-  if (type == 'RecentlyCommented') {
+  if (type === 'RecentlyCommented') {
     return [...items].sort((a, b) =>
       compareDates(a.latestComment, b.latestComment, direction),
     );
   }
-  if (type == 'Rating') {
+  if (type === 'Rating') {
     return [...items].sort((a, b) => {
       const ar = a.rating ?? 0;
       const br = b.rating ?? 0;

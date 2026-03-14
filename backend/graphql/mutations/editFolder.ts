@@ -57,8 +57,8 @@ const resolver: PicrResolver<object, EditFolderArgs> = async (
       doAuthError('INVALID_HERO_IMAGE');
       return;
     }
-    if (heroImage.type != 'Image') doAuthError('INVALID_HERO_IMAGE_TYPE');
-    if (heroImage.folderId != folder.id) doAuthError('HERO_IMAGE_OUT_OF_SCOPE');
+    if (heroImage.type !== 'Image') doAuthError('INVALID_HERO_IMAGE_TYPE');
+    if (heroImage.folderId !== folder.id) doAuthError('HERO_IMAGE_OUT_OF_SCOPE');
 
     await setHeroImage(heroImage.id, folder.id);
 
@@ -99,9 +99,9 @@ const resolver: PicrResolver<object, EditFolderArgs> = async (
         doAuthError(AUTH_REASON.INVALID_BANNER_IMAGE);
         return;
       }
-      if (bannerImage.type != 'Image')
+      if (bannerImage.type !== 'Image')
         doAuthError(AUTH_REASON.INVALID_BANNER_IMAGE_TYPE);
-      if (bannerImage.folderId != folder.id)
+      if (bannerImage.folderId !== folder.id)
         doAuthError(AUTH_REASON.BANNER_IMAGE_OUT_OF_SCOPE);
     }
     await db

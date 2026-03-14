@@ -21,7 +21,7 @@ export const updateFolderHash = (folder: FolderFields) => {
     const basePath = folder.relativePath == null ? '' : folder.relativePath;
     const fileNames = readdirSync(fullPath(basePath)).join('#');
     const hash = crypto.createHash('md5').update(fileNames).digest('hex');
-    if (folder.folderHash != hash) {
+    if (folder.folderHash !== hash) {
       log(
         'info',
         `#️⃣ Updating Folder hash: ${folder.relativePath} from ${folder.folderHash} to ${hash}`,

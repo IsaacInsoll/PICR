@@ -17,7 +17,7 @@ const resolver: PicrResolver<object, QueryUserDevicesArgs> = async (
   if (!user || !isUser) {
     return doAuthError('NOT_A_USER');
   }
-  if (user.id != params.userId) {
+  if (user.id !== params.userId) {
     return doAuthError('ACCESS_DENIED');
   }
 

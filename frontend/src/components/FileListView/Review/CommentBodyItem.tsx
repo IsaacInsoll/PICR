@@ -31,7 +31,7 @@ export const CommentBodyItem = ({
 
   const showFile = file && !p?.singleFile;
 
-  const isHighlighted = p?.highlight == id;
+  const isHighlighted = p?.highlight === id;
   const isMobile = useIsMobile();
 
   // We could use the 'title' prop on `Item` but it's a huge font size
@@ -94,7 +94,7 @@ const FilePreview = ({
   return (
     <Box>
       {
-        file.type == 'Image' ? (
+        file.type === 'Image' ? (
           <PicrImage
             onClick={onClick}
             clickable={true}

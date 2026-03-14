@@ -56,13 +56,13 @@ export const sendExpoNotifications = async (
       if (ticket.status === 'ok' && ticket.id) {
         receiptIds.push(ticket.id);
       }
-      if (ticket.status == 'error') {
+      if (ticket.status === 'error') {
         const messageTarget = messages[index]?.to;
-        if (ticket.details?.error == 'DeviceNotRegistered') {
+        if (ticket.details?.error === 'DeviceNotRegistered') {
           if (typeof messageTarget === 'string') {
             disableToken(messageTarget as ExpoPushToken);
           }
-        } else if (ticket.details?.error == 'InvalidCredentials') {
+        } else if (ticket.details?.error === 'InvalidCredentials') {
           logger.error(
             `InvalidCredentials error when sending push notification to ${String(messageTarget)}`,
           );

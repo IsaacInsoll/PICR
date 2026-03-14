@@ -47,10 +47,10 @@ const resolver: PicrResolver<object, MutationRenameFolderArgs> = async (
     throw new GraphQLError(newPathError);
   }
 
-  if (folder.relativePath != oldPath) {
+  if (folder.relativePath !== oldPath) {
     throw new GraphQLError('Folder name mismatch');
   }
-  if (oldPath == newPath || !newPath || newPath == '') {
+  if (oldPath === newPath || !newPath || newPath === '') {
     throw new GraphQLError('New name invalid');
   }
   if (newPath.startsWith(oldPath + '/')) {

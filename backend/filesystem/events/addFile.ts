@@ -119,7 +119,7 @@ export const addFile = async (
     file.fileCreated = stats.birthtime;
     file.fileLastModified = stats.mtime;
 
-    if (type == 'Image') {
+    if (type === 'Image') {
       // deleteAllThumbs(filePath);
       file.imageRatio = await getImageRatio(filePath);
       const meta = await getImageMetadata(file);
@@ -127,7 +127,7 @@ export const addFile = async (
       file.blurHash = await encodeImageToBlurhash(filePath);
       if (generateThumbs) await generateAllThumbs(file); // will skip if thumbs exist
     }
-    if (type == 'Video') {
+    if (type === 'Video') {
       const meta = await getVideoMetadata(file);
       file.metadata = JSON.stringify(meta);
       file.duration = meta.Duration ?? null;

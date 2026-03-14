@@ -18,7 +18,7 @@ import { getServerOptions } from '../db/picrDb.js';
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
 export const generateAllThumbs = async (file: FileFields) => {
-  if (file.type == 'Image') {
+  if (file.type === 'Image') {
     if (!existsSync(fullPathFor(file, 'sm'))) {
       await generateThumbnail(file, 'sm');
     }
@@ -30,7 +30,7 @@ export const generateAllThumbs = async (file: FileFields) => {
     }
   }
 
-  if (file.type == 'Video') {
+  if (file.type === 'Video') {
     await generateVideoThumbnail(file, 'sm');
     await generateVideoThumbnail(file, 'md');
     await generateVideoThumbnail(file, 'lg');
@@ -106,7 +106,7 @@ export const fullPathFor = (
     );
   }
   const path = fullPath(file.relativePath) + '/' + file.name;
-  if (size == 'raw') {
+  if (size === 'raw') {
     return path;
   } else {
     return thumbnailPath(file, size, extension);

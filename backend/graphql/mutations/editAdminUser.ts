@@ -50,7 +50,7 @@ const resolver: PicrResolver<object, MutationEditAdminUserArgs> = async (
     });
 
     if (existingUsername) {
-      if (existingUsername.id != params.id || !params.id) {
+      if (existingUsername.id !== params.id || !params.id) {
         throw new GraphQLError(`Username "${username} already exists`);
       }
     }

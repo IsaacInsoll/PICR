@@ -27,7 +27,7 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
   useRequery(requery as Parameters<typeof useRequery>[0], 1000);
 
   const tasks = result.data?.tasks;
-  const complete = tasks?.filter((t) => t.status == 'Complete');
+  const complete = tasks?.filter((t) => t.status === 'Complete');
 
   useEffect(() => {
     zips.forEach((fh) => {
@@ -41,7 +41,7 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
       }
     });
   }, [zips, complete, setZips]);
-  const remaining = tasks?.filter((t) => t.status != 'Complete');
+  const remaining = tasks?.filter((t) => t.status !== 'Complete');
 
   // //TODO: remove this testing line
   // remaining = [
