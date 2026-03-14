@@ -17,7 +17,7 @@ export const NotificationSettings = () => {
 
   //TODO: refactor to check notif permissions locally, rather than requesting notif access right away
   useEffect(() => {
-    registerForPushNotificationsAsync().then((t) => {
+    void registerForPushNotificationsAsync().then((t) => {
       setToken(isDev ? `${t ?? ''} DEV` : (t ?? ''));
     });
     // now get existing value from server
@@ -66,7 +66,10 @@ const NotificationToggle = ({
       userId,
       name: Device.modelName ?? 'Mobile Device',
     });
-    requery({ requestPolicy: 'cache-and-network' });
+    void requery({ requestPolicy: 'cache-and-network' });
+  };
+  const handleChange = (enabled: boolean) => {
+    void onChange(enabled);
   };
 
   if (allow === undefined) {
@@ -76,7 +79,7 @@ const NotificationToggle = ({
   return (
     <Switch
       value={allow}
-      onChange={(event) => onChange(event.nativeEvent.value)}
+      onChange={(event) => handleChange(event.nativeEvent.value)}
     />
   );
 };

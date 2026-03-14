@@ -16,6 +16,7 @@ import type { AppFolderContentsViewChildProps } from '@/src/components/FolderCon
 import { AppVideo } from '@/src/components/AppVideo';
 import { PFileFolderThumbnail } from '@/src/components/PFileView';
 import { AppFooterPadding } from '@/src/components/AppHeaderPadding';
+import type { FileFlag } from '@shared/gql/graphql';
 import type {
   FolderContentsItem,
   ViewFolderFileWithHero,
@@ -93,6 +94,12 @@ const FlashFile = ({
   const isVideoFile = file.__typename === 'Video';
   const { id } = file;
   const [, mutate] = useMutation(addCommentMutation);
+  const handleFlagChange = (flag?: FileFlag) => {
+    void mutate({ id, flag });
+  };
+  const handleRatingChange = (rating: number) => {
+    void mutate({ id, rating });
+  };
 
   return (
     <AppFileLink file={file} asChild isDisabled={isVideoFile}>
@@ -114,11 +121,8 @@ const FlashFile = ({
         <View style={styles.fileActions}>
           {/*TODO: HeroImageSet, Info, Download */}
           <PText style={[styles.flashView]}>{file.name}</PText>
-          <FileFlagIcon file={file} onChange={(flag) => mutate({ id, flag })} />
-          <FileRating
-            file={file}
-            onChange={(rating) => mutate({ id, rating })}
-          />
+          <FileFlagIcon file={file} onChange={handleFlagChange} />
+          <FileRating file={file} onChange={handleRatingChange} />
           <FileCommentsIcon file={file} />
         </View>
       </TouchableOpacity>

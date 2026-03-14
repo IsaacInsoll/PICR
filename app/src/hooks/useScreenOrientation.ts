@@ -13,7 +13,7 @@ export const useScreenOrientation = (): [
 
   useEffect(() => {
     // set initial orientation
-    ScreenOrientation.getOrientationAsync().then((orientation) => {
+    void ScreenOrientation.getOrientationAsync().then((orientation) => {
       setOrientation(orientation);
     });
 

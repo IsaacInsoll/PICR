@@ -10,8 +10,8 @@ This plugin imports ratings and flags from PICR's CSV export into Lightroom Clas
 
 - Plugin installs and appears in Lightroom Library menu
 - CSV parsing for `filename,rating,flag` format (PICR export format)
-- Rating updates (0-5 stars)
-- Flag/pick status updates (approved → picked, rejected → rejected)
+- Rating updates (0-5 stars, including `0` to clear rating)
+- Flag/pick status updates (`approved` → picked, `rejected` → rejected, `none` → clear flag)
 - Subfolder support with relative paths (e.g., `subfolder/photo.jpg`)
 - File matching with virtual copy support
 - Extension-agnostic matching (CSV `photo.jpg` matches Lightroom `photo.NEF`)
@@ -32,6 +32,13 @@ This plugin imports ratings and flags from PICR's CSV export into Lightroom Clas
 - Automatic sync of ratings/flags
 - Bi-directional sync (Lightroom → PICR)
 - Settings UI for server configuration
+
+### Current Limitations / Known Issues
+
+- The parser does not currently ignore a CSV header row. If pasted data starts with `filename,rating,flag`, that line will be treated as a file entry and reported as an error.
+- Extension-agnostic matching can be ambiguous when multiple files in the same relative path share the same basename with different extensions.
+- Matching depends on the user selecting the correct Lightroom folder root before import.
+- The completion UI is functional but basic: modal dialog input, progress scopes during scan/import, and a final message box summary.
 
 ## Releasing
 
@@ -253,12 +260,13 @@ end)
 The plugin accepts CSV text exported from PICR:
 
 ```
-filename,rating,flag
 photo1.jpg,5,approved
 photo2.jpg,3,
 subfolder/photo3.jpg,4,rejected
-photo4.jpg,,approved
+photo4.jpg,0,none
 ```
+
+Important: the current parser expects data rows only and does not skip a header row.
 
 ### Column Definitions
 
@@ -266,7 +274,7 @@ photo4.jpg,,approved
 |--------|--------|-------|
 | filename | path/name.ext | Relative path from selected folder. Extension is ignored for matching. |
 | rating | 0-5 or empty | Empty = no change. 0 = unrated. |
-| flag | approved/rejected or empty | Empty = no change. Maps to Lightroom's pick status. |
+| flag | approved/rejected/none or empty | Empty = no change. `none` clears Lightroom's pick status. |
 
 ### Flag Mapping
 
@@ -274,6 +282,7 @@ photo4.jpg,,approved
 |-----------|----------------------|
 | approved | Picked (flag) |
 | rejected | Rejected (X) |
+| none | Clear pick/reject |
 | (empty) | No change |
 
 ### Subfolder Support
@@ -295,6 +304,7 @@ Lightroom virtual copies have names like "Copy 1", "Copy 2". The plugin maps:
 The plugin strips extensions before matching, so:
 - CSV `photo.jpg` matches Lightroom `photo.NEF` or `photo.CR2`
 - This supports workflows where JPG exports are rated in PICR but RAW files are in Lightroom
+- If both `photo.jpg` and `photo.nef` exist in the same relative path in Lightroom, matching is ambiguous because both normalize to the same basename
 
 ## Future: PICR Server Integration
 

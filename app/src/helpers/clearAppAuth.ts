@@ -4,5 +4,5 @@ import { loginDetailsAtom } from '../hooks/useLoginDetails';
 
 export const clearAppAuth = () => {
   getDefaultStore().set(loginDetailsAtom, undefined);
-  SecureStore.deleteItemAsync('login');
+  void SecureStore.deleteItemAsync('login');
 };

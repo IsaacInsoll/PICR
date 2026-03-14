@@ -54,7 +54,7 @@ export default function Index() {
             <View style={{ alignItems: 'center', marginBottom: 32 }}>
               <TouchableOpacity
                 onPress={() => {
-                  WebBrowser.openBrowserAsync(picrManualURL);
+                  void WebBrowser.openBrowserAsync(picrManualURL);
                 }}
               >
                 <Text style={{ color: picrColors[0] }}>What is PICR?</Text>
@@ -90,8 +90,8 @@ const LoginForm = () => {
     if (token) {
       setStep('success');
       // console.log('[login/index.tsx] redirecting to dashboard??');
-      router.replace('/');
-      setLogin({ ...(data as LoginDetails), token });
+      void router.replace('/');
+      void setLogin({ ...(data as LoginDetails), token });
     } else {
       setStep(
         error === 'Incorrect username or password'
@@ -108,6 +108,12 @@ const LoginForm = () => {
         ]);
       }
     }
+  };
+  const handleFormSubmit = handleSubmit((data) => {
+    void onSubmit(data);
+  });
+  const handlePressSubmit = () => {
+    void handleFormSubmit();
   };
 
   return (
@@ -154,7 +160,7 @@ const LoginForm = () => {
         autoCorrect={false}
         autoComplete="password"
         returnKeyType="go"
-        onSubmitEditing={handleSubmit(onSubmit)}
+        onSubmitEditing={handlePressSubmit}
       />
       <ErrorMessage error={errors.password} />
       <View style={{ marginTop: 16 }}>
@@ -163,7 +169,7 @@ const LoginForm = () => {
         ) : (
           <Button
             title="Login"
-            onPress={handleSubmit(onSubmit)}
+            onPress={handlePressSubmit}
             color={Platform.OS === 'ios' ? '#ffffff' : picrColors[0]}
           />
         )}

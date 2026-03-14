@@ -272,8 +272,11 @@ const AppDownloadFileButton = ({
       // console.log(e);
     }
   };
+  const handlePress = () => {
+    void onClick();
+  };
   return (
-    <HeaderButton onPress={onClick}>
+    <HeaderButton onPress={handlePress}>
       <Ionicons
         name="download"
         size={25}

@@ -30,16 +30,16 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (initComplete) return;
     // console.log('getting login details from local storage');
-    getLoginDetailsFromLocalDevice().then((login) => {
+    void getLoginDetailsFromLocalDevice().then((login) => {
       if (login) {
-        setLogin(login);
+        void setLogin(login);
         //this could be a super old token, so lets trigger a non-inline refresh just in case
-        appLogin(login).then(({ token, error }) => {
+        void appLogin(login).then(({ token }) => {
           if (token) {
             // console.log('[PicrUserProvider] Updating token');
-            setLogin({ ...login, token });
+            void setLogin({ ...login, token });
           } else {
-            logout();
+            void logout();
           }
         });
       }

@@ -23,6 +23,12 @@ export default function Settings() {
     await CacheManager.clearCache();
     alert('Cleared');
   };
+  const handleClearCache = () => {
+    void doClearCache();
+  };
+  const handleLogout = () => {
+    void logout();
+  };
   return (
     <AppView style={{ flex: 1 }}>
       <SafeAreaView style={{}}>
@@ -32,8 +38,8 @@ export default function Settings() {
           <Suspense fallback={<AppLoadingIndicator size="small" />}>
             <NotificationSettings />
           </Suspense>
-          <Button onPress={doClearCache} title="Clear image cache" />
-          <Button onPress={logout} title="Log out" />
+          <Button onPress={handleClearCache} title="Clear image cache" />
+          <Button onPress={handleLogout} title="Log out" />
         </View>
       </SafeAreaView>
     </AppView>
@@ -64,7 +70,7 @@ const AppDetails = () => {
   useEffect(() => {
     // console.log('getting cache size');
     //note, this always returns a tiny value and is useless, see https://github.com/georstat/react-native-image-cache/issues/81
-    CacheManager.getCacheSize().then((size) => setCacheSize(size));
+    void CacheManager.getCacheSize().then((size) => setCacheSize(size));
   }, []);
 
   //TODO: relative date option

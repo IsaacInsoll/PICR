@@ -64,6 +64,9 @@ export const FileCommentsBottomSheet = ({
       setCommentText('');
     }
   };
+  const handleSubmitComment = () => {
+    void onSubmitComment();
+  };
 
   useEffect(() => {
     if (open) {
@@ -172,7 +175,7 @@ export const FileCommentsBottomSheet = ({
             <AppIconButton
               name="chatbubble-ellipses-outline"
               disabled={commentText.length === 0}
-              onPress={onSubmitComment}
+              onPress={handleSubmitComment}
             >
               Add Comment
             </AppIconButton>

@@ -12,16 +12,25 @@ import {
 export default defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*'],
+    ignores: ['dist/*', 'eslint.config.mjs'],
   },
   {
     linterOptions: picrCommonLinterOptions,
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     plugins: {
       'unused-imports': picrCommonPlugins['unused-imports'],
     },
     rules: {
       ...picrCommonRules,
       ...picrTypeScriptRules,
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
       'react/no-array-index-key': 'warn',
       'no-restricted-imports': picrRestrictedImports([
         {
