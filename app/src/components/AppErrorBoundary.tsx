@@ -32,7 +32,7 @@ function fallbackRender({ error }: FallbackProps) {
         <Text style={styles.errorMessage}>{error.message}</Text>
         {stackLines.map((line: string, index: number) => (
           <Text
-            key={`${index}-${line}`}
+            key={line}
             style={[styles.stack, { opacity: 0.8 - index * 0.2 }]}
           >
             {line}

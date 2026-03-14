@@ -18,16 +18,16 @@ export const PicrVideoPreview = ({
   style?: CSSProperties;
 } & Partial<ThumbnailImageComponentImageProps>) => {
   const [loaded, setLoaded] = useState(false);
-  const { x: mouseX, ...mouse } = useMouse({ resetOnExit: true });
-  const element = useElementSize();
+  const { x: mouseX, ref: mouseRef } = useMouse({ resetOnExit: true });
+  const { ref: elementRef, width: elementWidth } = useElementSize();
   const second = useSecond();
 
   //Get 'styled' width, otherwise determine based on width of Box
   const styleWidth = typeof style?.width === 'number' ? style.width : undefined;
   const styleHeight =
     typeof style?.height === 'number' ? style.height : undefined;
-  const w = styleWidth ?? element.width;
-  const h = styleHeight ?? element.width / (file.imageRatio ?? 1);
+  const w = styleWidth ?? elementWidth;
+  const h = styleHeight ?? elementWidth / (file.imageRatio ?? 1);
 
   let frame = 0; // not mouseover
   if (w && mouseX) {
@@ -54,7 +54,7 @@ export const PicrVideoPreview = ({
   return (
     <Box
       style={{ position: 'relative', overflow: 'hidden', height: h }}
-      ref={element.ref}
+      ref={elementRef}
     >
       {!loaded ? (
         <LoadingOverlay
@@ -67,7 +67,7 @@ export const PicrVideoPreview = ({
         {...imageProps}
         title={imageProps.title ?? undefined}
         style={finalStyle}
-        ref={mouse.ref}
+        ref={mouseRef}
         src={imageURL(file, 'md')}
         onLoad={() => {
           setLoaded(true);
@@ -88,6 +88,6 @@ const useSecond = () => {
       setSecond((second) => (second >= 10 ? 1 : second + 1));
     }, 1000);
     return () => clearInterval(interval);
-  }, [second]);
+  }, []);
   return second;
 };

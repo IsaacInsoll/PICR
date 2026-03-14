@@ -1,18 +1,16 @@
+import { atom, useAtomValue } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import { atom, useAtom } from 'jotai';
 
 export const authKeyAtom = atomWithStorage('authKey', '', undefined, {
   getOnInit: true,
 });
 
-const sessionKeyAtom = atom<string | null>();
+const createSessionKey = () =>
+  globalThis.crypto?.randomUUID?.() ??
+  Math.floor(Math.random() * Date.now()).toString(16);
+
+const sessionKeyAtom = atom<string>(createSessionKey());
 
 export const useSessionKey = () => {
-  const [sessionKey, setSessionKey] = useAtom(sessionKeyAtom);
-  if (!sessionKey) {
-    const key = Math.floor(Math.random() * Date.now()).toString(16);
-    setSessionKey(key);
-    return key;
-  }
-  return sessionKey;
+  return useAtomValue(sessionKeyAtom) ?? '';
 };

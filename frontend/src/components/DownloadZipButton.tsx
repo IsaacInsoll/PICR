@@ -21,8 +21,8 @@ export const DownloadZipButton = ({
   folder: PicrFolder;
   disabled?: boolean;
 }) => {
-  const generateZip = useGenerateZip(folder, () => setTempDisabled(false));
   const [tempDisabled, setTempDisabled] = useState(false);
+  const generateZip = useGenerateZip(folder, () => setTempDisabled(false));
 
   if (!generateZip) return null;
   return (

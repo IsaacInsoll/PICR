@@ -173,11 +173,11 @@ const RecentUsers = ({ users }: { users: RecentUsersQueryQuery['users'] }) => {
     <View style={{ gap: 8, width: '100%' }}>
       <PTitle level={2}>Recent Clients</PTitle>
       <View style={[styles.indent]}>
-        {users.map((user, index: number) =>
+        {users.map((user) =>
           user.folder ? (
             <AppFolderLink folder={user.folder} key={user.id} asChild>
               <TouchableOpacity>
-                <View key={index} style={{ flexDirection: 'row', gap: 8 }}>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
                   <PFileView
                     file={user.folder.heroImage}
                     variant="rounded-fit"
@@ -221,8 +221,8 @@ const RecentFolders = ({
     <View style={{ gap: 8, width: '100%' }}>
       <PTitle level={2}>Recently Modified Folders</PTitle>
       <View style={styles.indent}>
-        {validFolders.map((f, index) => (
-          <AppFileListItem item={f} key={index}>
+        {validFolders.map((f) => (
+          <AppFileListItem item={f} key={f.id}>
             <AppDateDisplay dateString={f.folderLastModified} />
           </AppFileListItem>
         ))}

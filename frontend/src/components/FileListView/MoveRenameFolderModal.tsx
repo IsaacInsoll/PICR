@@ -1,5 +1,5 @@
 import { Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import type { PicrFolder } from '@shared/types/picr';
 import { useIsSmallScreen } from '../../hooks/useIsMobile';
@@ -53,7 +53,6 @@ const MoveRenameFolderModalBody = ({
   opened: boolean;
   onClose: () => void;
 }) => {
-  const [, mutate] = useMutation(renameFolderMutation);
   const me = useMe();
   const homeFolderId = me?.folderId;
   const [result] = useQuery({
@@ -61,10 +60,6 @@ const MoveRenameFolderModalBody = ({
     variables: { id: homeFolderId || folder.id },
     pause: !opened || !homeFolderId,
   });
-  const [name, setName] = useState(folder.name ?? '');
-  const [parentFolder, setParentFolder] = useState<PicrFolder>(folder);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const foldersList = useMemo(
     () =>
@@ -92,20 +87,49 @@ const MoveRenameFolderModalBody = ({
         foldersById,
       )
     : currentFolder;
-
-  const lastInitializedFolderId = useRef<string | undefined>(undefined);
   const initialName = currentFolder.name ?? folder.name ?? '';
 
-  useEffect(() => {
-    if (!opened) return;
-    if (!foldersById.size) return;
-    if (lastInitializedFolderId.current === folder.id) return;
-    setName(initialName);
-    setParentFolder(defaultParent);
-    setError(null);
-    lastInitializedFolderId.current = folder.id;
-  }, [opened, foldersById.size, initialName, defaultParent, folder.id]);
+  if (!foldersById.size) {
+    return <ModalLoadingIndicator />;
+  }
 
+  return (
+    <MoveRenameFolderModalForm
+      key={`${folder.id}:${opened ? 'open' : 'closed'}:${currentFolder.parentId ?? 'root'}:${currentFolder.name ?? ''}`}
+      folder={folder}
+      currentFolder={currentFolder}
+      defaultParent={defaultParent}
+      foldersById={foldersById}
+      foldersList={foldersList}
+      initialName={initialName}
+      onClose={onClose}
+    />
+  );
+};
+
+const MoveRenameFolderModalForm = ({
+  folder,
+  currentFolder,
+  defaultParent,
+  foldersById,
+  foldersList,
+  initialName,
+  onClose,
+}: {
+  folder: PicrFolder;
+  currentFolder: PicrFolder;
+  defaultParent: PicrFolder;
+  foldersById: Map<string, PicrFolder>;
+  foldersList: PicrFolder[];
+  initialName: string;
+  onClose: () => void;
+}) => {
+  const [, mutate] = useMutation(renameFolderMutation);
+  const me = useMe();
+  const [name, setName] = useState(initialName);
+  const [parentFolder, setParentFolder] = useState<PicrFolder>(defaultParent);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const oldPath = buildRelativePath(currentFolder);
   const trimmedName = name.trim();
   const parentPath = buildRelativePath(parentFolder);
