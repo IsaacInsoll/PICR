@@ -212,6 +212,8 @@ Run formatting before finalizing changes, then verify:
 - If repo-wide formatting is noisy due to unrelated pre-existing changes, still run Prettier on all touched files and verify those explicitly:
   - `npx prettier --write <touched-files...>`
   - `npx prettier --check <touched-files...>`
+- Do not stop at touched-file formatting alone. Before reporting success, always run the repo-level `npm run format:check` as a final guard because CI uses the repo-wide check.
+- If any file is edited after a formatting/check pass, rerun the relevant Prettier command(s) and rerun `npm run format:check` before finalizing.
 
 Test scope note:
 

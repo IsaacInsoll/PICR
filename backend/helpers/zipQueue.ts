@@ -41,7 +41,7 @@ export const addToZipQueue = (folderHash: FolderHash) => {
       status: 'Queued',
       folder: folderHash.folder,
     };
-    zipFolder(folderHash);
+    void zipFolder(folderHash);
   }
 };
 

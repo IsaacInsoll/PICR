@@ -139,10 +139,12 @@ export const addFile = async (
   } else if (picrConfig.updateMetadata) {
     log('info', '🔄️ update metadata: ' + file.id);
     switch (type) {
-      case 'Image':
+      case FileType.File:
+        break;
+      case FileType.Image:
         file.metadata = JSON.stringify(await getImageMetadata(file));
         break;
-      case 'Video':
+      case FileType.Video:
         file.metadata = JSON.stringify(await getVideoMetadata(file));
         break;
       default:

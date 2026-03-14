@@ -60,7 +60,7 @@ export const sendExpoNotifications = async (
         const messageTarget = messages[index]?.to;
         if (ticket.details?.error === 'DeviceNotRegistered') {
           if (typeof messageTarget === 'string') {
-            disableToken(messageTarget as ExpoPushToken);
+            void disableToken(messageTarget as ExpoPushToken);
           }
         } else if (ticket.details?.error === 'InvalidCredentials') {
           logger.error(
@@ -73,7 +73,12 @@ export const sendExpoNotifications = async (
         }
       }
       if (receiptIds.length > 0) {
-        setTimeout(() => checkReceipts(receiptIds), 60 * 60 * 1000);
+        setTimeout(
+          () => {
+            void checkReceipts(receiptIds);
+          },
+          60 * 60 * 1000,
+        );
       }
     });
   } catch (error) {
@@ -101,7 +106,7 @@ const checkReceipts = async (receiptIds: ExpoPushReceiptId[]) => {
             disableList.includes(receipt.details.error) &&
             receipt.details.expoPushToken
           ) {
-            disableToken(receipt.details.expoPushToken);
+            void disableToken(receipt.details.expoPushToken);
           }
         }
       }
