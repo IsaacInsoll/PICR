@@ -1,7 +1,12 @@
 // https://docs.expo.dev/guides/using-eslint/
 import { defineConfig } from 'eslint/config';
 import expoConfig from 'eslint-config-expo/flat.js';
-import unusedImports from 'eslint-plugin-unused-imports';
+import {
+  picrCommonLinterOptions,
+  picrCommonPlugins,
+  picrCommonRules,
+  picrRestrictedImports,
+} from '../eslint/picr-eslint.mjs';
 
 export default defineConfig([
   expoConfig,
@@ -9,62 +14,28 @@ export default defineConfig([
     ignores: ['dist/*'],
   },
   {
+    linterOptions: picrCommonLinterOptions,
     plugins: {
-      'unused-imports': unusedImports,
+      'unused-imports': picrCommonPlugins['unused-imports'],
     },
     rules: {
-      'import/no-duplicates': 'error',
-      'import/newline-after-import': 'error',
-      radix: 'error',
-      '@typescript-eslint/consistent-type-imports': 'error',
-      '@typescript-eslint/no-non-null-assertion': 'error',
-      'unused-imports/no-unused-imports': 'error',
-      '@typescript-eslint/ban-ts-comment': [
-        'error',
-        {
-          'ts-ignore': true,
-          'ts-expect-error': 'allow-with-description',
-          minimumDescriptionLength: 8,
-        },
-      ],
+      ...picrCommonRules,
       'react/no-array-index-key': 'warn',
-      'no-restricted-imports': [
-        'error',
+      'no-restricted-imports': picrRestrictedImports([
         {
-          patterns: [
-            {
-              group: ['../**/frontend/**'],
-              message:
-                'Do not import from frontend. Move shared code to shared/.',
-            },
-            {
-              group: ['../**/backend/**'],
-              message:
-                'Do not import from backend. Move shared code to shared/.',
-            },
-            {
-              group: ['../**/shared/**'],
-              message:
-                'Do not use relative imports to shared/. Use @shared/* imports instead.',
-            },
-          ],
+          group: ['../**/frontend/**'],
+          message: 'Do not import from frontend. Move shared code to shared/.',
         },
-      ],
-      'no-restricted-syntax': [
-        'error',
         {
-          selector:
-            "TSPropertySignature[key.name='metadata'] TSTypeReference[typeName.name='Record']",
+          group: ['../**/backend/**'],
+          message: 'Do not import from backend. Move shared code to shared/.',
+        },
+        {
+          group: ['../**/shared/**'],
           message:
-            'Use PicrMetadataMap from @shared/types/metadata for metadata maps instead of ad-hoc Record types.',
+            'Do not use relative imports to shared/. Use @shared/* imports instead.',
         },
-        {
-          selector:
-            "TSAsExpression[expression.type='TSAsExpression'][expression.typeAnnotation.type='TSUnknownKeyword']",
-          message:
-            'Avoid double assertions (`as unknown as`). Fix the type or add a typed adapter.',
-        },
-      ],
+      ]),
     },
   },
 ]);
