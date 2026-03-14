@@ -58,7 +58,8 @@ const resolver: PicrResolver<object, EditFolderArgs> = async (
       return;
     }
     if (heroImage.type !== 'Image') doAuthError('INVALID_HERO_IMAGE_TYPE');
-    if (heroImage.folderId !== folder.id) doAuthError('HERO_IMAGE_OUT_OF_SCOPE');
+    if (heroImage.folderId !== folder.id)
+      doAuthError('HERO_IMAGE_OUT_OF_SCOPE');
 
     await setHeroImage(heroImage.id, folder.id);
 
