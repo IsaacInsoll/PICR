@@ -12,7 +12,7 @@ type FolderHeadingData = Pick<
 >;
 
 export const FolderHeading = ({ folder }: { folder: FolderHeadingData }) => {
-  const title = folder.title ?? folder.name ?? 'Folder';
+  const title = folder.title ?? folder.name;
   const customSubtitle = folder.subtitle?.trim() ?? '';
   return (
     <PView style={styles.container} gap="xs">

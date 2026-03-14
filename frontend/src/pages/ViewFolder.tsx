@@ -94,7 +94,7 @@ const ViewFolderBody = () => {
   });
   useRequery(reQuery as Parameters<typeof useRequery>[0], 20000);
 
-  const branding = data?.data?.folder?.branding;
+  const branding = data.data?.folder.branding;
   // Create a stable key from the branding values to avoid re-running effect on object reference changes
   const brandingKey = branding
     ? `${branding.id}-${branding.mode}-${branding.primaryColor}-${branding.headingFontKey}`
@@ -114,8 +114,8 @@ const ViewFolderBody = () => {
 
   // redirect to 'no file selected' if you are in a valid folder but the file isn't found
   useEffect(() => {
-    const fileIds = folder?.files?.map((f) => f.id) ?? [];
-    if (fileId && fileIds && fileIds.length > 0 && !managing && !activity) {
+    const fileIds = folder?.files.map((f) => f.id) ?? [];
+    if (fileId && fileIds.length > 0 && !managing && !activity) {
       if (!fileIds.includes(fileId)) {
         if (folder) void setFolder(folder);
       }
@@ -224,7 +224,7 @@ const ViewFolderBody = () => {
             <Suspense
               fallback={
                 <ManageFolderDrawerLoading
-                  folderName={folder.name ?? 'Folder'}
+                  folderName={folder.name}
                   onClose={() => setFolder(folder)}
                 />
               }
@@ -369,7 +369,7 @@ const FolderOverflowMenu = ({
         </Menu.Target>
 
         <Menu.Dropdown>
-          <Menu.Label>{folder?.name}</Menu.Label>
+          <Menu.Label>{folder.name}</Menu.Label>
           <FolderMenuItems
             folder={folder}
             showOpenItem={false}

@@ -112,8 +112,8 @@ export const FolderCsvExportModal = ({
   const output = useMemo(() => {
     const names = files.map((file) => {
       const base = includeSubfolders
-        ? (file.relativePath ?? file.name ?? '')
-        : (file.name ?? '');
+        ? (file.relativePath ?? file.name)
+        : file.name;
       return excludeExtensions ? stripExtensionFromPath(base) : base;
     });
 

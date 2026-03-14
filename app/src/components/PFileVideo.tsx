@@ -17,7 +17,12 @@ const PFileVideoComponent = ({
   ...props
 }: { file: VideoThumbnailFile } & ImageProps) => {
   const uri = useLocalImageUrl(
-    { ...file, name: file.name ?? undefined, type: file.type ?? undefined },
+    {
+      id: file.id,
+      fileHash: file.fileHash,
+      name: file.name ?? undefined,
+      type: file.type,
+    },
     'md',
   );
   // const second = useSecond();
@@ -27,10 +32,10 @@ const PFileVideoComponent = ({
   const af = aspectFit(
     {
       width:
-        typeof flatStyle?.width === 'number'
+        typeof flatStyle.width === 'number'
           ? flatStyle.width
           : (file.imageRatio ?? 1),
-      height: typeof flatStyle?.height === 'number' ? flatStyle.height : 1,
+      height: typeof flatStyle.height === 'number' ? flatStyle.height : 1,
     },
     file.imageRatio ?? undefined,
   );

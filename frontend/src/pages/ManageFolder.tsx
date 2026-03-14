@@ -34,7 +34,6 @@ import { viewBrandingsQuery } from '@shared/urql/queries/viewBrandingsQuery';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { defaultBranding } from '../helpers/defaultBranding';
 import type { PicrFolder } from '@shared/types/picr';
-import type { BrandingRow } from '@shared/types/queryRows';
 import type { BrandingInput } from './management/BrandingForm';
 import type { SocialLink } from '@shared/branding/socialLinkTypes';
 
@@ -146,10 +145,8 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
   const [, setFolderBranding] = useMutation(setFolderBrandingMutation);
   const [saving, setSaving] = useState(false);
 
-  const brandings = (brandingsResult.data?.brandings ?? []).filter(
-    (b): b is BrandingRow => b != null,
-  );
-  const currentBrandingId = folder.brandingId?.toString() ?? null;
+  const brandings = brandingsResult.data?.brandings ?? [];
+  const currentBrandingId = folder.brandingId?.toString() || null;
   const inheritedBranding = folder.branding ?? null;
   const isInherited = !folder.brandingId && inheritedBranding?.id !== '0';
 

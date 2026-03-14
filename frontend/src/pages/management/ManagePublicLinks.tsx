@@ -110,9 +110,7 @@ const Body = ({
     query: manageFolderQuery,
     variables: { folderId, includeParents, includeChildren },
   });
-  const users = (result.data?.users ?? []).filter(
-    (u): u is ManageFolderUserRow => u != null,
-  );
+  const users = result.data?.users ?? [];
   return (
     <>
       <QueryFeedback result={result} reQuery={reQuery} />

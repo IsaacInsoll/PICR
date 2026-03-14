@@ -32,7 +32,7 @@ const prettyFolderPath = (folder: PicrFolder) => {
     .map((f) => f.name)
     .join(chev);
 
-  return (parents ? parents + chev : '') + folder?.name;
+  return (parents ? parents + chev : '') + folder.name;
 };
 
 export const FolderSelector = ({
@@ -103,10 +103,10 @@ const FolderTreeView = ({
 
   const folders = useMemo(
     () =>
-      (result?.data?.allFolders ?? []).filter(
+      (result.data?.allFolders ?? []).filter(
         (f): f is AllFoldersRow => f != null,
       ),
-    [result?.data?.allFolders],
+    [result.data?.allFolders],
   );
 
   const treeData = useMemo(() => {
@@ -129,7 +129,7 @@ const FolderTreeView = ({
     return map;
   }, [folders]);
 
-  const lastSelectedId = useRef<string | undefined>(folder?.id);
+  const lastSelectedId = useRef<string | undefined>(folder.id);
 
   const selectFolderById = useCallback(
     (id: string | undefined) => {
@@ -156,10 +156,9 @@ const FolderTreeView = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only trigger when opening; folder/tree changes are handled by dedicated sync effect below
   }, [open]);
 
-  const lastFolderId = useRef<string | undefined>(folder?.id);
+  const lastFolderId = useRef<string | undefined>(folder.id);
 
   useEffect(() => {
-    if (!folder?.id) return;
     if (lastFolderId.current !== folder.id) {
       tree.setSelectedState([folder.id]);
       tree.setExpandedState(expandedParents(folder));
@@ -167,7 +166,7 @@ const FolderTreeView = ({
       lastSelectedId.current = folder.id;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by folder id to avoid rerunning on object identity churn
-  }, [folder?.id]);
+  }, [folder.id]);
 
   if (!open) return null;
   return (
@@ -187,7 +186,7 @@ const FolderTreeView = ({
         // not onAbortCapture,onBlur, onAbort
         renderNode={({ node, hasChildren, elementProps, selected }) => {
           const onClick = (event: MouseEvent) => {
-            elementProps.onClick?.(event);
+            elementProps.onClick(event);
             selectFolderById(node.value);
           };
           return (

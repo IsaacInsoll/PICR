@@ -24,7 +24,7 @@ export const useMe = ():
   const [result] = useQuery({ query: meQuery, pause: !token && !uuid });
   if (!token && !uuid) return null;
   const data = result.data;
-  if (!data?.me || !data?.clientInfo) return null;
+  if (!data?.me || !data.clientInfo) return null;
   const me = {
     ...data.me,
     ...extraUserProps(data.me),
@@ -36,11 +36,11 @@ export const useMe = ():
 
 export const useAvifEnabled = () => {
   const me = useMe();
-  return me?.clientInfo?.avifEnabled ?? false;
+  return me?.clientInfo.avifEnabled ?? false;
 };
 export const useBaseUrl = () => {
   const me = useMe();
-  return me?.clientInfo?.baseUrl;
+  return me?.clientInfo.baseUrl;
 };
 
 export const useLinkMode = () => {

@@ -43,10 +43,9 @@ export const GridGallery = ({
   const thumbnailSize = theme.thumbnailSize ?? DEFAULT_THUMBNAIL_SIZE;
   const margin = theme.thumbnailSpacing ?? DEFAULT_SPACING;
   const borderRadius = theme.thumbnailBorderRadius ?? DEFAULT_BORDER_RADIUS;
-  const orderedItems = items ?? [...folders, ...files];
+  const orderedItems = items || [...folders, ...files];
   const handleClick = (index: number) => {
     const item = orderedItems[index];
-    if (!item) return;
     if (isFolderContentsFile(item)) {
       setSelectedFileId(item.id);
     } else {
@@ -95,16 +94,15 @@ export const GridGallery = ({
           p: ThumbnailImageProps<ImageExtended<GalleryItem>>,
         ) => {
           const title =
-            typeof p.imageProps?.title === 'string' ? p.imageProps.title : '';
+            typeof p.imageProps.title === 'string' ? p.imageProps.title : '';
+          const file = p.item.file;
 
           if (p.item.folder) {
             return <PicrFolder folder={p.item.folder} title={title} />;
           }
 
-          if (!p.item.file) return null;
-
-          if (p.item.file.type === 'File') {
-            return <PicrGenericFile file={p.item.file} title={title} />;
+          if (file?.type === 'File') {
+            return <PicrGenericFile file={file} title={title} />;
           }
 
           return <GalleryImage {...p} />;

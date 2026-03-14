@@ -12,7 +12,7 @@ export const appLogin = async (data: LoginDetails) => {
   const result = await newClient
     .mutation(loginMutation, { username, password })
     .toPromise();
-  const token = result?.data?.auth;
+  const token = result.data?.auth;
   if (token) {
     return { token };
   } else {

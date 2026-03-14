@@ -19,7 +19,7 @@ export const CommentHistory = ({
   const filteredComments = comments.filter((c) => {
     if (filter === 'all') return true;
     if (filter === 'comments') return !c.systemGenerated;
-    if (filter === 'ratings') return c.systemGenerated;
+    return c.systemGenerated;
   });
   const sortedComments =
     sort === 'desc' ? filteredComments : filteredComments.toReversed();

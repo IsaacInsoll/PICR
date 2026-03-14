@@ -39,6 +39,6 @@ export const SocialLinkIcon = ({
   type: SocialLinkTypeKey;
   size?: number;
 }) => {
-  const Icon = iconMap[type] ?? TbWorld;
+  const Icon = iconMap[type];
   return <Icon size={size} />;
 };

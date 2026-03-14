@@ -14,7 +14,7 @@ import {
 
 export const ServerInfo = () => {
   const [result] = useQuery({ query: serverInfoQuery });
-  const server = result?.data?.serverInfo;
+  const server = result.data?.serverInfo;
   if (!server) return null;
   return (
     <Table striped highlightOnHover withTableBorder>
@@ -129,7 +129,7 @@ const TableHeader = () => {
 
 const ServerFolderSize = () => {
   const [result] = useQuery({ query: expensiveServerFileSizeQuery });
-  const server = result?.data?.serverInfo;
+  const server = result.data?.serverInfo;
   if (!server) return null;
   return (
     <>

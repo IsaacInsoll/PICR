@@ -3,7 +3,6 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { PText } from '@/src/components/PText';
 
 export const AspectView = ({
   width: widthProp,
@@ -27,13 +26,7 @@ export const AspectView = ({
       }}
       style={{ height, width: widthProp }}
     >
-      {false ? (
-        <PText>
-          {width}x{height}
-        </PText>
-      ) : (
-        children
-      )}
+      {children}
     </View>
   );
 };

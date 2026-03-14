@@ -82,7 +82,7 @@ export const FileCommentsBottomSheet = ({
 
   const handleClose = () => {
     Keyboard.dismiss();
-    if (onClose) onClose();
+    onClose();
   };
 
   return (
@@ -197,7 +197,7 @@ const FileCommentsBody = ({ id }: { id: string }) => {
   });
 
   const comments = result.data?.comments ?? [];
-  if (comments?.length === 0)
+  if (comments.length === 0)
     return <PText variant="dimmed">No Comments (yet!)</PText>;
   return (
     <>
@@ -237,8 +237,7 @@ const CommentAction = ({
 }: {
   comment: CommentHistoryQueryQuery['comments'][number];
 }) => {
-  const json = JSON.parse(comment?.comment ?? '{}');
-  if (!json) return null;
+  const json = JSON.parse(comment.comment ?? '{}');
   return (
     <View>
       {json.rating != null ? (
@@ -259,8 +258,7 @@ export const AppFileFlagBadge = ({
   flag: FileFlag;
   hideIfNone?: boolean;
 }) => {
-  if (hideIfNone && (!flag || flag === FileFlag.None)) return null;
-  if (!flag) return null;
+  if (hideIfNone && flag === FileFlag.None) return null;
   const { icon, style } = fileFlagStyles[flag];
   return (
     <View

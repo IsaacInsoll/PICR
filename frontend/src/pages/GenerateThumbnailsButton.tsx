@@ -13,7 +13,7 @@ export const GenerateThumbnailsButton = ({
     query: generateThumbnailsQuery,
     variables: { folderId },
   });
-  const totalImages = result.data?.folder?.totalImages;
+  const totalImages = result.data?.folder.totalImages;
   const [, thumbsMutation] = useMutation(generateThumbnailsMutation);
   const handleClick = () => {
     void thumbsMutation({ folderId: folderId });

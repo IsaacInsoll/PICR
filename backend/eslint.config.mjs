@@ -28,7 +28,6 @@ export default tseslint.config(
       ...picrCommonRules,
       ...picrTypeScriptRules,
       ...picrTypeAwareAsyncRules,
-      '@typescript-eslint/no-unnecessary-condition': 'error',
       'no-restricted-imports': picrRestrictedImports([
         {
           group: ['../**/frontend/**'],

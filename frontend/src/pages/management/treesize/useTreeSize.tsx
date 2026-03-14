@@ -30,24 +30,23 @@ export const useTreeSize = (
 const folderToSlices = (
   folder: TreeFolder & { subFolders: (TreeSubFolder & { color: string })[] },
 ): PieSlice[] => {
-  const slices: PieSlice[] =
-    folder?.subFolders.map(
-      ({
-        id,
-        name,
-        totalSize,
-        color,
-      }: {
-        id: string;
-        name: string;
-        totalSize: string;
-        color: string;
-      }) => {
-        return { x: id, y: parseInt(totalSize, 10), label: name, color };
-      },
-    ) ?? [];
+  const slices: PieSlice[] = folder.subFolders.map(
+    ({
+      id,
+      name,
+      totalSize,
+      color,
+    }: {
+      id: string;
+      name: string;
+      totalSize: string;
+      color: string;
+    }) => {
+      return { x: id, y: parseInt(totalSize, 10), label: name, color };
+    },
+  );
 
-  const minSize = parseInt(folder?.totalSize, 10) / 50;
+  const minSize = parseInt(folder.totalSize, 10) / 50;
 
   const { big, small } = Object.groupBy(slices, ({ y }) =>
     y < minSize ? 'small' : 'big',

@@ -5,12 +5,10 @@ export const authKeyAtom = atomWithStorage('authKey', '', undefined, {
   getOnInit: true,
 });
 
-const createSessionKey = () =>
-  globalThis.crypto?.randomUUID?.() ??
-  Math.floor(Math.random() * Date.now()).toString(16);
+const createSessionKey = () => globalThis.crypto.randomUUID();
 
 const sessionKeyAtom = atom<string>(createSessionKey());
 
 export const useSessionKey = () => {
-  return useAtomValue(sessionKeyAtom) ?? '';
+  return useAtomValue(sessionKeyAtom);
 };

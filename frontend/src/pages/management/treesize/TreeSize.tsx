@@ -58,9 +58,9 @@ const TreeSizeNode = ({
   //   folder?.subFolders.find(({ id }) => id === hover) ?? folder;
 
   const crumbs = [
-    ...(folder?.parents?.toReversed().map((f) => (
+    ...(folder?.parents.toReversed().map((f) => (
       <Anchor key={f.id} onClick={() => setFolderId(f.id)}>
-        {f?.name}
+        {f.name}
       </Anchor>
     )) ?? []),
     <Text key="current">{folder?.name}</Text>,

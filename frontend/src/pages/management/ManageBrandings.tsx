@@ -1,4 +1,4 @@
-import { Alert, Box, Button } from '@mantine/core';
+import { Box, Button } from '@mantine/core';
 import { useQuery } from 'urql';
 import { Suspense, useState } from 'react';
 import QueryFeedback from '../../components/QueryFeedback';
@@ -19,8 +19,6 @@ export const ManageBrandings = () => {
   const [branding, setBranding] = useState<BrandingRow | null>(null);
   const setThemeMode = useSetAtom(themeModeAtom);
 
-  const mouseover = false;
-
   return (
     <>
       <QueryFeedback result={result} reQuery={reQuery} />
@@ -38,22 +36,13 @@ export const ManageBrandings = () => {
           />
         </Suspense>
       ) : null}
-      {mouseover ? (
-        <Alert variant="outline" m="sm" p="xs" ta="center">
-          Mouseover a branding to preview it
-        </Alert>
-      ) : null}
       {result.data?.brandings ? (
         <PicrDataGrid
           columns={brandingColumns}
-          data={result.data.brandings.filter(
-            (b): b is BrandingRow => b != null,
-          )}
+          data={result.data.brandings}
           onClick={(row) => setBranding(row)}
           onMouseover={(row) =>
-            mouseover
-              ? setThemeMode(row as Parameters<typeof setThemeMode>[0])
-              : null
+            setThemeMode(row as Parameters<typeof setThemeMode>[0])
           }
         />
       ) : undefined}

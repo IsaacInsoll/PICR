@@ -11,8 +11,6 @@ export const FolderLink = ({
 }) => {
   const setFolder = useSetFolder();
 
-  if (!folder) return undefined;
-
   return (
     <Anchor c={color} onClick={() => setFolder(folder)}>
       {folder.name}

@@ -25,7 +25,7 @@ export const LoginForm = () => {
 
   const doLogin = (e: React.FormEvent) => {
     void mutate({ username: user, password: pass }).then((result) => {
-      const token = result?.data?.auth ?? '';
+      const token = result.data?.auth ?? '';
       set(token);
       setFail(token === '');
     });

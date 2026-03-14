@@ -10,7 +10,7 @@ export const useSetLightboxFocus = () => {
   return () => {
     const cur = ref?.current;
     if (cur) {
-      cur?.focus();
+      cur.focus();
     }
   };
 };

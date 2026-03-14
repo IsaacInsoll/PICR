@@ -80,7 +80,7 @@ export const BrandingDrawer = ({
       socialLinks: branding.socialLinks,
     }).then(({ data }) => {
       setSubmitting(false);
-      const savedId = data?.editBranding?.id;
+      const savedId = data?.editBranding.id;
       if (savedId) onSaved?.(savedId);
       onClose();
     });

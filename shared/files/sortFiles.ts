@@ -72,16 +72,13 @@ export const sortFiles = <T extends SortableItem>(
       compareDates(a.latestComment, b.latestComment, direction),
     );
   }
-  if (type === 'Rating') {
-    return [...items].sort((a, b) => {
-      const ar = a.rating ?? 0;
-      const br = b.rating ?? 0;
-      if (ar < br) return positive;
-      if (ar > br) return -positive;
-      return 0;
-    });
-  }
-  return items;
+  return [...items].sort((a, b) => {
+    const ar = a.rating ?? 0;
+    const br = b.rating ?? 0;
+    if (ar < br) return positive;
+    if (ar > br) return -positive;
+    return 0;
+  });
 };
 
 export type ViewFolder = ViewFolderQuery['folder'];

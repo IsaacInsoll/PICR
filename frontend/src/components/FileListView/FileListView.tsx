@@ -120,7 +120,7 @@ const Row = ({
 
   const { ref, inView } = useInView({ threshold: 0 });
   useEffect(() => {
-    if (inView && onBecomeVisible) {
+    if (inView) {
       onBecomeVisible();
     }
   }, [inView, onBecomeVisible]);

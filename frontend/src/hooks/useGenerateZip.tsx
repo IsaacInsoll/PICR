@@ -15,7 +15,7 @@ export const useGenerateZip = (folder: PicrFolder, onComplete?: () => void) => {
 
   return async () => {
     return mutate({ folderId: folder.id }).then((res) => {
-      if (res?.data) {
+      if (res.data) {
         const fh: PendingZipDownload = { folder, hash: res.data.generateZip };
         setLinks((l) => [...l, fh]);
         if (onComplete) onComplete();

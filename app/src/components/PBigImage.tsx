@@ -85,11 +85,12 @@ export const useLocalImageUrl = (
   size: AllSize,
 ) => {
   const [uri, setUri] = useState<string | undefined>(undefined);
-  const baseUrl = useLoginDetails()?.server;
+  const loginDetails = useLoginDetails();
+  const baseUrl = loginDetails?.server;
 
   useEffect(() => {
     let cancelled = false;
-    if (!file || !baseUrl) {
+    if (!baseUrl) {
       setUri(undefined);
       return () => {
         cancelled = true;
@@ -109,7 +110,7 @@ export const useLocalImageUrl = (
     return () => {
       cancelled = true;
     };
-  }, [baseUrl, file, file?.fileHash, file?.id, file?.name, size]);
+  }, [baseUrl, file, file.fileHash, file.id, file.name, size]);
 
   if (!uri) return null;
   return Platform.OS === 'android' ? `file://${uri}` : uri;

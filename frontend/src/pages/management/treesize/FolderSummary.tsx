@@ -24,7 +24,6 @@ export const FolderSummary = ({
   slices: PieSlice[];
 }) => {
   const [treeSizeTab, setTreeSizeTab] = useAtom(treeSizeTabAtom);
-  if (!folder) return null;
   const data: { id: string; name: string; size: number; color?: string }[] =
     folder.subFolders.map((f) => ({
       ...f,
@@ -37,7 +36,7 @@ export const FolderSummary = ({
     color: chartColorFiles,
   });
   const sorted = data.sort((a, b) => b.size - a.size);
-  const largest = sorted[0].size ?? null;
+  const largest = sorted[0].size;
 
   return (
     <Box
@@ -57,10 +56,10 @@ export const FolderSummary = ({
       >
         <Tabs.List>
           <Tabs.Tab value="subfolders" leftSection={<FolderIcon />}>
-            {pluralize(folder?.subFolders.length, 'folder', true)}
+            {pluralize(folder.subFolders.length, 'folder', true)}
           </Tabs.Tab>
           <Tabs.Tab value="files" leftSection={<FileIcon />}>
-            {pluralize(folder?.files?.length, 'file', true)}
+            {pluralize(folder.files.length, 'file', true)}
           </Tabs.Tab>
         </Tabs.List>
 
@@ -76,7 +75,7 @@ export const FolderSummary = ({
         </Tabs.Panel>
 
         <Tabs.Panel value="files">
-          <FileTable files={folder?.files} />
+          <FileTable files={folder.files} />
         </Tabs.Panel>
       </Tabs>
       <Stack gap="xs"></Stack>

@@ -124,8 +124,7 @@ export const BrandingForm = ({
     if (next.length === 0) return; // must keep at least one
     const restricted = next.length < ALL_VIEWS.length ? next : null;
     const defaultView =
-      restricted &&
-      !restricted.includes((branding.defaultView as ViewKey) ?? '')
+      restricted && !restricted.includes(branding.defaultView as ViewKey)
         ? restricted[0]
         : branding.defaultView;
     onChange({ ...branding, availableViews: restricted, defaultView });
@@ -642,7 +641,7 @@ const HeadingFontSelector = ({
   const grouped = Object.entries(
     fontRegistry.reduce<Record<string, FontDefinition[]>>((acc, font) => {
       const group = categoryLabels[font.category] ?? font.category;
-      if (!acc[group]) acc[group] = [];
+      if (!(group in acc)) acc[group] = [];
       acc[group].push(font);
       return acc;
     }, {}),
@@ -671,9 +670,7 @@ const HeadingFontSelector = ({
         clearable={false}
         styles={{
           input: {
-            fontFamily:
-              fontFamilies[value as keyof typeof fontFamilies] ??
-              fontFamilies.default,
+            fontFamily: fontFamilies[value as keyof typeof fontFamilies],
           },
         }}
         onChange={(next) => {
@@ -685,8 +682,7 @@ const HeadingFontSelector = ({
             pb="sm"
             style={{
               fontFamily:
-                fontFamilies[option.value as keyof typeof fontFamilies] ??
-                fontFamilies.default,
+                fontFamilies[option.value as keyof typeof fontFamilies],
             }}
           >
             <div>{option.label}</div>

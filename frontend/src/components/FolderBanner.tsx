@@ -24,10 +24,7 @@ import { themeModeAtom } from '../atoms/themeModeAtom';
 import { FolderLink } from './FolderLink';
 import { Page } from './Page';
 import type { PicrFolder } from '@shared/types/picr';
-import {
-  DEFAULT_BANNER_SIZE,
-  type BannerSize,
-} from '@shared/branding/galleryPresets';
+import { type BannerSize } from '@shared/branding/galleryPresets';
 import styles from './FolderBanner.module.css';
 
 const bannerSizeClass: Record<BannerSize, string> = {
@@ -73,7 +70,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
   const bannerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const hasBannerImage = Boolean(folder.bannerImage);
-  const folderName = folder.name?.trim() || '(Unnamed Folder)';
+  const folderName = folder.name.trim() || '(Unnamed Folder)';
   const bannerTitle = folder.title?.trim() || folderName;
   const bannerSubtitle = folder.subtitle?.trim();
   const theme = useAtomValue(themeModeAtom);
@@ -90,9 +87,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
       : theme.mode;
   const isDark = resolvedMode === ThemeMode.Dark;
   const primaryScale = mantineTheme.colors[mantineTheme.primaryColor];
-  const breadcrumbLinkColor = isDark
-    ? (primaryScale?.[4] ?? mantineTheme.colors.blue[4])
-    : (primaryScale?.[7] ?? mantineTheme.colors.blue[7]);
+  const breadcrumbLinkColor = isDark ? primaryScale[4] : primaryScale[7];
   const breadcrumbColor = isDark
     ? mantineTheme.colors.gray[0]
     : mantineTheme.colors.dark[8];
@@ -102,12 +97,10 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
   const breadcrumbBorder = isDark
     ? `1px solid ${alpha(mantineTheme.white, 0.18)}`
     : `1px solid ${alpha(mantineTheme.black, 0.08)}`;
-  const filledParents: PicrFolder[] | undefined = folder.parents?.map(
-    (f, i) => {
-      return { ...f, parents: folder.parents?.slice(i + 1) };
-    },
-  );
-  const crumbs = filledParents?.length
+  const filledParents: PicrFolder[] = folder.parents.map((f, i) => {
+    return { ...f, parents: folder.parents.slice(i + 1) };
+  });
+  const crumbs = filledParents.length
     ? filledParents
         .slice(-3)
         .reverse()
@@ -214,9 +207,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
         ? styles.alignRight
         : styles.alignCenter;
 
-  const sizeClass =
-    bannerSizeClass[(folder.bannerSize as BannerSize) ?? DEFAULT_BANNER_SIZE] ??
-    bannerSizeClass[DEFAULT_BANNER_SIZE];
+  const sizeClass = bannerSizeClass[folder.bannerSize as BannerSize];
 
   return (
     <Box className={styles.root}>

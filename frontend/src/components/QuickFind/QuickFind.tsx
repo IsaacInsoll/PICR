@@ -168,7 +168,6 @@ const Results = ({
       if (e.code === 'Enter') {
         if (index == null) return;
         const item = list[index];
-        if (!item) return;
         if (isFolderResult(item)) {
           handleClick(e, item);
         } else {
@@ -186,7 +185,7 @@ const Results = ({
 
   return (
     <Stack gap={0}>
-      {list?.map((item, i) => {
+      {list.map((item, i) => {
         if (isFolderResult(item)) {
           return (
             <ResultButton

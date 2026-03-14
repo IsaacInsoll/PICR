@@ -79,7 +79,7 @@ const Body = ({
     return (
       <Stack gap="xs">
         {data.map((log) => (
-          <AccessLogListItem key={log?.id} log={log} />
+          <AccessLogListItem key={log.id} log={log} />
         ))}
       </Stack>
     );

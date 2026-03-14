@@ -29,9 +29,9 @@ export const CommentBodyItem = ({
   const openCommentModal = useOpenCommentsModal();
   const displayUser = user ?? { id: 'system', name: 'System' };
 
-  const showFile = file && !p?.singleFile;
+  const showFile = file && !p.singleFile;
 
-  const isHighlighted = p?.highlight === id;
+  const isHighlighted = p.highlight === id;
   const isMobile = useIsMobile();
 
   // We could use the 'title' prop on `Item` but it's a huge font size
@@ -56,7 +56,7 @@ export const CommentBodyItem = ({
             <FilePreview
               file={file as PicrFile}
               onClick={() => {
-                if (file?.id && id) openCommentModal(file.id, id);
+                if (id) openCommentModal(file.id, id);
               }}
             />
           ) : null}
@@ -71,7 +71,7 @@ export const CommentBodyItem = ({
             )}
             <Group>
               {showFile ? (
-                <Code style={{ opacity: 0.33 }}>{file?.name}</Code>
+                <Code style={{ opacity: 0.33 }}>{file.name}</Code>
               ) : null}
               <Text c="dimmed" size="xs">
                 {prettyDate(timestamp)}
@@ -126,7 +126,6 @@ const CommentAction = ({
     rating?: number;
     flag?: string;
   };
-  if (!json) return null;
   return (
     <Stack>
       {json.rating != null ? (

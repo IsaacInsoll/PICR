@@ -23,7 +23,7 @@ export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
   const id = useId();
   const { reward } = useReward(id, 'confetti', confettiOptions);
 
-  if (!me?.isUser || !file || file.type !== 'Image') return null;
+  if (!me?.isUser || file.type !== 'Image') return null;
 
   const onSetHero = () => {
     if (!file.folderId) return;

@@ -43,7 +43,7 @@ export const PicrImage = ({
               width: '100%',
               height: '100%',
               pointerEvents: 'none',
-              opacity: loaded ? 0 : 1,
+              opacity: 1,
               transition: 'opacity 160ms ease',
             }}
             resolutionX={32}

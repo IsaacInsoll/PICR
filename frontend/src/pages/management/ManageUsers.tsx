@@ -30,7 +30,7 @@ export const ManageUsers = () => {
       {result.data?.admins ? (
         <PicrDataGrid
           columns={userColumns}
-          data={result.data?.admins}
+          data={result.data.admins}
           onClick={(row) => setUserId(row.id ?? null)}
         />
       ) : undefined}

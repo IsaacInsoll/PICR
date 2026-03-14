@@ -42,7 +42,7 @@ export const filterFiles = <T extends FilterableFile>(
 };
 
 const textFilter = (file: FilterableFile, text: string): boolean => {
-  return !!file.name && file.name?.toLowerCase().includes(text.toLowerCase());
+  return !!file.name && file.name.toLowerCase().includes(text.toLowerCase());
 };
 
 const ratioFilter = (
@@ -67,7 +67,7 @@ const metadataFilter = (
   let allowed = true;
   Object.entries(metadata).forEach(([title, options]) => {
     if (options.length > 0) {
-      if (file?.__typename === 'File') {
+      if (file.__typename === 'File') {
         allowed = false; // basic files don't have metadata
       } else {
         const val = file.metadata?.[title];

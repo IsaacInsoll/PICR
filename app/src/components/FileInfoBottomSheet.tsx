@@ -44,7 +44,7 @@ export const FileInfoBottomSheet = ({
 
   const handleClose = () => {
     Keyboard.dismiss();
-    if (onClose) onClose();
+    onClose();
   };
 
   //TODO: refactor metadataTableRows.tsx from frontend to abstract where appropriate

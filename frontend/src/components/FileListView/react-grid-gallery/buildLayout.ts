@@ -64,7 +64,6 @@ const getRow = <T extends Image = Image>(
     for (const i in row) {
       const pixelsToRemove = cutoff[i];
       const item = row[i];
-      if (!item) continue;
       item.marginLeft = -Math.abs(Math.floor(pixelsToRemove / 2));
       item.viewportWidth = item.scaledWidth - pixelsToRemove;
     }
@@ -97,7 +96,6 @@ export const buildLayout = <T extends Image = Image>(
   rowHeight = typeof rowHeight === 'undefined' ? 180 : rowHeight;
   margin = typeof margin === 'undefined' ? 2 : margin;
 
-  if (!images) return [];
   if (!containerWidth) return [];
 
   const options = { containerWidth, maxRows, rowHeight, margin };

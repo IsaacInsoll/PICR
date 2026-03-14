@@ -2,7 +2,7 @@ import type { PicrFolder } from '@shared/types/picr';
 import { Blurhash } from 'react-blurhash';
 
 export const FolderPreview = ({ folder }: { folder: PicrFolder }) => {
-  const hero = folder?.heroImage;
+  const hero = folder.heroImage;
   if (!hero || hero.__typename !== 'Image' || !hero.blurHash) return null;
   return (
     <Blurhash

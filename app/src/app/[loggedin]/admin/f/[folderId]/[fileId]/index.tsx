@@ -68,7 +68,7 @@ export default function AppFileView() {
   const files = result.data?.folder.files ?? [];
   const file = files.find((f) => f.id === fileId);
   const fileIndex = files.findIndex((f) => f.id === fileId);
-  const branding = result.data?.folder?.branding;
+  const branding = result.data?.folder.branding;
   const fontKey = normalizeHeadingFontKey(branding?.headingFontKey);
   const headerFontFamily = getHeadingFontFamilyForLevel(fontKey, 3);
 
@@ -112,7 +112,7 @@ export default function AppFileView() {
           options={{
             ...headerOptions,
             headerTransparent: true, //overriding the 'false on android' so when we toggle it on and off there is no layout shift
-            headerTitle: skeleton?.name ?? 'Loading File...',
+            headerTitle: skeleton.name,
             headerTitleStyle,
             headerRight: () => (
               <View style={{ flexDirection: 'row' }}>
@@ -161,7 +161,6 @@ export default function AppFileView() {
           enabled={!isZoomed}
           onSnapToItem={(index) => {
             const f = files[index];
-            if (!f) return;
             addToFileCache({ id: f.id, name: f.name, fileHash: f.fileHash });
             router.setParams({ folderId, fileId: f.id });
           }}

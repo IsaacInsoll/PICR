@@ -228,7 +228,7 @@ const withParents = (
 ) => {
   const parents: PicrFolder[] = [];
   let current = folder;
-  while (current?.parentId) {
+  while (current.parentId) {
     const parent = foldersById.get(current.parentId);
     if (!parent) break;
     parents.push(parent);
@@ -287,7 +287,7 @@ const validateMoveRename = ({
   if (!me.isAdmin) {
     return 'Admin permissions required.';
   }
-  if (!me.clientInfo?.canWrite) {
+  if (!me.clientInfo.canWrite) {
     return 'Server is read-only.';
   }
   if (currentFolder.id === '1' || currentFolder.parentId == null) {

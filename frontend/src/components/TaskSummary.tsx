@@ -31,10 +31,10 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
 
   useEffect(() => {
     zips.forEach((fh) => {
-      const task = complete?.find(({ id }) => id === fh.folder?.id + fh.hash);
+      const task = complete?.find(({ id }) => id === fh.folder.id + fh.hash);
       if (task) {
         const url = withBasePath(
-          `/zip/${fh.folder?.id}/${fh.hash}/${fh.folder?.name}`,
+          `/zip/${fh.folder.id}/${fh.hash}/${fh.folder.name}`,
         );
         triggerDownload(url);
         setZips((list) => list.filter((zz) => zz !== fh));

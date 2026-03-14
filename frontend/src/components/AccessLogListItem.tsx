@@ -6,7 +6,6 @@ import { DateDisplay } from './FileListView/Filtering/PrettyDate';
 import { AccessLogClientMeta } from './AccessLogClientMeta';
 
 export const AccessLogListItem = ({ log }: { log: AccessLogRow }) => {
-  if (!log) return null;
   return (
     <Paper withBorder p="sm" radius="md">
       <Stack gap={6}>

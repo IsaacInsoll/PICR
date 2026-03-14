@@ -34,7 +34,7 @@ export const MetadataBox = ({
             <MetadataSelect
               key={title}
               title={title as AnyMetadataKey}
-              options={options ?? []}
+              options={options}
             />
           );
         })}

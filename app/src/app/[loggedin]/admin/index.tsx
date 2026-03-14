@@ -155,9 +155,7 @@ const DashboardBody = () => {
           {folderId ? <AppTaskSummary folderId={folderId} /> : null}
         </Suspense>
         {recentUsersResult.data ? (
-          <RecentUsers
-            users={(recentUsersResult.data?.users ?? []).slice(0, 5)}
-          />
+          <RecentUsers users={recentUsersResult.data.users.slice(0, 5)} />
         ) : null}
         {recentFoldersResult.data ? (
           <RecentFolders folders={recentFoldersResult.data.allFolders} />

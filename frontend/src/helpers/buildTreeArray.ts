@@ -2,7 +2,7 @@
 // modified to add typescript and optional `rootId` param
 
 export type NodeId = string | number;
-type NodeMap = { [key: NodeId]: TreeNode };
+type NodeMap = Partial<Record<NodeId, TreeNode>>;
 
 export interface TreeNode {
   id: NodeId;
@@ -34,6 +34,6 @@ export function buildTreeArray(flatArray: TreeNode[], rootId?: NodeId) {
 
   // Filter flatArray for root nodes
   return flatArray
-    .filter((item) => (rootId ? item.id === rootId : item.parentId === null))
+    .filter((item) => (rootId ? item.id === rootId : item.parentId == null))
     .map((item) => buildNode(item.id));
 }

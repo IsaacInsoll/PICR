@@ -28,7 +28,7 @@ export const CommentModal = ({
       <Modal
         opened={true}
         onClose={onClose}
-        title={'Comments on ' + file?.name}
+        title={'Comments on ' + file.name}
         fullScreen={isMobile}
       >
         <Suspense fallback={<LoadingIndicator />}>
