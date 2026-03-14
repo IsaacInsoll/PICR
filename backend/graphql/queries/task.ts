@@ -12,7 +12,7 @@ const resolver: PicrResolver<object, QueryTasksArgs> = async (
   params,
   context,
 ) => {
-  const { user, folder } = await contextPermissions(
+  const { folder } = await contextPermissions(
     context,
     params.folderId ?? 1,
     'View',
@@ -23,7 +23,7 @@ const resolver: PicrResolver<object, QueryTasksArgs> = async (
   taskList.push(...queueZipTaskStatus(folderIds));
 
   const thumbs = queueTaskStatus();
-  if (user && thumbs) taskList.push(thumbs);
+  if (thumbs) taskList.push(thumbs);
 
   return taskList;
 };

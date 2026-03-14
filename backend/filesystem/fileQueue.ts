@@ -71,7 +71,7 @@ const runQueueItem = async (action: QueueAction, payload: QueuePayload) => {
   } catch (err) {
     log(
       'error',
-      `⚠️ fileQueue task "${action}" failed: ${(err as Error).message ?? err}`,
+      `⚠️ fileQueue task "${action}" failed: ${(err as Error).message}`,
     );
   } finally {
     queueDone++;

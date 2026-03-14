@@ -77,7 +77,7 @@ export const ManagePublicLink = ({
       linkMode,
       username,
     };
-    mutate(data).then(({ error }) => {
+    void mutate(data).then(({ error }) => {
       if (error) {
         setError(error.toString());
       } else {
@@ -91,7 +91,7 @@ export const ManagePublicLink = ({
 
   const onDelete = () => {
     if (!id) return;
-    deleteUser({ id }).then(({ error }) => {
+    void deleteUser({ id }).then(({ error }) => {
       if (error) {
         setError(error.toString());
       } else {

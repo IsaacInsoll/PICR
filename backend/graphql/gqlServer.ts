@@ -47,7 +47,7 @@ export const gqlServer = createHandler({
     const user = (await getUserFromToken(h)) ?? (await getUserFromUUID(h));
     const userHomeFolder = await dbFolderForId(user?.folderId);
     const extra = extraUserProps(
-      user?.userType ? { userType: UserType[user?.userType] } : undefined,
+      user?.userType ? { userType: UserType[user.userType] } : undefined,
     );
 
     return { headers: h, user, userHomeFolder, ...extra } as Record<

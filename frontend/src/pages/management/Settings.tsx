@@ -32,7 +32,7 @@ export const Settings = () => {
 
   const onTabChange = (newTab: string | null) => {
     if (!newTab) return;
-    navigate('/admin/settings/' + newTab);
+    void navigate('/admin/settings/' + newTab);
   };
 
   const title = 'PICR Settings';

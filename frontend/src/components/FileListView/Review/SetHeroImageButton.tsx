@@ -28,7 +28,7 @@ export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
   const onSetHero = () => {
     if (!file.folderId) return;
     setLoading(true);
-    mutate({
+    void mutate({
       folderId: file.folderId,
       heroImageId: file.id,
     }).then(() => {

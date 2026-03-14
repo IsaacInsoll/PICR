@@ -82,11 +82,11 @@ const resolver: PicrResolver<object, MutationEditAdminUserArgs> = async (
     adminUser.folderId = params.folderId;
     adminUser.name = params.name;
     adminUser.username = params.username ?? null;
-    adminUser.enabled = params.enabled ?? adminUser.enabled ?? true;
+    adminUser.enabled = params.enabled ?? adminUser.enabled;
     adminUser.ntfy = params.ntfy ?? null;
-    adminUser.ntfyEmail = params.ntfyEmail ?? adminUser.ntfyEmail ?? false;
+    adminUser.ntfyEmail = params.ntfyEmail ?? adminUser.ntfyEmail;
     adminUser.commentPermissions =
-      params.commentPermissions ?? adminUser.commentPermissions ?? 'edit';
+      params.commentPermissions ?? adminUser.commentPermissions;
     adminUser.updatedAt = new Date();
     if (pass) adminUser.hashedPassword = hashPassword(pass);
     await db.update(dbUser).set(adminUser).where(eq(dbUser.id, adminUser.id));

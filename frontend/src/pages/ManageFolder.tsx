@@ -56,13 +56,13 @@ export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
   const setActiveTab = (tab: string | null) => {
     if (!tab) return;
     //TODO: I hate this hard coded navigation but don't know a better way :/
-    navigate(`/admin/f/${folderId}/manage/${tab}`);
+    void navigate(`/admin/f/${folderId}/manage/${tab}`);
   };
 
   const onSave = () => {
     setSaving(true);
     setError('');
-    mutate({
+    void mutate({
       folderId: folder.id,
       title: normalizedTitle,
       subtitle: normalizedSubtitle,
@@ -165,7 +165,7 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
 
   const openBranding = (b: BrandingInput) => {
     setEditBranding(b);
-    navigate(`/admin/f/${folderId}/manage/branding`);
+    void navigate(`/admin/f/${folderId}/manage/branding`);
   };
 
   const handleChange = async (value: string | null) => {
@@ -195,6 +195,9 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
     });
     setSaving(false);
   };
+  const onBrandingChange = (value: string | null) => {
+    void handleChange(value);
+  };
 
   const handleEdit = () => {
     if (!selectedBranding) return;
@@ -214,7 +217,7 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
           placeholder="Select a branding"
           data={options}
           value={currentBrandingId}
-          onChange={handleChange}
+          onChange={onBrandingChange}
           disabled={saving}
           leftSection={<BrandingIcon />}
           clearable={false}

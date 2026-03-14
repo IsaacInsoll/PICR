@@ -33,7 +33,7 @@ export const sendExpoNotifications = async (
 
     // replace URL with one that will open in the app
     const targetUrl = payload.url?.startsWith('https://')
-      ? 'picr://' + payload.url?.substring(8)
+      ? 'picr://' + payload.url.substring(8)
       : payload.url;
 
     // Construct a message (see https://docs.expo.io/push-notifications/sending-notifications/)
@@ -96,9 +96,9 @@ const checkReceipts = async (receiptIds: ExpoPushReceiptId[]) => {
       const receipt = receipts[receiptId];
       if (receipt.status === 'ok') {
         continue;
-      } else if (receipt.status === 'error') {
+      } else {
         logger.error(
-          `There was an error sending a notification: ${receipt?.message}`,
+          `There was an error sending a notification: ${receipt.message}`,
         );
         if (receipt.details && receipt.details.error) {
           logger.error(`The error code is ${receipt.details.error}`);

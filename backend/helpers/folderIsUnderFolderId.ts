@@ -14,7 +14,7 @@ export const folderIsUnderFolderId = async (
   child: FolderFields,
   parentId: number | string,
 ): Promise<boolean> => {
-  if (!child || !parentId) return false;
+  if (!parentId) return false;
   const normalizedParentId = parseNumericId(parentId, 'parentId');
   if (child.id === normalizedParentId) {
     return true;
@@ -31,7 +31,7 @@ export const folderIsUnderFolder = (
   child: FolderFields,
   parent?: FolderFields,
 ): boolean => {
-  if (!child || !child.id || !parent || !parent.id) return false;
+  if (!parent || !parent.id) return false;
   if (child.id === parent.id || parent.id === 1) return true;
   if (!child.parentId) return false;
   return pathIsUnder(child.relativePath, parent.relativePath);

@@ -22,7 +22,7 @@ export function generateAccessToken(obj: {
 export async function getUserFromToken(
   context: CustomJwtPayload,
 ): Promise<UserFields | undefined> {
-  const token = context?.['auth']?.split(' ')?.[1];
+  const token = context['auth']?.split(' ')?.[1];
   if (token == null || token === '') return undefined;
   const secret = picrConfig.tokenSecret;
   if (!secret) return undefined;

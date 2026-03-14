@@ -1,5 +1,4 @@
 import { GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull } from 'graphql';
-import { GraphQLError } from 'graphql/error/index.js';
 import { and, asc, count, eq, inArray } from 'drizzle-orm';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { QueryFolderFilesArgs } from '@shared/gql/graphql.js';
@@ -35,13 +34,7 @@ const resolver: PicrResolver<object, QueryFolderFilesArgs> = async (
   params,
   context,
 ) => {
-  if (params.folderId == null) {
-    throw new GraphQLError('Missing required folderId');
-  }
   const { folder } = await contextPermissions(context, params.folderId, 'View');
-  if (!folder) {
-    throw new GraphQLError('Folder not found');
-  }
   const baseFolder: FolderFields = folder;
   const includeSubfolders = !!params.includeSubfolders;
   const requestedLimit = params.limit ?? MAX_FOLDER_FILES;

@@ -38,7 +38,7 @@ export const createRenameTracker = (ttlMs: number = DEFAULT_TTL_MS) => {
   const makeKey = (kind: RenameKind, stats: Stats): string | null => {
     if (stats.ino && stats.ino > 0) return `ino:${stats.ino}`;
     if (kind === 'dir') return null;
-    const birthtimeMs = stats.birthtimeMs ?? 0;
+    const birthtimeMs = stats.birthtimeMs;
     return `sig:${stats.size}-${stats.mtimeMs}-${birthtimeMs}`;
   };
 

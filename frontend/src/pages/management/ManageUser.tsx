@@ -59,7 +59,7 @@ export const ManageUser = ({
 
   const onDelete = () => {
     if (!id || isRootAdmin) return;
-    deleteUser({ id }).then(({ error }) => {
+    void deleteUser({ id }).then(({ error }) => {
       if (error) {
         setError(error.toString());
       } else {
@@ -82,7 +82,7 @@ export const ManageUser = ({
       ntfy,
       ntfyEmail,
     };
-    mutate(data).then(({ error }) => {
+    void mutate(data).then(({ error }) => {
       if (error) {
         setError(error.toString());
       } else {

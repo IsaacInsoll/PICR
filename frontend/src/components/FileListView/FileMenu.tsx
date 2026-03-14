@@ -74,7 +74,10 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
             disabled={!!file.isHeroImage}
             onClick={() => {
               if (!file.folderId) return;
-              editFolder({ folderId: file.folderId, heroImageId: file.id });
+              void editFolder({
+                folderId: file.folderId,
+                heroImageId: file.id,
+              });
             }}
           >
             Set as Hero Image

@@ -117,7 +117,7 @@ const ViewFolderBody = () => {
     const fileIds = folder?.files?.map((f) => f.id) ?? [];
     if (fileId && fileIds && fileIds.length > 0 && !managing && !activity) {
       if (!fileIds.includes(fileId)) {
-        if (folder) setFolder(folder);
+        if (folder) void setFolder(folder);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally omitting folder/setFolder to avoid spurious redirects on query refresh
@@ -126,20 +126,23 @@ const ViewFolderBody = () => {
   // redirect if someone navigates directly to manage/branding without the atom being set
   useEffect(() => {
     if (managing && tab === 'branding' && !editBranding) {
-      navigate(`/admin/f/${currentFolderId}/manage/folder`, { replace: true });
+      void navigate(`/admin/f/${currentFolderId}/manage/folder`, {
+        replace: true,
+      });
     }
   }, [managing, tab, editBranding, navigate, currentFolderId]);
 
   const closeBranding = () => {
     setEditBranding(null);
     setAssignBrandingToFolderId(null);
-    if (managing && folder)
-      navigate(`/admin/f/${currentFolderId}/manage/folder`);
+    if (managing && folder) {
+      void navigate(`/admin/f/${currentFolderId}/manage/folder`);
+    }
   };
 
   const onBrandingSaved = (savedId: string) => {
     if (assignBrandingToFolderId) {
-      setFolderBranding({
+      void setFolderBranding({
         folderId: assignBrandingToFolderId,
         brandingId: savedId,
       });
@@ -167,7 +170,7 @@ const ViewFolderBody = () => {
       <Button
         variant="default"
         onClick={() => {
-          if (folder) setFolder(folder);
+          if (folder) void setFolder(folder);
         }}
         leftSection={<FolderIcon />}
         key="BackToFolder"

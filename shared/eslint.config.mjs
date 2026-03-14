@@ -12,11 +12,23 @@ export default tseslint.config(
   eslint.configs.recommended,
   tseslint.configs.recommended,
   {
+    ignores: ['eslint.config.mjs'],
+  },
+  {
     linterOptions: picrCommonLinterOptions,
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     plugins: picrCommonPlugins,
     rules: {
       ...picrCommonRules,
       ...picrTypeScriptRules,
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
       'no-restricted-imports': picrRestrictedImports([
         {
           group: ['../**/frontend/**'],

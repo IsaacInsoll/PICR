@@ -174,6 +174,9 @@ const MoveRenameFolderModalForm = ({
     }
     onClose();
   };
+  const handleSubmit = () => {
+    void onSubmit();
+  };
 
   const handleParentChange = (selected: PicrFolder) => {
     const resolved = foldersById.get(selected.id) ?? selected;
@@ -211,7 +214,7 @@ const MoveRenameFolderModalForm = ({
         <Button variant="default" onClick={onClose}>
           Cancel
         </Button>
-        <Button onClick={onSubmit} disabled={!canSubmit}>
+        <Button onClick={handleSubmit} disabled={!canSubmit}>
           Move/Rename
         </Button>
       </Group>

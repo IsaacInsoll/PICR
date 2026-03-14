@@ -26,7 +26,7 @@ const resolver: PicrResolver<object, MutationAddCommentArgs> = async (
   );
   if (!file?.exists) throw new GraphQLError('File not found');
 
-  if (!user || user.commentPermissions !== 'edit') {
+  if (user.commentPermissions !== 'edit') {
     doAuthError('COMMENTS_NOT_ALLOWED');
   }
 

@@ -26,7 +26,7 @@ const resolver: PicrResolver<object, MutationGenerateThumbnailsArgs> = async (
     orderBy: asc(dbFile.name),
   }); //.then(x=>x.map(f=>f.id));
 
-  files?.map((f) => addToQueue('generateThumbnails', { id: f.id }));
+  files.map((f) => addToQueue('generateThumbnails', { id: f.id }));
   return true;
 };
 

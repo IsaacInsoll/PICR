@@ -158,7 +158,7 @@ export const SetBannerImageModal = ({
 
   const handleSave = () => {
     if (!selectedSize || !file.folderId) return;
-    editFolder({
+    void editFolder({
       folderId: file.folderId,
       bannerImageId: file.id,
       bannerSize: selectedSize,

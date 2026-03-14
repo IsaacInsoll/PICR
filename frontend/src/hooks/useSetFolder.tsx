@@ -24,7 +24,7 @@ export const useSetFolder = () => {
     const base = baseUrl + folder.id;
     const fileId = typeof file === 'string' ? file : file?.id;
     const f = fileId ? `/${fileId}` : '';
-    navigate(base + f + location.hash, options);
+    void navigate(base + f + location.hash, options);
   };
 };
 

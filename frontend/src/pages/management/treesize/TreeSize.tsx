@@ -27,7 +27,7 @@ export const TreeSize = ({ rootId }: { rootId?: string }) => {
     if (id === 'files') {
       setTreeSizeTab('files');
     } else {
-      navigate('/admin/settings/treesize/' + id);
+      void navigate('/admin/settings/treesize/' + id);
     }
   };
   return (

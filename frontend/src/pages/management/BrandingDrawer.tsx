@@ -59,7 +59,7 @@ export const BrandingDrawer = ({
 
   const onSave = () => {
     setSubmitting(true);
-    mutate({
+    void mutate({
       id: isNew ? undefined : branding.id,
       name: branding.name,
       mode: branding.mode,
@@ -89,7 +89,7 @@ export const BrandingDrawer = ({
   const onDelete = () => {
     if (!branding.id) return;
     setSubmitting(true);
-    deleteBranding({ id: branding.id }).then(() => {
+    void deleteBranding({ id: branding.id }).then(() => {
       setSubmitting(false);
       onClose();
     });

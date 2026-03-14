@@ -17,7 +17,16 @@ export default tseslint.config(
   react.configs.flat.recommended,
   react.configs.flat['jsx-runtime'],
   {
+    ignores: ['eslint.config.mjs'],
+  },
+  {
     linterOptions: picrCommonLinterOptions,
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     settings: {
       react: { version: 'detect' },
     },
@@ -30,6 +39,9 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       ...picrCommonRules,
       ...picrTypeScriptRules,
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
       'react/prop-types': 'off',
       'react/destructuring-assignment': ['error', 'always'],
       'react/no-unescaped-entities': 'off',

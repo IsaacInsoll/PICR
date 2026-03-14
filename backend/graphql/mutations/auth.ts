@@ -19,7 +19,7 @@ const resolver: PicrResolver<object, MutationAuthArgs> = async (
 ) => {
   const p: string | undefined = params.password;
   const identity = {
-    ipAddress: context.headers?.ipAddress,
+    ipAddress: context.headers.ipAddress,
     username: params.user,
   };
 

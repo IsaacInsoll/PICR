@@ -99,6 +99,9 @@ const AddCommentBox = ({
     setSubmitting(false);
     if (!result.error) setText('');
   };
+  const handleSubmit = () => {
+    void onSubmit();
+  };
   return (
     <>
       <Divider />
@@ -115,7 +118,7 @@ const AddCommentBox = ({
         <Button
           variant="filled"
           disabled={text.length === 0}
-          onClick={onSubmit}
+          onClick={handleSubmit}
           loading={submitting}
         >
           Add Comment

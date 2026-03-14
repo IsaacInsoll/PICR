@@ -32,6 +32,12 @@ export const FileReview = ({ file }: { file: ReviewableFile }) => {
   if (isNone) return null;
 
   const { id, flag, rating, totalComments } = file;
+  const handleFlagChange = (flag: FileFlag) => {
+    void mutate({ id, flag });
+  };
+  const handleRatingChange = (rating: number) => {
+    void mutate({ id, rating });
+  };
 
   // Note when plumbing in mutations:
   //Rating will probably want something like   return <Loader color="blue" size="sm" type="dots" />;
@@ -42,13 +48,13 @@ export const FileReview = ({ file }: { file: ReviewableFile }) => {
       ) : (
         <FileFlagButtons
           flag={flag ?? FileFlag.None}
-          onChange={(flag) => mutate({ id, flag })}
+          onChange={handleFlagChange}
         />
       )}
       <Divider orientation="vertical" />
       <FileRating
         value={rating ?? 0}
-        onChange={(rating) => mutate({ id, rating })}
+        onChange={handleRatingChange}
         readOnly={readOnly}
       />
       <Divider orientation="vertical" />

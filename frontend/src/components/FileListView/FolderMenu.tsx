@@ -36,6 +36,9 @@ export const FolderMenuItems = ({
   const me = useMe();
   const openMoveModal = useOpenMoveRenameFolderModal();
   const { canView } = useCommentPermissions();
+  const handleGenerateZip = () => {
+    void generateZip?.();
+  };
 
   return (
     <>
@@ -59,7 +62,7 @@ export const FolderMenuItems = ({
         <Menu.Item
           leftSection={<DownloadIcon />}
           key="download"
-          onClick={generateZip}
+          onClick={handleGenerateZip}
         >
           Download ZIP
         </Menu.Item>

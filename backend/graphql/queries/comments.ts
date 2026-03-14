@@ -27,7 +27,7 @@ const resolver: PicrResolver<object, QueryCommentsArgs> = async (
     const file = await dbFileForId(params.fileId);
     if (!file) throw new GraphQLError('File not found');
     const { user } = await contextPermissions(context, file.folderId, 'View');
-    if (user?.commentPermissions === 'none') {
+    if (user.commentPermissions === 'none') {
       doAuthError('COMMENTS_HIDDEN');
     }
 
@@ -46,12 +46,9 @@ const resolver: PicrResolver<object, QueryCommentsArgs> = async (
       }),
     );
   } else {
-    const folderId = params.folderId;
-    if (folderId == null) {
-      throw new GraphQLError('Missing folderId');
-    }
+    const folderId = params.folderId as number;
     const { user } = await contextPermissions(context, folderId, 'View');
-    if (user?.commentPermissions === 'none') {
+    if (user.commentPermissions === 'none') {
       doAuthError('COMMENTS_HIDDEN');
     }
     const files = await subFilesMap(folderId);

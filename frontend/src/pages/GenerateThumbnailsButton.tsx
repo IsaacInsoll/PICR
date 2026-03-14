@@ -15,11 +15,14 @@ export const GenerateThumbnailsButton = ({
   });
   const totalImages = result.data?.folder?.totalImages;
   const [, thumbsMutation] = useMutation(generateThumbnailsMutation);
+  const handleClick = () => {
+    void thumbsMutation({ folderId: folderId });
+  };
   return (
     <Button
       variant="default"
       disabled={!totalImages || totalImages === 0}
-      onClick={() => thumbsMutation({ folderId: folderId })}
+      onClick={handleClick}
     >
       <PhotoCheckIcon />
       {`Generate ${totalImages} Thumbnails`}

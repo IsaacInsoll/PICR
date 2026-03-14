@@ -23,12 +23,15 @@ export const DownloadZipButton = ({
 }) => {
   const [tempDisabled, setTempDisabled] = useState(false);
   const generateZip = useGenerateZip(folder, () => setTempDisabled(false));
+  const handleClick = () => {
+    void generateZip?.();
+  };
 
   if (!generateZip) return null;
   return (
     <Button
       title="Download All Files"
-      onClick={generateZip}
+      onClick={handleClick}
       variant="default"
       disabled={disabled || tempDisabled}
       leftSection={<DownloadIcon />}

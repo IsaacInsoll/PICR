@@ -14,20 +14,20 @@ export const getImageMetadata = async (file: FileFields) => {
 
     if (!exif) return null;
     const x = ex(exif);
-    const camera = joinDefined(x?.Image?.Make, x?.Image?.Model);
-    const lens = joinDefined(x?.Photo?.LensMake, x?.Photo?.LensModel);
-    // const et = x?.Photo?.ExposureTime;
+    const camera = joinDefined(x.Image?.Make, x.Image?.Model);
+    const lens = joinDefined(x.Photo?.LensMake, x.Photo?.LensModel);
+    // const et = x.Photo?.ExposureTime;
     const result: PicrImageMetadata = {
       Camera: camera,
       Lens: lens,
-      Artist: x?.Image?.Artist,
-      DateTimeEdit: toISODateTime(x?.Image?.DateTime),
-      DateTimeOriginal: toISODateTime(x?.Photo?.DateTimeOriginal),
-      Aperture: x?.Photo?.FNumber,
-      ExposureTime: x?.Photo?.ExposureTime,
+      Artist: x.Image?.Artist,
+      DateTimeEdit: toISODateTime(x.Image?.DateTime),
+      DateTimeOriginal: toISODateTime(x.Photo?.DateTimeOriginal),
+      Aperture: x.Photo?.FNumber,
+      ExposureTime: x.Photo?.ExposureTime,
       Width: width,
       Height: height,
-      ISO: x?.Photo?.ISOSpeedRatings,
+      ISO: x.Photo?.ISOSpeedRatings,
       Rating: getImageRating(xmp),
     };
     return result;

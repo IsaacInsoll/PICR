@@ -26,6 +26,12 @@ export const FileFlagButtons = ({
     await onChange(flag);
     setLoading(false);
   };
+  const handleApproveClick = () => {
+    void setFlag(!isApproved ? FileFlag.Approved : FileFlag.None);
+  };
+  const handleRejectClick = () => {
+    void setFlag(!isRejected ? FileFlag.Rejected : FileFlag.None);
+  };
 
   const isApproved = flag === FileFlag.Approved;
   const isRejected = flag === FileFlag.Rejected;
@@ -36,9 +42,7 @@ export const FileFlagButtons = ({
       <Tooltip label="Approve (Thumbs Up)">
         <ActionIcon
           variant={isApproved ? 'filled' : 'default'}
-          onClick={() =>
-            setFlag(!isApproved ? FileFlag.Approved : FileFlag.None)
-          }
+          onClick={handleApproveClick}
           title="Approve"
           color={approvedFlagStyle.color}
           loading={loading}
@@ -49,9 +53,7 @@ export const FileFlagButtons = ({
       <Tooltip label="Reject (Thumbs Down)">
         <ActionIcon
           variant={isRejected ? 'filled' : 'default'}
-          onClick={() =>
-            setFlag(!isRejected ? FileFlag.Rejected : FileFlag.None)
-          }
+          onClick={handleRejectClick}
           title="Reject"
           color={rejectedFlagStyle.color}
           loading={loading}

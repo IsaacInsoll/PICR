@@ -196,7 +196,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
   }, [hasBannerImage]);
 
   const onClear = () => {
-    editFolder({ folderId: folder.id, bannerImageId: null });
+    void editFolder({ folderId: folder.id, bannerImageId: null });
   };
 
   if (!folder.bannerImage) return null;
