@@ -26,7 +26,7 @@
 
 | Command                                                     | Description                                            | When to use                                                                                             |
 | ----------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| `npm start`                                                 | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. <br /> Uses nodemon/vite to reload on changes                              |
+| `npm start`                                                 | Run "_everything_": Server / DB / Frontend in Dev Mode | Used for 90% of development. <br /> Uses `tsx watch`/Vite to reload on changes                          |
 | `cd frontend && npm run css:types`                          | Generate typed CSS module declarations                 | Run after adding/renaming/removing CSS module class names                                               |
 | `cd frontend && npm run css:types:check`                    | Verify typed CSS module declarations are current       | Runs in frontend lint/CI guard; useful before commit                                                    |
 | `npm run gql`                                               | Build GQL files                                        | Run after updating any GQL on server to "see" new stuff, <br />or after updating a query on client side |

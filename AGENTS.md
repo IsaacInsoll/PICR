@@ -124,13 +124,15 @@ Per-user setting (`commentPermissions`): `edit` | `read` | `none`
 ```bash
 # Development
 npm start                    # Full dev stack (backend + frontend + Docker DB)
-npm run start:server         # Backend only (with nodemon)
+npm run start:server         # Backend only (tsx watch on source files)
 npm run start:client         # Frontend only (Vite dev server)
 npm run start:db             # Database only (Docker)
 
 # Dev runtime note
-# `npm start` runs the backend from `dist/server`, so backend runtime deps must exist in `dist/node_modules`.
-# If startup fails with ERR_MODULE_NOT_FOUND from `dist/server`, run:
+# `npm start` runs the backend directly from `backend/app.ts` via `tsx watch`.
+# Type checking runs separately via `npx tsc --noEmit -w`.
+# Build/test/docker still run the compiled backend from `dist/server`.
+# If compiled runtime fails with ERR_MODULE_NOT_FOUND from `dist/server`, run:
 # bash ./copy-backend-files.sh && npm --prefix dist ci
 
 # Building

@@ -7,7 +7,6 @@
     "lint": "eslint . --ext .ts",
     "build": "rm -rf ../dist/server && tsc && tsc-alias && cd .. && bash ./copy-backend-files.sh",
     "start": " node ../dist/server/backend/app.js",
-    "server": "nodemon --delay 0.5 --watch .env --watch server server/backend/app.js",
     "dk": "DOTENV_CONFIG_PATH=../.env NODE_OPTIONS='--import tsx' drizzle-kit",
     "dk:generate": "sh -c 'if [ -z \"$MIGRATION_NAME\" ]; then echo \"MIGRATION_NAME is required. Example: MIGRATION_NAME=branding-upgrades npm run dk:generate\"; exit 1; fi; npm run dk -- generate --name=\"$MIGRATION_NAME\"'"
   },
@@ -50,7 +49,6 @@
     "@types/semver": "^7.7.1",
     "drizzle-kit": "^0.31",
     "eslint": "^9.25.0",
-    "nodemon": "^3.1.11",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.21",
     "typescript": "^5.9.3",
