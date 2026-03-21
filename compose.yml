@@ -6,6 +6,12 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: picr
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user -d picr']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
     ports:
       - '54321:5432'
     volumes:

@@ -8,7 +8,8 @@ services:
     # intentionally leaving the cache inside the container as we can't write to the host when running in docker ?
     #      - ./env/cache:/home/node/app/cache
     depends_on:
-      - test-db
+      test-db:
+        condition: service_healthy
     ports:
       - '6901:6900'
     environment:
@@ -25,6 +26,12 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: picr
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user -d picr']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
     volumes:
       - type: tmpfs
         target: /var/lib/postgresql/data

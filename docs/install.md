@@ -26,7 +26,8 @@ services:
       - <path-to-your-shared-images>:/home/node/app/media:ro # read only access to your 'files i give to clients' folder
       - ./cache:/home/node/app/cache #where PICR will store thumbnails it generates, no need to back it up
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - '6900:6900' # presumably reverse proxy will handle HTTPS
     environment:
@@ -40,9 +41,17 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: picr
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user -d picr']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
     volumes:
       - ./data:/var/lib/postgresql/data #database storage, you should back this up
 ```
+
+The `healthcheck` and `depends_on.condition: service_healthy` pairing is recommended so PICR waits for Postgres to be ready, not just started. PICR also retries its startup migrations once after 10 seconds if the database is still unavailable, which helps with slower disks or NAS startup timing.
 
 ## Volumes (File Locations)
 
@@ -96,6 +105,8 @@ There are lots of environment variables you can use, but only a few are needed:
 Start the docker compose stack and it should start PICR and the postgres database.
 You should see output in docker saying 'you need a token secret, heres one...', add that to your `compose.yml` and then
 start the container again.
+
+If Postgres is still booting when PICR starts, PICR will wait 10 seconds and retry once before treating startup as a real failure.
 
 Once it's up and running you can then log in. Go to the url (EG: http://<ip-address>:6900/) and login with the default
 login of `admin` / `picr1234`
