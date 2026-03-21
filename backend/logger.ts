@@ -18,6 +18,14 @@ export const logger = createLogger({
   ],
 });
 
+const logMethods = {
+  error: logger.error.bind(logger),
+  warn: logger.warn.bind(logger),
+  info: logger.info.bind(logger),
+  verbose: logger.verbose.bind(logger),
+  debug: logger.debug.bind(logger),
+} as const;
+
 export const addDevLogger = () => {
   // If we're not in production then **ALSO** log to the `console` with colors
   if (picrConfig.dev) {
@@ -32,8 +40,7 @@ export const addDevLogger = () => {
 
 export const log = (level: LevelType, message: string, important?: boolean) => {
   if (important) process.stdout.write(message + '\n'); // basic "server running" type messages
-  logger.log(level, message);
+  logMethods[level](message);
 };
 
-// no idea where to find this type in winston :/
-type LevelType = 'error' | 'warn' | 'info' | 'verbose' | 'debug';
+type LevelType = keyof typeof logMethods;
