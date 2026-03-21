@@ -73,7 +73,7 @@ export const configFromEnv = () => {
   Object.assign(picrConfig, c);
 
   if (d.CAN_WRITE && !canWriteToMediaPath) {
-    log('warning', buildCanWriteWarning(mediaPath), true);
+    log('warn', buildCanWriteWarning(mediaPath), true);
   }
 };
 

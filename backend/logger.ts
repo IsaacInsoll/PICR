@@ -36,4 +36,4 @@ export const log = (level: LevelType, message: string, important?: boolean) => {
 };
 
 // no idea where to find this type in winston :/
-type LevelType = 'error' | 'warning' | 'info' | 'verbose' | 'debug';
+type LevelType = 'error' | 'warn' | 'info' | 'verbose' | 'debug';

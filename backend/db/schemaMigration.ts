@@ -84,7 +84,7 @@ const runMigrationsWithRetry = async (
 
       if (isRetryable && retryRemaining) {
         log(
-          'warning',
+          'warn',
           `⚠️ Database unavailable for migrations. Waiting ${retryPolicy.delayMs / 1000}s before retry ${attempt + 1}/${retryPolicy.attempts}...`,
           true,
         );

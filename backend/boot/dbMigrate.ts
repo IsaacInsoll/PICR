@@ -82,7 +82,7 @@ const removeDuplicates = async () => {
     duplicateFolders.map(({ relativePath }) => {
       if (!relativePath) {
         log(
-          'warning',
+          'warn',
           'Skipping duplicate-folder migration row with no path',
           true,
         );
@@ -129,7 +129,7 @@ const removeDuplicates = async () => {
     duplicateFiles.map(({ relativePath, name }) => {
       if (!relativePath || !name) {
         log(
-          'warning',
+          'warn',
           'Skipping duplicate-file migration row with missing fields',
           true,
         );
