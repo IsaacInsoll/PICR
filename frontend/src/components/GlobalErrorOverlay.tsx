@@ -46,6 +46,12 @@ export const GlobalErrorOverlay = () => {
             {incident.message
               .replace('[GraphQL] ', '')
               .replace('[Network] ', '')}
+            {incident.operationName ? (
+              <Text size="sm" mt="xs">
+                Operation: {incident.operationName}
+                {incident.operationKind ? ` (${incident.operationKind})` : ''}
+              </Text>
+            ) : null}
           </Alert>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <Button

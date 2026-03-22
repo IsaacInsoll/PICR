@@ -5,6 +5,8 @@ export interface GlobalErrorIncident {
   id: number;
   type: GlobalErrorType;
   message: string;
+  operationName?: string;
+  operationKind?: string;
 }
 
 export const globalErrorAtom = atom<GlobalErrorIncident | null>(null);

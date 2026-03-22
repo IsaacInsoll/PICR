@@ -12,7 +12,7 @@ export const createClient = (authToken: string, sessionKey: string) =>
   new Client({
     url: withBasePath('graphql'),
     suspense: true,
-    exchanges: [urqlCacheExchange, retry, globalErrorExchange, fetchExchange],
+    exchanges: [urqlCacheExchange, globalErrorExchange, retry, fetchExchange],
     fetchOptions: () => {
       const uuid = getUUID();
       const headers: Record<string, string> = { sessionId: sessionKey };
