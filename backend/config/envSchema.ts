@@ -11,6 +11,13 @@ const castStringToBool = z
   }, z.coerce.boolean())
   .default(false);
 
+const optionalNonEmptyString = z.preprocess((val) => {
+  if (typeof val === 'string' && val.trim() === '') {
+    return undefined;
+  }
+  return val;
+}, z.string().min(1).optional());
+
 export const envSchema = z.object({
   DATABASE_URL: z
     .string({
@@ -54,9 +61,9 @@ export const envSchema = z.object({
     })
     .min(64)
     .optional(),
-  PICR_BUILD_CHANNEL: z.string().min(1).optional(),
-  PICR_DEVELOPMENT_BUILD_SHA: z.string().min(1).optional(),
-  PICR_GIT_SHA: z.string().min(1).optional(),
+  PICR_BUILD_CHANNEL: optionalNonEmptyString,
+  PICR_DEVELOPMENT_BUILD_SHA: optionalNonEmptyString,
+  PICR_GIT_SHA: optionalNonEmptyString,
 
   DEBUG_SQL: castStringToBool,
   CONSOLE_LOGGING: castStringToBool,
