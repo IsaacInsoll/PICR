@@ -4,6 +4,8 @@ export const picrConfig: IPicrConfiguration = {
   baseUrl: '',
   baseUrlOrigin: '',
   baseUrlPathname: '',
+  ffmpegPath: undefined,
+  ffprobePath: undefined,
   cachePath: '',
   mediaPath: '',
   updateMetadata: false,

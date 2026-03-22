@@ -1,5 +1,19 @@
 ## Troubleshooting
 
+### PICR exits at startup saying ffmpeg or ffprobe is missing
+
+PICR now checks for both binaries during backend startup and fails fast if they are unavailable.
+
+Fix:
+
+1. Install `ffmpeg` for your development machine or server
+2. Confirm both commands work:
+   - `ffmpeg -version`
+   - `ffprobe -version`
+3. If they are installed in a non-standard location, set `FFMPEG_PATH` and/or `FFPROBE_PATH` in `.env`
+
+On WSL2, install `ffmpeg` inside the Linux distro you use for development. Installing it only in Windows will not make it available to the backend running under WSL.
+
 ### PICR says database migrations failed when Docker has only just started
 
 PICR now distinguishes between:

@@ -1,10 +1,10 @@
 import ffmpeg from 'fluent-ffmpeg';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import type { FileFields } from '../db/picrDb.js';
+import { picrConfig } from '../config/picrConfig.js';
 
 export const ffmpegForFile = (file: FileFields): ffmpeg.FfmpegCommand => {
-  //TODO: fix this not working in dev server as it needs prefix of `dist/`
   return ffmpeg({
     source: fullPathForFile(file),
-  }).setFfmpegPath('node_modules/ffmpeg-static/ffmpeg');
+  }).setFfmpegPath(picrConfig.ffmpegPath ?? 'ffmpeg');
 };

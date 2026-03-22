@@ -40,6 +40,9 @@ export const envSchema = z.object({
     .endsWith('/', { message: 'BASE_URL must end with trailing /' })
     .min(10),
 
+  FFMPEG_PATH: z.string().min(1).optional(),
+  FFPROBE_PATH: z.string().min(1).optional(),
+
   POLLING_INTERVAL: z.coerce
     .number({ description: 'Polling Interval' })
     .positive()

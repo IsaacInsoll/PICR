@@ -2,6 +2,8 @@ export interface IPicrConfiguration {
   baseUrl: string; // eg: https://picr.mydomain.com/
   baseUrlOrigin: string;
   baseUrlPathname: string;
+  ffmpegPath?: string;
+  ffprobePath?: string;
   tokenSecret?: string;
   databaseUrl?: string;
   debugSql?: boolean;

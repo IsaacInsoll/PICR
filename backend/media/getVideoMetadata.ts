@@ -5,10 +5,10 @@ import type { PicrVideoMetadata } from '@shared/types/metadata.js';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import type { FileFields } from '../db/picrDb.js';
 import { log } from '../logger.js';
+import { picrConfig } from '../config/picrConfig.js';
 
 export const getVideoMetadata = async (file: FileFields) => {
-  //PROBLEM when not running in docker: need to prefix this with `dist/`
-  ffmpeg.setFfprobePath('node_modules/ffprobe-static/bin/linux/x64/ffprobe');
+  ffmpeg.setFfprobePath(picrConfig.ffprobePath ?? 'ffprobe');
 
   //ffprobe is 'traditional callback' style so lets promise-ify it
   const ffprobePromise = util.promisify(ffmpeg.ffprobe);

@@ -1,6 +1,6 @@
 # Initial Setup
 
-1. Install `node`, `npm`, `docker` if they aren't already installed
+1. Install `node`, `npm`, `docker`, and `ffmpeg` if they aren't already installed
 2. Clone PICR repo
 3. Database server using docker
 4. Set up `.env` file
@@ -18,10 +18,27 @@
 
 Run a `docker compose up` to start a postgres server with default login credentials
 
+### FFmpeg / FFprobe Requirement
+
+PICR checks for both `ffmpeg` and `ffprobe` during backend startup and exits with a clear error if either is missing.
+
+In most package managers, installing `ffmpeg` provides both binaries:
+
+- Linux: install the `ffmpeg` package for your distro
+- WSL2: install the Linux `ffmpeg` package inside your WSL distro, not in Windows
+- macOS: install `ffmpeg` with your package manager
+
+If your binaries live outside your shell `PATH`, set one or both of these in `.env`:
+
+```bash
+FFMPEG_PATH=/absolute/path/to/ffmpeg
+FFPROBE_PATH=/absolute/path/to/ffprobe
+```
+
 ### 4. .ENV File
 
 `cp .env.example .env`
-You may optionally add extra fields such as `GITHUB_TOKEN` but these aren't required for development.
+You may optionally add extra fields such as `GITHUB_TOKEN`, `FFMPEG_PATH`, or `FFPROBE_PATH` but these aren't required for development if the binaries are already on your `PATH`.
 
 ### 5. Run build steps
 

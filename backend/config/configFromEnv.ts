@@ -42,6 +42,8 @@ export const configFromEnv = () => {
     baseUrl: d.BASE_URL,
     baseUrlOrigin: baseUrl.origin,
     baseUrlPathname,
+    ffmpegPath: d.FFMPEG_PATH,
+    ffprobePath: d.FFPROBE_PATH,
     usePolling: d.USE_POLLING,
     pollingInterval: d.POLLING_INTERVAL,
     tokenSecret: d.TOKEN_SECRET,

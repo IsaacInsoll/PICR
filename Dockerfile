@@ -1,6 +1,8 @@
 FROM node:24.13.0-alpine
 LABEL org.opencontainers.image.source=https://github.com/isaacinsoll/picr
 
+RUN apk add --no-cache ffmpeg
+
 USER node
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
