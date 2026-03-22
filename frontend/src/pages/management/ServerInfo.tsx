@@ -20,7 +20,11 @@ export const ServerInfo = () => {
     <Table striped highlightOnHover withTableBorder>
       <TableHeader />
       <Table.Tbody>
-        <Version version={server.version} latest={server.latest} />
+        <Version
+          version={server.version}
+          latest={server.latest}
+          developmentBuildSha={server.developmentBuildSha}
+        />
         <Row title="Client URL">{window.location.origin}</Row>
         <Row title="Server URL">{server.host}</Row>
         <Suspense
@@ -68,25 +72,46 @@ const AvifEnabled = () => {
   );
 };
 
-const Version = ({ version, latest }: { version: string; latest: string }) => {
+const Version = ({
+  version,
+  latest,
+  developmentBuildSha,
+}: {
+  version: string;
+  latest: string;
+  developmentBuildSha?: string | null;
+}) => {
   const isLatest = latest === version;
+  const versionColor = developmentBuildSha
+    ? 'yellow'
+    : isLatest
+      ? 'green'
+      : 'red';
+
   return (
-    <Row title="PICR Version">
-      <Code c={isLatest ? 'green' : 'red'}>{version}</Code>
-      {!isLatest ? (
-        <>
-          Latest: <Code>{latest}</Code>
-        </>
+    <>
+      <Row title="PICR Version">
+        <Code c={versionColor}>{version}</Code>
+        {!isLatest ? (
+          <>
+            Latest: <Code>{latest}</Code>
+          </>
+        ) : null}
+        <Anchor
+          href="https://github.com/IsaacInsoll/PICR/releases"
+          size="xs"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <GitHubIcon /> View PICR Releases
+        </Anchor>
+      </Row>
+      {developmentBuildSha ? (
+        <Row title="Development Build">
+          <Code c="yellow">{developmentBuildSha}</Code>
+        </Row>
       ) : null}
-      <Anchor
-        href="https://github.com/IsaacInsoll/PICR/releases"
-        size="xs"
-        target="_blank"
-        rel="noreferrer"
-      >
-        <GitHubIcon /> View PICR Releases
-      </Anchor>
-    </Row>
+    </>
   );
 };
 

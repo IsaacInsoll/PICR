@@ -4,6 +4,7 @@ export const serverInfoQuery = gql(/* GraphQL */ `
   query serverInfoQuery {
     serverInfo {
       version
+      developmentBuildSha
       latest
       databaseUrl
       dev

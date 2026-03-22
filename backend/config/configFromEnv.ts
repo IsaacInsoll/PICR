@@ -36,6 +36,9 @@ export const configFromEnv = () => {
   const c: IPicrConfiguration = {
     updateMetadata: false, //re-read metadata, set by dbMigrate
     version: getVersion(),
+    buildChannel: d.PICR_BUILD_CHANNEL,
+    developmentBuildSha: d.PICR_DEVELOPMENT_BUILD_SHA,
+    gitSha: d.PICR_GIT_SHA,
 
     databaseUrl: d.DATABASE_URL,
     port: d.PORT,
@@ -64,6 +67,13 @@ export const configFromEnv = () => {
   };
 
   log('info', '#️⃣  Version: ' + (c.dev ? '[DEV] ' : '') + c.version, true);
+  if (c.developmentBuildSha) {
+    log(
+      'warn',
+      `👷️ Running development build ${c.developmentBuildSha}. Use this for testing only and move to an official release when available.`,
+      true,
+    );
+  }
   // if (c.dev) {
   //   console.log('SERVER CONFIGURATION ONLY DISPLAYED IN DEV MODE');
   //   console.log(c);

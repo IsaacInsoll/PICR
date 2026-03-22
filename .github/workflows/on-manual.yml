@@ -6,33 +6,20 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/build.yml
-  docker_build:
-    needs: build
+  vars:
     runs-on: ubuntu-24.04
+    outputs:
+      short_sha: ${{ steps.vars.outputs.short_sha }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: picr-build-${{ github.sha }}
-          path: ./dist
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
       - name: Compute short SHA
         id: vars
         run: echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: isaacinsoll/picr:commit-${{ steps.vars.outputs.short_sha }}
+  docker_publish:
+    needs: [build, vars]
+    uses: ./.github/workflows/docker-publish.yml
+    with:
+      build_channel: development
+      development_build_sha: ${{ needs.vars.outputs.short_sha }}
+      image_tags: isaacinsoll/picr:commit-${{ needs.vars.outputs.short_sha }}
+      version: ${{ github.ref_name }}
+    secrets: inherit

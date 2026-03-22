@@ -52,7 +52,7 @@ type Documents = {
     "\n  query readAllFoldersQuery($id: ID!, $sort: FoldersSortType, $limit: Int) {\n    allFolders(id: $id, sort: $sort, limit: $limit) {\n      ...FolderFragment\n    }\n  }\n": typeof types.ReadAllFoldersQueryDocument,
     "\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      ...AppRecentUserFragment\n    }\n  }\n": typeof types.RecentUsersQueryDocument,
     "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...AppSearchFolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...AppSearchFileFragment\n    }\n  }\n": typeof types.SearchQueryDocument,
-    "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n": typeof types.ServerInfoQueryDocument,
+    "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      developmentBuildSha\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n": typeof types.ServerInfoQueryDocument,
     "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n": typeof types.ExpensiveServerFileSizeQueryDocument,
     "\n  query TaskQuery($folderId: ID!) {\n    tasks(folderId: $folderId) {\n      id\n      name\n      step\n      totalSteps\n      status\n    }\n  }\n": typeof types.TaskQueryDocument,
     "\n  query UserDeviceQuery($userId: ID!, $token: String!) {\n    userDevices(userId: $userId, notificationToken: $token) {\n      userId\n      enabled\n      name\n      notificationToken\n    }\n  }\n": typeof types.UserDeviceQueryDocument,
@@ -101,7 +101,7 @@ const documents: Documents = {
     "\n  query readAllFoldersQuery($id: ID!, $sort: FoldersSortType, $limit: Int) {\n    allFolders(id: $id, sort: $sort, limit: $limit) {\n      ...FolderFragment\n    }\n  }\n": types.ReadAllFoldersQueryDocument,
     "\n  query RecentUsersQuery($folderId: ID!) {\n    users(folderId: $folderId, sortByRecent: true, includeChildren: true) {\n      ...AppRecentUserFragment\n    }\n  }\n": types.RecentUsersQueryDocument,
     "\n  query searchQuery($folderId: ID!, $query: String!) {\n    searchFolders(folderId: $folderId, query: $query) {\n      ...AppSearchFolderFragment\n    }\n    searchFiles(folderId: $folderId, query: $query) {\n      ...AppSearchFileFragment\n    }\n  }\n": types.SearchQueryDocument,
-    "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n": types.ServerInfoQueryDocument,
+    "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      developmentBuildSha\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n": types.ServerInfoQueryDocument,
     "\n  query expensiveServerFileSizeQuery {\n    serverInfo {\n      cacheSize\n      mediaSize\n    }\n  }\n": types.ExpensiveServerFileSizeQueryDocument,
     "\n  query TaskQuery($folderId: ID!) {\n    tasks(folderId: $folderId) {\n      id\n      name\n      step\n      totalSteps\n      status\n    }\n  }\n": types.TaskQueryDocument,
     "\n  query UserDeviceQuery($userId: ID!, $token: String!) {\n    userDevices(userId: $userId, notificationToken: $token) {\n      userId\n      enabled\n      name\n      notificationToken\n    }\n  }\n": types.UserDeviceQueryDocument,
@@ -281,7 +281,7 @@ export function graphql(source: "\n  query searchQuery($folderId: ID!, $query: S
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n"): (typeof documents)["\n  query serverInfoQuery {\n    serverInfo {\n      version\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n"];
+export function graphql(source: "\n  query serverInfoQuery {\n    serverInfo {\n      version\n      developmentBuildSha\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n"): (typeof documents)["\n  query serverInfoQuery {\n    serverInfo {\n      version\n      developmentBuildSha\n      latest\n      databaseUrl\n      dev\n      usePolling\n      host\n      canWrite\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

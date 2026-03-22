@@ -13,6 +13,9 @@ export interface IPicrConfiguration {
   pollingInterval: number;
   dev?: boolean;
   version?: string;
+  buildChannel?: string;
+  developmentBuildSha?: string;
+  gitSha?: string;
   updateMetadata: boolean;
   cachePath: string;
   mediaPath: string;

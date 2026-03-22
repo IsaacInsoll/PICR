@@ -286,6 +286,7 @@ type ServerInfo {
   canWrite: Boolean!
   databaseUrl: String!
   dev: Boolean!
+  developmentBuildSha: String
   host: String!
   latest: String!
   mediaSize: BigInt!

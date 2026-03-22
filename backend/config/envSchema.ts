@@ -54,6 +54,9 @@ export const envSchema = z.object({
     })
     .min(64)
     .optional(),
+  PICR_BUILD_CHANNEL: z.string().min(1).optional(),
+  PICR_DEVELOPMENT_BUILD_SHA: z.string().min(1).optional(),
+  PICR_GIT_SHA: z.string().min(1).optional(),
 
   DEBUG_SQL: castStringToBool,
   CONSOLE_LOGGING: castStringToBool,

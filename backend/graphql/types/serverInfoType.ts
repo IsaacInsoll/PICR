@@ -10,6 +10,7 @@ export const serverInfoType = new GraphQLObjectType({
   name: 'ServerInfo',
   fields: () => ({
     version: { type: new GraphQLNonNull(GraphQLString) },
+    developmentBuildSha: { type: GraphQLString },
     latest: { type: new GraphQLNonNull(GraphQLString) },
     host: { type: new GraphQLNonNull(GraphQLString) },
     databaseUrl: { type: new GraphQLNonNull(GraphQLString) },
