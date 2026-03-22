@@ -31,7 +31,7 @@ export const folderIsUnderFolder = (
   child: FolderFields,
   parent?: FolderFields,
 ): boolean => {
-  if (!parent || !parent.id) return false;
+  if (!parent?.id) return false;
   if (child.id === parent.id || parent.id === 1) return true;
   if (!child.parentId) return false;
   return pathIsUnder(child.relativePath, parent.relativePath);

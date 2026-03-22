@@ -81,9 +81,7 @@ const sendNotification = async (
     )
     .map((u) => {
       const email =
-        u.ntfyEmail && u.username && u.username.includes('@')
-          ? u.username
-          : undefined;
+        u.ntfyEmail && u.username?.includes('@') ? u.username : undefined;
       return sendNtfyNotification(u.ntfy, payload, { email });
     });
 

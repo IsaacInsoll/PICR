@@ -100,7 +100,7 @@ const checkReceipts = async (receiptIds: ExpoPushReceiptId[]) => {
         logger.error(
           `There was an error sending a notification: ${receipt.message}`,
         );
-        if (receipt.details && receipt.details.error) {
+        if (receipt.details?.error) {
           logger.error(`The error code is ${receipt.details.error}`);
           if (
             disableList.includes(receipt.details.error) &&

@@ -49,7 +49,7 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
   //   { id: '1234', name: 'Unstepped task' },
   // ];
 
-  if (!remaining || !remaining.length) return null;
+  if (!remaining?.length) return null;
   return (
     <Page>
       <Paper shadow="xs" withBorder p="xs" mb="md" mt="lg">

@@ -60,6 +60,7 @@ export const picrTypeAwareAsyncRules = {
   '@typescript-eslint/no-misused-promises': 'error',
   '@typescript-eslint/no-unnecessary-condition': 'error',
   '@typescript-eslint/switch-exhaustiveness-check': 'error',
+  '@typescript-eslint/prefer-optional-chain': 'error',
 };
 
 export const picrRestrictedImports = (patterns) => [

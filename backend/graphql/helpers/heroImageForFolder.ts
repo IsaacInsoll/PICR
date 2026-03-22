@@ -89,6 +89,6 @@ const heroImageForSubFolder = async (parentIds: number[]) => {
     ),
     with: { heroImage: true },
   });
-  if (!subFolder || !subFolder.heroImage?.exists) return undefined;
+  if (!subFolder?.heroImage?.exists) return undefined;
   return subFolder.heroImage;
 };

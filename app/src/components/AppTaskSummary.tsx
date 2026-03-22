@@ -18,7 +18,7 @@ export const AppTaskSummary = ({ folderId }: { folderId: string }) => {
 
   const tasks = result.data?.tasks;
   const remaining = tasks?.filter((t) => t.status !== 'Complete');
-  if (!remaining || !remaining.length) return null;
+  if (!remaining?.length) return null;
 
   return (
     <View style={{ width: '100%' }}>

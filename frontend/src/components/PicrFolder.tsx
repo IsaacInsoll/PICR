@@ -25,7 +25,7 @@ export const PicrFolder = ({
   title?: string;
 }) => {
   const src =
-    folder.heroImage && folder.heroImage.__typename === 'Image'
+    folder.heroImage?.__typename === 'Image'
       ? imageURL(folder.heroImage, 'md')
       : undefined;
   const { hovered, ref } = useHover();

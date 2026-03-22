@@ -3,7 +3,7 @@ import { Blurhash } from 'react-blurhash';
 
 export const FolderPreview = ({ folder }: { folder: PicrFolder }) => {
   const hero = folder.heroImage;
-  if (!hero || hero.__typename !== 'Image' || !hero.blurHash) return null;
+  if (hero?.__typename !== 'Image' || !hero.blurHash) return null;
   return (
     <Blurhash
       hash={hero.blurHash}
