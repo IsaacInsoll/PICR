@@ -60,7 +60,7 @@
   "scripts": {
     "start": "vite",
     "css:types": "tcm src --pattern '**/*.module.css' --camelCase",
-    "css:types:watch": "tcm src --pattern '**/*.module.css' --camelCase -w",
+    "css:types:watch": "tcm src --pattern '**/*.module.css' --camelCase -w --silent",
     "css:types:check": "tcm src --pattern '**/*.module.css' --camelCase --listDifferent",
     "lint": "npm run css:types:check && eslint src --ext .ts,.tsx",
     "build": "vite build",
