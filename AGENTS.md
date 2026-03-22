@@ -224,6 +224,8 @@ Test scope note:
 - In `tests/e2e/` Playwright smoke tests, keep GraphQL operations local to `tests/e2e/` and avoid importing enums from generated GraphQL type files (`shared/gql/graphql`).
 - Local E2E runs use Docker images built from `dist` output artifacts, not live `frontend/src` files.
 - Run a fresh local build before E2E when validating frontend code changes (`npm run test:e2e:fresh` is preferred).
+- If a change touches Dockerfiles, GitHub Actions build/test steps, backend startup/boot code, `backend/config/*`, or environment variable validation, run `cd backend && npm run build` and `npm run test:api` before declaring success. These changes can pass lint/tsc while still breaking the containerized runtime used in CI.
+- For those same CI-sensitive changes, also ask the user to run `npm run workflow` before pushing. `npm run test:api` is the required local reproduction of the risky Dockerized backend path; `npm run workflow` is the final end-to-end CI guard that the user runs manually.
 
 **Do not run `npm run workflow` directly.** Ask the user to run it themselves.
 **`npm run test:api` and `npm run test:e2e` may be run by AI locally anytime.**

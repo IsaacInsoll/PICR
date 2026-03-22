@@ -444,6 +444,12 @@ flowchart TB
 
 All env vars validated with Zod. See `.env.example` for full documentation.
 
+When changing `backend/config/*`, Docker `ARG`/`ENV` wiring, or startup code that reads env vars:
+
+- Validate both shapes of "optional" env vars: truly unset and present-but-empty (`''`).
+- Remember that Docker can turn missing build args into empty env strings when they are forwarded through `ENV`.
+- Do not stop at lint/typecheck. Rebuild the compiled backend and run `npm run test:api` so the Dockerized runtime path is exercised.
+
 ### Required Variables
 
 | Variable       | Description                  |
@@ -498,6 +504,12 @@ Run these after backend changes:
 cd backend && npm run lint
 cd backend && npx tsc --noEmit
 cd backend && npm run build
+```
+
+If the change affects config/env parsing, Docker runtime behavior, boot/startup, or compiled `dist` behavior, also run:
+
+```bash
+npm run test:api
 ```
 
 Also run repo-wide formatting checks:
