@@ -2,6 +2,7 @@
   "extends": ["../tsconfig.base.json", "expo/tsconfig.base"],
   "compilerOptions": {
     "strict": true,
+    "types": ["node"],
     "paths": {
       "@/*": ["./*"],
       "@shared/*": ["../shared/*"]
