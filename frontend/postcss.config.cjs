@@ -2,6 +2,13 @@ module.exports = {
   plugins: {
     'postcss-preset-mantine': {},
     'postcss-simple-vars': {
+      unknown(node, name) {
+        if (node.source?.input?.file?.includes('/node_modules/')) {
+          return `$${name}`;
+        }
+
+        throw node.error(`Undefined variable $${name}`);
+      },
       variables: {
         'mantine-breakpoint-xs': '36em',
         'mantine-breakpoint-sm': '48em',

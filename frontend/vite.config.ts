@@ -69,20 +69,28 @@ export default defineConfig(({ command, mode }) => {
     ],
     resolve: {
       dedupe: ['react', 'react-dom', 'jotai'],
-      alias: {
-        '@shared': path.resolve(repoRoot, 'shared'),
-        // /esm/icons/index.mjs only exports the icons statically, so no separate chunks are created
-        '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
-      },
+      alias: [
+        {
+          find: '@shared',
+          replacement: path.resolve(repoRoot, 'shared'),
+        },
+        {
+          // /esm/icons/index.mjs only exports the icons statically, so no separate chunks are created
+          find: '@tabler/icons-react',
+          replacement: '@tabler/icons-react/dist/esm/icons/index.mjs',
+        },
+      ],
     },
     build: {
       outDir: '../dist/public',
       emptyOutDir: true,
-      rollupOptions: {
+      rolldownOptions: {
         external: [],
+        output: {
+          keepNames: true,
+        },
       },
     },
-    esbuild: { minifyIdentifiers: false }, //keep function names for easier debugging on production
     server: {
       port: 6969,
       proxy,

@@ -11,7 +11,7 @@ React 19 SPA for the PICR admin interface and public gallery views.
 | Mantine      | 7.x     | UI component library    |
 | Jotai        | 2.10    | Atomic state management |
 | URQL         | 4.2     | GraphQL client          |
-| Vite         | 6.4     | Build tool              |
+| Vite         | 8.x     | Build tool              |
 | TypeScript   | 5.6     | Type safety             |
 
 ## Directory Structure
