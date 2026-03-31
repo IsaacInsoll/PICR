@@ -83,7 +83,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "prettier": "3.5.3",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "overrides": {
     "zeego": {
