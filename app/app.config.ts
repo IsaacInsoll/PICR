@@ -25,7 +25,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   icon: icon,
   scheme: scheme,
   userInterfaceStyle: 'automatic',
-  newArchEnabled: true,
   ios: {
     supportsTablet: true,
     bundleIdentifier: bundle,
@@ -42,7 +41,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: icon,
       backgroundColor: '#ffffff',
     },
-    edgeToEdgeEnabled: true,
     package: bundle,
     blockedPermissions: [
       'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
@@ -84,6 +82,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-notifications',
     'expo-web-browser',
     'expo-font',
+    'expo-image',
     ['react-native-edge-to-edge'],
     [
       'expo-build-properties',

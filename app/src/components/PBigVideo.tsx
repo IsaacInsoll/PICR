@@ -45,7 +45,7 @@ export const PBigVideo = ({
       <VideoView
         style={styles.video}
         player={player}
-        allowsFullscreen
+        fullscreenOptions={{ enable: true }}
         allowsPictureInPicture
       />
       {/*<View>*/}

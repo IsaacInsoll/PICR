@@ -41,7 +41,7 @@ export default function AppLayout() {
   const router = useRouter();
   useEffect(() => {
     // if (lastNotification);
-    const url = lastNotification?.notification.request.content.data['url'];
+    const url = lastNotification?.notification.request.content.data?.['url'];
 
     if (typeof url === 'string') {
       // console.log([

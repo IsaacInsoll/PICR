@@ -28,7 +28,7 @@ export const AppVideo = ({
     <VideoView
       style={{ width: safeWidth, height: safeWidth / safeRatio }}
       player={player}
-      allowsFullscreen
+      fullscreenOptions={{ enable: true }}
       allowsPictureInPicture
     />
   );

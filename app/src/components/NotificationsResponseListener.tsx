@@ -30,7 +30,7 @@ const notificationResponseReceived = (
   router: Router,
 ) => {
   const data = event.notification.request.content.data;
-  const url = data['url'];
+  const url = data?.['url'];
   if (typeof url === 'string') {
     // console.log('navigate to ' + url);
     router.push(url as Href);

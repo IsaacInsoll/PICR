@@ -6,9 +6,9 @@ Expo/React Native mobile app for PICR, providing gallery viewing and push notifi
 
 | Technology         | Version | Purpose                |
 | ------------------ | ------- | ---------------------- |
-| Expo               | SDK 54  | React Native framework |
-| Expo Router        | 6.0     | File-based navigation  |
-| React Native       | 0.81    | Mobile UI              |
+| Expo               | SDK 55  | React Native framework |
+| Expo Router        | 55.0    | File-based navigation  |
+| React Native       | 0.83    | Mobile UI              |
 | React              | 19.1    | UI framework           |
 | URQL               | 4.2     | GraphQL client         |
 | Jotai              | 2.12    | State management       |
