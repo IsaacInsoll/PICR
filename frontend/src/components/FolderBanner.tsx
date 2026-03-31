@@ -9,7 +9,6 @@ import {
   alpha,
   Box,
   Breadcrumbs,
-  Overlay,
   Paper,
   Text,
   Title,
@@ -24,7 +23,10 @@ import { themeModeAtom } from '../atoms/themeModeAtom';
 import { FolderLink } from './FolderLink';
 import { Page } from './Page';
 import type { PicrFolder } from '@shared/types/picr';
-import { type BannerSize } from '@shared/branding/galleryPresets';
+import {
+  DEFAULT_HEADING_ALIGNMENT,
+  type BannerSize,
+} from '@shared/branding/galleryPresets';
 import styles from './FolderBanner.module.css';
 
 const bannerSizeClass: Record<BannerSize, string> = {
@@ -78,7 +80,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
   const computedColorScheme = useComputedColorScheme('light', {
     getInitialValueInEffect: true,
   });
-  const alignment = theme.headingAlignment ?? 'center';
+  const alignment = theme.headingAlignment ?? DEFAULT_HEADING_ALIGNMENT;
   const resolvedMode =
     theme.mode == null || theme.mode === ThemeMode.Auto
       ? computedColorScheme === 'dark'
@@ -222,12 +224,12 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
             transform: `translate3d(0, 0, 0) scale(${parallaxScale})`,
           }}
         />
-        <Overlay
-          gradient={`linear-gradient(180deg, ${alpha(mantineTheme.black, 0.45)} 0%, ${alpha(mantineTheme.black, 0.2)} 45%, ${alpha(mantineTheme.black, 0.45)} 100%)`}
-          style={{
-            pointerEvents: 'none',
-          }}
-        />
+        {/*<Overlay*/}
+        {/*  gradient={`linear-gradient(180deg, ${alpha(mantineTheme.black, 0.45)} 0%, ${alpha(mantineTheme.black, 0.2)} 45%, ${alpha(mantineTheme.black, 0.45)} 100%)`}*/}
+        {/*  style={{*/}
+        {/*    pointerEvents: 'none',*/}
+        {/*  }}*/}
+        {/*/>*/}
         <Box className={`${styles.titleLayer} ${justifyClass}`}>
           <Box className={`${styles.titleInner} ${alignClass}`}>
             <Title

@@ -3,6 +3,7 @@ import type { Branding } from '@shared/gql/graphql';
 import { HeadingFontKey, PrimaryColor, ThemeMode } from '@shared/gql/graphql';
 import {
   DEFAULT_BORDER_RADIUS,
+  DEFAULT_HEADING_ALIGNMENT,
   DEFAULT_HEADING_FONT_SIZE,
   DEFAULT_SPACING,
   DEFAULT_THUMBNAIL_SIZE,
@@ -18,6 +19,7 @@ export const defaultBranding: Branding = {
   thumbnailSpacing: DEFAULT_SPACING,
   thumbnailBorderRadius: DEFAULT_BORDER_RADIUS,
   headingFontSize: DEFAULT_HEADING_FONT_SIZE,
+  headingAlignment: DEFAULT_HEADING_ALIGNMENT,
   folders: [],
 };
 

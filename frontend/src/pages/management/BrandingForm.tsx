@@ -36,6 +36,7 @@ import { fontFamilies } from '../../fonts.generated';
 import {
   BORDER_RADIUS_PRESETS,
   DEFAULT_BORDER_RADIUS,
+  DEFAULT_HEADING_ALIGNMENT,
   DEFAULT_HEADING_FONT_SIZE,
   DEFAULT_SPACING,
   DEFAULT_THUMBNAIL_SIZE,
@@ -368,7 +369,8 @@ export const BrandingForm = ({
                     { value: 'right', icon: <TbAlignRight />, label: 'Right' },
                   ] as const
                 ).map((opt) => {
-                  const current = branding.headingAlignment ?? 'left';
+                  const current =
+                    branding.headingAlignment ?? DEFAULT_HEADING_ALIGNMENT;
                   return (
                     <Button
                       key={opt.value}
