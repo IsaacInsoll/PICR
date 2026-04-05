@@ -55,19 +55,30 @@ The `healthcheck` and `depends_on.condition: service_healthy` pairing is recomme
 
 ## Volumes (File Locations)
 
-To avoid permissions issues please create these folders before first starting PICR.
+**Create these folders before starting PICR for the first time.** If Docker creates them automatically it will do so as
+`root`, which will prevent PICR from writing thumbnails.
 
-| Folder  | Description                                                                                                                                                             | Backup         |
-| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------- |
-| `data`  | database (you should back this up!) <br/>Technically it's used by `db` not `picr`                                                                                       | Yes            |
-| `media` | mount point containing folders of images, PICR only needs read access. <br/>Often this would be a folder that already exists unless you are starting from scratch       | Yes            |
-| `cache` | thumbnails, zip files built from your media <br />It's safe to delete contents of this folder (but not the folder itself!). <br />Contents will be recreated if deleted | (not required) |
+```bash
+mkdir -p ./cache ./data
+sudo chown -R 1000:1000 ./cache ./data
+```
+
+PICR runs inside the container as UID `1000` (the `node` user). The `cache` and `data` folders on your host must be
+owned by that same UID so the container can write to them.
+
+| Folder  | Description                                                                                                                                                                        | Backup         |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------- |
+| `data`  | database (you should back this up!) <br/>Technically it's used by `db` not `picr`                                                                                                 | Yes            |
+| `media` | mount point containing folders of images, PICR only needs read access. <br/>Often this would be a folder that already exists unless you are starting from scratch                 | Yes            |
+| `cache` | thumbnails, zip files built from your media <br />It is safe to **delete the contents** of this folder, but do not delete the folder itself. <br />Contents will be recreated automatically | (not required) |
 
 If you have a folder you are already using then point the `media` mount to that, otherwise you can make a new folder
-whereever you want.
+wherever you want.
 
 Typically `data` and `cache` will be created in the folder you are putting the `compose` file in for simplicity but you
 can put them anywhere that is writable.
+
+> **Thumbnails not showing?** See [Troubleshooting](troubleshooting.md).
 
 ## Reverse Proxy / Port Forwarding
 
