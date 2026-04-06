@@ -55,6 +55,49 @@ test('Admin can set folder title and subtitle', async () => {
   expect(clearResult.data?.editFolder?.subtitle).toBeNull();
 });
 
+test('Admin can set and clear banner text alignment', async () => {
+  const headers = await getUserHeader(defaultCredentials);
+  const client = await createTestGraphqlClient(headers);
+
+  const setAlign = await client
+    .mutation(editFolderMutation, {
+      folderId: photoFolderId,
+      bannerTextHAlign: 'left',
+      bannerTextVAlign: 'bottom',
+    })
+    .toPromise();
+  expect(setAlign.error).toBeUndefined();
+  expect(setAlign.data?.editFolder?.bannerTextHAlign).toBe('left');
+  expect(setAlign.data?.editFolder?.bannerTextVAlign).toBe('bottom');
+
+  const clearAlign = await client
+    .mutation(editFolderMutation, {
+      folderId: photoFolderId,
+      bannerTextHAlign: null,
+      bannerTextVAlign: null,
+    })
+    .toPromise();
+  expect(clearAlign.error).toBeUndefined();
+  expect(clearAlign.data?.editFolder?.bannerTextHAlign).toBeNull();
+  expect(clearAlign.data?.editFolder?.bannerTextVAlign).toBeNull();
+
+  const invalidH = await client
+    .mutation(editFolderMutation, {
+      folderId: photoFolderId,
+      bannerTextHAlign: 'diagonal',
+    })
+    .toPromise();
+  expect(invalidH.error).toBeDefined();
+
+  const invalidV = await client
+    .mutation(editFolderMutation, {
+      folderId: photoFolderId,
+      bannerTextVAlign: 'sideways',
+    })
+    .toPromise();
+  expect(invalidV.error).toBeDefined();
+});
+
 test('Admin can set and clear banner image, and invalid cases are rejected', async () => {
   const headers = await getUserHeader(defaultCredentials);
   const client = await createTestGraphqlClient(headers);

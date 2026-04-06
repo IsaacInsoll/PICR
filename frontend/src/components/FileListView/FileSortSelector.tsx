@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import type { SelectProps } from '@mantine/core';
-import { Avatar, Box, Button, Group, Select } from '@mantine/core';
+import { Avatar, Box, Button, Group, Menu, Select } from '@mantine/core';
 import type { ReactNode } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
@@ -97,6 +97,45 @@ export const FileSortSelector = () => {
           }
         />
       )}
+    </>
+  );
+};
+
+export const FileSortMenuItems = () => {
+  const { canView } = useCommentPermissions();
+  const [sort, setSort] = useAtom(fileSortAtom);
+  const { type, direction } = sort;
+  const options = sortOptions.filter((s) => !s.requiresComments || canView);
+
+  const handleSelect = (value: FileSortType) => {
+    if (value !== type) {
+      setSort({ type: value, direction: 'Asc' });
+    } else {
+      setSort({
+        ...sort,
+        direction: sort.direction === 'Asc' ? 'Desc' : 'Asc',
+      });
+    }
+  };
+
+  return (
+    <>
+      <Menu.Divider />
+      <Menu.Label>Sort by</Menu.Label>
+      {options.map((option) => {
+        const isActive = option.value === type;
+        return (
+          <Menu.Item
+            key={option.value}
+            leftSection={option.icon}
+            rightSection={isActive ? sortIcons[direction].chevron : null}
+            fw={isActive ? 600 : undefined}
+            onClick={() => handleSelect(option.value)}
+          >
+            {option.label}
+          </Menu.Item>
+        );
+      })}
     </>
   );
 };

@@ -64,6 +64,18 @@
   justify-content: flex-end;
 }
 
+.vAlignTop {
+  align-items: flex-start;
+}
+
+.vAlignCenter {
+  align-items: center;
+}
+
+.vAlignBottom {
+  align-items: flex-end;
+}
+
 .titleInner {
   max-width: 90%;
 }
@@ -101,9 +113,35 @@
   display: inline-block;
 }
 
+.editButton {
+  position: absolute;
+  top: 8px;
+  right: 42px;
+  opacity: 0.7;
+}
+
 .clearButton {
   position: absolute;
   top: 8px;
   right: 8px;
   opacity: 0.7;
+}
+
+.scrollButton {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.8;
+  animation: scrollButtonBounce 2s ease-in-out infinite;
+}
+
+@keyframes scrollButtonBounce {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(4px);
+  }
 }

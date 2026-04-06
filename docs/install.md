@@ -66,10 +66,10 @@ sudo chown -R 1000:1000 ./cache ./data
 PICR runs inside the container as UID `1000` (the `node` user). The `cache` and `data` folders on your host must be
 owned by that same UID so the container can write to them.
 
-| Folder  | Description                                                                                                                                                                        | Backup         |
-| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------- |
-| `data`  | database (you should back this up!) <br/>Technically it's used by `db` not `picr`                                                                                                 | Yes            |
-| `media` | mount point containing folders of images, PICR only needs read access. <br/>Often this would be a folder that already exists unless you are starting from scratch                 | Yes            |
+| Folder  | Description                                                                                                                                                                                 | Backup         |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------- |
+| `data`  | database (you should back this up!) <br/>Technically it's used by `db` not `picr`                                                                                                           | Yes            |
+| `media` | mount point containing folders of images, PICR only needs read access. <br/>Often this would be a folder that already exists unless you are starting from scratch                           | Yes            |
 | `cache` | thumbnails, zip files built from your media <br />It is safe to **delete the contents** of this folder, but do not delete the folder itself. <br />Contents will be recreated automatically | (not required) |
 
 If you have a folder you are already using then point the `media` mount to that, otherwise you can make a new folder

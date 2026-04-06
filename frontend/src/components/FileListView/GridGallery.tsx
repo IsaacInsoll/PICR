@@ -37,6 +37,7 @@ export const GridGallery = ({
   folders,
   items,
   setSelectedFileId,
+  width,
 }: FileListViewStyleComponentProps) => {
   const setFolder = useSetFolder();
   const theme = useAtomValue(themeModeAtom);
@@ -84,6 +85,7 @@ export const GridGallery = ({
         images={galleryItems}
         onClick={handleClick}
         enableImageSelection={false}
+        defaultContainerWidth={width}
         tileViewportStyle={(context) => ({
           width: context.item.viewportWidth,
           height: context.item.scaledHeight,

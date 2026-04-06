@@ -5,12 +5,15 @@ declare const styles: {
   readonly "breadcrumbChip": string;
   readonly "breadcrumbLayer": string;
   readonly "clearButton": string;
+  readonly "editButton": string;
   readonly "image": string;
   readonly "justifyCenter": string;
   readonly "justifyLeft": string;
   readonly "justifyRight": string;
   readonly "media": string;
   readonly "root": string;
+  readonly "scrollButton": string;
+  readonly "scrollButtonBounce": string;
   readonly "sizeCinematic": string;
   readonly "sizeClassic": string;
   readonly "sizeFull": string;
@@ -19,6 +22,9 @@ declare const styles: {
   readonly "title": string;
   readonly "titleInner": string;
   readonly "titleLayer": string;
+  readonly "vAlignBottom": string;
+  readonly "vAlignCenter": string;
+  readonly "vAlignTop": string;
 };
 export = styles;
 

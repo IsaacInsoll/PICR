@@ -98,6 +98,7 @@
 }
 
 .phoneBanner {
+  position: relative;
   width: 100%;
   flex-shrink: 0;
   overflow: hidden;
@@ -113,4 +114,26 @@
   gap: 4px;
   overflow: hidden;
   mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+}
+
+/* 3×3 text position grid */
+.positionCell {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--mantine-radius-sm);
+  border: 1.5px solid var(--mantine-color-default-border);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    border-color 100ms ease,
+    background 100ms ease;
+}
+
+.positionCell:hover {
+  border-color: var(--mantine-color-primary-filled);
+}
+
+.positionCellActive {
+  border-color: var(--mantine-color-primary-filled);
+  background: var(--mantine-color-primary-filled);
 }

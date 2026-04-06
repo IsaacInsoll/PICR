@@ -138,11 +138,16 @@ const user = await dbUserForId(userId); // throws if not found
 
 1. Create or edit model in `db/models/`
 2. Export from `db/models/index.ts` if new
-3. **IMPORTANT**: AI agents must NOT run migrations directly. Prompt the user:
+3. **Generate the migration** by running:
+
+   ```bash
+   cd backend && MIGRATION_NAME=<descriptive-name> npm run dk:generate
    ```
-   Please run: cd backend && MIGRATION_NAME=<suggest-a-name> npm run dk:generate
-   Then review the migration in backend/db/drizzle/ and commit it
-   ```
+
+   drizzle-kit diffs the schema against existing migrations and writes the SQL file to `db/drizzle/`. **Never hand-write migration SQL files** — the generated output includes statement-breakpoint annotations and journal metadata that manual files will be missing.
+
+   If the command fails (e.g. DB not reachable), tell the user to run it themselves rather than creating the file manually.
+
 4. Server auto-migrates on startup (dev and production)
 
 ---
@@ -241,6 +246,17 @@ const queries = {
 ### Adding a New Mutation
 
 Same pattern, but add to `mutations` object in `schema.ts`.
+
+### Mutation Resolver Args Types
+
+Resolvers use `Mutation*Args` from `@shared/gql/graphql.js` for their args type:
+
+```typescript
+import type { MutationEditFolderArgs } from '@shared/gql/graphql.js';
+type EditFolderArgs = MutationEditFolderArgs;
+```
+
+After adding new args to a mutation, run `npm run gql` to regenerate the types before continuing. If the server is not running, ask the user to start it and run `npm run gql`. Never use local type extensions or any other workaround to avoid this step.
 
 ### Permission Checking
 

@@ -1,3 +1,4 @@
+import useMeasure from 'react-use-measure';
 import { selectedViewAtom } from '../selectedViewAtom';
 import { GridGallery } from './GridGallery';
 import { useCallback, useEffect, type MouseEvent } from 'react';
@@ -27,6 +28,8 @@ import {
 import type { ViewFolder } from '@shared/files/sortFiles';
 import {
   currentFolderBannerSizeAtom,
+  currentFolderBannerHAlignAtom,
+  currentFolderBannerVAlignAtom,
   moveRenameFolderAtom,
   useCloseMoveRenameFolderModal,
   useSetBannerImageFile,
@@ -43,6 +46,7 @@ export interface FileListViewStyleComponentProps {
   selectedFileId?: string;
   setSelectedFileId: (id: string | undefined) => void;
   folderId: string;
+  width: number;
 }
 
 export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
@@ -84,9 +88,24 @@ export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
   const bannerImageFile = useSetBannerImageFile();
   const closeBannerImageModal = useCloseSetBannerImageModal();
   const setCurrentFolderBannerSize = useSetAtom(currentFolderBannerSizeAtom);
+  const setCurrentFolderBannerHAlign = useSetAtom(
+    currentFolderBannerHAlignAtom,
+  );
+  const setCurrentFolderBannerVAlign = useSetAtom(
+    currentFolderBannerVAlignAtom,
+  );
   useEffect(() => {
     setCurrentFolderBannerSize(folder.bannerSize ?? null);
-  }, [folder.bannerSize, setCurrentFolderBannerSize]);
+    setCurrentFolderBannerHAlign(folder.bannerTextHAlign ?? null);
+    setCurrentFolderBannerVAlign(folder.bannerTextVAlign ?? null);
+  }, [
+    folder.bannerSize,
+    folder.bannerTextHAlign,
+    folder.bannerTextVAlign,
+    setCurrentFolderBannerSize,
+    setCurrentFolderBannerHAlign,
+    setCurrentFolderBannerVAlign,
+  ]);
   const canDownload = useCanDownload();
 
   const setSelectedFileId = (fileId: string | undefined) => {
@@ -120,6 +139,8 @@ export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
     (item) => !isFolderContentsFile(item),
   ) as ViewFolderSubFolder[];
 
+  const [containerRef, { width }] = useMeasure();
+
   const props = {
     folderId,
     folders: sortedFolders,
@@ -127,11 +148,12 @@ export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
     items: sortedItems,
     selectedFileId: fileId,
     setSelectedFileId,
+    width,
   };
 
   // console.log('FCV render');
   return (
-    <div onContextMenu={handleContextMenu}>
+    <div onContextMenu={handleContextMenu} ref={containerRef}>
       {moveFolder ? (
         <MoveRenameFolderModal
           folder={moveFolder}
@@ -144,6 +166,7 @@ export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
           file={bannerImageFile}
           opened={true}
           onClose={closeBannerImageModal}
+          previewTitle={folder.title?.trim() || folder.name}
         />
       ) : null}
       <Transition

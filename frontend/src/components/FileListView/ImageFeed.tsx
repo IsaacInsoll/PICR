@@ -36,6 +36,7 @@ export const ImageFeed = ({
   folders,
   items,
   setSelectedFileId,
+  width,
 }: FileListViewStyleComponentProps) => {
   const setFolder = useSetFolder();
   const [ref, bounds] = useMeasure();
@@ -43,31 +44,28 @@ export const ImageFeed = ({
 
   const [lazyLoaded, onBecomeVisible] = useLazyLoad(15, orderedItems.length);
   const loadedItems = orderedItems.slice(0, lazyLoaded);
+  const effectiveWidth = bounds.width || width;
 
   return (
     <Container>
-      <Box ref={ref}></Box>
-      {bounds.width === 0 ? null : (
-        <>
-          {loadedItems.map((item, i) =>
-            isFolderContentsFile(item) ? (
-              <FeedItem
-                file={item}
-                key={item.id}
-                onClick={setSelectedFileId}
-                width={bounds.width}
-                onBecomeVisible={() => onBecomeVisible(i)}
-              />
-            ) : (
-              <FeedFolderItem
-                folder={item}
-                key={item.id}
-                onClick={() => setFolder(item)}
-                onBecomeVisible={() => onBecomeVisible(i)}
-              />
-            ),
-          )}
-        </>
+      <Box ref={ref} />
+      {loadedItems.map((item, i) =>
+        isFolderContentsFile(item) ? (
+          <FeedItem
+            file={item}
+            key={item.id}
+            onClick={setSelectedFileId}
+            width={effectiveWidth}
+            onBecomeVisible={() => onBecomeVisible(i)}
+          />
+        ) : (
+          <FeedFolderItem
+            folder={item}
+            key={item.id}
+            onClick={() => setFolder(item)}
+            onBecomeVisible={() => onBecomeVisible(i)}
+          />
+        ),
       )}
     </Container>
   );

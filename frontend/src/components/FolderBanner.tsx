@@ -4,6 +4,7 @@ import { imageURL } from '../helpers/imageURL';
 import { useMe } from '../hooks/useMe';
 import { useMutation } from 'urql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
+import { useOpenSetBannerImageModal } from '../atoms/modalAtom';
 import {
   ActionIcon,
   alpha,
@@ -16,7 +17,7 @@ import {
   useComputedColorScheme,
   useMantineTheme,
 } from '@mantine/core';
-import { DeleteIcon } from '../PicrIcons';
+import { ChevronDownIcon, DeleteIcon, EditIcon } from '../PicrIcons';
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from '../atoms/themeModeAtom';
@@ -26,6 +27,8 @@ import type { PicrFolder } from '@shared/types/picr';
 import {
   DEFAULT_HEADING_ALIGNMENT,
   type BannerSize,
+  type BannerHAlign,
+  type BannerVAlign,
 } from '@shared/branding/galleryPresets';
 import styles from './FolderBanner.module.css';
 
@@ -41,6 +44,8 @@ type BannerFolder = Pick<
   | 'id'
   | 'bannerImage'
   | 'bannerSize'
+  | 'bannerTextHAlign'
+  | 'bannerTextVAlign'
   | 'name'
   | 'title'
   | 'subtitle'
@@ -69,6 +74,7 @@ const findScrollContainer = (element: HTMLElement): HTMLElement | Window => {
 export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
   const me = useMe();
   const [, editFolder] = useMutation(editFolderMutation);
+  const openSetBannerImageModal = useOpenSetBannerImageModal();
   const bannerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const hasBannerImage = Boolean(folder.bannerImage);
@@ -80,7 +86,14 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
   const computedColorScheme = useComputedColorScheme('light', {
     getInitialValueInEffect: true,
   });
-  const alignment = theme.headingAlignment ?? DEFAULT_HEADING_ALIGNMENT;
+  // Horizontal: folder-specific override → branding default → 'center'
+  const hAlign: BannerHAlign =
+    (folder.bannerTextHAlign as BannerHAlign | null) ??
+    (theme.headingAlignment as BannerHAlign | null) ??
+    DEFAULT_HEADING_ALIGNMENT;
+  // Vertical: folder-specific override → 'center'
+  const vAlign: BannerVAlign =
+    (folder.bannerTextVAlign as BannerVAlign | null) ?? 'center';
   const resolvedMode =
     theme.mode == null || theme.mode === ThemeMode.Auto
       ? computedColorScheme === 'dark'
@@ -194,20 +207,44 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
     void editFolder({ folderId: folder.id, bannerImageId: null });
   };
 
+  const scrollPastBanner = () => {
+    const bannerEl = bannerRef.current;
+    if (!bannerEl) return;
+    const scrollContainer = findScrollContainer(bannerEl);
+    const rect = bannerEl.getBoundingClientRect();
+    if (isHTMLElement(scrollContainer)) {
+      const containerRect = scrollContainer.getBoundingClientRect();
+      scrollContainer.scrollBy({
+        top: rect.bottom - containerRect.top,
+        behavior: 'smooth',
+      });
+    } else {
+      window.scrollBy({ top: rect.bottom, behavior: 'smooth' });
+    }
+  };
+
   if (!folder.bannerImage) return null;
 
+  const bannerImage = folder.bannerImage;
+
   const justifyClass =
-    alignment === 'left'
+    hAlign === 'left'
       ? styles.justifyLeft
-      : alignment === 'right'
+      : hAlign === 'right'
         ? styles.justifyRight
         : styles.justifyCenter;
   const alignClass =
-    alignment === 'left'
+    hAlign === 'left'
       ? styles.alignLeft
-      : alignment === 'right'
+      : hAlign === 'right'
         ? styles.alignRight
         : styles.alignCenter;
+  const vAlignClass =
+    vAlign === 'top'
+      ? styles.vAlignTop
+      : vAlign === 'bottom'
+        ? styles.vAlignBottom
+        : styles.vAlignCenter;
 
   const sizeClass = bannerSizeClass[folder.bannerSize as BannerSize];
 
@@ -218,7 +255,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
           component="img"
           className={styles.image}
           ref={imageRef}
-          src={imageURL(folder.bannerImage, 'lg')}
+          src={imageURL(bannerImage, 'lg')}
           alt=""
           style={{
             transform: `translate3d(0, 0, 0) scale(${parallaxScale})`,
@@ -230,7 +267,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
         {/*    pointerEvents: 'none',*/}
         {/*  }}*/}
         {/*/>*/}
-        <Box className={`${styles.titleLayer} ${justifyClass}`}>
+        <Box className={`${styles.titleLayer} ${justifyClass} ${vAlignClass}`}>
           <Box className={`${styles.titleInner} ${alignClass}`}>
             <Title
               order={1}
@@ -285,14 +322,47 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
         </Box>
       ) : null}
       {me?.isUser ? (
-        <Tooltip label="Clear banner image">
+        <>
+          <Tooltip label="Edit banner">
+            <ActionIcon
+              className={styles.editButton}
+              variant="filled"
+              color="dark"
+              onClick={() =>
+                openSetBannerImageModal({
+                  id: bannerImage.id,
+                  type: bannerImage.type,
+                  folderId: folder.id,
+                  fileHash: bannerImage.fileHash,
+                  isBannerImage: true,
+                })
+              }
+            >
+              <EditIcon />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Clear banner image">
+            <ActionIcon
+              className={styles.clearButton}
+              variant="filled"
+              color="dark"
+              onClick={onClear}
+            >
+              <DeleteIcon />
+            </ActionIcon>
+          </Tooltip>
+        </>
+      ) : null}
+      {folder.bannerSize === 'full' ? (
+        <Tooltip label="Scroll to gallery">
           <ActionIcon
-            className={styles.clearButton}
+            className={styles.scrollButton}
             variant="filled"
             color="dark"
-            onClick={onClear}
+            onClick={scrollPastBanner}
+            aria-label="Scroll to gallery"
           >
-            <DeleteIcon />
+            <ChevronDownIcon />
           </ActionIcon>
         </Tooltip>
       ) : null}

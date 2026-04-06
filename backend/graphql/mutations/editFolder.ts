@@ -15,7 +15,11 @@ import { dbFolder } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationEditFolderArgs } from '@shared/gql/graphql.js';
 import { AUTH_REASON } from '@shared/auth/authErrorContract.js';
-import { BANNER_SIZES } from '@shared/branding/galleryPresets.js';
+import {
+  BANNER_SIZES,
+  BANNER_H_ALIGNS,
+  BANNER_V_ALIGNS,
+} from '@shared/branding/galleryPresets.js';
 
 type EditFolderArgs = MutationEditFolderArgs;
 
@@ -119,6 +123,26 @@ const resolver: PicrResolver<object, EditFolderArgs> = async (
     throw new GraphQLError(`Unknown banner size: ${params.bannerSize}`);
   }
 
+  if (
+    params.bannerTextHAlign !== undefined &&
+    params.bannerTextHAlign !== null &&
+    !(BANNER_H_ALIGNS as readonly string[]).includes(params.bannerTextHAlign)
+  ) {
+    throw new GraphQLError(
+      `Unknown banner text horizontal alignment: ${params.bannerTextHAlign}`,
+    );
+  }
+
+  if (
+    params.bannerTextVAlign !== undefined &&
+    params.bannerTextVAlign !== null &&
+    !(BANNER_V_ALIGNS as readonly string[]).includes(params.bannerTextVAlign)
+  ) {
+    throw new GraphQLError(
+      `Unknown banner text vertical alignment: ${params.bannerTextVAlign}`,
+    );
+  }
+
   const updates: Partial<typeof dbFolder.$inferInsert> = {};
   const title = normalizeOptionalText(params.title);
   const subtitle = normalizeOptionalText(params.subtitle);
@@ -128,6 +152,10 @@ const resolver: PicrResolver<object, EditFolderArgs> = async (
   if (subtitle !== undefined) updates.subtitle = subtitle;
   if (params.bannerSize !== undefined)
     updates.bannerSize = params.bannerSize ?? null;
+  if (params.bannerTextHAlign !== undefined)
+    updates.bannerTextHAlign = params.bannerTextHAlign ?? null;
+  if (params.bannerTextVAlign !== undefined)
+    updates.bannerTextVAlign = params.bannerTextVAlign ?? null;
 
   if (Object.keys(updates).length > 0) {
     await db
@@ -151,6 +179,8 @@ export const editFolder = {
     heroImageId: { type: GraphQLID },
     bannerImageId: { type: GraphQLID },
     bannerSize: { type: GraphQLString },
+    bannerTextHAlign: { type: GraphQLString },
+    bannerTextVAlign: { type: GraphQLString },
     title: { type: GraphQLString },
     subtitle: { type: GraphQLString },
   },

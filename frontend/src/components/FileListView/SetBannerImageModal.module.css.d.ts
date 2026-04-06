@@ -8,6 +8,8 @@ declare const styles: {
   readonly "phoneBanner": string;
   readonly "phoneFrame": string;
   readonly "phoneGallery": string;
+  readonly "positionCell": string;
+  readonly "positionCellActive": string;
   readonly "preview": string;
   readonly "previewImage": string;
   readonly "skeletonArea": string;

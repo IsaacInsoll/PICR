@@ -45,6 +45,8 @@ export const dbFolder = pgTable('Folders', {
     (): AnyPgColumn => dbFile.id,
   ),
   bannerSize: varchar('bannerSize', { length: 16 }),
+  bannerTextHAlign: varchar('bannerTextHAlign', { length: 16 }),
+  bannerTextVAlign: varchar('bannerTextVAlign', { length: 16 }),
   brandingId: integer('brandingId').references(
     (): AnyPgColumn => dbBranding.id,
   ),

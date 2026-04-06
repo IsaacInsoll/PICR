@@ -12,6 +12,7 @@ import QueryFeedback from '../components/QueryFeedback';
 import { TaskSummary } from '../components/TaskSummary';
 import {
   ActionIcon,
+  Box,
   Button,
   Center,
   Group,
@@ -20,10 +21,12 @@ import {
   Stack,
   Text,
   Title,
+  Tooltip,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useSetFolder } from '../hooks/useSetFolder';
-import { useMe } from '../hooks/useMe';
+import { useCanDownload, useMe } from '../hooks/useMe';
+import { useCommentPermissions } from '../hooks/useCommentPermissions';
 import { useAtom, useSetAtom } from 'jotai';
 import { selectedViewAtom, viewOptions } from '../components/selectedViewAtom';
 import {
@@ -36,7 +39,10 @@ import { Page } from '../components/Page';
 import { QuickFind } from '../components/QuickFind/QuickFind';
 import { useRequery } from '@shared/hooks/useRequery';
 import { LoggedInHeader } from '../components/Header/LoggedInHeader';
-import { FileSortSelector } from '../components/FileListView/FileSortSelector';
+import {
+  FileSortMenuItems,
+  FileSortSelector,
+} from '../components/FileListView/FileSortSelector';
 import { FolderActivity } from './FolderActivity';
 import type { PicrFolder } from '@shared/types/picr';
 import { DotsIcon, FolderIcon } from '../PicrIcons';
@@ -54,6 +60,7 @@ import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 import { FolderCsvExportModal } from '../components/FileListView/FolderCsvExportModal';
 import { FolderBanner } from '../components/FolderBanner';
 import { GalleryFooter } from '../components/GalleryFooter';
+import { DownloadZipButton } from '../components/DownloadZipButton';
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -109,6 +116,9 @@ const ViewFolderBody = () => {
     setThemeMode(theme);
   }, [setThemeMode, theme]);
 
+  const me = useMe();
+  const canDownload = useCanDownload();
+  const { canView } = useCommentPermissions();
   const folder = data.data?.folder;
   const hasFiles = folder && folder.files.length > 0;
 
@@ -151,20 +161,29 @@ const ViewFolderBody = () => {
   };
 
   const actions = [];
+  const showOverflow =
+    !!folder && (!!me?.isUser || canView || canDownload || !!hasFiles);
 
   if (mode !== 'activity') {
     if (folder)
       actions.push(<ViewSelectorButton folder={folder} key="ViewSelector" />);
-    if (hasFiles) actions.push(<FileSortSelector key="FileSortSelector" />);
-    actions.push(
-      folder ? (
+    if (hasFiles)
+      actions.push(
+        <Box visibleFrom="md" key="FileSortSelector">
+          <FileSortSelector />
+        </Box>,
+      );
+    if (hasFiles && canDownload && me?.isLink)
+      actions.push(<DownloadZipButton folder={folder} key="downloadbutton" />);
+    if (showOverflow)
+      actions.push(
         <FolderOverflowMenu
           folder={folder}
           key="Overflow"
           onCsvExport={() => setCsvExportOpen(true)}
-        />
-      ) : null,
-    );
+          hasFiles={!!hasFiles}
+        />,
+      );
   } else {
     actions.push(
       <Button
@@ -179,15 +198,6 @@ const ViewFolderBody = () => {
       </Button>,
     );
   }
-
-  // if (hasFiles || hasFolders)
-  //   actions.push(
-  //     <DownloadZipButton
-  //       folder={folder}
-  //       key="downloadbutton"
-  //       disabled={managing}
-  //     />,
-  //   );
 
   return (
     <>
@@ -281,29 +291,42 @@ const ViewSelectorButton = ({ folder }: { folder: PicrFolder }) => {
 
   if (shownOptions.length <= 1) return null;
 
+  const restrictedLabel =
+    me?.isUser && restricted?.length
+      ? `Link users restricted to: ${restricted
+          .map(
+            (name) => viewOptions.find((v) => v.name === name)?.label ?? name,
+          )
+          .join(', ')}`
+      : null;
+
   return (
-    <Button.Group>
-      {shownOptions.map((v) => (
-        <Button
-          key={v.name}
-          variant={view === v.name ? 'filled' : 'default'}
-          onClick={() => setView(v.name)}
-          title={v.label}
-          px="xs"
-        >
-          {v.icon}
-        </Button>
-      ))}
-    </Button.Group>
+    <Tooltip label={restrictedLabel} disabled={!restrictedLabel} withArrow>
+      <Button.Group>
+        {shownOptions.map((v) => (
+          <Button
+            key={v.name}
+            variant={view === v.name ? 'filled' : 'default'}
+            onClick={() => setView(v.name)}
+            title={v.label}
+            px="xs"
+          >
+            {v.icon}
+          </Button>
+        ))}
+      </Button.Group>
+    </Tooltip>
   );
 };
 
 const FolderOverflowMenu = ({
   folder,
   onCsvExport,
+  hasFiles,
 }: {
   folder: PicrFolder;
   onCsvExport: () => void;
+  hasFiles: boolean;
 }) => {
   const setFiltering = useSetAtom(filterAtom);
   const setEditBranding = useSetAtom(editBrandingAtom);
@@ -373,10 +396,15 @@ const FolderOverflowMenu = ({
           <FolderMenuItems
             folder={folder}
             showOpenItem={false}
-            onFilterFiles={() => setFiltering(true)}
+            onFilterFiles={hasFiles ? () => setFiltering(true) : undefined}
             onCsvExport={onCsvExport}
             onBranding={handleBranding}
           />
+          {hasFiles ? (
+            <Box hiddenFrom="md">
+              <FileSortMenuItems />
+            </Box>
+          ) : null}
         </Menu.Dropdown>
       </Menu>
 

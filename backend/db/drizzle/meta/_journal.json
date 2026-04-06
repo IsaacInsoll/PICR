@@ -120,6 +120,13 @@
       "when": 1773310092600,
       "tag": "0016_banner-size",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1775431737932,
+      "tag": "0017_banner-text-align",
+      "breakpoints": true
     }
   ]
 }

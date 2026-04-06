@@ -52,9 +52,11 @@ export const moveRenameFolderAtom = atom<PicrFolder | null>(null);
 
 export const setBannerImageAtom = atom<BannerImageCandidate | null>(null);
 
-// Tracks the current folder's bannerSize so the modal can highlight the active option.
-// Set by FolderContentsView whenever the folder changes.
+// Tracks the current folder's bannerSize, bannerTextHAlign, bannerTextVAlign so the
+// modal can pre-populate the active options. Set by FolderContentsView on folder change.
 export const currentFolderBannerSizeAtom = atom<string | null>(null);
+export const currentFolderBannerHAlignAtom = atom<string | null>(null);
+export const currentFolderBannerVAlignAtom = atom<string | null>(null);
 
 export const useOpenSetBannerImageModal = () => {
   const set = useSetAtom(setBannerImageAtom);

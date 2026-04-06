@@ -6,6 +6,8 @@ export const editFolderMutation = gql(/* GraphQL */ `
     $heroImageId: ID
     $bannerImageId: ID
     $bannerSize: String
+    $bannerTextHAlign: String
+    $bannerTextVAlign: String
     $title: String
     $subtitle: String
   ) {
@@ -14,6 +16,8 @@ export const editFolderMutation = gql(/* GraphQL */ `
       heroImageId: $heroImageId
       bannerImageId: $bannerImageId
       bannerSize: $bannerSize
+      bannerTextHAlign: $bannerTextHAlign
+      bannerTextVAlign: $bannerTextVAlign
       title: $title
       subtitle: $subtitle
     ) {

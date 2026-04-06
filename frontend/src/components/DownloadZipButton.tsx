@@ -1,3 +1,4 @@
+import type { ButtonProps } from '@mantine/core';
 import { Button } from '@mantine/core';
 import { useState } from 'react';
 import { atom } from 'jotai';
@@ -17,10 +18,11 @@ export const linksToDownloadAtom = atom<PendingZipDownload[]>([]);
 export const DownloadZipButton = ({
   folder,
   disabled,
+  ...props
 }: {
   folder: PicrFolder;
   disabled?: boolean;
-}) => {
+} & ButtonProps) => {
   const [tempDisabled, setTempDisabled] = useState(false);
   const generateZip = useGenerateZip(folder, () => setTempDisabled(false));
   const handleClick = () => {
@@ -30,9 +32,10 @@ export const DownloadZipButton = ({
   if (!generateZip) return null;
   return (
     <Button
+      variant="filled"
+      {...props}
       title="Download All Files"
       onClick={handleClick}
-      variant="default"
       disabled={disabled || tempDisabled}
       leftSection={<DownloadIcon />}
     >

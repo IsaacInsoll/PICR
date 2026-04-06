@@ -51,6 +51,12 @@ export const BANNER_SIZES = [
 export type BannerSize = (typeof BANNER_SIZES)[number];
 export const DEFAULT_BANNER_SIZE: BannerSize = 'classic';
 
+export const BANNER_H_ALIGNS = ['left', 'center', 'right'] as const;
+export type BannerHAlign = (typeof BANNER_H_ALIGNS)[number];
+
+export const BANNER_V_ALIGNS = ['top', 'center', 'bottom'] as const;
+export type BannerVAlign = (typeof BANNER_V_ALIGNS)[number];
+
 export const bannerSizeLabels: Record<BannerSize, string> = {
   classic: 'Classic',
   widescreen: 'Widescreen',
