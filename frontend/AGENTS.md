@@ -230,6 +230,15 @@ function MyComponent() {
 - Root dev command integration: `npm start` (from repo root) runs `css:types:watch` automatically alongside frontend/backend watchers.
 - Generated CSS module declaration files are excluded from Prettier to avoid conflicts with `typed-css-modules` output.
 
+### Render-Sensitive UI
+
+- Avoid GraphQL reads inside frequently rerendered leaf controls like copy/share buttons. In the public-link UI, deriving the link from the current browser origin and `withBasePath(...)` is cheaper than calling `useMe()` just to read `clientInfo.baseUrl`.
+
+### Folder Hierarchy Data
+
+- `folder.parents` is ordered closest-parent first, with older ancestors later in the array.
+- For breadcrumb UIs, truncate that array before reversing it for display so the immediate parent remains visible on deep paths.
+
 ### Custom "Picr" Components
 
 Wrappers that integrate Mantine with React Router:

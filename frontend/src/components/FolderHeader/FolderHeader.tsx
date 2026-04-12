@@ -18,6 +18,7 @@ import {
 } from '@mantine/core';
 import { PicrTitle } from '../PicrTitle';
 import { LoggedInHeader } from '../Header/LoggedInHeader';
+import { getBreadcrumbFolders } from '../../helpers/getBreadcrumbFolders';
 
 export const FolderHeader = ({
   folder,
@@ -91,15 +92,9 @@ const HeaderWrapper = ({
   const normalizedCustomSubtitle = customSubtitle?.trim();
 
   //let's populate each parent folder with a list of its parents so when we click one the placeholder has its parent hierachy for good UI
-  const filledParents: PicrFolder[] | undefined = parent?.map((f, i) => {
-    return { ...f, parents: parent.slice(i + 1) };
-  });
-  const crumbs = filledParents?.length
-    ? filledParents
-        .slice(-3)
-        .reverse()
-        .map((p) => <FolderLink folder={p} key={p.id} />)
-    : null;
+  const crumbs = getBreadcrumbFolders(parent).map((parentFolder) => (
+    <FolderLink folder={parentFolder} key={parentFolder.id} />
+  ));
 
   return (
     <Page>

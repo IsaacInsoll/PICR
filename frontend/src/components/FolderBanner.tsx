@@ -23,7 +23,6 @@ import { useAtomValue } from 'jotai';
 import { themeModeAtom } from '../atoms/themeModeAtom';
 import { FolderLink } from './FolderLink';
 import { Page } from './Page';
-import type { PicrFolder } from '@shared/types/picr';
 import {
   DEFAULT_HEADING_ALIGNMENT,
   type BannerSize,
@@ -31,6 +30,7 @@ import {
   type BannerVAlign,
 } from '@shared/branding/galleryPresets';
 import styles from './FolderBanner.module.css';
+import { getBreadcrumbFolders } from '../helpers/getBreadcrumbFolders';
 
 const bannerSizeClass: Record<BannerSize, string> = {
   classic: styles.sizeClassic,
@@ -112,17 +112,13 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
   const breadcrumbBorder = isDark
     ? `1px solid ${alpha(mantineTheme.white, 0.18)}`
     : `1px solid ${alpha(mantineTheme.black, 0.08)}`;
-  const filledParents: PicrFolder[] = folder.parents.map((f, i) => {
-    return { ...f, parents: folder.parents.slice(i + 1) };
-  });
-  const crumbs = filledParents.length
-    ? filledParents
-        .slice(-3)
-        .reverse()
-        .map((p) => (
-          <FolderLink folder={p} key={p.id} color={breadcrumbLinkColor} />
-        ))
-    : null;
+  const crumbs = getBreadcrumbFolders(folder.parents).map((parentFolder) => (
+    <FolderLink
+      folder={parentFolder}
+      key={parentFolder.id}
+      color={breadcrumbLinkColor}
+    />
+  ));
 
   useEffect(() => {
     if (!hasBannerImage) return;
@@ -296,7 +292,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
           </Box>
         </Box>
       </Box>
-      {crumbs ? (
+      {crumbs.length ? (
         <Box className={styles.breadcrumbLayer}>
           <Page>
             <Paper
