@@ -1,4 +1,5 @@
 import { Button, Group, Input, Paper, Tree, useTree } from '@mantine/core';
+import { normalizeDisplayName } from '@shared/displayName';
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -29,10 +30,10 @@ const prettyFolderPath = (folder: PicrFolder) => {
   const parents = folder.parents
     ?.slice()
     .reverse()
-    .map((f) => f.name)
+    .map((f) => normalizeDisplayName(f.name))
     .join(chev);
 
-  return (parents ? parents + chev : '') + folder.name;
+  return (parents ? parents + chev : '') + normalizeDisplayName(folder.name);
 };
 
 export const FolderSelector = ({
@@ -113,7 +114,7 @@ const FolderTreeView = ({
     const treeRaw: TreeNode[] = folders.map((f) => ({
       id: f.id, // buildTree
       value: f.id, // <Tree> view
-      label: f.name,
+      label: normalizeDisplayName(f.name) ?? '',
       parentId: f.parentId ?? undefined,
     }));
     return buildTreeArray(treeRaw, rootId).filter(

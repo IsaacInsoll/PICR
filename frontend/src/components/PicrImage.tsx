@@ -1,4 +1,5 @@
 import { imageURL } from '../helpers/imageURL';
+import { normalizeDisplayName } from '@shared/displayName';
 import { Image } from '@mantine/core';
 import type { ThumbnailSize } from '@shared/thumbnailSize';
 import { Blurhash } from 'react-blurhash';
@@ -54,7 +55,7 @@ export const PicrImage = ({
         <Image
           src={imageURL(file, size)}
           fit="contain"
-          alt={file.name ?? ''}
+          alt={normalizeDisplayName(file.name) ?? ''}
           onLoad={() => {
             setLoaded(true);
             if (onImageLoaded) onImageLoaded(file);

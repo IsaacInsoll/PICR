@@ -1,4 +1,5 @@
 import type { FolderFragmentFragment } from '@shared/gql/graphql';
+import { normalizeDisplayName } from '@shared/displayName';
 import { ThemeMode } from '@shared/gql/graphql';
 import { imageURL } from '../helpers/imageURL';
 import { useMe } from '../hooks/useMe';
@@ -78,7 +79,8 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
   const bannerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const hasBannerImage = Boolean(folder.bannerImage);
-  const folderName = folder.name.trim() || '(Unnamed Folder)';
+  const folderName =
+    normalizeDisplayName(folder.name)?.trim() || '(Unnamed Folder)';
   const bannerTitle = folder.title?.trim() || folderName;
   const bannerSubtitle = folder.subtitle?.trim();
   const theme = useAtomValue(themeModeAtom);

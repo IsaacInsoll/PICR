@@ -1,4 +1,5 @@
 import type { PicrFile } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import type { Slide, ImageSource } from 'yet-another-react-lightbox';
 import { thumbnailSizes } from '@shared/thumbnailSize';
 import { thumbnailDimensions } from '@shared/thumbnailDimensions';
@@ -6,7 +7,7 @@ import { imageURL } from '../../../helpers/imageURL';
 
 export const filesForLightbox = (files: PicrFile[]): Slide[] => {
   return files.map((file) => {
-    const title = file.name ?? '';
+    const title = normalizeDisplayName(file.name) ?? '';
     const props =
       file.type === 'Image'
         ? {

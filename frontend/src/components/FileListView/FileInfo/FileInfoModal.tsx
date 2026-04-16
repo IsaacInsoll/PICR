@@ -1,4 +1,5 @@
 import { Box, Group, Modal, Table } from '@mantine/core';
+import { normalizeDisplayName } from '@shared/displayName';
 import { MetadataTableRows } from './metadataTableRows';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { StatCard } from './StatCard';
@@ -12,13 +13,14 @@ import type { PicrFile } from '@shared/types/picr';
 export const FileInfoModal = ({ file }: { file: PicrFile }) => {
   const onClose = useSetAtom(closeModalAtom);
   const isMobile = useIsSmallScreen();
+  const fileName = normalizeDisplayName(file.name);
 
   return (
     <Modal
       opened={true}
       centered={true}
       onClose={onClose}
-      title={file.type + ' Details: ' + file.name}
+      title={file.type + ' Details: ' + fileName}
       fullScreen={isMobile}
       overlayProps={{ blur: 3 }}
       // transitionProps={{ transition: 'fade', duration: 200 }}

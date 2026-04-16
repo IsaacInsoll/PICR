@@ -1,4 +1,5 @@
 import type { PicrFolder } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import { FolderLink } from '../FolderLink';
 import type React from 'react';
 import type { ReactElement, ReactNode } from 'react';
@@ -37,7 +38,9 @@ export const FolderHeader = ({
 }) => {
   return (
     <HeaderWrapper
-      title={folder.title ?? folder.name ?? '(Unnamed Folder)'}
+      title={
+        folder.title ?? normalizeDisplayName(folder.name) ?? '(Unnamed Folder)'
+      }
       customSubtitle={customSubtitle ?? undefined}
       subtitle={subtitle}
       actions={actions}
@@ -56,7 +59,7 @@ export const PlaceholderFolderHeader = () => {
     <>
       <LoggedInHeader folder={folder} />
       <HeaderWrapper
-        title={folder?.name ?? 'Loading'}
+        title={normalizeDisplayName(folder?.name) ?? 'Loading'}
         subtitle={<Loader type="dots" />}
         parent={folder?.parents}
       />

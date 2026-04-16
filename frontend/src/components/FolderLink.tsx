@@ -1,5 +1,6 @@
 import { Anchor } from '@mantine/core';
 import type { PicrFolder } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import { useSetFolder } from '../hooks/useSetFolder';
 
 export const FolderLink = ({
@@ -13,7 +14,7 @@ export const FolderLink = ({
 
   return (
     <Anchor c={color} onClick={() => setFolder(folder)}>
-      {folder.name}
+      {normalizeDisplayName(folder.name)}
     </Anchor>
   );
 };

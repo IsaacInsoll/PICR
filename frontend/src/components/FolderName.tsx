@@ -1,4 +1,5 @@
 import type { PicrFolder } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import { Code, Tooltip } from '@mantine/core';
 import { ChevronRightIcon, HomeIcon } from '../PicrIcons';
 import { PrettyFolderPath } from './PrettyFolderPath';
@@ -9,6 +10,7 @@ import { PicrLink } from './PicrLink';
 export const FolderName = ({ folder }: { folder: PicrFolder }) => {
   const setFolder = useSetFolder();
   const baseURL = useBaseViewFolderURL();
+  const folderName = normalizeDisplayName(folder.name);
 
   return (
     <Tooltip
@@ -29,7 +31,7 @@ export const FolderName = ({ folder }: { folder: PicrFolder }) => {
           {folder.id === '1' ? (
             <HomeIcon opacity={0.5} style={{ paddingTop: 3, marginRight: 2 }} />
           ) : null}
-          {folder.name}
+          {folderName}
         </Code>
       </PicrLink>
     </Tooltip>

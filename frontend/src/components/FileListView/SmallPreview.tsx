@@ -1,4 +1,5 @@
 import type { PicrFile, PicrFolder } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import { Avatar, Box } from '@mantine/core';
 import { PicrImage } from '../PicrImage';
 import { FileIcon, FolderIcon, VideoIcon } from '../../PicrIcons';
@@ -54,7 +55,7 @@ export const SmallPreview = ({
         size="md"
         opacity={0.5}
         variant="light"
-        name={file.name ?? undefined}
+        name={normalizeDisplayName(file.name) ?? undefined}
         color="initials"
       >
         {isFolder ? (

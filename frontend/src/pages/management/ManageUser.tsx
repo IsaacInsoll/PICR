@@ -1,4 +1,5 @@
 import type { PicrFolder } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import {
@@ -56,6 +57,7 @@ export const ManageUser = ({
 
   const invalidUsername = username === '' || name === '';
   const isRootAdmin = id === '1';
+  const folderName = normalizeDisplayName(folder.name);
 
   const onDelete = () => {
     if (!id || isRootAdmin) return;
@@ -94,7 +96,7 @@ export const ManageUser = ({
   return (
     <Modal
       onClose={onClose}
-      title={`Manage User${folder.id !== '1' ? ' for: ' + folder.name : ''}`}
+      title={`Manage User${folder.id !== '1' ? ' for: ' + folderName : ''}`}
       centered
       opened={true}
     >

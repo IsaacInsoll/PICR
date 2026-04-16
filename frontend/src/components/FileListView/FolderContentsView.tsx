@@ -1,4 +1,5 @@
 import useMeasure from 'react-use-measure';
+import { normalizeDisplayName } from '@shared/displayName';
 import { selectedViewAtom } from '../selectedViewAtom';
 import { GridGallery } from './GridGallery';
 import { useCallback, useEffect, type MouseEvent } from 'react';
@@ -166,7 +167,11 @@ export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
           file={bannerImageFile}
           opened={true}
           onClose={closeBannerImageModal}
-          previewTitle={folder.title?.trim() || folder.name}
+          previewTitle={
+            folder.title?.trim() ||
+            normalizeDisplayName(folder.name) ||
+            '(Unnamed Folder)'
+          }
         />
       ) : null}
       <Transition

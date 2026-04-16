@@ -1,4 +1,5 @@
 import type { PicrFolder } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import { Blurhash } from 'react-blurhash';
 
 export const FolderPreview = ({ folder }: { folder: PicrFolder }) => {
@@ -12,7 +13,7 @@ export const FolderPreview = ({ folder }: { folder: PicrFolder }) => {
       punch={1}
       width={16 * (hero.imageRatio ?? 1)}
       height={16}
-      title={hero.name ?? undefined}
+      title={normalizeDisplayName(hero.name) ?? undefined}
     />
   );
 };

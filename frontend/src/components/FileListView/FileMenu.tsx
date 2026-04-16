@@ -1,4 +1,5 @@
 import type { PicrFile } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import {
@@ -22,6 +23,7 @@ import { useMutation } from 'urql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 
 export const FileMenu = ({ file }: { file: PicrFile }) => {
+  const fileName = normalizeDisplayName(file.name);
   const setFolder = useSetFolder();
   const { canView } = useCommentPermissions();
   const me = useMe();
@@ -41,7 +43,7 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
           setFolder({ id: file.folderId }, file);
         }}
       >
-        View {file.name}
+        View {fileName}
       </Menu.Item>
       <Menu.Item
         leftSection={<InfoIcon size="20" />}

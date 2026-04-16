@@ -1,4 +1,5 @@
 import { Button, Divider, Group, Modal, Stack, Textarea } from '@mantine/core';
+import { normalizeDisplayName } from '@shared/displayName';
 import { closeModalAtom } from '../../../atoms/modalAtom';
 import { useSetAtom } from 'jotai';
 import { LoadingIndicator } from '../../LoadingIndicator';
@@ -22,13 +23,14 @@ export const CommentModal = ({
 }) => {
   const onClose = useSetAtom(closeModalAtom);
   const isMobile = useIsSmallScreen();
+  const fileName = normalizeDisplayName(file.name);
 
   return (
     <>
       <Modal
         opened={true}
         onClose={onClose}
-        title={'Comments on ' + file.name}
+        title={'Comments on ' + fileName}
         fullScreen={isMobile}
       >
         <Suspense fallback={<LoadingIndicator />}>

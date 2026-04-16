@@ -1,4 +1,5 @@
 import { Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
+import { normalizeDisplayName } from '@shared/displayName';
 import { Suspense, useMemo, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import type { PicrFolder } from '@shared/types/picr';
@@ -28,7 +29,7 @@ export const MoveRenameFolderModal = ({
     <Modal
       opened={opened}
       onClose={onClose}
-      title={`Move/Rename Folder: ${folder.name}`}
+      title={`Move/Rename Folder: ${normalizeDisplayName(folder.name)}`}
       centered
       fullScreen={isMobile}
       overlayProps={{ blur: 3 }}

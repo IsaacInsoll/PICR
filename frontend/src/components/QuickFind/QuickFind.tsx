@@ -1,4 +1,5 @@
 import { useDebouncedValue, useHotkeys } from '@mantine/hooks';
+import { normalizeDisplayName } from '@shared/displayName';
 import {
   Alert,
   Button,
@@ -245,10 +246,12 @@ const PrettyFilePath = ({
       style={{ cursor: 'pointer' }}
       gap={1}
     >
-      <Code onClick={(e) => handleClick(e, folder)}>{folder.name}</Code>
+      <Code onClick={(e) => handleClick(e, folder)}>
+        {normalizeDisplayName(folder.name)}
+      </Code>
       <Joiner />
       <Code color="green.7" onClick={(e) => handleClick(e, folder, file)}>
-        {file.name}
+        {normalizeDisplayName(file.name)}
       </Code>
     </Group>
   );

@@ -1,4 +1,5 @@
 import type { FileListViewStyleComponentProps } from './FolderContentsView';
+import { normalizeDisplayName } from '@shared/displayName';
 import { imageURL } from '../../helpers/imageURL';
 import { useEffect, useMemo } from 'react';
 import useMeasure from 'react-use-measure';
@@ -106,6 +107,7 @@ const FeedItem = ({
   }, [width, file]);
 
   const { type } = file;
+  const fileName = normalizeDisplayName(file.name);
   return (
     <Box
       ref={ref}
@@ -153,7 +155,7 @@ const FeedItem = ({
         gap={4}
       >
         <Title order={5} flex={1}>
-          {file.name}
+          {fileName}
         </Title>
         <Group gap="xs">
           <FileReview file={file} />
@@ -194,7 +196,7 @@ const FeedFolderItem = ({
 
 const FileDownloadButton = ({ file }: { file: ViewFolderFileWithHero }) => {
   return (
-    <Tooltip label={`Download ${file.name}`}>
+    <Tooltip label={`Download ${normalizeDisplayName(file.name)}`}>
       <ActionIcon
         variant="default"
         component="a"
@@ -211,7 +213,7 @@ const FileInfoButton = ({ file }: { file: ViewFolderFileWithHero }) => {
   const openFileInfo = useOpenFileInfoModal();
 
   return (
-    <Tooltip label={`File Info for ${file.name}`}>
+    <Tooltip label={`File Info for ${normalizeDisplayName(file.name)}`}>
       <ActionIcon variant="default" onClick={() => openFileInfo(file.id)}>
         <InfoIcon />
       </ActionIcon>

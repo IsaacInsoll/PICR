@@ -1,4 +1,5 @@
 import type { ManageFolderUserRow } from '@shared/types/queryRows';
+import { normalizeDisplayName } from '@shared/displayName';
 import { Avatar, Badge, Group, Paper, Stack, Text } from '@mantine/core';
 import { CommentChip } from './CommentChip';
 import { LinkModeChip } from './LinkModeChip';
@@ -45,7 +46,7 @@ export const PublicLinkListItem = ({
               <Group gap={4} wrap="nowrap">
                 <FolderIcon size={11} style={{ opacity: 0.4, flexShrink: 0 }} />
                 <Text size="xs" c="dimmed" truncate>
-                  {user.folder.name}
+                  {normalizeDisplayName(user.folder.name)}
                 </Text>
               </Group>
             ) : null}

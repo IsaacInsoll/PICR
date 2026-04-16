@@ -1,4 +1,5 @@
 import { Badge, Group, Text, Tooltip } from '@mantine/core';
+import { normalizeDisplayName } from '@shared/displayName';
 import { useMe } from '../hooks/useMe';
 import { useSetFolder } from '../hooks/useSetFolder';
 
@@ -48,7 +49,7 @@ export const BrandingFolderChips = ({
                 setFolder({ id: folder.id, name: folder.name ?? undefined })
               }
             >
-              {folder.name ?? folder.id}
+              {normalizeDisplayName(folder.name) ?? folder.id}
             </Badge>
           );
         }
@@ -58,7 +59,7 @@ export const BrandingFolderChips = ({
             label="This folder is outside your access scope"
           >
             <Badge variant="outline" color="gray" style={{ cursor: 'default' }}>
-              {folder.name ?? folder.id}
+              {normalizeDisplayName(folder.name) ?? folder.id}
             </Badge>
           </Tooltip>
         );

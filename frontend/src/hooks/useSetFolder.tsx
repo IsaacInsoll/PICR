@@ -3,6 +3,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder';
 import type { PicrFolder } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import type {
   FileNavigationTarget,
   FolderNavigationTarget,
@@ -51,6 +52,6 @@ export const useFolderLink = (
 const toPlaceholderFolder = (folder: FolderNavigationTarget): PicrFolder => ({
   ...folder,
   id: folder.id,
-  name: folder.name ?? 'Loading...',
+  name: normalizeDisplayName(folder.name) ?? 'Loading...',
   parents: folder.parents ?? [],
 });

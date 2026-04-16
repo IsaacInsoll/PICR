@@ -1,4 +1,5 @@
 import type { PicrFolder } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import type { MantineColor } from '@mantine/core';
 import { Code, Group } from '@mantine/core';
 import { Joiner } from './FolderName';
@@ -30,7 +31,7 @@ export const PrettyFolderPath = ({
             color={subColor}
             onClick={(e) => handleClick(e, f)}
           >
-            {f.name}
+            {normalizeDisplayName(f.name)}
           </Code>
           <Joiner />
         </>
@@ -40,7 +41,7 @@ export const PrettyFolderPath = ({
         style={style}
         onClick={(e) => handleClick(e, folder)}
       >
-        {folder.name}
+        {normalizeDisplayName(folder.name)}
       </Code>
     </Group>
   );

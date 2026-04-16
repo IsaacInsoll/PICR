@@ -2,6 +2,7 @@ import type {
   PicrFile,
   PicrFolder as PicrFolderType,
 } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import { BackgroundImage, Box, Button } from '@mantine/core';
 import { FileIcon, FolderIcon } from '../PicrIcons';
 import { imageURL } from '../helpers/imageURL';
@@ -24,6 +25,7 @@ export const PicrFolder = ({
   disabled?: boolean;
   title?: string;
 }) => {
+  const folderName = normalizeDisplayName(folder.name);
   const src =
     folder.heroImage?.__typename === 'Image'
       ? imageURL(folder.heroImage, 'md')
@@ -53,7 +55,7 @@ export const PicrFolder = ({
           color={hovered ? 'blue' : dark ? '#ddd' : '#333'}
           style={{ height: '100%' }}
         >
-          {folder.name}
+          {folderName}
         </Button>
       </Box>
     </BackgroundImage>
@@ -72,6 +74,7 @@ export const PicrGenericFile = ({
   disabled?: boolean;
   title?: string;
 }) => {
+  const fileName = normalizeDisplayName(file.name);
   const { hovered, ref } = useHover();
 
   return (
@@ -84,7 +87,7 @@ export const PicrGenericFile = ({
       color={hovered ? 'blue' : 'gray'}
       style={{ height: '100%', ...style }}
     >
-      {file.name}
+      {fileName}
     </Button>
   );
 };

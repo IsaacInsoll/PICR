@@ -1,4 +1,5 @@
 import type { FileListViewStyleComponentProps } from './FolderContentsView';
+import { normalizeDisplayName } from '@shared/displayName';
 import { Page } from '../Page';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -81,6 +82,7 @@ const Row = ({
     : file.fileLastModified;
   const latestComment = isFile ? file.latestComment : null;
   const totalComments = isFile ? file.totalComments : null;
+  const fileName = normalizeDisplayName(file.name);
   const rating = isFile ? (file.rating ?? 0) : 0;
   const flag = isFile ? file.flag : null;
   const fileSize = isFile ? file.fileSize : null;
@@ -139,7 +141,7 @@ const Row = ({
               fw={500}
               title={`Modified: ${modifiedDate ? prettyDate(modifiedDate) : 'N/A'}\nLast Comment: ${latestComment ? prettyDate(latestComment) : 'N/A'}`}
             >
-              {file.name}
+              {fileName}
             </Text>
             {/*{isMobile ? (*/}
             {/*  <Text c="dimmed" fz="xs">*/}

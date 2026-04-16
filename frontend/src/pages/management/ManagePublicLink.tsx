@@ -1,4 +1,5 @@
 import type { PicrFolder } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import { randomString } from '../../helpers/randomString';
 import { useState } from 'react';
 import { useMutation } from 'urql';
@@ -63,6 +64,7 @@ export const ManagePublicLink = ({
 
   //get folder from user if they exist as it may be a parent or child
   const f = user?.folder ?? folder;
+  const folderName = normalizeDisplayName(f?.name);
 
   const onSave = () => {
     if (!f?.id) return;
@@ -105,7 +107,7 @@ export const ManagePublicLink = ({
       onClose={onClose}
       title={
         <>
-          Public Link for: <em>{f?.name}</em>{' '}
+          Public Link for: <em>{folderName}</em>{' '}
         </>
       }
       centered
@@ -156,7 +158,7 @@ export const ManagePublicLink = ({
                 variant="default"
                 onClick={() => {
                   const pretty =
-                    folder?.name?.replaceAll(' ', '-') +
+                    normalizeDisplayName(folder?.name)?.replaceAll(' ', '-') +
                     '-' +
                     randomString().substring(0, 4);
                   setLink(pretty);
@@ -214,31 +216,37 @@ export const ManagePublicLink = ({
         </Group>
       </Stack>
 
-      <Modal
-        opened={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
-        title="Delete Public Link"
-        centered
-        size="sm"
-      >
-        <Stack>
-          <Text>
-            Are you sure you want to delete this public link? This action cannot
-            be undone and the link will stop working immediately.
-          </Text>
-          <Group justify="flex-end">
-            <Button
-              variant="default"
-              onClick={() => setShowDeleteConfirm(false)}
-            >
-              Cancel
-            </Button>
-            <Button color="red" onClick={onDelete} leftSection={<DeleteIcon />}>
-              Delete
-            </Button>
-          </Group>
-        </Stack>
-      </Modal>
+      {showDeleteConfirm ? (
+        <Modal
+          opened={true}
+          onClose={() => setShowDeleteConfirm(false)}
+          title="Delete Public Link"
+          centered
+          size="sm"
+        >
+          <Stack>
+            <Text>
+              Are you sure you want to delete this public link? This action
+              cannot be undone and the link will stop working immediately.
+            </Text>
+            <Group justify="flex-end">
+              <Button
+                variant="default"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                color="red"
+                onClick={onDelete}
+                leftSection={<DeleteIcon />}
+              >
+                Delete
+              </Button>
+            </Group>
+          </Stack>
+        </Modal>
+      ) : null}
     </Modal>
   );
 };

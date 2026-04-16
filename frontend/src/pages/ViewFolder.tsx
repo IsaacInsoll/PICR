@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from 'urql';
+import { normalizeDisplayName } from '@shared/displayName';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import {
   FolderHeader,
@@ -120,6 +121,7 @@ const ViewFolderBody = () => {
   const canDownload = useCanDownload();
   const { canView } = useCommentPermissions();
   const folder = data.data?.folder;
+  const displayFolderName = normalizeDisplayName(folder?.name);
   const hasFiles = folder && folder.files.length > 0;
 
   // redirect to 'no file selected' if you are in a valid folder but the file isn't found
@@ -234,7 +236,7 @@ const ViewFolderBody = () => {
             <Suspense
               fallback={
                 <ManageFolderDrawerLoading
-                  folderName={folder.name}
+                  folderName={displayFolderName ?? 'Loading'}
                   onClose={() => setFolder(folder)}
                 />
               }
@@ -328,6 +330,7 @@ const FolderOverflowMenu = ({
   onCsvExport: () => void;
   hasFiles: boolean;
 }) => {
+  const displayFolderName = normalizeDisplayName(folder.name);
   const setFiltering = useSetAtom(filterAtom);
   const setEditBranding = useSetAtom(editBrandingAtom);
   const setAssignBrandingToFolder = useSetAtom(assignBrandingToFolderAtom);
@@ -354,7 +357,7 @@ const FolderOverflowMenu = ({
       openInheritedDialog();
     } else {
       setAssignBrandingToFolder(folder.id);
-      setEditBranding({ ...defaultBranding, name: folder.name ?? '' });
+      setEditBranding({ ...defaultBranding, name: displayFolderName ?? '' });
     }
   };
 
@@ -372,7 +375,7 @@ const FolderOverflowMenu = ({
         (folder.branding?.socialLinks as SocialLink[] | null | undefined) ??
         null,
       id: '0',
-      name: folder.name ?? '',
+      name: displayFolderName ?? '',
     });
   };
 
@@ -392,7 +395,7 @@ const FolderOverflowMenu = ({
         </Menu.Target>
 
         <Menu.Dropdown>
-          <Menu.Label>{folder.name}</Menu.Label>
+          <Menu.Label>{displayFolderName}</Menu.Label>
           <FolderMenuItems
             folder={folder}
             showOpenItem={false}
@@ -411,7 +414,7 @@ const FolderOverflowMenu = ({
       <InheritedBrandingModal
         opened={inheritedDialogOpen}
         onClose={closeInheritedDialog}
-        folderName={folder.name ?? 'this folder'}
+        folderName={displayFolderName ?? 'this folder'}
         brandingName={folder.branding?.name ?? 'Unnamed'}
         onEditInherited={handleEditInherited}
         onCreateForFolder={handleCreateForFolder}

@@ -8,6 +8,7 @@ import {
   Text,
   Timeline,
 } from '@mantine/core';
+import { normalizeDisplayName } from '@shared/displayName';
 import type { AppCommentHistoryCommentFragmentFragment } from '@shared/gql/graphql';
 import { FileFlag } from '@shared/gql/graphql';
 import type { PicrFile } from '@shared/types/picr';
@@ -71,7 +72,9 @@ export const CommentBodyItem = ({
             )}
             <Group>
               {showFile ? (
-                <Code style={{ opacity: 0.33 }}>{file.name}</Code>
+                <Code style={{ opacity: 0.33 }}>
+                  {normalizeDisplayName(file.name)}
+                </Code>
               ) : null}
               <Text c="dimmed" size="xs">
                 {prettyDate(timestamp)}

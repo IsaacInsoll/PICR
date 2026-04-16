@@ -1,4 +1,5 @@
 import type { PicrFolder } from '@shared/types/picr';
+import { normalizeDisplayName } from '@shared/displayName';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { Menu } from '@mantine/core';
 import {
@@ -31,6 +32,7 @@ export const FolderMenuItems = ({
   onCsvExport,
   onBranding,
 }: FolderMenuItemsProps) => {
+  const folderName = normalizeDisplayName(folder.name);
   const setFolder = useSetFolder();
   const generateZip = useGenerateZip(folder);
   const me = useMe();
@@ -50,7 +52,7 @@ export const FolderMenuItems = ({
             setFolder(folder);
           }}
         >
-          Open {folder.name}
+          Open {folderName}
         </Menu.Item>
       ) : null}
       {onFilterFiles ? (
@@ -89,7 +91,7 @@ export const FolderMenuItems = ({
               setFolder(folder, 'manage/links');
             }}
           >
-            Manage {folder.name}
+            Manage {folderName}
           </Menu.Item>
           {me.isAdmin && me.clientInfo.canWrite ? (
             <Menu.Item
