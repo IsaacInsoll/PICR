@@ -1,8 +1,8 @@
 import { ActionIcon, Button, Group, Tooltip } from '@mantine/core';
 import { BrandingForm, type BrandingInput } from './BrandingForm';
 import type { SocialLink } from '@shared/branding/socialLinkTypes';
-import { useEffect, useRef, useState } from 'react';
-import { useSetAtom } from 'jotai';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
 import {
   themeModeAtom,
   applyBrandingDefaults,
@@ -17,6 +17,9 @@ import {
 } from '@shared/branding/fontRegistry';
 import { PicrDrawer } from '../../components/PicrDrawer';
 import { BrandingFolderChips } from '../../components/BrandingFolderChips';
+import { useDebouncedValue } from '@mantine/hooks';
+
+const TEXT_PREVIEW_DELAY_MS = 150;
 
 type FolderChip = {
   id: string;
@@ -40,22 +43,73 @@ export const BrandingDrawer = ({
     socialLinks:
       (brandingProp.socialLinks as SocialLink[] | null | undefined) ?? null,
   });
+  const currentThemeMode = useAtomValue(themeModeAtom);
   const setThemeMode = useSetAtom(themeModeAtom);
   const [submitting, setSubmitting] = useState(false);
   const [showOverlay, setShowOverlay] = useState(true);
   const [, mutate] = useMutation(editBrandingMutation);
   const [, deleteBranding] = useMutation(deleteBrandingMutation);
+  const textPreviewFields = useMemo(
+    () => ({
+      footerTitle: branding.footerTitle,
+      footerUrl: branding.footerUrl,
+      logoUrl: branding.logoUrl,
+      socialLinks: branding.socialLinks,
+    }),
+    [
+      branding.footerTitle,
+      branding.footerUrl,
+      branding.logoUrl,
+      branding.socialLinks,
+    ],
+  );
+  const [debouncedTextPreviewFields] = useDebouncedValue(
+    textPreviewFields,
+    TEXT_PREVIEW_DELAY_MS,
+  );
+  const previewBranding = useMemo(
+    () =>
+      applyBrandingDefaults({
+        availableViews: branding.availableViews,
+        defaultView: branding.defaultView,
+        footerTitle: debouncedTextPreviewFields.footerTitle,
+        footerUrl: debouncedTextPreviewFields.footerUrl,
+        headingAlignment: branding.headingAlignment,
+        headingFontKey: branding.headingFontKey,
+        headingFontSize: branding.headingFontSize,
+        logoUrl: debouncedTextPreviewFields.logoUrl,
+        mode: branding.mode,
+        primaryColor: branding.primaryColor,
+        socialLinks: debouncedTextPreviewFields.socialLinks,
+        thumbnailBorderRadius: branding.thumbnailBorderRadius,
+        thumbnailSize: branding.thumbnailSize,
+        thumbnailSpacing: branding.thumbnailSpacing,
+      }),
+    [
+      branding.availableViews,
+      branding.defaultView,
+      branding.headingAlignment,
+      branding.headingFontKey,
+      branding.headingFontSize,
+      branding.mode,
+      branding.primaryColor,
+      branding.thumbnailBorderRadius,
+      branding.thumbnailSize,
+      branding.thumbnailSpacing,
+      debouncedTextPreviewFields.footerTitle,
+      debouncedTextPreviewFields.footerUrl,
+      debouncedTextPreviewFields.logoUrl,
+      debouncedTextPreviewFields.socialLinks,
+    ],
+  );
 
-  const originalTheme = useRef(applyBrandingDefaults(brandingProp));
+  const originalTheme = useRef(currentThemeMode);
 
   const isNew = !branding.id || branding.id === '0';
 
   useEffect(() => {
-    // Only update theme when mode is defined to prevent flickering
-    if (branding.mode) {
-      setThemeMode(branding as Parameters<typeof setThemeMode>[0]);
-    }
-  }, [branding, setThemeMode]);
+    setThemeMode(previewBranding);
+  }, [previewBranding, setThemeMode]);
 
   const onSave = () => {
     setSubmitting(true);

@@ -14,7 +14,7 @@ interface QueryFeedbackProps {
   reQuery: () => void;
 }
 export default function QueryFeedback({ result, reQuery }: QueryFeedbackProps) {
-  const { fetching, error } = result;
+  const { fetching, data, error } = result;
   const setAuthKey = useSetAtom(authKeyAtom);
   const logOut = () => {
     setAuthKey('');
@@ -25,7 +25,7 @@ export default function QueryFeedback({ result, reQuery }: QueryFeedbackProps) {
 
   return (
     <>
-      {fetching && <LoadingIndicator size="large" />}
+      {fetching && !data && <LoadingIndicator size="large" />}
       {error && !isGlobalError && !isAuthExpired && (
         <Alert variant="light" color="red" title="Error" icon={<AlertIcon />}>
           {error.toString().replace('[GraphQL] ', '')}

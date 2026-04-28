@@ -4,6 +4,53 @@
 
 **When you learn something about how this project works — a gotcha, a required workflow step, a pattern that isn't obvious — add it to the relevant `AGENTS.md` or `docs/` file immediately. Do not store it only in an AI-specific memory system. This project is worked on by multiple developers and multiple AI agents across different machines; anything that lives only in one agent's memory is invisible to everyone else.**
 
+## Accuracy and Verification
+
+When answering questions about this repository, distinguish clearly between:
+
+- **Observed facts**: directly verified from files, git state, command output, docs, tests, or other primary sources.
+- **Inferences**: conclusions based on observed facts.
+- **Assumptions**: plausible but unverified statements.
+
+Do not present an inference or assumption as a verified fact.
+
+For claims about project state, behavior, configuration, dependencies, generated files, git tracking, CI, deployment, or developer workflow, verify with the repo before answering when practical. Prefer commands such as `rg`, `git status`, `git check-ignore`, `git ls-files`, package scripts, config files, and subsystem `AGENTS.md` files. If answering whether something is shared with other developers, committed, ignored, generated, or part of the repo, check the actual git state first and do not infer from a file merely existing in the working tree.
+
+If a claim has not been verified, say so explicitly with language like "I have not checked that yet" or "based on the file I inspected." If the user asks a follow-up that challenges a claim, re-check the underlying evidence before defending or revising the answer.
+
+Before giving a confident answer, ask: "What would I need to inspect to prove this?" If that inspection is cheap, do it first.
+
+## Agent Operating Standard
+
+Work like a senior developer, not a command runner. Before changing code or giving architectural guidance, inspect the existing implementation, nearby patterns, relevant subsystem `AGENTS.md`, tests, and configuration. Do not implement from memory when the repo can answer the question cheaply.
+
+Prefer primary sources over assumptions:
+
+- For repo behavior: source code, tests, config, scripts, generated-file instructions, CI files, git state, and issue comments.
+- For dependency or platform behavior: official docs, changelogs, package metadata, or upstream source.
+- For user-facing behavior: existing UI flows, docs, screenshots, tests, and route/API contracts.
+
+When requirements are ambiguous, choose the smallest reversible change that matches existing patterns. If there are meaningful tradeoffs, state them briefly before or while implementing. Ask a question only when the answer cannot be discovered from local context and a reasonable assumption would be risky.
+
+When reviewing or debugging, look for the root cause instead of patching symptoms. Validate that the proposed fix addresses the observed failure mode, and call out adjacent risks if the investigation reveals them.
+
+## JavaScript/TypeScript Project Practices
+
+- Fix TypeScript errors at the source. Avoid `any`, broad casts, non-null assertions, or local type shims unless the surrounding code already establishes that pattern or the runtime invariant has been verified.
+- For React/Vite UI changes, validate the rendered behavior when practical: run the relevant dev server or build, inspect browser console/network failures when available, and use screenshots or Playwright for layout-sensitive work.
+- For dependency, script, build, Vite, ESLint, TypeScript, or Node runtime changes, inspect the relevant `package.json`, lockfile, config file, and CI/test command before editing. Keep root and subsystem package files in sync when the repo structure requires it.
+- For async/server code, verify error handling and logging behavior on the failure path, not just the happy path. Do not swallow errors to make tests pass.
+
+## Definition of Done
+
+Before finalizing a task:
+
+- Run the narrowest relevant lint, typecheck, test, build, or formatting command for the touched subsystem unless blocked.
+- State exactly which checks were run and whether they passed.
+- If a required check could not be run or failed for an unrelated pre-existing reason, say so clearly and include the evidence.
+- Call out generated files, schema changes, migrations, new environment variables, user-facing behavior changes, and documentation updates.
+- Do not claim the work is complete if verification is missing and the missing check is material to the change.
+
 PICR is an open-source photo/video gallery for photographers to share media with clients. Deployed via Docker for self-hosting, with a React Native companion app.
 
 ## Project Links
@@ -55,6 +102,10 @@ Or use `gh issue view <number>` if the GitHub CLI is available.
 
 - Root `readme.md` is customer-facing and should not be updated for developer workflow/troubleshooting notes.
 - Put developer-facing guidance under `docs/development/*` instead.
+
+## IDE Project Files
+
+- `.idea/` is ignored by git. JetBrains IDE files such as `.idea/dataSources.xml` may exist locally, but they are not shared with other machines unless the ignore rules are deliberately changed or files are explicitly force-added.
 
 ## Autogenerated Files (Do Not Edit)
 
@@ -246,7 +297,7 @@ ESLint enforces that `frontend`, `backend`, and `app` do not import from each ot
 - **Functional React** - No class components
 - **Prettier 3** - Two-space indentation, format before committing
 - **ESLint** - React hooks rules, React Compiler compatibility
-- **No console.log** - Use proper logging or remove before committing
+- **Temporary debugging is allowed** - In this local dev environment, add `console.log`, `console.debug`, backend `log('debug', ...)`, or similarly direct instrumentation when it helps troubleshooting. Remove temporary traces before saying the job is done. Do not add dev-mode switches, feature flags, or permanent logging just to justify short-lived debugging output.
 - **Frontend UI styling** - Prefer Mantine-idiomatic patterns (components, theme tokens, semantic colors) over hardcoded inline CSS values
 - **Typed CSS modules** - Prefer `styles.className` dot notation (camelCase class names) and keep generated `*.module.css.d.ts` files in sync/committed via `css:types`
 

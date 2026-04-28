@@ -30,5 +30,16 @@ export const applyBrandingDefaults = (
 ): Branding => ({
   ...defaultBranding,
   ...branding,
-  headingFontKey: branding?.headingFontKey ?? HeadingFontKey.Default,
+  mode: branding?.mode ?? defaultBranding.mode,
+  primaryColor: branding?.primaryColor ?? defaultBranding.primaryColor,
+  headingFontKey: branding?.headingFontKey ?? defaultBranding.headingFontKey,
+  thumbnailSize: branding?.thumbnailSize ?? defaultBranding.thumbnailSize,
+  thumbnailSpacing:
+    branding?.thumbnailSpacing ?? defaultBranding.thumbnailSpacing,
+  thumbnailBorderRadius:
+    branding?.thumbnailBorderRadius ?? defaultBranding.thumbnailBorderRadius,
+  headingFontSize: branding?.headingFontSize ?? defaultBranding.headingFontSize,
+  headingAlignment:
+    branding?.headingAlignment ?? defaultBranding.headingAlignment,
+  folders: branding?.folders ?? defaultBranding.folders,
 });

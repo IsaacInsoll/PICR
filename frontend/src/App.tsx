@@ -13,7 +13,7 @@ import { LoadingOverlay, MantineProvider, Portal } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { PicrErrorBoundary } from './components/PicrErrorBoundary';
 import { lightboxRefAtom } from './atoms/lightboxRefAtom';
 import { getBaseHrefPathname } from './helpers/baseHref';
@@ -24,9 +24,23 @@ import { normalizeFontKey } from '@shared/branding/fontRegistry';
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
   const sessionKey = useSessionKey();
-  const client = createClient(authKey, sessionKey);
+  const client = useMemo(
+    () => createClient(authKey, sessionKey),
+    [authKey, sessionKey],
+  );
   const customTheme = useAtomValue(themeModeAtom);
   const basePathname = getBaseHrefPathname();
+  const mantineTheme = useMemo(
+    () => ({
+      ...theme,
+      primaryColor: customTheme.primaryColor ?? undefined,
+    }),
+    [customTheme.primaryColor],
+  );
+  const forceColorScheme =
+    customTheme.mode == null || customTheme.mode === 'auto'
+      ? undefined
+      : customTheme.mode;
 
   //we put a portal at the start, otherwise Mantine Modals will be hidden behind it
   const portal = useRef<HTMLDivElement>(null);
@@ -53,15 +67,8 @@ const App = () => {
     <URQLProvider value={client}>
       <BrowserRouter basename={basePathname || undefined}>
         <MantineProvider
-          theme={{
-            ...theme,
-            primaryColor: customTheme.primaryColor ?? undefined,
-          }}
-          forceColorScheme={
-            customTheme.mode == null || customTheme.mode === 'auto'
-              ? undefined
-              : customTheme.mode
-          }
+          theme={mantineTheme}
+          forceColorScheme={forceColorScheme}
           defaultColorScheme={'auto'}
         >
           <Portal className="lightbox-portal">
