@@ -234,6 +234,7 @@ function MyComponent() {
 
 - Avoid GraphQL reads inside frequently rerendered leaf controls like copy/share buttons. In the public-link UI, deriving the link from the current browser origin and `withBasePath(...)` is cheaper than calling `useMe()` just to read `clientInfo.baseUrl`.
 - Live branding preview writes to `themeModeAtom`, which is consumed by the app shell and gallery components. Do not publish every draft form keystroke directly to this atom; debounce preview-only fields and keep non-preview fields local so settings inputs stay responsive.
+- Do not pass inline function components to render slots in gallery/lightbox-style components. React treats a new function identity as a new component type and can remount thumbnails during background query refreshes, resetting image loaded state and causing visible flashes.
 
 ### Folder Hierarchy Data
 

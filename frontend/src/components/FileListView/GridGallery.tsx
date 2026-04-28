@@ -4,6 +4,7 @@ import { imageURL } from '../../helpers/imageURL';
 import { Gallery } from './react-grid-gallery';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from '../../atoms/themeModeAtom';
+import { useCallback, useMemo } from 'react';
 import type { FileListViewStyleComponentProps } from './FolderContentsView';
 import {
   DEFAULT_BORDER_RADIUS,
@@ -44,39 +45,57 @@ export const GridGallery = ({
   const thumbnailSize = theme.thumbnailSize ?? DEFAULT_THUMBNAIL_SIZE;
   const margin = theme.thumbnailSpacing ?? DEFAULT_SPACING;
   const borderRadius = theme.thumbnailBorderRadius ?? DEFAULT_BORDER_RADIUS;
-  const orderedItems = items || [...folders, ...files];
-  const handleClick = (index: number) => {
-    const item = orderedItems[index];
-    if (isFolderContentsFile(item)) {
-      setSelectedFileId(item.id);
-    } else {
-      setFolder(item);
-    }
-  };
-  const galleryItems: GalleryItem[] = orderedItems.map(
-    (item: FolderContentsItem) => {
-      if (isFolderContentsFile(item)) {
-        const imageRatio =
-          'imageRatio' in item && typeof item.imageRatio === 'number'
-            ? item.imageRatio
-            : 1;
-        return {
-          key: item.id,
-          src: imageURL(item, 'md'),
-          width: thumbnailSize,
-          height: thumbnailSize / imageRatio,
-          file: item,
-        };
-      }
-      return {
-        key: 'f' + item.id,
-        src: '',
-        width: thumbnailSize * 2,
-        height: thumbnailSize,
-        folder: item,
-      };
-    },
+  const orderedItems = useMemo(
+    () => items || [...folders, ...files],
+    [files, folders, items],
   );
+  const handleClick = useCallback(
+    (index: number) => {
+      const item = orderedItems[index];
+      if (isFolderContentsFile(item)) {
+        setSelectedFileId(item.id);
+      } else {
+        setFolder(item);
+      }
+    },
+    [orderedItems, setFolder, setSelectedFileId],
+  );
+  const galleryItems: GalleryItem[] = useMemo(
+    () =>
+      orderedItems.map((item: FolderContentsItem) => {
+        if (isFolderContentsFile(item)) {
+          const imageRatio =
+            'imageRatio' in item && typeof item.imageRatio === 'number'
+              ? item.imageRatio
+              : 1;
+          return {
+            key: item.id,
+            src: imageURL(item, 'md'),
+            width: thumbnailSize,
+            height: thumbnailSize / imageRatio,
+            file: item,
+          };
+        }
+        return {
+          key: 'f' + item.id,
+          src: '',
+          width: thumbnailSize * 2,
+          height: thumbnailSize,
+          folder: item,
+        };
+      }),
+    [orderedItems, thumbnailSize],
+  );
+  const tileViewportStyle = useCallback(
+    (context: { item: ImageExtended<GalleryItem> }) => ({
+      width: context.item.viewportWidth,
+      height: context.item.scaledHeight,
+      overflow: 'hidden',
+      borderRadius,
+    }),
+    [borderRadius],
+  );
+
   return (
     <>
       <Gallery
@@ -86,32 +105,29 @@ export const GridGallery = ({
         onClick={handleClick}
         enableImageSelection={false}
         defaultContainerWidth={width}
-        tileViewportStyle={(context) => ({
-          width: context.item.viewportWidth,
-          height: context.item.scaledHeight,
-          overflow: 'hidden',
-          borderRadius,
-        })}
-        thumbnailImageComponent={(
-          p: ThumbnailImageProps<ImageExtended<GalleryItem>>,
-        ) => {
-          const title =
-            typeof p.imageProps.title === 'string' ? p.imageProps.title : '';
-          const file = p.item.file;
-
-          if (p.item.folder) {
-            return <PicrFolder folder={p.item.folder} title={title} />;
-          }
-
-          if (file?.type === 'File') {
-            return <PicrGenericFile file={file} title={title} />;
-          }
-
-          return <GalleryImage {...p} />;
-        }}
+        tileViewportStyle={tileViewportStyle}
+        thumbnailImageComponent={GalleryThumbnailImage}
       />
     </>
   );
+};
+
+const GalleryThumbnailImage = (
+  props: ThumbnailImageProps<ImageExtended<GalleryItem>>,
+) => {
+  const { imageProps, item } = props;
+  const title = typeof imageProps.title === 'string' ? imageProps.title : '';
+  const file = item.file;
+
+  if (item.folder) {
+    return <PicrFolder folder={item.folder} title={title} />;
+  }
+
+  if (file?.type === 'File') {
+    return <PicrGenericFile file={file} title={title} />;
+  }
+
+  return <GalleryImage {...props} />;
 };
 
 type GalleryImageProps = {
