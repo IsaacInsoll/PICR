@@ -169,6 +169,40 @@ test('Admin can see access log entry for public link visit', async () => {
   expect(log.timestamp).toBeDefined();
 });
 
+test('Public Link access log truncates long user agents', async () => {
+  const longUserAgent = `picr-test/${'x'.repeat(1500)}`;
+  const headers = {
+    ...(await getLinkHeader(testPublicLink.uuid)),
+    'user-agent': longUserAgent,
+    sessionid: `long-user-agent-${testSuffix}`,
+  };
+  const client = await createTestGraphqlClient(headers);
+
+  const folderResult = await client
+    .query(viewFolderQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+
+  expect(folderResult.error).toBeUndefined();
+  expect(folderResult.data?.folder).toBeDefined();
+
+  const adminHeaders = await getUserHeader(defaultCredentials);
+  const adminClient = await createTestGraphqlClient(adminHeaders);
+
+  const logsResult = await adminClient
+    .query(accessLogQuery, {
+      folderId: testPublicLink.folderId,
+      userId: createdUserId,
+    })
+    .toPromise();
+
+  expect(logsResult.error).toBeUndefined();
+  const log = logsResult.data?.accessLogs.find((accessLog) =>
+    accessLog.userAgent?.startsWith('picr-test/'),
+  );
+
+  expect(log?.userAgent).toBe(longUserAgent.slice(0, 1024));
+});
+
 test('Public Link with Read permissions can view comments', async () => {
   const headers = await getLinkHeader(testPublicLink.uuid);
   const client = await createTestGraphqlClient(headers);

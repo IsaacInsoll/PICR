@@ -37,6 +37,14 @@ export type FileFields = typeof dbFile.$inferSelect;
 export type FolderFields = typeof dbFolder.$inferSelect;
 export type CommentFields = typeof dbComment.$inferSelect;
 
+export const ACCESS_LOG_HEADER_MAX_LENGTH = 1024;
+
+export const normalizeAccessLogHeader = (value: string | undefined): string => {
+  if (value == null) return '';
+  const trimmed = value.trim();
+  return trimmed.slice(0, ACCESS_LOG_HEADER_MAX_LENGTH);
+};
+
 export const dbFolderForId = async (
   id: number | undefined,
 ): Promise<FolderFields | undefined> => {
@@ -110,19 +118,14 @@ export const createAccessLog = async (
   //Check if sessionId/ipAddress/user already accessed this in last hour and don't create if so
 
   const h = context.headers;
-  const normalizeText = (value: string | undefined): string => {
-    if (value == null) return '';
-    const trimmed = value.trim();
-    return trimmed === '' ? '' : trimmed;
-  };
 
   const props = {
     userId: user.id,
     folderId: folder.id,
     type: type,
-    ipAddress: normalizeText(h.ipAddress),
-    sessionId: normalizeText(h.sessionId),
-    userAgent: normalizeText(h.userAgent),
+    ipAddress: normalizeAccessLogHeader(h.ipAddress),
+    sessionId: normalizeAccessLogHeader(h.sessionId),
+    userAgent: normalizeAccessLogHeader(h.userAgent),
   };
 
   const recent = await db.query.dbAccessLog.findFirst({

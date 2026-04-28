@@ -21,7 +21,7 @@ PICR is an open-source photo/video gallery for photographers to share media with
 
 When working on a GitHub issue:
 
-1. **Reference the issue** in commits: `✨ #42 add feature description`
+1. **Reference the issue** in commits: `✨ #42 [frontend] add feature description`
 2. **Understand the full context** - fetch the issue URL to read all comments and discussion
 3. **Check for labels** - `currently working on` means it's in progress
 4. **Test thoroughly** - ask the user to run `npm run workflow` before considering work complete
@@ -266,11 +266,11 @@ ESLint enforces that `frontend`, `backend`, and `app` do not import from each ot
 ### Commit Format
 
 ```
-<gitmoji> [subsystem] <description>
+<gitmoji> [#issue] [subsystem] <description>
 
 Examples:
-🐛 [backend] fix folder rename crash
-✨ [frontend] add gallery search
+🐛 #42 [backend] fix folder rename crash
+✨ #43 [frontend] add gallery search
 📝 [docs] update installation guide
 ♻️ [shared] refactor date formatting
 ```

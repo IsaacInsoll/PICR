@@ -19,9 +19,9 @@ export const dbAccessLog = pgTable('AccessLogs', {
   ...baseColumns,
   userId: integer('userId').references(() => dbUser.id),
   folderId: integer('folderId').references(() => dbFolder.id),
-  ipAddress: varchar('ipAddress', { length: 255 }),
-  sessionId: varchar('sessionId', { length: 255 }),
-  userAgent: varchar('userAgent', { length: 255 }),
+  ipAddress: varchar('ipAddress', { length: 1024 }),
+  sessionId: varchar('sessionId', { length: 1024 }),
+  userAgent: varchar('userAgent', { length: 1024 }),
   type: accessTypeEnum(),
 });
 

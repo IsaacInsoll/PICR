@@ -102,6 +102,11 @@ All models in `db/models/`. See `database-erd.md` for the full entity relationsh
 | `dbUserDevice`    | UserDevice    | Push notification devices     |
 | `dbServerOptions` | ServerOptions | Global server config          |
 
+Access log writes are awaited by folder view and ZIP download resolvers. Treat
+request-derived metadata such as User-Agent, session IDs, and forwarded IP
+headers as untrusted/variable length; database length errors here can block
+gallery access, not just analytics.
+
 ### Enums (in `db/models/enums.ts`)
 
 ```typescript
