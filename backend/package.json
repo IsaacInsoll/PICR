@@ -17,7 +17,7 @@
     "blurhash": "^2.0.5",
     "chokidar": "^5",
     "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.45",
+    "drizzle-orm": "^0.45.2",
     "exif-reader": "^2.0.3",
     "expo-server-sdk": "^4.0.0",
     "express": "^5.2.1",
