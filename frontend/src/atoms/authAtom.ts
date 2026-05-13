@@ -6,9 +6,10 @@ export const authKeyAtom = atomWithStorage('authKey', '', undefined, {
 });
 
 const createFallbackSessionKey = () => {
+  const browserCrypto: Partial<Crypto> = globalThis.crypto;
   const bytes = new Uint8Array(16);
-  if (globalThis.crypto?.getRandomValues) {
-    globalThis.crypto.getRandomValues(bytes);
+  if (typeof browserCrypto.getRandomValues === 'function') {
+    browserCrypto.getRandomValues(bytes);
   } else {
     for (let i = 0; i < bytes.length; i += 1) {
       bytes[i] = Math.floor(Math.random() * 256);
@@ -32,8 +33,9 @@ const createFallbackSessionKey = () => {
 };
 
 const createSessionKey = () => {
-  if (globalThis.crypto?.randomUUID) {
-    return globalThis.crypto.randomUUID();
+  const browserCrypto: Partial<Crypto> = globalThis.crypto;
+  if (typeof browserCrypto.randomUUID === 'function') {
+    return browserCrypto.randomUUID();
   }
 
   return createFallbackSessionKey();

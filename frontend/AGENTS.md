@@ -235,6 +235,7 @@ function MyComponent() {
 - Prefer camelCase CSS class names so `styles.className` dot notation works cleanly.
 - Regenerate after editing CSS modules: `npm run css:types`.
 - CI/lint guard: `npm run lint` runs `npm run css:types:check` first and fails if type declarations are stale.
+- Always run `npm run lint` for all changes before reporting completion, even when TypeScript and formatting already pass.
 - Root dev command integration: `npm start` (from repo root) runs `css:types:watch` automatically alongside frontend/backend watchers.
 - Generated CSS module declaration files are excluded from Prettier to avoid conflicts with `typed-css-modules` output.
 
