@@ -215,6 +215,14 @@ function MyComponent() {
 }
 ```
 
+### Browser API Availability
+
+- PICR can be self-hosted over plain HTTP, and the Vite dev server may be
+  accessed from another machine over HTTP rather than `localhost`. Frontend
+  startup code must not assume secure-context-only APIs like
+  `crypto.randomUUID()` exist. `atoms/authAtom.ts` keeps a fallback for the
+  access-log `sessionId` header.
+
 ### Mantine-Idiomatic Styling
 
 - Prefer Mantine primitives/props (`Paper`, `Overlay`, `Container`, spacing, radius, shadow) over ad-hoc wrapper `div` styling.
@@ -420,6 +428,8 @@ The data flow is:
 4. On save, the mutation persists the change; GraphQL re-fetch updates the atom via step 1
 
 **Rule:** if a component renders a branding field visually, it reads from `themeModeAtom`. If it uses branding for access control or configuration logic (e.g. `availableViews`, `defaultView`, management UI), it may read `folder.branding` directly.
+
+`thumbnailSpacing` affects more than the gap between gallery tiles on web. The gallery view also derives its outer page breathing room from that same branding field, using a dampened responsive mapping so existing saved spacing values do not explode at the page edge.
 
 The mobile app has no branding editor, so it does not use `themeModeAtom` and may read branding from GraphQL data directly.
 
