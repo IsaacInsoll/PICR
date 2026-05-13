@@ -1,7 +1,8 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
-import react from '@vitejs/plugin-react';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import babel from '@rolldown/plugin-babel';
 
 // https://vitejs.dev/config/
 
@@ -32,7 +33,7 @@ export const picrIndexVarsDev = (env: Record<string, string>): Plugin => ({
   },
 });
 
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(async ({ command, mode }) => {
   const configDir = path.dirname(fileURLToPath(import.meta.url));
   const repoRoot = path.resolve(configDir, '..');
   const env = loadEnv(mode, repoRoot, '');
@@ -53,19 +54,11 @@ export default defineConfig(({ command, mode }) => {
     base: command === 'build' ? './' : '/',
     plugins: [
       ...(command === 'serve' ? [picrIndexVarsDev(env)] : []),
-      react({
-        babel: {
-          plugins: [
-            ['babel-plugin-react-compiler', ReactCompilerConfig],
-            [
-              '@locator/babel-jsx/dist',
-              {
-                env: 'development',
-              },
-            ],
-          ],
-        },
+      await babel({
+        presets: [reactCompilerPreset(ReactCompilerConfig)],
+        plugins: [['@locator/babel-jsx/dist', { env: 'development' }]],
       }),
+      react(),
     ],
     resolve: {
       dedupe: ['react', 'react-dom', 'jotai'],

@@ -4,6 +4,11 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './fonts.generated';
 
+if (import.meta.env.DEV) {
+  const { default: setupLocatorUI } = await import('@locator/runtime');
+  setupLocatorUI();
+}
+
 const element = document.getElementById('root');
 if (element) {
   const root = ReactDOM.createRoot(element);
