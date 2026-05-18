@@ -48,7 +48,7 @@
   inset: 0;
   display: flex;
   align-items: center;
-  padding: 16px;
+  padding: clamp(18px, 4vw, 32px);
   pointer-events: none;
 }
 
@@ -77,13 +77,17 @@
 }
 
 .titleInner {
-  max-width: 90%;
+  width: min(100%, 54rem);
+  max-width: 100%;
 }
 
 .alignLeft {
   text-align: left;
 }
 
+/* Horizontal placement of .titleInner is driven by .titleLayer's flex
+   justify-content (.justifyLeft / .justifyCenter / .justifyRight). These
+   classes only control text alignment within the constrained-width block. */
 .alignCenter {
   text-align: center;
 }
@@ -143,5 +147,18 @@
   }
   50% {
     transform: translateX(-50%) translateY(4px);
+  }
+}
+
+@media (min-width: 48em) {
+  .titleLayer {
+    padding-inline: clamp(28px, 6vw, 64px);
+    padding-block: clamp(28px, 5vw, 56px);
+  }
+
+  /* Edge-aligned banner text needs a tighter line length to stay anchored. */
+  .alignLeft,
+  .alignRight {
+    width: min(100%, 40rem);
   }
 }

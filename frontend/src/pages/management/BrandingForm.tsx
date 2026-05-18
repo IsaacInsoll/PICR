@@ -36,12 +36,12 @@ import { fontFamilies } from '../../fonts.generated';
 import {
   BORDER_RADIUS_PRESETS,
   DEFAULT_BORDER_RADIUS,
-  DEFAULT_HEADING_ALIGNMENT,
   DEFAULT_HEADING_FONT_SIZE,
   DEFAULT_SPACING,
   DEFAULT_THUMBNAIL_SIZE,
   HEADING_FONT_SIZE_PRESETS,
   matchPreset,
+  normalizeHeadingAlignment,
   SPACING_PRESETS,
   THUMBNAIL_SIZE_PRESETS,
 } from '@shared/branding/galleryPresets';
@@ -59,7 +59,6 @@ import { SocialLinkIcon } from '../../components/SocialLinkIcon';
 import {
   TbAlignCenter,
   TbAlignLeft,
-  TbAlignRight,
   TbArrowDown,
   TbArrowUp,
   TbLink,
@@ -366,11 +365,11 @@ export const BrandingForm = ({
                       icon: <TbAlignCenter />,
                       label: 'Center',
                     },
-                    { value: 'right', icon: <TbAlignRight />, label: 'Right' },
                   ] as const
                 ).map((opt) => {
-                  const current =
-                    branding.headingAlignment ?? DEFAULT_HEADING_ALIGNMENT;
+                  const current = normalizeHeadingAlignment(
+                    branding.headingAlignment,
+                  );
                   return (
                     <Button
                       key={opt.value}

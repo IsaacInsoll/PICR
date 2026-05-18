@@ -14,8 +14,8 @@ export const SPACING_PRESETS = {
   xs: 0,
   sm: 2,
   md: 4,
-  lg: 8,
-  xl: 12,
+  lg: 10,
+  xl: 16,
 } as const;
 
 export const BORDER_RADIUS_PRESETS = {
@@ -37,10 +37,16 @@ export const HEADING_FONT_SIZE_PRESETS = {
 export type PresetKey = keyof typeof THUMBNAIL_SIZE_PRESETS;
 
 export const DEFAULT_THUMBNAIL_SIZE = THUMBNAIL_SIZE_PRESETS.md;
-export const DEFAULT_SPACING = SPACING_PRESETS.sm;
+export const DEFAULT_SPACING = SPACING_PRESETS.md;
 export const DEFAULT_BORDER_RADIUS = BORDER_RADIUS_PRESETS.md;
 export const DEFAULT_HEADING_FONT_SIZE = HEADING_FONT_SIZE_PRESETS.md;
-export const DEFAULT_HEADING_ALIGNMENT = 'center' as const;
+export const DEFAULT_HEADING_ALIGNMENT = 'left' as const;
+export type HeadingAlignment = typeof DEFAULT_HEADING_ALIGNMENT | 'center';
+
+export const normalizeHeadingAlignment = (
+  alignment?: string | null,
+): HeadingAlignment =>
+  alignment === 'center' ? 'center' : DEFAULT_HEADING_ALIGNMENT;
 
 export const BANNER_SIZES = [
   'classic',
@@ -53,6 +59,7 @@ export const DEFAULT_BANNER_SIZE: BannerSize = 'classic';
 
 export const BANNER_H_ALIGNS = ['left', 'center', 'right'] as const;
 export type BannerHAlign = (typeof BANNER_H_ALIGNS)[number];
+export const DEFAULT_BANNER_H_ALIGNMENT: BannerHAlign = 'center';
 
 export const BANNER_V_ALIGNS = ['top', 'center', 'bottom'] as const;
 export type BannerVAlign = (typeof BANNER_V_ALIGNS)[number];

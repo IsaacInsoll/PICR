@@ -103,9 +103,24 @@ const ViewFolderBody = () => {
   useRequery(reQuery as Parameters<typeof useRequery>[0], 20000);
 
   const branding = data.data?.folder.branding;
-  // Create a stable key from the branding values to avoid re-running effect on object reference changes
+  // Create a stable key from display branding values to avoid re-running the
+  // effect on object reference changes while still reacting to visual updates.
   const brandingKey = branding
-    ? `${branding.id}-${branding.mode}-${branding.primaryColor}-${branding.headingFontKey}`
+    ? JSON.stringify({
+        id: branding.id,
+        mode: branding.mode,
+        primaryColor: branding.primaryColor,
+        headingFontKey: branding.headingFontKey,
+        thumbnailSize: branding.thumbnailSize,
+        thumbnailSpacing: branding.thumbnailSpacing,
+        thumbnailBorderRadius: branding.thumbnailBorderRadius,
+        headingFontSize: branding.headingFontSize,
+        headingAlignment: branding.headingAlignment,
+        footerTitle: branding.footerTitle,
+        footerUrl: branding.footerUrl,
+        logoUrl: branding.logoUrl,
+        socialLinks: branding.socialLinks,
+      })
     : 'default';
   const theme = useMemo(
     () => applyBrandingDefaults(branding),

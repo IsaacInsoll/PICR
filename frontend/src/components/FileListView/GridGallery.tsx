@@ -5,6 +5,8 @@ import { Gallery } from './react-grid-gallery';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from '../../atoms/themeModeAtom';
 import { useCallback, useMemo } from 'react';
+import { useMediaQuery } from '@mantine/hooks';
+import { Box } from '@mantine/core';
 import type { FileListViewStyleComponentProps } from './FolderContentsView';
 import {
   DEFAULT_BORDER_RADIUS,
@@ -45,6 +47,8 @@ export const GridGallery = ({
   const thumbnailSize = theme.thumbnailSize ?? DEFAULT_THUMBNAIL_SIZE;
   const margin = theme.thumbnailSpacing ?? DEFAULT_SPACING;
   const borderRadius = theme.thumbnailBorderRadius ?? DEFAULT_BORDER_RADIUS;
+  const isTabletUp = useMediaQuery('(min-width: 48em)');
+  const isDesktopUp = useMediaQuery('(min-width: 75em)');
   const orderedItems = useMemo(
     () => items || [...folders, ...files],
     [files, folders, items],
@@ -95,20 +99,27 @@ export const GridGallery = ({
     }),
     [borderRadius],
   );
+  const outerPadding = useMemo(() => {
+    // Keep this dampened mapping aligned with frontend/AGENTS.md branding notes.
+    if (isDesktopUp) return Math.max(20, Math.round(margin * 2.25));
+    if (isTabletUp) return Math.max(16, Math.round(margin * 1.75));
+    return Math.max(12, Math.round(margin * 1.5));
+  }, [isDesktopUp, isTabletUp, margin]);
+  const initialContainerWidth = Math.max(0, width - 2 * outerPadding);
 
   return (
-    <>
+    <Box px={outerPadding}>
       <Gallery
         rowHeight={thumbnailSize}
         margin={margin}
         images={galleryItems}
         onClick={handleClick}
         enableImageSelection={false}
-        defaultContainerWidth={width}
+        defaultContainerWidth={initialContainerWidth}
         tileViewportStyle={tileViewportStyle}
         thumbnailImageComponent={GalleryThumbnailImage}
       />
-    </>
+    </Box>
   );
 };
 

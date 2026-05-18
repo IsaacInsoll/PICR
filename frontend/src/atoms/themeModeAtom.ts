@@ -7,6 +7,7 @@ import {
   DEFAULT_HEADING_FONT_SIZE,
   DEFAULT_SPACING,
   DEFAULT_THUMBNAIL_SIZE,
+  normalizeHeadingAlignment,
 } from '@shared/branding/galleryPresets';
 
 export const defaultBranding: Branding = {
@@ -39,7 +40,6 @@ export const applyBrandingDefaults = (
   thumbnailBorderRadius:
     branding?.thumbnailBorderRadius ?? defaultBranding.thumbnailBorderRadius,
   headingFontSize: branding?.headingFontSize ?? defaultBranding.headingFontSize,
-  headingAlignment:
-    branding?.headingAlignment ?? defaultBranding.headingAlignment,
+  headingAlignment: normalizeHeadingAlignment(branding?.headingAlignment),
   folders: branding?.folders ?? defaultBranding.folders,
 });

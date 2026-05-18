@@ -25,7 +25,9 @@ import { themeModeAtom } from '../atoms/themeModeAtom';
 import { FolderLink } from './FolderLink';
 import { Page } from './Page';
 import {
-  DEFAULT_HEADING_ALIGNMENT,
+  BANNER_SIZES,
+  DEFAULT_BANNER_H_ALIGNMENT,
+  DEFAULT_BANNER_SIZE,
   type BannerSize,
   type BannerHAlign,
   type BannerVAlign,
@@ -88,11 +90,10 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
   const computedColorScheme = useComputedColorScheme('light', {
     getInitialValueInEffect: true,
   });
-  // Horizontal: folder-specific override → branding default → 'center'
+  // Horizontal: folder-specific override → banner default
   const hAlign: BannerHAlign =
     (folder.bannerTextHAlign as BannerHAlign | null) ??
-    (theme.headingAlignment as BannerHAlign | null) ??
-    DEFAULT_HEADING_ALIGNMENT;
+    DEFAULT_BANNER_H_ALIGNMENT;
   // Vertical: folder-specific override → 'center'
   const vAlign: BannerVAlign =
     (folder.bannerTextVAlign as BannerVAlign | null) ?? 'center';
@@ -244,7 +245,10 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
         ? styles.vAlignBottom
         : styles.vAlignCenter;
 
-  const sizeClass = bannerSizeClass[folder.bannerSize as BannerSize];
+  const bannerSize = BANNER_SIZES.includes(folder.bannerSize as BannerSize)
+    ? (folder.bannerSize as BannerSize)
+    : DEFAULT_BANNER_SIZE;
+  const sizeClass = bannerSizeClass[bannerSize];
 
   return (
     <Box className={styles.root}>
@@ -259,12 +263,6 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
             transform: `translate3d(0, 0, 0) scale(${parallaxScale})`,
           }}
         />
-        {/*<Overlay*/}
-        {/*  gradient={`linear-gradient(180deg, ${alpha(mantineTheme.black, 0.45)} 0%, ${alpha(mantineTheme.black, 0.2)} 45%, ${alpha(mantineTheme.black, 0.45)} 100%)`}*/}
-        {/*  style={{*/}
-        {/*    pointerEvents: 'none',*/}
-        {/*  }}*/}
-        {/*/>*/}
         <Box className={`${styles.titleLayer} ${justifyClass} ${vAlignClass}`}>
           <Box className={`${styles.titleInner} ${alignClass}`}>
             <Title

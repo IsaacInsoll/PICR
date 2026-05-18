@@ -20,8 +20,8 @@ import {
   bannerSizeLabels,
   bannerSizePortraitPercent,
   bannerSizeSubtitles,
+  DEFAULT_BANNER_H_ALIGNMENT,
   DEFAULT_BANNER_SIZE,
-  DEFAULT_HEADING_ALIGNMENT,
   type BannerSize,
   type BannerHAlign,
   type BannerVAlign,
@@ -33,7 +33,6 @@ import {
   currentFolderBannerVAlignAtom,
   type BannerImageCandidate,
 } from '../../atoms/modalAtom';
-import { themeModeAtom } from '../../atoms/themeModeAtom';
 import styles from './SetBannerImageModal.module.css';
 
 // Skeleton rows simulate how much gallery is visible below the banner.
@@ -275,7 +274,6 @@ export const SetBannerImageModal = ({
   const currentBannerSize = useAtomValue(currentFolderBannerSizeAtom);
   const currentBannerHAlign = useAtomValue(currentFolderBannerHAlignAtom);
   const currentBannerVAlign = useAtomValue(currentFolderBannerVAlignAtom);
-  const theme = useAtomValue(themeModeAtom);
 
   const [selectedSize, setSelectedSize] = useState<BannerSize | null>(
     BANNER_SIZES.includes(currentBannerSize as BannerSize)
@@ -284,12 +282,8 @@ export const SetBannerImageModal = ({
   );
   const [hoveredSize, setHoveredSize] = useState<BannerSize | null>(null);
 
-  const brandingHAlign = (theme.headingAlignment ??
-    DEFAULT_HEADING_ALIGNMENT) as BannerHAlign;
-
-  // Track the explicit folder-level overrides separately from the display value.
-  // null means "inherit from branding" — we only write a value if the user
-  // explicitly picks one (or the folder already had one).
+  // Track explicit folder-level overrides separately from the display value.
+  // null means "use the banner default" until the user explicitly picks one.
   const [hAlign, setHAlign] = useState<BannerHAlign | null>(
     currentBannerHAlign as BannerHAlign | null,
   );
@@ -297,10 +291,9 @@ export const SetBannerImageModal = ({
     currentBannerVAlign as BannerVAlign | null,
   );
 
-  // Derive the display position: fall back to branding/default for the preview
-  // and grid highlight without turning the fallback into a saved override.
+  // Derive the display position without turning the default into a saved override.
   const position: Position = {
-    h: hAlign ?? brandingHAlign,
+    h: hAlign ?? DEFAULT_BANNER_H_ALIGNMENT,
     v: vAlign ?? 'center',
   };
 

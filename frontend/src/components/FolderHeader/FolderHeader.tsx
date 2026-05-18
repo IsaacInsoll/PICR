@@ -11,15 +11,16 @@ import {
   Box,
   Breadcrumbs,
   Flex,
-  Grid,
   Loader,
   Skeleton,
+  Stack,
   Text,
   Title,
 } from '@mantine/core';
 import { PicrTitle } from '../PicrTitle';
 import { LoggedInHeader } from '../Header/LoggedInHeader';
 import { getBreadcrumbFolders } from '../../helpers/getBreadcrumbFolders';
+import { normalizeHeadingAlignment } from '@shared/branding/galleryPresets';
 
 export const FolderHeader = ({
   folder,
@@ -70,6 +71,43 @@ export const PlaceholderFolderHeader = () => {
   );
 };
 
+const TitleBlock = ({
+  title,
+  customSubtitle,
+  headingFontSize,
+  textAlign,
+}: {
+  title?: string;
+  customSubtitle?: string;
+  headingFontSize?: number;
+  textAlign: React.CSSProperties['textAlign'];
+}) => (
+  <Box>
+    <Title
+      order={1}
+      style={{
+        fontSize: headingFontSize ?? undefined,
+        textAlign,
+      }}
+    >
+      {title}
+    </Title>
+    {customSubtitle ? (
+      <Title
+        order={3}
+        style={{
+          paddingTop: headingFontSize ? headingFontSize * 0.1 : undefined,
+          fontSize: headingFontSize ? headingFontSize * 0.5 : undefined,
+          opacity: 0.5,
+          textAlign,
+        }}
+      >
+        {customSubtitle}
+      </Title>
+    ) : null}
+  </Box>
+);
+
 const HeaderWrapper = ({
   title,
   customSubtitle,
@@ -91,8 +129,21 @@ const HeaderWrapper = ({
 }) => {
   const theme = useAtomValue(themeModeAtom);
   const headingFontSize = theme.headingFontSize ?? undefined;
-  const headingAlignment = theme.headingAlignment ?? undefined;
+  const headingAlignment = normalizeHeadingAlignment(theme.headingAlignment);
   const normalizedCustomSubtitle = customSubtitle?.trim();
+  const hasBannerLayout = hideBreadcrumbs || hideTitleAndCustomSubtitle;
+  const titleTextAlign = headingAlignment as React.CSSProperties['textAlign'];
+  // Mobile always centers the title regardless of branding alignment — left/right
+  // alignment looks awkward at phone widths, so the alignment setting only affects
+  // tablet/desktop. See frontend/AGENTS.md for the broader branding alignment rules.
+  const stackedTextAlign: React.CSSProperties['textAlign'] = 'center';
+  const stackActionsOnDesktop = headingAlignment === 'center';
+  const titleBlockStyle: React.CSSProperties = {
+    width: '100%',
+    maxWidth: headingAlignment === 'center' ? 720 : 900,
+    textAlign: titleTextAlign,
+    marginInline: headingAlignment === 'center' ? 'auto' : undefined,
+  };
 
   //let's populate each parent folder with a list of its parents so when we click one the placeholder has its parent hierachy for good UI
   const crumbs = getBreadcrumbFolders(parent).map((parentFolder) => (
@@ -101,64 +152,78 @@ const HeaderWrapper = ({
 
   return (
     <Page>
-      <PicrTitle title={[title, 'PICR'].filter(Boolean) as string[]} />
-      {!hideBreadcrumbs ? (
-        <Box style={{ minHeight: 25 }}>
-          <Breadcrumbs separator="→" separatorMargin="md" mt="xs">
-            {crumbs}
-          </Breadcrumbs>
+      <Box
+        pt={hasBannerLayout ? 'sm' : undefined}
+        pb={hasBannerLayout ? 'sm' : 'lg'}
+      >
+        <PicrTitle title={[title, 'PICR'].filter(Boolean) as string[]} />
+        {!hideBreadcrumbs ? (
+          <Box style={{ minHeight: 25 }}>
+            <Breadcrumbs separator="→" separatorMargin="md" mt="xs">
+              {crumbs}
+            </Breadcrumbs>
+          </Box>
+        ) : null}
+        <Box hiddenFrom="sm">
+          <Stack gap="md">
+            {!hideTitleAndCustomSubtitle ? (
+              <TitleBlock
+                title={title}
+                customSubtitle={normalizedCustomSubtitle}
+                headingFontSize={headingFontSize}
+                textAlign={stackedTextAlign}
+              />
+            ) : null}
+            <Text ta={stackedTextAlign}>{subtitle}</Text>
+            <Flex justify="center" pb={hasBannerLayout ? 'sm' : 'md'}>
+              {actions}
+            </Flex>
+          </Stack>
         </Box>
-      ) : null}
-      <Grid>
-        <Grid.Col span={{ xs: 12, sm: 6 }}>
-          {!hideTitleAndCustomSubtitle ? (
-            <>
-              <Title
-                order={1}
-                style={{
-                  fontSize: headingFontSize ?? undefined,
-                  textAlign:
-                    (headingAlignment as React.CSSProperties['textAlign']) ??
-                    undefined,
-                }}
-              >
-                {title}
-              </Title>
-              {normalizedCustomSubtitle ? (
-                <Title
-                  order={3}
-                  style={{
-                    paddingTop: headingFontSize
-                      ? headingFontSize * 0.1
-                      : undefined,
-                    fontSize: headingFontSize
-                      ? headingFontSize * 0.5
-                      : undefined,
-                    opacity: 0.5,
-                    textAlign:
-                      (headingAlignment as React.CSSProperties['textAlign']) ??
-                      undefined,
-                  }}
-                >
-                  {normalizedCustomSubtitle}
-                </Title>
-              ) : null}
-            </>
-          ) : null}
-          <Text>{subtitle}</Text>
-        </Grid.Col>
-        <Grid.Col span={{ xs: 12, sm: 6 }}>
-          <Flex hiddenFrom="sm" justify="space-evenly" pb="md">
-            {actions}
-          </Flex>
-          <Flex visibleFrom="sm" justify="flex-end">
-            {actions}
-          </Flex>
-        </Grid.Col>
-      </Grid>
+        <Box visibleFrom="sm">
+          {stackActionsOnDesktop ? (
+            <Box pb={hasBannerLayout ? 'sm' : undefined}>
+              <Box style={{ width: '100%' }}>
+                {!hideTitleAndCustomSubtitle ? (
+                  <Box style={titleBlockStyle}>
+                    <TitleBlock
+                      title={title}
+                      customSubtitle={normalizedCustomSubtitle}
+                      headingFontSize={headingFontSize}
+                      textAlign={titleTextAlign}
+                    />
+                  </Box>
+                ) : null}
+                <Text style={titleBlockStyle}>{subtitle}</Text>
+              </Box>
+              <Flex justify="center" mt="lg">
+                {actions}
+              </Flex>
+            </Box>
+          ) : (
+            <Flex align="flex-start" justify="space-between">
+              <Box style={{ flex: '1 1 auto', minWidth: 0 }}>
+                {!hideTitleAndCustomSubtitle ? (
+                  <Box style={titleBlockStyle}>
+                    <TitleBlock
+                      title={title}
+                      customSubtitle={normalizedCustomSubtitle}
+                      headingFontSize={headingFontSize}
+                      textAlign={titleTextAlign}
+                    />
+                  </Box>
+                ) : null}
+                <Text style={titleBlockStyle}>{subtitle}</Text>
+              </Box>
+              <Flex justify="flex-end" style={{ flex: '0 0 auto' }}>
+                {actions}
+              </Flex>
+            </Flex>
+          )}
+        </Box>
 
-      {children}
-      {/*<Divider mt="md" mb="md" />*/}
+        {children}
+      </Box>
     </Page>
   );
 };

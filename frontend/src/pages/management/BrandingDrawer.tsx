@@ -15,6 +15,7 @@ import {
   normalizeFontKey,
   toHeadingFontKeyEnumValue,
 } from '@shared/branding/fontRegistry';
+import { normalizeHeadingAlignment } from '@shared/branding/galleryPresets';
 import { PicrDrawer } from '../../components/PicrDrawer';
 import { BrandingFolderChips } from '../../components/BrandingFolderChips';
 import { useDebouncedValue } from '@mantine/hooks';
@@ -128,7 +129,7 @@ export const BrandingDrawer = ({
       thumbnailSpacing: branding.thumbnailSpacing,
       thumbnailBorderRadius: branding.thumbnailBorderRadius,
       headingFontSize: branding.headingFontSize,
-      headingAlignment: branding.headingAlignment,
+      headingAlignment: normalizeHeadingAlignment(branding.headingAlignment),
       footerTitle: branding.footerTitle,
       footerUrl: branding.footerUrl,
       socialLinks: branding.socialLinks,

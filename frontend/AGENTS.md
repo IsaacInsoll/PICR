@@ -432,6 +432,10 @@ The data flow is:
 
 `thumbnailSpacing` affects more than the gap between gallery tiles on web. The gallery view also derives its outer page breathing room from that same branding field, using a dampened responsive mapping so existing saved spacing values do not explode at the page edge.
 
+Branding `headingAlignment` is intentionally limited to `left` and `center` in the editor. Legacy stored `right` values are normalized to `left` by the frontend. Banner text positioning is a separate folder-level control and still supports left/center/right with its own default, so changing the general heading default must not change banner defaults.
+
+`headingAlignment` only takes effect from the tablet breakpoint up. On mobile the folder header always centers its title, subtitle, and actions because left/right alignment looks awkward at phone widths.
+
 The mobile app has no branding editor, so it does not use `themeModeAtom` and may read branding from GraphQL data directly.
 
 ### Context Gating

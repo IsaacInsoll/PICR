@@ -1,5 +1,12 @@
 import type { Branding as BrandingType } from '@shared/gql/graphql.js';
 import { PrimaryColor, ThemeMode } from '@shared/gql/graphql.js';
+import {
+  DEFAULT_BORDER_RADIUS,
+  DEFAULT_HEADING_ALIGNMENT,
+  DEFAULT_HEADING_FONT_SIZE,
+  DEFAULT_SPACING,
+  DEFAULT_THUMBNAIL_SIZE,
+} from '@shared/branding/galleryPresets.js';
 import type { FolderFields } from '../../db/picrDb.js';
 import { brandingForId, dbFolderForId } from '../../db/picrDb.js';
 
@@ -30,9 +37,11 @@ export const brandingForFolder = async (
     id: '0', //urql will complain otherwise
     mode: ThemeMode.Auto,
     primaryColor: PrimaryColor.Blue,
-    thumbnailSize: 250,
-    thumbnailSpacing: 2, // sm default
-    thumbnailBorderRadius: 0,
+    thumbnailSize: DEFAULT_THUMBNAIL_SIZE,
+    thumbnailSpacing: DEFAULT_SPACING,
+    thumbnailBorderRadius: DEFAULT_BORDER_RADIUS,
+    headingFontSize: DEFAULT_HEADING_FONT_SIZE,
+    headingAlignment: DEFAULT_HEADING_ALIGNMENT,
     folders: [],
   };
 };
