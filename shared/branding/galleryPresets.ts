@@ -40,8 +40,9 @@ export const DEFAULT_THUMBNAIL_SIZE = THUMBNAIL_SIZE_PRESETS.md;
 export const DEFAULT_SPACING = SPACING_PRESETS.md;
 export const DEFAULT_BORDER_RADIUS = BORDER_RADIUS_PRESETS.md;
 export const DEFAULT_HEADING_FONT_SIZE = HEADING_FONT_SIZE_PRESETS.md;
-export const DEFAULT_HEADING_ALIGNMENT = 'left' as const;
-export type HeadingAlignment = typeof DEFAULT_HEADING_ALIGNMENT | 'center';
+export const HEADING_ALIGNMENT_OPTIONS = ['left', 'center'] as const;
+export type HeadingAlignment = (typeof HEADING_ALIGNMENT_OPTIONS)[number];
+export const DEFAULT_HEADING_ALIGNMENT: HeadingAlignment = 'left';
 
 export const normalizeHeadingAlignment = (
   alignment?: string | null,

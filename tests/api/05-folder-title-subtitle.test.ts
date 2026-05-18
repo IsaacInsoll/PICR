@@ -5,6 +5,7 @@ import { editFolderMutation } from '../../shared/urql/mutations/editFolderMutati
 import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
 import { AUTH_REASON } from '../../shared/auth/authErrorContract';
 import { photoFolderId, videoFolderId } from './testVariables';
+import { BannerTextHAlign, BannerTextVAlign } from '../../shared/gql/graphql';
 
 const expectAuthCode = (
   result: { error?: { graphQLErrors?: Array<{ extensions?: unknown }> } },
@@ -62,8 +63,8 @@ test('Admin can set and clear banner text alignment', async () => {
   const setAlign = await client
     .mutation(editFolderMutation, {
       folderId: photoFolderId,
-      bannerTextHAlign: 'left',
-      bannerTextVAlign: 'bottom',
+      bannerTextHAlign: BannerTextHAlign.Left,
+      bannerTextVAlign: BannerTextVAlign.Bottom,
     })
     .toPromise();
   expect(setAlign.error).toBeUndefined();
@@ -84,7 +85,7 @@ test('Admin can set and clear banner text alignment', async () => {
   const invalidH = await client
     .mutation(editFolderMutation, {
       folderId: photoFolderId,
-      bannerTextHAlign: 'diagonal',
+      bannerTextHAlign: 'diagonal' as never,
     })
     .toPromise();
   expect(invalidH.error).toBeDefined();
@@ -92,7 +93,7 @@ test('Admin can set and clear banner text alignment', async () => {
   const invalidV = await client
     .mutation(editFolderMutation, {
       folderId: photoFolderId,
-      bannerTextVAlign: 'sideways',
+      bannerTextVAlign: 'sideways' as never,
     })
     .toPromise();
   expect(invalidV.error).toBeDefined();

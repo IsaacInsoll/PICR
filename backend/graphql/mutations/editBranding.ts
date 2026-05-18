@@ -12,6 +12,7 @@ import { db } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbBranding } from '../../db/models/index.js';
 import {
+  headingAlignmentEnum,
   headingFontKeyEnum,
   primaryColorEnum,
   themeModeEnum,
@@ -22,6 +23,7 @@ import type { SocialLink } from '@shared/branding/socialLinkTypes.js';
 import { normalizeSocialLinks } from '@shared/branding/socialLinkTypes.js';
 import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 import { GraphQLError } from 'graphql/error/index.js';
+import type { HeadingAlignment } from '@shared/branding/galleryPresets.js';
 
 const KNOWN_VIEWS = ['list', 'gallery', 'feed'] as const;
 type KnownView = (typeof KNOWN_VIEWS)[number];
@@ -34,7 +36,7 @@ type EditBrandingArgs = MutationEditBrandingArgs & {
   thumbnailSpacing?: number | null;
   thumbnailBorderRadius?: number | null;
   headingFontSize?: number | null;
-  headingAlignment?: string | null;
+  headingAlignment?: HeadingAlignment | null;
   footerTitle?: string | null;
   footerUrl?: string | null;
   socialLinks?: SocialLink[] | null;
@@ -99,17 +101,6 @@ const resolver: PicrResolver<object, EditBrandingArgs> = async (
     availableViews !== null
   ) {
     defaultView = availableViews[0];
-  }
-
-  // Validate heading alignment
-  if (
-    params.headingAlignment !== undefined &&
-    params.headingAlignment !== null &&
-    !['left', 'center', 'right'].includes(params.headingAlignment)
-  ) {
-    throw new GraphQLError(
-      `headingAlignment must be 'left', 'center', or 'right'`,
-    );
   }
 
   const props = {
@@ -177,7 +168,7 @@ export const editBranding = {
     thumbnailSpacing: { type: GraphQLInt },
     thumbnailBorderRadius: { type: GraphQLInt },
     headingFontSize: { type: GraphQLInt },
-    headingAlignment: { type: GraphQLString },
+    headingAlignment: { type: headingAlignmentEnum },
     footerTitle: { type: GraphQLString },
     footerUrl: { type: GraphQLString },
     socialLinks: { type: GraphQLJSON },

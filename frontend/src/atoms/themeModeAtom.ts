@@ -1,14 +1,25 @@
 import { atom } from 'jotai';
 import type { Branding } from '@shared/gql/graphql';
-import { HeadingFontKey, PrimaryColor, ThemeMode } from '@shared/gql/graphql';
+import {
+  HeadingAlignment,
+  HeadingFontKey,
+  PrimaryColor,
+  ThemeMode,
+} from '@shared/gql/graphql';
 import {
   DEFAULT_BORDER_RADIUS,
-  DEFAULT_HEADING_ALIGNMENT,
   DEFAULT_HEADING_FONT_SIZE,
   DEFAULT_SPACING,
   DEFAULT_THUMBNAIL_SIZE,
   normalizeHeadingAlignment,
 } from '@shared/branding/galleryPresets';
+
+const toHeadingAlignmentEnumValue = (
+  alignment?: string | null,
+): HeadingAlignment =>
+  normalizeHeadingAlignment(alignment) === 'center'
+    ? HeadingAlignment.Center
+    : HeadingAlignment.Left;
 
 export const defaultBranding: Branding = {
   id: '',
@@ -20,7 +31,7 @@ export const defaultBranding: Branding = {
   thumbnailSpacing: DEFAULT_SPACING,
   thumbnailBorderRadius: DEFAULT_BORDER_RADIUS,
   headingFontSize: DEFAULT_HEADING_FONT_SIZE,
-  headingAlignment: DEFAULT_HEADING_ALIGNMENT,
+  headingAlignment: HeadingAlignment.Left,
   folders: [],
 };
 
@@ -40,6 +51,6 @@ export const applyBrandingDefaults = (
   thumbnailBorderRadius:
     branding?.thumbnailBorderRadius ?? defaultBranding.thumbnailBorderRadius,
   headingFontSize: branding?.headingFontSize ?? defaultBranding.headingFontSize,
-  headingAlignment: normalizeHeadingAlignment(branding?.headingAlignment),
+  headingAlignment: toHeadingAlignmentEnumValue(branding?.headingAlignment),
   folders: branding?.folders ?? defaultBranding.folders,
 });

@@ -1,6 +1,6 @@
 import type { HeadingFontKey } from '@shared/gql/graphql';
 import type { ComponentType } from 'react';
-import { PrimaryColor, ThemeMode } from '@shared/gql/graphql';
+import { HeadingAlignment, PrimaryColor, ThemeMode } from '@shared/gql/graphql';
 import {
   ActionIcon,
   Badge,
@@ -84,7 +84,7 @@ export interface BrandingInput {
   thumbnailSpacing?: number | null;
   thumbnailBorderRadius?: number | null;
   headingFontSize?: number | null;
-  headingAlignment?: string | null;
+  headingAlignment?: HeadingAlignment | null;
   footerTitle?: string | null;
   footerUrl?: string | null;
   socialLinks?: SocialLink[] | null;
@@ -359,9 +359,13 @@ export const BrandingForm = ({
               <Button.Group>
                 {(
                   [
-                    { value: 'left', icon: <TbAlignLeft />, label: 'Left' },
                     {
-                      value: 'center',
+                      value: HeadingAlignment.Left,
+                      icon: <TbAlignLeft />,
+                      label: 'Left',
+                    },
+                    {
+                      value: HeadingAlignment.Center,
                       icon: <TbAlignCenter />,
                       label: 'Center',
                     },

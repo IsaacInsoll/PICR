@@ -161,6 +161,12 @@ const user = await dbUserForId(userId); // throws if not found
 
 Uses `graphql-http` (not Apollo). Schema defined programmatically with `graphql` library.
 
+GraphQL enum fields do not always imply Postgres enum columns. For user-facing
+layout settings that may gain options later, keep the DB column as `varchar`
+when flexibility matters, expose a `GraphQLEnumType` at the API boundary, and
+normalize legacy/invalid stored strings in the object field resolver so enum
+serialization cannot fail.
+
 ### Request Flow
 
 ```mermaid

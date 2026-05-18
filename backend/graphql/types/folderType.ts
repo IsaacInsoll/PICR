@@ -24,6 +24,22 @@ import { and, count, eq, inArray, sum } from 'drizzle-orm';
 import { dbFile, dbUser } from '../../db/models/index.js';
 import { GraphQLDateTime } from 'graphql-scalars';
 import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
+import {
+  bannerSizeEnum,
+  bannerTextHAlignEnum,
+  bannerTextVAlignEnum,
+} from './enums.js';
+import {
+  BANNER_H_ALIGNS,
+  BANNER_SIZES,
+  BANNER_V_ALIGNS,
+} from '@shared/branding/galleryPresets.js';
+
+const nullableEnumValue = <T extends string>(
+  value: string | null | undefined,
+  options: readonly T[],
+): T | null =>
+  value && (options as readonly string[]).includes(value) ? (value as T) : null;
 
 export const folderType: GraphQLObjectType<FolderFields, PicrRequestContext> =
   new GraphQLObjectType({
@@ -60,9 +76,21 @@ export const folderType: GraphQLObjectType<FolderFields, PicrRequestContext> =
         type: imageFileType,
         resolve: async (f: FolderFields) => heroImageForFolder(f),
       },
-      bannerSize: { type: GraphQLString },
-      bannerTextHAlign: { type: GraphQLString },
-      bannerTextVAlign: { type: GraphQLString },
+      bannerSize: {
+        type: bannerSizeEnum,
+        resolve: (f: FolderFields) =>
+          nullableEnumValue(f.bannerSize, BANNER_SIZES),
+      },
+      bannerTextHAlign: {
+        type: bannerTextHAlignEnum,
+        resolve: (f: FolderFields) =>
+          nullableEnumValue(f.bannerTextHAlign, BANNER_H_ALIGNS),
+      },
+      bannerTextVAlign: {
+        type: bannerTextVAlignEnum,
+        resolve: (f: FolderFields) =>
+          nullableEnumValue(f.bannerTextVAlign, BANNER_V_ALIGNS),
+      },
       bannerImage: {
         type: imageFileType,
         resolve: async (f: FolderFields) => {

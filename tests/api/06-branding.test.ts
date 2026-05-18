@@ -151,14 +151,12 @@ describe('Branding Management', () => {
     const result = await client
       .mutation(editBrandingMutation, {
         id: createdBrandingId,
-        headingAlignment: 'middle',
+        headingAlignment: 'middle' as never,
       })
       .toPromise();
 
     expect(result.error).toBeDefined();
-    expect(result.error?.message).toContain(
-      "headingAlignment must be 'left', 'center', or 'right'",
-    );
+    expect(result.error?.message).toContain('HeadingAlignment');
   });
 
   test('Admin can assign branding to a folder', async () => {

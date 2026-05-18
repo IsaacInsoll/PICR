@@ -16,10 +16,10 @@ import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationEditFolderArgs } from '@shared/gql/graphql.js';
 import { AUTH_REASON } from '@shared/auth/authErrorContract.js';
 import {
-  BANNER_SIZES,
-  BANNER_H_ALIGNS,
-  BANNER_V_ALIGNS,
-} from '@shared/branding/galleryPresets.js';
+  bannerSizeEnum,
+  bannerTextHAlignEnum,
+  bannerTextVAlignEnum,
+} from '../types/enums.js';
 
 type EditFolderArgs = MutationEditFolderArgs;
 
@@ -115,34 +115,6 @@ const resolver: PicrResolver<object, EditFolderArgs> = async (
       .where(eq(dbFolder.id, folder.id));
   }
 
-  if (
-    params.bannerSize !== undefined &&
-    params.bannerSize !== null &&
-    !(BANNER_SIZES as readonly string[]).includes(params.bannerSize)
-  ) {
-    throw new GraphQLError(`Unknown banner size: ${params.bannerSize}`);
-  }
-
-  if (
-    params.bannerTextHAlign !== undefined &&
-    params.bannerTextHAlign !== null &&
-    !(BANNER_H_ALIGNS as readonly string[]).includes(params.bannerTextHAlign)
-  ) {
-    throw new GraphQLError(
-      `Unknown banner text horizontal alignment: ${params.bannerTextHAlign}`,
-    );
-  }
-
-  if (
-    params.bannerTextVAlign !== undefined &&
-    params.bannerTextVAlign !== null &&
-    !(BANNER_V_ALIGNS as readonly string[]).includes(params.bannerTextVAlign)
-  ) {
-    throw new GraphQLError(
-      `Unknown banner text vertical alignment: ${params.bannerTextVAlign}`,
-    );
-  }
-
   const updates: Partial<typeof dbFolder.$inferInsert> = {};
   const title = normalizeOptionalText(params.title);
   const subtitle = normalizeOptionalText(params.subtitle);
@@ -178,9 +150,9 @@ export const editFolder = {
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     heroImageId: { type: GraphQLID },
     bannerImageId: { type: GraphQLID },
-    bannerSize: { type: GraphQLString },
-    bannerTextHAlign: { type: GraphQLString },
-    bannerTextVAlign: { type: GraphQLString },
+    bannerSize: { type: bannerSizeEnum },
+    bannerTextHAlign: { type: bannerTextHAlignEnum },
+    bannerTextVAlign: { type: bannerTextVAlignEnum },
     title: { type: GraphQLString },
     subtitle: { type: GraphQLString },
   },

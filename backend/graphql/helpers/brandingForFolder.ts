@@ -1,14 +1,25 @@
 import type { Branding as BrandingType } from '@shared/gql/graphql.js';
-import { PrimaryColor, ThemeMode } from '@shared/gql/graphql.js';
+import {
+  HeadingAlignment,
+  PrimaryColor,
+  ThemeMode,
+} from '@shared/gql/graphql.js';
 import {
   DEFAULT_BORDER_RADIUS,
-  DEFAULT_HEADING_ALIGNMENT,
   DEFAULT_HEADING_FONT_SIZE,
   DEFAULT_SPACING,
   DEFAULT_THUMBNAIL_SIZE,
+  normalizeHeadingAlignment,
 } from '@shared/branding/galleryPresets.js';
 import type { FolderFields } from '../../db/picrDb.js';
 import { brandingForId, dbFolderForId } from '../../db/picrDb.js';
+
+const toHeadingAlignmentEnumValue = (
+  alignment?: string | null,
+): HeadingAlignment =>
+  normalizeHeadingAlignment(alignment) === 'center'
+    ? HeadingAlignment.Center
+    : HeadingAlignment.Left;
 
 export const brandingForFolder = async (
   folder: FolderFields,
@@ -27,6 +38,9 @@ export const brandingForFolder = async (
           primaryColor: branding.primaryColor as BrandingType['primaryColor'],
           headingFontKey:
             branding.headingFontKey as BrandingType['headingFontKey'],
+          headingAlignment: toHeadingAlignmentEnumValue(
+            branding.headingAlignment,
+          ),
           folders: [],
         };
       }
@@ -41,7 +55,7 @@ export const brandingForFolder = async (
     thumbnailSpacing: DEFAULT_SPACING,
     thumbnailBorderRadius: DEFAULT_BORDER_RADIUS,
     headingFontSize: DEFAULT_HEADING_FONT_SIZE,
-    headingAlignment: DEFAULT_HEADING_ALIGNMENT,
+    headingAlignment: HeadingAlignment.Left,
     folders: [],
   };
 };

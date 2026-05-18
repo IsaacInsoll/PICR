@@ -11,6 +11,12 @@ import {
 } from '../../db/models/index.js';
 import { GraphQLEnumType } from 'graphql';
 import { headingFontKeyOptions } from './headingFontKeyOptions.js';
+import {
+  BANNER_H_ALIGNS,
+  BANNER_SIZES,
+  BANNER_V_ALIGNS,
+  HEADING_ALIGNMENT_OPTIONS,
+} from '@shared/branding/galleryPresets.js';
 
 export const accessTypeEnum = new GraphQLEnumType(
   enumToGQL('AccessType', accessTypeOptions),
@@ -36,6 +42,18 @@ export const themeModeEnum = new GraphQLEnumType(
 );
 export const primaryColorEnum = new GraphQLEnumType(
   enumToGQL('PrimaryColor', primaryColorOptions, true),
+);
+export const headingAlignmentEnum = new GraphQLEnumType(
+  enumToGQL('HeadingAlignment', HEADING_ALIGNMENT_OPTIONS),
+);
+export const bannerSizeEnum = new GraphQLEnumType(
+  enumToGQL('BannerSize', BANNER_SIZES),
+);
+export const bannerTextHAlignEnum = new GraphQLEnumType(
+  enumToGQL('BannerTextHAlign', BANNER_H_ALIGNS),
+);
+export const bannerTextVAlignEnum = new GraphQLEnumType(
+  enumToGQL('BannerTextVAlign', BANNER_V_ALIGNS),
 );
 
 const toCamelCase = (str: string) =>

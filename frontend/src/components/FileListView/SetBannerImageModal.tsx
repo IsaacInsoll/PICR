@@ -13,6 +13,11 @@ import {
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import { useAtomValue } from 'jotai';
+import {
+  BannerSize as GqlBannerSize,
+  BannerTextHAlign,
+  BannerTextVAlign,
+} from '@shared/gql/graphql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 import {
   BANNER_SIZES,
@@ -46,6 +51,49 @@ const SKELETON_COUNTS: Record<BannerSize, number> = {
 };
 
 type Position = { h: BannerHAlign; v: BannerVAlign };
+
+const toBannerSizeEnumValue = (size: BannerSize): GqlBannerSize => {
+  switch (size) {
+    case 'cinematic':
+      return GqlBannerSize.Cinematic;
+    case 'classic':
+      return GqlBannerSize.Classic;
+    case 'full':
+      return GqlBannerSize.Full;
+    case 'widescreen':
+      return GqlBannerSize.Widescreen;
+  }
+};
+
+const toBannerHAlignEnumValue = (
+  alignment: BannerHAlign | null,
+): BannerTextHAlign | null => {
+  switch (alignment) {
+    case 'center':
+      return BannerTextHAlign.Center;
+    case 'left':
+      return BannerTextHAlign.Left;
+    case 'right':
+      return BannerTextHAlign.Right;
+    case null:
+      return null;
+  }
+};
+
+const toBannerVAlignEnumValue = (
+  alignment: BannerVAlign | null,
+): BannerTextVAlign | null => {
+  switch (alignment) {
+    case 'bottom':
+      return BannerTextVAlign.Bottom;
+    case 'center':
+      return BannerTextVAlign.Center;
+    case 'top':
+      return BannerTextVAlign.Top;
+    case null:
+      return null;
+  }
+};
 
 const GRID_POSITIONS: Position[] = [
   { v: 'top', h: 'left' },
@@ -309,9 +357,9 @@ export const SetBannerImageModal = ({
     void editFolder({
       folderId: file.folderId,
       bannerImageId: file.id,
-      bannerSize: selectedSize,
-      bannerTextHAlign: hAlign,
-      bannerTextVAlign: vAlign,
+      bannerSize: toBannerSizeEnumValue(selectedSize),
+      bannerTextHAlign: toBannerHAlignEnumValue(hAlign),
+      bannerTextVAlign: toBannerVAlignEnumValue(vAlign),
     });
     onClose();
   };

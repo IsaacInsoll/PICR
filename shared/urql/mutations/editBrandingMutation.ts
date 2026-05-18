@@ -14,7 +14,7 @@ export const editBrandingMutation = gql(/* GraphQL */ `
     $thumbnailSpacing: Int
     $thumbnailBorderRadius: Int
     $headingFontSize: Int
-    $headingAlignment: String
+    $headingAlignment: HeadingAlignment
     $footerTitle: String
     $footerUrl: String
     $socialLinks: JSON

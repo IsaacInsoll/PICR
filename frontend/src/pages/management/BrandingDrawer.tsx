@@ -16,11 +16,19 @@ import {
   toHeadingFontKeyEnumValue,
 } from '@shared/branding/fontRegistry';
 import { normalizeHeadingAlignment } from '@shared/branding/galleryPresets';
+import { HeadingAlignment } from '@shared/gql/graphql';
 import { PicrDrawer } from '../../components/PicrDrawer';
 import { BrandingFolderChips } from '../../components/BrandingFolderChips';
 import { useDebouncedValue } from '@mantine/hooks';
 
 const TEXT_PREVIEW_DELAY_MS = 150;
+
+const toHeadingAlignmentEnumValue = (
+  alignment?: string | null,
+): HeadingAlignment =>
+  normalizeHeadingAlignment(alignment) === 'center'
+    ? HeadingAlignment.Center
+    : HeadingAlignment.Left;
 
 type FolderChip = {
   id: string;
@@ -129,7 +137,7 @@ export const BrandingDrawer = ({
       thumbnailSpacing: branding.thumbnailSpacing,
       thumbnailBorderRadius: branding.thumbnailBorderRadius,
       headingFontSize: branding.headingFontSize,
-      headingAlignment: normalizeHeadingAlignment(branding.headingAlignment),
+      headingAlignment: toHeadingAlignmentEnumValue(branding.headingAlignment),
       footerTitle: branding.footerTitle,
       footerUrl: branding.footerUrl,
       socialLinks: branding.socialLinks,
