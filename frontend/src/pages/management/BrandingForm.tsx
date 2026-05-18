@@ -41,7 +41,6 @@ import {
   DEFAULT_THUMBNAIL_SIZE,
   HEADING_FONT_SIZE_PRESETS,
   matchPreset,
-  normalizeHeadingAlignment,
   SPACING_PRESETS,
   THUMBNAIL_SIZE_PRESETS,
 } from '@shared/branding/galleryPresets';
@@ -371,9 +370,8 @@ export const BrandingForm = ({
                     },
                   ] as const
                 ).map((opt) => {
-                  const current = normalizeHeadingAlignment(
-                    branding.headingAlignment,
-                  );
+                  const current =
+                    branding.headingAlignment ?? HeadingAlignment.Left;
                   return (
                     <Button
                       key={opt.value}

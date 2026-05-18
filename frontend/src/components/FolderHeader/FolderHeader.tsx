@@ -29,6 +29,7 @@ export const FolderHeader = ({
   actions,
   hideTitleAndCustomSubtitle,
   hideBreadcrumbs,
+  hasBannerLayout,
 }: {
   folder: PicrFolder;
   subtitle?: string;
@@ -36,6 +37,7 @@ export const FolderHeader = ({
   actions?: ReactElement;
   hideTitleAndCustomSubtitle?: boolean;
   hideBreadcrumbs?: boolean;
+  hasBannerLayout?: boolean;
 }) => {
   return (
     <HeaderWrapper
@@ -48,6 +50,7 @@ export const FolderHeader = ({
       parent={folder.parents}
       hideTitleAndCustomSubtitle={hideTitleAndCustomSubtitle}
       hideBreadcrumbs={hideBreadcrumbs}
+      hasBannerLayout={hasBannerLayout}
     />
   );
 };
@@ -94,7 +97,7 @@ const TitleBlock = ({
     </Title>
     {customSubtitle ? (
       <Title
-        order={3}
+        order={2}
         style={{
           paddingTop: headingFontSize ? headingFontSize * 0.1 : undefined,
           fontSize: headingFontSize ? headingFontSize * 0.5 : undefined,
@@ -117,6 +120,7 @@ const HeaderWrapper = ({
   parent,
   hideTitleAndCustomSubtitle,
   hideBreadcrumbs,
+  hasBannerLayout: hasBannerLayoutProp,
 }: {
   title?: string;
   customSubtitle?: string;
@@ -126,18 +130,21 @@ const HeaderWrapper = ({
   parent?: PicrFolder[];
   hideTitleAndCustomSubtitle?: boolean;
   hideBreadcrumbs?: boolean;
+  hasBannerLayout?: boolean;
 }) => {
   const theme = useAtomValue(themeModeAtom);
   const headingFontSize = theme.headingFontSize ?? undefined;
   const headingAlignment = normalizeHeadingAlignment(theme.headingAlignment);
   const normalizedCustomSubtitle = customSubtitle?.trim();
-  const hasBannerLayout = hideBreadcrumbs || hideTitleAndCustomSubtitle;
+  const hasBannerLayout =
+    hasBannerLayoutProp ??
+    Boolean(hideBreadcrumbs || hideTitleAndCustomSubtitle);
   const titleTextAlign = headingAlignment as React.CSSProperties['textAlign'];
   // Mobile always centers the title regardless of branding alignment — left/right
   // alignment looks awkward at phone widths, so the alignment setting only affects
   // tablet/desktop. See frontend/AGENTS.md for the broader branding alignment rules.
-  const stackedTextAlign: React.CSSProperties['textAlign'] = 'center';
-  const stackActionsOnDesktop = headingAlignment === 'center';
+  const desktopLayout: 'stacked' | 'sideBySide' =
+    headingAlignment === 'center' ? 'stacked' : 'sideBySide';
   const titleBlockStyle: React.CSSProperties = {
     width: '100%',
     maxWidth: headingAlignment === 'center' ? 720 : 900,
@@ -171,31 +178,29 @@ const HeaderWrapper = ({
                 title={title}
                 customSubtitle={normalizedCustomSubtitle}
                 headingFontSize={headingFontSize}
-                textAlign={stackedTextAlign}
+                textAlign="center"
               />
             ) : null}
-            <Text ta={stackedTextAlign}>{subtitle}</Text>
+            <Text ta="center">{subtitle}</Text>
             <Flex justify="center" pb={hasBannerLayout ? 'sm' : 'md'}>
               {actions}
             </Flex>
           </Stack>
         </Box>
         <Box visibleFrom="sm">
-          {stackActionsOnDesktop ? (
+          {desktopLayout === 'stacked' ? (
             <Box pb={hasBannerLayout ? 'sm' : undefined}>
-              <Box style={{ width: '100%' }}>
-                {!hideTitleAndCustomSubtitle ? (
-                  <Box style={titleBlockStyle}>
-                    <TitleBlock
-                      title={title}
-                      customSubtitle={normalizedCustomSubtitle}
-                      headingFontSize={headingFontSize}
-                      textAlign={titleTextAlign}
-                    />
-                  </Box>
-                ) : null}
-                <Text style={titleBlockStyle}>{subtitle}</Text>
-              </Box>
+              {!hideTitleAndCustomSubtitle ? (
+                <Box style={titleBlockStyle}>
+                  <TitleBlock
+                    title={title}
+                    customSubtitle={normalizedCustomSubtitle}
+                    headingFontSize={headingFontSize}
+                    textAlign={titleTextAlign}
+                  />
+                </Box>
+              ) : null}
+              <Text style={titleBlockStyle}>{subtitle}</Text>
               <Flex justify="center" mt="lg">
                 {actions}
               </Flex>

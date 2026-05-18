@@ -11,16 +11,11 @@ import {
   DEFAULT_HEADING_FONT_SIZE,
   DEFAULT_SPACING,
   DEFAULT_THUMBNAIL_SIZE,
-  normalizeHeadingAlignment,
 } from '@shared/branding/galleryPresets';
 
-const toHeadingAlignmentEnumValue = (
-  alignment?: string | null,
-): HeadingAlignment =>
-  normalizeHeadingAlignment(alignment) === 'center'
-    ? HeadingAlignment.Center
-    : HeadingAlignment.Left;
-
+// headingAlignment arrives already normalized to Left|Center by the backend
+// resolver in brandingType.ts, so the only fallback we need here is the
+// null/undefined case for default branding.
 export const defaultBranding: Branding = {
   id: '',
   folderId: '',
@@ -51,6 +46,6 @@ export const applyBrandingDefaults = (
   thumbnailBorderRadius:
     branding?.thumbnailBorderRadius ?? defaultBranding.thumbnailBorderRadius,
   headingFontSize: branding?.headingFontSize ?? defaultBranding.headingFontSize,
-  headingAlignment: toHeadingAlignmentEnumValue(branding?.headingAlignment),
+  headingAlignment: branding?.headingAlignment ?? HeadingAlignment.Left,
   folders: branding?.folders ?? defaultBranding.folders,
 });

@@ -13,7 +13,7 @@ import {
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import { useAtomValue } from 'jotai';
-import {
+import type {
   BannerSize as GqlBannerSize,
   BannerTextHAlign,
   BannerTextVAlign,
@@ -52,48 +52,12 @@ const SKELETON_COUNTS: Record<BannerSize, number> = {
 
 type Position = { h: BannerHAlign; v: BannerVAlign };
 
-const toBannerSizeEnumValue = (size: BannerSize): GqlBannerSize => {
-  switch (size) {
-    case 'cinematic':
-      return GqlBannerSize.Cinematic;
-    case 'classic':
-      return GqlBannerSize.Classic;
-    case 'full':
-      return GqlBannerSize.Full;
-    case 'widescreen':
-      return GqlBannerSize.Widescreen;
-  }
-};
-
-const toBannerHAlignEnumValue = (
-  alignment: BannerHAlign | null,
-): BannerTextHAlign | null => {
-  switch (alignment) {
-    case 'center':
-      return BannerTextHAlign.Center;
-    case 'left':
-      return BannerTextHAlign.Left;
-    case 'right':
-      return BannerTextHAlign.Right;
-    case null:
-      return null;
-  }
-};
-
-const toBannerVAlignEnumValue = (
-  alignment: BannerVAlign | null,
-): BannerTextVAlign | null => {
-  switch (alignment) {
-    case 'bottom':
-      return BannerTextVAlign.Bottom;
-    case 'center':
-      return BannerTextVAlign.Center;
-    case 'top':
-      return BannerTextVAlign.Top;
-    case null:
-      return null;
-  }
-};
+// The shared string-union types (BannerSize, BannerHAlign, BannerVAlign) and
+// the generated GraphQL enums (GqlBannerSize, BannerTextHAlign,
+// BannerTextVAlign) carry identical runtime string values by construction —
+// the backend builds the enums from the same arrays via enumToGQL. The casts
+// at the mutation boundary below are safe alignment between two type systems,
+// not unchecked coercion.
 
 const GRID_POSITIONS: Position[] = [
   { v: 'top', h: 'left' },
@@ -357,9 +321,9 @@ export const SetBannerImageModal = ({
     void editFolder({
       folderId: file.folderId,
       bannerImageId: file.id,
-      bannerSize: toBannerSizeEnumValue(selectedSize),
-      bannerTextHAlign: toBannerHAlignEnumValue(hAlign),
-      bannerTextVAlign: toBannerVAlignEnumValue(vAlign),
+      bannerSize: selectedSize as GqlBannerSize,
+      bannerTextHAlign: hAlign as BannerTextHAlign | null,
+      bannerTextVAlign: vAlign as BannerTextVAlign | null,
     });
     onClose();
   };

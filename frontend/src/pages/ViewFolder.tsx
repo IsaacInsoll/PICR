@@ -105,23 +105,29 @@ const ViewFolderBody = () => {
   const branding = data.data?.folder.branding;
   // Create a stable key from display branding values to avoid re-running the
   // effect on object reference changes while still reacting to visual updates.
-  const brandingKey = branding
-    ? JSON.stringify({
-        id: branding.id,
-        mode: branding.mode,
-        primaryColor: branding.primaryColor,
-        headingFontKey: branding.headingFontKey,
-        thumbnailSize: branding.thumbnailSize,
-        thumbnailSpacing: branding.thumbnailSpacing,
-        thumbnailBorderRadius: branding.thumbnailBorderRadius,
-        headingFontSize: branding.headingFontSize,
-        headingAlignment: branding.headingAlignment,
-        footerTitle: branding.footerTitle,
-        footerUrl: branding.footerUrl,
-        logoUrl: branding.logoUrl,
-        socialLinks: branding.socialLinks,
-      })
-    : 'default';
+  // Memoised so JSON.stringify only runs when the branding reference changes
+  // (every poll), not every render.
+  const brandingKey = useMemo(
+    () =>
+      branding
+        ? JSON.stringify({
+            id: branding.id,
+            mode: branding.mode,
+            primaryColor: branding.primaryColor,
+            headingFontKey: branding.headingFontKey,
+            thumbnailSize: branding.thumbnailSize,
+            thumbnailSpacing: branding.thumbnailSpacing,
+            thumbnailBorderRadius: branding.thumbnailBorderRadius,
+            headingFontSize: branding.headingFontSize,
+            headingAlignment: branding.headingAlignment,
+            footerTitle: branding.footerTitle,
+            footerUrl: branding.footerUrl,
+            logoUrl: branding.logoUrl,
+            socialLinks: branding.socialLinks,
+          })
+        : 'default',
+    [branding],
+  );
   const theme = useMemo(
     () => applyBrandingDefaults(branding),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -245,6 +251,7 @@ const ViewFolderBody = () => {
             actions={<Group>{actions}</Group>}
             hideTitleAndCustomSubtitle={Boolean(folder.bannerImage)}
             hideBreadcrumbs={!activity && Boolean(folder.bannerImage)}
+            hasBannerLayout={!activity && Boolean(folder.bannerImage)}
           />
           <TaskSummary folderId={folder.id} />
           {managing && !editBranding ? (
