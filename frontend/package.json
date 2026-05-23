@@ -53,7 +53,7 @@
     "ua-parser-js": "^2.0.0",
     "urql": "^4.2.2",
     "victory": "^37.3.5",
-    "yet-another-react-lightbox": "^3.26.0"
+    "yet-another-react-lightbox": "3.32"
   },
   "scripts": {
     "start": "vite --host",

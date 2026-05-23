@@ -6,6 +6,7 @@ import {
   Slideshow,
   Thumbnails,
   Video,
+  Zoom,
 } from 'yet-another-react-lightbox/plugins';
 
 export const lightboxPlugins = [
@@ -16,6 +17,7 @@ export const lightboxPlugins = [
   Slideshow,
   Thumbnails,
   Video,
+  Zoom,
 ];
 //same as above but no downloads
 export const lightboxPluginsProof = [
@@ -25,4 +27,5 @@ export const lightboxPluginsProof = [
   Slideshow,
   Thumbnails,
   Video,
+  Zoom,
 ];

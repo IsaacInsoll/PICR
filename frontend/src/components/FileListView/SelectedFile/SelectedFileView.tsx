@@ -103,6 +103,10 @@ export const SelectedFileView = ({
       }}
       carousel={carouselProps}
       thumbnails={showThumbnails ? { position: 'bottom' } : undefined}
+      zoom={{
+        pinchZoomV4: true,
+        maxZoomPixelRatio: 5,
+      }}
       on={{
         entered: unInert,
         view: ({ index }) => {
