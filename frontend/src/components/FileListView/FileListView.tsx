@@ -86,6 +86,9 @@ const Row = ({
   const rating = isFile ? (file.rating ?? 0) : 0;
   const flag = isFile ? file.flag : null;
   const fileSize = isFile ? file.fileSize : null;
+  const title = canView
+    ? `Modified: ${modifiedDate ? prettyDate(modifiedDate) : 'N/A'}\nLast Comment: ${latestComment ? prettyDate(latestComment) : 'N/A'}`
+    : `Modified: ${modifiedDate ? prettyDate(modifiedDate) : 'N/A'}`;
 
   // if filtering by RecentlyCommented or LastModified then lets show that data
   const { type } = useAtomValue(fileSortAtom);
@@ -136,11 +139,7 @@ const Row = ({
         <Group gap="sm">
           {/*<Avatar size={40} src={item.avatar} radius={40} />*/}
           <div>
-            <Text
-              fz="md"
-              fw={500}
-              title={`Modified: ${modifiedDate ? prettyDate(modifiedDate) : 'N/A'}\nLast Comment: ${latestComment ? prettyDate(latestComment) : 'N/A'}`}
-            >
+            <Text fz="md" fw={500} title={title}>
               {fileName}
             </Text>
             {/*{isMobile ? (*/}

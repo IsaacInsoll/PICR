@@ -18,7 +18,7 @@ import {
   HeroImageIcon,
   InfoIcon,
 } from '../../PicrIcons';
-import { useMe } from '../../hooks/useMe';
+import { useCanDownload, useMe } from '../../hooks/useMe';
 import { useMutation } from 'urql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 
@@ -26,6 +26,7 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
   const fileName = normalizeDisplayName(file.name);
   const setFolder = useSetFolder();
   const { canView } = useCommentPermissions();
+  const canDownload = useCanDownload();
   const me = useMe();
   const [, editFolder] = useMutation(editFolderMutation);
   const openBannerModal = useOpenSetBannerImageModal();
@@ -93,15 +94,17 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
           </Menu.Item>
         </>
       ) : null}
-      <Menu.Item
-        component="a"
-        leftSection={<CloudDownloadIcon />}
-        key={4}
-        href={imageURL(file, 'raw')}
-        download={true}
-      >
-        Download
-      </Menu.Item>
+      {canDownload ? (
+        <Menu.Item
+          component="a"
+          leftSection={<CloudDownloadIcon />}
+          key={4}
+          href={imageURL(file, 'raw')}
+          download={true}
+        >
+          Download
+        </Menu.Item>
+      ) : null}
     </>
   );
 };

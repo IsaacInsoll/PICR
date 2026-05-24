@@ -26,6 +26,7 @@ import { CloudDownloadIcon, InfoIcon, SlideshowIcon } from '../../PicrIcons';
 import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { useInView } from 'react-intersection-observer';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
+import { useCanDownload } from '../../hooks/useMe';
 import type {
   FolderContentsItem,
   ViewFolderFileWithHero,
@@ -88,6 +89,7 @@ const FeedItem = ({
   onBecomeVisible?: () => void;
 }) => {
   const { isNone } = useCommentPermissions();
+  const canDownload = useCanDownload();
   const isMobile = useIsMobile();
   const theme = useAtomValue(themeModeAtom);
   const borderRadius = theme.thumbnailBorderRadius ?? DEFAULT_BORDER_RADIUS;
@@ -143,7 +145,12 @@ const FeedItem = ({
         {/*</Link>*/}
         {file.type === 'Video' ? (
           <Box>
-            <video controls playsInline style={{ maxWidth: '100%' }}>
+            <video
+              controls
+              controlsList={canDownload ? undefined : 'nodownload'}
+              playsInline
+              style={{ maxWidth: '100%' }}
+            >
               <source src={imageURL(file, 'raw')} />
             </video>
             {/*<VideoBadge file={file} size="xl" />*/}
@@ -167,7 +174,7 @@ const FeedItem = ({
           {!isNone ? <Divider orientation="vertical" /> : null}
           {file.type === 'Video' ? <OpenFileButton file={file} /> : null}
           <FileInfoButton file={file} />
-          <FileDownloadButton file={file} />
+          {canDownload ? <FileDownloadButton file={file} /> : null}
         </Group>
       </Group>
     </Box>
