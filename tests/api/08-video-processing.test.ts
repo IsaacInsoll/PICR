@@ -31,8 +31,8 @@ test('Video sample has extracted metadata', async () => {
   expect(video.metadata).toBeDefined();
   expect(video.metadata?.Duration).toBeGreaterThan(18);
   expect(video.metadata?.Duration).toBeLessThan(19);
-  expect(video.metadata?.Bitrate).toBeGreaterThan(5_000_000);
-  expect(video.metadata?.Bitrate).toBeLessThan(5_300_000);
+  expect(video.metadata?.Bitrate).toBeGreaterThan(1_100_000);
+  expect(video.metadata?.Bitrate).toBeLessThan(1_300_000);
   expect(video.metadata?.Format).toBe('QuickTime / MOV');
   expect(video.metadata?.Width).toBeGreaterThan(1000);
   expect(video.metadata?.Width).toBeLessThan(1100);

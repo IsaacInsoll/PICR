@@ -140,8 +140,7 @@ media/*
 /public/
 /cache/
 
-/tests/env/*
-/tests/api/env/*
+/tests/api/env/cache
 /playwright-report/
 /test-results/
 

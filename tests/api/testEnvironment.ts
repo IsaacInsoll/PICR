@@ -1,13 +1,10 @@
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
-import decompress from 'decompress';
 import {
   buildOne,
   downMany,
   type IDockerComposeOptions,
   upMany,
 } from 'docker-compose';
-import fs from 'node:fs';
-import https from 'node:https';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -21,21 +18,15 @@ const composeOpts: IDockerComposeOptions = {
 
 export async function setupTestEnvironment() {
   console.log('🧪 Test Setup Starting');
-  const sampleFiles = 'https://photosummaryapp.com/picr-demo-data.zip';
-  const samplePath = './tests/api/env/sample.zip';
   const media = './tests/api/env/media';
   const cache = './tests/api/env/cache';
-  if (!existsSync(samplePath)) {
-    console.log('\t⬇️ Sample files not found, downloading from ' + sampleFiles);
-    mkdirSync('./tests/api/env', { recursive: true });
-    await download(sampleFiles, samplePath);
+  if (!existsSync(media)) {
+    throw new Error(
+      `Test media not found at ${media}. Fixtures are committed to the repo — check your working tree.`,
+    );
   }
-  rmSync(media, { recursive: true, force: true });
   rmSync(cache, { recursive: true, force: true });
-  mkdirSync(media, { recursive: true });
   mkdirSync(cache, { recursive: true });
-  console.log('\t📂 Decompressing sample files');
-  await decompress(samplePath, media, { strip: 1 });
   console.log('\t🐋 Docker Starting');
   await buildOne(services[0], composeOpts);
   await upMany(services, composeOpts);
@@ -48,27 +39,4 @@ export async function teardownTestEnvironment() {
   console.log('🧪 Test Teardown Starting');
   await downMany(services, composeOpts);
   console.log('🧪 Test Teardown Complete');
-}
-
-function download(url: string, dest: string) {
-  const file = fs.createWriteStream(dest);
-  return new Promise((resolve, reject) => {
-    let responseSent = false;
-    https
-      .get(url, (response) => {
-        response.pipe(file);
-        file.on('finish', () => {
-          file.close(() => {
-            if (responseSent) return;
-            responseSent = true;
-            resolve(null);
-          });
-        });
-      })
-      .on('error', (err) => {
-        if (responseSent) return;
-        responseSent = true;
-        reject(err);
-      });
-  });
 }

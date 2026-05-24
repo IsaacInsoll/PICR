@@ -92,8 +92,6 @@ jobs:
           '
 
       # TESTS
-      - name: '🧪 [tests/api] download sample files'
-        run: mkdir -p ./tests/api/env && wget --no-verbose https://photosummaryapp.com/picr-demo-data.zip --output-document=./tests/api/env/sample.zip
       - name: '🧪 [tests/api] run backend tests (vitest)'
         run: npm run test:api
       - name: '🧪 [tests/e2e] install playwright browser'

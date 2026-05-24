@@ -28,6 +28,7 @@ tests/
 ├── api/
 │   ├── compose.yml
 │   ├── env/
+│   │   └── media/        # committed test fixtures (photos + video)
 │   ├── testEnvironment.ts
 │   ├── testSetup.ts
 │   ├── testVariables.ts
@@ -58,3 +59,10 @@ tests/
 
 - CI runs `test:api` and `test:e2e` separately.
 - `tests/api` and `tests/e2e` each bootstrap their own Docker test environment via `tests/api/testEnvironment.ts`.
+
+## Test Media Fixtures
+
+- Photo and video fixtures are committed at `tests/api/env/media/` and bind-mounted into the test container by `tests/api/compose.yml`.
+- `testEnvironment.ts` does not download anything; if `env/media/` is missing it throws. Run `git status` / `git restore` to recover.
+- Photos (`Dog Photos/`) are deliberately re-encoded at low JPEG quality to keep the repo small while preserving filenames, dimensions, and EXIF — test assertions depend on the original filenames (e.g. `XH2A2139.jpg`) and blurhash output, not visual fidelity.
+- The video (`Birthday Video/Jess Birthday.mp4`) is a compressed re-encode of the original; `08-video-processing.test.ts` asserts the codec/dimensions/duration of the file currently in the tree. If you re-encode it, update those ranges.
