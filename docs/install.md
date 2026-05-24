@@ -111,6 +111,10 @@ There are lots of environment variables you can use, but only a few are needed:
   Defaults are sensible for most setups (15-minute window, per-IP and per-user/IP limits, temporary block on abuse),
   so you can usually leave these unset.
 
+- `DISABLE_ACCESS_LOGS` [optional] Set to `true` to stop recording AccessLog entries for folder views and downloads.
+  This also suppresses folder-view notifications (they ride on the same code path). Existing log rows are not deleted.
+  Useful for privacy-sensitive deployments or to reduce database growth. Requires a server restart to change.
+
 ## Run PICR
 
 Start the docker compose stack and it should start PICR and the postgres database.

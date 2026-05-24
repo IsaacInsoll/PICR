@@ -26,4 +26,5 @@ export interface IPicrConfiguration {
   loginRateLimitUserIpMaxAttempts?: number;
   loginRateLimitBlockMinutes?: number;
   loginRateLimitMaxBlockMinutes?: number;
+  disableAccessLogs?: boolean;
 }

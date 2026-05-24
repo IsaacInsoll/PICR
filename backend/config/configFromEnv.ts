@@ -56,6 +56,7 @@ export const configFromEnv = () => {
     loginRateLimitUserIpMaxAttempts: d.LOGIN_RATE_LIMIT_USER_IP_MAX_ATTEMPTS,
     loginRateLimitBlockMinutes: d.LOGIN_RATE_LIMIT_BLOCK_MINUTES,
     loginRateLimitMaxBlockMinutes: d.LOGIN_RATE_LIMIT_MAX_BLOCK_MINUTES,
+    disableAccessLogs: d.DISABLE_ACCESS_LOGS,
 
     dev: d.NODE_ENV === 'development',
     debugSql: d.DEBUG_SQL,

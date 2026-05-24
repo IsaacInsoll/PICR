@@ -107,6 +107,11 @@ request-derived metadata such as User-Agent, session IDs, and forwarded IP
 headers as untrusted/variable length; database length errors here can block
 gallery access, not just analytics.
 
+`createAccessLog()` is short-circuited at the top when `DISABLE_ACCESS_LOGS=true`,
+which also suppresses folder-view notifications (they ride on the same code
+path). Existing rows are not deleted by the flag — set it only via env, not via
+any UI mutation.
+
 ### Enums (in `db/models/enums.ts`)
 
 ```typescript
@@ -486,14 +491,15 @@ When changing `backend/config/*`, Docker `ARG`/`ENV` wiring, or startup code tha
 
 ### Optional Variables
 
-| Variable           | Default      | Description                   |
-| ------------------ | ------------ | ----------------------------- |
-| `NODE_ENV`         | `production` | Environment mode              |
-| `PORT`             | `6900`       | Server port                   |
-| `USE_POLLING`      | `false`      | File watcher polling mode     |
-| `POLLING_INTERVAL` | `20`         | Polling multiplier (ms × 100) |
-| `DEBUG_SQL`        | `false`      | Log Drizzle queries           |
-| `CONSOLE_LOGGING`  | `false`      | Winston console output        |
+| Variable              | Default      | Description                                     |
+| --------------------- | ------------ | ----------------------------------------------- |
+| `NODE_ENV`            | `production` | Environment mode                                |
+| `PORT`                | `6900`       | Server port                                     |
+| `USE_POLLING`         | `false`      | File watcher polling mode                       |
+| `POLLING_INTERVAL`    | `20`         | Polling multiplier (ms × 100)                   |
+| `DEBUG_SQL`           | `false`      | Log Drizzle queries                             |
+| `CONSOLE_LOGGING`     | `false`      | Winston console output                          |
+| `DISABLE_ACCESS_LOGS` | `false`      | Skip AccessLog rows + folder-view notifications |
 
 ---
 

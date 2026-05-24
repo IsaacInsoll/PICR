@@ -83,4 +83,5 @@ export const envSchema = z.object({
     .default(5),
   LOGIN_RATE_LIMIT_BLOCK_MINUTES: z.coerce.number().positive().default(15),
   LOGIN_RATE_LIMIT_MAX_BLOCK_MINUTES: z.coerce.number().positive().default(60),
+  DISABLE_ACCESS_LOGS: castStringToBool,
 });

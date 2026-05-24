@@ -115,6 +115,8 @@ export const createAccessLog = async (
   context: PicrRequestContext,
   type: AccessType,
 ) => {
+  if (picrConfig.disableAccessLogs) return;
+
   //Check if sessionId/ipAddress/user already accessed this in last hour and don't create if so
 
   const h = context.headers;
