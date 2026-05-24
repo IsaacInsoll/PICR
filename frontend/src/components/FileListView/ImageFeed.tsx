@@ -2,6 +2,9 @@ import type { FileListViewStyleComponentProps } from './FolderContentsView';
 import { normalizeDisplayName } from '@shared/displayName';
 import { imageURL } from '../../helpers/imageURL';
 import { useEffect, useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { themeModeAtom } from '../../atoms/themeModeAtom';
+import { DEFAULT_BORDER_RADIUS } from '@shared/branding/galleryPresets';
 import useMeasure from 'react-use-measure';
 import {
   ActionIcon,
@@ -86,6 +89,8 @@ const FeedItem = ({
 }) => {
   const { isNone } = useCommentPermissions();
   const isMobile = useIsMobile();
+  const theme = useAtomValue(themeModeAtom);
+  const borderRadius = theme.thumbnailBorderRadius ?? DEFAULT_BORDER_RADIUS;
 
   const { ref, inView } = useInView({ threshold: 0 });
   useEffect(() => {
@@ -117,7 +122,7 @@ const FeedItem = ({
       // overflow="hidden"
       // margin={{ bottom: 'small' }}
     >
-      <Box style={{ position: 'relative' }}>
+      <Box style={{ position: 'relative', borderRadius, overflow: 'hidden' }}>
         {/*{!imageLoaded ? (*/}
         {/*  <Skeleton style={{ height: tempHeight, ...tempBoxStyle }}>*/}
         {/*    <LoadingIndicator size="large" />*/}

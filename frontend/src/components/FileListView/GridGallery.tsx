@@ -101,14 +101,14 @@ export const GridGallery = ({
   );
   const outerPadding = useMemo(() => {
     // Keep this dampened mapping aligned with frontend/AGENTS.md branding notes.
-    if (isDesktopUp) return Math.max(20, Math.round(margin * 2.25));
-    if (isTabletUp) return Math.max(16, Math.round(margin * 1.75));
-    return Math.max(12, Math.round(margin * 1.5));
+    if (isDesktopUp) return Math.max(20, Math.round(margin * 1.75));
+    if (isTabletUp) return Math.max(16, Math.round(margin * 1.5));
+    return Math.max(12, Math.round(margin * 1.25));
   }, [isDesktopUp, isTabletUp, margin]);
   const initialContainerWidth = Math.max(0, width - 2 * outerPadding);
 
   return (
-    <Box px={outerPadding}>
+    <Box px={outerPadding} style={{ marginTop: -margin }}>
       <Gallery
         rowHeight={thumbnailSize}
         margin={margin}
