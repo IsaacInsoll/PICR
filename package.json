@@ -75,7 +75,8 @@
   "overrides": {
     "release-it": {
       "undici": "7.24.1"
-    }
+    },
+    "lodash": "^4.18.1"
   },
   "release-it": {
     "npm": {
