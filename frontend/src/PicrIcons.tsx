@@ -173,6 +173,9 @@ export const AudioIcon = (props: IconBaseProps) => <TbVolume {...props} />;
 export const FramerateIcon = (props: IconBaseProps) => (
   <TbBrandSpeedtest {...props} />
 );
+export const BenchmarkIcon = (props: IconBaseProps) => (
+  <TbBrandSpeedtest {...props} />
+);
 export const HeightIcon = (props: IconBaseProps) => (
   <TbArrowAutofitHeight {...props} />
 );

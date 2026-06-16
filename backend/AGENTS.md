@@ -194,6 +194,14 @@ sequenceDiagram
     E-->>C: JSON response
 ```
 
+### FFmpeg/FFprobe Configuration
+
+- Direct `fluent-ffmpeg` calls must respect both configured binary paths. Use
+  `.setFfmpegPath(picrConfig.ffmpegPath ?? 'ffmpeg')` for ffmpeg commands and
+  call `ffmpeg.setFfprobePath(picrConfig.ffprobePath ?? 'ffprobe')` before
+  `ffmpeg.ffprobe(...)`. Some self-hosted installs set `FFPROBE_PATH` because
+  `ffprobe` is not on `PATH`.
+
 ### Context Structure (`PicrRequestContext`)
 
 ```typescript

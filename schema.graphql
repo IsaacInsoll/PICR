@@ -34,6 +34,25 @@ enum BannerTextVAlign {
   top
 }
 
+type BenchmarkResult {
+  appVersion: String!
+  assetPath: String!
+  assetSetup: BenchmarkStep!
+  assetSourceUrl: String!
+  avifResize: BenchmarkStep!
+  imageCount: Int!
+  jpegResize: BenchmarkStep!
+  totalMs: Float!
+  videoCount: Int!
+  videoThumbnail: BenchmarkStep!
+  videoTranscode: BenchmarkStep!
+}
+
+type BenchmarkStep {
+  ms: Float
+  skippedReason: String
+}
+
 """
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
@@ -267,6 +286,7 @@ type Mutation {
   generateThumbnails(folderId: ID): Boolean!
   generateZip(folderId: ID): String!
   renameFolder(folderId: ID!, newPath: String!, oldPath: String!): Folder!
+  runBenchmark: BenchmarkResult!
   setFolderBranding(brandingId: ID, folderId: ID!): Folder!
 }
 

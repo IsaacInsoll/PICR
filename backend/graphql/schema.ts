@@ -48,6 +48,11 @@ import { deleteUser } from './mutations/deleteUser.js';
 import { folderFiles } from './queries/folderFiles.js';
 import { folderFileExportType } from './types/folderFileExportType.js';
 import { folderFilesResultType } from './types/folderFilesResultType.js';
+import { runBenchmark } from './mutations/runBenchmark.js';
+import {
+  benchmarkResultType,
+  benchmarkStepType,
+} from './types/benchmarkType.js';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -90,12 +95,15 @@ const mutations = new GraphQLObjectType({
     setFolderBranding,
     editUserDevice,
     renameFolder,
+    runBenchmark,
   }),
 });
 
 const types = [
   accessTypeEnum,
   accessLogType,
+  benchmarkResultType,
+  benchmarkStepType,
   brandingType,
   clientInfoType,
   commentType,

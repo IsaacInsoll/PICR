@@ -6,6 +6,8 @@ export const urqlCacheExchange = cacheExchange({
   schema,
   keys: {
     ClientInfo: () => null,
+    BenchmarkResult: () => null,
+    BenchmarkStep: () => null,
     FolderFileExport: () => null,
     FolderFilesResult: () => null,
     ImageMetadataSummary: () => null,

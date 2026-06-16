@@ -66,3 +66,4 @@ tests/
 - `testEnvironment.ts` does not download anything; if `env/media/` is missing it throws. Run `git status` / `git restore` to recover.
 - Photos (`Dog Photos/`) are deliberately re-encoded at low JPEG quality to keep the repo small while preserving filenames, dimensions, and EXIF — test assertions depend on the original filenames (e.g. `XH2A2139.jpg`) and blurhash output, not visual fidelity.
 - The video (`Birthday Video/Jess Birthday.mp4`) is a compressed re-encode of the original; `08-video-processing.test.ts` asserts the codec/dimensions/duration of the file currently in the tree. If you re-encode it, update those ranges.
+- Do not run the full benchmark workload from the API suite. It is intentionally manual/admin-triggered and can exceed normal test timeouts; API tests should only cover auth/schema behavior for benchmark entry points.
