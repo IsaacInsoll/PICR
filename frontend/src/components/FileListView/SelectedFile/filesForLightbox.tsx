@@ -5,7 +5,10 @@ import { thumbnailSizes } from '@shared/thumbnailSize';
 import { thumbnailDimensions } from '@shared/thumbnailDimensions';
 import { imageURL } from '../../../helpers/imageURL';
 
-export const filesForLightbox = (files: PicrFile[]): Slide[] => {
+export const filesForLightbox = (
+  files: PicrFile[],
+  canDownload: boolean,
+): Slide[] => {
   return files.map((file) => {
     const title = normalizeDisplayName(file.name) ?? '';
     const props =
@@ -16,7 +19,7 @@ export const filesForLightbox = (files: PicrFile[]): Slide[] => {
               const height = width / (file.imageRatio ?? 1);
               return { src: imageURL(file, size), width, height };
             }),
-            src: imageURL(file, 'raw'),
+            src: imageURL(file, canDownload ? 'raw' : 'lg'),
           }
         : file.type === 'Video'
           ? {
@@ -29,7 +32,7 @@ export const filesForLightbox = (files: PicrFile[]): Slide[] => {
             };
 
     return {
-      download: imageURL(file, 'raw'),
+      download: canDownload ? imageURL(file, 'raw') : false,
       alt: title,
       title, //requires caption plugin
       ...props,

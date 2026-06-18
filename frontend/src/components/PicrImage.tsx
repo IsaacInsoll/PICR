@@ -7,6 +7,7 @@ import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import type { PicrFile } from '@shared/types/picr';
 import { useAvifEnabled } from '../hooks/useMe';
+import { useNoDownloadMediaProps } from '../hooks/useNoDownloadMediaProps';
 
 interface PicrImageProps {
   file: PicrFile;
@@ -28,6 +29,7 @@ export const PicrImage = ({
   //<picture> is HTML5 that allows you to specify multiple sources for a child image tag
   const [loaded, setLoaded] = useState(false);
   const avif = useAvifEnabled();
+  const noDownloadMediaProps = useNoDownloadMediaProps();
   return (
     <div style={{ ...style, position: 'relative' }}>
       <picture>
@@ -53,6 +55,7 @@ export const PicrImage = ({
           />
         ) : null}
         <Image
+          {...noDownloadMediaProps}
           src={imageURL(file, size)}
           fit="contain"
           alt={normalizeDisplayName(file.name) ?? ''}
@@ -63,7 +66,11 @@ export const PicrImage = ({
           onClick={() => {
             if (onClick) onClick(file);
           }}
-          style={{ ...style, cursor: clickable ? 'pointer' : undefined }}
+          style={{
+            ...style,
+            ...noDownloadMediaProps.style,
+            cursor: clickable ? 'pointer' : undefined,
+          }}
         />
       </picture>
     </div>

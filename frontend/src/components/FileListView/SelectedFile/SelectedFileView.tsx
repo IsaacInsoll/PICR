@@ -2,6 +2,7 @@
 import type {
   CarouselSettings,
   ControllerRef,
+  ImageProps,
   SlotStyles,
 } from 'yet-another-react-lightbox';
 import { Lightbox } from 'yet-another-react-lightbox';
@@ -24,6 +25,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { lightboxControllerRefAtom } from '../../../atoms/lightboxControllerRefAtom';
 import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
 import { useCanDownload } from '../../../hooks/useMe';
+import { useNoDownloadMediaProps } from '../../../hooks/useNoDownloadMediaProps';
 import { Thumbnails } from 'yet-another-react-lightbox/plugins';
 import { ThumbnailsIcon } from '../../../PicrIcons';
 
@@ -53,6 +55,15 @@ export const SelectedFileView = ({
 
   const setFolder = useSetFolder();
   const canDownload = useCanDownload();
+  const noDownloadMediaProps = useNoDownloadMediaProps();
+  const imageProps: ImageProps = {
+    ...carouselImageProps,
+    ...noDownloadMediaProps,
+    style: {
+      ...carouselImageProps.style,
+      ...noDownloadMediaProps.style,
+    },
+  };
 
   const toolbarButtons = [
     selectedImage ? (
@@ -88,7 +99,7 @@ export const SelectedFileView = ({
       controller={{ ref }}
       plugins={config.plugins}
       counter={counterProps}
-      slides={filesForLightbox(files)}
+      slides={filesForLightbox(files, canDownload)}
       open={!!selectedFileId}
       index={selectedImageIndex}
       close={() => setSelectedFileId(undefined)}
@@ -101,7 +112,10 @@ export const SelectedFileView = ({
             <LightboxFileRating selected={selectedImage} />
           ) : null,
       }}
-      carousel={carouselProps}
+      carousel={{
+        ...carouselProps,
+        imageProps,
+      }}
       thumbnails={showThumbnails ? { position: 'bottom' } : undefined}
       zoom={{
         pinchZoomV4: true,
@@ -128,6 +142,10 @@ const lightBoxStyles: SlotStyles = {
 const counterProps = { container: { style: { top: 'unset', bottom: 0 } } };
 const videoProps = { autoPlay: true, muted: false };
 
+const carouselImageProps: ImageProps = {
+  style: { objectFit: 'contain' }, // fix image getting cropped
+};
+
 const unInert = () => {
   // YARL "inerts" everything so lets undo that if we have modals
   // https://github.com/igordanchenko/yet-another-react-lightbox/issues/310#issuecomment-2407706206
@@ -145,7 +163,5 @@ const carouselProps: CarouselSettings = {
   imageFit: 'cover' as const, // we want 'cover' otherwise there is too much padding on mobile
   padding: 0,
   spacing: 0,
-  imageProps: {
-    style: { objectFit: 'contain' }, // fix image getting cropped
-  },
+  imageProps: carouselImageProps,
 };

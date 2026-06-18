@@ -7,6 +7,7 @@ import type { ThumbnailImageComponentImageProps } from './react-grid-gallery';
 import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 import { imageURL } from '../../helpers/imageURL';
+import { useNoDownloadMediaProps } from '../../hooks/useNoDownloadMediaProps';
 
 // Video 'scrubber' image preview. Requires either a `style` prop for dimensions or will work it out based on container width
 export const PicrVideoPreview = ({
@@ -21,6 +22,7 @@ export const PicrVideoPreview = ({
   const { x: mouseX, ref: mouseRef } = useMouse({ resetOnExit: true });
   const { ref: elementRef, width: elementWidth } = useElementSize();
   const second = useSecond();
+  const noDownloadMediaProps = useNoDownloadMediaProps();
 
   //Get 'styled' width, otherwise determine based on width of Box
   const styleWidth = typeof style?.width === 'number' ? style.width : undefined;
@@ -65,8 +67,9 @@ export const PicrVideoPreview = ({
       ) : null}
       <Image
         {...imageProps}
+        {...noDownloadMediaProps}
         title={imageProps.title ?? undefined}
-        style={finalStyle}
+        style={{ ...finalStyle, ...noDownloadMediaProps.style }}
         ref={mouseRef}
         src={imageURL(file, 'md')}
         onLoad={() => {

@@ -6,6 +6,7 @@ import { useMe } from '../hooks/useMe';
 import { useMutation } from 'urql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 import { useOpenSetBannerImageModal } from '../atoms/modalAtom';
+import { useNoDownloadMediaProps } from '../hooks/useNoDownloadMediaProps';
 import {
   ActionIcon,
   alpha,
@@ -87,6 +88,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
   const bannerSubtitle = folder.subtitle?.trim();
   const theme = useAtomValue(themeModeAtom);
   const mantineTheme = useMantineTheme();
+  const noDownloadMediaProps = useNoDownloadMediaProps();
   const computedColorScheme = useComputedColorScheme('light', {
     getInitialValueInEffect: true,
   });
@@ -254,6 +256,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
     <Box className={styles.root}>
       <Box ref={bannerRef} className={`${styles.media} ${sizeClass}`}>
         <Box
+          {...noDownloadMediaProps}
           component="img"
           className={styles.image}
           ref={imageRef}
@@ -261,6 +264,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
           alt=""
           style={{
             transform: `translate3d(0, 0, 0) scale(${parallaxScale})`,
+            ...noDownloadMediaProps.style,
           }}
         />
         <Box className={`${styles.titleLayer} ${justifyClass} ${vAlignClass}`}>
