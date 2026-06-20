@@ -202,6 +202,16 @@ sequenceDiagram
   `ffmpeg.ffprobe(...)`. Some self-hosted installs set `FFPROBE_PATH` because
   `ffprobe` is not on `PATH`.
 
+### Media Write Access
+
+- Treat effective file operations as the source of truth for media write access.
+  NAS setups, especially Synology over NFS, can expose POSIX mode bits or
+  `fs.access` results that do not match DSM ACL behavior. Use the hidden-file
+  write probe in `backend/config/mediaWriteAccess.ts` instead of adding new
+  ownership/mode-bit or `fs.accessSync(W_OK)` gates.
+- `CAN_WRITE=false` must remain a pure opt-out: do not create probe files or
+  perform any other media write attempts when it is disabled.
+
 ### Context Structure (`PicrRequestContext`)
 
 ```typescript

@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql/error/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationRenameFolderArgs } from '@shared/gql/graphql.js';
 import { picrConfig } from '../../config/picrConfig.js';
-import { accessSync, constants, existsSync, renameSync } from 'node:fs';
+import { existsSync, renameSync } from 'node:fs';
 import { db } from '../../db/picrDb.js';
 import { and, eq, like, sql, isNull } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../../db/models/index.js';
@@ -103,7 +103,15 @@ const resolver: PicrResolver<object, MutationRenameFolderArgs> = async (
     renameSync(fullOld, fullNew);
     log('info', 'Folder renamed successfully!');
   } catch (err) {
-    log('error', 'Error renaming folder: ' + String(err));
+    const error = err as NodeJS.ErrnoException;
+    log(
+      'error',
+      [
+        `Error renaming folder ${fullOld} => ${fullNew}.`,
+        `Code: ${error.code ?? 'unknown'}.`,
+        `Message: ${error.message}`,
+      ].join(' '),
+    );
     throw new GraphQLError('Failed to rename folder');
   }
 
@@ -205,11 +213,6 @@ function escapeRegExp(string: string): string {
 
 const assertWriteAccess = () => {
   if (!picrConfig.canWrite) {
-    throw new GraphQLError('No Write Access');
-  }
-  try {
-    accessSync(picrConfig.mediaPath, constants.W_OK);
-  } catch {
     throw new GraphQLError('No Write Access');
   }
 };

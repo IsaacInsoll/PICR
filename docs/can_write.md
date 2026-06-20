@@ -25,13 +25,22 @@ services:
 
 ## Synology / NAS note (common issue)
 
-If `CAN_WRITE=true` but PICR still reports `canWrite: false`, your media mount is readable but not writable for the
-container user.
+When `CAN_WRITE=true`, PICR checks write support by creating and deleting a hidden `.picr-write-test-*` file in
+`/home/node/app/media` during startup. It does not rely on POSIX mode bits alone.
+
+On Synology DSM and some NFS mounts, DSM ACLs can allow writes even when the NFS client reports the folder as something
+like `555` / `dr-xr-xr-x`. That is OK: if the hidden probe file can be created and deleted from inside the container,
+PICR will report `canWrite: true`.
+
+If `CAN_WRITE=true` but PICR still reports `canWrite: false`, the startup warning will include the actual probe error
+code/message, plus the container runtime UID/GID and media path owner/mode.
 
 ## Short Version
 
 - Set the `CAN_WRITE=true` then run PICR.
-- You will get a "you tried to enable write access but we can't actually write" warning with exact IDs to add to docker compose.
+- PICR will try to create and delete a hidden `.picr-write-test-*` file in the media root.
+- If that fails, you will get a "you tried to enable write access but the write probe failed" warning with the real
+  filesystem error and exact IDs to add to docker compose.
 - Add those, then restart the container.
 
 ## Long Version
@@ -60,7 +69,7 @@ services:
 You can quickly test from inside the container:
 
 ```bash
-docker exec -it picr sh -lc 'id; ls -ld /home/node/app/media; touch /home/node/app/media/.picr-write-test && rm /home/node/app/media/.picr-write-test'
+docker exec -it picr sh -lc 'id; ls -ld /home/node/app/media; test_file="/home/node/app/media/.picr-write-test-manual-$(date +%s)"; printf "picr-write-test\n" > "$test_file" && rm "$test_file"'
 ```
 
 ## Why this is risky

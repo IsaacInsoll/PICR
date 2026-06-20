@@ -5,7 +5,7 @@ import { picrConfig } from './picrConfig.js';
 import type { IPicrConfiguration } from './IPicrConfiguration.js';
 import path from 'path';
 import { envSchema } from './envSchema.js';
-import { buildCanWriteWarning, testWriteAccess } from './mediaWriteAccess.js';
+import { buildCanWriteWarning, probeWriteAccess } from './mediaWriteAccess.js';
 
 export const configFromEnv = () => {
   config(); // read .ENV
@@ -25,7 +25,9 @@ export const configFromEnv = () => {
   const cachePath = path.join(process.cwd(), 'cache');
 
   const d = env.data;
-  const canWriteToMediaPath = testWriteAccess(mediaPath);
+  const writeProbe = d.CAN_WRITE
+    ? probeWriteAccess(mediaPath)
+    : { canWrite: false };
   const baseUrl = new URL(d.BASE_URL);
   const baseUrlPathname =
     baseUrl.pathname === '/'
@@ -64,7 +66,7 @@ export const configFromEnv = () => {
 
     mediaPath,
     cachePath,
-    canWrite: d.CAN_WRITE && canWriteToMediaPath,
+    canWrite: d.CAN_WRITE && writeProbe.canWrite,
   };
 
   log('info', '#️⃣  Version: ' + (c.dev ? '[DEV] ' : '') + c.version, true);
@@ -85,8 +87,8 @@ export const configFromEnv = () => {
   }
   Object.assign(picrConfig, c);
 
-  if (d.CAN_WRITE && !canWriteToMediaPath) {
-    log('warn', buildCanWriteWarning(mediaPath), true);
+  if (d.CAN_WRITE && !writeProbe.canWrite) {
+    log('warn', buildCanWriteWarning(mediaPath, writeProbe), true);
   }
 };
 
