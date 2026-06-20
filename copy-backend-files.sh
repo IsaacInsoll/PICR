@@ -4,7 +4,7 @@
 # They are here so we can use the same list locally for development and in github CI
 
 cp ./backend/package*.json ./dist/
-cp version.txt ./dist/
+node -p "require('./package.json').version" > ./dist/version.txt
 
 mkdir -p ./dist/backend/db/drizzle
 cp -r ./backend/db/drizzle ./dist/backend/db

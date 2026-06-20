@@ -93,10 +93,21 @@ export const configFromEnv = () => {
 };
 
 const getVersion = () => {
+  // Production/Docker builds generate ./version.txt from package.json at build time.
   const p = './version.txt';
   if (existsSync(p)) {
     return readFileSync(p, 'utf8').trim();
-  } else {
-    return 'DEV';
   }
+  // Dev fallback: version.txt is not generated, so read the canonical version
+  // from package.json (CWD is the repo root when running `npm start`).
+  const pkg = './package.json';
+  if (existsSync(pkg)) {
+    try {
+      const { version } = JSON.parse(readFileSync(pkg, 'utf8'));
+      if (version) return version;
+    } catch {
+      // fall through to 'DEV'
+    }
+  }
+  return 'DEV';
 };

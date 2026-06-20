@@ -135,6 +135,9 @@ docker-compose.yml
 #picr specific
 media/*
 
+# Generated from package.json during the backend build (into dist/); never commit a root copy
+version.txt
+
 .idea/
 /data/
 /public/

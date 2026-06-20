@@ -5,10 +5,22 @@
 Run `npm run release` which will:
 
 1. Ask for a new semver version
-2. Commit and tag via `release-it`
-3. Push to GitHub
+2. Commit, tag, and push via `release-it`
+3. Create a GitHub release
 
-The GitHub release pipeline then builds and publishes Docker images.
+The GitHub release pipeline then builds and publishes Docker images. The root
+`package.json` version is the canonical release version. The `backend` build
+generates `dist/version.txt` from root `package.json` for runtime compatibility.
+Let `release-it` own the release commit, tag, push, and GitHub release creation
+so the GitHub release tag points at the commit containing the matching
+`package.json` version.
+
+Do not manually create normal Docker/backend release tags or GitHub releases. If
+the release verification guard fails, fix the tag/version mismatch before
+publishing a GitHub release.
+
+Do not recreate or commit a root `version.txt`; it is generated in `dist/` during
+the backend build.
 
 ## Expo app release
 

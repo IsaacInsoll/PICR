@@ -60,7 +60,6 @@
     "@graphql-codegen/client-preset": "^4.8.0",
     "@graphql-codegen/introspection": "^4.0.3",
     "@playwright/test": "^1.58.2",
-    "@release-it/bumper": "^7.0.2",
     "concurrently": "^10.0.3",
     "docker-compose": "^1.3",
     "dotenv-cli": "^11",
@@ -87,25 +86,13 @@
       "commitMessage": "🚀 Release ${version}",
       "commit": true,
       "tag": true,
-      "push": false
+      "push": true
     },
     "github": {
       "release": true
     },
-    "plugins": {
-      "@release-it/bumper": {
-        "out": {
-          "file": "./version.txt",
-          "type": "text/plain",
-          "consumeWholeFile": true
-        }
-      }
-    },
     "hooks": {
-      "after:git:release": [
-        "git push origin master",
-        "git push origin ${tagName}"
-      ],
+      "before:github:release": "node scripts/verify-release.mjs ${version} ${tagName}",
       "before:bump": "node lightroom/scripts/update-info-lua.js ${version}"
     }
   },
