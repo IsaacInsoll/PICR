@@ -84,6 +84,14 @@ https://github.com/IsaacInsoll/PICR/issues/<number>
 
 Or use `gh issue view <number>` if the GitHub CLI is available.
 
+If plain `gh issue view <number> --comments` fails with a GraphQL error about
+`repository.issue.projectCards`, request only the fields needed for issue
+context:
+
+```bash
+gh issue view <number> --comments --json number,title,state,body,comments,labels
+```
+
 ## Project Structure
 
 | Directory    | Purpose                                                            | Has AGENTS.md |

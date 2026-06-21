@@ -124,6 +124,7 @@ const ViewFolderBody = () => {
             footerUrl: branding.footerUrl,
             logoUrl: branding.logoUrl,
             socialLinks: branding.socialLinks,
+            defaultFileSort: branding.defaultFileSort,
           })
         : 'default',
     [branding],
@@ -144,6 +145,12 @@ const ViewFolderBody = () => {
   const folder = data.data?.folder;
   const displayFolderName = normalizeDisplayName(folder?.name);
   const hasFiles = folder && folder.files.length > 0;
+  // Only expose the "Date taken" sort when at least one file carries an EXIF
+  // capture date - a folder of videos/documents wouldn't benefit from it.
+  const hasCaptureDates =
+    folder?.files.some(
+      (f) => f.__typename === 'Image' && !!f.metadata?.DateTimeOriginal,
+    ) ?? false;
 
   // redirect to 'no file selected' if you are in a valid folder but the file isn't found
   useEffect(() => {
@@ -193,7 +200,7 @@ const ViewFolderBody = () => {
     if (hasFiles)
       actions.push(
         <Box visibleFrom="md" key="FileSortSelector">
-          <FileSortSelector />
+          <FileSortSelector hasMetadata={hasCaptureDates} />
         </Box>,
       );
     if (hasFiles && canDownload && me?.isLink)
@@ -205,6 +212,7 @@ const ViewFolderBody = () => {
           key="Overflow"
           onCsvExport={() => setCsvExportOpen(true)}
           hasFiles={!!hasFiles}
+          hasCaptureDates={hasCaptureDates}
         />,
       );
   } else {
@@ -294,7 +302,10 @@ const ViewFolderBody = () => {
           {!activity ? (
             <>
               {/*<SubfolderListView folder={folder} />*/}
-              <FolderContentsView folder={folder} />
+              <FolderContentsView
+                folder={folder}
+                hasCaptureDates={hasCaptureDates}
+              />
               <GalleryFooter />
             </>
           ) : null}
@@ -347,10 +358,12 @@ const FolderOverflowMenu = ({
   folder,
   onCsvExport,
   hasFiles,
+  hasCaptureDates,
 }: {
   folder: PicrFolder;
   onCsvExport: () => void;
   hasFiles: boolean;
+  hasCaptureDates: boolean;
 }) => {
   const displayFolderName = normalizeDisplayName(folder.name);
   const setFiltering = useSetAtom(filterAtom);
@@ -427,7 +440,7 @@ const FolderOverflowMenu = ({
           />
           {hasFiles ? (
             <Box hiddenFrom="md">
-              <FileSortMenuItems />
+              <FileSortMenuItems hasMetadata={hasCaptureDates} />
             </Box>
           ) : null}
         </Menu.Dropdown>

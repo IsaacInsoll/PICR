@@ -7,6 +7,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import {
   CalendarIcon,
+  CameraIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   CommentIcon,
@@ -16,18 +17,32 @@ import {
   StarIcon,
 } from '../../PicrIcons';
 import type { FileSortDirection, FileSortType } from '@shared/files/sortFiles';
+import {
+  defaultSortDirection,
+  resolveEffectiveSort,
+} from '@shared/files/sortFiles';
 
-export const FileSortSelector = () => {
+export const FileSortSelector = ({
+  hasMetadata = false,
+}: {
+  hasMetadata?: boolean;
+}) => {
   const { canView } = useCommentPermissions();
   const [sort, setSort] = useAtom(fileSortAtom);
   const [dropdownOpened, { toggle, close }] = useDisclosure();
-  const { type, direction } = sort;
+  const { direction } = sort;
+  // Same effective sort the gallery uses (FolderContentsView), so the displayed
+  // option always matches the actual order.
+  const { type } = resolveEffectiveSort(sort, hasMetadata);
   const sortIcon = sortIcons[direction];
   const selectedSortOption =
     sortOptions.find((s) => s.value === type) ?? sortOptions[0];
   const { icon } = selectedSortOption;
 
-  const options = sortOptions.filter((s) => !s.requiresComments || canView);
+  const options = sortOptions.filter(
+    (s) =>
+      (!s.requiresComments || canView) && (!s.requiresMetadata || hasMetadata),
+  );
 
   const renderSelectOption: SelectProps['renderOption'] = ({
     option,
@@ -55,12 +70,11 @@ export const FileSortSelector = () => {
     if (selectedOption && selectedOption.value !== type) {
       setSort({
         type: selectedOption.value,
-        direction: 'Asc',
-        // direction: v === 'Filename' ? 'Asc' : 'Desc',
+        direction: defaultSortDirection(selectedOption.value),
       });
     } else {
       setSort({
-        ...sort,
+        type,
         direction: sort.direction === 'Asc' ? 'Desc' : 'Asc',
       });
     }
@@ -101,18 +115,26 @@ export const FileSortSelector = () => {
   );
 };
 
-export const FileSortMenuItems = () => {
+export const FileSortMenuItems = ({
+  hasMetadata = false,
+}: {
+  hasMetadata?: boolean;
+}) => {
   const { canView } = useCommentPermissions();
   const [sort, setSort] = useAtom(fileSortAtom);
-  const { type, direction } = sort;
-  const options = sortOptions.filter((s) => !s.requiresComments || canView);
+  const { direction } = sort;
+  const { type } = resolveEffectiveSort(sort, hasMetadata);
+  const options = sortOptions.filter(
+    (s) =>
+      (!s.requiresComments || canView) && (!s.requiresMetadata || hasMetadata),
+  );
 
   const handleSelect = (value: FileSortType) => {
     if (value !== type) {
-      setSort({ type: value, direction: 'Asc' });
+      setSort({ type: value, direction: defaultSortDirection(value) });
     } else {
       setSort({
-        ...sort,
+        type,
         direction: sort.direction === 'Asc' ? 'Desc' : 'Asc',
       });
     }
@@ -145,6 +167,7 @@ type SortOption = {
   label: string;
   icon: ReactNode;
   requiresComments: boolean;
+  requiresMetadata?: boolean;
 };
 
 const sortOptions: SortOption[] = [
@@ -159,6 +182,13 @@ const sortOptions: SortOption[] = [
     label: 'Modified',
     icon: <CalendarIcon />,
     requiresComments: false,
+  },
+  {
+    value: 'DateTaken',
+    label: 'Date taken',
+    icon: <CameraIcon />,
+    requiresComments: false,
+    requiresMetadata: true,
   },
   {
     value: 'RecentlyCommented',
@@ -178,6 +208,6 @@ const sortIcons: Record<
   FileSortDirection,
   { icon: ReactNode; chevron: ReactNode }
 > = {
-  Asc: { icon: <SortDescIcon />, chevron: <ChevronDownIcon /> },
-  Desc: { icon: <SortAscIcon />, chevron: <ChevronUpIcon /> },
+  Asc: { icon: <SortAscIcon />, chevron: <ChevronUpIcon /> },
+  Desc: { icon: <SortDescIcon />, chevron: <ChevronDownIcon /> },
 } as const;

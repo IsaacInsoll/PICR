@@ -27,6 +27,7 @@ export const folderFragment = gql(/* GraphQL */ `
       headingFontKey
       availableViews
       defaultView
+      defaultFileSort
       thumbnailSize
       thumbnailSpacing
       thumbnailBorderRadius

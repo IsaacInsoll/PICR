@@ -32,6 +32,7 @@ type KnownView = (typeof KNOWN_VIEWS)[number];
 type EditBrandingArgs = MutationEditBrandingArgs & {
   availableViews?: string[] | null;
   defaultView?: string | null;
+  defaultFileSort?: string | null;
   thumbnailSize?: number | null;
   thumbnailSpacing?: number | null;
   thumbnailBorderRadius?: number | null;
@@ -111,6 +112,7 @@ const resolver: PicrResolver<object, EditBrandingArgs> = async (
     headingFontKey,
     availableViews,
     defaultView,
+    defaultFileSort: params.defaultFileSort,
     thumbnailSize: params.thumbnailSize,
     thumbnailSpacing: params.thumbnailSpacing,
     thumbnailBorderRadius: params.thumbnailBorderRadius,
@@ -164,6 +166,7 @@ export const editBranding = {
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
     },
     defaultView: { type: GraphQLString },
+    defaultFileSort: { type: GraphQLString },
     thumbnailSize: { type: GraphQLInt },
     thumbnailSpacing: { type: GraphQLInt },
     thumbnailBorderRadius: { type: GraphQLInt },

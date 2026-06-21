@@ -52,6 +52,21 @@ describe('Branding Management', () => {
     expect(result.data?.editBranding?.primaryColor).toBe('blue');
   });
 
+  test('Admin can set a default file sort that round-trips', async () => {
+    const headers = await getUserHeader(defaultCredentials);
+    const client = await createTestGraphqlClient(headers);
+
+    const result = await client
+      .mutation(editBrandingMutation, {
+        id: createdBrandingId,
+        defaultFileSort: 't', // DateTaken, descending (see encodeFileSort)
+      })
+      .toPromise();
+
+    expect(result.error).toBeUndefined();
+    expect(result.data?.editBranding?.defaultFileSort).toBe('t');
+  });
+
   test('defaultView is corrected when availableViews is restricted', async () => {
     const headers = await getUserHeader(defaultCredentials);
     const client = await createTestGraphqlClient(headers);

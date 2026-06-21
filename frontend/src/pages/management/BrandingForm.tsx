@@ -1,6 +1,12 @@
 import type { HeadingFontKey } from '@shared/gql/graphql';
 import type { ComponentType } from 'react';
 import { HeadingAlignment, PrimaryColor, ThemeMode } from '@shared/gql/graphql';
+import type { FileSortDirection, FileSortType } from '@shared/files/sortFiles';
+import {
+  decodeFileSort,
+  defaultSortDirection,
+  encodeFileSort,
+} from '@shared/files/sortFiles';
 import {
   ActionIcon,
   Badge,
@@ -79,6 +85,7 @@ export interface BrandingInput {
   headingFontKey?: HeadingFontKey | null;
   availableViews?: string[] | null;
   defaultView?: string | null;
+  defaultFileSort?: string | null;
   thumbnailSize?: number | null;
   thumbnailSpacing?: number | null;
   thumbnailBorderRadius?: number | null;
@@ -313,6 +320,12 @@ export const BrandingForm = ({
                 </Group>
               )}
             />
+            <DefaultSortSelector
+              value={branding.defaultFileSort ?? null}
+              onChange={(defaultFileSort) =>
+                onChange({ ...branding, defaultFileSort })
+              }
+            />
             <Divider label="Gallery Styling" labelPosition="left" />
             <Box>
               <InputLabel>Thumbnail size</InputLabel>
@@ -439,6 +452,80 @@ export const BrandingForm = ({
         </Tabs.Panel>
       </Tabs>
     </Stack>
+  );
+};
+
+const sortTypeOptions: { value: FileSortType; label: string }[] = [
+  { value: 'Filename', label: 'Filename' },
+  { value: 'LastModified', label: 'Modified' },
+  { value: 'DateTaken', label: 'Date taken' },
+  // Rating and Commented are permission-gated in the live sort menu, so they
+  // make poor branding defaults for viewers who cannot see review data.
+  // { value: 'Rating', label: 'Rating' },
+  // { value: 'RecentlyCommented', label: 'Commented' },
+];
+
+const DefaultSortSelector = ({
+  value,
+  onChange,
+}: {
+  value: string | null;
+  onChange: (value: string | null) => void;
+}) => {
+  const decoded = value ? decodeFileSort(value) : null;
+  const type = decoded?.type ?? '';
+  const direction: FileSortDirection = decoded?.direction ?? 'Desc';
+  return (
+    <Box>
+      <InputLabel>Default sort</InputLabel>
+      <InputDescription pb="xs">
+        Initial sort order when opening the gallery. Viewers can still change
+        it.
+      </InputDescription>
+      <Group gap="sm">
+        <Select
+          value={type}
+          clearable={false}
+          data={[
+            { value: '', label: 'App default (Filename)' },
+            ...sortTypeOptions,
+          ]}
+          onChange={(v) =>
+            onChange(
+              v
+                ? encodeFileSort({
+                    type: v as FileSortType,
+                    // Apply the type's natural default direction on type change;
+                    // the admin can still flip it with the buttons below.
+                    direction: defaultSortDirection(v as FileSortType),
+                  })
+                : null,
+            )
+          }
+        />
+        {type ? (
+          <Button.Group>
+            {(['Asc', 'Desc'] as FileSortDirection[]).map((d) => (
+              <Button
+                key={d}
+                variant={direction === d ? 'filled' : 'default'}
+                size="xs"
+                onClick={() =>
+                  onChange(
+                    encodeFileSort({
+                      type: type as FileSortType,
+                      direction: d,
+                    }),
+                  )
+                }
+              >
+                {d === 'Asc' ? 'Ascending' : 'Descending'}
+              </Button>
+            ))}
+          </Button.Group>
+        ) : null}
+      </Group>
+    </Box>
   );
 };
 

@@ -60,6 +60,7 @@ scalar BigInt
 
 type Branding {
   availableViews: [String!]
+  defaultFileSort: String
   defaultView: String
   folder: Folder
   folderId: ID
@@ -279,7 +280,7 @@ type Mutation {
   deleteBranding(id: ID!): Boolean!
   deleteUser(id: ID!): Boolean!
   editAdminUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, ntfy: String, ntfyEmail: Boolean, password: String, username: String): User!
-  editBranding(availableViews: [String!], defaultView: String, footerTitle: String, footerUrl: String, headingAlignment: HeadingAlignment, headingFontKey: HeadingFontKey, headingFontSize: Int, id: ID, logoUrl: String, mode: ThemeMode, name: String, primaryColor: PrimaryColor, socialLinks: JSON, thumbnailBorderRadius: Int, thumbnailSize: Int, thumbnailSpacing: Int): Branding!
+  editBranding(availableViews: [String!], defaultFileSort: String, defaultView: String, footerTitle: String, footerUrl: String, headingAlignment: HeadingAlignment, headingFontKey: HeadingFontKey, headingFontSize: Int, id: ID, logoUrl: String, mode: ThemeMode, name: String, primaryColor: PrimaryColor, socialLinks: JSON, thumbnailBorderRadius: Int, thumbnailSize: Int, thumbnailSpacing: Int): Branding!
   editFolder(bannerImageId: ID, bannerSize: BannerSize, bannerTextHAlign: BannerTextHAlign, bannerTextVAlign: BannerTextVAlign, folderId: ID!, heroImageId: ID, subtitle: String, title: String): Folder!
   editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
   editUserDevice(enabled: Boolean!, name: String, notificationToken: String!, userId: ID!): UserDevice!

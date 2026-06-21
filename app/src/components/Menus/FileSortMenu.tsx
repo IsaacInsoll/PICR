@@ -12,6 +12,7 @@ import type { ReactNode } from 'react';
 import { useAtom } from 'jotai';
 import { fileSortAtom } from '@/src/atoms/atoms';
 import type { FileSortDirection, FileSortType } from '@shared/files/sortFiles';
+import { defaultSortDirection } from '@shared/files/sortFiles';
 import type { SFSymbol } from 'expo-symbols';
 
 export const FileSortMenu = ({ children }: { children: ReactNode }) => {
@@ -26,7 +27,13 @@ export const FileSortMenu = ({ children }: { children: ReactNode }) => {
         {sortOptions.map(({ label, value, sfSymbol }) => (
           <DropdownMenuCheckboxItem
             key={value}
-            onSelect={() => setSort((s) => ({ ...s, type: value }))}
+            onSelect={() =>
+              setSort((s) =>
+                s.type === value
+                  ? s
+                  : { type: value, direction: defaultSortDirection(value) },
+              )
+            }
             value={sort.type === value ? 'on' : 'off'}
           >
             <DropdownMenuItemTitle>{label}</DropdownMenuItemTitle>
@@ -62,6 +69,7 @@ const sortOptions: {
     sfSymbol: 'textformat.abc',
   },
   { label: 'Last Modified', value: 'LastModified', sfSymbol: 'clock' },
+  { label: 'Date taken', value: 'DateTaken', sfSymbol: 'camera' },
   {
     label: 'Recently Commented',
     value: 'RecentlyCommented',

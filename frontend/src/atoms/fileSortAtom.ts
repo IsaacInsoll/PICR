@@ -1,32 +1,28 @@
 import { atom } from 'jotai';
 import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
 import { atomWithHash } from 'jotai-location';
-import type { FileSort, FileSortType } from '@shared/files/sortFiles';
+import type { FileSort } from '@shared/files/sortFiles';
+import {
+  decodeFileSort,
+  defaultFileSort,
+  encodeFileSort,
+} from '@shared/files/sortFiles';
+import { themeModeAtom } from './themeModeAtom';
 
-const fileSortHashAtom = atomWithHash('s', '', opts);
+export const fileSortHashAtom = atomWithHash('s', '', opts);
 
+// Effective sort precedence: explicit URL-hash sort > the active Branding's
+// defaultFileSort > app default (Filename ascending). The Branding is mirrored
+// into themeModeAtom by ViewFolder, so the selector and the gallery stay in sync.
 export const fileSortAtom = atom<FileSort, [FileSort], void>(
   (get) => {
     const sort = get(fileSortHashAtom);
-    if (!sort) return { type: 'Filename', direction: 'Asc' };
-    const typeEntry = Object.entries(fileSortEncoding).find(
-      ([, v]) => v === sort[0],
-    );
-    const type = (typeEntry?.[0] as FileSortType | undefined) ?? 'Filename';
-    const direction = sort[1] === 'a' ? 'Asc' : 'Desc';
-    return { type, direction };
+    if (sort) return decodeFileSort(sort);
+    const brandingDefault = get(themeModeAtom).defaultFileSort;
+    if (brandingDefault) return decodeFileSort(brandingDefault);
+    return defaultFileSort;
   },
   (get, set, args: FileSort) => {
-    set(
-      fileSortHashAtom,
-      fileSortEncoding[args.type] + (args.direction === 'Asc' ? 'a' : ''),
-    );
+    set(fileSortHashAtom, encodeFileSort(args));
   },
 );
-
-const fileSortEncoding: { [key in FileSortType]: string } = {
-  Filename: 'f',
-  LastModified: 'm',
-  RecentlyCommented: 'c',
-  Rating: 'r',
-};

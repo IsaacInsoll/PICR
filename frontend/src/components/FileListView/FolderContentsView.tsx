@@ -27,6 +27,7 @@ import {
   isFolderContentsFile,
 } from '@shared/files/folderContentsViewModel';
 import type { ViewFolder } from '@shared/files/sortFiles';
+import { resolveEffectiveSort } from '@shared/files/sortFiles';
 import {
   currentFolderBannerSizeAtom,
   currentFolderBannerHAlignAtom,
@@ -50,7 +51,13 @@ export interface FileListViewStyleComponentProps {
   width: number;
 }
 
-export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
+export const FolderContentsView = ({
+  folder,
+  hasCaptureDates,
+}: {
+  folder: ViewFolder;
+  hasCaptureDates: boolean;
+}) => {
   const files = folder.files;
   const folderId = folder.id;
   const { fileId: fileIdParam } = useParams();
@@ -127,9 +134,10 @@ export const FolderContentsView = ({ folder }: { folder: ViewFolder }) => {
     [canDownload],
   );
 
+  const effectiveSort = resolveEffectiveSort(sort, hasCaptureDates);
   // don't memo files because it breaks graphicache (IE: file changing rating won't reflect)
   const sortedItems = folderContentsItems(folder, {
-    sort,
+    sort: effectiveSort,
     filtering,
     filters,
   });

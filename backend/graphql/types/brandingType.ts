@@ -36,6 +36,7 @@ export const brandingType = new GraphQLObjectType({
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
     },
     defaultView: { type: GraphQLString },
+    defaultFileSort: { type: GraphQLString },
     thumbnailSize: { type: GraphQLInt },
     thumbnailSpacing: { type: GraphQLInt },
     thumbnailBorderRadius: { type: GraphQLInt },
