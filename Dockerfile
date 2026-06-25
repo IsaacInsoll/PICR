@@ -4,10 +4,20 @@ ARG PICR_BUILD_CHANNEL=release
 ARG PICR_DEVELOPMENT_BUILD_SHA
 ARG PICR_GIT_SHA
 ARG PICR_VERSION
+# Provided automatically by buildx; used to gate VAAPI drivers to amd64 only.
+ARG TARGETARCH
 LABEL org.opencontainers.image.version=$PICR_VERSION
 LABEL org.opencontainers.image.revision=$PICR_GIT_SHA
 
-RUN apk add --no-cache ffmpeg
+# ffmpeg is required on every arch. VAAPI hardware-acceleration drivers
+# (mesa-va-gallium = AMD/Intel Gallium, intel-media-driver = Intel Gen8+,
+# libva-utils = vainfo for troubleshooting) are added on amd64 only: arm64
+# hosts rarely have a usable VAAPI GPU, so they stay byte-for-byte unchanged.
+# Acceleration is still opt-in at runtime (requires /dev/dri + VIDEO_ACCELERATION).
+RUN apk add --no-cache ffmpeg && \
+    if [ "$TARGETARCH" = "amd64" ]; then \
+      apk add --no-cache mesa-va-gallium intel-media-driver libva-utils; \
+    fi
 
 USER node
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
