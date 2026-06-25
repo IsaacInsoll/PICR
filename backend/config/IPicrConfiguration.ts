@@ -4,6 +4,15 @@ export interface IPicrConfiguration {
   baseUrlPathname: string;
   ffmpegPath?: string;
   ffprobePath?: string;
+  // Video acceleration config (from env) + resolved runtime status (set at
+  // boot by detectVideoAcceleration). Mode/reason always populated; driver and
+  // codecs only when VAAPI is active.
+  videoAcceleration: 'auto' | 'off';
+  videoAccelerationDevice: string;
+  videoAccelerationMode: 'cpu' | 'vaapi';
+  videoAccelerationReason: string;
+  videoAccelerationDriver?: string;
+  videoAccelerationCodecs?: string[];
   tokenSecret?: string;
   databaseUrl?: string;
   debugSql?: boolean;

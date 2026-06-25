@@ -50,6 +50,11 @@ export const envSchema = z.object({
   FFMPEG_PATH: z.string().min(1).optional(),
   FFPROBE_PATH: z.string().min(1).optional(),
 
+  // Hardware video acceleration. Defaults give "free" VAAPI when a render
+  // device is passed into the container; neither var is required.
+  VIDEO_ACCELERATION: z.enum(['auto', 'off']).default('auto'),
+  VIDEO_ACCELERATION_DEVICE: z.string().min(1).default('/dev/dri/renderD128'),
+
   POLLING_INTERVAL: z.coerce
     .number({ description: 'Polling Interval' })
     .positive()

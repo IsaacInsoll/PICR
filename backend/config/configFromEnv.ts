@@ -49,6 +49,11 @@ export const configFromEnv = () => {
     baseUrlPathname,
     ffmpegPath: d.FFMPEG_PATH,
     ffprobePath: d.FFPROBE_PATH,
+    videoAcceleration: d.VIDEO_ACCELERATION,
+    videoAccelerationDevice: d.VIDEO_ACCELERATION_DEVICE,
+    // Resolved at boot by detectVideoAcceleration(); CPU until then.
+    videoAccelerationMode: 'cpu',
+    videoAccelerationReason: 'Video acceleration not yet detected',
     usePolling: d.USE_POLLING,
     pollingInterval: d.POLLING_INTERVAL,
     tokenSecret: d.TOKEN_SECRET,

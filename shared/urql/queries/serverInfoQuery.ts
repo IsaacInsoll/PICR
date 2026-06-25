@@ -11,6 +11,12 @@ export const serverInfoQuery = gql(/* GraphQL */ `
       usePolling
       host
       canWrite
+      videoAcceleration {
+        mode
+        reason
+        driver
+        codecs
+      }
     }
   }
 `);

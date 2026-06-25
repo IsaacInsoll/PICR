@@ -26,7 +26,7 @@ import {
   serverInfoQuery,
 } from '@shared/urql/queries/serverInfoQuery';
 import { runBenchmarkMutation } from '@shared/urql/mutations/runBenchmarkMutation';
-import type { BenchmarkStep } from '@shared/gql/graphql';
+import type { BenchmarkStep, ServerInfoQueryQuery } from '@shared/gql/graphql';
 import { copyToClipboard } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
 
@@ -76,6 +76,7 @@ export const ServerInfo = () => {
         <Suspense>
           <AvifEnabled />
         </Suspense>
+        <VideoAcceleration info={server.videoAcceleration} />
         <Benchmark />
       </Table.Tbody>
     </Table>
@@ -87,6 +88,30 @@ const AvifEnabled = () => {
   return (
     <Row title="AVIF Enabled">
       <Bool value={avif} />
+    </Row>
+  );
+};
+
+type VideoAccelerationInfo = NonNullable<
+  ServerInfoQueryQuery['serverInfo']
+>['videoAcceleration'];
+
+const VideoAcceleration = ({ info }: { info: VideoAccelerationInfo }) => {
+  const active = info.mode === 'vaapi';
+  return (
+    <Row title="Video Acceleration">
+      <Code c={active ? 'green' : 'dimmed'}>
+        {active ? 'VAAPI' : 'CPU only'}
+      </Code>
+      {active ? (
+        <Text size="sm">
+          {[info.driver, info.codecs.join(', ')].filter(Boolean).join(' — ')}
+        </Text>
+      ) : (
+        <Text size="sm" c="dimmed">
+          {info.reason}
+        </Text>
+      )}
     </Row>
   );
 };

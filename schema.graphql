@@ -339,6 +339,7 @@ type ServerInfo {
   mediaSize: BigInt!
   usePolling: Boolean!
   version: String!
+  videoAcceleration: VideoAccelerationInfo!
 }
 
 type Task {
@@ -407,6 +408,13 @@ type Video implements FileInterface {
   rating: Int
   totalComments: Int
   type: FileType!
+}
+
+type VideoAccelerationInfo {
+  codecs: [String!]!
+  driver: String
+  mode: String!
+  reason: String!
 }
 
 type VideoMetadataSummary {

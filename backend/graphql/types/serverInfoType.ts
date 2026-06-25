@@ -1,10 +1,28 @@
 import {
   GraphQLBoolean,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
+
+export const videoAccelerationInfoType = new GraphQLObjectType({
+  name: 'VideoAccelerationInfo',
+  fields: () => ({
+    // 'cpu' | 'vaapi'
+    mode: { type: new GraphQLNonNull(GraphQLString) },
+    // human-readable status / fallback reason
+    reason: { type: new GraphQLNonNull(GraphQLString) },
+    // driver + accelerated codecs only present when mode === 'vaapi'
+    driver: { type: GraphQLString },
+    codecs: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(GraphQLString)),
+      ),
+    },
+  }),
+});
 
 export const serverInfoType = new GraphQLObjectType({
   name: 'ServerInfo',
@@ -17,6 +35,7 @@ export const serverInfoType = new GraphQLObjectType({
     usePolling: { type: new GraphQLNonNull(GraphQLBoolean) },
     dev: { type: new GraphQLNonNull(GraphQLBoolean) },
     canWrite: { type: new GraphQLNonNull(GraphQLBoolean) },
+    videoAcceleration: { type: new GraphQLNonNull(videoAccelerationInfoType) },
     cacheSize: { type: new GraphQLNonNull(GraphQLBigInt) },
     mediaSize: { type: new GraphQLNonNull(GraphQLBigInt) },
   }),

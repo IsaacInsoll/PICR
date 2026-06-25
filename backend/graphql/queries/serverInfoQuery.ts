@@ -17,6 +17,12 @@ const resolver: PicrResolver = async (_, _params, context) => {
     usePolling: picrConfig.usePolling,
     dev: picrConfig.dev,
     canWrite: picrConfig.canWrite,
+    videoAcceleration: {
+      mode: picrConfig.videoAccelerationMode,
+      reason: picrConfig.videoAccelerationReason,
+      driver: picrConfig.videoAccelerationDriver ?? null,
+      codecs: picrConfig.videoAccelerationCodecs ?? [],
+    },
     //these are functions because they can be potentially SUPER EXPENSIVE
     cacheSize: () => folderSize(picrConfig.cachePath),
     mediaSize: () => folderSize(picrConfig.mediaPath),
