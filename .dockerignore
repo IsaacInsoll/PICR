@@ -1,2 +1,5 @@
 *
 !dist
+# Built on the CI host (glibc/x64); discarded and reinstalled for Alpine/musl
+# (and arm64) inside the image, so never send it into the build context.
+dist/node_modules

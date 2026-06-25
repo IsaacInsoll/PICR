@@ -115,5 +115,10 @@ jobs:
         name: '🗜️ Generate Build Artifacts'
         with:
           name: picr-build-${{ github.sha }}
-          path: ./dist/
+          # Exclude node_modules: it is CI-host (glibc/x64) binaries that the
+          # Docker image discards and reinstalls for Alpine/musl + arm64.
+          # Dropping it shrinks the artifact by ~200MB (faster up/download).
+          path: |
+            dist/
+            !dist/node_modules
           if-no-files-found: error

@@ -52,3 +52,5 @@ jobs:
             org.opencontainers.image.version=${{ inputs.version }}
             org.opencontainers.image.revision=${{ github.sha }}
           tags: ${{ inputs.image_tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
