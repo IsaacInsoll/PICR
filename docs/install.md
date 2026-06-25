@@ -115,6 +115,10 @@ There are lots of environment variables you can use, but only a few are needed:
   This also suppresses folder-view notifications (they ride on the same code path). Existing log rows are not deleted.
   Useful for privacy-sensitive deployments or to reduce database growth. Requires a server restart to change.
 
+- `VIDEO_ACCELERATION` / `VIDEO_ACCELERATION_DEVICE` [optional] Hardware video acceleration (VAAPI).
+  You don't normally need to set either — just pass a GPU into the container and it's auto-detected.
+  See [Hardware Video Acceleration](#hardware-video-acceleration-vaapi) below.
+
 ## Run PICR
 
 Start the docker compose stack and it should start PICR and the postgres database.
@@ -127,3 +131,66 @@ Once it's up and running you can then log in. Go to the url (EG: http://<ip-addr
 login of `admin` / `picr1234`
 
 Change the account details (username and password), then start using PICR 🔥
+
+## Hardware Video Acceleration (VAAPI)
+
+PICR detects an Intel or AMD GPU via VAAPI and exposes it for video work. It is
+optional, Linux + `amd64` only, and fully opt-in: with no GPU passed into the
+container PICR behaves exactly as before.
+
+> **What is accelerated today?** Honestly — nothing in normal use yet. PICR's
+> current video workload is thumbnail generation, and benchmarking showed VAAPI
+> is _slower_ than the CPU for that (extracting a handful of seeked frames is
+> dominated by GPU setup overhead). So **thumbnails are generated on the CPU**.
+> VAAPI is, however, dramatically faster for whole-video transcoding (~2.5–3×),
+> so this is groundwork for upcoming transcoding features. For now you can see
+> the detected GPU on the **Server Info** page and compare CPU vs VAAPI yourself
+> with the admin **Benchmark** tool.
+
+### How it works
+
+- VAAPI drivers are bundled in the `amd64` image (Intel `iHD` + AMD `radeonsi`).
+  The `arm64` image does not include them.
+- On startup PICR probes the render device and reports VAAPI as available if it
+  works; otherwise it logs one line explaining why. A broken or missing GPU never
+  stops PICR from starting.
+- You can see the resolved status (and which codecs the GPU supports) on the admin
+  **Server Info** page, e.g. _"VAAPI — Intel iHD driver … — H.264, HEVC, VP9"_.
+- The admin **Benchmark** runs each video step on both CPU and VAAPI so you can
+  compare them on your own hardware.
+
+### Enabling it
+
+Pass the GPU render device into the `picr` service. That is usually all you need —
+acceleration is auto-detected:
+
+```yaml
+services:
+  picr:
+    # ...existing config from the compose file above...
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - '<render-gid>' # see below
+```
+
+The container runs as the `node` user, so it must be in the host's `render` group
+to reach the GPU. Find that group's numeric ID **on the host**:
+
+```bash
+getent group render
+# e.g. render:x:992:   ->   992 is the GID to use
+```
+
+Put that number under `group_add`. The GID varies between machines, so don't copy
+a value from another host.
+
+### Optional overrides
+
+- `VIDEO_ACCELERATION=off` — force CPU even when a GPU is present (useful if a
+  driver produces corrupted output).
+- `VIDEO_ACCELERATION_DEVICE=/dev/dri/renderD129` — target a specific render node
+  when you have multiple GPUs (defaults to `/dev/dri/renderD128`).
+
+If acceleration isn't engaging, see
+[Troubleshooting → Hardware video acceleration](troubleshooting.md#hardware-video-acceleration-not-working).

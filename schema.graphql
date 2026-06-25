@@ -43,9 +43,13 @@ type BenchmarkResult {
   imageCount: Int!
   jpegResize: BenchmarkStep!
   totalMs: Float!
+  videoAccelerationMode: String!
+  videoAccelerationReason: String!
   videoCount: Int!
-  videoThumbnail: BenchmarkStep!
-  videoTranscode: BenchmarkStep!
+  videoThumbnailAccelerated: BenchmarkStep!
+  videoThumbnailCpu: BenchmarkStep!
+  videoTranscodeAccelerated: BenchmarkStep!
+  videoTranscodeCpu: BenchmarkStep!
 }
 
 type BenchmarkStep {

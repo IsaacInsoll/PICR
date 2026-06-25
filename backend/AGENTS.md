@@ -202,6 +202,30 @@ sequenceDiagram
   `ffmpeg.ffprobe(...)`. Some self-hosted installs set `FFPROBE_PATH` because
   `ffprobe` is not on `PATH`.
 
+### Hardware Video Acceleration (VAAPI)
+
+- The resolved acceleration status lives on `picrConfig`
+  (`videoAccelerationMode` = `'cpu' | 'vaapi'`, plus `videoAccelerationReason`,
+  `videoAccelerationDriver`, `videoAccelerationCodecs`). It is set once at boot
+  by `backend/boot/detectVideoAcceleration.ts`. The authority is a tiny ffmpeg
+  VAAPI smoke pipeline (proves ffmpeg can run `scale_vaapi` on the device);
+  `vainfo` only enriches the driver/codec display. Never re-probe per request;
+  read the config instead.
+- Detection and every accelerated media operation must be **non-fatal**: VAAPI
+  failure falls back to CPU, never `process.exit`. Gate VAAPI ffmpeg paths on
+  `picrConfig.videoAccelerationMode === 'vaapi'` and retry the file on CPU if
+  the hardware path throws (see the benchmark for the pattern).
+- VAAPI drivers ship in the `amd64` Docker image only; `arm64` has no drivers
+  and always resolves to CPU. Anything that runs ffmpeg VAAPI filters must
+  therefore tolerate the drivers being absent.
+- **Production video thumbnails are intentionally CPU-only.** VAAPI benchmarked
+  ~16-19% slower than CPU for the 10-frame seek montage (GPU upload/download
+  overhead dominates), so `generateVideoThumbnail.ts` does not use VAAPI. The
+  VAAPI thumbnail helper (`media/vaapiVideo.ts`, `extractVaapiThumbnailFrames`)
+  is benchmark/reference-only. VAAPI is retained because it is ~2.5-2.9x faster
+  for whole-video transcode — groundwork for a future transcoding feature. Don't
+  wire VAAPI into the thumbnail path without re-benchmarking.
+
 ### Media Write Access
 
 - Treat effective file operations as the source of truth for media write access.

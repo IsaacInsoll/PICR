@@ -21,14 +21,24 @@ export const runBenchmarkMutation = gql(/* GraphQL */ `
         ms
         skippedReason
       }
-      videoThumbnail {
+      videoThumbnailCpu {
         ms
         skippedReason
       }
-      videoTranscode {
+      videoThumbnailAccelerated {
         ms
         skippedReason
       }
+      videoTranscodeCpu {
+        ms
+        skippedReason
+      }
+      videoTranscodeAccelerated {
+        ms
+        skippedReason
+      }
+      videoAccelerationMode
+      videoAccelerationReason
     }
   }
 `);

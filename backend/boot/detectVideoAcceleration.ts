@@ -7,7 +7,11 @@ import { log } from '../logger.js';
 // acceleration mode/driver/codecs so the benchmark and ServerInfo can report
 // how video is being processed. It NEVER throws and NEVER exits the process:
 // the worst case is falling back to CPU. Per-file CPU fallback at runtime still
-// covers cases where a codec vainfo advertises can't actually be used.
+// covers cases where a specific file/codec can't be accelerated.
+//
+// The authority for "is VAAPI usable" is a tiny ffmpeg VAAPI pipeline (proves
+// PICR's ffmpeg can actually run scale_vaapi against the device), NOT vainfo.
+// vainfo only enriches the display with the driver name + codec list.
 
 const probeTimeoutMs = 5000;
 
@@ -36,21 +40,18 @@ export const detectVideoAcceleration = async (): Promise<void> => {
     return;
   }
 
-  const probe = spawnSync(
-    'vainfo',
-    ['--display', 'drm', '--device', videoAccelerationDevice],
-    { encoding: 'utf8', timeout: probeTimeoutMs },
-  );
-
-  if (probe.error || probe.status !== 0) {
-    // Device was present but VAAPI did not initialise. Log loudly (warn) so a
-    // user who mounted /dev/dri expecting acceleration can see why it didn't.
-    useCpu('warn', `VAAPI probe failed: ${probeFailureReason(probe)}`);
+  // Authority check: can ffmpeg actually run a VAAPI filter on this device?
+  const ffmpegProbe = probeFfmpegVaapi(videoAccelerationDevice);
+  if (ffmpegProbe.error || ffmpegProbe.status !== 0) {
+    // Device present but ffmpeg VAAPI didn't work. Log loudly (warn) so a user
+    // who mounted /dev/dri expecting acceleration can see why it didn't happen.
+    useCpu('warn', `VAAPI probe failed: ${failureReason(ffmpegProbe)}`);
     return;
   }
 
-  const driver = parseDriver(probe.stdout);
-  const codecs = parseCodecs(probe.stdout);
+  // ffmpeg VAAPI works. Enrich the display with driver + codecs via vainfo
+  // (best effort — if vainfo is missing/fails we still report VAAPI active).
+  const { driver, codecs } = vainfoCapabilities(videoAccelerationDevice);
 
   picrConfig.videoAccelerationMode = 'vaapi';
   picrConfig.videoAccelerationDriver = driver;
@@ -69,6 +70,47 @@ export const detectVideoAcceleration = async (): Promise<void> => {
   );
 };
 
+// Minimal "does ffmpeg VAAPI work" smoke test. Mirrors the full thumbnail data
+// path — hwupload -> scale_vaapi -> hwdownload -> sw frame — so a working probe
+// proves the round-trip the thumbnails actually use (not just GPU-side scaling).
+// Uses a synthetic source, so no input file or GPU decode is required.
+const probeFfmpegVaapi = (device: string): SpawnSyncReturns<string> =>
+  spawnSync(
+    picrConfig.ffmpegPath ?? 'ffmpeg',
+    [
+      '-hide_banner',
+      '-loglevel',
+      'error',
+      '-init_hw_device',
+      `vaapi=va:${device}`,
+      '-filter_hw_device',
+      'va',
+      '-f',
+      'lavfi',
+      '-i',
+      'color=c=black:s=64x64:d=0.1',
+      '-vf',
+      'format=nv12,hwupload,scale_vaapi=w=32:h=32,hwdownload,format=nv12',
+      '-frames:v',
+      '1',
+      '-f',
+      'null',
+      '-',
+    ],
+    { encoding: 'utf8', timeout: probeTimeoutMs },
+  );
+
+const vainfoCapabilities = (
+  device: string,
+): { driver?: string; codecs: string[] } => {
+  const info = spawnSync('vainfo', ['--display', 'drm', '--device', device], {
+    encoding: 'utf8',
+    timeout: probeTimeoutMs,
+  });
+  if (info.error || info.status !== 0) return { codecs: [] };
+  return { driver: parseDriver(info.stdout), codecs: parseCodecs(info.stdout) };
+};
+
 const useCpu = (level: 'info' | 'warn', reason: string): void => {
   picrConfig.videoAccelerationMode = 'cpu';
   picrConfig.videoAccelerationDriver = undefined;
@@ -77,11 +119,11 @@ const useCpu = (level: 'info' | 'warn', reason: string): void => {
   log(level, `🎬 Using CPU only for video processing because ${reason}`, true);
 };
 
-const probeFailureReason = (probe: SpawnSyncReturns<string>): string => {
+const failureReason = (probe: SpawnSyncReturns<string>): string => {
   if (probe.error) return probe.error.message;
   const output = (probe.stderr || probe.stdout || '').trim();
   const lastLine = output.split('\n').filter(Boolean).at(-1);
-  return lastLine ?? `vainfo exited with status ${probe.status}`;
+  return lastLine ?? `exited with status ${probe.status}`;
 };
 
 const parseDriver = (output: string): string | undefined => {

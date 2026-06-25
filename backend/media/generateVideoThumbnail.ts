@@ -16,6 +16,15 @@ const numberOfVideoSnapshots = 10;
 // so lets queue it up
 const videoThumbnailQueue: { [key: string]: Promise<void> } = {};
 
+// NOTE: video thumbnails are generated on the CPU on purpose, even when VAAPI
+// hardware acceleration is available. Benchmarking on real Intel hardware showed
+// VAAPI ~16-19% SLOWER than CPU for this workload: extracting 10 seeked frames is
+// dominated by GPU upload/download/init overhead rather than decode cost, so the
+// GPU loses. (Whole-video transcoding is the opposite — VAAPI ~2.5-2.9x faster —
+// but PICR has no transcoding workload yet.) A VAAPI thumbnail pipeline is kept in
+// the admin benchmark only (see backend/media/vaapiVideo.ts) for comparison and
+// in case future hardware/codecs change the calculus.
+
 const processVideoThumbnail = async (
   file: FileFields,
   size: ThumbnailSize,

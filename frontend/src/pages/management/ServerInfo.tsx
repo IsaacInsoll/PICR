@@ -308,12 +308,40 @@ const Benchmark = () => {
                   value={<BenchmarkStepValue step={benchmark.avifResize} />}
                 />
                 <BenchmarkResultLine
-                  title="Video Thumbnails"
-                  value={<BenchmarkStepValue step={benchmark.videoThumbnail} />}
+                  title="Video Acceleration"
+                  value={
+                    benchmark.videoAccelerationMode === 'vaapi'
+                      ? 'VAAPI'
+                      : `CPU only (${benchmark.videoAccelerationReason})`
+                  }
                 />
                 <BenchmarkResultLine
-                  title="Video Transcode"
-                  value={<BenchmarkStepValue step={benchmark.videoTranscode} />}
+                  title="Video Thumbnail (CPU)"
+                  value={
+                    <BenchmarkStepValue step={benchmark.videoThumbnailCpu} />
+                  }
+                />
+                <BenchmarkResultLine
+                  title="Video Thumbnail (VAAPI)"
+                  value={
+                    <BenchmarkStepValue
+                      step={benchmark.videoThumbnailAccelerated}
+                    />
+                  }
+                />
+                <BenchmarkResultLine
+                  title="Video Transcode (CPU)"
+                  value={
+                    <BenchmarkStepValue step={benchmark.videoTranscodeCpu} />
+                  }
+                />
+                <BenchmarkResultLine
+                  title="Video Transcode (VAAPI)"
+                  value={
+                    <BenchmarkStepValue
+                      step={benchmark.videoTranscodeAccelerated}
+                    />
+                  }
                 />
                 <BenchmarkResultLine
                   title="Total"
@@ -369,8 +397,12 @@ type BenchmarkResultForCopy = {
   assetSetup: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
   jpegResize: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
   avifResize: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  videoThumbnail: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  videoTranscode: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
+  videoAccelerationMode: string;
+  videoAccelerationReason: string;
+  videoThumbnailCpu: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
+  videoThumbnailAccelerated: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
+  videoTranscodeCpu: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
+  videoTranscodeAccelerated: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
   totalMs: number;
 };
 
@@ -381,8 +413,15 @@ const formatBenchmarkResults = (benchmark: BenchmarkResultForCopy) => {
     `Asset Setup (not included in total): ${formatStep(benchmark.assetSetup)}`,
     `JPEG Resize: ${formatStep(benchmark.jpegResize)}`,
     `AVIF Resize: ${formatStep(benchmark.avifResize)}`,
-    `Video Thumbnails: ${formatStep(benchmark.videoThumbnail)}`,
-    `Video Transcode: ${formatStep(benchmark.videoTranscode)}`,
+    `Video Acceleration: ${
+      benchmark.videoAccelerationMode === 'vaapi'
+        ? 'VAAPI'
+        : `CPU only (${benchmark.videoAccelerationReason})`
+    }`,
+    `Video Thumbnail (CPU): ${formatStep(benchmark.videoThumbnailCpu)}`,
+    `Video Thumbnail (VAAPI): ${formatStep(benchmark.videoThumbnailAccelerated)}`,
+    `Video Transcode (CPU): ${formatStep(benchmark.videoTranscodeCpu)}`,
+    `Video Transcode (VAAPI): ${formatStep(benchmark.videoTranscodeAccelerated)}`,
     `Total: ${formatMs(benchmark.totalMs)} (asset setup excluded)`,
   ].join('\n');
 };

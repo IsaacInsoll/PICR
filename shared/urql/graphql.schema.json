@@ -397,6 +397,38 @@
             "deprecationReason": null
           },
           {
+            "name": "videoAccelerationMode",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "videoAccelerationReason",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "videoCount",
             "description": null,
             "args": [],
@@ -413,7 +445,7 @@
             "deprecationReason": null
           },
           {
-            "name": "videoThumbnail",
+            "name": "videoThumbnailAccelerated",
             "description": null,
             "args": [],
             "type": {
@@ -429,7 +461,39 @@
             "deprecationReason": null
           },
           {
-            "name": "videoTranscode",
+            "name": "videoThumbnailCpu",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "BenchmarkStep",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "videoTranscodeAccelerated",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "BenchmarkStep",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "videoTranscodeCpu",
             "description": null,
             "args": [],
             "type": {
