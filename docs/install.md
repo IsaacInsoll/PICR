@@ -100,10 +100,11 @@ There are lots of environment variables you can use, but only a few are needed:
 
 - `DATABASE_URL` You can leave the defaults here, which match the `db` container listed lower in the docker file.
 
-- `ADMIN_PASSWORD` [optional] The password for the admin account created on first boot.
-  If you leave it unset, PICR generates a strong random password and prints it to the logs
-  once on first start (read it with `docker logs picr`). `ADMIN_USERNAME` is also optional
-  and defaults to `admin`. Both only apply when there are no users yet.
+- `ADMIN_PASSWORD` [optional] The password for the admin account created on first boot
+  (minimum 8 characters). If you leave it unset, PICR generates a strong random password
+  and prints it to the logs once on first start (read it with `docker logs picr`).
+  `ADMIN_USERNAME` is also optional and defaults to `admin`. Both only apply when there
+  are no users yet.
 
 - `USE_POLLING` this means files aren't detected "instantly" and will take 20 seconds to be discovered. This has been
   found to be useful when you have a large number of files.

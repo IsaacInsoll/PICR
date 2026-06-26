@@ -52,10 +52,16 @@ export const envSchema = z.object({
 
   // Initial admin account created on first boot (when no users exist).
   // If ADMIN_PASSWORD is unset a strong random password is generated and
-  // printed to the logs. Kept permissive (no min length) so we never reject an
-  // operator's chosen password.
+  // printed to the logs. When set it must be at least 8 characters, matching the
+  // in-app password rule (see graphql/mutations/editAdminUser.ts).
   ADMIN_USERNAME: optionalNonEmptyString,
-  ADMIN_PASSWORD: optionalNonEmptyString,
+  ADMIN_PASSWORD: z.preprocess(
+    (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+    z
+      .string()
+      .min(8, 'ADMIN_PASSWORD must be at least 8 characters')
+      .optional(),
+  ),
 
   // Hardware video acceleration. Defaults give "free" VAAPI when a render
   // device is passed into the container; neither var is required.

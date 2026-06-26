@@ -75,7 +75,7 @@ const warnIfDefaultPassword = async () => {
     .join(', ');
   log(
     'warn',
-    `\n⚠️  SECURITY: ${insecure.length} admin user(s) still use the default PICR password${names ? ` (${names})` : ''}.\n    Anyone who can reach this server can sign in as admin — log in and change the password now.\n`,
+    `\n⚠️  SECURITY: ${insecure.length} user account(s) still use the default PICR password${names ? ` (${names})` : ''}.\n    Anyone who can reach this server can sign in with it — log in and change the password now.\n`,
     true,
   );
 };
