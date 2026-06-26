@@ -100,6 +100,11 @@ There are lots of environment variables you can use, but only a few are needed:
 
 - `DATABASE_URL` You can leave the defaults here, which match the `db` container listed lower in the docker file.
 
+- `ADMIN_PASSWORD` [optional] The password for the admin account created on first boot.
+  If you leave it unset, PICR generates a strong random password and prints it to the logs
+  once on first start (read it with `docker logs picr`). `ADMIN_USERNAME` is also optional
+  and defaults to `admin`. Both only apply when there are no users yet.
+
 - `USE_POLLING` this means files aren't detected "instantly" and will take 20 seconds to be discovered. This has been
   found to be useful when you have a large number of files.
 
@@ -127,8 +132,12 @@ start the container again.
 
 If Postgres is still booting when PICR starts, PICR will wait 10 seconds and retry once before treating startup as a real failure.
 
-Once it's up and running you can then log in. Go to the url (EG: http://<ip-address>:6900/) and login with the default
-login of `admin` / `picr1234`
+Once it's up and running you can then log in. Go to the url (EG: http://<ip-address>:6900/) and log in as `admin`
+(or your `ADMIN_USERNAME`). For the password:
+
+- If you set `ADMIN_PASSWORD`, use that.
+- If you didn't, PICR generated one and printed it to the logs on first boot — find it with `docker logs picr`
+  (look for the `admin user ... was created with a generated password` line).
 
 Change the account details (username and password), then start using PICR 🔥
 

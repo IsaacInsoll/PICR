@@ -50,6 +50,13 @@ export const envSchema = z.object({
   FFMPEG_PATH: z.string().min(1).optional(),
   FFPROBE_PATH: z.string().min(1).optional(),
 
+  // Initial admin account created on first boot (when no users exist).
+  // If ADMIN_PASSWORD is unset a strong random password is generated and
+  // printed to the logs. Kept permissive (no min length) so we never reject an
+  // operator's chosen password.
+  ADMIN_USERNAME: optionalNonEmptyString,
+  ADMIN_PASSWORD: optionalNonEmptyString,
+
   // Hardware video acceleration. Defaults give "free" VAAPI when a render
   // device is passed into the container; neither var is required.
   VIDEO_ACCELERATION: z.enum(['auto', 'off']).default('auto'),

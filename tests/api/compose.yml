@@ -17,6 +17,11 @@ services:
       - USE_POLLING=true
       - POLLING_INTERVAL=100
       - BASE_URL=http://localhost:6901/
+      # Pin the first-boot admin credentials so the suite logs in deterministically
+      # (matches defaultCredentials). Without this the auto-created admin would get
+      # a random password and every auth test would fail.
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=picr1234
   test-db:
     container_name: test-db
     ports:
