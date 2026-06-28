@@ -229,6 +229,16 @@ npm run install-all              # Preferred install flow for all subsystems
 # If installing subsystems manually, install `shared` first, then `frontend` / `app`.
 # Do not run `npm install` for `shared`, `frontend`, and `app` in parallel.
 
+# Lockfile note after bumping a dependency (CI gotcha)
+# An incremental `npm install <pkg>@<ver>` can leave a subsystem's
+# package-lock.json out of sync (e.g. missing @emnapi/* wasm transitive nodes).
+# CI runs strict `npm ci`, which then fails with EUSAGE ("lock file ... not in sync").
+# A fully clean `npm install` in `frontend`/`app` will ERESOLVE because
+# mantine-react-table forces a @mantine peer override (handled via `overrides`
+# in frontend/package.json). To regenerate a CI-valid lockfile:
+#   rm -rf node_modules package-lock.json && npm install --legacy-peer-deps
+# then ALWAYS verify with `npm ci` (exactly what CI runs) before committing the lock.
+
 # Formatting
 npm run format               # Apply Prettier formatting across the repo
 npm run format:check         # Verify formatting only (same check used in CI)
