@@ -130,7 +130,7 @@ test('public link and login routes load with no browser/runtime errors', async (
     });
     await expect(page.getByText(/^Login to PICR$/)).toBeVisible();
     await expect(page.getByLabel('Username')).toBeVisible();
-    await expect(page.getByLabel('Password')).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Password' })).toBeVisible();
     await expect(page.getByText('Something went wrong')).toHaveCount(0);
     await page.waitForTimeout(300);
     expectNoBrowserFailures(failures);

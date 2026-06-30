@@ -19,11 +19,13 @@ test('admin login renders the dashboard and a folder view with no browser/runtim
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await expect(page.getByText('Login to PICR')).toBeVisible();
   await expect(page.getByLabel('Username')).toBeVisible();
-  await expect(page.getByLabel('Password')).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Password' })).toBeVisible();
 
   // Drive the real login form.
   await page.getByLabel('Username').fill(defaultCredentials.username);
-  await page.getByLabel('Password').fill(defaultCredentials.password);
+  await page
+    .getByRole('textbox', { name: 'Password' })
+    .fill(defaultCredentials.password);
   await page.getByRole('button', { name: 'Login' }).click();
 
   // Logged-in routes take over → redirected to the dashboard (react-router).
