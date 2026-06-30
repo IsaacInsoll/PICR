@@ -6,8 +6,8 @@ React 19 SPA for the PICR admin interface and public gallery views.
 
 | Technology   | Version | Purpose                 |
 | ------------ | ------- | ----------------------- |
-| React        | 19.2    | UI framework            |
-| React Router | 7.12    | Routing                 |
+| React        | 19.2.7  | UI framework            |
+| React Router | 8.x     | Routing                 |
 | Mantine      | 9.x     | UI component library    |
 | Jotai        | 2.17    | Atomic state management |
 | URQL         | 5.0     | GraphQL client          |
@@ -39,7 +39,8 @@ frontend/src/
 
 ## Routing
 
-React Router v7 with these main routes:
+React Router 8 in declarative mode (`BrowserRouter`, `Routes`, `Route`) with
+these main routes:
 
 ```typescript
 // Public gallery (Link users)
@@ -52,6 +53,10 @@ React Router v7 with these main routes:
 
 // Root redirects to /admin
 ```
+
+React Router 8 requires Node 22.22+ and React/React DOM 19.2.7+. Keep DOM
+router imports in declarative mode from `react-router`; this project does not
+use `react-router-dom`.
 
 ### Route Parameters
 
