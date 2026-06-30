@@ -8,7 +8,7 @@ React 19 SPA for the PICR admin interface and public gallery views.
 | ------------ | ------- | ----------------------- |
 | React        | 19.2    | UI framework            |
 | React Router | 7.12    | Routing                 |
-| Mantine      | 8.x     | UI component library    |
+| Mantine      | 9.x     | UI component library    |
 | Jotai        | 2.17    | Atomic state management |
 | URQL         | 5.0     | GraphQL client          |
 | Vite         | 8.x     | Build tool              |
@@ -185,6 +185,12 @@ updates: {
 Consider invalidating the appropriate "list" query when adding or removing an item. Updates to an existing item should be handled automatically without doing this.
 
 ## UI Components (Mantine)
+
+Mantine 9.x requires React 19.2+ and all installed `@mantine/*` packages must
+stay on the same exact version range. PICR preserves the Mantine 8.x light
+variant colors with `v8CssVariablesResolver`, keeps `defaultRadius: 'sm'`, and
+sets notifications to `pauseResetOnHover="notification"` to avoid subtle UI
+behavior changes from the 9.x defaults.
 
 ### Theme Configuration
 

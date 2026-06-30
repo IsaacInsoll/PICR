@@ -8,7 +8,12 @@ import { themeModeAtom } from './atoms/themeModeAtom';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
-import { LoadingOverlay, MantineProvider, Portal } from '@mantine/core';
+import {
+  LoadingOverlay,
+  MantineProvider,
+  Portal,
+  v8CssVariablesResolver,
+} from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
@@ -67,6 +72,7 @@ const App = () => {
       <BrowserRouter basename={basePathname || undefined}>
         <MantineProvider
           theme={mantineTheme}
+          cssVariablesResolver={v8CssVariablesResolver}
           forceColorScheme={forceColorScheme}
           defaultColorScheme={'auto'}
         >
@@ -76,7 +82,7 @@ const App = () => {
           <PicrErrorBoundary>
             <Suspense fallback={<PicrLoadingOverlay />}>
               <UserProvider />
-              <Notifications />
+              <Notifications pauseResetOnHover="notification" />
             </Suspense>
           </PicrErrorBoundary>
           <GlobalErrorOverlay />

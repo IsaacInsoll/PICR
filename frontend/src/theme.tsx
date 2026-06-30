@@ -4,6 +4,7 @@ export const fonts =
   '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji';
 
 export const theme = createTheme({
+  defaultRadius: 'sm',
   fontFamily: 'Roboto, ' + fonts,
   fontFamilyMonospace:
     'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace',
