@@ -5,6 +5,12 @@ The build process is in `.github/workflows/build.yml`.
 - Github will automatically run this on every push to `master`
 - You can run it locally with the following command: `npm run workflow`
 
+`npm run workflow` depends on the local `act` version supporting the Node.js
+runtime declared by the workflow actions. If `act` fails before running any
+PICR build steps with an error like `runs.using ... got node24`, update `act`
+before investigating project build failures. On macOS/Homebrew installs, check
+with `act --version` and update with `brew upgrade act`.
+
 This will run the following commands in order. You can run any of these individually at any time
 
 | Command                        | Description                            | Notes                                                         |

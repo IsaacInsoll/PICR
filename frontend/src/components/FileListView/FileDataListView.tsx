@@ -1,7 +1,10 @@
 import type { FileListViewStyleComponentProps } from './FolderContentsView';
 import { prettyBytes } from '@shared/prettyBytes';
-import type { PicrColumns } from '../PicrDataGrid';
-import { PicrDataGrid } from '../PicrDataGrid';
+import {
+  createPicrColumns,
+  PicrDataGrid,
+  type PicrColumns,
+} from '../PicrDataGrid';
 import { Page } from '../Page';
 import type { MantineSize } from '@mantine/core';
 import { Rating } from '@mantine/core';
@@ -14,6 +17,8 @@ import { FolderMenuItems } from './FolderMenu';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import type { FolderContentsItem } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
+
+const folderContentsColumn = createPicrColumns<FolderContentsItem>();
 
 export const FileDataListView = ({
   files,
@@ -63,70 +68,97 @@ const columns: (PicrColumns<FolderContentsItem> & {
   visibleFor: MantineSize;
 })[] = [
   {
-    accessorKey: 'name',
-    header: 'Name',
-    size: 10,
+    ...folderContentsColumn.accessor('name', {
+      header: 'Name',
+      widthPercent: 10,
+    }),
     visibleFor: 'xs',
     isComment: false,
   },
   {
-    header: 'Type',
-    size: 10,
+    ...folderContentsColumn.accessor(
+      (row) => (isFolderContentsFile(row) ? row.type : 'Folder'),
+      {
+        id: 'type',
+        header: 'Type',
+        widthPercent: 10,
+      },
+    ),
     visibleFor: 'md',
     isComment: false,
-    accessorFn: (row) => {
-      return isFolderContentsFile(row) ? row.type : 'Folder';
-    },
   },
   {
-    accessorKey: 'rating',
-    header: 'Rating',
+    ...folderContentsColumn.accessor(
+      (row) => (isFolderContentsFile(row) ? row.rating : null),
+      {
+        id: 'rating',
+        header: 'Rating',
+        widthPercent: 10,
+        cell: ({ value }) => {
+          const rating = Number(value ?? 0);
+          return rating > 0 ? <Rating readOnly value={rating} /> : null;
+        },
+      },
+    ),
     isComment: true,
-    size: 10,
-    Cell: ({ cell }) => {
-      const rating = Number(cell.getValue() ?? 0);
-      return rating > 0 ? <Rating readOnly value={rating} /> : null;
-    },
     visibleFor: 'xs',
   },
   {
-    accessorKey: 'flag',
-    header: 'Flag',
-    size: 10,
+    ...folderContentsColumn.accessor(
+      (row) => (isFolderContentsFile(row) ? row.flag : null),
+      {
+        id: 'flag',
+        header: 'Flag',
+        widthPercent: 10,
+        cell: ({ value }) => <FileFlagBadge flag={value} />,
+      },
+    ),
     isComment: true,
-    Cell: ({ cell }) => <FileFlagBadge flag={cell.getValue() as never} />,
     visibleFor: 'xs',
   },
   {
-    accessorKey: 'totalComments',
-    header: 'Comments',
-    size: 7,
-    Cell: ({ cell }) => {
-      const totalComments = Number(cell.getValue() ?? 0);
-      return totalComments > 0 ? totalComments : '';
-    },
+    ...folderContentsColumn.accessor(
+      (row) => (isFolderContentsFile(row) ? row.totalComments : null),
+      {
+        id: 'totalComments',
+        header: 'Comments',
+        widthPercent: 7,
+        cell: ({ value }) => {
+          const totalComments = Number(value ?? 0);
+          return totalComments > 0 ? totalComments : '';
+        },
+      },
+    ),
     isComment: true,
     visibleFor: 'sm',
   },
   {
-    accessorKey: 'latestComment',
-    header: 'Latest Action',
-    size: 10,
-    Cell: ({ cell }) => {
-      const value = cell.getValue();
-      return <DateDisplay dateString={value ? String(value) : undefined} />;
-    },
+    ...folderContentsColumn.accessor(
+      (row) => (isFolderContentsFile(row) ? row.latestComment : null),
+      {
+        id: 'latestComment',
+        header: 'Latest Action',
+        widthPercent: 10,
+        cell: ({ value }) => {
+          return <DateDisplay dateString={value ?? undefined} />;
+        },
+      },
+    ),
     isComment: true,
     visibleFor: 'sm',
   },
   {
-    accessorKey: 'fileSize',
-    header: 'File Size',
-    Cell: ({ cell }) => {
-      const fileSize = Number(cell.getValue() ?? 0);
-      return <>{fileSize ? prettyBytes(fileSize) : null}</>;
-    },
-    size: 10,
+    ...folderContentsColumn.accessor(
+      (row) => (isFolderContentsFile(row) ? row.fileSize : null),
+      {
+        id: 'fileSize',
+        header: 'File Size',
+        cell: ({ value }) => {
+          return <>{value ? prettyBytes(value) : null}</>;
+        },
+        widthPercent: 10,
+      },
+    ),
     visibleFor: 'md',
     isComment: false,
   },

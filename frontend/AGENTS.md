@@ -6,13 +6,13 @@ React 19 SPA for the PICR admin interface and public gallery views.
 
 | Technology   | Version | Purpose                 |
 | ------------ | ------- | ----------------------- |
-| React        | 19.1    | UI framework            |
-| React Router | 7.5     | Routing                 |
-| Mantine      | 7.x     | UI component library    |
-| Jotai        | 2.10    | Atomic state management |
-| URQL         | 4.2     | GraphQL client          |
+| React        | 19.2    | UI framework            |
+| React Router | 7.12    | Routing                 |
+| Mantine      | 8.x     | UI component library    |
+| Jotai        | 2.17    | Atomic state management |
+| URQL         | 5.0     | GraphQL client          |
 | Vite         | 8.x     | Build tool              |
-| TypeScript   | 5.6     | Type safety             |
+| TypeScript   | 6.0     | Type safety             |
 
 ## Directory Structure
 
@@ -214,6 +214,23 @@ function MyComponent() {
   return isMobile ? <MobileView /> : <DesktopView />;
 }
 ```
+
+### Data Tables
+
+- `PicrDataGrid` is the local table abstraction. It is backed by
+  `@tanstack/react-table` and rendered with Mantine primitives.
+- Keep table-library types inside `components/PicrDataGrid/`; callers should
+  use the exported `createPicrColumns` helper and `PicrColumns` type rather than
+  importing TanStack directly.
+- Use `createPicrColumns<T>().accessor(keyOrFn, options)` for direct row keys,
+  dotted accessor keys, and derived typed values. Use `.display(options)` for
+  action/display-only columns.
+- Accessor columns, including function accessors, follow TanStack's default
+  sortable behavior. Set `enableSorting: false` only when a value column should
+  not be sortable.
+- Column sizing is explicit CSS sizing: use `widthPercent` for percentage
+  widths, and `width`, `minWidth`, or `maxWidth` for CSS length values or pixel
+  numbers.
 
 ### Browser API Availability
 

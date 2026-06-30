@@ -1,4 +1,7 @@
-import type { PicrColumns } from '../../components/PicrDataGrid';
+import {
+  createPicrColumns,
+  type PicrColumns,
+} from '../../components/PicrDataGrid';
 import type { PicrUser } from '@shared/types/picr';
 import { FolderName } from '../../components/FolderName';
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
@@ -9,75 +12,79 @@ import { BooleanIcon } from './BooleanIcon';
 import { LinkModeChip } from '../../components/LinkModeChip';
 import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
 
+const userColumn = createPicrColumns<PicrUser>();
+
 export const userColumns: PicrColumns<PicrUser>[] = [
-  { accessorKey: 'name', header: 'Name', minSize: 25 },
-  { accessorKey: 'username', header: 'Username', minSize: 25 },
-  {
-    accessorKey: 'folder.name',
+  userColumn.accessor('name', { header: 'Name', minWidth: 25 }),
+  userColumn.accessor('username', {
+    header: 'Username',
+    minWidth: 25,
+  }),
+  userColumn.accessor('folder.name', {
     header: 'Folder',
-    minSize: 25,
-    accessorFn: ({ folder }) =>
-      folder ? <FolderName folder={folder} /> : undefined,
-  },
-  {
-    accessorKey: 'enabled',
-    maxSize: 50,
+    minWidth: 25,
+    cell: ({ row }) =>
+      row.original.folder ? <FolderName folder={row.original.folder} /> : null,
+  }),
+  userColumn.accessor('enabled', {
+    maxWidth: 50,
     header: 'Enabled',
-    accessorFn: ({ enabled }) => <BooleanIcon value={!!enabled} />,
-  },
+    cell: ({ value }) => <BooleanIcon value={!!value} />,
+  }),
 ];
 
 export const publicLinkColumns: PicrColumns<PicrUser>[] = [
-  { accessorKey: 'name', header: 'Name', minSize: 25 },
-  {
-    accessorKey: 'folder.name',
+  userColumn.accessor('name', { header: 'Name', minWidth: 25 }),
+  userColumn.accessor('folder.name', {
     header: 'Folder',
-    minSize: 25,
-    accessorFn: ({ folder }) =>
-      folder ? <FolderName folder={folder} /> : undefined,
-  },
-  {
-    accessorKey: 'enabled',
-    maxSize: 50,
+    minWidth: 25,
+    cell: ({ row }) =>
+      row.original.folder ? <FolderName folder={row.original.folder} /> : null,
+  }),
+  userColumn.accessor('enabled', {
+    maxWidth: 50,
     header: 'Enabled',
-    accessorFn: ({ enabled }) => <BooleanIcon value={!!enabled} />,
-  },
-  {
+    cell: ({ value }) => <BooleanIcon value={!!value} />,
+  }),
+  userColumn.accessor('commentPermissions', {
     header: 'Comments',
-    maxSize: 75,
-    accessorFn: (user: PicrUser) => (
-      <CommentChip
-        commentPermissions={user.commentPermissions ?? CommentPermissions.Read}
-      />
+    maxWidth: 75,
+    cell: ({ value }) => (
+      <CommentChip commentPermissions={value ?? CommentPermissions.Read} />
     ),
-  },
-  {
+  }),
+  userColumn.accessor('linkMode', {
     header: 'LinkMode',
-    maxSize: 75,
-    accessorFn: (user: PicrUser) => (
-      <LinkModeChip linkMode={user.linkMode ?? LinkMode.FinalDelivery} />
+    maxWidth: 75,
+    cell: ({ value }) => (
+      <LinkModeChip linkMode={value ?? LinkMode.FinalDelivery} />
     ),
-  },
-  {
+  }),
+  userColumn.display({
+    id: 'actions',
     header: 'Actions',
-    minSize: 200,
-    accessorFn: ({ enabled, uuid, folderId, folder }) => (
+    minWidth: 200,
+    cell: ({ row }) => (
       <Group gap={1}>
         <CopyPublicLinkButton
-          disabled={!enabled || !uuid || !folderId}
-          hash={uuid ?? undefined}
-          folderId={folderId ?? undefined}
+          disabled={
+            !row.original.enabled ||
+            !row.original.uuid ||
+            !row.original.folderId
+          }
+          hash={row.original.uuid ?? undefined}
+          folderId={row.original.folderId ?? undefined}
           variant="subtle"
           size="compact-sm"
         />
-        {folder ? (
+        {row.original.folder ? (
           <ViewFolderButton
-            folder={folder}
+            folder={row.original.folder}
             variant="subtle"
             size="compact-sm"
           />
         ) : null}
       </Group>
     ),
-  },
+  }),
 ];

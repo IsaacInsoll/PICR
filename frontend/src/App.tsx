@@ -7,7 +7,6 @@ import { themeModeAtom } from './atoms/themeModeAtom';
 
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
-import 'mantine-react-table/styles.css';
 
 import { LoadingOverlay, MantineProvider, Portal } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';

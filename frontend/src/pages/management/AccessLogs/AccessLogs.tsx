@@ -1,6 +1,9 @@
 import { useQuery } from 'urql';
-import type { PicrColumns } from '../../../components/PicrDataGrid';
-import { PicrDataGrid } from '../../../components/PicrDataGrid';
+import {
+  createPicrColumns,
+  type PicrColumns,
+  PicrDataGrid,
+} from '../../../components/PicrDataGrid';
 import { UserType } from '@shared/gql/graphql';
 import { DateDisplay } from '../../../components/FileListView/Filtering/PrettyDate';
 import { LazyPicrAvatar } from '../../../components/LazyPicrAvatar';
@@ -16,6 +19,8 @@ import { accessLogQuery } from '@shared/urql/queries/accessLogQuery';
 import type { AccessLogRow } from '@shared/types/queryRows';
 import { AccessLogListItem } from '../../../components/AccessLogListItem';
 import { AccessLogClientMeta } from '../../../components/AccessLogClientMeta';
+
+const accessLogColumn = createPicrColumns<AccessLogRow>();
 
 export const AccessLogs = ({
   folderId,
@@ -85,63 +90,62 @@ const Body = ({
     );
   }
 
-  return (
-    <PicrDataGrid columns={accessLogColumns} data={data} onClick={() => {}} />
-  );
+  return <PicrDataGrid columns={accessLogColumns} data={data} />;
 };
 
 const accessLogColumns: PicrColumns<AccessLogRow>[] = [
-  {
-    accessorKey: 'timestamp',
+  accessLogColumn.accessor('timestamp', {
     header: 'Time',
-    Cell: ({ cell }) => {
-      return <DateDisplay dateString={cell.getValue() as string} />;
+    cell: ({ value }) => {
+      return <DateDisplay dateString={value} />;
     },
-  },
-  {
-    accessorKey: 'folder.name',
+  }),
+  accessLogColumn.accessor('folder.name', {
     header: 'Folder',
-    minSize: 25,
-    accessorFn: ({ folder }) =>
-      folder ? (
+    minWidth: 25,
+    cell: ({ row }) =>
+      row.original.folder ? (
         <FolderName
           folder={{
-            id: folder.id,
-            name: folder.name,
-            title: folder.title,
-            subtitle: folder.subtitle,
-            parentId: folder.parentId,
+            id: row.original.folder.id,
+            name: row.original.folder.name,
+            title: row.original.folder.title,
+            subtitle: row.original.folder.subtitle,
+            parentId: row.original.folder.parentId,
           }}
         />
       ) : null,
-  },
-  {
+  }),
+  accessLogColumn.accessor('userId', {
     header: 'User',
-    minSize: 25,
-    accessorFn: (al: AccessLogRow) => (
+    minWidth: 25,
+    cell: ({ value }) => (
       <Suspense fallback={<LoadingIndicator size="small" />}>
-        {al.userId ? (
+        {value ? (
           <LazyPicrAvatar
-            userId={al.userId}
+            userId={String(value)}
             props={{ size: 'sm' }}
             showName={true}
           />
         ) : null}
       </Suspense>
     ),
-  },
-  // { accessorKey: 'folderId', header: 'Folder', minSize: 25 },
-  {
+  }),
+  // { accessorKey: 'folderId', header: 'Folder', minWidth: 25 },
+  accessLogColumn.accessor('ipAddress', {
     header: 'IP Address',
-    minSize: 25,
-    accessorFn: (al: AccessLogRow) =>
-      al.ipAddress ? <Code>{al.ipAddress}</Code> : null,
-  },
-  {
+    minWidth: 25,
+    cell: ({ value }) => (value ? <Code>{String(value)}</Code> : null),
+  }),
+  accessLogColumn.accessor('userAgent', {
     header: 'User Agent',
-    minSize: 75,
-    accessorFn: (al: AccessLogRow) => (
-      <AccessLogClientMeta userAgent={al.userAgent} showIpAddress={false} />
+    minWidth: 75,
+    enableSorting: false,
+    cell: ({ value }) => (
+      <AccessLogClientMeta
+        userAgent={value ? String(value) : null}
+        showIpAddress={false}
+      />
     ),
-  },
+  }),
 ];

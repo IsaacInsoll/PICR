@@ -1,39 +1,41 @@
-import type { PicrColumns } from '../../components/PicrDataGrid';
+import {
+  createPicrColumns,
+  type PicrColumns,
+} from '../../components/PicrDataGrid';
 import { PrimaryColor, ThemeMode } from '@shared/gql/graphql';
 import type { DefaultMantineColor } from '@mantine/core';
 import { Badge, Text } from '@mantine/core';
 import type { BrandingRow } from '@shared/types/queryRows';
 import { BrandingFolderChips } from '../../components/BrandingFolderChips';
 
+const brandingColumn = createPicrColumns<BrandingRow>();
+
 export const brandingColumns: PicrColumns<BrandingRow>[] = [
-  {
-    accessorKey: 'name',
+  brandingColumn.accessor('name', {
     header: 'Name',
-    minSize: 30,
-    accessorFn: ({ name }) => <Text fw={500}>{name}</Text>,
-  },
-  {
-    accessorKey: 'folders',
+    minWidth: 30,
+    cell: ({ value }) => <Text fw={500}>{String(value ?? '')}</Text>,
+  }),
+  brandingColumn.display({
+    id: 'folders',
     header: 'Folders',
-    minSize: 40,
-    accessorFn: ({ folders }) => (
-      <BrandingFolderChips folders={folders} showLabel={false} />
+    minWidth: 40,
+    cell: ({ row }) => (
+      <BrandingFolderChips folders={row.original.folders} showLabel={false} />
     ),
-  },
-  {
-    accessorKey: 'mode',
+  }),
+  brandingColumn.accessor('mode', {
     header: 'Mode',
-    minSize: 20,
-    accessorFn: ({ mode }) => <ModeChip mode={mode ?? ThemeMode.Auto} />,
-  },
-  {
-    accessorKey: 'primaryColor',
+    minWidth: 20,
+    cell: ({ value }) => <ModeChip mode={value ?? ThemeMode.Auto} />,
+  }),
+  brandingColumn.accessor('primaryColor', {
     header: 'Color',
-    minSize: 20,
-    accessorFn: ({ primaryColor }) => (
-      <PrimaryColorChip color={primaryColor ?? PrimaryColor.Blue} />
+    minWidth: 20,
+    cell: ({ value }) => (
+      <PrimaryColorChip color={value ?? PrimaryColor.Blue} />
     ),
-  },
+  }),
 ];
 
 const PrimaryColorChip = ({ color }: { color: DefaultMantineColor }) => {
