@@ -44,6 +44,7 @@ export const dbUser = pgTable('Users', {
   // IF PUBLIC LINK
   uuid: varchar('uuid', { length: 255 }),
   linkMode: linkModeEnum(),
+  galleryPasscode: varchar('galleryPasscode', { length: 255 }),
 });
 
 export const dbUserRelations = relations(dbUser, ({ one }) => ({

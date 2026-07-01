@@ -85,6 +85,8 @@ export type PicrUser = {
   folderId?: string;
   commentPermissions?: UserFragmentFragment['commentPermissions'];
   linkMode?: UserFragmentFragment['linkMode'];
+  hasGalleryPasscode?: UserFragmentFragment['hasGalleryPasscode'];
+  galleryPasscode?: UserFragmentFragment['galleryPasscode'];
   gravatar?: string | null;
   ntfy?: string | null;
   ntfyEmail?: boolean | null;

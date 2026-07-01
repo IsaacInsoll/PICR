@@ -5,6 +5,10 @@ import { getUUID } from './helpers/getUUID';
 import { urqlCacheExchange } from './urql/urqlCacheExchange';
 import { withBasePath } from './helpers/baseHref';
 import { globalErrorExchange } from './urql/globalErrorExchange';
+import {
+  getPublicLinkPasscode,
+  publicLinkPasscodeHeader,
+} from './helpers/publicLinkPasscode';
 
 const retry: Exchange = retryExchange({ initialDelayMs: 500 });
 
@@ -18,6 +22,8 @@ export const createClient = (authToken: string, sessionKey: string) =>
       const headers: Record<string, string> = { sessionId: sessionKey };
       if (uuid) {
         headers['uuid'] = uuid;
+        const passcode = getPublicLinkPasscode(uuid);
+        if (passcode) headers[publicLinkPasscodeHeader] = passcode;
       } else if (authToken !== '') {
         headers['authorization'] = `Bearer ${authToken}`;
       }

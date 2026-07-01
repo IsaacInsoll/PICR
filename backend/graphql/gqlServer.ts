@@ -7,6 +7,7 @@ import { getUserFromUUID } from '../auth/getUserFromUUID.js';
 import { dbFolderForId } from '../db/picrDb.js';
 import { extraUserProps } from '@shared/extraUserProps.js';
 import { UserType } from '@shared/gql/graphql.js';
+import { galleryPasscodeHeader } from '@shared/auth/galleryPasscode.js';
 
 type GraphqlHttpContextRequest = {
   headers: IncomingCustomHeaders;
@@ -38,6 +39,9 @@ export const gqlServer = createHandler({
     const h: PicrRequestContext['headers'] = {
       auth: normalizedHeader(firstHeader(headers.authorization)),
       uuid: headers.uuid,
+      galleryPasscode: normalizedHeader(
+        firstHeader(headers[galleryPasscodeHeader]),
+      ),
       host: firstHeader(headers.host),
       sessionId: normalizedHeader(firstHeader(headers['sessionid'])), //note: header field is lower case
       userAgent: firstHeader(headers['user-agent']),

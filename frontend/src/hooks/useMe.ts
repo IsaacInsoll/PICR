@@ -8,7 +8,9 @@ import { meQuery } from '@shared/urql/queries/meQuery';
 import type { ExtraUserProps } from '@shared/extraUserProps';
 import { extraUserProps } from '@shared/extraUserProps';
 
-export const useMe = ():
+export const useMe = (
+  options: { pause?: boolean } = {},
+):
   | (NonNullable<MeQueryQuery['me']> &
       ExtraUserProps & {
         clientInfo: {
@@ -21,7 +23,10 @@ export const useMe = ():
   // console.log('useMe()');
   const token = useAtomValue(authKeyAtom);
   const uuid = getUUID();
-  const [result] = useQuery({ query: meQuery, pause: !token && !uuid });
+  const [result] = useQuery({
+    query: meQuery,
+    pause: options.pause || (!token && !uuid),
+  });
   if (!token && !uuid) return null;
   const data = result.data;
   if (!data?.me || !data.clientInfo) return null;

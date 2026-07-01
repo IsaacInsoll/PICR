@@ -13,6 +13,7 @@ import {
   Code,
   Group,
   Modal,
+  PasswordInput,
   Stack,
   Text,
   TextInput,
@@ -26,6 +27,7 @@ import {
   DeleteIcon,
   EmailIcon,
   LabelIcon,
+  PasswordIcon,
   PublicLinkIcon,
   RefreshIcon,
   SaveIcon,
@@ -60,6 +62,9 @@ export const ManagePublicLink = ({
   const [linkMode, setLinkMode] = useState<LinkMode>(
     user?.linkMode ?? LinkMode.FinalDelivery,
   );
+  const [galleryPasscode, setGalleryPasscode] = useState(
+    user?.galleryPasscode ?? '',
+  );
   const [error, setError] = useState('');
 
   //get folder from user if they exist as it may be a parent or child
@@ -78,6 +83,7 @@ export const ManagePublicLink = ({
       commentPermissions,
       linkMode,
       username,
+      galleryPasscode,
     };
     void mutate(data).then(({ error }) => {
       if (error) {
@@ -183,6 +189,13 @@ export const ManagePublicLink = ({
           onChange={setCommentPermissions}
         />
         <LinkModeSelector value={linkMode} onChange={setLinkMode} />
+        <PasswordInput
+          leftSection={<PasswordIcon />}
+          label="Gallery passcode"
+          value={galleryPasscode}
+          description="Optional"
+          onChange={(e) => setGalleryPasscode(e.currentTarget.value)}
+        />
 
         <Checkbox
           checked={enabled}

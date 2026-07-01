@@ -141,6 +141,13 @@
       "when": 1782032556105,
       "tag": "0019_branding-default-sort",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1782868824104,
+      "tag": "0020_gallery-passcode",
+      "breakpoints": true
     }
   ]
 }

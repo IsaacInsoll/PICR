@@ -25,6 +25,7 @@ import {
   TbFile,
   TbFileTypography,
   TbFilter,
+  TbLockPassword,
   TbFolder,
   TbFolderOpen,
   TbFolderShare,
@@ -330,3 +331,6 @@ export const StorageIcon = (props: IconBaseProps) => (
 );
 export const EyeIcon = (props: IconBaseProps) => <TbEye {...props} />;
 export const EyeOffIcon = (props: IconBaseProps) => <TbEyeOff {...props} />;
+export const PasswordIcon = (props: IconBaseProps) => (
+  <TbLockPassword {...props} />
+);

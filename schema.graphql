@@ -286,7 +286,7 @@ type Mutation {
   editAdminUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, ntfy: String, ntfyEmail: Boolean, password: String, username: String): User!
   editBranding(availableViews: [String!], defaultFileSort: String, defaultView: String, footerTitle: String, footerUrl: String, headingAlignment: HeadingAlignment, headingFontKey: HeadingFontKey, headingFontSize: Int, id: ID, logoUrl: String, mode: ThemeMode, name: String, primaryColor: PrimaryColor, socialLinks: JSON, thumbnailBorderRadius: Int, thumbnailSize: Int, thumbnailSpacing: Int): Branding!
   editFolder(bannerImageId: ID, bannerSize: BannerSize, bannerTextHAlign: BannerTextHAlign, bannerTextVAlign: BannerTextVAlign, folderId: ID!, heroImageId: ID, subtitle: String, title: String): Folder!
-  editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
+  editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, galleryPasscode: String, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
   editUserDevice(enabled: Boolean!, name: String, notificationToken: String!, userId: ID!): UserDevice!
   generateThumbnails(folderId: ID): Boolean!
   generateZip(folderId: ID): String!
@@ -312,6 +312,11 @@ enum PrimaryColor {
   yellow
 }
 
+type PublicLinkInfo {
+  requiresPasscode: Boolean!
+  unlocked: Boolean!
+}
+
 type Query {
   accessLogs(folderId: ID!, includeChildren: Boolean, userId: ID, userType: UserType): [AccessLog!]!
   admins: [User!]!
@@ -323,6 +328,7 @@ type Query {
   folder(id: ID!): Folder!
   folderFiles(folderId: ID!, includeSubfolders: Boolean, limit: Int): FolderFilesResult!
   me: User
+  publicLinkInfo(uuid: String!): PublicLinkInfo!
   searchFiles(folderId: ID, query: String!): [File!]!
   searchFolders(folderId: ID, query: String!): [Folder!]!
   serverInfo: ServerInfo
@@ -368,7 +374,9 @@ type User {
   enabled: Boolean
   folder: Folder
   folderId: ID!
+  galleryPasscode: String
   gravatar: String
+  hasGalleryPasscode: Boolean!
   id: ID
   lastAccess: DateTime
   linkMode: LinkMode

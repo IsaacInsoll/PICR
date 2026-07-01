@@ -14,6 +14,7 @@ export const editUserMutationText = /* GraphQL */ `
     $folderId: ID
     $commentPermissions: CommentPermissions
     $linkMode: LinkMode
+    $galleryPasscode: String
   ) {
     editUser(
       id: $id
@@ -24,6 +25,7 @@ export const editUserMutationText = /* GraphQL */ `
       folderId: $folderId
       commentPermissions: $commentPermissions
       linkMode: $linkMode
+      galleryPasscode: $galleryPasscode
     ) {
       id
     }

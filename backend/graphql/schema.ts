@@ -27,6 +27,8 @@ import { commentType } from './types/commentType.js';
 import { comments } from './queries/comments.js';
 import { serverInfoType } from './types/serverInfoType.js';
 import { serverInfo } from './queries/serverInfoQuery.js';
+import { publicLinkInfo } from './queries/publicLinkInfo.js';
+import { publicLinkInfoType } from './types/publicLinkInfoType.js';
 import { searchFolders } from './queries/searchFolders.js';
 import { searchFiles } from './queries/searchFiles.js';
 import { editFolder } from './mutations/editFolder.js';
@@ -68,6 +70,7 @@ const queries = new GraphQLObjectType({
     accessLogs,
     folder,
     me,
+    publicLinkInfo,
     searchFiles,
     searchFolders,
     tasks,
@@ -115,6 +118,7 @@ const types = [
   folderPermissionsType,
   imageFileType,
   imageMetadataSummaryType,
+  publicLinkInfoType,
   serverInfoType,
   taskType,
   userType,

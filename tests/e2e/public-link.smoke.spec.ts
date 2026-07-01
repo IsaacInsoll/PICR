@@ -78,6 +78,7 @@ test('public link and login routes load with no browser/runtime errors', async (
   const uuid = `frontend-smoke-${suffix}`;
   const folderId = photoFolderId;
   const username = `frontend-smoke-${suffix}@example.com`;
+  const galleryPasscode = `smoke-${suffix}`;
   const loginResult = await gqlRequest<{ auth?: string }>(
     loginMutationText,
     defaultCredentials,
@@ -105,6 +106,7 @@ test('public link and login routes load with no browser/runtime errors', async (
         uuid,
         enabled: true,
         commentPermissions: 'read',
+        galleryPasscode,
       },
       authHeader,
     );
@@ -121,6 +123,13 @@ test('public link and login routes load with no browser/runtime errors', async (
     await page.waitForTimeout(1500);
     await expect(page).toHaveTitle(/PICR/i);
     await expect(page.locator('#root')).toBeVisible();
+    await expect(page.getByLabel('Passcode')).toBeVisible();
+    await page.getByLabel('Passcode').fill('wrong-passcode');
+    await page.getByRole('button', { name: 'Open gallery' }).click();
+    await expect(page.getByText('Incorrect passcode')).toBeVisible();
+    await page.getByLabel('Passcode').fill(galleryPasscode);
+    await page.getByRole('button', { name: 'Open gallery' }).click();
+    await expect(page.getByLabel('Passcode')).toHaveCount(0);
     await expect(page.getByText('Something went wrong')).toHaveCount(0);
     await expect(page).toHaveURL(new RegExp(`/s/${uuid}/${folderId}`));
     expectNoBrowserFailures(failures);

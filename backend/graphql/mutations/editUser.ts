@@ -18,6 +18,7 @@ import { commentPermissionsEnum, linkModeEnum } from '../types/enums.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationEditUserArgs } from '@shared/gql/graphql.js';
+import { normalizeGalleryPasscode } from '@shared/auth/galleryPasscode.js';
 
 const resolver: PicrResolver<object, MutationEditUserArgs> = async (
   _,
@@ -91,6 +92,9 @@ const resolver: PicrResolver<object, MutationEditUserArgs> = async (
     user.enabled = params.enabled;
     user.commentPermissions = params.commentPermissions;
     user.linkMode = params.linkMode ?? LinkMode.FinalDelivery;
+    if (params.galleryPasscode !== undefined) {
+      user.galleryPasscode = normalizeGalleryPasscode(params.galleryPasscode);
+    }
     user.updatedAt = new Date();
     await db.update(dbUser).set(user).where(eq(dbUser.id, user.id));
     return { ...userToJSON(user), folder: dbFolderForId(user.folderId) };
@@ -106,6 +110,7 @@ const resolver: PicrResolver<object, MutationEditUserArgs> = async (
       enabled: params.enabled,
       commentPermissions: params.commentPermissions,
       linkMode: params.linkMode ?? LinkMode.FinalDelivery,
+      galleryPasscode: normalizeGalleryPasscode(params.galleryPasscode),
       createdAt: new Date(),
       updatedAt: new Date(),
       userType: UserType.Link,
@@ -128,5 +133,6 @@ export const editUser = {
     enabled: { type: GraphQLBoolean },
     commentPermissions: { type: commentPermissionsEnum },
     linkMode: { type: linkModeEnum },
+    galleryPasscode: { type: GraphQLString },
   },
 };

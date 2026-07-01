@@ -11,6 +11,8 @@ import { accessLogQuery } from '../../shared/urql/queries/accessLogQuery';
 
 import { photoFolderId, videoFolderId } from './testVariables';
 import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
+import { publicLinkInfoQuery } from '../../shared/urql/queries/publicLinkInfoQuery';
+import { meGalleryPasscodeQuery } from '../../shared/urql/queries/meGalleryPasscodeQuery';
 import { commentHistoryQuery } from '../../shared/urql/queries/commentHistoryQuery';
 import { addCommentMutation } from '../../shared/urql/mutations/addCommentMutation';
 import { CommentPermissions, LinkMode } from '../../shared/gql/graphql';
@@ -101,6 +103,141 @@ test('Public Link can access folder', async () => {
 
   expect(folder.subFolders).toHaveLength(0);
   expect(folder.files.length).toBe(10);
+});
+
+test('Public Link gallery passcode gates GraphQL access only', async () => {
+  const adminHeaders = await getUserHeader(defaultCredentials);
+  const adminClient = await createTestGraphqlClient(adminHeaders);
+  const galleryPasscode = `orchid-${testSuffix}`;
+
+  const setPasscodeResult = await adminClient
+    .mutation(editUserMutation, {
+      ...testPublicLink,
+      id: createdUserId,
+      galleryPasscode,
+    })
+    .toPromise();
+
+  expect(setPasscodeResult.error).toBeUndefined();
+  expect(setPasscodeResult.data?.editUser?.hasGalleryPasscode).toBe(true);
+  expect(setPasscodeResult.data?.editUser?.galleryPasscode).toBe(
+    galleryPasscode,
+  );
+
+  const noPasscodeClient = await createTestGraphqlClient(
+    await getLinkHeader(testPublicLink.uuid),
+  );
+  const noPasscodeInfo = await noPasscodeClient
+    .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
+    .toPromise();
+
+  expect(noPasscodeInfo.error).toBeUndefined();
+  expect(noPasscodeInfo.data?.publicLinkInfo).toEqual({
+    requiresPasscode: true,
+    unlocked: false,
+  });
+
+  const blockedResult = await noPasscodeClient
+    .query(viewFolderQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+
+  expect(blockedResult.error).toBeDefined();
+  expect(blockedResult.data?.folder).toBeUndefined();
+
+  const wrongPasscodeClient = await createTestGraphqlClient(
+    await getLinkHeader(testPublicLink.uuid, 'wrong-passcode'),
+  );
+  const wrongPasscodeInfo = await wrongPasscodeClient
+    .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
+    .toPromise();
+  const missingLinkInfo = await wrongPasscodeClient
+    .query(publicLinkInfoQuery, { uuid: `missing-${testSuffix}` })
+    .toPromise();
+
+  expect(wrongPasscodeInfo.data?.publicLinkInfo).toEqual(
+    missingLinkInfo.data?.publicLinkInfo,
+  );
+  expect(wrongPasscodeInfo.data?.publicLinkInfo).toEqual({
+    requiresPasscode: true,
+    unlocked: false,
+  });
+
+  const correctPasscodeClient = await createTestGraphqlClient(
+    await getLinkHeader(testPublicLink.uuid, galleryPasscode),
+  );
+  const unlockedInfo = await correctPasscodeClient
+    .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
+    .toPromise();
+
+  expect(unlockedInfo.error).toBeUndefined();
+  expect(unlockedInfo.data?.publicLinkInfo).toEqual({
+    requiresPasscode: true,
+    unlocked: true,
+  });
+
+  const allowedResult = await correctPasscodeClient
+    .query(viewFolderQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+
+  expect(allowedResult.error).toBeUndefined();
+  expect(allowedResult.data?.folder).toBeDefined();
+
+  const linkMeResult = await correctPasscodeClient
+    .query(meGalleryPasscodeQuery, {})
+    .toPromise();
+
+  expect(linkMeResult.error).toBeUndefined();
+  expect(linkMeResult.data?.me?.galleryPasscode).toBeNull();
+
+  const heroImage = allowedResult.data?.folder.heroImage;
+  expect(heroImage?.fileHash).toBeDefined();
+  const imageResponse = await fetch(
+    `http://localhost:6901/image/${heroImage?.id}/md/${heroImage?.fileHash}/${heroImage?.name}`,
+  );
+  expect(imageResponse.ok).toBe(true);
+
+  const changedPasscode = `maple-${testSuffix}`;
+  const changePasscodeResult = await adminClient
+    .mutation(editUserMutation, {
+      ...testPublicLink,
+      id: createdUserId,
+      galleryPasscode: changedPasscode,
+    })
+    .toPromise();
+
+  expect(changePasscodeResult.error).toBeUndefined();
+
+  const oldPasscodeInfo = await correctPasscodeClient
+    .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
+    .toPromise();
+  expect(oldPasscodeInfo.data?.publicLinkInfo).toEqual({
+    requiresPasscode: true,
+    unlocked: false,
+  });
+
+  const clearPasscodeResult = await adminClient
+    .mutation(editUserMutation, {
+      ...testPublicLink,
+      id: createdUserId,
+      galleryPasscode: '',
+    })
+    .toPromise();
+
+  expect(clearPasscodeResult.error).toBeUndefined();
+  expect(clearPasscodeResult.data?.editUser?.hasGalleryPasscode).toBe(false);
+  expect(clearPasscodeResult.data?.editUser?.galleryPasscode).toBeNull();
+
+  const clearedLinkClient = await createTestGraphqlClient(
+    await getLinkHeader(testPublicLink.uuid),
+  );
+  const clearedInfo = await clearedLinkClient
+    .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
+    .toPromise();
+
+  expect(clearedInfo.data?.publicLinkInfo).toEqual({
+    requiresPasscode: false,
+    unlocked: true,
+  });
 });
 test("Public Link can't access other folders", async () => {
   const headers = await getLinkHeader(testPublicLink.uuid);

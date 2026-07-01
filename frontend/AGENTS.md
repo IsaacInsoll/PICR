@@ -134,6 +134,11 @@ export const picrUrqlClient = (headers: HeadersInit) => {
 };
 ```
 
+Public-link request headers can change after the frontend URQL client is
+created. For example, gallery passcodes are entered after `/s/:uuid/...` loads
+and are stored in `sessionStorage`. Keep public-link header values read inside
+`fetchOptions` for each request rather than closing over a fixed header object.
+
 ### Queries
 
 ```typescript

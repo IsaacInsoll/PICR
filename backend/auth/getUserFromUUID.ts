@@ -3,6 +3,7 @@ import type { UserFields } from '../db/picrDb.js';
 import { db } from '../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbUser } from '../db/models/dbUser.js';
+import { normalizeGalleryPasscode } from '@shared/auth/galleryPasscode.js';
 
 export const getUserFromUUID = async (
   context: CustomJwtPayload,
@@ -13,6 +14,13 @@ export const getUserFromUUID = async (
     });
     //todo: check expiry dates etc
     if (user && user.enabled && !user.deleted) {
+      const requiredPasscode = normalizeGalleryPasscode(user.galleryPasscode);
+      if (
+        requiredPasscode &&
+        normalizeGalleryPasscode(context.galleryPasscode) !== requiredPasscode
+      ) {
+        return undefined;
+      }
       return user;
     }
   }

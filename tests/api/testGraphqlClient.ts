@@ -23,6 +23,9 @@ export const getUserHeader = async (credentials: ICredentials) => {
   return { authorization: `Bearer ${result.data.auth}` };
 };
 
-export const getLinkHeader = async (uuid: string) => {
-  return { uuid };
+export const getLinkHeader = async (uuid: string, galleryPasscode?: string) => {
+  return {
+    uuid,
+    ...(galleryPasscode ? { 'gallery-passcode': galleryPasscode } : {}),
+  };
 };
