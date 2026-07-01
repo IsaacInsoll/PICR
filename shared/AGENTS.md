@@ -69,6 +69,7 @@ shared/
 | Pure functions     | `prettyBytes`, `sortFiles`    | No React dependencies |
 | Jotai atoms        | `filterAtom`                  | Framework-agnostic    |
 | Constants          | `thumbnailDimensions`         | Plain values          |
+| Format helpers     | `imageFormats`                | Pure extension checks |
 | Validation         | `validateFolderName`          | Pure functions        |
 
 ### NOT Safe to Share
@@ -88,6 +89,15 @@ Shared:   React 19.0 (exact) + URQL peer dependency
 ```
 
 Different URQL instances cause hook errors. The solution: define operations in shared, use hooks in consumers.
+
+## Image Format Helpers
+
+`shared/imageFormats.ts` owns pure extension-based media format groups used by
+backend, frontend, and app. Keep runtime capability checks out of shared; the
+backend combines these lists with `picrConfig.mediaCaps` because ImageMagick and
+ExifTool availability depends on the server environment. Browser-displayable
+originals are a narrower set than sharp-readable inputs: TIFF is sharp-readable
+but should not be handed to a browser lightbox as a raw `<img>` source.
 
 ## Auth Error Contract
 

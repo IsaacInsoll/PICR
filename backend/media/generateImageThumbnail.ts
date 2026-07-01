@@ -5,7 +5,7 @@ import type {
   ResizeOptions,
 } from 'sharp';
 import { openSharp } from './openSharp.js';
-import { fullPath, fullPathForFile } from '../filesystem/fileManager.js';
+import { fullPath } from '../filesystem/fileManager.js';
 import { existsSync, mkdirSync } from 'node:fs';
 import { dirname } from 'path';
 import { thumbnailDimensions } from '@shared/thumbnailDimensions.js';
@@ -15,6 +15,7 @@ import { thumbnailPath } from './thumbnailPath.js';
 import { generateVideoThumbnail } from './generateVideoThumbnail.js';
 import type { FileFields } from '../db/picrDb.js';
 import { getServerOptions } from '../db/picrDb.js';
+import { ensureDecodedImage } from './ensureDecodedImage.js';
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
 export const generateAllThumbs = async (file: FileFields) => {
@@ -58,15 +59,15 @@ export const generateThumbnail = async (
   size: ThumbnailSize,
 ) => {
   log('info', `🖼️ Generating ${size} thumbnail for ${file.name}`);
-  mkdirSync(dirname(thumbnailPath(file, size)), { recursive: true });
-  const px = thumbnailDimensions[size];
-  const fullPath = fullPathForFile(file);
-
-  const img = openSharp(fullPath).withMetadata().resize(px, px, sharpOpts);
-
-  const opts = await getServerOptions();
-
   try {
+    mkdirSync(dirname(thumbnailPath(file, size)), { recursive: true });
+    const px = thumbnailDimensions[size];
+    const fullPath = await ensureDecodedImage(file);
+
+    const img = openSharp(fullPath).withMetadata().resize(px, px, sharpOpts);
+
+    const opts = await getServerOptions();
+
     const promises: Promise<OutputInfo>[] = [];
     promises.push(
       img.jpeg(jpegOptions).toFile(thumbnailPath(file, size, '.jpg')),

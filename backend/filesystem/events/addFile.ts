@@ -16,6 +16,14 @@ import { dbFile, dbFolder } from '../../db/models/index.js';
 import { delay } from '../../helpers/delay.js';
 import type { Stats } from 'node:fs';
 import { existsSync, statSync } from 'node:fs';
+import { ensureDecodedImage } from '../../media/ensureDecodedImage.js';
+import {
+  isHeicFormat,
+  isPsbFormat,
+  isPsdFormat,
+  isRawFormat,
+  isSharpReadableFormat,
+} from '@shared/imageFormats.js';
 
 export const addFile = async (
   filePath: string,
@@ -97,13 +105,14 @@ export const addFile = async (
 
   const previousLastModified = created ? null : file.fileLastModified;
   const previousCreated = created ? null : file.fileCreated;
+  const typeChanged = file.type !== type;
   const modified =
     !created &&
     (previousLastModified?.getTime() !== stats.mtime.getTime() ||
       previousCreated?.getTime() !== stats.birthtime.getTime() ||
       wasRenamed);
 
-  if (created || !file.fileHash || modified) {
+  if (created || !file.fileHash || modified || typeChanged) {
     log(
       'info',
       (created
@@ -112,22 +121,38 @@ export const addFile = async (
           ? 'Renamed: '
           : modified
             ? 'Modified: '
-            : 'Hash Mismatch for: ') + filePath,
+            : typeChanged
+              ? 'Type changed for: '
+              : 'Hash Mismatch for: ') + filePath,
     );
+    file.type = type;
     // const hash = await fileHash2(filePath);
     file.fileHash = fastHash(file, stats);
     file.fileCreated = stats.birthtime;
     file.fileLastModified = stats.mtime;
 
-    if (type === 'Image') {
-      // deleteAllThumbs(filePath);
-      file.imageRatio = await getImageRatio(filePath);
-      const meta = await getImageMetadata(file);
-      file.metadata = JSON.stringify(meta);
-      file.blurHash = await encodeImageToBlurhash(filePath);
-      if (generateThumbs) await generateAllThumbs(file); // will skip if thumbs exist
+    if (file.type === FileType.Image) {
+      try {
+        const src = await ensureDecodedImage(file);
+        // deleteAllThumbs(filePath);
+        file.imageRatio = await getImageRatio(src);
+        const meta = await getImageMetadata(file, src);
+        file.metadata = JSON.stringify(meta);
+        file.blurHash = await encodeImageToBlurhash(src);
+        if (generateThumbs) await generateAllThumbs(file); // will skip if thumbs exist
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        log(
+          'error',
+          `Downgrading ${file.name} to generic file after image decode failed: ${message}`,
+        );
+        file.type = FileType.File;
+        file.imageRatio = 0;
+        file.metadata = null;
+        file.blurHash = null;
+      }
     }
-    if (type === 'Video') {
+    if (file.type === FileType.Video) {
       const meta = await getVideoMetadata(file);
       file.metadata = JSON.stringify(meta);
       file.duration = meta.Duration ?? null;
@@ -142,7 +167,21 @@ export const addFile = async (
       case FileType.File:
         break;
       case FileType.Image:
-        file.metadata = JSON.stringify(await getImageMetadata(file));
+        try {
+          const src = await ensureDecodedImage(file);
+          file.metadata = JSON.stringify(await getImageMetadata(file, src));
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : String(error);
+          log(
+            'error',
+            `Downgrading ${file.name} to generic file after image decode failed: ${message}`,
+          );
+          file.type = FileType.File;
+          file.imageRatio = 0;
+          file.metadata = null;
+          file.blurHash = null;
+        }
         break;
       case FileType.Video:
         file.metadata = JSON.stringify(await getVideoMetadata(file));
@@ -196,32 +235,18 @@ const findFolderId = async (fullPath: string) => {
 const validExtension = (filePath: string): FileType | null => {
   const ext = extname(filePath).toLowerCase();
   if (ext === '') return null;
-  if (imageExtensions.includes(ext)) return FileType.Image;
+  if (isSharpReadableFormat(filePath)) return FileType.Image;
+  if (isRawFormat(filePath) && picrConfig.mediaCaps.raw) return FileType.Image;
+  if (isPsdFormat(filePath) && picrConfig.mediaCaps.psd) return FileType.Image;
+  if (isPsbFormat(filePath) && picrConfig.mediaCaps.psb) return FileType.Image;
+  if (isHeicFormat(filePath) && picrConfig.mediaCaps.heic)
+    return FileType.Image;
   if (videoExtensions.includes(ext)) return FileType.Video;
   //TODO: null for ignored files (EG: dot files?)
   //TODO: documents (eg notes in word format?)
 
   return FileType.File;
 };
-
-// sharp uses libvips but different builds support different formats (some do PSD / heif / avif!)
-// this is 'bare minimum
-// Call console.log(sharp.format) to see exactly what is supported
-
-const imageExtensions = [
-  '.jpg',
-  '.jpeg',
-  '.png',
-  '.gif',
-  '.webp',
-  '.tiff',
-  '.tif',
-  '.svg',
-  // '.avif',
-  // '.heic',
-  // '.heif',
-  // '.psd',
-];
 
 const videoExtensions = [
   '.mp4',

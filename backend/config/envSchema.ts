@@ -49,6 +49,8 @@ export const envSchema = z.object({
 
   FFMPEG_PATH: z.string().min(1).optional(),
   FFPROBE_PATH: z.string().min(1).optional(),
+  EXIFTOOL_PATH: z.string().min(1).optional(),
+  MAGICK_PATH: z.string().min(1).optional(),
 
   // Initial admin account created on first boot (when no users exist).
   // If ADMIN_PASSWORD is unset a strong random password is generated and

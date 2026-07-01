@@ -278,6 +278,13 @@ enum LinkMode {
   proof_no_downloads
 }
 
+type MediaCapsInfo {
+  heic: Boolean!
+  psb: Boolean!
+  psd: Boolean!
+  raw: Boolean!
+}
+
 type Mutation {
   addComment(comment: String, flag: FileFlag, id: ID!, nickName: String, rating: Int): FileInterface!
   auth(password: String!, user: String!): String!
@@ -357,6 +364,7 @@ type ServerInfo {
   developmentBuildSha: String
   host: String!
   latest: String!
+  mediaCaps: MediaCapsInfo!
   mediaSize: BigInt!
   usePolling: Boolean!
   version: String!

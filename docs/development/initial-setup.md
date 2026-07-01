@@ -40,6 +40,91 @@ FFPROBE_PATH=/absolute/path/to/ffprobe
 `cp .env.example .env`
 You may optionally add extra fields such as `GITHUB_TOKEN`, `FFMPEG_PATH`, or `FFPROBE_PATH` but these aren't required for development if the binaries are already on your `PATH`.
 
+### Optional RAW / PSD / HEIC Helpers
+
+PICR can generate previews for RAW files from embedded JPEG previews using
+ExifTool, and for PSD/PSB/HEIC via ImageMagick when the local build has read
+support for those formats. These tools are optional: if missing, those formats
+stay as generic downloadable files.
+
+For local development, install both when testing these formats:
+
+- macOS with Homebrew:
+
+  ```bash
+  brew install exiftool imagemagick
+  ```
+
+- Ubuntu / Debian:
+
+  ```bash
+  sudo apt update
+  sudo apt install libimage-exiftool-perl imagemagick
+  ```
+
+- Fedora:
+
+  ```bash
+  sudo dnf install perl-Image-ExifTool ImageMagick
+  ```
+
+- Arch Linux:
+
+  ```bash
+  sudo pacman -S perl-image-exiftool imagemagick
+  ```
+
+- Alpine Linux:
+
+  ```bash
+  sudo apk add exiftool imagemagick
+  ```
+
+- Windows 11 with winget:
+
+  ```powershell
+  winget install OliverBetz.ExifTool
+  winget install ImageMagick.ImageMagick
+  ```
+
+- Windows 11 with Chocolatey:
+
+  ```powershell
+  choco install exiftool imagemagick
+  ```
+
+On WSL2, install the Linux packages inside the WSL distro that runs PICR.
+Installing the Windows binaries is only useful when running the backend directly
+on Windows.
+
+If the binaries are not on `PATH`, set:
+
+```bash
+EXIFTOOL_PATH=/absolute/path/to/exiftool
+MAGICK_PATH=/absolute/path/to/magick
+```
+
+HEIC/HEIF and PSB depend on ImageMagick delegate/read support. After installing,
+restart your terminal and check:
+
+```bash
+exiftool -ver
+magick -version
+magick -list format | grep -E '^\s*(PSD|PSB|HEIC|HEIF)\*?\s'
+```
+
+On Windows PowerShell, use:
+
+```powershell
+exiftool -ver
+magick -version
+magick -list format | Select-String '^\s*(PSD|PSB|HEIC|HEIF)\*?\s'
+```
+
+The relevant `PSD`, `PSB`, `HEIC`, or `HEIF` rows must include `r` in the Mode
+column. Presence without read mode is not enough. Some distro ImageMagick builds
+do not include HEIC/HEIF read support even when ImageMagick itself is installed.
+
 ### 5. Run build steps
 
 Run:

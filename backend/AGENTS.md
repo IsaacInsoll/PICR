@@ -436,6 +436,21 @@ flowchart LR
 // Creates blurhash for placeholder
 ```
 
+- RAW, PSD/PSB, and HEIC/HEIF support is capability-gated at boot by
+  `checkOptionalMediaTools()`. Unsupported decoded formats must remain
+  `FileType.File` so they stay downloadable without broken image previews.
+- `ensureDecodedImage()` is the only backend path that shells out to optional
+  image decoders. It returns the original path for sharp-readable formats and a
+  validated cached JPEG in `cache/thumbs/<relativePath>/` for decoded formats.
+  External decoder calls must use argument arrays, timeouts, temp files, and
+  sharp metadata validation before rename.
+- Existing decoded cache hits are trusted by existence, like generated
+  thumbnails. New decoded intermediates must be validated before the atomic
+  rename into the cache.
+- `addFile()` uses a `typeChanged` gate so existing files reclassify during the
+  normal boot scan when optional decoder capabilities appear. Do not bulk-clear
+  `fileHash` to force this.
+
 ### Video Processing
 
 ```typescript

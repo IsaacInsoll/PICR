@@ -4,6 +4,7 @@ import type { Slide, ImageSource } from 'yet-another-react-lightbox';
 import { thumbnailSizes } from '@shared/thumbnailSize';
 import { thumbnailDimensions } from '@shared/thumbnailDimensions';
 import { imageURL } from '../../../helpers/imageURL';
+import { isBrowserDisplayableOriginal } from '@shared/imageFormats';
 
 export const filesForLightbox = (
   files: PicrFile[],
@@ -19,7 +20,12 @@ export const filesForLightbox = (
               const height = width / (file.imageRatio ?? 1);
               return { src: imageURL(file, size), width, height };
             }),
-            src: imageURL(file, canDownload ? 'raw' : 'lg'),
+            src: imageURL(
+              file,
+              canDownload && isBrowserDisplayableOriginal(file.name ?? '')
+                ? 'raw'
+                : 'lg',
+            ),
           }
         : file.type === 'Video'
           ? {

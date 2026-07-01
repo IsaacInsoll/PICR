@@ -11,6 +11,12 @@ export const serverInfoQuery = gql(/* GraphQL */ `
       usePolling
       host
       canWrite
+      mediaCaps {
+        raw
+        psd
+        psb
+        heic
+      }
       videoAcceleration {
         mode
         reason

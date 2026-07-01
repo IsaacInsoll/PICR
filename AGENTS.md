@@ -1,6 +1,6 @@
 # PICR Repository Guidelines
 
-**If a tool or command fails, stop and ask — do not work around it. One exception: if the failure is clearly caused by an obvious command typo, wrong file path, or shell syntax issue (for example missing quotes around a path with `[` or `]`), fix that exact mistake and retry once before checking with the user.**
+**If a tool or command fails unexpectedly, stop and ask — do not work around it. One exception: if the failure is clearly caused by an obvious command typo, wrong file path, or shell syntax issue (for example missing quotes around a path with `[` or `]`), fix that exact mistake and retry once before checking with the user. Validation commands such as lint, typecheck, tests, builds, and format checks are different: failures from those commands are actionable project feedback, so fix the underlying issue when it is in scope, rerun the command, and report any remaining failures with evidence.**
 
 **When you learn something about how this project works — a gotcha, a required workflow step, a pattern that isn't obvious — add it to the relevant `AGENTS.md` or `docs/` file immediately. Do not store it only in an AI-specific memory system. This project is worked on by multiple developers and multiple AI agents across different machines; anything that lives only in one agent's memory is invisible to everyone else.**
 

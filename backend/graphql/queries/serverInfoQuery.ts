@@ -17,6 +17,7 @@ const resolver: PicrResolver = async (_, _params, context) => {
     usePolling: picrConfig.usePolling,
     dev: picrConfig.dev,
     canWrite: picrConfig.canWrite,
+    mediaCaps: picrConfig.mediaCaps,
     videoAcceleration: {
       mode: picrConfig.videoAccelerationMode,
       reason: picrConfig.videoAccelerationReason,

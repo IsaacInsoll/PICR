@@ -1,16 +1,15 @@
 import type { PicrImageMetadata } from '@shared/types/metadata.js';
 import { default as ex } from 'exif-reader';
 import { XMLParser } from 'fast-xml-parser';
-import { fullPathForFile } from '../filesystem/fileManager.js';
 import type { FileFields } from '../db/picrDb.js';
 import { openSharp } from './openSharp.js';
 import { log } from '../logger.js';
+import { fullPathForFile } from '../filesystem/fileManager.js';
 
-export const getImageMetadata = async (file: FileFields) => {
+export const getImageMetadata = async (file: FileFields, src?: string) => {
+  const path = src ?? fullPathForFile(file);
   try {
-    const { exif, width, height, xmp } = await openSharp(
-      fullPathForFile(file),
-    ).metadata();
+    const { exif, width, height, xmp } = await openSharp(path).metadata();
 
     if (!exif) return null;
     const x = ex(exif);
@@ -32,7 +31,7 @@ export const getImageMetadata = async (file: FileFields) => {
     };
     return result;
   } catch (e) {
-    log('error', 'Error getting metadata for file: ' + fullPathForFile(file));
+    log('error', 'Error getting metadata for file: ' + path);
     log('error', String(e));
     return null;
   }

@@ -14,6 +14,112 @@ Fix:
 
 On WSL2, install `ffmpeg` inside the Linux distro you use for development. Installing it only in Windows will not make it available to the backend running under WSL.
 
+#### macOS Homebrew ffmpeg starts failing after installing/upgrading packages
+
+If PICR reports that `ffmpeg` is unavailable, but the error includes
+`dyld: Library not loaded` or `Library not loaded: /opt/homebrew/...`, Homebrew
+has a broken dynamic link between `ffmpeg` and one of its dependencies. This can
+happen after installing or upgrading nearby media packages.
+
+Repair the Homebrew linkage:
+
+```bash
+brew update
+brew reinstall x265 ffmpeg
+ffmpeg -version
+ffprobe -version
+```
+
+If either binary still fails, ask Homebrew what `ffmpeg` is missing and relink:
+
+```bash
+brew missing ffmpeg
+brew link --overwrite x265
+brew link --overwrite ffmpeg
+ffmpeg -version
+ffprobe -version
+```
+
+If `brew reinstall x265 ffmpeg` prints `Would reinstall` / `Would install` and
+does not actually install anything, check that Homebrew is not running in
+dry-run mode:
+
+```bash
+env | grep HOMEBREW
+unset HOMEBREW_DRY_RUN
+```
+
+If Homebrew then reports a broken Cellar path such as
+`/opt/homebrew/Cellar/ffmpeg/<version> is not a directory`, remove the broken
+formula record and install again:
+
+```bash
+brew uninstall --force ffmpeg x265
+brew cleanup ffmpeg x265
+brew install x265 ffmpeg
+ffmpeg -version
+ffprobe -version
+```
+
+### RAW / PSD / HEIC files stay as generic files
+
+RAW, PSD/PSB, and HEIC/HEIF previews depend on optional local binaries. PICR
+will still boot if they are missing, but unsupported formats remain
+`FileType.File` so originals can be downloaded without broken thumbnails.
+
+1. Confirm ExifTool is available for RAW preview extraction:
+   - `exiftool -ver`
+2. Confirm ImageMagick is available for PSD/PSB/HEIC:
+   - `magick -version`
+   - `magick -list format`
+3. In `magick -list format`, the relevant `PSD`, `PSB`, `HEIC`, or `HEIF` rows
+   must include `r` in the Mode column. Presence without read mode is not
+   enough.
+4. If either binary is installed in a non-standard location, set
+   `EXIFTOOL_PATH` or `MAGICK_PATH` in `.env`.
+
+Install commands for common local development environments:
+
+```bash
+# macOS
+brew install exiftool imagemagick
+
+# Ubuntu / Debian
+sudo apt update
+sudo apt install libimage-exiftool-perl imagemagick
+
+# Fedora
+sudo dnf install perl-Image-ExifTool ImageMagick
+
+# Arch Linux
+sudo pacman -S perl-image-exiftool imagemagick
+
+# Alpine Linux
+sudo apk add exiftool imagemagick
+```
+
+```powershell
+# Windows 11 with winget
+winget install OliverBetz.ExifTool
+winget install ImageMagick.ImageMagick
+
+# Windows 11 with Chocolatey
+choco install exiftool imagemagick
+```
+
+On WSL2, install the Linux packages inside WSL. Windows-native packages are only
+used when the backend itself is running on Windows.
+
+To see the exact ImageMagick rows PICR cares about:
+
+```bash
+magick -list format | grep -E '^\s*(PSD|PSB|HEIC|HEIF)\*?\s'
+```
+
+```powershell
+magick -list format | Select-String '^\s*(PSD|PSB|HEIC|HEIF)\*?\s'
+```
+
 ### PICR says database migrations failed when Docker has only just started
 
 PICR now distinguishes between:

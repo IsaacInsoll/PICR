@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from 'urql';
 import {
   Anchor,
+  Badge,
   Button,
   Code,
   Group,
@@ -45,19 +46,7 @@ export const ServerInfo = () => {
         />
         <Row title="Client URL">{window.location.origin}</Row>
         <Row title="Server URL">{server.host}</Row>
-        <Suspense
-          fallback={
-            <>
-              <Row title="Media Size">
-                <LoadingIndicator size="small" />
-                <TreesizeLink />
-              </Row>
-              <Row title="Cache Size">
-                <LoadingIndicator size="small" />
-              </Row>
-            </>
-          }
-        >
+        <Suspense fallback={<StorageUsageLoading />}>
           <ServerFolderSize />
         </Suspense>
 
@@ -76,6 +65,7 @@ export const ServerInfo = () => {
         <Suspense>
           <AvifEnabled />
         </Suspense>
+        <AdditionalImageFormats caps={server.mediaCaps} />
         <VideoAcceleration info={server.videoAcceleration} />
         <Benchmark />
       </Table.Tbody>
@@ -95,6 +85,33 @@ const AvifEnabled = () => {
 type VideoAccelerationInfo = NonNullable<
   ServerInfoQueryQuery['serverInfo']
 >['videoAcceleration'];
+
+type MediaCapsInfo = NonNullable<
+  ServerInfoQueryQuery['serverInfo']
+>['mediaCaps'];
+
+const AdditionalImageFormats = ({ caps }: { caps: MediaCapsInfo }) => {
+  const formats = [
+    { label: 'RAW', enabled: caps.raw },
+    { label: 'PSD', enabled: caps.psd },
+    { label: 'PSB', enabled: caps.psb },
+    { label: 'HEIC / HEIF', enabled: caps.heic },
+  ];
+
+  return (
+    <Row title="Additional Image Formats">
+      {formats.map((format) => (
+        <Badge
+          key={format.label}
+          color={format.enabled ? 'green' : 'gray'}
+          variant={format.enabled ? 'light' : 'outline'}
+        >
+          {format.label}
+        </Badge>
+      ))}
+    </Row>
+  );
+};
 
 const VideoAcceleration = ({ info }: { info: VideoAccelerationInfo }) => {
   const active = info.mode === 'vaapi';
@@ -197,19 +214,45 @@ const TableHeader = () => {
 };
 
 const ServerFolderSize = () => {
-  const [result] = useQuery({ query: expensiveServerFileSizeQuery });
+  const [requested, setRequested] = useState(false);
+  const [result] = useQuery({
+    query: expensiveServerFileSizeQuery,
+    pause: !requested,
+  });
   const server = result.data?.serverInfo;
-  if (!server) return null;
-  return (
-    <>
-      <Row title="Media Size">
-        {prettyBytes(server.mediaSize)}
+  if (!requested) {
+    return (
+      <Row title="Storage Usage">
+        <Button
+          size="xs"
+          variant="light"
+          leftSection={<StorageIcon />}
+          onClick={() => setRequested(true)}
+        >
+          Calculate
+        </Button>
         <TreesizeLink />
       </Row>
-      <Row title="Cache Size">{prettyBytes(server.cacheSize)}</Row>
-    </>
+    );
+  }
+  if (!server) return null;
+  return (
+    <Row title="Storage Usage">
+      <Text size="sm">Media: {prettyBytes(server.mediaSize)}</Text>
+      <Text size="sm">Cache: {prettyBytes(server.cacheSize)}</Text>
+      <TreesizeLink />
+    </Row>
   );
 };
+
+const StorageUsageLoading = () => (
+  <Row title="Storage Usage">
+    <LoadingIndicator size="small" />
+    <Text size="sm" c="dimmed">
+      Calculating...
+    </Text>
+  </Row>
+);
 
 const Benchmark = () => {
   const [result, runBenchmark] = useMutation(runBenchmarkMutation);

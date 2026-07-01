@@ -49,6 +49,14 @@ export const configFromEnv = () => {
     baseUrlPathname,
     ffmpegPath: d.FFMPEG_PATH,
     ffprobePath: d.FFPROBE_PATH,
+    exiftoolPath: d.EXIFTOOL_PATH,
+    magickPath: d.MAGICK_PATH,
+    mediaCaps: {
+      raw: false,
+      psd: false,
+      psb: false,
+      heic: false,
+    },
     videoAcceleration: d.VIDEO_ACCELERATION,
     videoAccelerationDevice: d.VIDEO_ACCELERATION_DEVICE,
     // Resolved at boot by detectVideoAcceleration(); CPU until then.

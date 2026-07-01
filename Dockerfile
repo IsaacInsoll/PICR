@@ -14,7 +14,7 @@ LABEL org.opencontainers.image.revision=$PICR_GIT_SHA
 # libva-utils = vainfo for troubleshooting) are added on amd64 only: arm64
 # hosts rarely have a usable VAAPI GPU, so they stay byte-for-byte unchanged.
 # Acceleration is still opt-in at runtime (requires /dev/dri + VIDEO_ACCELERATION).
-RUN apk add --no-cache ffmpeg && \
+RUN apk add --no-cache ffmpeg exiftool imagemagick && \
     if [ "$TARGETARCH" = "amd64" ]; then \
       apk add --no-cache mesa-va-gallium intel-media-driver libva-utils; \
     fi

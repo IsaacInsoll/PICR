@@ -24,6 +24,16 @@ export const videoAccelerationInfoType = new GraphQLObjectType({
   }),
 });
 
+export const mediaCapsInfoType = new GraphQLObjectType({
+  name: 'MediaCapsInfo',
+  fields: () => ({
+    raw: { type: new GraphQLNonNull(GraphQLBoolean) },
+    psd: { type: new GraphQLNonNull(GraphQLBoolean) },
+    psb: { type: new GraphQLNonNull(GraphQLBoolean) },
+    heic: { type: new GraphQLNonNull(GraphQLBoolean) },
+  }),
+});
+
 export const serverInfoType = new GraphQLObjectType({
   name: 'ServerInfo',
   fields: () => ({
@@ -36,6 +46,7 @@ export const serverInfoType = new GraphQLObjectType({
     dev: { type: new GraphQLNonNull(GraphQLBoolean) },
     canWrite: { type: new GraphQLNonNull(GraphQLBoolean) },
     videoAcceleration: { type: new GraphQLNonNull(videoAccelerationInfoType) },
+    mediaCaps: { type: new GraphQLNonNull(mediaCapsInfoType) },
     cacheSize: { type: new GraphQLNonNull(GraphQLBigInt) },
     mediaSize: { type: new GraphQLNonNull(GraphQLBigInt) },
   }),
