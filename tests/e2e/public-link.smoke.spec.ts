@@ -123,6 +123,9 @@ test('public link and login routes load with no browser/runtime errors', async (
     await page.waitForTimeout(1500);
     await expect(page).toHaveTitle(/PICR/i);
     await expect(page.locator('#root')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Dog Photos' }),
+    ).toBeVisible();
     await expect(page.getByLabel('Passcode')).toBeVisible();
     await page.getByLabel('Passcode').fill('wrong-passcode');
     await page.getByRole('button', { name: 'Open gallery' }).click();

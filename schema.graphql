@@ -312,7 +312,18 @@ enum PrimaryColor {
   yellow
 }
 
+type PublicLinkBrandingPreview {
+  headingAlignment: HeadingAlignment
+  headingFontKey: HeadingFontKey
+  headingFontSize: Int
+  mode: ThemeMode
+  primaryColor: PrimaryColor
+}
+
 type PublicLinkInfo {
+  available: Boolean!
+  branding: PublicLinkBrandingPreview
+  galleryName: String
   requiresPasscode: Boolean!
   unlocked: Boolean!
 }

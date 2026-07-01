@@ -3880,10 +3880,122 @@
       },
       {
         "kind": "OBJECT",
+        "name": "PublicLinkBrandingPreview",
+        "description": null,
+        "isOneOf": null,
+        "fields": [
+          {
+            "name": "headingAlignment",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "HeadingAlignment",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "headingFontKey",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "HeadingFontKey",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "headingFontSize",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "mode",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "ThemeMode",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "primaryColor",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "PrimaryColor",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "PublicLinkInfo",
         "description": null,
         "isOneOf": null,
         "fields": [
+          {
+            "name": "available",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "branding",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "PublicLinkBrandingPreview",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "galleryName",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
           {
             "name": "requiresPasscode",
             "description": null,

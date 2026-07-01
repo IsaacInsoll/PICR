@@ -29,6 +29,7 @@ import { serverInfoType } from './types/serverInfoType.js';
 import { serverInfo } from './queries/serverInfoQuery.js';
 import { publicLinkInfo } from './queries/publicLinkInfo.js';
 import { publicLinkInfoType } from './types/publicLinkInfoType.js';
+import { publicLinkBrandingPreviewType } from './types/publicLinkBrandingPreviewType.js';
 import { searchFolders } from './queries/searchFolders.js';
 import { searchFiles } from './queries/searchFiles.js';
 import { editFolder } from './mutations/editFolder.js';
@@ -118,6 +119,7 @@ const types = [
   folderPermissionsType,
   imageFileType,
   imageMetadataSummaryType,
+  publicLinkBrandingPreviewType,
   publicLinkInfoType,
   serverInfoType,
   taskType,

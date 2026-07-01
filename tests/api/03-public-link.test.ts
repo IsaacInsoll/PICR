@@ -132,9 +132,18 @@ test('Public Link gallery passcode gates GraphQL access only', async () => {
     .toPromise();
 
   expect(noPasscodeInfo.error).toBeUndefined();
-  expect(noPasscodeInfo.data?.publicLinkInfo).toEqual({
+  expect(noPasscodeInfo.data?.publicLinkInfo).toMatchObject({
+    available: true,
     requiresPasscode: true,
     unlocked: false,
+    galleryName: 'Dog Photos',
+    branding: {
+      mode: 'auto',
+      primaryColor: 'blue',
+      headingFontKey: null,
+      headingFontSize: 32,
+      headingAlignment: 'left',
+    },
   });
 
   const blockedResult = await noPasscodeClient
@@ -154,12 +163,22 @@ test('Public Link gallery passcode gates GraphQL access only', async () => {
     .query(publicLinkInfoQuery, { uuid: `missing-${testSuffix}` })
     .toPromise();
 
-  expect(wrongPasscodeInfo.data?.publicLinkInfo).toEqual(
-    missingLinkInfo.data?.publicLinkInfo,
-  );
-  expect(wrongPasscodeInfo.data?.publicLinkInfo).toEqual({
+  expect(wrongPasscodeInfo.data?.publicLinkInfo).toMatchObject({
+    available: true,
     requiresPasscode: true,
     unlocked: false,
+    galleryName: 'Dog Photos',
+    branding: {
+      mode: 'auto',
+      primaryColor: 'blue',
+    },
+  });
+  expect(missingLinkInfo.data?.publicLinkInfo).toEqual({
+    available: false,
+    requiresPasscode: false,
+    unlocked: false,
+    galleryName: null,
+    branding: null,
   });
 
   const correctPasscodeClient = await createTestGraphqlClient(
@@ -170,9 +189,11 @@ test('Public Link gallery passcode gates GraphQL access only', async () => {
     .toPromise();
 
   expect(unlockedInfo.error).toBeUndefined();
-  expect(unlockedInfo.data?.publicLinkInfo).toEqual({
+  expect(unlockedInfo.data?.publicLinkInfo).toMatchObject({
+    available: true,
     requiresPasscode: true,
     unlocked: true,
+    galleryName: 'Dog Photos',
   });
 
   const allowedResult = await correctPasscodeClient
@@ -210,9 +231,11 @@ test('Public Link gallery passcode gates GraphQL access only', async () => {
   const oldPasscodeInfo = await correctPasscodeClient
     .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
     .toPromise();
-  expect(oldPasscodeInfo.data?.publicLinkInfo).toEqual({
+  expect(oldPasscodeInfo.data?.publicLinkInfo).toMatchObject({
+    available: true,
     requiresPasscode: true,
     unlocked: false,
+    galleryName: 'Dog Photos',
   });
 
   const clearPasscodeResult = await adminClient
@@ -234,9 +257,11 @@ test('Public Link gallery passcode gates GraphQL access only', async () => {
     .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
     .toPromise();
 
-  expect(clearedInfo.data?.publicLinkInfo).toEqual({
+  expect(clearedInfo.data?.publicLinkInfo).toMatchObject({
+    available: true,
     requiresPasscode: false,
     unlocked: true,
+    galleryName: 'Dog Photos',
   });
 });
 test("Public Link can't access other folders", async () => {

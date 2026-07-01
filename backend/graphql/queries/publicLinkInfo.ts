@@ -1,18 +1,23 @@
 import { GraphQLNonNull, GraphQLString } from 'graphql';
-import { db } from '../../db/picrDb.js';
+import { db, dbFolderForId } from '../../db/picrDb.js';
 import { dbUser } from '../../db/models/index.js';
 import { eq } from 'drizzle-orm';
 import { publicLinkInfoType } from '../types/publicLinkInfoType.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import { normalizeGalleryPasscode } from '@shared/auth/galleryPasscode.js';
+import { normalizeDisplayName } from '@shared/displayName.js';
+import { brandingForFolder } from '../helpers/brandingForFolder.js';
 
 type PublicLinkInfoArgs = {
   uuid: string;
 };
 
 const lockedInfo = {
-  requiresPasscode: true,
+  available: false,
+  requiresPasscode: false,
   unlocked: false,
+  galleryName: null,
+  branding: null,
 };
 
 const resolver: PicrResolver<object, PublicLinkInfoArgs> = async (
@@ -28,19 +33,32 @@ const resolver: PicrResolver<object, PublicLinkInfoArgs> = async (
     return lockedInfo;
   }
 
+  const folder = await dbFolderForId(user.folderId);
+  if (!folder) return lockedInfo;
+
+  const branding = await brandingForFolder(folder);
+  const galleryName =
+    folder.title?.trim() || normalizeDisplayName(folder.name) || 'Gallery';
+
   const requiredPasscode = normalizeGalleryPasscode(user.galleryPasscode);
   if (!requiredPasscode) {
     return {
+      available: true,
       requiresPasscode: false,
       unlocked: true,
+      galleryName,
+      branding,
     };
   }
 
   return {
+    available: true,
     requiresPasscode: true,
     unlocked:
       normalizeGalleryPasscode(context.headers.galleryPasscode) ===
       requiredPasscode,
+    galleryName,
+    branding,
   };
 };
 
