@@ -1,0 +1,21 @@
+.folderCard {
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.folderCard:hover {
+  background-color: var(--mantine-color-default-hover);
+  border-color: var(--mantine-color-dimmed);
+}
+
+.clickableRow {
+  cursor: pointer;
+  border-radius: var(--mantine-radius-sm);
+  transition: background-color 150ms ease;
+}
+
+.clickableRow:hover {
+  background-color: var(--mantine-color-default-hover);
+}

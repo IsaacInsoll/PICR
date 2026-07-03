@@ -6,6 +6,12 @@ import { atom, useAtom, useAtomValue } from 'jotai';
 export interface CommentHistoryProps {
   singleFile?: boolean;
   highlight?: string;
+  // Render each comment without its own Paper surface, so it blends into a
+  // parent card (used on the dashboard feedback feed).
+  flat?: boolean;
+  // Dashboard comments are shown outside their folder, so file links need to
+  // navigate to the owning folder before opening the comment modal.
+  showFolderContext?: boolean;
 }
 
 export const CommentHistory = ({

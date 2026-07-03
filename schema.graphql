@@ -107,6 +107,18 @@ enum CommentPermissions {
   read
 }
 
+type DashboardStats {
+  totalFiles: Int!
+  totalFolders: Int!
+  totalImages: Int!
+  totalSize: String!
+}
+
+type DashboardUpdateInfo {
+  latest: String!
+  version: String!
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -341,7 +353,9 @@ type Query {
   allFolders(id: ID!, limit: Int, sort: FoldersSortType): [Folder]!
   brandings: [Branding!]!
   clientInfo: ClientInfo
-  comments(fileId: ID, folderId: ID): [Comment!]!
+  comments(fileId: ID, folderId: ID, includeChildren: Boolean, limit: Int): [Comment!]!
+  dashboardStats(folderId: ID!): DashboardStats!
+  dashboardUpdateInfo: DashboardUpdateInfo!
   file(id: ID!): FileInterface!
   folder(id: ID!): Folder!
   folderFiles(folderId: ID!, includeSubfolders: Boolean, limit: Int): FolderFilesResult!

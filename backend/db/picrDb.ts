@@ -229,3 +229,13 @@ export const getFilesForFolder = async (folderId: number) => {
     return fileToJSON(f);
   });
 };
+
+// Fetch a specific set of files by id (used to attach `file` to comments without
+// loading every file in a folder subtree).
+export const getFilesForIds = async (ids: number[]) => {
+  if (ids.length === 0) return [];
+  const files = await db.query.dbFile.findMany({
+    where: and(inArray(dbFile.id, ids), eq(dbFile.exists, true)),
+  });
+  return files.map((f) => fileToJSON(f));
+};

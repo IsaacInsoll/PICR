@@ -35,11 +35,13 @@ import {
 type Scope = 'all' | 'current';
 const scopeAtom = atom<Scope>('current');
 const scopeTypeAtom = atom<SearchResultType>('all');
-const queryAtom = atom('');
+// Exported so other surfaces (e.g. the dashboard search box) can pre-fill the
+// query before opening QuickFind.
+export const quickFindQueryAtom = atom('');
 
 export const QuickFind = ({ folder }: { folder?: PicrFolder }) => {
   const [opened, setOpened] = useQuickFind();
-  const [query, setQuery] = useAtom(queryAtom);
+  const [query, setQuery] = useAtom(quickFindQueryAtom);
   const ref = useRef<HTMLInputElement | null>(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- stable enough for this global keybinding usage
@@ -116,7 +118,7 @@ const Results = ({
 }) => {
   const setFolder = useSetFolder();
   const me = useMe();
-  const query = useAtomValue(queryAtom);
+  const query = useAtomValue(quickFindQueryAtom);
   const scope = useAtomValue(scopeAtom);
   const type = useAtomValue(scopeTypeAtom);
   const folderId = scope === 'all' || !folder?.id ? me?.folderId : folder.id;

@@ -30,7 +30,9 @@ test('admin login renders the dashboard and a folder view with no browser/runtim
 
   // Logged-in routes take over → redirected to the dashboard (react-router).
   await page.waitForURL('**/admin', { timeout: 15_000 });
-  await expect(page.getByText('PICR Media Delivery')).toBeVisible();
+  // Dashboard section headings render immediately (not gated on data loading).
+  await expect(page.getByText('Your Galleries')).toBeVisible();
+  await expect(page.getByText('Client Feedback')).toBeVisible();
   await expect(page.getByText('Login to PICR')).toHaveCount(0);
   await expect(page.locator('#root')).toBeVisible();
   await expect(page.getByText('Something went wrong')).toHaveCount(0);

@@ -19,23 +19,7 @@ export const folderFragment = gql(/* GraphQL */ `
       name
     }
     branding {
-      id
-      name
-      mode
-      primaryColor
-      logoUrl
-      headingFontKey
-      availableViews
-      defaultView
-      defaultFileSort
-      thumbnailSize
-      thumbnailSpacing
-      thumbnailBorderRadius
-      headingFontSize
-      headingAlignment
-      footerTitle
-      footerUrl
-      socialLinks
+      ...BrandingFragment
     }
     ...HeroImageFragment
   }

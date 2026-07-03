@@ -55,6 +55,17 @@ tests/
 - For meaningful frontend runtime validation, run a fresh local build first.
 - Preferred command: `npm run test:e2e:fresh`.
 
+## Local Build Requirement For API Tests
+
+- `npm run test:api` ALSO runs against a Docker image built from `dist` (the
+  compose file's `build: ../..` uses the Dockerfile, which `COPY`s `./dist`).
+- So after changing `backend/**` or `shared/**` (resolvers, GraphQL schema/args,
+  shared queries), a stale `dist` means the suite tests the OLD schema — it can
+  pass without exercising your change, or fail with "Unknown argument" if a
+  shared query uses a new arg the built image doesn't have.
+- There is no `test:api:fresh`. Rebuild first, e.g.
+  `npm run build:local && npm run test:api`.
+
 ## CI Expectations
 
 - CI runs `test:api` and `test:e2e` separately.

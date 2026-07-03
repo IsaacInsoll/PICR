@@ -3,6 +3,7 @@ import { requireFullAdmin } from './admins.js';
 import fastFolderSizeSync from 'fast-folder-size/sync.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
+import { getLatestBuild } from '../../helpers/latestBuild.js';
 
 const resolver: PicrResolver = async (_, _params, context) => {
   await requireFullAdmin(context);
@@ -34,18 +35,6 @@ const resolver: PicrResolver = async (_, _params, context) => {
 export const serverInfo = {
   type: serverInfoType,
   resolve: resolver,
-};
-
-const getLatestBuild = async () => {
-  const req = await fetch(
-    'https://api.github.com/repos/isaacinsoll/picr/releases',
-  );
-  const json = (await req.json()) as { tag_name: string }[];
-  if (Array.isArray(json)) {
-    return json[0]?.tag_name ?? '';
-  } else {
-    return '';
-  }
 };
 
 // This can be slow if it's a large folder

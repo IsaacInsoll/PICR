@@ -27,6 +27,12 @@ import { commentType } from './types/commentType.js';
 import { comments } from './queries/comments.js';
 import { serverInfoType } from './types/serverInfoType.js';
 import { serverInfo } from './queries/serverInfoQuery.js';
+import {
+  dashboardStatsType,
+  dashboardUpdateInfoType,
+} from './types/dashboardType.js';
+import { dashboardStats } from './queries/dashboardStats.js';
+import { dashboardUpdateInfo } from './queries/dashboardUpdateInfo.js';
 import { publicLinkInfo } from './queries/publicLinkInfo.js';
 import { publicLinkInfoType } from './types/publicLinkInfoType.js';
 import { publicLinkBrandingPreviewType } from './types/publicLinkBrandingPreviewType.js';
@@ -65,6 +71,8 @@ const queries = new GraphQLObjectType({
     brandings,
     clientInfo,
     comments,
+    dashboardStats,
+    dashboardUpdateInfo,
     file,
     folderFiles,
     /* Admin Only */
@@ -111,6 +119,8 @@ const types = [
   brandingType,
   clientInfoType,
   commentType,
+  dashboardStatsType,
+  dashboardUpdateInfoType,
   fileInterface,
   fileType,
   folderType,

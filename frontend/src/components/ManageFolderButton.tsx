@@ -33,7 +33,15 @@ export const ManageFolderButton = ({
   );
 };
 
-export const ManageFolderIconButton = ({ folder }: { folder: PicrFolder }) => {
+export const ManageFolderIconButton = ({
+  folder,
+  variant = 'outline',
+  color,
+}: {
+  folder: PicrFolder;
+  variant?: string;
+  color?: string;
+}) => {
   const baseUrl = useBaseViewFolderURL();
   const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const onClick = () => {
@@ -44,7 +52,8 @@ export const ManageFolderIconButton = ({ folder }: { folder: PicrFolder }) => {
       component={NavLink}
       to={baseUrl + folder.id + '/manage/links'}
       onClick={onClick}
-      variant="outline"
+      variant={variant}
+      color={color}
       // size="xs"
     >
       <ManageFolderIcon />

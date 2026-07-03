@@ -1,27 +1,45 @@
 import { contextPermissions } from '../../auth/contextPermissions.js';
-import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+} from 'graphql';
 import { commentType } from '../types/commentType.js';
 import { GraphQLError } from 'graphql/error/index.js';
-import { subFilesMap } from '../helpers/subFiles.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 import { addUserRelationship } from '../helpers/addUserRelationship.js';
-import { db, dbFileForId } from '../../db/picrDb.js';
+import type { FileFields } from '../../db/picrDb.js';
+import { db, dbFileForId, getFilesForIds } from '../../db/picrDb.js';
+import { allSubfolderIds } from '../../helpers/allSubfolders.js';
 import { dbComment } from '../../db/models/index.js';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, inArray } from 'drizzle-orm';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { QueryCommentsArgs } from '@shared/gql/graphql.js';
+
+const MAX_COMMENTS_LIMIT = 100;
+
+const normalizeLimit = (limit?: number | null) => {
+  if (limit == null) return undefined;
+  if (limit < 1) {
+    throw new GraphQLError('limit must be greater than zero', {
+      extensions: { code: 'BAD_USER_INPUT' },
+    });
+  }
+  return Math.min(limit, MAX_COMMENTS_LIMIT);
+};
 
 const resolver: PicrResolver<object, QueryCommentsArgs> = async (
   _,
   params,
   context,
 ) => {
-  //TODO: maybe support subfolders?
-  //TODO: pagination?
   if (!params.fileId && !params.folderId) {
     throw new GraphQLError('Must specify either fileId or folderId');
   }
   //presume file, otherwise try folder
+  const limit = normalizeLimit(params.limit);
 
   if (params.fileId) {
     const file = await dbFileForId(params.fileId);
@@ -34,6 +52,7 @@ const resolver: PicrResolver<object, QueryCommentsArgs> = async (
     const list = await db.query.dbComment.findMany({
       where: eq(dbComment.fileId, file.id),
       orderBy: desc(dbComment.createdAt),
+      limit,
     });
 
     return addUserRelationship(
@@ -47,15 +66,39 @@ const resolver: PicrResolver<object, QueryCommentsArgs> = async (
     );
   } else {
     const folderId = params.folderId as number;
-    const { user } = await contextPermissions(context, folderId, 'View');
+    const { user, folder } = await contextPermissions(
+      context,
+      folderId,
+      'View',
+    );
     if (user.commentPermissions === 'none') {
       doAuthError('COMMENTS_HIDDEN');
     }
-    const files = await subFilesMap(folderId);
+
+    // Optionally include the whole subtree (used by the dashboard feed).
+    const folderIds = params.includeChildren
+      ? await allSubfolderIds(folder)
+      : [folderId];
 
     const list = await db.query.dbComment.findMany({
-      where: eq(dbComment.folderId, folderId),
+      where:
+        folderIds.length === 1
+          ? eq(dbComment.folderId, folderIds[0])
+          : inArray(dbComment.folderId, folderIds),
       orderBy: desc(dbComment.createdAt),
+      limit,
+    });
+
+    // Only load the files actually referenced by these comments (scales with the
+    // limit, not the size of the subtree).
+    const fileIds = [
+      ...new Set(
+        list.map((c) => c.fileId).filter((id): id is number => id != null),
+      ),
+    ];
+    const files: Record<number, FileFields> = {};
+    (await getFilesForIds(fileIds)).forEach((f) => {
+      files[f.id] = f;
     });
 
     return addUserRelationship(
@@ -73,5 +116,10 @@ const resolver: PicrResolver<object, QueryCommentsArgs> = async (
 export const comments = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(commentType))),
   resolve: resolver,
-  args: { fileId: { type: GraphQLID }, folderId: { type: GraphQLID } },
+  args: {
+    fileId: { type: GraphQLID },
+    folderId: { type: GraphQLID },
+    includeChildren: { type: GraphQLBoolean },
+    limit: { type: GraphQLInt },
+  },
 };

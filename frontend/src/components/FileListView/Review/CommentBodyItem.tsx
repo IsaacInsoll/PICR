@@ -7,6 +7,7 @@ import {
   Stack,
   Text,
   Timeline,
+  Tooltip,
 } from '@mantine/core';
 import { normalizeDisplayName } from '@shared/displayName';
 import type { AppCommentHistoryCommentFragmentFragment } from '@shared/gql/graphql';
@@ -19,6 +20,9 @@ import type { CommentHistoryProps } from './CommentHistory';
 import { PicrAvatar } from '../../PicrAvatar';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { prettyDate } from '@shared/prettyDate';
+import { PicrLink } from '../../PicrLink';
+import { useBaseViewFolderURL } from '../../../hooks/useBaseViewFolderURL';
+import { PrettyFolderPath } from '../../PrettyFolderPath';
 
 export const CommentBodyItem = ({
   comment,
@@ -29,11 +33,26 @@ export const CommentBodyItem = ({
   const { id, timestamp, user, systemGenerated, file } = comment;
   const openCommentModal = useOpenCommentsModal();
   const displayUser = user ?? { id: 'system', name: 'System' };
+  const baseFolderUrl = useBaseViewFolderURL();
 
   const showFile = file && !p.singleFile;
+  const commentLink =
+    p.showFolderContext && file?.folder
+      ? `${baseFolderUrl}${file.folder.id}#m=comments-${file.id}${
+          id ? `-${id}` : ''
+        }`
+      : undefined;
+  const folderLink =
+    p.showFolderContext && file?.folder
+      ? `${baseFolderUrl}${file.folder.id}`
+      : undefined;
 
   const isHighlighted = p.highlight === id;
   const isMobile = useIsMobile();
+  const openFileComment = () => {
+    if (!file || !id) return;
+    openCommentModal(file.id, id);
+  };
 
   // We could use the 'title' prop on `Item` but it's a huge font size
   return (
@@ -44,6 +63,7 @@ export const CommentBodyItem = ({
     >
       <Paper
         withBorder={isHighlighted}
+        bg={p.flat && !isHighlighted ? 'transparent' : undefined}
         p={isHighlighted ? 'sm' : undefined}
         shadow={isHighlighted ? 'xl' : undefined}
       >
@@ -56,9 +76,8 @@ export const CommentBodyItem = ({
           {showFile ? (
             <FilePreview
               file={file as PicrFile}
-              onClick={() => {
-                if (id) openCommentModal(file.id, id);
-              }}
+              onClick={commentLink ? undefined : openFileComment}
+              linkTo={commentLink}
             />
           ) : null}
           <Stack style={{ flexGrow: 1 }} gap="xs">
@@ -72,9 +91,11 @@ export const CommentBodyItem = ({
             )}
             <Group>
               {showFile ? (
-                <Code style={{ opacity: 0.33 }}>
-                  {normalizeDisplayName(file.name)}
-                </Code>
+                <FileContext
+                  file={file as PicrFile}
+                  linkTo={commentLink}
+                  folderLink={folderLink}
+                />
               ) : null}
               <Text c="dimmed" size="xs">
                 {prettyDate(timestamp)}
@@ -90,27 +111,73 @@ export const CommentBodyItem = ({
 const FilePreview = ({
   file,
   onClick,
+  linkTo,
 }: {
   file: PicrFile;
   onClick?: () => void;
+  linkTo?: string;
 }) => {
+  const image =
+    file.type === 'Image' ? (
+      <PicrImage
+        onClick={onClick}
+        clickable={Boolean(onClick) || Boolean(linkTo)}
+        file={file}
+        size="sm"
+        style={{
+          width: 96 * (file.imageRatio ?? 1),
+          height: 80,
+        }}
+      />
+    ) : null;
+
   return (
     <Box>
-      {
-        file.type === 'Image' ? (
-          <PicrImage
-            onClick={onClick}
-            clickable={true}
-            file={file}
-            size="sm"
-            style={{
-              width: 96 * (file.imageRatio ?? 1),
-              height: 80,
-            }}
-          />
-        ) : null // <Code>{file.name}</Code>
-      }
+      {linkTo && image ? <PicrLink to={linkTo}>{image}</PicrLink> : image}
     </Box>
+  );
+};
+
+const FileContext = ({
+  file,
+  linkTo,
+  folderLink,
+}: {
+  file: PicrFile;
+  linkTo?: string;
+  folderLink?: string;
+}) => {
+  const fileName = (
+    <Code style={{ opacity: 0.33 }}>{normalizeDisplayName(file.name)}</Code>
+  );
+
+  if (!linkTo) return fileName;
+
+  return (
+    <Group gap={4}>
+      <PicrLink to={linkTo} underline="never">
+        {fileName}
+      </PicrLink>
+      {file.folder ? (
+        <>
+          <Text c="dimmed" size="xs">
+            in
+          </Text>
+          <Tooltip
+            withArrow
+            color="blue.9"
+            disabled={file.folder.parents?.length === 0}
+            label={<PrettyFolderPath folder={file.folder} subColor="blue.8" />}
+          >
+            <PicrLink to={folderLink ?? linkTo} underline="never">
+              <Code style={{ opacity: 0.33 }}>
+                {normalizeDisplayName(file.folder.name)}
+              </Code>
+            </PicrLink>
+          </Tooltip>
+        </>
+      ) : null}
+    </Group>
   );
 };
 

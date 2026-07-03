@@ -9,6 +9,14 @@ export const appCommentHistoryCommentFragment = gql(/* GraphQL */ `
     userId
     file {
       ...FileFragment
+      folder {
+        id
+        name
+        parents {
+          id
+          name
+        }
+      }
     }
     user {
       ...AppCommentHistoryUserFragment
