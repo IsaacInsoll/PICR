@@ -6,6 +6,8 @@ import { atom, useAtom, useAtomValue } from 'jotai';
 export interface CommentHistoryProps {
   singleFile?: boolean;
   highlight?: string;
+  compact?: boolean;
+  limit?: number;
   // Render each comment without its own Paper surface, so it blends into a
   // parent card (used on the dashboard feedback feed).
   flat?: boolean;
@@ -29,14 +31,16 @@ export const CommentHistory = ({
   });
   const sortedComments =
     sort === 'desc' ? filteredComments : filteredComments.toReversed();
+  const visibleComments =
+    p.limit == null ? sortedComments : sortedComments.slice(0, p.limit);
   return (
     <>
-      <Group justify="space-between">
-        <CommentFilter />
-        <CommentSort />
+      <Group justify="space-between" gap="xs">
+        <CommentFilter compact={p.compact} />
+        <CommentSort compact={p.compact} />
       </Group>
-      <Timeline active={1} bulletSize={24} lineWidth={2}>
-        {sortedComments.map((c) => (
+      <Timeline active={1} bulletSize={p.compact ? 20 : 24} lineWidth={2}>
+        {visibleComments.map((c) => (
           <CommentBodyItem comment={c} key={c.id} {...p} />
         ))}
       </Timeline>
@@ -44,7 +48,7 @@ export const CommentHistory = ({
   );
 };
 
-const CommentFilter = () => {
+const CommentFilter = ({ compact = false }: { compact?: boolean }) => {
   const [value, setValue] = useAtom(commentFilterAtom);
   return (
     <Group>
@@ -54,14 +58,14 @@ const CommentFilter = () => {
         size="xs"
         data={[
           { label: 'All', value: 'all' },
-          { label: 'Comments', value: 'comments' },
+          { label: compact ? 'Text' : 'Comments', value: 'comments' },
           { label: 'Ratings', value: 'ratings' },
         ]}
       />
     </Group>
   );
 };
-const CommentSort = () => {
+const CommentSort = ({ compact = false }: { compact?: boolean }) => {
   const [value, setValue] = useAtom(commentSortAtom);
   return (
     <Group>
@@ -70,8 +74,8 @@ const CommentSort = () => {
         onChange={(next) => setValue(next as CommentSort)}
         size="xs"
         data={[
-          { label: 'Newest First', value: 'desc' },
-          { label: 'Oldest First', value: 'asc' },
+          { label: compact ? 'Newest' : 'Newest First', value: 'desc' },
+          { label: compact ? 'Oldest' : 'Oldest First', value: 'asc' },
         ]}
       />
     </Group>

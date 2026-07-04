@@ -49,10 +49,13 @@ export const CommentBodyItem = ({
 
   const isHighlighted = p.highlight === id;
   const isMobile = useIsMobile();
+  const compact = Boolean(p.compact);
   const openFileComment = () => {
     if (!file || !id) return;
     openCommentModal(file.id, id);
   };
+
+  const showFilePreview = showFile && !compact;
 
   // We could use the 'title' prop on `Item` but it's a huge font size
   return (
@@ -73,7 +76,7 @@ export const CommentBodyItem = ({
             alignItems: 'flex-start',
           }}
         >
-          {showFile ? (
+          {showFilePreview ? (
             <FilePreview
               file={file as PicrFile}
               onClick={commentLink ? undefined : openFileComment}
@@ -87,7 +90,9 @@ export const CommentBodyItem = ({
             {systemGenerated ? (
               <CommentAction comment={comment} />
             ) : (
-              <Text size="sm">{comment.comment}</Text>
+              <Text size="sm" lineClamp={compact ? 2 : undefined}>
+                {comment.comment}
+              </Text>
             )}
             <Group>
               {showFile ? (

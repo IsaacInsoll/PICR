@@ -1,3 +1,17 @@
+.dashboardStack {
+  gap: var(--mantine-spacing-xl);
+}
+
+.statsGroup {
+  flex: 1 1 420px;
+}
+
+.dashboardSearch {
+  flex: 1 1 220px;
+  max-width: 320px;
+  min-width: 220px;
+}
+
 .folderCard {
   cursor: pointer;
   transition:
@@ -18,4 +32,43 @@
 
 .clickableRow:hover {
   background-color: var(--mantine-color-default-hover);
+}
+
+.sectionCard {
+  padding: var(--mantine-spacing-lg);
+}
+
+.sectionStack {
+  gap: var(--mantine-spacing-md);
+}
+
+@media (max-width: 62em) {
+  .dashboardStack {
+    gap: var(--mantine-spacing-lg);
+  }
+
+  .sectionCard {
+    padding: var(--mantine-spacing-md);
+  }
+}
+
+@media (max-width: 36em) {
+  .sectionCard {
+    padding: var(--mantine-spacing-sm);
+  }
+
+  .sectionStack {
+    gap: var(--mantine-spacing-sm);
+  }
+
+  .statsGroup,
+  .dashboardSearch {
+    flex-basis: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .statsGroup {
+    gap: var(--mantine-spacing-sm);
+  }
 }

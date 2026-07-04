@@ -23,6 +23,7 @@ import {
   Title,
   Tooltip,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -59,24 +60,55 @@ import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { FoldersSortType } from '@shared/gql/graphql';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
 
+const dashboardLimits = {
+  desktop: {
+    galleries: 12,
+    comments: 5,
+    clients: 10,
+    modified: 12,
+  },
+  tablet: {
+    galleries: 8,
+    comments: 5,
+    clients: 6,
+    modified: 8,
+  },
+  mobile: {
+    galleries: 4,
+    comments: 3,
+    clients: 4,
+    modified: 6,
+  },
+} as const;
+
+const useDashboardDensity = () => {
+  const isMobile = useMediaQuery('(max-width: 36em)');
+  const isTablet = useMediaQuery('(max-width: 62em)');
+
+  if (isMobile) return 'mobile';
+  if (isTablet) return 'tablet';
+  return 'desktop';
+};
+
 export const Dashboard = () => {
   const me = useMe();
   const folderId = me?.folderId;
+  const density = useDashboardDensity();
   return (
     <>
       <LoggedInHeader />
       <Page>
         {folderId ? <TaskSummary folderId={folderId} /> : null}
-        <Stack gap="xl" pt="md" pb="xl">
+        <Stack className={styles.dashboardStack} gap="xl" pt="md" pb="xl">
           <TopBar folder={me?.folder ?? undefined} />
           {folderId ? (
             <>
-              <YourGalleries folderId={folderId} />
+              <YourGalleries folderId={folderId} density={density} />
               <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-                <ClientFeedback folderId={folderId} />
                 <ClientActivity folderId={folderId} />
+                <ClientFeedback folderId={folderId} density={density} />
               </SimpleGrid>
-              <RecentlyModified folderId={folderId} />
+              <RecentlyModified folderId={folderId} density={density} />
             </>
           ) : null}
         </Stack>
@@ -92,7 +124,7 @@ export const Dashboard = () => {
 const TopBar = ({ folder }: { folder?: PicrFolder }) => {
   return (
     <Group justify="space-between" align="center" wrap="wrap" gap="md">
-      <Group gap="lg" wrap="wrap">
+      <Group className={styles.statsGroup} gap="lg" wrap="wrap">
         <LibraryStats folderId={folder?.id} />
         <UpdateIndicator />
       </Group>
@@ -117,7 +149,7 @@ const DashboardSearch = ({ folder }: { folder?: PicrFolder }) => {
         onKeyDown={(e) => {
           if (e.key === 'Enter' && query.trim()) setOpened(true);
         }}
-        style={{ flexGrow: 1, minWidth: 220, maxWidth: 320 }}
+        className={styles.dashboardSearch}
       />
       <QuickFind folder={folder} />
     </>
@@ -219,6 +251,7 @@ const bytesForRoll = (bytes: string) => {
 // Loaded in its own query — these are subtree aggregates and can be slow, so we
 // never block the rest of the dashboard on them.
 const LibraryStats = ({ folderId }: { folderId?: string }) => {
+  const density = useDashboardDensity();
   const [result] = useQuery({
     query: dashboardStatsQuery,
     variables: { folderId: folderId ?? '' },
@@ -227,6 +260,7 @@ const LibraryStats = ({ folderId }: { folderId?: string }) => {
   const f = result.data?.dashboardStats;
   if (!f) return null;
   const size = bytesForRoll(f.totalSize);
+  const showDetailedCounts = density === 'desktop';
   return (
     <>
       <StatItem
@@ -235,18 +269,22 @@ const LibraryStats = ({ folderId }: { folderId?: string }) => {
         icon={<FileIcon size={16} />}
         color="blue"
       />
-      <StatItem
-        value={<AnimatedNumber value={f.totalImages} />}
-        label="photos"
-        icon={<PhotoViewIcon size={16} />}
-        color="grape"
-      />
-      <StatItem
-        value={<AnimatedNumber value={f.totalFolders} />}
-        label="folders"
-        icon={<FolderIcon size={16} />}
-        color="teal"
-      />
+      {showDetailedCounts ? (
+        <>
+          <StatItem
+            value={<AnimatedNumber value={f.totalImages} />}
+            label="photos"
+            icon={<PhotoViewIcon size={16} />}
+            color="grape"
+          />
+          <StatItem
+            value={<AnimatedNumber value={f.totalFolders} />}
+            label="folders"
+            icon={<FolderIcon size={16} />}
+            color="teal"
+          />
+        </>
+      ) : null}
       <StatItem
         value={
           <AnimatedNumber
@@ -294,7 +332,7 @@ const SectionHeading = ({
   icon: ReactNode;
   action?: { label: string; to: string };
 }) => (
-  <Group justify="space-between" wrap="nowrap">
+  <Group justify="space-between" wrap="nowrap" gap="xs">
     <Group gap="xs">
       <ThemeIcon variant="transparent" color="gray" size="sm">
         {icon}
@@ -320,7 +358,13 @@ const SectionCard = ({
   action?: { label: string; to: string };
   children: ReactNode;
 }) => (
-  <Card withBorder padding="lg" radius="md" h="100%">
+  <Card
+    withBorder
+    padding="lg"
+    radius="md"
+    h="100%"
+    className={styles.sectionCard}
+  >
     <Box mb="md">
       <SectionHeading title={title} icon={icon} action={action} />
     </Box>
@@ -336,14 +380,17 @@ const FolderCard = ({
   folder,
   action,
   showPathTooltip = true,
+  compact = false,
 }: {
   folder: PicrFolder;
   action?: ReactNode;
   showPathTooltip?: boolean;
+  compact?: boolean;
 }) => {
   const navigate = useNavigate();
   const to = `/admin/f/${folder.id}`;
   const title = folder.title ?? folder.name ?? '';
+  const coverSize = compact ? 48 : 60;
   return (
     <Tooltip
       withArrow
@@ -368,12 +415,16 @@ const FolderCard = ({
         }}
       >
         <Group gap={0} wrap="nowrap" align="stretch">
-          <FolderCover heroImage={folder.heroImage} size={60} fill />
+          <FolderCover heroImage={folder.heroImage} size={coverSize} fill />
           <Box p="xs" style={{ flexGrow: 1, minWidth: 0, alignSelf: 'center' }}>
             <Text fw={600} size="sm" truncate>
               {title}
             </Text>
-            <DateDisplay dateString={folder.folderLastModified ?? undefined} />
+            {compact ? null : (
+              <DateDisplay
+                dateString={folder.folderLastModified ?? undefined}
+              />
+            )}
           </Box>
           {action ? (
             <Box
@@ -438,7 +489,13 @@ const FolderCover = ({
 // Your Galleries — top level of the home folder
 // ---------------------------------------------------------------------------
 
-const YourGalleries = ({ folderId }: { folderId: string }) => {
+const YourGalleries = ({
+  folderId,
+  density,
+}: {
+  folderId: string;
+  density: keyof typeof dashboardLimits;
+}) => {
   const setThemeMode = useSetAtom(themeModeAtom);
   const [result] = useQuery({
     query: dashboardGalleriesQuery,
@@ -450,9 +507,13 @@ const YourGalleries = ({ folderId }: { folderId: string }) => {
     if (homeFolder) setThemeMode(applyBrandingDefaults(homeBranding));
   }, [homeBranding, homeFolder, setThemeMode]);
 
-  const galleries = (result.data?.folder.subFolders ?? []).slice(0, 12);
+  const compact = density === 'mobile';
+  const galleries = (result.data?.folder.subFolders ?? []).slice(
+    0,
+    dashboardLimits[density].galleries,
+  );
   return (
-    <Stack gap="md">
+    <Stack className={styles.sectionStack} gap="md">
       <SectionHeading title="Your Galleries" icon={<FolderIcon />} />
       {result.fetching && galleries.length === 0 ? (
         <LoadingIndicator />
@@ -461,7 +522,12 @@ const YourGalleries = ({ folderId }: { folderId: string }) => {
       ) : (
         <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="sm">
           {galleries.map((g) => (
-            <FolderCard key={g.id} folder={g} showPathTooltip={false} />
+            <FolderCard
+              key={g.id}
+              folder={g}
+              showPathTooltip={false}
+              compact={compact}
+            />
           ))}
         </SimpleGrid>
       )}
@@ -473,10 +539,16 @@ const YourGalleries = ({ folderId }: { folderId: string }) => {
 // Client Feedback — reuses the existing CommentHistory timeline
 // ---------------------------------------------------------------------------
 
-const ClientFeedback = ({ folderId }: { folderId: string }) => {
+const ClientFeedback = ({
+  folderId,
+  density,
+}: {
+  folderId: string;
+  density: keyof typeof dashboardLimits;
+}) => {
   const [result] = useQuery({
     query: dashboardCommentsQuery,
-    variables: { id: folderId, limit: 25 },
+    variables: { id: folderId, limit: dashboardLimits.desktop.comments },
     requestPolicy: 'cache-and-network',
   });
   const comments = result.data?.comments ?? [];
@@ -494,7 +566,13 @@ const ClientFeedback = ({ folderId }: { folderId: string }) => {
           icon={<CommentsIcon />}
         />
       ) : (
-        <CommentHistory comments={comments} flat showFolderContext />
+        <CommentHistory
+          comments={comments}
+          compact={density === 'mobile'}
+          flat
+          limit={dashboardLimits[density].comments}
+          showFolderContext
+        />
       )}
     </SectionCard>
   );
@@ -508,12 +586,17 @@ const ClientFeedback = ({ folderId }: { folderId: string }) => {
 
 const ClientActivity = ({ folderId }: { folderId: string }) => {
   const navigate = useNavigate();
+  const density = useDashboardDensity();
   const [result] = useQuery({
     query: recentUsersQuery,
     variables: { folderId },
     requestPolicy: 'cache-and-network',
   });
-  const users = result.data?.users ?? [];
+  const compact = density === 'mobile';
+  const users = (result.data?.users ?? []).slice(
+    0,
+    dashboardLimits[density].clients,
+  );
   return (
     <SectionCard
       title="Recent Clients"
@@ -546,7 +629,10 @@ const ClientActivity = ({ folderId }: { folderId: string }) => {
                 }
               }}
             >
-              <FolderCover heroImage={u.folder?.heroImage} size={44} />
+              <FolderCover
+                heroImage={u.folder?.heroImage}
+                size={compact ? 36 : 44}
+              />
               <Box style={{ flexGrow: 1, minWidth: 0 }}>
                 <Group gap={6} wrap="nowrap">
                   <PicrAvatar user={u} size={18} radius="xl" />
@@ -554,13 +640,17 @@ const ClientActivity = ({ folderId }: { folderId: string }) => {
                     {u.name}
                   </Text>
                 </Group>
-                <Text size="xs" c="dimmed" truncate>
-                  {u.folder?.name}
-                </Text>
+                {compact ? null : (
+                  <Text size="xs" c="dimmed" truncate>
+                    {u.folder?.name}
+                  </Text>
+                )}
               </Box>
-              <Box style={{ whiteSpace: 'nowrap' }}>
-                <DateDisplay dateString={u.lastAccess ?? undefined} />
-              </Box>
+              {compact ? null : (
+                <Box style={{ whiteSpace: 'nowrap' }}>
+                  <DateDisplay dateString={u.lastAccess ?? undefined} />
+                </Box>
+              )}
             </Group>
           ))}
         </Stack>
@@ -574,31 +664,38 @@ const ClientActivity = ({ folderId }: { folderId: string }) => {
 // plus a manage-folder action on the right of each card.
 // ---------------------------------------------------------------------------
 
-const RecentlyModified = ({ folderId }: { folderId: string }) => {
+const RecentlyModified = ({
+  folderId,
+  density,
+}: {
+  folderId: string;
+  density: keyof typeof dashboardLimits;
+}) => {
   const [result] = useQuery({
     query: readAllFoldersQuery,
     variables: {
       id: folderId,
-      limit: 12,
+      limit: dashboardLimits.desktop.modified,
       sort: FoldersSortType.FolderLastModified,
     },
   });
   const folders = (result.data?.allFolders ?? []).filter(
     (f): f is NonNullable<typeof f> => f != null,
   );
+  const visibleFolders = folders.slice(0, dashboardLimits[density].modified);
   return (
-    <Stack gap="md">
+    <Stack className={styles.sectionStack} gap="md">
       <SectionHeading title="Recently Modified" icon={<FolderIcon />} />
-      {result.fetching && folders.length === 0 ? (
+      {result.fetching && visibleFolders.length === 0 ? (
         <LoadingIndicator />
-      ) : folders.length === 0 ? (
+      ) : visibleFolders.length === 0 ? (
         <EmptyPlaceholder
           text="Nothing modified recently"
           icon={<FolderIcon />}
         />
       ) : (
         <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="sm">
-          {folders.map((f) => (
+          {visibleFolders.map((f) => (
             <FolderCard
               key={f.id}
               folder={f}
