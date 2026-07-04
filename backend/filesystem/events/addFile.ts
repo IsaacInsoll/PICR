@@ -2,16 +2,18 @@ import { basename, dirname, extname } from 'path';
 import { addFolder } from './addFolder.js';
 import { folderList, relativePath } from '../fileManager.js';
 import { log } from '../../logger.js';
-import { fastHash } from '../fileHash.js';
+import { contentHashForStats } from '../fileHash.js';
 import { FileType } from '@shared/gql/graphql.js';
 import { getImageRatio } from '../../media/getImageRatio.js';
 import { getImageMetadata } from '../../media/getImageMetadata.js';
 import { getVideoMetadata } from '../../media/getVideoMetadata.js';
 import { generateAllThumbs } from '../../media/generateImageThumbnail.js';
 import { encodeImageToBlurhash } from '../../media/blurHash.js';
+import { moveThumbnailFile } from '../../media/moveThumbnailFile.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import { and, eq } from 'drizzle-orm';
 import { db } from '../../db/picrDb.js';
+import type { FileFields } from '../../db/picrDb.js';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 import { delay } from '../../helpers/delay.js';
 import type { Stats } from 'node:fs';
@@ -50,6 +52,9 @@ export const addFile = async (
   };
 
   let wasRenamed = false;
+  let renamedFromName: string | undefined;
+  let renamedFromRelativePath: string | undefined;
+  let renamedFromType: FileFields['type'] | undefined;
   let file = renameFromPath
     ? await db.query.dbFile.findFirst({
         where: and(
@@ -61,6 +66,11 @@ export const addFile = async (
 
   if (file) {
     wasRenamed = true;
+    // Capture the pre-rename identity before we overwrite it, so a pure move can
+    // relocate the existing thumbnails instead of regenerating them.
+    renamedFromName = file.name;
+    renamedFromRelativePath = file.relativePath;
+    renamedFromType = file.type;
     file.name = props.name;
     file.relativePath = props.relativePath;
     file.folderId = props.folderId;
@@ -103,31 +113,40 @@ export const addFile = async (
 
   if (!file) return; // not needed, just for typescript to know it's not null at this point
 
-  const previousLastModified = created ? null : file.fileLastModified;
-  const previousCreated = created ? null : file.fileCreated;
-  const typeChanged = file.type !== type;
-  const modified =
-    !created &&
-    (previousLastModified?.getTime() !== stats.mtime.getTime() ||
-      previousCreated?.getTime() !== stats.birthtime.getTime() ||
-      wasRenamed);
+  const newHash = contentHashForStats(stats);
+  const typeChanged = (wasRenamed ? renamedFromType : file.type) !== type;
+  const hashChanged = file.fileHash !== newHash;
+  // A pure move: the file was renamed/relocated but its content (size + mtime,
+  // and therefore its content hash) is unchanged. Relocate the cached thumbnails
+  // and skip all media processing (no re-decode/metadata/blurhash/regeneration).
+  const isPureMove = wasRenamed && !hashChanged && !typeChanged;
 
-  if (created || !file.fileHash || modified || typeChanged) {
+  if (isPureMove) {
+    log('info', 'Moved: ' + filePath);
+    await moveThumbnailFile(
+      renamedFromRelativePath ?? file.relativePath,
+      file.relativePath,
+      renamedFromName ?? file.name,
+      file.name,
+      newHash,
+      file.type,
+    );
+    file.fileHash = newHash;
+  } else if (created || !file.fileHash || hashChanged || typeChanged) {
     log(
       'info',
       (created
         ? 'New File: '
         : wasRenamed
           ? 'Renamed: '
-          : modified
+          : hashChanged
             ? 'Modified: '
             : typeChanged
               ? 'Type changed for: '
               : 'Hash Mismatch for: ') + filePath,
     );
     file.type = type;
-    // const hash = await fileHash2(filePath);
-    file.fileHash = fastHash(file, stats);
+    file.fileHash = newHash;
     file.fileCreated = stats.birthtime;
     file.fileLastModified = stats.mtime;
 

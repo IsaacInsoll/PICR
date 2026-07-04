@@ -1,6 +1,6 @@
 import { extname, join } from 'path';
 import { picrConfig } from '../config/picrConfig.js';
-import { FileType } from '@shared/gql/graphql.js';
+import type { FileFields } from '../db/picrDb.js';
 import { thumbnailSizes } from '@shared/thumbnailSize.js';
 
 export interface ThumbnailVariant {
@@ -26,12 +26,12 @@ export const thumbnailVariantPaths = (
   relativePath: string,
   name: string,
   hash: string,
-  type: FileType | null,
+  type: FileFields['type'],
 ): ThumbnailVariant[] => {
   const dir = join(picrConfig.cachePath, 'thumbs', relativePath);
   const variants: ThumbnailVariant[] = [];
 
-  if (type === FileType.Image) {
+  if (type === 'Image') {
     // Image thumbnails are always written as .jpg, plus .avif when enabled.
     for (const size of thumbnailSizes) {
       variants.push({
@@ -48,7 +48,7 @@ export const thumbnailVariantPaths = (
       path: join(dir, `${name}-decoded-${hash}.jpg`),
       isDirectory: false,
     });
-  } else if (type === FileType.Video) {
+  } else if (type === 'Video') {
     // A single montage directory for the `md` size, named with the original
     // video extension (see generateVideoThumbnail.ts).
     variants.push({

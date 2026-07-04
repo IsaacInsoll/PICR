@@ -23,6 +23,7 @@ import {
   dbUser,
 } from '../db/models/index.js';
 import { log } from '../logger.js';
+import { runThumbnailHashMigrationIfNeeded } from './migrateThumbnailHashes.js';
 
 // This does the "picr" side of migrations, for the DB side see schemaMigration.ts
 export const dbMigrate = async (config: IPicrConfiguration) => {
@@ -60,6 +61,10 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
       await migrateBrandingRelationship();
     }
   }
+
+  // Gated internally (also handles a missing/invalid lastBootedVersion when files
+  // already exist). Runs before the file watcher so no scan rewrites hashes first.
+  await runThumbnailHashMigrationIfNeeded(lastBootedVersion);
 
   await setServerOptions({ lastBootedVersion: config.version });
 };

@@ -1,6 +1,6 @@
 import { promises as fs, constants as fsConstants } from 'node:fs';
 import { dirname, join } from 'path';
-import type { FileType } from '@shared/gql/graphql.js';
+import type { FileFields } from '../db/picrDb.js';
 import { log } from '../logger.js';
 import { thumbnailVariantPaths } from './thumbnailVariants.js';
 
@@ -79,7 +79,7 @@ const replicateFileNoOverwrite = async (
  * source entries and the source dir. A failure mid-replicate leaves the old
  * montage intact and serving; worst case is an orphaned partial destination.
  */
-const moveEntryNoOverwrite = async (
+export const moveEntryNoOverwrite = async (
   from: string,
   to: string,
   isDirectory: boolean,
@@ -130,7 +130,7 @@ export const moveThumbnailFile = async (
   oldName: string,
   newName: string,
   hash: string,
-  type: FileType | null,
+  type: FileFields['type'],
 ): Promise<RelocationResult> => {
   const result: RelocationResult = {
     moved: 0,
