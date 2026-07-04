@@ -61,6 +61,12 @@ For front end development you definitely want to use the 6969 address. For backe
 Frontend note:
 
 - `npm start` runs CSS module type generation in watch mode automatically (`start:css:types`).
+- For UI-only work against a remote PICR dataset, run the frontend with
+  `VITE_PICR_DEV_BACKEND_URL=https://your-picr.example/ npm run start` from
+  `frontend/`. Vite proxies GraphQL queries, `/image`, and `/zip` to that
+  backend, blocks GraphQL mutations other than login, and shows a backend
+  override banner. Only use this when the local frontend schema matches the
+  remote server.
 
 ### Backend Dev Server Details
 

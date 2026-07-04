@@ -533,6 +533,19 @@ npm run gql           # In another
 4. Build for production: `npm run build`
 5. Output goes to `dist/public` for backend to serve
 
+### Production Backend Override
+
+For UI-only development against a larger remote dataset, run the Vite frontend
+with `VITE_PICR_DEV_BACKEND_URL=https://your-picr.example/ npm run start`.
+This dev-only override proxies GraphQL queries, `/image`, and `/zip` requests
+to the configured backend while keeping the browser on the Vite origin. GraphQL
+mutations other than login are blocked by the dev proxy, and a banner is shown
+in the UI.
+
+Only use this when local frontend GraphQL documents match the remote server's
+schema. Backend/API changes still require the normal local backend and codegen
+workflow.
+
 ## Validation Commands
 
 Run these after frontend changes:

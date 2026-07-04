@@ -24,6 +24,7 @@ import { getBaseHrefPathname } from './helpers/baseHref';
 import { fontFamilies } from './fonts.generated';
 import { GlobalErrorOverlay } from './components/GlobalErrorOverlay';
 import { normalizeFontKey } from '@shared/branding/fontRegistry';
+import { DevBackendOverrideBanner } from './components/DevBackendOverrideBanner';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
@@ -76,6 +77,7 @@ const App = () => {
           forceColorScheme={forceColorScheme}
           defaultColorScheme={'auto'}
         >
+          <DevBackendOverrideBanner />
           <Portal className="lightbox-portal">
             <div ref={portal} />
           </Portal>
