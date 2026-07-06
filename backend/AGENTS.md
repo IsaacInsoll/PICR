@@ -450,6 +450,10 @@ flowchart LR
 - `addFile()` uses a `typeChanged` gate so existing files reclassify during the
   normal boot scan when optional decoder capabilities appear. Do not bulk-clear
   `fileHash` to force this.
+- Cache directories can contain non-PICR metadata directories from NAS filesystems
+  (for example Synology `@eaDir` inside video montage cache folders). Code that
+  moves or migrates thumbnail cache directories must handle nested directories;
+  do not assume video montage cache folders contain only flat image files.
 
 ### Video Processing
 

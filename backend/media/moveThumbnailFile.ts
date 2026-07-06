@@ -29,6 +29,14 @@ const unlinkIfExists = async (path: string): Promise<void> => {
   }
 };
 
+const removeDirIfExists = async (path: string): Promise<void> => {
+  try {
+    await fs.rm(path, { recursive: true });
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+  }
+};
+
 /**
  * Replicate a single file to `to` without overwriting: an atomic hardlink,
  * falling back to an exclusive copy where hardlinks are unsupported. Leaves the
@@ -63,21 +71,67 @@ const replicateFileNoOverwrite = async (
   }
 };
 
+const replicateEntryNoOverwrite = async (
+  from: string,
+  to: string,
+): Promise<boolean> => {
+  const stats = await fs.stat(from);
+  if (!stats.isDirectory()) return replicateFileNoOverwrite(from, to);
+
+  try {
+    await fs.mkdir(to);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === 'EEXIST') return false;
+    throw err;
+  }
+
+  const entries = await fs.readdir(from);
+  for (const entry of entries) {
+    const replicated = await replicateEntryNoOverwrite(
+      join(from, entry),
+      join(to, entry),
+    );
+    if (!replicated) return false;
+  }
+
+  return true;
+};
+
+const replicateDirectoryContentsNoOverwrite = async (
+  from: string,
+  to: string,
+): Promise<boolean> => {
+  const entries = await fs.readdir(from);
+  for (const entry of entries) {
+    const replicated = await replicateEntryNoOverwrite(
+      join(from, entry),
+      join(to, entry),
+    );
+    if (!replicated) return false;
+  }
+
+  return true;
+};
+
 /**
- * Move one cache entry to `to` without ever overwriting an existing destination,
- * and without damaging the source if the move fails partway (guards against a
- * concurrently-generated thumbnail and against partial failures once this is
- * wired into the runtime).
+ * Move one cache entry to `to` without overwriting existing cache data, and
+ * without damaging the source if the move fails partway. A non-empty destination
+ * is always left intact (callers report it as a conflict); the only thing a move
+ * can replace is an *empty* destination directory (see the directory note below),
+ * which by definition holds no thumbnails.
  *
  * Files: hardlink (or exclusive copy) then unlink the source — the source stays
- * intact until the destination exists.
+ * intact until the destination exists, and an existing destination file is never
+ * replaced (`EEXIST` -> caller treats it as a conflict).
  *
- * Directories (video montages): claim the destination with an exclusive `mkdir`
- * (fails `EEXIST` if it already exists, so an empty raced dir is never silently
- * replaced the way `rename` would), replicate every entry into it while leaving
- * the source untouched, and only once the new montage is complete remove the
- * source entries and the source dir. A failure mid-replicate leaves the old
- * montage intact and serving; worst case is an orphaned partial destination.
+ * Directories (video montages): move the whole subtree in one atomic `fs.rename`.
+ * This travels any nested content along untouched — including foreign NAS sidecar
+ * dirs such as Synology `@eaDir` — and never invokes `copyFile` on a directory.
+ * A pre-existing non-empty destination fails `ENOTEMPTY`/`EEXIST` and is reported
+ * as a conflict (both left intact). `rename` cannot cross filesystems, but cache
+ * moves stay within the cache dir, so the recursive `EXDEV` fallback below is
+ * defensive only; it replicates entries non-destructively (source intact on a
+ * mid-way failure) before dropping the source.
  */
 export const moveEntryNoOverwrite = async (
   from: string,
@@ -88,22 +142,27 @@ export const moveEntryNoOverwrite = async (
 
   if (isDirectory) {
     try {
+      await fs.rename(from, to);
+      return 'moved';
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code;
+      // Destination already present: rename replaces an *empty* dir, so a real
+      // montage (non-empty) surfaces as ENOTEMPTY/EEXIST -> leave both, conflict.
+      if (code === 'EEXIST' || code === 'ENOTEMPTY') return 'conflict';
+      // Only a cross-device move needs the manual copy fallback below.
+      if (code !== 'EXDEV') throw err;
+    }
+
+    try {
       await fs.mkdir(to);
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code === 'EEXIST') return 'conflict';
       throw err;
     }
-    const entries = await fs.readdir(from);
-    // Phase 1: replicate every entry into the freshly created (private) dest,
-    // leaving the source complete so a mid-way failure can't break it.
-    for (const entry of entries) {
-      await replicateFileNoOverwrite(join(from, entry), join(to, entry));
-    }
-    // Phase 2: destination montage is complete -> drop the source.
-    for (const entry of entries) {
-      await unlinkIfExists(join(from, entry));
-    }
-    await fs.rmdir(from);
+    const replicated = await replicateDirectoryContentsNoOverwrite(from, to);
+    if (!replicated) return 'conflict';
+    // Destination montage is complete -> drop the source.
+    await removeDirIfExists(from);
     return 'moved';
   }
 
@@ -119,10 +178,12 @@ export const moveEntryNoOverwrite = async (
  * same content hash (a pure move never changes the hash). Handles both image
  * files and the video montage directory.
  *
- * NEVER unlinks or overwrites existing cache data — each variant resolves to one
- * of four non-fatal categories (see {@link RelocationResult}). A `conflict`
- * leaves both entries untouched; the orphaned source is reclaimed by the
- * Release B sweep. Only an unexpected filesystem error propagates.
+ * Never discards existing cache data — a variant is relocated (its source removed
+ * only once the destination is in place) and an existing destination is never
+ * overwritten. Each variant resolves to one of four non-fatal categories (see
+ * {@link RelocationResult}); a `conflict` leaves both entries untouched and the
+ * orphaned source is reclaimed by the Release B sweep. Only an unexpected
+ * filesystem error propagates.
  */
 export const moveThumbnailFile = async (
   oldRelativePath: string,

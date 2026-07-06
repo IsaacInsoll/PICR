@@ -26,6 +26,7 @@ interface MigrationTotals {
   alreadyMoved: number;
   missing: number;
   conflict: number;
+  failed: number;
 }
 
 const liveHashedFiles = and(
@@ -112,7 +113,9 @@ export const runThumbnailHashMigrationIfNeeded = async (
  * blocking, before the file watcher starts, so nothing recomputes hashes
  * mid-flight. Works from DB-known metadata (fileSize + fileLastModified): if a
  * file changed while offline the boot scan supersedes this row afterwards.
- * Non-destructive: never unlinks or overwrites a cache entry.
+ * Does not discard cache data: it moves/renames entries (removing a source only
+ * once its destination exists) and may replace an empty destination directory,
+ * but never overwrites existing thumbnails.
  */
 export const migrateThumbnailHashes = async (): Promise<void> => {
   const startedAt = Date.now();
@@ -125,6 +128,7 @@ export const migrateThumbnailHashes = async (): Promise<void> => {
     alreadyMoved: 0,
     missing: 0,
     conflict: 0,
+    failed: 0,
   };
 
   const [{ total }] = await db
@@ -161,6 +165,7 @@ export const migrateThumbnailHashes = async (): Promise<void> => {
       totals.files++;
       const oldHash = row.fileHash;
       if (!oldHash) continue;
+      // fileSize/fileLastModified are NOT NULL, so this cannot throw.
       const newHash = contentHashForDb(row.fileSize, row.fileLastModified);
       if (newHash === oldHash) {
         totals.skipped++;
@@ -184,33 +189,58 @@ export const migrateThumbnailHashes = async (): Promise<void> => {
         const from = sources[i].path;
         const to = dests[i].path;
         const isDir = sources[i].isDirectory;
-        const [srcExists, dstExists] = await Promise.all([
-          cacheEntryExists(from),
-          cacheEntryExists(to),
-        ]);
+        // Contain per-variant filesystem failures: a single unmovable/anomalous
+        // cache entry must never throw out of this blocking boot migration and
+        // take the server down. A skipped variant simply regenerates later under
+        // the new hash; the row is still advanced below so the file becomes
+        // path-independent regardless.
+        try {
+          const [srcExists, dstExists] = await Promise.all([
+            cacheEntryExists(from),
+            cacheEntryExists(to),
+          ]);
 
-        if (!srcExists && !dstExists) {
-          totals.missing++;
-        } else if (!srcExists && dstExists) {
-          totals.alreadyMoved++;
-        } else if (srcExists && !dstExists) {
-          const outcome = await moveEntryNoOverwrite(from, to, isDir);
-          if (outcome === 'moved') {
-            totals.moved++;
+          if (!srcExists && !dstExists) {
+            totals.missing++;
+          } else if (!srcExists && dstExists) {
+            totals.alreadyMoved++;
+          } else if (srcExists && !dstExists) {
+            const outcome = await moveEntryNoOverwrite(from, to, isDir);
+            if (outcome === 'moved') {
+              totals.moved++;
+            } else {
+              // Destination appeared (not expected while single-threaded);
+              // resolve it like any other conflict.
+              totals.conflict++;
+              await resolveConflict(from, to, isDir, `${row.id}-${i}`, totals);
+            }
           } else {
-            // Destination appeared (not expected while single-threaded); resolve
-            // it like any other conflict.
+            // Both the old-hash source and the new-hash destination exist. The
+            // old source is authoritative; make it win non-destructively.
             totals.conflict++;
             await resolveConflict(from, to, isDir, `${row.id}-${i}`, totals);
           }
-        } else {
-          // Both the old-hash source and the new-hash destination exist. The old
-          // source is authoritative; make it win non-destructively.
-          totals.conflict++;
-          await resolveConflict(from, to, isDir, `${row.id}-${i}`, totals);
+        } catch (variantErr) {
+          totals.failed++;
+          const message =
+            variantErr instanceof Error
+              ? variantErr.message
+              : String(variantErr);
+          log(
+            'warn',
+            `⚠️ Could not migrate cache variant ${from} -> ${to} (id ${row.id}); it will regenerate: ${message}`,
+            true,
+          );
         }
       }
 
+      // Advance to the content-stable hash even if some variants failed to move —
+      // the file is path-independent from here on and any variant we couldn't move
+      // regenerates lazily at the new hash. This DB write is deliberately NOT
+      // wrapped in a catch: a write failure propagates and aborts the migration so
+      // lastBootedVersion does not advance and the whole run retries on the next
+      // boot (idempotently — completed rows skip on `newHash === oldHash`), rather
+      // than silently marking the migration done with rows left on the old hash.
       await db
         .update(dbFile)
         .set({ fileHash: newHash })
@@ -226,7 +256,7 @@ export const migrateThumbnailHashes = async (): Promise<void> => {
     log(
       'info',
       `   … ${processed} / ${total} (${pct}%) — elapsed ${elapsed.toFixed(0)}s, eta ~${eta.toFixed(0)}s ` +
-        `[moved ${totals.moved} · alreadyMoved ${totals.alreadyMoved} · missing ${totals.missing} · conflict ${totals.conflict}]`,
+        `[moved ${totals.moved} · alreadyMoved ${totals.alreadyMoved} · missing ${totals.missing} · conflict ${totals.conflict} · failed ${totals.failed}]`,
       true,
     );
   }
@@ -238,7 +268,8 @@ export const migrateThumbnailHashes = async (): Promise<void> => {
       (totals.superseded
         ? `, ${totals.superseded} conflicting destinations superseded`
         : '') +
-      ` in ${elapsed.toFixed(1)}s — moved=${totals.moved} alreadyMoved=${totals.alreadyMoved} missing=${totals.missing} conflict=${totals.conflict}`,
+      (totals.failed ? `, ${totals.failed} skipped after errors` : '') +
+      ` in ${elapsed.toFixed(1)}s — moved=${totals.moved} alreadyMoved=${totals.alreadyMoved} missing=${totals.missing} conflict=${totals.conflict} failed=${totals.failed}`,
     true,
   );
 };
