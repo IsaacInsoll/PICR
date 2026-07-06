@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from 'urql';
 import { normalizeDisplayName } from '@shared/displayName';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import {
   FolderHeader,
   PlaceholderFolderHeader,
@@ -34,17 +34,14 @@ import {
   assignBrandingToFolderAtom,
   editBrandingAtom,
 } from '../atoms/editBrandingAtom';
-import { BrandingDrawer } from './management/BrandingDrawer';
 import { FolderModalManager } from '../components/FolderModalManager';
 import { Page } from '../components/Page';
 import { QuickFind } from '../components/QuickFind/QuickFind';
 import { useRequery } from '@shared/hooks/useRequery';
-import { LoggedInHeader } from '../components/Header/LoggedInHeader';
 import {
   FileSortMenuItems,
   FileSortSelector,
 } from '../components/FileListView/FileSortSelector';
-import { FolderActivity } from './FolderActivity';
 import type { PicrFolder } from '@shared/types/picr';
 import { DotsIcon, FolderIcon } from '../PicrIcons';
 import { setFolderBrandingMutation } from '@shared/urql/mutations/setFolderBrandingMutation';
@@ -53,15 +50,36 @@ import type { SocialLink } from '@shared/branding/socialLinkTypes';
 import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
-import {
-  ManageFolderDrawer,
-  ManageFolderDrawerLoading,
-} from '../components/ManageFolderDrawer';
 import { FolderMenuItems } from '../components/FileListView/FolderMenu';
-import { FolderCsvExportModal } from '../components/FileListView/FolderCsvExportModal';
 import { FolderBanner } from '../components/FolderBanner';
 import { GalleryFooter } from '../components/GalleryFooter';
 import { DownloadZipButton } from '../components/DownloadZipButton';
+
+const LoggedInHeader = lazy(() =>
+  import('../components/Header/LoggedInHeader').then((module) => ({
+    default: module.LoggedInHeader,
+  })),
+);
+const BrandingDrawer = lazy(() =>
+  import('./management/BrandingDrawer').then((module) => ({
+    default: module.BrandingDrawer,
+  })),
+);
+const FolderActivity = lazy(() =>
+  import('./FolderActivity').then((module) => ({
+    default: module.FolderActivity,
+  })),
+);
+const loadFolderCsvExportModal = () =>
+  import('../components/FileListView/FolderCsvExportModal').then((module) => ({
+    default: module.FolderCsvExportModal,
+  }));
+const FolderCsvExportModal = lazy(loadFolderCsvExportModal);
+const ManageFolderDrawer = lazy(() =>
+  import('../components/ManageFolderDrawer').then((module) => ({
+    default: module.ManageFolderDrawer,
+  })),
+);
 
 type ViewFolderMode = 'files' | 'manage' | 'activity';
 
@@ -143,7 +161,6 @@ const ViewFolderBody = () => {
   const canDownload = useCanDownload();
   const { canView } = useCommentPermissions();
   const folder = data.data?.folder;
-  const displayFolderName = normalizeDisplayName(folder?.name);
   const hasFiles = folder && folder.files.length > 0;
   // Only expose the "Date taken" sort when at least one file carries an EXIF
   // capture date - a folder of videos/documents wouldn't benefit from it.
@@ -194,6 +211,14 @@ const ViewFolderBody = () => {
   const showOverflow =
     !!folder && (!!me?.isUser || canView || canDownload || !!hasFiles);
 
+  useEffect(() => {
+    if (!hasFiles || !showOverflow) return;
+    const timeout = window.setTimeout(() => {
+      void loadFolderCsvExportModal();
+    }, 1000);
+    return () => window.clearTimeout(timeout);
+  }, [hasFiles, showOverflow]);
+
   if (mode !== 'activity') {
     if (folder)
       actions.push(<ViewSelectorButton folder={folder} key="ViewSelector" />);
@@ -232,19 +257,25 @@ const ViewFolderBody = () => {
 
   return (
     <>
-      <LoggedInHeader
-        folder={folder}
-        managing={managing}
-        flushBottom={Boolean(folder?.bannerImage) && !activity}
-      />
+      {me?.isUser ? (
+        <Suspense fallback={null}>
+          <LoggedInHeader
+            folder={folder}
+            managing={managing}
+            flushBottom={Boolean(folder?.bannerImage) && !activity}
+          />
+        </Suspense>
+      ) : null}
       <QuickFind folder={folder} />
       {folder ? <FolderModalManager folder={folder} /> : null}
-      {folder ? (
-        <FolderCsvExportModal
-          folder={folder}
-          opened={csvExportOpen}
-          onClose={() => setCsvExportOpen(false)}
-        />
+      {folder && csvExportOpen ? (
+        <Suspense fallback={null}>
+          <FolderCsvExportModal
+            folder={folder}
+            opened={csvExportOpen}
+            onClose={() => setCsvExportOpen(false)}
+          />
+        </Suspense>
       ) : null}
       <QueryFeedback result={data} reQuery={reQuery} />
       {!folder ? (
@@ -263,14 +294,7 @@ const ViewFolderBody = () => {
           />
           <TaskSummary folderId={folder.id} />
           {managing && !editBranding ? (
-            <Suspense
-              fallback={
-                <ManageFolderDrawerLoading
-                  folderName={displayFolderName ?? 'Loading'}
-                  onClose={() => setFolder(folder)}
-                />
-              }
-            >
+            <Suspense fallback={null}>
               <ManageFolderDrawer
                 folder={folder}
                 onClose={() => setFolder(folder)}
@@ -278,11 +302,13 @@ const ViewFolderBody = () => {
             </Suspense>
           ) : null}
           {editBranding ? (
-            <BrandingDrawer
-              branding={editBranding}
-              onClose={closeBranding}
-              onSaved={onBrandingSaved}
-            />
+            <Suspense fallback={null}>
+              <BrandingDrawer
+                branding={editBranding}
+                onClose={closeBranding}
+                onSaved={onBrandingSaved}
+              />
+            </Suspense>
           ) : null}
           {activity ? (
             <Suspense

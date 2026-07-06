@@ -1,10 +1,8 @@
 import { Tabs } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router';
-import { ManageUsers } from './ManageUsers';
 import { Page } from '../../components/Page';
 import type { ReactNode } from 'react';
-import { Suspense } from 'react';
-import { ServerInfo } from './ServerInfo';
+import { lazy, Suspense } from 'react';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import {
   AccessLogsIcon,
@@ -13,17 +11,44 @@ import {
   PublicLinkIcon,
   UserSettingsIcon,
 } from '../../PicrIcons';
-import { ManagePublicLinks } from './ManagePublicLinks';
 import { useMe } from '../../hooks/useMe';
 import { Tips } from '../../components/Tips';
 import { TaskSummary } from '../../components/TaskSummary';
 import { PicrTitle } from '../../components/PicrTitle';
 import { QuickFind } from '../../components/QuickFind/QuickFind';
 import { LoggedInHeader } from '../../components/Header/LoggedInHeader';
-import { ManageBrandings } from './ManageBrandings';
-import { AccessLogs } from './AccessLogs/AccessLogs';
-import { TreeSize } from './treesize/TreeSize';
 import { TopBar } from './TopBar';
+
+const AccessLogs = lazy(() =>
+  import('./AccessLogs/AccessLogs').then((module) => ({
+    default: module.AccessLogs,
+  })),
+);
+const ManageBrandings = lazy(() =>
+  import('./ManageBrandings').then((module) => ({
+    default: module.ManageBrandings,
+  })),
+);
+const ManagePublicLinks = lazy(() =>
+  import('./ManagePublicLinks').then((module) => ({
+    default: module.ManagePublicLinks,
+  })),
+);
+const ManageUsers = lazy(() =>
+  import('./ManageUsers').then((module) => ({
+    default: module.ManageUsers,
+  })),
+);
+const ServerInfo = lazy(() =>
+  import('./ServerInfo').then((module) => ({
+    default: module.ServerInfo,
+  })),
+);
+const TreeSize = lazy(() =>
+  import('./treesize/TreeSize').then((module) => ({
+    default: module.TreeSize,
+  })),
+);
 
 export const Settings = () => {
   const { tab } = useParams();
@@ -93,7 +118,9 @@ export const Settings = () => {
             </Suspense>
           </Tabs.Panel>
           <Tabs.Panel value="treesize">
-            {me?.folderId ? <TreeSize rootId={me.folderId} /> : null}
+            <Suspense fallback={<LoadingIndicator />}>
+              {me?.folderId ? <TreeSize rootId={me.folderId} /> : null}
+            </Suspense>
           </Tabs.Panel>
         </Tabs>
       </Page>

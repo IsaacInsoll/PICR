@@ -1,10 +1,9 @@
 import useMeasure from 'react-use-measure';
 import { normalizeDisplayName } from '@shared/displayName';
 import { selectedViewAtom } from '../selectedViewAtom';
+import { lazy, Suspense, useCallback, useEffect, type MouseEvent } from 'react';
 import { GridGallery } from './GridGallery';
-import { useCallback, useEffect, type MouseEvent } from 'react';
 import { ImageFeed } from './ImageFeed';
-import { SelectedFileView } from './SelectedFile/SelectedFileView';
 import {
   filterAtom,
   filterOptions,
@@ -37,9 +36,24 @@ import {
   useSetBannerImageFile,
   useCloseSetBannerImageModal,
 } from '../../atoms/modalAtom';
-import { MoveRenameFolderModal } from './MoveRenameFolderModal';
-import { SetBannerImageModal } from './SetBannerImageModal';
 import { useCanDownload, useMe } from '../../hooks/useMe';
+
+const loadMoveRenameFolderModal = () =>
+  import('./MoveRenameFolderModal').then((module) => ({
+    default: module.MoveRenameFolderModal,
+  }));
+const loadSelectedFileView = () =>
+  import('./SelectedFile/SelectedFileView').then((module) => ({
+    default: module.SelectedFileView,
+  }));
+const loadSetBannerImageModal = () =>
+  import('./SetBannerImageModal').then((module) => ({
+    default: module.SetBannerImageModal,
+  }));
+
+const MoveRenameFolderModal = lazy(loadMoveRenameFolderModal);
+const SelectedFileView = lazy(loadSelectedFileView);
+const SetBannerImageModal = lazy(loadSetBannerImageModal);
 
 export interface FileListViewStyleComponentProps {
   files: ViewFolderFileWithHero[];
@@ -69,6 +83,15 @@ export const FolderContentsView = ({
   const [view, setView] = useAtom(selectedViewAtom);
   const me = useMe();
   const branding = folder.branding;
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      void loadSelectedFileView();
+      void loadMoveRenameFolderModal();
+      void loadSetBannerImageModal();
+    }, 1000);
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   // For link users: if saved view is not available, switch to defaultView or first shown
   useEffect(() => {
@@ -164,23 +187,27 @@ export const FolderContentsView = ({
   return (
     <div onContextMenu={handleContextMenu} ref={containerRef}>
       {moveFolder ? (
-        <MoveRenameFolderModal
-          folder={moveFolder}
-          opened={true}
-          onClose={closeMoveFolderModal}
-        />
+        <Suspense fallback={null}>
+          <MoveRenameFolderModal
+            folder={moveFolder}
+            opened={true}
+            onClose={closeMoveFolderModal}
+          />
+        </Suspense>
       ) : null}
       {bannerImageFile ? (
-        <SetBannerImageModal
-          file={bannerImageFile}
-          opened={true}
-          onClose={closeBannerImageModal}
-          previewTitle={
-            folder.title?.trim() ||
-            normalizeDisplayName(folder.name) ||
-            '(Unnamed Folder)'
-          }
-        />
+        <Suspense fallback={null}>
+          <SetBannerImageModal
+            file={bannerImageFile}
+            opened={true}
+            onClose={closeBannerImageModal}
+            previewTitle={
+              folder.title?.trim() ||
+              normalizeDisplayName(folder.name) ||
+              '(Unnamed Folder)'
+            }
+          />
+        </Suspense>
       ) : null}
       <Transition
         mounted={filtering}
@@ -197,14 +224,14 @@ export const FolderContentsView = ({
         )}
       </Transition>
       {fileId ? ( // SelectedFileView react lightbox 'blocks' fileinfo so we can't have them on at the same time
-        <>
+        <Suspense fallback={null}>
           <SelectedFileView
             files={props.files}
             setSelectedFileId={setSelectedFileId}
             selectedFileId={fileId}
             folderId={folderId}
           />
-        </>
+        </Suspense>
       ) : null}
       {view === 'list' && <FileListView {...props} />}
       {view === 'gallery' && <GridGallery {...props} />}

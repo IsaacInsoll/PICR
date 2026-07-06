@@ -1,10 +1,36 @@
+import { lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router';
-import { LoginForm } from './pages/LoginForm';
-import { ViewFolder } from './pages/ViewFolder';
-import { PageNotFound } from './pages/PageNotFound';
-import { Settings } from './pages/management/Settings';
-import { ParticleBackground } from './components/ParticleBackground';
-import { Dashboard } from './pages/Dashboard';
+
+const Dashboard = lazy(() =>
+  import('./pages/Dashboard').then((module) => ({
+    default: module.Dashboard,
+  })),
+);
+const LoginForm = lazy(() =>
+  import('./pages/LoginForm').then((module) => ({
+    default: module.LoginForm,
+  })),
+);
+const PageNotFound = lazy(() =>
+  import('./pages/PageNotFound').then((module) => ({
+    default: module.PageNotFound,
+  })),
+);
+const ParticleBackground = lazy(() =>
+  import('./components/ParticleBackground').then((module) => ({
+    default: module.ParticleBackground,
+  })),
+);
+const Settings = lazy(() =>
+  import('./pages/management/Settings').then((module) => ({
+    default: module.Settings,
+  })),
+);
+const ViewFolder = lazy(() =>
+  import('./pages/ViewFolder').then((module) => ({
+    default: module.ViewFolder,
+  })),
+);
 
 const folderRoute = '/:folderId/:fileId?/:tab?';
 
