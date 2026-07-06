@@ -53,6 +53,26 @@ services:
 
 The `healthcheck` and `depends_on.condition: service_healthy` pairing is recommended so PICR waits for Postgres to be ready, not just started. PICR also retries its startup migrations once after 10 seconds if the database is still unavailable, which helps with slower disks or NAS startup timing.
 
+## Upgrades
+
+PICR supports direct upgrades from any release in the previous major version to
+any release in the next major version, unless the release notes explicitly
+declare a required upgrade stop.
+
+Examples:
+
+- Any `0.x` release can upgrade directly to any `1.x` release.
+- Any `1.x` release can upgrade directly to any `2.x` release.
+
+Before upgrading, back up the `data` volume. PICR applies application database
+migrations automatically on startup. Downgrades are supported only to PICR
+versions greater than or equal to the database's minimum supported PICR version.
+To downgrade below that floor, restore a backup taken before the upgrade.
+
+PostgreSQL major-version upgrades are separate from PICR app upgrades. Do not
+change the `db` image from one Postgres major version to another unless the PICR
+docs or release notes provide a database migration path for that change.
+
 ## Volumes (File Locations)
 
 **Create these folders before starting PICR for the first time.** If Docker creates them automatically it will do so as

@@ -332,6 +332,32 @@ ESLint enforces that `frontend`, `backend`, and `app` do not import from each ot
 
 ## Git & Commit Guidelines
 
+### Upgrade Compatibility Policy
+
+PICR uses major versions as the clear boundary for breaking changes. A release
+must support a direct upgrade from any release in the previous major version to
+any release in the next major version, unless a release note explicitly declares
+a required upgrade stop.
+
+Examples:
+
+- Any `0.x` release must be able to upgrade directly to any `1.x` release.
+- Any `1.x` release must be able to upgrade directly to any `2.x` release.
+
+Design migrations around that promise. If a breaking schema or API cleanup is
+needed, ship it in the next major version instead of the middle of the current
+major. If a migration removes a column/table used by older versions, preserve
+any required data before dropping it. Remember that Drizzle SQL migrations run
+before `backend/boot/dbMigrate.ts`, so data needed from a dropped column must be
+copied in SQL before the `DROP COLUMN`.
+
+Downgrades are allowed only to PICR versions greater than or equal to the
+database compatibility floor (`minimumPicrVersion`). If a migration makes older
+versions unsafe, raise that floor in the same release. Restoring a backup taken
+before the upgrade is required to downgrade below the floor. PostgreSQL
+major-version upgrades are separate from PICR app upgrades and require their own
+documented database migration path.
+
 ### Commit Format
 
 ```

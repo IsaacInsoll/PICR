@@ -15,6 +15,30 @@ Let `release-it` own the release commit, tag, push, and GitHub release creation
 so the GitHub release tag points at the commit containing the matching
 `package.json` version.
 
+### Versioning and upgrade policy
+
+PICR uses major versions as the intentional boundary for breaking changes.
+
+- Any release in the previous major version must be able to upgrade directly to
+  any release in the next major version, unless release notes explicitly declare
+  a required upgrade stop.
+- Any `0.x` release must be able to upgrade directly to any `1.x` release.
+- Any `1.x` release must be able to upgrade directly to any `2.x` release.
+- Breaking database, GraphQL, API, config, or Docker/runtime changes should be
+  saved for the next major version.
+- Downgrades are supported only to PICR versions greater than or equal to the
+  database compatibility floor (`minimumPicrVersion`). If a migration makes
+  older versions unsafe, raise that floor in the same release. Restoring a
+  pre-upgrade backup is required to downgrade below the floor.
+- PostgreSQL major-version upgrades are separate from PICR app upgrades and need
+  their own documented database migration path.
+
+For schema migrations, design for skipped releases. A user may jump from an old
+minor release straight to the newest release in the next major. If a migration
+removes a column/table that older releases used, copy any required data before
+dropping it. Drizzle SQL migrations run before `backend/boot/dbMigrate.ts`, so
+data needed from a dropped column must be preserved in SQL before `DROP COLUMN`.
+
 Do not manually create normal Docker/backend release tags or GitHub releases. If
 the release verification guard fails, fix the tag/version mismatch before
 publishing a GitHub release.
