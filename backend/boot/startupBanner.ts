@@ -46,11 +46,11 @@ const versionLabel = (config: IPicrConfiguration) => {
     .join(' ');
 };
 
-const buildLabel = (config: IPicrConfiguration) => {
-  if (config.developmentBuildSha) return shortSha(config.developmentBuildSha);
-  if (config.gitSha) return shortSha(config.gitSha);
-  return undefined;
-};
+// Only development (`commit-*`) builds set developmentBuildSha, so only they show
+// a commit hash. Release builds (`latest` / a tagged version) leave it unset —
+// gitSha is still set for the Docker provenance label but is never shown here.
+const buildLabel = (config: IPicrConfiguration) =>
+  config.developmentBuildSha ? shortSha(config.developmentBuildSha) : undefined;
 
 const shortSha = (sha: string) => sha.slice(0, 12);
 
