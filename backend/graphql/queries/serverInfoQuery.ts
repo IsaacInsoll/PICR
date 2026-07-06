@@ -8,7 +8,7 @@ import { getLatestBuild } from '../../helpers/latestBuild.js';
 const resolver: PicrResolver = async (_, _params, context) => {
   await requireFullAdmin(context);
 
-  const latest = await getLatestBuild();
+  const latest = await getLatestBuild({ forceRefresh: true });
 
   return {
     version: picrConfig.version,

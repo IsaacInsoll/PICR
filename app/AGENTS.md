@@ -81,20 +81,16 @@ router.push({
 router.back();
 ```
 
-## Sharing Code with Frontend
+## Sharing Code with Shared
 
 ### Metro Configuration
 
 ```javascript
 // metro.config.js
 config.resolver.extraNodeModules = {
-  '@frontend': __dirname + '/../frontend/src',
   '@shared': __dirname + '/../shared',
 };
-config.watchFolders = [
-  __dirname + '/../frontend/src',
-  __dirname + '/../shared',
-];
+config.watchFolders = [__dirname + '/../shared'];
 ```
 
 ### Import Patterns
@@ -104,19 +100,17 @@ config.watchFolders = [
 import { meQuery } from '@shared/urql/queries/meQuery';
 import { prettyBytes } from '@shared/prettyBytes';
 import { sortFolderContents } from '@shared/files/sortFiles';
-
-// From frontend (limited - no React hooks)
-import { formatMetadataValue } from '@frontend/metadata/formatMetadataValue';
 ```
 
 ### What CAN Be Imported
 
-| Source      | What's Safe                                 | What's NOT Safe         |
-| ----------- | ------------------------------------------- | ----------------------- |
-| `@shared`   | Types, queries, pure functions, Jotai atoms | URQL hooks              |
-| `@frontend` | Pure formatting functions                   | React hooks, components |
+| Source    | What's Safe                                 | What's NOT Safe |
+| --------- | ------------------------------------------- | --------------- |
+| `@shared` | Types, queries, pure functions, Jotai atoms | URQL hooks      |
 
-Any attempt to import from @frontend should trigger a "should this be refactored to be in @shared" consideration.
+The app must not import from `frontend`, `backend`, or any other non-shared
+subsystem. Move code needed by multiple consumers into `shared/` and import it
+with `@shared/*`.
 
 ## Known Issues / Tech Debt
 

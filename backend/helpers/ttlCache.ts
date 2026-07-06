@@ -20,5 +20,6 @@ export const ttlCache = <T>(ttlMs: number) => {
       cache.set(key, { value, expiresAt: Date.now() + ttlMs });
       return value;
     },
+    clear: () => cache.clear(),
   };
 };
