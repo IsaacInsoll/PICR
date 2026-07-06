@@ -4,10 +4,11 @@ import { setupRootFolder } from './filesystem/events/addFolder.js';
 import { envPassword } from './boot/envPassword.js';
 import { expressServer } from './express/express.js';
 import { dbMigrate } from './boot/dbMigrate.js';
-import { log, logger } from './logger.js';
+import { log } from './logger.js';
 import { picrConfig } from './config/picrConfig.js';
 import { initDb } from './db/picrDb.js';
 import { schemaMigration } from './db/schemaMigration.js';
+import { logStartupBanner, logFatalBanner } from './boot/startupBanner.js';
 
 export const server = async () => {
   try {
@@ -15,12 +16,8 @@ export const server = async () => {
     initDb();
     await dbMigrate(picrConfig);
   } catch (e) {
-    logger.error(
-      `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\`. 
-   Please ensure configuration is correct and database server is running`,
-    );
-    logger.error(String(e));
-    process.exit();
+    logFatalBanner(picrConfig, String(e));
+    process.exit(1);
   }
 
   await setupRootFolder();
@@ -28,11 +25,7 @@ export const server = async () => {
   const appName = pkg.name;
   const express = expressServer();
   const httpServer = express.listen(picrConfig.port, () => {
-    log(
-      'info',
-      `🌐 App listening at http://localhost:${picrConfig.port}`,
-      true,
-    );
+    logStartupBanner(picrConfig);
   });
 
   const gracefulShutdown = (signal: string) => {

@@ -7,7 +7,7 @@ import type { MutationRenameFolderArgs } from '@shared/gql/graphql.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import { existsSync, renameSync } from 'node:fs';
 import { db } from '../../db/picrDb.js';
-import { and, eq, like, sql, isNull } from 'drizzle-orm';
+import { and, eq, like, or, sql, isNull } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 import { folderList, pathSplit } from '../../filesystem/fileManager.js';
 import { moveThumbnailFolder } from '../../media/moveThumbnailFolder.js';
@@ -133,7 +133,10 @@ const resolver: PicrResolver<object, MutationRenameFolderArgs> = async (
       })
       .where(
         and(
-          like(dbFolder.relativePath, oldPath + '%'),
+          or(
+            eq(dbFolder.relativePath, oldPath),
+            like(dbFolder.relativePath, oldPath + '/%'),
+          ),
           eq(dbFolder.exists, true),
         ),
       );
@@ -149,7 +152,13 @@ const resolver: PicrResolver<object, MutationRenameFolderArgs> = async (
         relativePath: sql`REGEXP_REPLACE(${dbFile.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)})`,
       })
       .where(
-        and(like(dbFile.relativePath, oldPath + '%'), eq(dbFile.exists, true)),
+        and(
+          or(
+            eq(dbFile.relativePath, oldPath),
+            like(dbFile.relativePath, oldPath + '/%'),
+          ),
+          eq(dbFile.exists, true),
+        ),
       );
 
     // console.log(files);
@@ -160,7 +169,13 @@ const resolver: PicrResolver<object, MutationRenameFolderArgs> = async (
         folderId: sql`(SELECT ${dbFolder.id} FROM ${dbFolder} WHERE ${dbFolder.relativePath} = ${dbFile.relativePath} AND ${dbFolder.exists} = true LIMIT 1)`,
       })
       .where(
-        and(like(dbFile.relativePath, newPath + '%'), eq(dbFile.exists, true)),
+        and(
+          or(
+            eq(dbFile.relativePath, newPath),
+            like(dbFile.relativePath, newPath + '/%'),
+          ),
+          eq(dbFile.exists, true),
+        ),
       );
 
     // console.log(filesFolderIds);

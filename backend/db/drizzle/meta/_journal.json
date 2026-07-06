@@ -148,6 +148,13 @@
       "when": 1782868824104,
       "tag": "0020_gallery-passcode",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1783143845753,
+      "tag": "0021_add-minimum-picr-version",
+      "breakpoints": true
     }
   ]
 }

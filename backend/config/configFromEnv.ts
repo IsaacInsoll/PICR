@@ -84,7 +84,6 @@ export const configFromEnv = () => {
     canWrite: d.CAN_WRITE && writeProbe.canWrite,
   };
 
-  log('info', '#️⃣  Version: ' + (c.dev ? '[DEV] ' : '') + c.version, true);
   if (c.developmentBuildSha) {
     log(
       'warn',

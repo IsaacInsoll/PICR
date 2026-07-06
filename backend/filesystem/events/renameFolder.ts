@@ -3,7 +3,7 @@ import type { Stats } from 'node:fs';
 import { addFolder } from './addFolder.js';
 import { folderList, relativePath } from '../fileManager.js';
 import { db } from '../../db/picrDb.js';
-import { and, eq, like, sql } from 'drizzle-orm';
+import { and, eq, like, or, sql } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 import { moveThumbnailFolder } from '../../media/moveThumbnailFolder.js';
 
@@ -65,7 +65,10 @@ export const renameFolder = async (
     })
     .where(
       and(
-        like(dbFile.relativePath, oldRelative + '/%'),
+        or(
+          eq(dbFile.relativePath, oldRelative),
+          like(dbFile.relativePath, oldRelative + '/%'),
+        ),
         eq(dbFile.exists, true),
       ),
     );
@@ -77,7 +80,10 @@ export const renameFolder = async (
     })
     .where(
       and(
-        like(dbFile.relativePath, newRelative + '/%'),
+        or(
+          eq(dbFile.relativePath, newRelative),
+          like(dbFile.relativePath, newRelative + '/%'),
+        ),
         eq(dbFile.exists, true),
       ),
     );

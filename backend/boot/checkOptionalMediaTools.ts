@@ -1,5 +1,4 @@
 import { spawnSync } from 'node:child_process';
-import { log } from '../logger.js';
 import { picrConfig } from '../config/picrConfig.js';
 
 type MagickFormat = 'PSD' | 'PSB' | 'HEIC' | 'HEIF';
@@ -21,18 +20,6 @@ export const checkOptionalMediaTools = () => {
       formatCanRead(magickFormats, 'HEIC') ||
       formatCanRead(magickFormats, 'HEIF'),
   };
-
-  log(
-    'info',
-    [
-      '🧩 Optional image decoders:',
-      `RAW ${enabledLabel(picrConfig.mediaCaps.raw)}`,
-      `PSD ${enabledLabel(picrConfig.mediaCaps.psd)}`,
-      `PSB ${enabledLabel(picrConfig.mediaCaps.psb)}`,
-      `HEIC ${enabledLabel(picrConfig.mediaCaps.heic)}`,
-    ].join(' '),
-    true,
-  );
 };
 
 const commandSucceeds = (command: string, args: string[]): boolean => {
@@ -61,6 +48,3 @@ const formatCanRead = (
   formats: Map<string, string>,
   format: MagickFormat,
 ): boolean => formats.get(format)?.includes('r') ?? false;
-
-const enabledLabel = (enabled: boolean): string =>
-  enabled ? 'enabled' : 'disabled';
