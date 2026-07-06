@@ -109,6 +109,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
         varchar lastBootedVersion "nullable"
+        varchar minimumPicrVersion "nullable"
         varchar tokenSecret "nullable"
         boolean avifEnabled "nullable"
     }

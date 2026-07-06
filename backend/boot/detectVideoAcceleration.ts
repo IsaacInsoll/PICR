@@ -59,15 +59,6 @@ export const detectVideoAcceleration = async (): Promise<void> => {
   picrConfig.videoAccelerationReason = driver
     ? `VAAPI active (${driver})`
     : 'VAAPI active';
-
-  const detail = [driver, codecs.length ? codecs.join(', ') : undefined]
-    .filter(Boolean)
-    .join(' — ');
-  log(
-    'info',
-    `🎬 Using VAAPI for video acceleration${detail ? ` — ${detail}` : ''}`,
-    true,
-  );
 };
 
 // Minimal "does ffmpeg VAAPI work" smoke test. Mirrors the full thumbnail data
@@ -116,7 +107,13 @@ const useCpu = (level: 'info' | 'warn', reason: string): void => {
   picrConfig.videoAccelerationDriver = undefined;
   picrConfig.videoAccelerationCodecs = undefined;
   picrConfig.videoAccelerationReason = reason;
-  log(level, `🎬 Using CPU only for video processing because ${reason}`, true);
+  if (level === 'warn') {
+    log(
+      level,
+      `🎬 Using CPU only for video processing because ${reason}`,
+      true,
+    );
+  }
 };
 
 const failureReason = (probe: SpawnSyncReturns<string>): string => {

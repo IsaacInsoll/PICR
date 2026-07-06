@@ -1,7 +1,6 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import pg from 'pg';
-import { picrConfig } from '../config/picrConfig.js';
 import { delay } from '../helpers/delay.js';
 import { log } from '../logger.js';
 
@@ -62,7 +61,7 @@ export async function schemaMigration() {
 
   try {
     await runMigrationsWithRetry(migrationClient, defaultRetryPolicy);
-    log('info', '🗃️  Migrations Complete', true);
+    log('info', '🗃️  Migrations Complete');
   } finally {
     await pool.end();
   }
@@ -93,27 +92,16 @@ const runMigrationsWithRetry = async (
         continue;
       }
 
+      // Throw with context and let the caller (server.ts) render the fatal
+      // banner, rather than exiting here and bypassing it.
+      const code = String(migrationErrorCode(error));
       if (isRetryable) {
-        log(
-          'error',
-          `⚠️ Unable to connect to database \`${picrConfig.databaseUrl}\` after ${retryPolicy.attempts} attempts. 
-   Please ensure configuration is correct and database server is running`,
-          true,
-        );
-      } else {
-        log(
-          'error',
-          '⚠️ Error during database migration: ' + describeError(error),
-          true,
+        throw new Error(
+          `Unable to connect to the database after ${retryPolicy.attempts} attempts — ensure the database is running and DATABASE_URL is correct (code: ${code})`,
         );
       }
-
-      log(
-        'error',
-        `Migration error code: ${String(migrationErrorCode(error))}`,
-        true,
-      );
-      process.exit(1);
+      const detail = error instanceof Error ? error.message : String(error);
+      throw new Error(`Database migration failed (code: ${code}): ${detail}`);
     }
   }
 };

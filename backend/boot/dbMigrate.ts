@@ -24,10 +24,12 @@ import {
 } from '../db/models/index.js';
 import { log } from '../logger.js';
 import { runThumbnailHashMigrationIfNeeded } from './migrateThumbnailHashes.js';
+import { assertDatabaseVersionCompatible } from './dbVersionGuard.js';
 
 // This does the "picr" side of migrations, for the DB side see schemaMigration.ts
 export const dbMigrate = async (config: IPicrConfiguration) => {
   const opts = await getServerOptions();
+  assertDatabaseVersionCompatible(opts, config.version);
 
   if (!opts.tokenSecret) {
     if (config.tokenSecret) {

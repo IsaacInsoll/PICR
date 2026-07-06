@@ -638,7 +638,7 @@ Fix:
 
 1. Kill **all** running server processes — check for any leftover `node` processes
    on port 6900: `lsof -ti:6900 | xargs kill -9`
-2. Run `npm start` fresh and wait until you see `🗃️ Migrations Complete` in the
+2. Run `npm start` fresh and wait until you see the PICR startup banner in the
    output (confirms the new server is up and compiled code is loaded)
 3. Verify the new fields are live before running codegen:
    ```bash

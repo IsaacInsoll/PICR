@@ -15,7 +15,6 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
     '👀 Now watching: ' +
       picrConfig.mediaPath +
       (config.usePolling ? ' with POLLING' : ''),
-    true,
   );
   const intervalMultiplier = config.pollingInterval; // multiply default interval values by this
 

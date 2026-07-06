@@ -5,6 +5,7 @@ import { baseColumns } from '../column.helpers.js';
  * Singleton table for server-wide configuration (should only have one row).
  *
  * - `lastBootedVersion`: tracks version for upgrade migrations
+ * - `minimumPicrVersion`: oldest PICR version allowed to boot this DB
  * - `tokenSecret`: JWT signing secret (auto-generated on first boot)
  * - `avifEnabled`: whether to generate AVIF thumbnails (experimental)
  *
@@ -13,6 +14,7 @@ import { baseColumns } from '../column.helpers.js';
 export const dbServerOptions = pgTable('ServerOptions', {
   ...baseColumns,
   lastBootedVersion: varchar('lastBootedVersion', { length: 255 }),
+  minimumPicrVersion: varchar('minimumPicrVersion', { length: 255 }),
   tokenSecret: varchar('tokenSecret', { length: 255 }),
   avifEnabled: boolean('avifEnabled'),
 });
