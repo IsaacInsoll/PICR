@@ -8,6 +8,7 @@ import { dbFile, dbFolder } from '../db/models/index.js';
 import { isNotNull } from 'drizzle-orm';
 import type { IPicrConfiguration } from '../config/IPicrConfiguration.js';
 import { createRenameTracker } from './renameTracker.js';
+import { ignoredPathPattern } from './ignoredPaths.js';
 
 export const fileWatcher = async (config: IPicrConfiguration) => {
   log(
@@ -28,7 +29,7 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
   const renameTracker = createRenameTracker();
 
   const watcher = chokidar.watch(picrConfig.mediaPath, {
-    ignored: ignored,
+    ignored: ignoredPathPattern,
     persistent: true,
     awaitWriteFinish: true,
     usePolling: config.usePolling,
@@ -77,8 +78,3 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
       addToQueue('initComplete', {});
     });
 };
-
-const ignored = /(^\.|\/\.|@eaDir|desktop.ini|Thumbs.db)/;
-// anything in root starting with .
-// any file/folder starting with a .
-// anything in a folder @eaDir which is a sneaky synology "metadata" folder
