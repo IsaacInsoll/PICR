@@ -1,5 +1,6 @@
 import {
   type AnyPgColumn,
+  bigint,
   boolean,
   integer,
   pgTable,
@@ -28,6 +29,7 @@ export const dbFolder = pgTable('Folders', {
   subtitle: varchar('subtitle', { length: 255 }),
   folderHash: varchar('folderHash', { length: 255 }),
   relativePath: varchar('relativePath', { length: 255 }), // can't be null because of root folder
+  stIno: bigint('stIno', { mode: 'bigint' }),
   exists: boolean('exists').notNull(), // bulk set as 'false' at boot, then set true when detected, to weed out files deleted while server down
   existsRescan: boolean('existsRescan').notNull().default(false), // used to detect if files still exist at boot time
   folderLastModified: timestamp('folderLastModified', {

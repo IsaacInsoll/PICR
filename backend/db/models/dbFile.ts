@@ -37,6 +37,7 @@ export const dbFile = pgTable('Files', {
   imageRatio: doublePrecision('imageRatio'), // width / height (used for sizing on screen elements before image is loaded
   duration: doublePrecision('duration'), // seconds (video files)
   fileSize: bigint('fileSize', { mode: 'number' }).notNull(),
+  stIno: bigint('stIno', { mode: 'bigint' }),
   fileLastModified: timestamp('fileLastModified', {
     withTimezone: true,
   }).notNull(),
