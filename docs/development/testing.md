@@ -9,12 +9,25 @@ Testing now has two integration suites:
 - `tests/api`: backend API coverage (Vitest + Docker)
 - `tests/e2e`: basic frontend smoke coverage (Playwright + Docker)
 
+There is also a fast unit lane for pure backend primitives:
+
+- `tests/**/*.unit.test.ts`: Docker-free Vitest unit tests for isolated logic
+
 Run everything with `npm run test`, or run suites individually:
 
+- `npm run test:unit`
 - `npm run test:api`
 - `npm run test:e2e:install` (browser binaries)
 - `npm run test:e2e`
 - `npm run test:e2e:fresh` (recommended for frontend changes: rebuild + e2e)
+
+`npm run test:unit`:
+
+- Uses `vitest.unit.config.mts`
+- Does not run `tests/api/testSetup.ts`
+- Does not build or start Docker
+- Only picks up `*.unit.test.ts`
+- Is for fast iteration only: those same unit tests still run during `npm run test:api`
 
 `npm run test:api`:
 
@@ -42,7 +55,7 @@ Run everything with `npm run test`, or run suites individually:
 
 Current testing is still integration-focused and intentionally lightweight:
 
-- Backend: broad GraphQL endpoint behavior checks
+- Backend: broad GraphQL endpoint behavior checks, plus focused unit tests for backend primitives
 - Frontend: basic "page loads cleanly" smoke checks for public links
 
 ## Troubleshooting 'ALL TESTS FAILING'
@@ -60,6 +73,7 @@ Common faults include:
 ## Creating Tests
 
 - Add backend API integration tests in `tests/api` (numbered `.test.ts` files).
+- Add pure backend primitive tests as `*.unit.test.ts`; mock DB/filesystem dependencies and keep them Docker-free.
 - Add frontend browser smoke tests in `tests/e2e` (`*.smoke.spec.ts`).
 - Keep frontend smoke tests self-contained (create their own test data and clean up).
 

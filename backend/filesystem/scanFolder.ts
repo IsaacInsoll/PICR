@@ -1,7 +1,8 @@
 import { readdir, stat } from 'node:fs/promises';
 import type { Stats } from 'node:fs';
-import { join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import { and, eq } from 'drizzle-orm';
+import { log } from '../logger.js';
 import { db, dbFolderForId } from '../db/picrDb.js';
 import { dbFile, dbFolder } from '../db/models/index.js';
 import { addFile } from './events/addFile.js';
@@ -12,8 +13,15 @@ import { fullPath, fullPathForFile } from './fileManager.js';
 import { contentHashForStats } from './fileHash.js';
 import { isIgnoredPath } from './ignoredPaths.js';
 
+export const SCAN_SETTLE_SECONDS = 10;
+export const SCAN_FASTPATH_MAX_BYTES = 5 * 1024 * 1024;
+
+const PENDING_FOLDER_TTL_MS = 24 * 60 * 60 * 1000;
+const SCAN_SETTLE_MS = SCAN_SETTLE_SECONDS * 1000;
+
 export interface ScanFolderOptions {
   generateThumbs?: boolean;
+  depth?: number;
 }
 
 export interface ScanFolderResult {
@@ -23,6 +31,8 @@ export interface ScanFolderResult {
   addedFolders: number;
   removedFolders: number;
   ignored: number;
+  unsettledFiles: number;
+  unsettledFolders: number;
 }
 
 interface DiskEntry {
@@ -30,10 +40,24 @@ interface DiskEntry {
   stats: Stats;
 }
 
+interface FileSignature {
+  size: number;
+  // Integer epoch ms via Date#getTime() — NOT stats.mtimeMs (fractional).
+  mtimeEpochMs: number;
+}
+
+interface PendingFolder {
+  firstSeen: number;
+}
+
+const growingFiles = new Map<string, FileSignature>();
+const pendingFolders = new Map<number, PendingFolder>();
+
 export const scanFolder = async (
   folderId: number,
   options: ScanFolderOptions = {},
 ): Promise<ScanFolderResult> => {
+  const startedAt = Date.now();
   const folder = await dbFolderForId(folderId);
   if (!folder) throw new Error(`Folder ${folderId} not found`);
 
@@ -45,6 +69,8 @@ export const scanFolder = async (
     addedFolders: 0,
     removedFolders: 0,
     ignored: 0,
+    unsettledFiles: 0,
+    unsettledFolders: 0,
   };
 
   const diskEntries = await directDiskEntries(folderPath, result);
@@ -77,22 +103,56 @@ export const scanFolder = async (
   );
 
   for (const [name, entry] of diskFolders) {
-    if (dbFoldersByName.has(name)) continue;
-    await addFolder(entry.path, entry.stats);
+    const dbMatch = dbFoldersByName.get(name);
+    if (dbMatch) {
+      const settled = await scanPendingFolder(dbMatch.id, options, result);
+      if (!settled) result.unsettledFolders++;
+      continue;
+    }
+
+    const addedFolderId = await addFolder(entry.path, entry.stats);
     result.addedFolders++;
+    if (addedFolderId) {
+      pendingFolders.set(addedFolderId, {
+        firstSeen: Date.now(),
+      });
+      const settled = await scanPendingFolder(addedFolderId, options, result);
+      if (!settled) result.unsettledFolders++;
+    }
   }
 
   for (const [name, entry] of diskFiles) {
     const dbMatch = dbFilesByName.get(name);
     if (!dbMatch) {
+      if (!isFileSettled(entry.path, entry.stats)) {
+        result.unsettledFiles++;
+        continue;
+      }
       await addFile(entry.path, options.generateThumbs ?? false, entry.stats);
       result.addedFiles++;
       continue;
     }
 
-    if (dbMatch.fileHash !== contentHashForStats(entry.stats)) {
-      await addFile(entry.path, options.generateThumbs ?? false, entry.stats);
-      result.changedFiles++;
+    if (dbMatch.fileHash === contentHashForStats(entry.stats)) {
+      growingFiles.delete(entry.path);
+      continue;
+    }
+
+    if (!isFileSettled(entry.path, entry.stats)) {
+      result.unsettledFiles++;
+      continue;
+    }
+    await addFile(entry.path, options.generateThumbs ?? false, entry.stats);
+    result.changedFiles++;
+  }
+
+  // Drop growing-file signatures for direct children that vanished since a prior
+  // scan (e.g. a partial copy that was aborted or renamed away). Settled/imported
+  // files already clear themselves in isFileSettled; this keeps the map from
+  // accumulating entries for transient files that never settled.
+  for (const path of growingFiles.keys()) {
+    if (dirname(path) === folderPath && !diskFiles.has(basename(path))) {
+      growingFiles.delete(path);
     }
   }
 
@@ -104,11 +164,95 @@ export const scanFolder = async (
 
   for (const childFolder of dbFolders) {
     if (diskFolders.has(childFolder.name)) continue;
+    pendingFolders.delete(childFolder.id);
     await removeFolder(fullPath(childFolder.relativePath ?? ''));
     result.removedFolders++;
   }
 
+  logScanResult(folderId, folderPath, startedAt, result);
   return result;
+};
+
+const scanPendingFolder = async (
+  folderId: number,
+  options: ScanFolderOptions,
+  parentResult: ScanFolderResult,
+): Promise<boolean> => {
+  const pendingFolder = pendingFolders.get(folderId);
+  if (!pendingFolder) return true;
+
+  if (Date.now() - pendingFolder.firstSeen > PENDING_FOLDER_TTL_MS) {
+    pendingFolders.delete(folderId);
+    return true;
+  }
+
+  if ((options.depth ?? 0) <= 0) return false;
+
+  const childResult = await scanFolder(folderId, {
+    ...options,
+    depth: (options.depth ?? 0) - 1,
+  });
+  mergeScanResult(parentResult, childResult);
+
+  if (hasUnsettledWork(childResult)) return false;
+  pendingFolders.delete(folderId);
+  return true;
+};
+
+const isFileSettled = (path: string, stats: Stats): boolean => {
+  const signature = fileSignature(stats);
+  const ageMs = Date.now() - stats.mtime.getTime();
+  const canFastPath =
+    stats.size < SCAN_FASTPATH_MAX_BYTES && ageMs >= SCAN_SETTLE_MS;
+
+  if (canFastPath) {
+    growingFiles.delete(path);
+    return true;
+  }
+
+  const previous = growingFiles.get(path);
+  growingFiles.set(path, signature);
+  if (!previous) return false;
+
+  const settled =
+    previous.size === signature.size &&
+    previous.mtimeEpochMs === signature.mtimeEpochMs;
+  if (settled) growingFiles.delete(path);
+  return settled;
+};
+
+const fileSignature = (stats: Stats): FileSignature => ({
+  size: stats.size,
+  mtimeEpochMs: stats.mtime.getTime(),
+});
+
+const hasUnsettledWork = (result: ScanFolderResult): boolean =>
+  result.unsettledFiles > 0 || result.unsettledFolders > 0;
+
+const mergeScanResult = (
+  target: ScanFolderResult,
+  source: ScanFolderResult,
+): void => {
+  target.addedFiles += source.addedFiles;
+  target.changedFiles += source.changedFiles;
+  target.removedFiles += source.removedFiles;
+  target.addedFolders += source.addedFolders;
+  target.removedFolders += source.removedFolders;
+  target.ignored += source.ignored;
+  target.unsettledFiles += source.unsettledFiles;
+  target.unsettledFolders += source.unsettledFolders;
+};
+
+const logScanResult = (
+  folderId: number,
+  folderPath: string,
+  startedAt: number,
+  result: ScanFolderResult,
+) => {
+  log(
+    'debug',
+    `scanFolder(${folderId}) ${folderPath}: ${JSON.stringify(result)} in ${Date.now() - startedAt}ms`,
+  );
 };
 
 const directDiskEntries = async (
