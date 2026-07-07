@@ -10,6 +10,29 @@ Testing is split into two suites under `tests/`:
 - API tests validate GraphQL/backend behavior against the Dockerized backend.
 - E2E tests validate that key frontend routes load in a browser and do not throw console errors.
 - Keep these suites integration-focused; do not add frontend component unit tests here.
+- Exception: pure backend-primitive unit tests that guard load-bearing invariants
+  (e.g. the file queue ordering/coalescing in `fileQueue.unit.test.ts`) are allowed
+  in `tests/api`. They mock their dependencies and need no Docker/DB. Name them
+  `*.unit.test.ts` and see "Fast Docker-free unit lane" below.
+
+## Fast Docker-free Unit Lane
+
+`npm run test:api` runs `vitest run` against `vite.config.mts`, whose `globalSetup`
+unconditionally builds and starts the Docker test container — even when you target
+a single file (`npx vitest run tests/api/foo.test.ts` still pays the buildout).
+
+For pure unit tests that mock their dependencies, use the Docker-free lane instead:
+
+- `npm run test:unit` runs `vitest run --config vitest.unit.config.mts`, which has
+  **no** `globalSetup`, so no container is built or started (~0.5s vs the full
+  Docker cycle). Use this for fast local iteration on primitives.
+- It only picks up files matching `tests/**/*.unit.test.*`. Name Docker-free unit
+  tests `*.unit.test.ts`.
+- These files are ALSO matched by `vite.config.mts`, so they still run under
+  `npm run test:api` in CI — the unit lane is a faster local lens, not a way to
+  skip CI coverage.
+- Do NOT put anything needing the DB, real GraphQL, or media fixtures behind this
+  lane; those belong in the numbered integration tests.
 
 ## GraphQL Reuse Rules
 
@@ -42,7 +65,8 @@ tests/
 
 ## Commands
 
-- `npm run test:api`: run backend API Vitest suite
+- `npm run test:api`: run backend API Vitest suite (Docker)
+- `npm run test:unit`: run Docker-free backend unit tests (`*.unit.test.ts`), fast local iteration
 - `npm run test:e2e:install`: install Playwright browser binaries
 - `npm run test:e2e`: run frontend Playwright smoke suite
 - `npm run test:e2e:fresh`: rebuild local `dist` artifacts, then run frontend Playwright smoke suite

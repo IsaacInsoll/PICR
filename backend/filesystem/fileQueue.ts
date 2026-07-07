@@ -20,7 +20,6 @@ type QueueAction =
   | 'generateThumbnails'
   | 'initComplete';
 
-let queue: Promise<void> | null = null;
 let queueDone = 0;
 let queueTotal = 0;
 export let initComplete = false;
@@ -33,6 +32,17 @@ interface QueuePayload {
   stats?: Stats;
   renameFromPath?: string;
 }
+
+interface QueueItem {
+  action: QueueAction;
+  payload: QueuePayload;
+  priority: boolean;
+  key: string | null;
+}
+
+const pendingQueue: QueueItem[] = [];
+const queuedItemsByKey = new Map<string, QueueItem>();
+let queueProcessing = false;
 
 const requirePayloadPath = (
   payload: QueuePayload,
@@ -50,19 +60,89 @@ export const addToQueue = (
   payload: QueuePayload,
   priority?: boolean,
 ) => {
-  queueTotal++;
-  const oldQueue = queue;
-  const task = () => runQueueItem(action, payload);
+  const key = queueItemKey(action, payload);
+  if (key) {
+    const existing = queuedItemsByKey.get(key);
+    if (existing) {
+      existing.payload = payload;
+      if (priority) existing.priority = true;
+      moveQueueItemToTierTail(existing);
+      return;
+    }
+  }
 
-  if (oldQueue) {
-    queue = priority
-      ? task().then(() => oldQueue)
-      : oldQueue.then(() => task());
+  queueTotal++;
+  const item: QueueItem = {
+    action,
+    payload,
+    priority: priority ?? false,
+    key,
+  };
+  enqueueItem(item);
+  if (key) queuedItemsByKey.set(key, item);
+  void processQueueItems();
+};
+
+const queueItemKey = (
+  action: QueueAction,
+  payload: QueuePayload,
+): string | null => {
+  switch (action) {
+    case 'generateThumbnails':
+      return payload.id === undefined ? null : `${action}:${payload.id}`;
+    case 'initComplete':
+      return action;
+    case 'renameDir':
+      return payload.path && payload.renameFromPath
+        ? `${action}:${payload.renameFromPath}:${payload.path}`
+        : null;
+    case 'addDir':
+    case 'unlinkDir':
+    case 'add':
+    case 'unlink':
+      return payload.path ? `${action}:${payload.path}` : null;
+  }
+};
+
+const enqueueItem = (item: QueueItem) => {
+  if (!item.priority) {
+    pendingQueue.push(item);
     return;
   }
 
-  queueDone = 0;
-  queue = task();
+  const insertAt = pendingQueue.findIndex(
+    (pendingItem) => !pendingItem.priority,
+  );
+  if (insertAt === -1) pendingQueue.push(item);
+  else pendingQueue.splice(insertAt, 0, item);
+};
+
+const moveQueueItemToTierTail = (item: QueueItem) => {
+  const currentIndex = pendingQueue.indexOf(item);
+  if (currentIndex === -1) return;
+  pendingQueue.splice(currentIndex, 1);
+  enqueueItem(item);
+};
+
+const processQueueItems = async () => {
+  if (queueProcessing) return;
+  queueProcessing = true;
+
+  try {
+    while (pendingQueue.length) {
+      const item = pendingQueue.shift();
+      if (!item) continue;
+      if (item.key) queuedItemsByKey.delete(item.key);
+      await runQueueItem(item.action, item.payload);
+    }
+  } finally {
+    queueProcessing = false;
+    if (pendingQueue.length) void processQueueItems();
+    else if (queueDone === queueTotal) {
+      queueDone = 0;
+      queueTotal = 0;
+    }
+  }
 };
 
 const runQueueItem = async (action: QueueAction, payload: QueuePayload) => {
@@ -75,11 +155,6 @@ const runQueueItem = async (action: QueueAction, payload: QueuePayload) => {
     );
   } finally {
     queueDone++;
-    if (queueDone === queueTotal) {
-      queueDone = 0;
-      queueTotal = 0;
-      queue = null;
-    }
   }
 };
 
@@ -126,7 +201,7 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
 };
 
 export const queueTaskStatus = (): null | Task => {
-  if (queueDone === queueTotal) return null;
+  if (queueTotal === 0 || queueDone === queueTotal) return null;
   return {
     name: 'Import Files and Generate Thumbnails',
     step: queueDone,
