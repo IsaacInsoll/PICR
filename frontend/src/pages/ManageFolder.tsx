@@ -20,6 +20,7 @@ import {
 } from '../PicrIcons';
 import { ManagePublicLinks } from './management/ManagePublicLinks';
 import { GenerateThumbnailsButton } from './GenerateThumbnailsButton';
+import { ScanFolderButton } from './ScanFolderButton';
 import { AccessLogs } from './management/AccessLogs/AccessLogs';
 import { useNavigate, useParams } from 'react-router';
 import { useSetAtom } from 'jotai';
@@ -121,6 +122,7 @@ export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
           </Paper>
           <Stack gap="xs">
             <Group justify="flex-start">
+              <ScanFolderButton folderId={folder.id} />
               <GenerateThumbnailsButton folderId={folder.id} />
             </Group>
           </Stack>

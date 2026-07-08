@@ -24,6 +24,16 @@ export const urqlCacheExchange = cacheExchange({
         invalidateQueries(cache, ['brandings', 'folder']),
       renameFolder: (_, args, cache) =>
         invalidateQueries(cache, ['allFolders', 'folder', 'searchFolders']),
+      rescanFolder: (_, args, cache) =>
+        invalidateQueries(cache, [
+          'allFolders',
+          'dashboardStats',
+          'folder',
+          'folderFiles',
+          'searchFiles',
+          'searchFolders',
+          'tasks',
+        ]),
     },
   },
 });
