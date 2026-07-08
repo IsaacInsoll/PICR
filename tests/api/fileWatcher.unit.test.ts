@@ -9,7 +9,7 @@ const configForMode = (
   ({
     fileWatcherMode,
     mediaPath,
-    pollingInterval: 20,
+    pollingSeconds: 20,
   }) as IPicrConfiguration;
 
 const loadFileWatcher = async (scanFolderTreeError?: Error) => {
@@ -144,8 +144,8 @@ test('FILE_WATCHER=polling keeps chokidar initial emit as the boot scan', async 
     expect.objectContaining({
       alwaysStat: true,
       awaitWriteFinish: true,
-      binaryInterval: 6000,
-      interval: 2000,
+      binaryInterval: 20000,
+      interval: 20000,
       persistent: true,
       usePolling: true,
     }),

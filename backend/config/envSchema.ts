@@ -18,6 +18,23 @@ const optionalNonEmptyString = z.preprocess((val) => {
   return val;
 }, z.string().min(1).optional());
 
+const optionalPositiveNumber = z.preprocess((val) => {
+  if (typeof val === 'string' && val.trim() === '') {
+    return undefined;
+  }
+  return val;
+}, z.coerce.number().positive().optional());
+
+const optionalFileWatcherMode = z.preprocess(
+  (val) => {
+    if (typeof val === 'string' && val.trim() === '') {
+      return undefined;
+    }
+    return val;
+  },
+  z.enum(['off', 'native', 'polling']).optional(),
+);
+
 export const envSchema = z.object({
   DATABASE_URL: z
     .string({
@@ -70,12 +87,10 @@ export const envSchema = z.object({
   VIDEO_ACCELERATION: z.enum(['auto', 'off']).default('auto'),
   VIDEO_ACCELERATION_DEVICE: z.string().min(1).default('/dev/dri/renderD128'),
 
-  FILE_WATCHER: z.enum(['off', 'native', 'polling']).optional(),
+  FILE_WATCHER: optionalFileWatcherMode,
 
-  POLLING_INTERVAL: z.coerce
-    .number({ description: 'Polling Interval' })
-    .positive()
-    .default(20),
+  POLLING_SECONDS: optionalPositiveNumber,
+  POLLING_INTERVAL: optionalPositiveNumber,
 
   TOKEN_SECRET: z
     .string({

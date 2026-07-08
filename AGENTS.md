@@ -391,12 +391,16 @@ Common gitmoji:
 
 See `.env.example` for all available variables with documentation. Key ones:
 
-| Variable       | Required | Description                                     |
-| -------------- | -------- | ----------------------------------------------- |
-| `DATABASE_URL` | Yes      | PostgreSQL connection string                    |
-| `BASE_URL`     | Yes      | Server URL ending with `/` (for social sharing) |
-| `NODE_ENV`     | No       | `development` \| `test` \| `production`         |
-| `USE_POLLING`  | No       | Enable file watcher polling (for Docker/NAS)    |
+| Variable          | Required | Description                                     |
+| ----------------- | -------- | ----------------------------------------------- |
+| `DATABASE_URL`    | Yes      | PostgreSQL connection string                    |
+| `BASE_URL`        | Yes      | Server URL ending with `/` (for social sharing) |
+| `NODE_ENV`        | No       | `development` \| `test` \| `production`         |
+| `FILE_WATCHER`    | No       | `native`, `polling`, or `off` media detection   |
+| `POLLING_SECONDS` | No       | Polling interval in real seconds                |
+
+Legacy aliases `USE_POLLING` and `POLLING_INTERVAL` are still accepted in 1.x
+but should not be used in new examples.
 
 ## Cross-References
 

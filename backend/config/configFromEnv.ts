@@ -39,6 +39,10 @@ export const configFromEnv = () => {
         ? baseUrl.pathname
         : `${baseUrl.pathname}/`;
   const fileWatcherMode = resolveFileWatcherMode(d.FILE_WATCHER, d.USE_POLLING);
+  const pollingSeconds = resolvePollingSeconds(
+    d.POLLING_SECONDS,
+    d.POLLING_INTERVAL,
+  );
   const c: IPicrConfiguration = {
     updateMetadata: false, //re-read metadata, set by dbMigrate
     version: getVersion(),
@@ -70,7 +74,7 @@ export const configFromEnv = () => {
     inodeSupportReason: 'Inode support not yet detected',
     fileWatcherMode,
     usePolling: fileWatcherMode === 'polling',
-    pollingInterval: d.POLLING_INTERVAL,
+    pollingSeconds,
     tokenSecret: d.TOKEN_SECRET,
     adminUsername: d.ADMIN_USERNAME,
     adminPassword: d.ADMIN_PASSWORD,
@@ -111,12 +115,74 @@ export const configFromEnv = () => {
   if (d.CAN_WRITE && !writeProbe.canWrite) {
     log('warn', buildCanWriteWarning(mediaPath, writeProbe), true);
   }
+
+  const legacyAdvisory = legacyConfigAdvisory(process.env);
+  if (legacyAdvisory) log('warn', legacyAdvisory, true);
 };
 
 export const resolveFileWatcherMode = (
   fileWatcher: FileWatcherMode | undefined,
   usePolling: boolean,
 ): FileWatcherMode => fileWatcher ?? (usePolling ? 'polling' : 'native');
+
+export const resolvePollingSeconds = (
+  pollingSeconds: number | undefined,
+  pollingInterval: number | undefined,
+): number => pollingSeconds ?? (pollingInterval ? pollingInterval / 10 : 20);
+
+export const legacyConfigAdvisory = (
+  rawEnv: NodeJS.ProcessEnv,
+): string | null => {
+  const lines: string[] = [];
+  const usePolling = rawEnv['USE_POLLING'];
+  const pollingInterval = rawEnv['POLLING_INTERVAL'];
+
+  if (hasEnvValue(rawEnv, 'USE_POLLING')) {
+    if (hasEnvValue(rawEnv, 'FILE_WATCHER')) {
+      lines.push('      USE_POLLING is ignored because FILE_WATCHER is set');
+    } else {
+      lines.push(
+        `      USE_POLLING=${usePolling}        ->  FILE_WATCHER=${legacyUsePollingMode(usePolling)}`,
+      );
+    }
+  }
+
+  if (hasEnvValue(rawEnv, 'POLLING_INTERVAL')) {
+    if (hasEnvValue(rawEnv, 'POLLING_SECONDS')) {
+      lines.push(
+        '      POLLING_INTERVAL is ignored because POLLING_SECONDS is set',
+      );
+    } else {
+      lines.push(
+        `      POLLING_INTERVAL=${pollingInterval}    ->  POLLING_SECONDS=${legacyPollingIntervalSeconds(pollingInterval)}`,
+      );
+    }
+  }
+
+  if (!lines.length) return null;
+  return [
+    '⚙️  Deprecated config detected (still works in 1.x, will be removed in 2.0):',
+    ...lines,
+    '    Update your docker-compose to the new vars when convenient.',
+    '    Polling seconds are real seconds for all files; media no longer has the old hidden 3x binary delay.',
+  ].join('\n');
+};
+
+const hasEnvValue = (rawEnv: NodeJS.ProcessEnv, key: string): boolean =>
+  typeof rawEnv[key] === 'string' && rawEnv[key].trim() !== '';
+
+// Mirror castStringToBool (envSchema.ts): only '0'/'false' are falsy; every other
+// non-empty value coerces truthy (e.g. 'yes'/'no'/'off' all enable polling). Keeping
+// this in sync means the advisory never prints a mode that contradicts the resolved one.
+const legacyUsePollingMode = (value: string | undefined): FileWatcherMode => {
+  const normalized = value?.toLowerCase();
+  return normalized === '0' || normalized === 'false' ? 'native' : 'polling';
+};
+
+const legacyPollingIntervalSeconds = (value: string | undefined): string => {
+  const seconds = Number(value) / 10;
+  return Number.isFinite(seconds) ? seconds.toString() : '<invalid>';
+};
 
 const getVersion = () => {
   // Production/Docker builds generate ./version.txt from package.json at build time.

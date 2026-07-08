@@ -27,7 +27,7 @@ export const fileWatcher = async (
       picrConfig.mediaPath +
       (config.fileWatcherMode === 'polling' ? ' with POLLING' : ''),
   );
-  const intervalMultiplier = config.pollingInterval; // multiply default interval values by this
+  const pollingMs = config.pollingSeconds * 1000;
 
   //update all files to 'not exist' then set as exist when we find them
   await db.update(dbFile).set({ existsRescan: false });
@@ -43,8 +43,8 @@ export const fileWatcher = async (
     persistent: true,
     awaitWriteFinish: true,
     usePolling: config.fileWatcherMode === 'polling',
-    interval: 100 * intervalMultiplier,
-    binaryInterval: 300 * intervalMultiplier,
+    interval: pollingMs,
+    binaryInterval: pollingMs,
     alwaysStat: true,
   });
 

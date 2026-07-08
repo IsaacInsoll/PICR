@@ -1,5 +1,9 @@
 import { expect, test } from 'vitest';
-import { resolveFileWatcherMode } from '../../backend/config/configFromEnv';
+import {
+  legacyConfigAdvisory,
+  resolveFileWatcherMode,
+  resolvePollingSeconds,
+} from '../../backend/config/configFromEnv';
 
 test('FILE_WATCHER overrides legacy USE_POLLING mode selection', () => {
   expect(resolveFileWatcherMode('off', true)).toBe('off');
@@ -10,4 +14,62 @@ test('FILE_WATCHER overrides legacy USE_POLLING mode selection', () => {
 test('USE_POLLING remains the fallback when FILE_WATCHER is unset', () => {
   expect(resolveFileWatcherMode(undefined, true)).toBe('polling');
   expect(resolveFileWatcherMode(undefined, false)).toBe('native');
+});
+
+test('POLLING_SECONDS overrides legacy POLLING_INTERVAL conversion', () => {
+  expect(resolvePollingSeconds(45, 300)).toBe(45);
+});
+
+test('POLLING_INTERVAL converts legacy 100ms units to seconds', () => {
+  expect(resolvePollingSeconds(undefined, 300)).toBe(30);
+  expect(resolvePollingSeconds(undefined, 20)).toBe(2);
+});
+
+test('polling seconds defaults to 20 when no polling interval env is set', () => {
+  expect(resolvePollingSeconds(undefined, undefined)).toBe(20);
+});
+
+test('legacy config advisory translates deprecated vars', () => {
+  expect(
+    legacyConfigAdvisory({
+      USE_POLLING: 'true',
+      POLLING_INTERVAL: '300',
+    }),
+  ).toContain('POLLING_SECONDS=30');
+});
+
+test('legacy config advisory notes ignored legacy vars when modern vars are set', () => {
+  const advisory = legacyConfigAdvisory({
+    FILE_WATCHER: 'off',
+    USE_POLLING: 'true',
+    POLLING_SECONDS: '20',
+    POLLING_INTERVAL: '300',
+  });
+
+  expect(advisory).toContain(
+    'USE_POLLING is ignored because FILE_WATCHER is set',
+  );
+  expect(advisory).toContain(
+    'POLLING_INTERVAL is ignored because POLLING_SECONDS is set',
+  );
+});
+
+test('legacy config advisory maps non-standard truthy USE_POLLING like the parser does', () => {
+  // castStringToBool coerces any non-'0'/'false' value truthy, so the advisory must
+  // show polling for 'yes'/'no'/'off' rather than contradicting the resolved mode.
+  expect(legacyConfigAdvisory({ USE_POLLING: 'yes' })).toContain(
+    'FILE_WATCHER=polling',
+  );
+  expect(legacyConfigAdvisory({ USE_POLLING: 'off' })).toContain(
+    'FILE_WATCHER=polling',
+  );
+  expect(legacyConfigAdvisory({ USE_POLLING: 'false' })).toContain(
+    'FILE_WATCHER=native',
+  );
+});
+
+test('legacy config advisory stays silent when only modern vars are used', () => {
+  expect(
+    legacyConfigAdvisory({ FILE_WATCHER: 'polling', POLLING_SECONDS: '20' }),
+  ).toBeNull();
 });

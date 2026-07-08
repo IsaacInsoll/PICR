@@ -25,7 +25,7 @@ export const picrConfig: IPicrConfiguration = {
   updateMetadata: false,
   fileWatcherMode: 'native',
   usePolling: false,
-  pollingInterval: 20, //sensible default
+  pollingSeconds: 20,
   loginRateLimitEnabled: true,
   loginRateLimitWindowMinutes: 15,
   loginRateLimitIpMaxAttempts: 30,

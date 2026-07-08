@@ -568,7 +568,8 @@ When changing `backend/config/*`, Docker `ARG`/`ENV` wiring, or startup code tha
 | `PORT`                | `6900`       | Server port                                     |
 | `FILE_WATCHER`        | `native`     | `native`, `polling`, or `off` media detection   |
 | `USE_POLLING`         | `false`      | File watcher polling mode                       |
-| `POLLING_INTERVAL`    | `20`         | Polling multiplier (ms × 100)                   |
+| `POLLING_SECONDS`     | `20`         | Polling interval in real seconds                |
+| `POLLING_INTERVAL`    | unset        | Legacy 100ms polling units, converted `/10`     |
 | `DEBUG_SQL`           | `false`      | Log Drizzle queries                             |
 | `CONSOLE_LOGGING`     | `false`      | Winston console output                          |
 | `DISABLE_ACCESS_LOGS` | `false`      | Skip AccessLog rows + folder-view notifications |
@@ -669,7 +670,8 @@ Fix:
 1. Check `FILE_WATCHER=polling` is set for Docker/NAS setups where native
    watching is unreliable (`USE_POLLING=true` is still accepted as a legacy
    alias)
-2. Increase `POLLING_INTERVAL` if system is slow
+2. Increase `POLLING_SECONDS` if system is slow (`POLLING_INTERVAL` is still
+   accepted as a legacy alias and converted from old 100ms units)
 3. Check file permissions on media directory
 
 ### Thumbnails not generating

@@ -36,7 +36,7 @@ export interface IPicrConfiguration {
   fileWatcherMode: FileWatcherMode;
   usePolling: boolean;
   port?: number;
-  pollingInterval: number;
+  pollingSeconds: number;
   dev?: boolean;
   version?: string;
   buildChannel?: string;
