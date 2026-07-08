@@ -39,6 +39,7 @@ export interface ScanFolderResult {
   movedFolders: number;
   removedFolders: number;
   ignored: number;
+  skippedEntries: number;
   unsettledFiles: number;
   unsettledFolders: number;
 }
@@ -148,11 +149,12 @@ export const scanFolder = async (
   const folderPath = fullPath(folder.relativePath ?? '');
   const result = emptyScanFolderResult();
 
-  const diskEntries = await directDiskEntries(folderPath, result);
+  const scanned = await directDiskEntries(folderPath, result);
   // The folder itself vanished from disk since its DB row was created. We can't
   // conclude its children were individually deleted, so short-circuit rather than
   // archiving every child — a vanished folder is unlinked by its parent's scan.
-  if (diskEntries === null) return result;
+  if (scanned === null) return result;
+  const { entries: diskEntries, unreadable: unreadableNames } = scanned;
 
   const diskFiles = new Map<string, DiskEntry>();
   const diskFolders = new Map<string, DiskEntry>();
@@ -176,7 +178,12 @@ export const scanFolder = async (
   const dbFoldersByName = new Map(
     dbFolders.map((childFolder) => [childFolder.name, childFolder]),
   );
-  const disappearedFiles = dbFiles.filter((file) => !diskFiles.has(file.name));
+  // Files present in the DB but absent from disk this pass. Entries we simply
+  // could not stat (unreadableNames) are NOT "disappeared" — they are still on
+  // disk — so they must not become move sources for a new same-hash file.
+  const disappearedFiles = dbFiles.filter(
+    (file) => !diskFiles.has(file.name) && !unreadableNames.has(file.name),
+  );
   const movedFileIds = new Set<number>();
   const movedFolderIds = new Set<number>();
 
@@ -284,6 +291,7 @@ export const scanFolder = async (
     for (const file of dbFiles) {
       if (movedFileIds.has(file.id)) continue;
       if (diskFiles.has(file.name)) continue;
+      if (unreadableNames.has(file.name)) continue;
       await removeFile(fullPathForFile(file));
       result.removedFiles++;
     }
@@ -291,6 +299,7 @@ export const scanFolder = async (
     for (const childFolder of dbFolders) {
       if (movedFolderIds.has(childFolder.id)) continue;
       if (diskFolders.has(childFolder.name)) continue;
+      if (unreadableNames.has(childFolder.name)) continue;
       pendingFolders.delete(childFolder.id);
       await removeFolder(fullPath(childFolder.relativePath ?? ''));
       result.removedFolders++;
@@ -362,6 +371,7 @@ const emptyScanFolderResult = (): ScanFolderResult => ({
   movedFolders: 0,
   removedFolders: 0,
   ignored: 0,
+  skippedEntries: 0,
   unsettledFiles: 0,
   unsettledFolders: 0,
 });
@@ -475,6 +485,7 @@ const mergeScanResult = (
   target.movedFolders += source.movedFolders;
   target.removedFolders += source.removedFolders;
   target.ignored += source.ignored;
+  target.skippedEntries += source.skippedEntries;
   target.unsettledFiles += source.unsettledFiles;
   target.unsettledFolders += source.unsettledFolders;
 };
@@ -494,22 +505,39 @@ const logScanResult = (
 const directDiskEntries = async (
   folderPath: string,
   result: ScanFolderResult,
-): Promise<Map<string, DiskEntry> | null> => {
-  const diskEntries = new Map<string, DiskEntry>();
+): Promise<{
+  entries: Map<string, DiskEntry>;
+  unreadable: Set<string>;
+} | null> => {
+  const entries = new Map<string, DiskEntry>();
+  // Names of entries we could see (via readdir) but couldn't stat this pass. They
+  // exist on disk, so the removeMissing sweep must NOT archive their DB rows.
+  const unreadable = new Set<string>();
 
-  let entries;
+  let dirEntries;
   try {
-    entries = await readdir(folderPath, { withFileTypes: true });
+    dirEntries = await readdir(folderPath, { withFileTypes: true });
   } catch (error) {
     // Folder vanished from disk since its DB row was created (e.g. deleted while
     // being viewed). Signal "folder gone" (null) so the caller short-circuits
     // instead of archiving every child — and don't throw (an unhandled rejection
     // here would terminate the process, see app.ts).
     if (isNotFoundError(error)) return null;
+    // Unreadable folder (permissions, flaky NAS mount, transient I/O error): we
+    // couldn't list it, so we can't conclude its children are gone. Log and
+    // short-circuit WITHOUT archiving, rather than aborting the whole walk.
+    if (isFilesystemError(error)) {
+      result.skippedEntries++;
+      log(
+        'warn',
+        `Skipping unreadable folder ${folderPath}: ${errorMessage(error)}`,
+      );
+      return null;
+    }
     throw error;
   }
 
-  for (const entry of entries) {
+  for (const entry of dirEntries) {
     const entryPath = join(folderPath, entry.name);
     if (isIgnoredPath(entryPath)) {
       result.ignored++;
@@ -517,17 +545,30 @@ const directDiskEntries = async (
     }
 
     try {
-      diskEntries.set(
+      entries.set(
         entry.name,
         diskEntryForStats(entryPath, await stat(entryPath, { bigint: true })),
       );
     } catch (error) {
       if (isNotFoundError(error)) continue;
+      // Unreadable entry (permissions, symlink loop, transient NAS error): skip it
+      // but remember the name so removeMissing does not archive its DB row — the
+      // file/folder is present, we just couldn't stat it this pass. One bad entry
+      // must not abort the whole folder scan.
+      if (isFilesystemError(error)) {
+        result.skippedEntries++;
+        unreadable.add(entry.name);
+        log(
+          'warn',
+          `Skipping unreadable entry ${entryPath}: ${errorMessage(error)}`,
+        );
+        continue;
+      }
       throw error;
     }
   }
 
-  return diskEntries;
+  return { entries, unreadable };
 };
 
 const pathExists = async (path: string): Promise<boolean> => {
@@ -536,6 +577,11 @@ const pathExists = async (path: string): Promise<boolean> => {
     return true;
   } catch (error) {
     if (isNotFoundError(error)) return false;
+    // Unreadable old path (EACCES/EIO/ESTALE/ELOOP/…): we cannot confirm it is
+    // gone, so treat it as still present. This keeps the inode move guard from
+    // aborting the whole scan and, conservatively, avoids re-homing a row whose
+    // old path may still exist.
+    if (isFilesystemError(error)) return true;
     throw error;
   }
 };
@@ -548,6 +594,18 @@ const isNotFoundError = (error: unknown): boolean => {
     error.code === 'ENOENT'
   );
 };
+
+// A Node filesystem error carries a string `code` (EACCES, EIO, ESTALE, ELOOP, …).
+// We log-and-skip these so one unreadable entry can't abort a whole reconcile;
+// anything without a code (a real programming error) still throws.
+const isFilesystemError = (error: unknown): boolean =>
+  typeof error === 'object' &&
+  error !== null &&
+  'code' in error &&
+  typeof (error as { code?: unknown }).code === 'string';
+
+const errorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 const diskEntryForStats = (path: string, stats: BigIntStats): DiskEntry => ({
   path,

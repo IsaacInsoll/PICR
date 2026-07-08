@@ -26,6 +26,7 @@ const loadFileWatcher = async (scanFolderTreeError?: Error) => {
       movedFolders: 0,
       removedFolders: 0,
       ignored: 0,
+      skippedEntries: 0,
       unsettledFiles: 0,
       unsettledFolders: 0,
       completed: true,

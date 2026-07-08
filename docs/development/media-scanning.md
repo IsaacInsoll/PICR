@@ -115,6 +115,13 @@ Important invariants:
   `SCAN_SETTLE_SECONDS`.
 - Newly discovered folders can stay pending so a parent scan keeps descending
   until unsettled children settle or the pending-folder TTL expires.
+- A single unreadable entry does not abort the scan. Non-`ENOENT` filesystem
+  errors (`EACCES`, `EIO`, `ESTALE`, `ELOOP`, …) are logged and skipped: the
+  entry is counted in `ScanFolderResult.skippedEntries`, its DB row is **not**
+  archived (it is present on disk, we just could not stat it this pass), and the
+  scan keeps processing siblings. An unreadable folder (`readdir` failure)
+  short-circuits that folder without archiving its children. Errors with no
+  filesystem `code` still throw, since they indicate a real bug.
 
 ## Move Detection
 
@@ -149,12 +156,11 @@ by the thumbnail helpers.
 
 ## Known Caveats
 
-- `scanFolder` currently rethrows non-`ENOENT` filesystem errors from a folder or
-  entry read. All outer callers catch this (boot-off and scheduled scans log it,
-  on-view scans log-and-swallow, and the manual mutation returns a GraphQL
-  error), so it never crashes the process — but a single `EACCES`, `EIO`,
-  `ESTALE`, or similar error can still abort that whole scan. A future hardening
-  pass should log-and-skip unreadable entries/folders and continue the walk.
+- Unreadable entries/folders are logged and skipped rather than aborting the
+  walk (see Scanner Safety Rules). A persistently unreadable file therefore stays
+  in the database and is re-attempted on every scan until it becomes readable or
+  is genuinely removed; the per-scan `skippedEntries` count surfaces how many
+  were skipped.
 - `lastScanStartedAt` for on-view cooldown is process-local and bounded by the
   number of distinct folders viewed while PICR is running.
 - The scheduled thumbnail-delta query uses `createdAt >= scanStartedAt`; rare

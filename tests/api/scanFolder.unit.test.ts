@@ -4,6 +4,7 @@ import {
   mkdir,
   rm,
   stat,
+  symlink,
   utimes,
   writeFile,
 } from 'node:fs/promises';
@@ -857,4 +858,125 @@ test('returns an empty result when the folder no longer exists on disk', async (
     addedFolders: 0,
     removedFolders: 0,
   });
+});
+
+test('skips an unreadable entry without archiving its row and keeps scanning siblings', async () => {
+  const mediaRoot = await createMediaRoot();
+  const goodPath = join(mediaRoot, 'good.jpg');
+  await writeFile(goodPath, 'image');
+  await makeOld(goodPath);
+  // A self-referential symlink: stat() follows it and fails with ELOOP — a
+  // non-ENOENT filesystem error — deterministically and cross-platform. This
+  // simulates an unreadable entry (bad permissions, flaky NAS mount, etc.).
+  await symlink('stuck.raw', join(mediaRoot, 'stuck.raw'));
+
+  const { addFile, removeFile, log, scanFolder } = await loadScanFolder({
+    mediaRoot,
+    files: [
+      { name: 'stuck.raw', relativePath: '', folderId: 10, fileHash: 'x' },
+    ],
+  });
+
+  const result = await scanFolder(10);
+
+  // The readable sibling is still imported despite the bad entry.
+  expect(addFile).toHaveBeenCalledOnce();
+  expect(addFile).toHaveBeenCalledWith(
+    goodPath,
+    false,
+    expect.any(Object),
+    undefined,
+    expect.anything(),
+  );
+  // The unreadable file's DB row must NOT be archived — it is present on disk,
+  // we just could not stat it this pass.
+  expect(removeFile).not.toHaveBeenCalled();
+  expect(log).toHaveBeenCalledWith(
+    'warn',
+    expect.stringContaining('Skipping unreadable entry'),
+  );
+  expect(result).toMatchObject({
+    addedFiles: 1,
+    removedFiles: 0,
+    skippedEntries: 1,
+  });
+});
+
+test('does not treat an unreadable entry as a move source for a new same-hash file', async () => {
+  const mediaRoot = await createMediaRoot();
+  const goodPath = join(mediaRoot, 'good.jpg');
+  await writeFile(goodPath, 'image');
+  await makeOld(goodPath);
+  await symlink('stuck.raw', join(mediaRoot, 'stuck.raw'));
+  // The DB row for the unreadable file happens to share the new file's content
+  // hash. It must NOT be re-homed onto good.jpg, because stuck.raw is still on disk.
+  const sharedHash = contentHashForStats(await stat(goodPath));
+
+  const { addFile, removeFile, scanFolder } = await loadScanFolder({
+    mediaRoot,
+    files: [
+      {
+        name: 'stuck.raw',
+        relativePath: '',
+        folderId: 10,
+        fileHash: sharedHash,
+      },
+    ],
+  });
+
+  const result = await scanFolder(10);
+
+  // good.jpg is imported as a NEW file (renameFromPath undefined), not a move.
+  expect(addFile).toHaveBeenCalledOnce();
+  expect(addFile).toHaveBeenCalledWith(
+    goodPath,
+    false,
+    expect.any(Object),
+    undefined,
+    expect.anything(),
+  );
+  expect(removeFile).not.toHaveBeenCalled();
+  expect(result).toMatchObject({
+    addedFiles: 1,
+    movedFiles: 0,
+    skippedEntries: 1,
+  });
+});
+
+test('does not abort the scan when an inode move candidate has an unreadable old path', async () => {
+  const mediaRoot = await createMediaRoot();
+  const newPath = join(mediaRoot, 'new.jpg');
+  await writeFile(newPath, 'image');
+  await makeOld(newPath);
+  // A DB file in another folder matches the new file's inode (per the coarse mock),
+  // but its old path is an unreadable symlink loop. Checking "is the old path gone?"
+  // must not throw and abort the whole scan.
+  await mkdir(join(mediaRoot, 'sub'));
+  await symlink('old.raw', join(mediaRoot, 'sub', 'old.raw'));
+
+  const { addFile, removeFile, scanFolder } = await loadScanFolder({
+    mediaRoot,
+    folders: [{ id: 11, name: 'sub', relativePath: 'sub', parentId: 10 }],
+    files: [
+      {
+        name: 'old.raw',
+        relativePath: 'sub',
+        folderId: 11,
+        fileHash: 'x',
+        stIno: 987654321n,
+      },
+    ],
+  });
+
+  const result = await scanFolder(10);
+
+  expect(addFile).toHaveBeenCalledWith(
+    newPath,
+    false,
+    expect.any(Object),
+    undefined,
+    expect.anything(),
+  );
+  expect(removeFile).not.toHaveBeenCalled();
+  expect(result).toMatchObject({ addedFiles: 1, movedFiles: 0 });
 });
