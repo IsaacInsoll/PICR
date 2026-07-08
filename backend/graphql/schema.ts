@@ -58,6 +58,7 @@ import { folderFiles } from './queries/folderFiles.js';
 import { folderFileExportType } from './types/folderFileExportType.js';
 import { folderFilesResultType } from './types/folderFilesResultType.js';
 import { runBenchmark } from './mutations/runBenchmark.js';
+import { rescanFolder } from './mutations/rescanFolder.js';
 import {
   benchmarkResultType,
   benchmarkStepType,
@@ -107,6 +108,7 @@ const mutations = new GraphQLObjectType({
     setFolderBranding,
     editUserDevice,
     renameFolder,
+    rescanFolder,
     runBenchmark,
   }),
 });

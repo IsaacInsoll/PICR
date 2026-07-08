@@ -310,6 +310,7 @@ type Mutation {
   generateThumbnails(folderId: ID): Boolean!
   generateZip(folderId: ID): String!
   renameFolder(folderId: ID!, newPath: String!, oldPath: String!): Folder!
+  rescanFolder(folderId: ID!): Boolean!
   runBenchmark: BenchmarkResult!
   setFolderBranding(brandingId: ID, folderId: ID!): Folder!
 }
