@@ -4,6 +4,7 @@ import fastFolderSizeSync from 'fast-folder-size/sync.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import { getLatestBuild } from '../../helpers/latestBuild.js';
+import { getScheduledScanStatus } from '../../filesystem/scheduledScan.js';
 
 const resolver: PicrResolver = async (_, _params, context) => {
   await requireFullAdmin(context);
@@ -28,6 +29,12 @@ const resolver: PicrResolver = async (_, _params, context) => {
     inodeSupport: {
       status: picrConfig.inodeSupport,
       reason: picrConfig.inodeSupportReason,
+    },
+    scanning: {
+      fileWatcherMode: picrConfig.fileWatcherMode,
+      onViewScanMode: picrConfig.onViewScanMode,
+      scheduledScanHours: picrConfig.scheduledScanHours,
+      scheduledScan: getScheduledScanStatus(),
     },
     //these are functions because they can be potentially SUPER EXPENSIVE
     cacheSize: () => folderSize(picrConfig.cachePath),

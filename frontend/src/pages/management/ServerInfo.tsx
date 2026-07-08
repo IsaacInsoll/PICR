@@ -13,6 +13,7 @@ import {
 import type { ReactNode } from 'react';
 import { Suspense, useState } from 'react';
 import { prettyBytes } from '@shared/prettyBytes';
+import { prettyDate } from '@shared/prettyDate';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { useAvifEnabled, useMe } from '../../hooks/useMe';
 import {
@@ -59,6 +60,7 @@ export const ServerInfo = () => {
         <Row title="Use Polling">
           <Bool value={server.usePolling} />
         </Row>
+        <Scanning info={server.scanning} />
         <Row title="Can write">
           <Bool value={server.canWrite} />
         </Row>
@@ -95,6 +97,10 @@ type InodeSupportInfo = NonNullable<
   ServerInfoQueryQuery['serverInfo']
 >['inodeSupport'];
 
+type ScanningInfo = NonNullable<ServerInfoQueryQuery['serverInfo']>['scanning'];
+
+type ScheduledScanStatusInfo = ScanningInfo['scheduledScan'];
+
 const AdditionalImageFormats = ({ caps }: { caps: MediaCapsInfo }) => {
   const formats = [
     { label: 'RAW', enabled: caps.raw },
@@ -116,6 +122,106 @@ const AdditionalImageFormats = ({ caps }: { caps: MediaCapsInfo }) => {
       ))}
     </Row>
   );
+};
+
+const Scanning = ({ info }: { info: ScanningInfo }) => {
+  const scheduled = info.scheduledScan;
+  return (
+    <>
+      <Row title="File Watcher">
+        <Code>{scanModeLabel(info.fileWatcherMode)}</Code>
+      </Row>
+      <Row title="On-view Scan">
+        <Code>{scanModeLabel(info.onViewScanMode)}</Code>
+      </Row>
+      <Row title="Scheduled Scan">
+        <Badge
+          color={info.scheduledScanHours > 0 ? 'green' : 'gray'}
+          variant="light"
+        >
+          {info.scheduledScanHours > 0
+            ? `Every ${info.scheduledScanHours}h`
+            : 'Off'}
+        </Badge>
+        {scheduled.running ? (
+          <Badge color="blue" variant="light">
+            Running
+          </Badge>
+        ) : null}
+        {scheduled.nextScanAt ? (
+          <Text size="sm" c="dimmed">
+            Next: {prettyDate(scheduled.nextScanAt)}
+          </Text>
+        ) : null}
+      </Row>
+      <Row title="Last Scheduled Scan">
+        <ScheduledScanStatus status={scheduled} />
+      </Row>
+    </>
+  );
+};
+
+const ScheduledScanStatus = ({
+  status,
+}: {
+  status: ScheduledScanStatusInfo;
+}) => {
+  if (!status.lastStartedAt) {
+    return (
+      <Text size="sm" c="dimmed">
+        Never run
+      </Text>
+    );
+  }
+
+  const result = status.lastResult;
+  const moved = (result?.movedFiles ?? 0) + (result?.movedFolders ?? 0);
+  const removed = (result?.removedFiles ?? 0) + (result?.removedFolders ?? 0);
+
+  return (
+    <Stack gap={2}>
+      <Group gap="xs">
+        <Text size="sm">Started: {prettyDate(status.lastStartedAt)}</Text>
+        {status.lastCompletedAt ? (
+          <Text size="sm" c="dimmed">
+            Finished: {prettyDate(status.lastCompletedAt)}
+          </Text>
+        ) : null}
+        {typeof status.lastDurationMs === 'number' ? (
+          <Text size="sm" c="dimmed">
+            Duration: {formatDuration(status.lastDurationMs)}
+          </Text>
+        ) : null}
+      </Group>
+      {status.lastError ? (
+        <Text size="sm" c="red">
+          {status.lastError}
+        </Text>
+      ) : result ? (
+        <Text size="sm" c={result.completed ? 'dimmed' : 'yellow'}>
+          {result.completed ? 'Completed' : 'Unsettled'} after{' '}
+          {result.scanPasses} pass{result.scanPasses === 1 ? '' : 'es'}:{' '}
+          {result.addedFiles} added, {result.changedFiles} changed, {moved}{' '}
+          moved, {removed} removed, {result.skippedEntries} skipped
+        </Text>
+      ) : null}
+    </Stack>
+  );
+};
+
+const scanModeLabel = (mode: string): string =>
+  mode
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+
+const formatDuration = (durationMs: number): string => {
+  if (durationMs < 1000) return `${durationMs}ms`;
+  const seconds = durationMs / 1000;
+  if (seconds < 60) return `${seconds.toFixed(1)}s`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.round(seconds % 60);
+  return `${minutes}m ${remainingSeconds}s`;
 };
 
 const InodeSupport = ({ info }: { info: InodeSupportInfo }) => {

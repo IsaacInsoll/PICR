@@ -75,6 +75,7 @@ const loadScheduledScan = async ({
 };
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.restoreAllMocks();
   vi.resetModules();
 });
@@ -149,11 +150,73 @@ test('scheduled scan resets its running flag after a failure so the next tick ru
   expect(scanFolderTree).toHaveBeenCalledTimes(2);
 });
 
+test('scheduled scan status records success details', async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-01-02T03:04:05.000Z'));
+  const { scheduledScan } = await loadScheduledScan({
+    scanFolderTreeImpl: async () => ({
+      ...scanResult(2),
+      changedFiles: 1,
+      movedFiles: 1,
+      removedFolders: 1,
+      skippedEntries: 3,
+      scanPasses: 2,
+    }),
+  });
+
+  const run = scheduledScan.runScheduledScan(1);
+  vi.setSystemTime(new Date('2026-01-02T03:04:17.345Z'));
+  await run;
+
+  expect(scheduledScan.getScheduledScanStatus()).toMatchObject({
+    running: false,
+    nextScanAt: null,
+    lastStartedAt: '2026-01-02T03:04:05.000Z',
+    lastCompletedAt: '2026-01-02T03:04:17.345Z',
+    lastDurationMs: 12345,
+    lastError: null,
+    lastResult: {
+      completed: true,
+      addedFiles: 2,
+      changedFiles: 1,
+      movedFiles: 1,
+      removedFolders: 1,
+      skippedEntries: 3,
+      scanPasses: 2,
+    },
+  });
+});
+
+test('scheduled scan status records failures without keeping the scan running', async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-01-02T03:04:05.000Z'));
+  const { scheduledScan } = await loadScheduledScan({
+    scanFolderTreeImpl: async () => {
+      throw new Error('NAS asleep');
+    },
+  });
+
+  const run = scheduledScan.runScheduledScan(1);
+  vi.setSystemTime(new Date('2026-01-02T03:04:08.250Z'));
+  await run;
+
+  expect(scheduledScan.getScheduledScanStatus()).toMatchObject({
+    running: false,
+    lastStartedAt: '2026-01-02T03:04:05.000Z',
+    lastCompletedAt: '2026-01-02T03:04:08.250Z',
+    lastDurationMs: 3250,
+    lastError: 'NAS asleep',
+    lastResult: null,
+  });
+});
+
 test('scheduled scan interval starts only when enabled and can be stopped', async () => {
   const { scheduledScan } = await loadScheduledScan();
   const timer = {} as ReturnType<typeof setInterval>;
   const setIntervalFn = vi.fn(() => timer);
   const clearIntervalFn = vi.fn();
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-01-02T03:04:05.000Z'));
 
   expect(
     scheduledScan.startScheduledScan(
@@ -163,6 +226,7 @@ test('scheduled scan interval starts only when enabled and can be stopped', asyn
       clearIntervalFn,
     ),
   ).toBeUndefined();
+  expect(scheduledScan.getScheduledScanStatus().nextScanAt).toBeNull();
 
   const stop = scheduledScan.startScheduledScan(
     { scheduledScanHours: 2 },
@@ -172,6 +236,10 @@ test('scheduled scan interval starts only when enabled and can be stopped', asyn
   );
 
   expect(setIntervalFn).toHaveBeenCalledWith(expect.any(Function), 7_200_000);
+  expect(scheduledScan.getScheduledScanStatus().nextScanAt).toBe(
+    '2026-01-02T05:04:05.000Z',
+  );
   stop?.();
+  expect(scheduledScan.getScheduledScanStatus().nextScanAt).toBeNull();
   expect(clearIntervalFn).toHaveBeenCalledWith(timer);
 });

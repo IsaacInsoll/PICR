@@ -92,6 +92,14 @@ test('Server Info Query (kinda slow)', async () => {
     info?.inodeSupport.status,
   );
   expect(info?.inodeSupport.reason).toBeTruthy();
+  expect(['native', 'polling', 'off']).toContain(
+    info?.scanning.fileWatcherMode,
+  );
+  expect(['off', 'direct', 'direct_and_new', 'one_level']).toContain(
+    info?.scanning.onViewScanMode,
+  );
+  expect(info?.scanning.scheduledScanHours).toBeGreaterThanOrEqual(0);
+  expect(info?.scanning.scheduledScan.running).toBe(false);
   // `latest` comes from an unauthenticated GitHub API call which can be rate-limited in CI;
   // the resolver swallows failures and returns ''. Don't fail the suite on that — just warn.
   if (info!.latest === '') {

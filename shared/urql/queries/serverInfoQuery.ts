@@ -27,6 +27,35 @@ export const serverInfoQuery = gql(/* GraphQL */ `
         status
         reason
       }
+      scanning {
+        fileWatcherMode
+        onViewScanMode
+        scheduledScanHours
+        scheduledScan {
+          running
+          nextScanAt
+          lastStartedAt
+          lastCompletedAt
+          lastDurationMs
+          lastError
+          lastResult {
+            completed
+            cleanupRun
+            scanPasses
+            addedFiles
+            changedFiles
+            removedFiles
+            addedFolders
+            movedFiles
+            movedFolders
+            removedFolders
+            ignored
+            skippedEntries
+            unsettledFiles
+            unsettledFolders
+          }
+        }
+      }
     }
   }
 `);

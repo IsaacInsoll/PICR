@@ -302,6 +302,13 @@ type MediaCapsInfo {
   raw: Boolean!
 }
 
+type MediaScanningInfo {
+  fileWatcherMode: String!
+  onViewScanMode: String!
+  scheduledScan: ScheduledScanStatusInfo!
+  scheduledScanHours: Int!
+}
+
 type Mutation {
   addComment(comment: String, flag: FileFlag, id: ID!, nickName: String, rating: Int): FileInterface!
   auth(password: String!, user: String!): String!
@@ -376,6 +383,33 @@ type Query {
   users(folderId: ID!, includeChildren: Boolean, includeParents: Boolean, sortByRecent: Boolean): [User!]!
 }
 
+type ScheduledScanResultInfo {
+  addedFiles: Int!
+  addedFolders: Int!
+  changedFiles: Int!
+  cleanupRun: Boolean!
+  completed: Boolean!
+  ignored: Int!
+  movedFiles: Int!
+  movedFolders: Int!
+  removedFiles: Int!
+  removedFolders: Int!
+  scanPasses: Int!
+  skippedEntries: Int!
+  unsettledFiles: Int!
+  unsettledFolders: Int!
+}
+
+type ScheduledScanStatusInfo {
+  lastCompletedAt: String
+  lastDurationMs: Int
+  lastError: String
+  lastResult: ScheduledScanResultInfo
+  lastStartedAt: String
+  nextScanAt: String
+  running: Boolean!
+}
+
 type ServerInfo {
   cacheSize: BigInt!
   canWrite: Boolean!
@@ -387,6 +421,7 @@ type ServerInfo {
   latest: String!
   mediaCaps: MediaCapsInfo!
   mediaSize: BigInt!
+  scanning: MediaScanningInfo!
   usePolling: Boolean!
   version: String!
   videoAcceleration: VideoAccelerationInfo!

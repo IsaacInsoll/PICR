@@ -12,7 +12,43 @@ type ScheduledTimer = ReturnType<typeof setInterval>;
 type SetIntervalFn = (handler: () => void, timeout: number) => ScheduledTimer;
 type ClearIntervalFn = (timer: ScheduledTimer) => void;
 
+export interface ScheduledScanResultSummary {
+  completed: boolean;
+  cleanupRun: boolean;
+  scanPasses: number;
+  addedFiles: number;
+  changedFiles: number;
+  removedFiles: number;
+  addedFolders: number;
+  movedFiles: number;
+  movedFolders: number;
+  removedFolders: number;
+  ignored: number;
+  skippedEntries: number;
+  unsettledFiles: number;
+  unsettledFolders: number;
+}
+
+export interface ScheduledScanStatus {
+  running: boolean;
+  nextScanAt: string | null;
+  lastStartedAt: string | null;
+  lastCompletedAt: string | null;
+  lastDurationMs: number | null;
+  lastError: string | null;
+  lastResult: ScheduledScanResultSummary | null;
+}
+
 let scheduledScanRunning = false;
+const scheduledScanStatus: ScheduledScanStatus = {
+  running: false,
+  nextScanAt: null,
+  lastStartedAt: null,
+  lastCompletedAt: null,
+  lastDurationMs: null,
+  lastError: null,
+  lastResult: null,
+};
 
 export const startScheduledScan = (
   config: Pick<IPicrConfiguration, 'scheduledScanHours'>,
@@ -20,9 +56,15 @@ export const startScheduledScan = (
   setIntervalFn: SetIntervalFn = setInterval,
   clearIntervalFn: ClearIntervalFn = clearInterval,
 ): (() => void) | undefined => {
-  if (config.scheduledScanHours <= 0) return undefined;
+  if (config.scheduledScanHours <= 0) {
+    scheduledScanStatus.nextScanAt = null;
+    return undefined;
+  }
 
   const intervalMs = config.scheduledScanHours * 60 * 60 * 1000;
+  scheduledScanStatus.nextScanAt = new Date(
+    Date.now() + intervalMs,
+  ).toISOString();
   log(
     'info',
     `🕒 Scheduled scan enabled every ${config.scheduledScanHours} hour(s)`,
@@ -30,10 +72,16 @@ export const startScheduledScan = (
   );
 
   const timer = setIntervalFn(() => {
+    scheduledScanStatus.nextScanAt = new Date(
+      Date.now() + intervalMs,
+    ).toISOString();
     void runScheduledScan(rootFolderId);
   }, intervalMs);
 
-  return () => clearIntervalFn(timer);
+  return () => {
+    scheduledScanStatus.nextScanAt = null;
+    clearIntervalFn(timer);
+  };
 };
 
 export const runScheduledScan = async (rootFolderId = 1): Promise<void> => {
@@ -46,8 +94,14 @@ export const runScheduledScan = async (rootFolderId = 1): Promise<void> => {
   }
 
   scheduledScanRunning = true;
+  scheduledScanStatus.running = true;
   const startedAt = new Date();
   const startedMs = Date.now();
+  scheduledScanStatus.lastStartedAt = startedAt.toISOString();
+  scheduledScanStatus.lastCompletedAt = null;
+  scheduledScanStatus.lastDurationMs = null;
+  scheduledScanStatus.lastError = null;
+  scheduledScanStatus.lastResult = null;
 
   try {
     log('info', '🕒 Scheduled scan started', true);
@@ -55,24 +109,43 @@ export const runScheduledScan = async (rootFolderId = 1): Promise<void> => {
       generateThumbs: false,
     });
     await queueScheduledThumbnails(startedAt, result);
+    scheduledScanStatus.lastResult = resultSummary(result);
     log(
       result.completed ? 'info' : 'warn',
       `🕒 Scheduled scan ${result.completed ? 'complete' : 'finished with unsettled files'} after ${result.scanPasses} pass(es) in ${((Date.now() - startedMs) / 1000).toFixed(2)} seconds`,
       true,
     );
   } catch (error) {
+    scheduledScanStatus.lastError = errorMessage(error);
     log(
       'error',
       `Scheduled scan failed; serving existing data: ${errorMessage(error)}`,
       true,
     );
   } finally {
+    scheduledScanStatus.lastCompletedAt = new Date().toISOString();
+    scheduledScanStatus.lastDurationMs = Date.now() - startedMs;
+    scheduledScanStatus.running = false;
     scheduledScanRunning = false;
   }
 };
 
+export const getScheduledScanStatus = (): ScheduledScanStatus => ({
+  ...scheduledScanStatus,
+  lastResult: scheduledScanStatus.lastResult
+    ? { ...scheduledScanStatus.lastResult }
+    : null,
+});
+
 export const resetScheduledScanStateForTests = (): void => {
   scheduledScanRunning = false;
+  scheduledScanStatus.running = false;
+  scheduledScanStatus.nextScanAt = null;
+  scheduledScanStatus.lastStartedAt = null;
+  scheduledScanStatus.lastCompletedAt = null;
+  scheduledScanStatus.lastDurationMs = null;
+  scheduledScanStatus.lastError = null;
+  scheduledScanStatus.lastResult = null;
 };
 
 const queueScheduledThumbnails = async (
@@ -102,3 +175,22 @@ const queueScheduledThumbnails = async (
 
 const errorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
+
+const resultSummary = (
+  result: ScanFolderTreeResult,
+): ScheduledScanResultSummary => ({
+  completed: result.completed,
+  cleanupRun: result.cleanupRun,
+  scanPasses: result.scanPasses,
+  addedFiles: result.addedFiles,
+  changedFiles: result.changedFiles,
+  removedFiles: result.removedFiles,
+  addedFolders: result.addedFolders,
+  movedFiles: result.movedFiles,
+  movedFolders: result.movedFolders,
+  removedFolders: result.removedFolders,
+  ignored: result.ignored,
+  skippedEntries: result.skippedEntries,
+  unsettledFiles: result.unsettledFiles,
+  unsettledFolders: result.unsettledFolders,
+});
