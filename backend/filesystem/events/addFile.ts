@@ -32,6 +32,7 @@ export const addFile = async (
   generateThumbs: boolean,
   statsProp?: Stats,
   renameFromPath?: string,
+  stIno?: bigint | null,
 ) => {
   const type = validExtension(filePath);
   if (!type) {
@@ -97,6 +98,7 @@ export const addFile = async (
         ...props,
         type: type,
         fileSize: stats.size,
+        stIno: stIno ?? null,
         fileCreated: stats.birthtime,
         fileLastModified: stats.mtime,
         exists: false, //set as `true` once we have all the hash/metadata
@@ -112,6 +114,8 @@ export const addFile = async (
   }
 
   if (!file) return; // not needed, just for typescript to know it's not null at this point
+
+  if (stIno) file.stIno = stIno;
 
   const newHash = contentHashForStats(stats);
   const typeChanged = (wasRenamed ? renamedFromType : file.type) !== type;

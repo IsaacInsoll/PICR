@@ -45,7 +45,11 @@ export const setupRootFolder = async () => {
   return root;
 };
 
-export const addFolder = async (path: string, statsProp?: Stats) => {
+export const addFolder = async (
+  path: string,
+  statsProp?: Stats,
+  stIno?: bigint | null,
+) => {
   const relative = relativePath(path);
   if (!rootFolder)
     throw new Error('rootFolder not initialized — call setupRootFolder first');
@@ -85,8 +89,17 @@ export const addFolder = async (path: string, statsProp?: Stats) => {
           exists: true,
           existsRescan: true,
           folderLastModified: stats.mtime,
+          ...(stIno && p === relative ? { stIno } : {}),
         }) // I'm intentionally not updating `lastUpdated` here (, updatedAt: new Date())
         .where(eq(dbFolder.id, newFolder.id));
+    }
+
+    if (newFolder && stIno && p === relative && newFolder.stIno !== stIno) {
+      await db
+        .update(dbFolder)
+        .set({ stIno })
+        .where(eq(dbFolder.id, newFolder.id));
+      newFolder.stIno = stIno;
     }
 
     if (!newFolder) {
@@ -95,6 +108,7 @@ export const addFolder = async (path: string, statsProp?: Stats) => {
         .insert(dbFolder)
         .values({
           ...props,
+          ...(stIno && p === relative ? { stIno } : {}),
           createdAt: new Date(),
           updatedAt: new Date(),
           exists: true,

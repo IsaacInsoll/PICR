@@ -3,6 +3,7 @@ import {
   bigint,
   boolean,
   integer,
+  index,
   pgTable,
   timestamp,
   varchar,
@@ -22,37 +23,41 @@ import { relations } from 'drizzle-orm';
  * - `folderHash` is used for cache invalidation
  * - `brandingId` optionally points to a branding set (inherited by subfolders)
  */
-export const dbFolder = pgTable('Folders', {
-  ...baseColumns,
-  name: varchar('name', { length: 255 }).notNull(),
-  title: varchar('title', { length: 255 }),
-  subtitle: varchar('subtitle', { length: 255 }),
-  folderHash: varchar('folderHash', { length: 255 }),
-  relativePath: varchar('relativePath', { length: 255 }), // can't be null because of root folder
-  stIno: bigint('stIno', { mode: 'bigint' }),
-  exists: boolean('exists').notNull(), // bulk set as 'false' at boot, then set true when detected, to weed out files deleted while server down
-  existsRescan: boolean('existsRescan').notNull().default(false), // used to detect if files still exist at boot time
-  folderLastModified: timestamp('folderLastModified', {
-    withTimezone: true,
-  })
-    .notNull()
-    .defaultNow(),
-  parentId: integer('parentId')
-    // .notNull() root folder :/
-    .references((): AnyPgColumn => dbFolder.id),
-  heroImageId: integer('heroImageId')
-    // .notNull()
-    .references((): AnyPgColumn => dbFile.id),
-  bannerImageId: integer('bannerImageId').references(
-    (): AnyPgColumn => dbFile.id,
-  ),
-  bannerSize: varchar('bannerSize', { length: 16 }),
-  bannerTextHAlign: varchar('bannerTextHAlign', { length: 16 }),
-  bannerTextVAlign: varchar('bannerTextVAlign', { length: 16 }),
-  brandingId: integer('brandingId').references(
-    (): AnyPgColumn => dbBranding.id,
-  ),
-});
+export const dbFolder = pgTable(
+  'Folders',
+  {
+    ...baseColumns,
+    name: varchar('name', { length: 255 }).notNull(),
+    title: varchar('title', { length: 255 }),
+    subtitle: varchar('subtitle', { length: 255 }),
+    folderHash: varchar('folderHash', { length: 255 }),
+    relativePath: varchar('relativePath', { length: 255 }), // can't be null because of root folder
+    stIno: bigint('stIno', { mode: 'bigint' }),
+    exists: boolean('exists').notNull(), // bulk set as 'false' at boot, then set true when detected, to weed out files deleted while server down
+    existsRescan: boolean('existsRescan').notNull().default(false), // used to detect if files still exist at boot time
+    folderLastModified: timestamp('folderLastModified', {
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+    parentId: integer('parentId')
+      // .notNull() root folder :/
+      .references((): AnyPgColumn => dbFolder.id),
+    heroImageId: integer('heroImageId')
+      // .notNull()
+      .references((): AnyPgColumn => dbFile.id),
+    bannerImageId: integer('bannerImageId').references(
+      (): AnyPgColumn => dbFile.id,
+    ),
+    bannerSize: varchar('bannerSize', { length: 16 }),
+    bannerTextHAlign: varchar('bannerTextHAlign', { length: 16 }),
+    bannerTextVAlign: varchar('bannerTextVAlign', { length: 16 }),
+    brandingId: integer('brandingId').references(
+      (): AnyPgColumn => dbBranding.id,
+    ),
+  },
+  (table) => [index('Folders_stIno_idx').on(table.stIno)],
+);
 
 export const dbFolderRelations = relations(dbFolder, ({ one, many }) => ({
   parent: one(dbFolder, {

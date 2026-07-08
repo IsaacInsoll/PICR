@@ -1,14 +1,24 @@
-import { mkdtemp, mkdir, rm, stat, utimes, writeFile } from 'node:fs/promises';
+import {
+  link,
+  mkdtemp,
+  mkdir,
+  rm,
+  stat,
+  utimes,
+  writeFile,
+} from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { afterEach, expect, test, vi } from 'vitest';
 import { contentHashForStats } from '../../backend/filesystem/fileHash';
 
 interface MockFileRow {
+  id?: number;
   name: string;
   relativePath: string;
   fileHash: string | null;
   folderId?: number;
+  stIno?: bigint | null;
 }
 
 interface MockFolderRow {
@@ -16,6 +26,7 @@ interface MockFolderRow {
   name: string;
   relativePath: string | null;
   parentId?: number | null;
+  stIno?: bigint | null;
 }
 
 const mediaRoots: string[] = [];
@@ -47,6 +58,7 @@ const loadScanFolder = async ({
   folderRelativePath?: string;
 }) => {
   vi.resetModules();
+  const { dbFile, dbFolder } = await import('../../backend/db/models/index.js');
 
   const folderRows: MockFolderRow[] = [
     {
@@ -60,6 +72,9 @@ const loadScanFolder = async ({
       parentId: folder.parentId ?? 10,
     })),
   ];
+  files.forEach((file, index) => {
+    file.id ??= index + 1;
+  });
   currentFolderId = 10;
   let nextFolderId = Math.max(...folderRows.map((folder) => folder.id)) + 1;
 
@@ -81,7 +96,15 @@ const loadScanFolder = async ({
   });
   const removeFile = vi.fn();
   const removeFolder = vi.fn();
+  const renameFolder = vi.fn();
   const log = vi.fn();
+  const update = vi.fn((table) => ({
+    set: vi.fn((values: Record<string, unknown>) => ({
+      where: vi.fn(async () => {
+        if (table === dbFile || table === dbFolder) void values;
+      }),
+    })),
+  }));
 
   vi.doMock('../../backend/filesystem/events/addFile.js', () => ({ addFile }));
   vi.doMock('../../backend/filesystem/events/addFolder.js', () => ({
@@ -93,6 +116,9 @@ const loadScanFolder = async ({
   vi.doMock('../../backend/filesystem/events/removeFolder.js', () => ({
     removeFolder,
   }));
+  vi.doMock('../../backend/filesystem/events/renameFolder.js', () => ({
+    renameFolder,
+  }));
   vi.doMock('../../backend/logger.js', () => ({ log }));
   vi.doMock('../../backend/db/picrDb.js', () => ({
     dbFolderForId: vi.fn(async (id: number) => {
@@ -100,6 +126,20 @@ const loadScanFolder = async ({
       return folderRows.find((folder) => folder.id === id);
     }),
     db: {
+      select: vi.fn(() => ({
+        from: vi.fn((table) => ({
+          where: vi.fn(async () => {
+            if (table === dbFile)
+              return files.filter((file) => file.stIno != null);
+            if (table === dbFolder)
+              return folderRows.filter(
+                (folder) => folder.stIno != null && folder.parentId != null,
+              );
+            return [];
+          }),
+        })),
+      })),
+      update,
       query: {
         dbFile: {
           findMany: vi.fn(async () =>
@@ -126,7 +166,9 @@ const loadScanFolder = async ({
     log,
     removeFile,
     removeFolder,
+    renameFolder,
     scanFolder,
+    update,
   };
 };
 
@@ -166,11 +208,14 @@ test('adds new direct files and folders while sharing watcher ignore rules', asy
     join(mediaRoot, 'new.jpg'),
     false,
     expect.any(Object),
+    undefined,
+    expect.anything(),
   );
   expect(addFolder).toHaveBeenCalledOnce();
   expect(addFolder).toHaveBeenCalledWith(
     join(mediaRoot, 'New Folder'),
     expect.any(Object),
+    expect.anything(),
   );
   expect(result).toMatchObject({
     addedFiles: 1,
@@ -248,9 +293,236 @@ test('re-adds an existing file when its content signature changed', async () => 
     join(mediaRoot, 'changed.jpg'),
     true,
     expect.any(Object),
+    undefined,
+    expect.anything(),
   );
   expect(result).toMatchObject({
     changedFiles: 1,
+  });
+});
+
+test('moves a file into the scanned folder by a single inode candidate', async () => {
+  const mediaRoot = await createMediaRoot();
+  const movedFilePath = join(mediaRoot, 'moved.jpg');
+  await writeFile(movedFilePath, 'moved content');
+  await makeOld(movedFilePath);
+  const movedStats = await stat(movedFilePath);
+
+  const { addFile, scanFolder } = await loadScanFolder({
+    mediaRoot,
+    files: [
+      {
+        id: 99,
+        name: 'old.jpg',
+        relativePath: 'Source',
+        folderId: 42,
+        fileHash: contentHashForStats(movedStats),
+        stIno: BigInt(movedStats.ino),
+      },
+    ],
+  });
+
+  const result = await scanFolder(10);
+
+  expect(addFile).toHaveBeenCalledOnce();
+  expect(addFile).toHaveBeenCalledWith(
+    movedFilePath,
+    false,
+    expect.any(Object),
+    join(mediaRoot, 'Source', 'old.jpg'),
+    BigInt(movedStats.ino),
+  );
+  expect(result).toMatchObject({
+    addedFiles: 0,
+    movedFiles: 1,
+    removedFiles: 0,
+  });
+});
+
+test('moves a renamed file within the scanned folder by a single content-hash candidate', async () => {
+  const mediaRoot = await createMediaRoot();
+  const newFilePath = join(mediaRoot, 'new-name.jpg');
+  await writeFile(newFilePath, 'same content');
+  await makeOld(newFilePath);
+  const newStats = await stat(newFilePath);
+
+  const { addFile, scanFolder } = await loadScanFolder({
+    mediaRoot,
+    files: [
+      {
+        id: 7,
+        name: 'old-name.jpg',
+        relativePath: '',
+        folderId: 10,
+        fileHash: contentHashForStats(newStats),
+      },
+    ],
+  });
+
+  const result = await scanFolder(10);
+
+  expect(addFile).toHaveBeenCalledOnce();
+  expect(addFile).toHaveBeenCalledWith(
+    newFilePath,
+    false,
+    expect.any(Object),
+    join(mediaRoot, 'old-name.jpg'),
+    expect.anything(),
+  );
+  expect(result).toMatchObject({
+    movedFiles: 1,
+    removedFiles: 0,
+  });
+});
+
+test('does not treat an existing path with a changed inode as a move', async () => {
+  const mediaRoot = await createMediaRoot();
+  const samePath = join(mediaRoot, 'same.jpg');
+  await writeFile(samePath, 'same content');
+  await makeOld(samePath);
+  const sameStats = await stat(samePath);
+
+  const { addFile, removeFile, scanFolder, update } = await loadScanFolder({
+    mediaRoot,
+    files: [
+      {
+        id: 1,
+        name: 'same.jpg',
+        relativePath: '',
+        folderId: 10,
+        fileHash: contentHashForStats(sameStats),
+        stIno: 123n,
+      },
+    ],
+  });
+
+  const result = await scanFolder(10);
+
+  expect(addFile).not.toHaveBeenCalled();
+  expect(removeFile).not.toHaveBeenCalled();
+  expect(update).toHaveBeenCalled();
+  expect(result).toMatchObject({
+    movedFiles: 0,
+    removedFiles: 0,
+  });
+});
+
+test('logs an ambiguous inode file match and falls back to adding the file', async () => {
+  const mediaRoot = await createMediaRoot();
+  const newFilePath = join(mediaRoot, 'new.jpg');
+  await writeFile(newFilePath, 'new content');
+  await makeOld(newFilePath);
+  const newStats = await stat(newFilePath);
+  const stIno = BigInt(newStats.ino);
+
+  const { addFile, log, scanFolder } = await loadScanFolder({
+    mediaRoot,
+    files: [
+      {
+        id: 1,
+        name: 'first.jpg',
+        relativePath: 'A',
+        folderId: 20,
+        fileHash: 'first',
+        stIno,
+      },
+      {
+        id: 2,
+        name: 'second.jpg',
+        relativePath: 'B',
+        folderId: 21,
+        fileHash: 'second',
+        stIno,
+      },
+    ],
+  });
+
+  const result = await scanFolder(10);
+
+  expect(log).toHaveBeenCalledWith(
+    'warn',
+    expect.stringContaining('Ambiguous scan file move by inode'),
+  );
+  expect(addFile).toHaveBeenCalledOnce();
+  expect(result).toMatchObject({
+    addedFiles: 1,
+    movedFiles: 0,
+  });
+});
+
+test('adds a hardlinked new file instead of moving the existing row', async () => {
+  const mediaRoot = await createMediaRoot();
+  const existingPath = join(mediaRoot, 'existing.jpg');
+  const linkedPath = join(mediaRoot, 'linked.jpg');
+  await writeFile(existingPath, 'same inode');
+  await link(existingPath, linkedPath);
+  await makeOld(existingPath);
+  const existingStats = await stat(existingPath);
+
+  const { addFile, removeFile, scanFolder } = await loadScanFolder({
+    mediaRoot,
+    files: [
+      {
+        id: 1,
+        name: 'existing.jpg',
+        relativePath: '',
+        folderId: 10,
+        fileHash: contentHashForStats(existingStats),
+        stIno: BigInt(existingStats.ino),
+      },
+    ],
+  });
+
+  const result = await scanFolder(10);
+
+  expect(removeFile).not.toHaveBeenCalled();
+  expect(addFile).toHaveBeenCalledOnce();
+  expect(addFile).toHaveBeenCalledWith(
+    linkedPath,
+    false,
+    expect.any(Object),
+    undefined,
+    BigInt(existingStats.ino),
+  );
+  expect(result).toMatchObject({
+    addedFiles: 1,
+    movedFiles: 0,
+    removedFiles: 0,
+  });
+});
+
+test('moves a folder into the scanned folder by a single inode candidate', async () => {
+  const mediaRoot = await createMediaRoot();
+  const movedFolderPath = join(mediaRoot, 'Moved Folder');
+  await mkdir(movedFolderPath);
+  const movedStats = await stat(movedFolderPath);
+
+  const { addFolder, renameFolder, scanFolder } = await loadScanFolder({
+    mediaRoot,
+    folders: [
+      {
+        id: 30,
+        name: 'Old Folder',
+        relativePath: 'Source/Old Folder',
+        parentId: 42,
+        stIno: BigInt(movedStats.ino),
+      },
+    ],
+  });
+
+  const result = await scanFolder(10);
+
+  expect(addFolder).not.toHaveBeenCalled();
+  expect(renameFolder).toHaveBeenCalledOnce();
+  expect(renameFolder).toHaveBeenCalledWith(
+    join(mediaRoot, 'Source', 'Old Folder'),
+    movedFolderPath,
+    expect.any(Object),
+    BigInt(movedStats.ino),
+  );
+  expect(result).toMatchObject({
+    addedFolders: 0,
+    movedFolders: 1,
   });
 });
 
@@ -277,6 +549,8 @@ test('waits for a fresh file to be stable across two scans before adding it', as
     join(mediaRoot, 'fresh.jpg'),
     false,
     expect.any(Object),
+    undefined,
+    expect.anything(),
   );
   expect(secondResult).toMatchObject({
     addedFiles: 1,
@@ -403,6 +677,8 @@ test('keeps descending into a new pending folder until its files settle', async 
     pendingFilePath,
     false,
     expect.any(Object),
+    undefined,
+    expect.anything(),
   );
   expect(secondResult).toMatchObject({
     addedFiles: 1,

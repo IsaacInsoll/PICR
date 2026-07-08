@@ -162,6 +162,13 @@
       "when": 1783408596505,
       "tag": "0022_store-inodes",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1783424600187,
+      "tag": "0023_st-ino-indexes",
+      "breakpoints": true
     }
   ]
 }

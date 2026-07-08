@@ -11,12 +11,13 @@ export const renameFolder = async (
   oldPath: string,
   newPath: string,
   stats?: Stats,
+  stIno?: bigint | null,
 ) => {
   const oldRelative = relativePath(oldPath);
   const newRelative = relativePath(newPath);
 
   if (!oldRelative || !newRelative || oldRelative === newRelative) {
-    await addFolder(newPath, stats);
+    await addFolder(newPath, stats, stIno);
     return;
   }
 
@@ -25,7 +26,7 @@ export const renameFolder = async (
   });
 
   if (!folder) {
-    await addFolder(newPath, stats);
+    await addFolder(newPath, stats, stIno);
     return;
   }
 
@@ -41,6 +42,7 @@ export const renameFolder = async (
       relativePath: newRelative,
       exists: true,
       existsRescan: true,
+      ...(stIno ? { stIno } : {}),
       folderLastModified: stats?.mtime ?? folder.folderLastModified,
       updatedAt: new Date(),
     })
