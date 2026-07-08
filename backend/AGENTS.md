@@ -424,7 +424,8 @@ flowchart LR
 ### File Watcher
 
 - Uses `chokidar` for cross-platform file watching
-- Supports polling mode (for Docker/NAS via `USE_POLLING=true`)
+- Supports `FILE_WATCHER=native|polling|off`; legacy `USE_POLLING=true`
+  still maps to polling mode for existing installs
 - Ignores: `.` files, `@eaDir`, `desktop.ini`, `Thumbs.db`
 - Detects renames via `renameTracker`
 
@@ -565,6 +566,7 @@ When changing `backend/config/*`, Docker `ARG`/`ENV` wiring, or startup code tha
 | --------------------- | ------------ | ----------------------------------------------- |
 | `NODE_ENV`            | `production` | Environment mode                                |
 | `PORT`                | `6900`       | Server port                                     |
+| `FILE_WATCHER`        | `native`     | `native`, `polling`, or `off` media detection   |
 | `USE_POLLING`         | `false`      | File watcher polling mode                       |
 | `POLLING_INTERVAL`    | `20`         | Polling multiplier (ms × 100)                   |
 | `DEBUG_SQL`           | `false`      | Log Drizzle queries                             |
@@ -664,7 +666,9 @@ Fix:
 
 ### File watcher not detecting changes
 
-1. Check `USE_POLLING=true` is set (required for Docker/NAS)
+1. Check `FILE_WATCHER=polling` is set for Docker/NAS setups where native
+   watching is unreliable (`USE_POLLING=true` is still accepted as a legacy
+   alias)
 2. Increase `POLLING_INTERVAL` if system is slow
 3. Check file permissions on media directory
 

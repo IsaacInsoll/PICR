@@ -23,6 +23,8 @@ export const picrConfig: IPicrConfiguration = {
   cachePath: '',
   mediaPath: '',
   updateMetadata: false,
+  fileWatcherMode: 'native',
+  usePolling: false,
   pollingInterval: 20, //sensible default
   loginRateLimitEnabled: true,
   loginRateLimitWindowMinutes: 15,

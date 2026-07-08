@@ -33,7 +33,7 @@ services:
     environment:
       - BASE_URL=https://clients.mydomain.com/ #change this to your URL
       - DATABASE_URL=postgres://user:pass@db/picr
-      - USE_POLLING=true # recommended if you have > 10,000 files
+      - FILE_WATCHER=polling # recommended if you have > 10,000 files
   db:
     image: postgres:17
     container_name: picr-db
@@ -126,8 +126,12 @@ There are lots of environment variables you can use, but only a few are needed:
   `ADMIN_USERNAME` is also optional and defaults to `admin`. Both only apply when there
   are no users yet.
 
-- `USE_POLLING` this means files aren't detected "instantly" and will take 20 seconds to be discovered. This has been
-  found to be useful when you have a large number of files.
+- `FILE_WATCHER` [optional] controls how PICR notices media changes.
+  `polling` is useful for Docker, NAS, or large libraries where native file
+  watching is unreliable. `native` uses OS file watching. `off` disables the
+  watcher entirely; PICR scans at boot and when an admin clicks **Scan Now**.
+  Existing installs using `USE_POLLING=true` still work, but `FILE_WATCHER` is
+  the preferred setting for new compose files.
 
 - `CAN_WRITE` [optional] You can turn this on later if needed, see [can_write.md](can_write.md)
   Note: write support needs both `CAN_WRITE=true` and real filesystem write permission on `/home/node/app/media`

@@ -21,7 +21,8 @@ export const server = async () => {
     process.exit(1);
   }
 
-  await setupRootFolder();
+  const rootFolder = await setupRootFolder();
+  if (!rootFolder) throw new Error('Root folder failed to initialize');
   detectInodeSupport();
   await envPassword();
   const appName = pkg.name;
@@ -46,5 +47,5 @@ export const server = async () => {
   process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
   process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-  await fileWatcher(picrConfig);
+  await fileWatcher(picrConfig, rootFolder.id);
 };

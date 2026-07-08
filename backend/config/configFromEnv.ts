@@ -2,7 +2,10 @@ import { config } from 'dotenv';
 import { existsSync, readFileSync } from 'node:fs';
 import { addDevLogger, log } from '../logger.js';
 import { picrConfig } from './picrConfig.js';
-import type { IPicrConfiguration } from './IPicrConfiguration.js';
+import type {
+  FileWatcherMode,
+  IPicrConfiguration,
+} from './IPicrConfiguration.js';
 import path from 'path';
 import { envSchema } from './envSchema.js';
 import { buildCanWriteWarning, probeWriteAccess } from './mediaWriteAccess.js';
@@ -35,6 +38,7 @@ export const configFromEnv = () => {
       : baseUrl.pathname.endsWith('/')
         ? baseUrl.pathname
         : `${baseUrl.pathname}/`;
+  const fileWatcherMode = resolveFileWatcherMode(d.FILE_WATCHER, d.USE_POLLING);
   const c: IPicrConfiguration = {
     updateMetadata: false, //re-read metadata, set by dbMigrate
     version: getVersion(),
@@ -64,7 +68,8 @@ export const configFromEnv = () => {
     videoAccelerationReason: 'Video acceleration not yet detected',
     inodeSupport: 'unknown',
     inodeSupportReason: 'Inode support not yet detected',
-    usePolling: d.USE_POLLING,
+    fileWatcherMode,
+    usePolling: fileWatcherMode === 'polling',
     pollingInterval: d.POLLING_INTERVAL,
     tokenSecret: d.TOKEN_SECRET,
     adminUsername: d.ADMIN_USERNAME,
@@ -107,6 +112,11 @@ export const configFromEnv = () => {
     log('warn', buildCanWriteWarning(mediaPath, writeProbe), true);
   }
 };
+
+export const resolveFileWatcherMode = (
+  fileWatcher: FileWatcherMode | undefined,
+  usePolling: boolean,
+): FileWatcherMode => fileWatcher ?? (usePolling ? 'polling' : 'native');
 
 const getVersion = () => {
   // Production/Docker builds generate ./version.txt from package.json at build time.

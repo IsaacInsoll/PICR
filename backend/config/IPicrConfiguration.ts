@@ -1,3 +1,5 @@
+export type FileWatcherMode = 'off' | 'native' | 'polling';
+
 export interface IPicrConfiguration {
   baseUrl: string; // eg: https://picr.mydomain.com/
   baseUrlOrigin: string;
@@ -31,7 +33,8 @@ export interface IPicrConfiguration {
   databaseUrl?: string;
   debugSql?: boolean;
   consoleLogging?: boolean;
-  usePolling?: boolean;
+  fileWatcherMode: FileWatcherMode;
+  usePolling: boolean;
   port?: number;
   pollingInterval: number;
   dev?: boolean;

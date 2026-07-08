@@ -70,6 +70,8 @@ export const envSchema = z.object({
   VIDEO_ACCELERATION: z.enum(['auto', 'off']).default('auto'),
   VIDEO_ACCELERATION_DEVICE: z.string().min(1).default('/dev/dri/renderD128'),
 
+  FILE_WATCHER: z.enum(['off', 'native', 'polling']).optional(),
+
   POLLING_INTERVAL: z.coerce
     .number({ description: 'Polling Interval' })
     .positive()

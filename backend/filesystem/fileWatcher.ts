@@ -1,6 +1,6 @@
 import chokidar from 'chokidar';
 import { relativePath } from './fileManager.js';
-import { addToQueue, initComplete } from './fileQueue.js';
+import { addToQueue, initComplete, markInitComplete } from './fileQueue.js';
 import { log } from '../logger.js';
 import { picrConfig } from '../config/picrConfig.js';
 import { db } from '../db/picrDb.js';
@@ -9,13 +9,23 @@ import { isNotNull } from 'drizzle-orm';
 import type { IPicrConfiguration } from '../config/IPicrConfiguration.js';
 import { createRenameTracker } from './renameTracker.js';
 import { ignoredPathPattern } from './ignoredPaths.js';
+import { scanFolderTree } from './scanFolder.js';
 
-export const fileWatcher = async (config: IPicrConfiguration) => {
+export const fileWatcher = async (
+  config: IPicrConfiguration,
+  rootFolderId = 1,
+  watch: typeof chokidar.watch = chokidar.watch,
+) => {
+  if (config.fileWatcherMode === 'off') {
+    await runBootScanWithoutWatcher(rootFolderId);
+    return;
+  }
+
   log(
     'info',
     '👀 Now watching: ' +
       picrConfig.mediaPath +
-      (config.usePolling ? ' with POLLING' : ''),
+      (config.fileWatcherMode === 'polling' ? ' with POLLING' : ''),
   );
   const intervalMultiplier = config.pollingInterval; // multiply default interval values by this
 
@@ -28,11 +38,11 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
 
   const renameTracker = createRenameTracker();
 
-  const watcher = chokidar.watch(picrConfig.mediaPath, {
+  const watcher = watch(picrConfig.mediaPath, {
     ignored: ignoredPathPattern,
     persistent: true,
     awaitWriteFinish: true,
-    usePolling: config.usePolling,
+    usePolling: config.fileWatcherMode === 'polling',
     interval: 100 * intervalMultiplier,
     binaryInterval: 300 * intervalMultiplier,
     alwaysStat: true,
@@ -77,4 +87,27 @@ export const fileWatcher = async (config: IPicrConfiguration) => {
     .on('ready', () => {
       addToQueue('initComplete', {});
     });
+};
+
+const runBootScanWithoutWatcher = async (rootFolderId: number) => {
+  const startedAt = Date.now();
+  log(
+    'info',
+    `👀 File watcher disabled; running boot scan for ${picrConfig.mediaPath}`,
+  );
+  try {
+    const result = await scanFolderTree(rootFolderId, {
+      generateThumbs: false,
+    });
+    log(
+      result.completed ? 'info' : 'warn',
+      `✅ Initial scan ${result.completed ? 'complete' : 'finished with unsettled files'} after ${result.scanPasses} pass(es) in ${((Date.now() - startedAt) / 1000).toFixed(2)} seconds`,
+      true,
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    log('error', `Boot scan failed; serving existing data: ${message}`, true);
+  } finally {
+    markInitComplete();
+  }
 };

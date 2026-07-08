@@ -194,10 +194,14 @@ const processQueue = async (action: QueueAction, payload: QueuePayload) => {
       break;
     }
     case 'initComplete':
-      initComplete = true;
+      markInitComplete();
       await handleInitComplete();
       break;
   }
+};
+
+export const markInitComplete = () => {
+  initComplete = true;
 };
 
 export const queueTaskStatus = (): null | Task => {
