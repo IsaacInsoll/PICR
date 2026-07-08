@@ -62,6 +62,8 @@ export const configFromEnv = () => {
     // Resolved at boot by detectVideoAcceleration(); CPU until then.
     videoAccelerationMode: 'cpu',
     videoAccelerationReason: 'Video acceleration not yet detected',
+    inodeSupport: 'unknown',
+    inodeSupportReason: 'Inode support not yet detected',
     usePolling: d.USE_POLLING,
     pollingInterval: d.POLLING_INTERVAL,
     tokenSecret: d.TOKEN_SECRET,

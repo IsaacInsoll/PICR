@@ -21,6 +21,8 @@ export interface IPicrConfiguration {
   videoAccelerationReason: string;
   videoAccelerationDriver?: string;
   videoAccelerationCodecs?: string[];
+  inodeSupport: 'enabled' | 'disabled' | 'unknown';
+  inodeSupportReason: string;
   tokenSecret?: string;
   // Initial admin account for first boot (no users yet). Password falls back to
   // a generated random value when unset; see boot/envPassword.ts.

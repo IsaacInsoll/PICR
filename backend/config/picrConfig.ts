@@ -18,6 +18,8 @@ export const picrConfig: IPicrConfiguration = {
   videoAccelerationDevice: '/dev/dri/renderD128',
   videoAccelerationMode: 'cpu',
   videoAccelerationReason: 'Video acceleration not yet detected',
+  inodeSupport: 'unknown',
+  inodeSupportReason: 'Inode support not yet detected',
   cachePath: '',
   mediaPath: '',
   updateMetadata: false,

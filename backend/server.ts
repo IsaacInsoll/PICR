@@ -9,6 +9,7 @@ import { picrConfig } from './config/picrConfig.js';
 import { initDb } from './db/picrDb.js';
 import { schemaMigration } from './db/schemaMigration.js';
 import { logStartupBanner, logFatalBanner } from './boot/startupBanner.js';
+import { detectInodeSupport } from './boot/detectInodeSupport.js';
 
 export const server = async () => {
   try {
@@ -21,6 +22,7 @@ export const server = async () => {
   }
 
   await setupRootFolder();
+  detectInodeSupport();
   await envPassword();
   const appName = pkg.name;
   const express = expressServer();

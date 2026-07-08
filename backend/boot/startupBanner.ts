@@ -63,6 +63,7 @@ const supportedCapabilities = (config: IPicrConfiguration) => {
     caps.heic ? 'HEIC' : undefined,
     config.videoAccelerationMode === 'vaapi' ? 'Video VAAPI' : 'Video CPU',
     config.canWrite ? 'media write' : undefined,
+    config.inodeSupport === 'enabled' ? 'Inode tracking' : undefined,
   ].filter((value): value is string => Boolean(value));
 };
 
@@ -78,6 +79,7 @@ const unsupportedCapabilities = (config: IPicrConfiguration) => {
       ? 'VAAPI'
       : undefined,
     config.canWrite ? undefined : 'media write',
+    config.inodeSupport === 'disabled' ? 'Inode tracking' : undefined,
   ].filter((value): value is string => Boolean(value));
 };
 
