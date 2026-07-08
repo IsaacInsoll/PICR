@@ -67,6 +67,7 @@ export const ServerInfo = () => {
         </Suspense>
         <AdditionalImageFormats caps={server.mediaCaps} />
         <VideoAcceleration info={server.videoAcceleration} />
+        <InodeSupport info={server.inodeSupport} />
         <Benchmark />
       </Table.Tbody>
     </Table>
@@ -90,6 +91,10 @@ type MediaCapsInfo = NonNullable<
   ServerInfoQueryQuery['serverInfo']
 >['mediaCaps'];
 
+type InodeSupportInfo = NonNullable<
+  ServerInfoQueryQuery['serverInfo']
+>['inodeSupport'];
+
 const AdditionalImageFormats = ({ caps }: { caps: MediaCapsInfo }) => {
   const formats = [
     { label: 'RAW', enabled: caps.raw },
@@ -109,6 +114,32 @@ const AdditionalImageFormats = ({ caps }: { caps: MediaCapsInfo }) => {
           {format.label}
         </Badge>
       ))}
+    </Row>
+  );
+};
+
+const InodeSupport = ({ info }: { info: InodeSupportInfo }) => {
+  const color =
+    info.status === 'enabled'
+      ? 'green'
+      : info.status === 'disabled'
+        ? 'red'
+        : 'gray';
+  const label =
+    info.status === 'enabled'
+      ? 'Enabled'
+      : info.status === 'disabled'
+        ? 'Disabled'
+        : 'Unknown';
+
+  return (
+    <Row title="Inode Tracking">
+      <Badge color={color} variant="light">
+        {label}
+      </Badge>
+      <Text size="sm" c="dimmed">
+        {info.reason}
+      </Text>
     </Row>
   );
 };

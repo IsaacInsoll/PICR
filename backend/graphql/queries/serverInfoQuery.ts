@@ -25,6 +25,10 @@ const resolver: PicrResolver = async (_, _params, context) => {
       driver: picrConfig.videoAccelerationDriver ?? null,
       codecs: picrConfig.videoAccelerationCodecs ?? [],
     },
+    inodeSupport: {
+      status: picrConfig.inodeSupport,
+      reason: picrConfig.inodeSupportReason,
+    },
     //these are functions because they can be potentially SUPER EXPENSIVE
     cacheSize: () => folderSize(picrConfig.cachePath),
     mediaSize: () => folderSize(picrConfig.mediaPath),

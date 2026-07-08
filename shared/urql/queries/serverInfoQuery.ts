@@ -23,6 +23,10 @@ export const serverInfoQuery = gql(/* GraphQL */ `
         driver
         codecs
       }
+      inodeSupport {
+        status
+        reason
+      }
     }
   }
 `);

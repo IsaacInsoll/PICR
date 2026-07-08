@@ -34,6 +34,15 @@ export const mediaCapsInfoType = new GraphQLObjectType({
   }),
 });
 
+export const inodeSupportInfoType = new GraphQLObjectType({
+  name: 'InodeSupportInfo',
+  fields: () => ({
+    // 'enabled' | 'disabled' | 'unknown'
+    status: { type: new GraphQLNonNull(GraphQLString) },
+    reason: { type: new GraphQLNonNull(GraphQLString) },
+  }),
+});
+
 export const serverInfoType = new GraphQLObjectType({
   name: 'ServerInfo',
   fields: () => ({
@@ -46,6 +55,7 @@ export const serverInfoType = new GraphQLObjectType({
     dev: { type: new GraphQLNonNull(GraphQLBoolean) },
     canWrite: { type: new GraphQLNonNull(GraphQLBoolean) },
     videoAcceleration: { type: new GraphQLNonNull(videoAccelerationInfoType) },
+    inodeSupport: { type: new GraphQLNonNull(inodeSupportInfoType) },
     mediaCaps: { type: new GraphQLNonNull(mediaCapsInfoType) },
     cacheSize: { type: new GraphQLNonNull(GraphQLBigInt) },
     mediaSize: { type: new GraphQLNonNull(GraphQLBigInt) },
