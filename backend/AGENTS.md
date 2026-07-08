@@ -424,6 +424,9 @@ flowchart LR
 
 ### File Watcher
 
+See `docs/development/media-scanning.md` for the full scanning model and the
+contracts between watcher, on-view, scheduled, and manual scans.
+
 - Uses `chokidar` for cross-platform file watching
 - Supports `FILE_WATCHER=native|polling|off`; legacy `USE_POLLING=true`
   still maps to polling mode for existing installs

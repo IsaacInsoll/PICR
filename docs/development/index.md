@@ -7,6 +7,7 @@
 | 📱 [App Development](app.md)               | React Native (Expo) App Development         |
 | 👷 [Build Process](build.md)               | How backend build process works             |
 | 🎨 [Frontend Styling](frontend-styling.md) | Mantine-first UI + typed CSS modules        |
+| 🖼️ [Media Scanning](media-scanning.md)     | File detection, scans, thumbnails, moves    |
 | 📃 [Basic Tutorial](basic-tutorial.md)     | Basic tutorial on front/backend feature dev |
 | 🧪 [Testing](testing.md)                   | Run API + E2E integration tests             |
 | 🚀 [Releases](release.md)                  | How to do releases                          |
