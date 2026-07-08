@@ -92,3 +92,25 @@ test('ON_VIEW_SCAN parses explicit modes and treats empty as unset', () => {
     envSchema.safeParse({ ...requiredEnv, ON_VIEW_SCAN: 'recursive' }).success,
   ).toBe(false);
 });
+
+test('SCHEDULED_SCAN_HOURS accepts zero, positive integers, and empty unset', () => {
+  expect(
+    envSchema.parse({ ...requiredEnv, SCHEDULED_SCAN_HOURS: '0' })
+      .SCHEDULED_SCAN_HOURS,
+  ).toBe(0);
+  expect(
+    envSchema.parse({ ...requiredEnv, SCHEDULED_SCAN_HOURS: '24' })
+      .SCHEDULED_SCAN_HOURS,
+  ).toBe(24);
+  expect(
+    envSchema.parse({ ...requiredEnv, SCHEDULED_SCAN_HOURS: '' })
+      .SCHEDULED_SCAN_HOURS,
+  ).toBeUndefined();
+  expect(
+    envSchema.safeParse({ ...requiredEnv, SCHEDULED_SCAN_HOURS: '-1' }).success,
+  ).toBe(false);
+  expect(
+    envSchema.safeParse({ ...requiredEnv, SCHEDULED_SCAN_HOURS: '1.5' })
+      .success,
+  ).toBe(false);
+});

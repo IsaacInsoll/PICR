@@ -39,6 +39,7 @@ export interface IPicrConfiguration {
   usePolling: boolean;
   port?: number;
   pollingSeconds: number;
+  scheduledScanHours: number;
   dev?: boolean;
   version?: string;
   buildChannel?: string;

@@ -10,6 +10,7 @@ import { initDb } from './db/picrDb.js';
 import { schemaMigration } from './db/schemaMigration.js';
 import { logStartupBanner, logFatalBanner } from './boot/startupBanner.js';
 import { detectInodeSupport } from './boot/detectInodeSupport.js';
+import { startScheduledScan } from './filesystem/scheduledScan.js';
 
 export const server = async () => {
   try {
@@ -30,9 +31,11 @@ export const server = async () => {
   const httpServer = express.listen(picrConfig.port, () => {
     logStartupBanner(picrConfig);
   });
+  const scheduledScan = { stop: undefined as (() => void) | undefined };
 
   const gracefulShutdown = (signal: string) => {
     log('info', `${signal} received, shutting down ${appName}...`, true);
+    scheduledScan.stop?.();
     httpServer.close(() => {
       log('info', `💀 ${appName} closed`, true);
       process.exit(0);
@@ -48,4 +51,5 @@ export const server = async () => {
   process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
   await fileWatcher(picrConfig, rootFolder.id);
+  scheduledScan.stop = startScheduledScan(picrConfig, rootFolder.id);
 };

@@ -431,6 +431,9 @@ flowchart LR
   folder IDs on `PicrRequestContext.scanFolderIds`, and the Express GraphQL
   wrapper drains them from `res.on('finish')`. Do not run filesystem scans
   inline in resolvers; gallery responses must return from the DB/cache first.
+- `SCHEDULED_SCAN_HOURS` runs an in-process whole-library reconcile backstop.
+  It skips overlapping ticks and queues thumbnail generation only when the
+  scheduled run's new-file count is within `SCHEDULED_SCAN_THUMB_LIMIT`.
 - Ignores: `.` files, `@eaDir`, `desktop.ini`, `Thumbs.db`
 - Detects renames via `renameTracker`
 
@@ -567,18 +570,19 @@ When changing `backend/config/*`, Docker `ARG`/`ENV` wiring, or startup code tha
 
 ### Optional Variables
 
-| Variable              | Default      | Description                                     |
-| --------------------- | ------------ | ----------------------------------------------- |
-| `NODE_ENV`            | `production` | Environment mode                                |
-| `PORT`                | `6900`       | Server port                                     |
-| `FILE_WATCHER`        | `native`     | `native`, `polling`, or `off` media detection   |
-| `USE_POLLING`         | `false`      | File watcher polling mode                       |
-| `POLLING_SECONDS`     | `20`         | Polling interval in real seconds                |
-| `POLLING_INTERVAL`    | unset        | Legacy 100ms polling units, converted `/10`     |
-| `ON_VIEW_SCAN`        | `off`        | Demand-driven scan mode for viewed folders      |
-| `DEBUG_SQL`           | `false`      | Log Drizzle queries                             |
-| `CONSOLE_LOGGING`     | `false`      | Winston console output                          |
-| `DISABLE_ACCESS_LOGS` | `false`      | Skip AccessLog rows + folder-view notifications |
+| Variable               | Default      | Description                                     |
+| ---------------------- | ------------ | ----------------------------------------------- |
+| `NODE_ENV`             | `production` | Environment mode                                |
+| `PORT`                 | `6900`       | Server port                                     |
+| `FILE_WATCHER`         | `native`     | `native`, `polling`, or `off` media detection   |
+| `USE_POLLING`          | `false`      | File watcher polling mode                       |
+| `POLLING_SECONDS`      | `20`         | Polling interval in real seconds                |
+| `POLLING_INTERVAL`     | unset        | Legacy 100ms polling units, converted `/10`     |
+| `ON_VIEW_SCAN`         | `off`        | Demand-driven scan mode for viewed folders      |
+| `SCHEDULED_SCAN_HOURS` | `0`          | Whole-library reconcile interval, `0` disables  |
+| `DEBUG_SQL`            | `false`      | Log Drizzle queries                             |
+| `CONSOLE_LOGGING`      | `false`      | Winston console output                          |
+| `DISABLE_ACCESS_LOGS`  | `false`      | Skip AccessLog rows + folder-view notifications |
 
 ---
 

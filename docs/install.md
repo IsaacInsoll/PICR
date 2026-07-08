@@ -36,6 +36,7 @@ services:
       - FILE_WATCHER=polling # recommended if you have > 10,000 files
       - POLLING_SECONDS=20 # only used when FILE_WATCHER=polling
       - ON_VIEW_SCAN=off # set direct_and_new with FILE_WATCHER=off for NAS spin-down
+      - SCHEDULED_SCAN_HOURS=0 # set 24 for a daily whole-library backstop
   db:
     image: postgres:17
     container_name: picr-db
@@ -145,6 +146,10 @@ There are lots of environment variables you can use, but only a few are needed:
   is viewed. It defaults to `off`. Use `direct_and_new` with `FILE_WATCHER=off`
   if you want NAS drives to sleep between shoots while still refreshing active
   galleries in the background.
+
+- `SCHEDULED_SCAN_HOURS` [optional] controls a whole-library reconcile backstop.
+  It defaults to `0` (off). Set `24` for a daily scan that catches changes nobody
+  viewed yet; newly-discovered thumbnails are pre-warmed only for small batches.
 
 - `CAN_WRITE` [optional] You can turn this on later if needed, see [can_write.md](can_write.md)
   Note: write support needs both `CAN_WRITE=true` and real filesystem write permission on `/home/node/app/media`
