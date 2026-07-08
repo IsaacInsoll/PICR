@@ -16,9 +16,9 @@ import { db } from '../../db/picrDb.js';
 import type { FileFields } from '../../db/picrDb.js';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 import { delay } from '../../helpers/delay.js';
-import type { Stats } from 'node:fs';
 import { existsSync, statSync } from 'node:fs';
 import { ensureDecodedImage } from '../../media/ensureDecodedImage.js';
+import type { PicrFileStats } from '../fileStats.js';
 import {
   isHeicFormat,
   isPsbFormat,
@@ -30,7 +30,7 @@ import {
 export const addFile = async (
   filePath: string,
   generateThumbs: boolean,
-  statsProp?: Stats,
+  statsProp?: PicrFileStats,
   renameFromPath?: string,
   stIno?: bigint | null,
 ) => {

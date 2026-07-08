@@ -236,6 +236,15 @@ sequenceDiagram
 - `CAN_WRITE=false` must remain a pure opt-out: do not create probe files or
   perform any other media write attempts when it is disabled.
 
+### Filesystem Stat Precision
+
+- `scanFolder` reads inodes with `stat(path, { bigint: true })`, but PICR's
+  content hashes intentionally match normal `fs.Stats` `Date#getTime()`
+  semantics. If you derive runtime stats from `BigIntStats`, round
+  `mtimeNs`/`birthtimeNs` to milliseconds the same way `fileStatsFromBigIntStats`
+  does before calling `contentHashForStats`; raw nanosecond or truncated
+  millisecond values can break move detection against existing database rows.
+
 ### Context Structure (`PicrRequestContext`)
 
 ```typescript

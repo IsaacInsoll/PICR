@@ -77,8 +77,64 @@ const loadScanFolder = async ({
   });
   currentFolderId = 10;
   let nextFolderId = Math.max(...folderRows.map((folder) => folder.id)) + 1;
+  let nextFileId = Math.max(0, ...files.map((file) => file.id ?? 0)) + 1;
 
-  const addFile = vi.fn();
+  const addFile = vi.fn(
+    (
+      path: string,
+      _generateThumbs: boolean,
+      stats: Parameters<typeof contentHashForStats>[0],
+      renameFromPath?: string,
+      stIno?: bigint | null,
+    ) => {
+      const relativeFolderPath = relativePathFor(mediaRoot, dirname(path));
+      const folder = folderRows.find(
+        (folderRow) => folderRow.relativePath === relativeFolderPath,
+      );
+      const updateFile = (file: MockFileRow) => {
+        file.name = basename(path);
+        file.relativePath = relativeFolderPath;
+        file.folderId = folder?.id ?? 10;
+        file.fileHash = contentHashForStats(stats);
+        if (stIno) file.stIno = stIno;
+      };
+
+      if (renameFromPath) {
+        const oldRelativeFolderPath = relativePathFor(
+          mediaRoot,
+          dirname(renameFromPath),
+        );
+        const existing = files.find(
+          (file) =>
+            file.name === basename(renameFromPath) &&
+            file.relativePath === oldRelativeFolderPath,
+        );
+        if (existing) {
+          updateFile(existing);
+          return;
+        }
+      }
+
+      const existing = files.find(
+        (file) =>
+          file.name === basename(path) &&
+          file.relativePath === relativeFolderPath,
+      );
+      if (existing) {
+        updateFile(existing);
+        return;
+      }
+
+      files.push({
+        id: nextFileId++,
+        name: basename(path),
+        relativePath: relativeFolderPath,
+        folderId: folder?.id ?? 10,
+        fileHash: contentHashForStats(stats),
+        stIno: stIno ?? null,
+      });
+    },
+  );
   const addFolder = vi.fn(async (path: string) => {
     const relativePath = relativePathFor(mediaRoot, path);
     const parentRelativePath = relativePathFor(mediaRoot, dirname(path));
@@ -158,7 +214,8 @@ const loadScanFolder = async ({
   const { picrConfig } = await import('../../backend/config/picrConfig.js');
   picrConfig.mediaPath = mediaRoot;
 
-  const { scanFolder } = await import('../../backend/filesystem/scanFolder.js');
+  const { scanFolder, scanFolderTree } =
+    await import('../../backend/filesystem/scanFolder.js');
 
   return {
     addFile,
@@ -168,6 +225,7 @@ const loadScanFolder = async ({
     removeFolder,
     renameFolder,
     scanFolder,
+    scanFolderTree,
     update,
   };
 };
@@ -523,6 +581,91 @@ test('moves a folder into the scanned folder by a single inode candidate', async
   expect(result).toMatchObject({
     addedFolders: 0,
     movedFolders: 1,
+  });
+});
+
+test('scanFolderTree descends into existing folders and retries unsettled large files', async () => {
+  const mediaRoot = await createMediaRoot();
+  const existingFolderPath = join(mediaRoot, 'Existing Folder');
+  const largeFilePath = join(existingFolderPath, 'large.mov');
+  await mkdir(existingFolderPath);
+  await writeFile(largeFilePath, Buffer.alloc(5 * 1024 * 1024 + 1));
+  await makeOld(largeFilePath);
+
+  const { addFile, scanFolderTree } = await loadScanFolder({
+    mediaRoot,
+    folders: [
+      {
+        id: 20,
+        name: 'Existing Folder',
+        relativePath: 'Existing Folder',
+      },
+    ],
+  });
+
+  const result = await scanFolderTree(10, { settleDelayMs: 0 });
+
+  expect(addFile).toHaveBeenCalledOnce();
+  expect(addFile).toHaveBeenCalledWith(
+    largeFilePath,
+    false,
+    expect.any(Object),
+    undefined,
+    expect.anything(),
+  );
+  expect(result).toMatchObject({
+    addedFiles: 1,
+    completed: true,
+    cleanupRun: true,
+    scanPasses: 2,
+    unsettledFiles: 0,
+  });
+});
+
+test('scanFolderTree moves files before cleanup removes missing rows', async () => {
+  const mediaRoot = await createMediaRoot();
+  const sourceFolderPath = join(mediaRoot, 'Source');
+  const destFolderPath = join(mediaRoot, 'Dest');
+  const movedFilePath = join(destFolderPath, 'moved.jpg');
+  await mkdir(sourceFolderPath);
+  await mkdir(destFolderPath);
+  await writeFile(movedFilePath, 'moved content');
+  await makeOld(movedFilePath);
+  const movedStats = await stat(movedFilePath);
+
+  const { addFile, removeFile, scanFolderTree } = await loadScanFolder({
+    mediaRoot,
+    folders: [
+      { id: 20, name: 'Source', relativePath: 'Source' },
+      { id: 21, name: 'Dest', relativePath: 'Dest' },
+    ],
+    files: [
+      {
+        id: 30,
+        name: 'old.jpg',
+        relativePath: 'Source',
+        folderId: 20,
+        fileHash: contentHashForStats(movedStats),
+        stIno: BigInt(movedStats.ino),
+      },
+    ],
+  });
+
+  const result = await scanFolderTree(10, { settleDelayMs: 0 });
+
+  expect(addFile).toHaveBeenCalledWith(
+    movedFilePath,
+    false,
+    expect.any(Object),
+    join(mediaRoot, 'Source', 'old.jpg'),
+    BigInt(movedStats.ino),
+  );
+  expect(removeFile).not.toHaveBeenCalled();
+  expect(result).toMatchObject({
+    movedFiles: 1,
+    removedFiles: 0,
+    completed: true,
+    cleanupRun: true,
   });
 });
 

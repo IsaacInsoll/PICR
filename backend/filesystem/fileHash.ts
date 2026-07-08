@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import fs from 'fs';
+import type { PicrFileStats } from './fileStats.js';
 
 export const fileHash = (filePath: string): string => {
   const fileBuffer = fs.readFileSync(filePath);
@@ -30,7 +31,7 @@ const contentHash = (size: number, mtimeEpochMs: number): string => {
 };
 
 // Runtime: derive the content hash from a filesystem stat.
-export const contentHashForStats = (stats: fs.Stats): string =>
+export const contentHashForStats = (stats: PicrFileStats): string =>
   contentHash(stats.size, stats.mtime.getTime());
 
 // Migration: derive the content hash from stored DB fields, byte-identically to

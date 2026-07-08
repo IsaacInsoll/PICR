@@ -6,10 +6,10 @@ import type { FolderFields } from '../../db/picrDb.js';
 import { db } from '../../db/picrDb.js';
 import { and, eq, isNull } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
-import type { Stats } from 'node:fs';
 import { statSync } from 'node:fs';
 import { picrConfig } from '../../config/picrConfig.js';
 import type { QueryResult, QueryResultRow } from 'pg';
+import type { PicrFileStats } from '../fileStats.js';
 
 let rootFolder: FolderFields | undefined = undefined;
 
@@ -47,7 +47,7 @@ export const setupRootFolder = async () => {
 
 export const addFolder = async (
   path: string,
-  statsProp?: Stats,
+  statsProp?: PicrFileStats,
   stIno?: bigint | null,
 ) => {
   const relative = relativePath(path);

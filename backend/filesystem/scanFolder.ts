@@ -1,11 +1,13 @@
 import { readdir, stat } from 'node:fs/promises';
-import type { Stats } from 'node:fs';
+import type { BigIntStats } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { and, eq, isNotNull } from 'drizzle-orm';
 import { log } from '../logger.js';
 import type { FileFields, FolderFields } from '../db/picrDb.js';
 import { db, dbFolderForId } from '../db/picrDb.js';
 import { dbFile, dbFolder } from '../db/models/index.js';
+import { delay } from '../helpers/delay.js';
+import { fileStatsFromBigIntStats, type PicrFileStats } from './fileStats.js';
 import { addFile } from './events/addFile.js';
 import { addFolder } from './events/addFolder.js';
 import { removeFile } from './events/removeFile.js';
@@ -24,6 +26,8 @@ const SCAN_SETTLE_MS = SCAN_SETTLE_SECONDS * 1000;
 export interface ScanFolderOptions {
   generateThumbs?: boolean;
   depth?: number;
+  removeMissing?: boolean;
+  scanExistingFolders?: boolean;
 }
 
 export interface ScanFolderResult {
@@ -39,9 +43,21 @@ export interface ScanFolderResult {
   unsettledFolders: number;
 }
 
+export interface ScanFolderTreeOptions {
+  generateThumbs?: boolean;
+  maxPasses?: number;
+  settleDelayMs?: number;
+}
+
+export interface ScanFolderTreeResult extends ScanFolderResult {
+  completed: boolean;
+  cleanupRun: boolean;
+  scanPasses: number;
+}
+
 interface DiskEntry {
   path: string;
-  stats: Stats;
+  stats: PicrFileStats;
   stIno: bigint | null;
 }
 
@@ -58,6 +74,69 @@ interface PendingFolder {
 const growingFiles = new Map<string, FileSignature>();
 const pendingFolders = new Map<number, PendingFolder>();
 
+export const scanFolderTree = async (
+  rootFolderId = 1,
+  options: ScanFolderTreeOptions = {},
+): Promise<ScanFolderTreeResult> => {
+  const startedAt = Date.now();
+  const maxPasses = Math.max(1, options.maxPasses ?? 2);
+  const result: ScanFolderTreeResult = {
+    ...emptyScanFolderResult(),
+    completed: false,
+    cleanupRun: false,
+    scanPasses: 0,
+  };
+  let finalUnsettledFiles = 0;
+  let finalUnsettledFolders = 0;
+
+  for (let pass = 0; pass < maxPasses; pass++) {
+    if (pass > 0) await delay(options.settleDelayMs ?? SCAN_SETTLE_MS);
+
+    const passResult = await scanFolder(rootFolderId, {
+      generateThumbs: options.generateThumbs ?? false,
+      depth: Number.MAX_SAFE_INTEGER,
+      removeMissing: false,
+      scanExistingFolders: true,
+    });
+    mergeScanResult(result, passResult);
+    result.scanPasses++;
+    finalUnsettledFiles = passResult.unsettledFiles;
+    finalUnsettledFolders = passResult.unsettledFolders;
+
+    if (!hasUnsettledWork(passResult)) {
+      result.completed = true;
+      break;
+    }
+  }
+
+  if (result.completed) {
+    const cleanupResult = await scanFolder(rootFolderId, {
+      generateThumbs: options.generateThumbs ?? false,
+      depth: Number.MAX_SAFE_INTEGER,
+      removeMissing: true,
+      scanExistingFolders: true,
+    });
+    mergeScanResult(result, cleanupResult);
+    result.cleanupRun = true;
+    finalUnsettledFiles = cleanupResult.unsettledFiles;
+    finalUnsettledFolders = cleanupResult.unsettledFolders;
+    result.completed = !hasUnsettledWork(cleanupResult);
+  } else {
+    log(
+      'warn',
+      `scanFolderTree(${rootFolderId}) stopped with unsettled files/folders after ${result.scanPasses} passes`,
+    );
+  }
+
+  result.unsettledFiles = finalUnsettledFiles;
+  result.unsettledFolders = finalUnsettledFolders;
+  log(
+    'debug',
+    `scanFolderTree(${rootFolderId}): ${JSON.stringify(result)} in ${Date.now() - startedAt}ms`,
+  );
+  return result;
+};
+
 export const scanFolder = async (
   folderId: number,
   options: ScanFolderOptions = {},
@@ -67,18 +146,7 @@ export const scanFolder = async (
   if (!folder) throw new Error(`Folder ${folderId} not found`);
 
   const folderPath = fullPath(folder.relativePath ?? '');
-  const result: ScanFolderResult = {
-    addedFiles: 0,
-    changedFiles: 0,
-    removedFiles: 0,
-    addedFolders: 0,
-    movedFiles: 0,
-    movedFolders: 0,
-    removedFolders: 0,
-    ignored: 0,
-    unsettledFiles: 0,
-    unsettledFolders: 0,
-  };
+  const result = emptyScanFolderResult();
 
   const diskEntries = await directDiskEntries(folderPath, result);
   // The folder itself vanished from disk since its DB row was created. We can't
@@ -116,7 +184,7 @@ export const scanFolder = async (
     const dbMatch = dbFoldersByName.get(name);
     if (dbMatch) {
       await refreshFolderInode(dbMatch, entry.stIno);
-      const settled = await scanPendingFolder(dbMatch.id, options, result);
+      const settled = await scanChildFolder(dbMatch.id, options, result);
       if (!settled) result.unsettledFolders++;
       continue;
     }
@@ -140,7 +208,7 @@ export const scanFolder = async (
       pendingFolders.set(addedFolderId, {
         firstSeen: Date.now(),
       });
-      const settled = await scanPendingFolder(addedFolderId, options, result);
+      const settled = await scanChildFolder(addedFolderId, options, result);
       if (!settled) result.unsettledFolders++;
     }
   }
@@ -212,39 +280,45 @@ export const scanFolder = async (
     }
   }
 
-  for (const file of dbFiles) {
-    if (movedFileIds.has(file.id)) continue;
-    if (diskFiles.has(file.name)) continue;
-    await removeFile(fullPathForFile(file));
-    result.removedFiles++;
-  }
+  if (options.removeMissing ?? true) {
+    for (const file of dbFiles) {
+      if (movedFileIds.has(file.id)) continue;
+      if (diskFiles.has(file.name)) continue;
+      await removeFile(fullPathForFile(file));
+      result.removedFiles++;
+    }
 
-  for (const childFolder of dbFolders) {
-    if (movedFolderIds.has(childFolder.id)) continue;
-    if (diskFolders.has(childFolder.name)) continue;
-    pendingFolders.delete(childFolder.id);
-    await removeFolder(fullPath(childFolder.relativePath ?? ''));
-    result.removedFolders++;
+    for (const childFolder of dbFolders) {
+      if (movedFolderIds.has(childFolder.id)) continue;
+      if (diskFolders.has(childFolder.name)) continue;
+      pendingFolders.delete(childFolder.id);
+      await removeFolder(fullPath(childFolder.relativePath ?? ''));
+      result.removedFolders++;
+    }
   }
 
   logScanResult(folderId, folderPath, startedAt, result);
   return result;
 };
 
-const scanPendingFolder = async (
+const scanChildFolder = async (
   folderId: number,
   options: ScanFolderOptions,
   parentResult: ScanFolderResult,
 ): Promise<boolean> => {
-  const pendingFolder = pendingFolders.get(folderId);
-  if (!pendingFolder) return true;
+  let pendingFolder = pendingFolders.get(folderId);
+  if (!pendingFolder && !options.scanExistingFolders) return true;
 
-  if (Date.now() - pendingFolder.firstSeen > PENDING_FOLDER_TTL_MS) {
+  if (
+    pendingFolder &&
+    Date.now() - pendingFolder.firstSeen > PENDING_FOLDER_TTL_MS
+  ) {
     pendingFolders.delete(folderId);
-    return true;
+    pendingFolder = undefined;
+    if (!options.scanExistingFolders) return true;
   }
 
-  if ((options.depth ?? 0) <= 0) return false;
+  if ((options.depth ?? 0) <= 0) return !pendingFolder;
 
   const childResult = await scanFolder(folderId, {
     ...options,
@@ -257,7 +331,7 @@ const scanPendingFolder = async (
   return true;
 };
 
-const isFileSettled = (path: string, stats: Stats): boolean => {
+const isFileSettled = (path: string, stats: PicrFileStats): boolean => {
   const signature = fileSignature(stats);
   const ageMs = Date.now() - stats.mtime.getTime();
   const canFastPath =
@@ -278,6 +352,19 @@ const isFileSettled = (path: string, stats: Stats): boolean => {
   if (settled) growingFiles.delete(path);
   return settled;
 };
+
+const emptyScanFolderResult = (): ScanFolderResult => ({
+  addedFiles: 0,
+  changedFiles: 0,
+  removedFiles: 0,
+  addedFolders: 0,
+  movedFiles: 0,
+  movedFolders: 0,
+  removedFolders: 0,
+  ignored: 0,
+  unsettledFiles: 0,
+  unsettledFolders: 0,
+});
 
 const findMovedFileCandidate = async (
   entry: DiskEntry,
@@ -368,7 +455,7 @@ const refreshFolderInode = async (
   folder.stIno = stIno;
 };
 
-const fileSignature = (stats: Stats): FileSignature => ({
+const fileSignature = (stats: PicrFileStats): FileSignature => ({
   size: stats.size,
   mtimeEpochMs: stats.mtime.getTime(),
 });
@@ -430,11 +517,10 @@ const directDiskEntries = async (
     }
 
     try {
-      diskEntries.set(entry.name, {
-        path: entryPath,
-        stats: await stat(entryPath),
-        stIno: await inodeForPath(entryPath),
-      });
+      diskEntries.set(
+        entry.name,
+        diskEntryForStats(entryPath, await stat(entryPath, { bigint: true })),
+      );
     } catch (error) {
       if (isNotFoundError(error)) continue;
       throw error;
@@ -442,11 +528,6 @@ const directDiskEntries = async (
   }
 
   return diskEntries;
-};
-
-const inodeForPath = async (path: string): Promise<bigint | null> => {
-  const stats = await stat(path, { bigint: true });
-  return stats.ino > 0n ? stats.ino : null;
 };
 
 const pathExists = async (path: string): Promise<boolean> => {
@@ -467,3 +548,9 @@ const isNotFoundError = (error: unknown): boolean => {
     error.code === 'ENOENT'
   );
 };
+
+const diskEntryForStats = (path: string, stats: BigIntStats): DiskEntry => ({
+  path,
+  stats: fileStatsFromBigIntStats(stats),
+  stIno: stats.ino > 0n ? stats.ino : null,
+});

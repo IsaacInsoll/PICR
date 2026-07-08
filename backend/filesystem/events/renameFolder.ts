@@ -1,16 +1,16 @@
 import { basename, dirname } from 'path';
-import type { Stats } from 'node:fs';
 import { addFolder } from './addFolder.js';
 import { folderList, relativePath } from '../fileManager.js';
 import { db } from '../../db/picrDb.js';
 import { and, eq, like, or, sql } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 import { moveThumbnailFolder } from '../../media/moveThumbnailFolder.js';
+import type { PicrFileStats } from '../fileStats.js';
 
 export const renameFolder = async (
   oldPath: string,
   newPath: string,
-  stats?: Stats,
+  stats?: PicrFileStats,
   stIno?: bigint | null,
 ) => {
   const oldRelative = relativePath(oldPath);
