@@ -4,6 +4,12 @@ import {
   resolveFileWatcherMode,
   resolvePollingSeconds,
 } from '../../backend/config/configFromEnv';
+import { envSchema } from '../../backend/config/envSchema';
+
+const requiredEnv = {
+  BASE_URL: 'http://localhost:6900/',
+  DATABASE_URL: 'postgres://user:pass@localhost:5432/picr',
+};
 
 test('FILE_WATCHER overrides legacy USE_POLLING mode selection', () => {
   expect(resolveFileWatcherMode('off', true)).toBe('off');
@@ -72,4 +78,17 @@ test('legacy config advisory stays silent when only modern vars are used', () =>
   expect(
     legacyConfigAdvisory({ FILE_WATCHER: 'polling', POLLING_SECONDS: '20' }),
   ).toBeNull();
+});
+
+test('ON_VIEW_SCAN parses explicit modes and treats empty as unset', () => {
+  expect(
+    envSchema.parse({ ...requiredEnv, ON_VIEW_SCAN: 'direct_and_new' })
+      .ON_VIEW_SCAN,
+  ).toBe('direct_and_new');
+  expect(
+    envSchema.parse({ ...requiredEnv, ON_VIEW_SCAN: '' }).ON_VIEW_SCAN,
+  ).toBeUndefined();
+  expect(
+    envSchema.safeParse({ ...requiredEnv, ON_VIEW_SCAN: 'recursive' }).success,
+  ).toBe(false);
 });

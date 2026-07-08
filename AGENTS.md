@@ -398,6 +398,7 @@ See `.env.example` for all available variables with documentation. Key ones:
 | `NODE_ENV`        | No       | `development` \| `test` \| `production`         |
 | `FILE_WATCHER`    | No       | `native`, `polling`, or `off` media detection   |
 | `POLLING_SECONDS` | No       | Polling interval in real seconds                |
+| `ON_VIEW_SCAN`    | No       | Demand-driven scan mode for viewed folders      |
 
 Legacy aliases `USE_POLLING` and `POLLING_INTERVAL` are still accepted in 1.x
 but should not be used in new examples.

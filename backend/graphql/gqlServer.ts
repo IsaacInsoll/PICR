@@ -8,10 +8,12 @@ import { dbFolderForId } from '../db/picrDb.js';
 import { extraUserProps } from '@shared/extraUserProps.js';
 import { UserType } from '@shared/gql/graphql.js';
 import { galleryPasscodeHeader } from '@shared/auth/galleryPasscode.js';
+import type { IncomingMessage } from 'node:http';
+import { createOnViewScanSet } from '../filesystem/onViewScan.js';
 
 type GraphqlHttpContextRequest = {
   headers: IncomingCustomHeaders;
-  raw?: { ip?: string };
+  raw?: IncomingMessage & { ip?: string };
 };
 
 const firstHeader = (
@@ -54,9 +56,16 @@ export const gqlServer = createHandler({
       user?.userType ? { userType: UserType[user.userType] } : undefined,
     );
 
-    return { headers: h, user, userHomeFolder, ...extra } as Record<
-      string,
-      unknown
-    >;
+    const scanFolderIds = request.raw
+      ? createOnViewScanSet(request.raw)
+      : undefined;
+
+    return {
+      headers: h,
+      user,
+      userHomeFolder,
+      scanFolderIds,
+      ...extra,
+    } as Record<string, unknown>;
   },
 });

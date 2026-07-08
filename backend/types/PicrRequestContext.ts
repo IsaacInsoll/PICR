@@ -6,4 +6,5 @@ export type PicrRequestContext = {
   user?: UserFields;
   userHomeFolder?: FolderFields;
   headers: IncomingCustomHeaders;
+  scanFolderIds?: Set<number>;
 } & ExtraUserProps;

@@ -35,6 +35,7 @@ services:
       - DATABASE_URL=postgres://user:pass@db/picr
       - FILE_WATCHER=polling # recommended if you have > 10,000 files
       - POLLING_SECONDS=20 # only used when FILE_WATCHER=polling
+      - ON_VIEW_SCAN=off # set direct_and_new with FILE_WATCHER=off for NAS spin-down
   db:
     image: postgres:17
     container_name: picr-db
@@ -139,6 +140,11 @@ There are lots of environment variables you can use, but only a few are needed:
   PICR converts the old 100ms units to seconds (`POLLING_INTERVAL=300` becomes
   `POLLING_SECONDS=30`). The interval now applies equally to all files,
   including media files.
+
+- `ON_VIEW_SCAN` [optional] controls demand-driven scanning when a gallery folder
+  is viewed. It defaults to `off`. Use `direct_and_new` with `FILE_WATCHER=off`
+  if you want NAS drives to sleep between shoots while still refreshing active
+  galleries in the background.
 
 - `CAN_WRITE` [optional] You can turn this on later if needed, see [can_write.md](can_write.md)
   Note: write support needs both `CAN_WRITE=true` and real filesystem write permission on `/home/node/app/media`

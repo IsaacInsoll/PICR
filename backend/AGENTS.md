@@ -258,6 +258,7 @@ interface PicrRequestContext {
   };
   user?: User; // Authenticated user (JWT or UUID)
   userHomeFolder?: Folder;
+  scanFolderIds?: Set<number>; // Viewed folders to scan after the GraphQL response finishes
 }
 ```
 
@@ -426,6 +427,10 @@ flowchart LR
 - Uses `chokidar` for cross-platform file watching
 - Supports `FILE_WATCHER=native|polling|off`; legacy `USE_POLLING=true`
   still maps to polling mode for existing installs
+- `ON_VIEW_SCAN` is stale-while-revalidate: the `folder` query records viewed
+  folder IDs on `PicrRequestContext.scanFolderIds`, and the Express GraphQL
+  wrapper drains them from `res.on('finish')`. Do not run filesystem scans
+  inline in resolvers; gallery responses must return from the DB/cache first.
 - Ignores: `.` files, `@eaDir`, `desktop.ini`, `Thumbs.db`
 - Detects renames via `renameTracker`
 
@@ -570,6 +575,7 @@ When changing `backend/config/*`, Docker `ARG`/`ENV` wiring, or startup code tha
 | `USE_POLLING`         | `false`      | File watcher polling mode                       |
 | `POLLING_SECONDS`     | `20`         | Polling interval in real seconds                |
 | `POLLING_INTERVAL`    | unset        | Legacy 100ms polling units, converted `/10`     |
+| `ON_VIEW_SCAN`        | `off`        | Demand-driven scan mode for viewed folders      |
 | `DEBUG_SQL`           | `false`      | Log Drizzle queries                             |
 | `CONSOLE_LOGGING`     | `false`      | Winston console output                          |
 | `DISABLE_ACCESS_LOGS` | `false`      | Skip AccessLog rows + folder-view notifications |

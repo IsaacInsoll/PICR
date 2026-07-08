@@ -35,6 +35,16 @@ const optionalFileWatcherMode = z.preprocess(
   z.enum(['off', 'native', 'polling']).optional(),
 );
 
+const optionalOnViewScanMode = z.preprocess(
+  (val) => {
+    if (typeof val === 'string' && val.trim() === '') {
+      return undefined;
+    }
+    return val;
+  },
+  z.enum(['off', 'direct', 'direct_and_new', 'one_level']).optional(),
+);
+
 export const envSchema = z.object({
   DATABASE_URL: z
     .string({
@@ -88,6 +98,7 @@ export const envSchema = z.object({
   VIDEO_ACCELERATION_DEVICE: z.string().min(1).default('/dev/dri/renderD128'),
 
   FILE_WATCHER: optionalFileWatcherMode,
+  ON_VIEW_SCAN: optionalOnViewScanMode,
 
   POLLING_SECONDS: optionalPositiveNumber,
   POLLING_INTERVAL: optionalPositiveNumber,

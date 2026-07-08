@@ -5,6 +5,7 @@ import { zipRequest } from './zipRequest.js';
 import { picrTemplate } from './picrTemplate.js';
 import { getBasePrefix } from './basePath.js';
 import { resolvePublicDir } from './resolvePublicDir.js';
+import { drainOnViewScanRequests } from '../filesystem/onViewScan.js';
 
 export const expressServer = () => {
   const exp = express();
@@ -12,7 +13,10 @@ export const expressServer = () => {
   const router = express.Router();
 
   const publicDir = resolvePublicDir();
-  router.all('/graphql', gqlServer);
+  router.all('/graphql', (req, res, next) => {
+    res.on('finish', () => drainOnViewScanRequests(req));
+    return gqlServer(req, res, next);
+  });
   router.use(express.static(publicDir, { index: false }));
   router.get('/image/:id/:size/:hash/:filename', imageRequest); //filename is ignored but nice for users to see a 'nice' name
   router.get('/zip/:folderId/:hash/:filename', zipRequest); //filename is ignored but nice for users to see a 'nice' name

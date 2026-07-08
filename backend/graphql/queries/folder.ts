@@ -5,6 +5,7 @@ import type { PicrResolver } from '../helpers/picrResolver.js';
 import { GraphQLID, GraphQLNonNull } from 'graphql';
 import { folderType } from '../types/folderType.js';
 import { createAccessLog } from '../../db/picrDb.js';
+import { markFolderViewedForScan } from '../../filesystem/onViewScan.js';
 
 const folderResolver: PicrResolver<Partial<Folder>, QueryFolderArgs> = async (
   _,
@@ -17,6 +18,7 @@ const folderResolver: PicrResolver<Partial<Folder>, QueryFolderArgs> = async (
     'View',
   );
   await createAccessLog(user, folder, context, AccessType.View);
+  markFolderViewedForScan(context, folder.id);
   return { ...folder, permissions };
 };
 

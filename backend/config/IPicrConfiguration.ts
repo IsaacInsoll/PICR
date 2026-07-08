@@ -1,4 +1,5 @@
 export type FileWatcherMode = 'off' | 'native' | 'polling';
+export type OnViewScanMode = 'off' | 'direct' | 'direct_and_new' | 'one_level';
 
 export interface IPicrConfiguration {
   baseUrl: string; // eg: https://picr.mydomain.com/
@@ -34,6 +35,7 @@ export interface IPicrConfiguration {
   debugSql?: boolean;
   consoleLogging?: boolean;
   fileWatcherMode: FileWatcherMode;
+  onViewScanMode: OnViewScanMode;
   usePolling: boolean;
   port?: number;
   pollingSeconds: number;
