@@ -12,4 +12,8 @@
 
 🧑‍💻 [Development Docs](docs/development/index.md) if you want to contribute
 
-<img src="https://api.star-history.com/svg?repos=IsaacInsoll/PICR&type=date&legend=bottom-right" alt="GitHub Star History" width="350" />
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=IsaacInsoll/PICR&type=date&theme=dark&legend=top-left&sealed_token=T6Gklt9vc45uyP_7Cm_KLX6OM0Bu4Ask_SC7U8d32BU4Icxg_2BxYEs3VehndJZ0eNgZ30e_0DxgTPj3iKQ6-Lz8ycG8n291ubEcTzZ9hE9FyQ_ec0G7Q-7TsOhiP6Wqzkg-3IcQ7WBXdwLO8KTYCYgl1rtaPnkZzT99P96f0E7TREYawHRJJyaTeRwY" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=IsaacInsoll/PICR&type=date&legend=top-left&sealed_token=T6Gklt9vc45uyP_7Cm_KLX6OM0Bu4Ask_SC7U8d32BU4Icxg_2BxYEs3VehndJZ0eNgZ30e_0DxgTPj3iKQ6-Lz8ycG8n291ubEcTzZ9hE9FyQ_ec0G7Q-7TsOhiP6Wqzkg-3IcQ7WBXdwLO8KTYCYgl1rtaPnkZzT99P96f0E7TREYawHRJJyaTeRwY" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=IsaacInsoll/PICR&type=date&legend=top-left&sealed_token=T6Gklt9vc45uyP_7Cm_KLX6OM0Bu4Ask_SC7U8d32BU4Icxg_2BxYEs3VehndJZ0eNgZ30e_0DxgTPj3iKQ6-Lz8ycG8n291ubEcTzZ9hE9FyQ_ec0G7Q-7TsOhiP6Wqzkg-3IcQ7WBXdwLO8KTYCYgl1rtaPnkZzT99P96f0E7TREYawHRJJyaTeRwY" />
+ </picture>
