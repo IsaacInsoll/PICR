@@ -1,0 +1,25 @@
+/* Global (non-module) app styles. */
+
+/*
+ * iOS Safari auto-zooms the page when a focused form control renders with a
+ * font-size below 16px, and leaves the page zoomed afterwards. On the admin
+ * path the 14px login fields trigger this, so the folder view ends up zoomed
+ * to 16/14 = 1.143x and its right edge (the user avatar) is pushed off-screen.
+ * Public links skip the login form, which is why they are never affected.
+ *
+ * Keeping form controls at >=16px on phone widths removes the trigger while
+ * leaving pinch-to-zoom enabled (unlike maximum-scale=1). Desktop is untouched.
+ *
+ * The Mantine input class is doubled to raise specificity above Mantine's own
+ * hashed `.m_*` rule (which sets font-size from --input-fz) independent of
+ * stylesheet order.
+ */
+@media (max-width: 47.99em) {
+  .mantine-Input-input.mantine-Input-input,
+  .mantine-PasswordInput-innerInput.mantine-PasswordInput-innerInput,
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
