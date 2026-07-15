@@ -23,6 +23,11 @@ import { useOpenFileInfoModal } from '../../atoms/modalAtom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
 import { CloudDownloadIcon, InfoIcon, SlideshowIcon } from '../../PicrIcons';
+import {
+  canUseShareSheet,
+  isShareableMediaFile,
+  shareOrDownload,
+} from '../../helpers/shareOrDownload';
 import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { useInView } from 'react-intersection-observer';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
@@ -214,6 +219,14 @@ const FileDownloadButton = ({ file }: { file: ViewFolderFileWithHero }) => {
         component="a"
         href={imageURL(file, 'raw')}
         download={true}
+        onClick={(e) => {
+          // On iOS, use the native share sheet ("Save to Photos") for media instead
+          // of the anchor download (which opens "Save to Files").
+          if (isShareableMediaFile(file) && canUseShareSheet()) {
+            e.preventDefault();
+            void shareOrDownload(imageURL(file, 'raw'), file.name);
+          }
+        }}
       >
         <CloudDownloadIcon />
       </ActionIcon>

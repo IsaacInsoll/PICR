@@ -38,7 +38,9 @@ export const filesForLightbox = (
             };
 
     return {
-      download: canDownload ? imageURL(file, 'raw') : false,
+      download: canDownload
+        ? { url: imageURL(file, 'raw'), filename: file.name ?? title }
+        : false,
       alt: title,
       title, //requires caption plugin
       ...props,

@@ -3,9 +3,10 @@ import type {
   CarouselSettings,
   ControllerRef,
   ImageProps,
+  Slide,
   SlotStyles,
 } from 'yet-another-react-lightbox';
-import { Lightbox } from 'yet-another-react-lightbox';
+import { isImageSlide, Lightbox } from 'yet-another-react-lightbox';
 
 import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/captions.css';
@@ -28,6 +29,10 @@ import { useCanDownload } from '../../../hooks/useMe';
 import { useNoDownloadMediaProps } from '../../../hooks/useNoDownloadMediaProps';
 import { Thumbnails } from 'yet-another-react-lightbox/plugins';
 import { ThumbnailsIcon } from '../../../PicrIcons';
+import {
+  canUseShareSheet,
+  shareOrDownload,
+} from '../../../helpers/shareOrDownload';
 
 export const SelectedFileView = ({
   files,
@@ -104,6 +109,7 @@ export const SelectedFileView = ({
       index={selectedImageIndex}
       close={() => setSelectedFileId(undefined)}
       styles={lightBoxStyles}
+      download={{ download: lightboxDownload }}
       video={videoProps}
       toolbar={{ buttons: config.buttons }}
       render={{
@@ -137,6 +143,37 @@ export const SelectedFileView = ({
 
 const lightBoxStyles: SlotStyles = {
   root: { fontFamily: theme.fontFamily, zIndex: 200 }, // mantine modals are 200
+};
+
+// On iOS, route media downloads through the native share sheet ("Save to Photos")
+// instead of the anchor `download` attribute (which opens "Save to Files").
+const lightboxDownload = ({
+  slide,
+  saveAs,
+}: {
+  slide: Slide;
+  saveAs: (source: string | Blob, name?: string) => void;
+}) => {
+  const { download } = slide;
+  const url =
+    typeof download === 'object'
+      ? download.url
+      : typeof download === 'string'
+        ? download
+        : slide.downloadUrl;
+  const filename =
+    typeof download === 'object' ? download.filename : slide.downloadFilename;
+  if (!url) return;
+  // Only route media (Image/Video) through the iOS share sheet; documents keep the
+  // regular anchor download ("Save to Files"), matching isShareableMediaFile elsewhere.
+  // A non-media File slide is an empty object (see filesForLightbox), so it has neither
+  // an image src nor video `sources`.
+  const isMedia = isImageSlide(slide) || 'sources' in slide;
+  if (isMedia && canUseShareSheet()) {
+    void shareOrDownload(url, filename ?? '');
+  } else {
+    saveAs(url, filename);
+  }
 };
 
 const counterProps = { container: { style: { top: 'unset', bottom: 0 } } };

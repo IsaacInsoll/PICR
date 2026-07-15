@@ -24,7 +24,6 @@ const labelForUrl = (rawUrl: string) => {
 export const DevBackendOverrideBanner = () => {
   const devBackendOverrideUrl = getDevBackendOverrideUrl();
   if (!devBackendOverrideUrl) return null;
-
   return (
     <Alert
       color="yellow"

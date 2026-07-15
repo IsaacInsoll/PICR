@@ -277,6 +277,26 @@ function MyComponent() {
   `crypto.randomUUID()` exist. `atoms/authAtom.ts` keeps a fallback for the
   access-log `sessionId` header.
 
+### Media Downloads (iOS share sheet)
+
+- iOS Safari (and iPadOS) does not honor the HTML5 anchor `download` attribute for
+  same-origin files — it opens the "Save to Files" picker instead of downloading, so
+  photos/videos can't reach the Photos library. Android/desktop honor `download` and
+  must not change.
+- Route per-file **media** downloads (Image/Video) through
+  `helpers/shareOrDownload.ts` (`shareOrDownload`), which on iOS fetches the file and
+  opens the native Web Share sheet ("Save to Photos"), and elsewhere falls back to the
+  normal anchor download. While fetching (large videos take time) it shows a Mantine
+  notification with a real progress bar driven by streaming the response body against
+  its `Content-Length` (falls back to an indeterminate spinner if the length is
+  unknown), and swallows the share-sheet `AbortError`.
+- Existing entry points wired up: the lightbox Download button
+  (`SelectedFile/SelectedFileView.tsx` via the YARL `download` custom function), the
+  image-feed per-file button (`ImageFeed.tsx`), and the list-view file menu
+  (`FileMenu.tsx`). Gate with `canUseShareSheet()` + `isShareableMediaFile(file)`.
+- Do NOT route ZIP or CSV/txt exports through this — "Save to Files" is correct for
+  documents.
+
 ### Mantine-Idiomatic Styling
 
 - Prefer Mantine primitives/props (`Paper`, `Overlay`, `Container`, spacing, radius, shadow) over ad-hoc wrapper `div` styling.

@@ -19,6 +19,11 @@ import {
   InfoIcon,
 } from '../../PicrIcons';
 import { useCanDownload, useMe } from '../../hooks/useMe';
+import {
+  canUseShareSheet,
+  isShareableMediaFile,
+  shareOrDownload,
+} from '../../helpers/shareOrDownload';
 import { useMutation } from 'urql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 
@@ -101,6 +106,14 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
           key={4}
           href={imageURL(file, 'raw')}
           download={true}
+          onClick={(e) => {
+            // On iOS, use the native share sheet ("Save to Photos") for media instead
+            // of the anchor download (which opens "Save to Files").
+            if (isShareableMediaFile(file) && canUseShareSheet()) {
+              e.preventDefault();
+              void shareOrDownload(imageURL(file, 'raw'), file.name ?? '');
+            }
+          }}
         >
           Download
         </Menu.Item>
