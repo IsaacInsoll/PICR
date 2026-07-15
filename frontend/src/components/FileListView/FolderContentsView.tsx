@@ -157,12 +157,17 @@ export const FolderContentsView = ({
     [canDownload],
   );
 
-  const effectiveSort = resolveEffectiveSort(sort, hasCaptureDates);
+  const effectiveSort = resolveEffectiveSort(
+    sort,
+    hasCaptureDates,
+    files.length > 0,
+  );
   // don't memo files because it breaks graphicache (IE: file changing rating won't reflect)
   const sortedItems = folderContentsItems(folder, {
     sort: effectiveSort,
     filtering,
     filters,
+    foldersFirst: effectiveSort.foldersFirst,
   });
   const sortedFiles = sortedItems.filter(
     isFolderContentsFile,

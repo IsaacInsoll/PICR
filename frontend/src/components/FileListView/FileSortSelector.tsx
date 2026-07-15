@@ -1,22 +1,36 @@
 import { useAtom } from 'jotai';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import type { SelectProps } from '@mantine/core';
-import { Avatar, Box, Button, Group, Menu, Select } from '@mantine/core';
+import {
+  Avatar,
+  Box,
+  Button,
+  Group,
+  Menu,
+  Select,
+  Tooltip,
+} from '@mantine/core';
 import type { ReactNode } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import {
   CalendarIcon,
   CameraIcon,
+  CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   CommentIcon,
   FilenameIcon,
+  FoldersIcon,
   SortAscIcon,
   SortDescIcon,
   StarIcon,
 } from '../../PicrIcons';
-import type { FileSortDirection, FileSortType } from '@shared/files/sortFiles';
+import type {
+  FileSort,
+  FileSortDirection,
+  FileSortType,
+} from '@shared/files/sortFiles';
 import {
   defaultSortDirection,
   resolveEffectiveSort,
@@ -24,8 +38,12 @@ import {
 
 export const FileSortSelector = ({
   hasMetadata = false,
+  hasFiles = true,
+  hasFolders = false,
 }: {
   hasMetadata?: boolean;
+  hasFiles?: boolean;
+  hasFolders?: boolean;
 }) => {
   const { canView } = useCommentPermissions();
   const [sort, setSort] = useAtom(fileSortAtom);
@@ -33,16 +51,13 @@ export const FileSortSelector = ({
   const { direction } = sort;
   // Same effective sort the gallery uses (FolderContentsView), so the displayed
   // option always matches the actual order.
-  const { type } = resolveEffectiveSort(sort, hasMetadata);
+  const { type } = resolveEffectiveSort(sort, hasMetadata, hasFiles);
   const sortIcon = sortIcons[direction];
   const selectedSortOption =
     sortOptions.find((s) => s.value === type) ?? sortOptions[0];
   const { icon } = selectedSortOption;
 
-  const options = sortOptions.filter(
-    (s) =>
-      (!s.requiresComments || canView) && (!s.requiresMetadata || hasMetadata),
-  );
+  const options = availableSortOptions(canView, hasMetadata, hasFiles);
 
   const renderSelectOption: SelectProps['renderOption'] = ({
     option,
@@ -68,21 +83,19 @@ export const FileSortSelector = ({
   const handleClick = (v: string | null) => {
     const selectedOption = sortOptions.find((s) => s.value === v);
     if (selectedOption && selectedOption.value !== type) {
-      setSort({
-        type: selectedOption.value,
-        direction: defaultSortDirection(selectedOption.value),
-      });
+      setSort(nextSortForType(sort, selectedOption.value));
     } else {
-      setSort({
-        type,
-        direction: sort.direction === 'Asc' ? 'Desc' : 'Asc',
-      });
+      setSort(toggledDirectionSort(sort, type));
     }
     close();
   };
 
+  // Folders-first only means something when files and folders coexist.
+  const showFoldersFirst = hasFiles && hasFolders;
+  const foldersFirst = sort.foldersFirst !== false;
+
   return (
-    <>
+    <Group gap="xs" wrap="nowrap">
       {!dropdownOpened ? (
         <Button onClick={toggle} variant="default">
           <Group gap={2}>
@@ -111,34 +124,50 @@ export const FileSortSelector = ({
           }
         />
       )}
-    </>
+      {showFoldersFirst ? (
+        <Tooltip
+          label={foldersFirst ? 'Folders first' : 'Folders mixed with files'}
+        >
+          <Button
+            variant={foldersFirst ? 'light' : 'default'}
+            px="xs"
+            aria-label="Folders first"
+            aria-pressed={foldersFirst}
+            onClick={() => setSort({ ...sort, foldersFirst: !foldersFirst })}
+          >
+            <FoldersIcon />
+          </Button>
+        </Tooltip>
+      ) : null}
+    </Group>
   );
 };
 
 export const FileSortMenuItems = ({
   hasMetadata = false,
+  hasFiles = true,
+  hasFolders = false,
 }: {
   hasMetadata?: boolean;
+  hasFiles?: boolean;
+  hasFolders?: boolean;
 }) => {
   const { canView } = useCommentPermissions();
   const [sort, setSort] = useAtom(fileSortAtom);
   const { direction } = sort;
-  const { type } = resolveEffectiveSort(sort, hasMetadata);
-  const options = sortOptions.filter(
-    (s) =>
-      (!s.requiresComments || canView) && (!s.requiresMetadata || hasMetadata),
-  );
+  const { type } = resolveEffectiveSort(sort, hasMetadata, hasFiles);
+  const options = availableSortOptions(canView, hasMetadata, hasFiles);
 
   const handleSelect = (value: FileSortType) => {
     if (value !== type) {
-      setSort({ type: value, direction: defaultSortDirection(value) });
+      setSort(nextSortForType(sort, value));
     } else {
-      setSort({
-        type,
-        direction: sort.direction === 'Asc' ? 'Desc' : 'Asc',
-      });
+      setSort(toggledDirectionSort(sort, type));
     }
   };
+
+  const showFoldersFirst = hasFiles && hasFolders;
+  const foldersFirst = sort.foldersFirst !== false;
 
   return (
     <>
@@ -158,6 +187,16 @@ export const FileSortMenuItems = ({
           </Menu.Item>
         );
       })}
+      {showFoldersFirst ? (
+        <Menu.Item
+          leftSection={<FoldersIcon />}
+          rightSection={foldersFirst ? <CheckIcon /> : null}
+          closeMenuOnClick={false}
+          onClick={() => setSort({ ...sort, foldersFirst: !foldersFirst })}
+        >
+          Folders first
+        </Menu.Item>
+      ) : null}
     </>
   );
 };
@@ -168,6 +207,10 @@ type SortOption = {
   icon: ReactNode;
   requiresComments: boolean;
   requiresMetadata?: boolean;
+  // Whether the sort is meaningful for subfolders. Rating/Commented/DateTaken
+  // only apply to files, so a folders-only view hides them (sortFolderContents
+  // maps folder ordering down to Filename/LastModified anyway).
+  folderSortable?: boolean;
 };
 
 const sortOptions: SortOption[] = [
@@ -176,12 +219,14 @@ const sortOptions: SortOption[] = [
     label: 'Filename',
     icon: <FilenameIcon />,
     requiresComments: false,
+    folderSortable: true,
   },
   {
     value: 'LastModified',
     label: 'Modified',
     icon: <CalendarIcon />,
     requiresComments: false,
+    folderSortable: true,
   },
   {
     value: 'DateTaken',
@@ -203,6 +248,38 @@ const sortOptions: SortOption[] = [
     requiresComments: true,
   },
 ];
+
+// Options for the current context: honours comment/metadata gates, and on a
+// folders-only view (no files) keeps only the folder-applicable sorts.
+const availableSortOptions = (
+  canView: boolean,
+  hasMetadata: boolean,
+  hasFiles: boolean,
+): SortOption[] =>
+  sortOptions.filter(
+    (s) =>
+      (!s.requiresComments || canView) &&
+      (!s.requiresMetadata || hasMetadata) &&
+      (hasFiles || s.folderSortable),
+  );
+
+// Selecting a new sort type applies that type's natural default direction while
+// preserving the folders-first choice.
+const nextSortForType = (current: FileSort, type: FileSortType): FileSort => ({
+  type,
+  direction: defaultSortDirection(type),
+  foldersFirst: current.foldersFirst,
+});
+
+// Re-selecting the active type flips direction, preserving folders-first.
+const toggledDirectionSort = (
+  current: FileSort,
+  type: FileSortType,
+): FileSort => ({
+  type,
+  direction: current.direction === 'Asc' ? 'Desc' : 'Asc',
+  foldersFirst: current.foldersFirst,
+});
 
 const sortIcons: Record<
   FileSortDirection,

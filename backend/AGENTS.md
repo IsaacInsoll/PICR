@@ -102,6 +102,11 @@ All models in `db/models/`. See `database-erd.md` for the full entity relationsh
 | `dbUserDevice`    | UserDevice    | Push notification devices     |
 | `dbServerOptions` | ServerOptions | Global server config          |
 
+`Folders.folderLastModified` is the folder filesystem mtime captured by folder
+add/rename/rescan paths. File ingestion (`addFile`) does not currently update
+the parent folder's `folderLastModified`, so UI sorting by folder "Modified"
+does not necessarily mean "newest child media inside this folder".
+
 Access log writes are awaited by folder view and ZIP download resolvers. Treat
 request-derived metadata such as User-Agent, session IDs, and forwarded IP
 headers as untrusted/variable length; database length errors here can block

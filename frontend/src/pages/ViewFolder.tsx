@@ -23,8 +23,9 @@ import {
   Text,
   Title,
   Tooltip,
+  useMantineTheme,
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { useSetFolder } from '../hooks/useSetFolder';
 import { useCanDownload, useMe } from '../hooks/useMe';
 import { useCommentPermissions } from '../hooks/useCommentPermissions';
@@ -100,6 +101,10 @@ const ViewFolderBody = () => {
   const navigate = useNavigate();
   const setFolder = useSetFolder();
   const setThemeMode = useSetAtom(themeModeAtom);
+  const mantineTheme = useMantineTheme();
+  const sortMenuInOverflow = useMediaQuery(
+    `(max-width: ${mantineTheme.breakpoints.md})`,
+  );
   const [editBranding, setEditBranding] = useAtom(editBrandingAtom);
   const [csvExportOpen, setCsvExportOpen] = useState(false);
   const [assignBrandingToFolderId, setAssignBrandingToFolderId] = useAtom(
@@ -162,6 +167,11 @@ const ViewFolderBody = () => {
   const { canView } = useCommentPermissions();
   const folder = data.data?.folder;
   const hasFiles = folder && folder.files.length > 0;
+  // Sorting applies to subfolders too (see sortFolderContents), so the sort UI
+  // should show whenever the folder has anything in it - not only when it has
+  // direct files. This is what lets a folders-only home folder be re-sorted.
+  const hasFolders = folder && folder.subFolders.length > 0;
+  const hasContent = hasFiles || hasFolders;
   // Only expose the "Date taken" sort when at least one file carries an EXIF
   // capture date - a folder of videos/documents wouldn't benefit from it.
   const hasCaptureDates =
@@ -208,8 +218,13 @@ const ViewFolderBody = () => {
   };
 
   const actions = [];
-  const showOverflow =
+  const hasOverflowActions =
     !!folder && (!!me?.isUser || canView || canDownload || !!hasFiles);
+  // The sort menu lives in overflow only below the md breakpoint. On desktop the
+  // standalone sort button is already visible, so don't show an otherwise-empty
+  // dots menu for folders-only public galleries.
+  const hasSortOverflowAction = !!folder && !!hasContent && sortMenuInOverflow;
+  const showOverflow = hasOverflowActions || hasSortOverflowAction;
 
   useEffect(() => {
     if (!hasFiles || !showOverflow) return;
@@ -222,10 +237,14 @@ const ViewFolderBody = () => {
   if (mode !== 'activity') {
     if (folder)
       actions.push(<ViewSelectorButton folder={folder} key="ViewSelector" />);
-    if (hasFiles)
+    if (hasContent)
       actions.push(
         <Box visibleFrom="md" key="FileSortSelector">
-          <FileSortSelector hasMetadata={hasCaptureDates} />
+          <FileSortSelector
+            hasMetadata={hasCaptureDates}
+            hasFiles={!!hasFiles}
+            hasFolders={!!hasFolders}
+          />
         </Box>,
       );
     if (hasFiles && canDownload && me?.isLink)
@@ -237,6 +256,9 @@ const ViewFolderBody = () => {
           key="Overflow"
           onCsvExport={() => setCsvExportOpen(true)}
           hasFiles={!!hasFiles}
+          hasFolders={!!hasFolders}
+          hasContent={!!hasContent}
+          sortMenuInOverflow={!!sortMenuInOverflow}
           hasCaptureDates={hasCaptureDates}
         />,
       );
@@ -384,11 +406,17 @@ const FolderOverflowMenu = ({
   folder,
   onCsvExport,
   hasFiles,
+  hasFolders,
+  hasContent,
+  sortMenuInOverflow,
   hasCaptureDates,
 }: {
   folder: PicrFolder;
   onCsvExport: () => void;
   hasFiles: boolean;
+  hasFolders: boolean;
+  hasContent: boolean;
+  sortMenuInOverflow: boolean;
   hasCaptureDates: boolean;
 }) => {
   const displayFolderName = normalizeDisplayName(folder.name);
@@ -464,10 +492,15 @@ const FolderOverflowMenu = ({
             onCsvExport={onCsvExport}
             onBranding={handleBranding}
           />
-          {hasFiles ? (
-            <Box hiddenFrom="md">
-              <FileSortMenuItems hasMetadata={hasCaptureDates} />
-            </Box>
+          {/* Gated on the same JS media query that decides whether the sort
+              belongs in overflow, so this can never disagree with the standalone
+              desktop button (a CSS hiddenFrom would differ at the md boundary). */}
+          {hasContent && sortMenuInOverflow ? (
+            <FileSortMenuItems
+              hasMetadata={hasCaptureDates}
+              hasFiles={hasFiles}
+              hasFolders={hasFolders}
+            />
           ) : null}
         </Menu.Dropdown>
       </Menu>

@@ -84,9 +84,30 @@ export const themeModeAtom = atom<BrandingType>(defaultBranding);
 // atoms/modalTypeAtom.ts - URL-synced modal state
 export const modalTypeAtom = atomWithHash<ModalType>('m', null);
 
-// atoms/fileSortAtom.ts - URL-synced sort preferences
-export const fileSortAtom = atomWithHash('s', { sort: 'f', direction: '' });
+// atoms/fileSortAtom.ts - sort preference (URL hash + localStorage)
+export const fileSortAtom = atom<FileSort, [FileSort], void>(/* ... */);
 ```
+
+#### Sort preference resolution (`atoms/fileSortAtom.ts`)
+
+`fileSortAtom` resolves the active sort with this precedence:
+
+1. URL hash `#s=` (bookmarkable/shareable, wins so links stay stable)
+2. `fileSort` in **localStorage** (this browser's remembered choice)
+3. The active Branding's `defaultFileSort` (admin-set, mirrored via `themeModeAtom`)
+4. App default (Filename ascending)
+
+Writing a sort updates **both** the URL hash and localStorage. Persistence is
+deliberately per-browser localStorage, not a backend user column: Link users are
+shared public URLs, so a server-side field would leak one viewer's choice to
+everyone on the same link.
+
+The value is a compact string from `encodeFileSort`/`decodeFileSort`
+(`shared/files/sortFiles.ts`): `<typeChar>` + optional `a` (ascending) + optional
+`i` ("interleaved", i.e. folders NOT grouped first). The `i` is only emitted for
+the non-default `foldersFirst: false` case, so every pre-existing hash/branding
+string stays byte-identical and decodes as `foldersFirst: true`. `decodeFileSort`
+reverts unknown/garbage strings to the default rather than guessing.
 
 ### URL-Based State with `atomWithHash`
 

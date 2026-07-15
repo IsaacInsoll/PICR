@@ -13,12 +13,23 @@ export type FileSortDirection = 'Asc' | 'Desc';
 export interface FileSort {
   type: FileSortType;
   direction: FileSortDirection;
+  // When false, folders are interleaved with files by the active sort instead of
+  // being grouped first. Optional/undefined is treated as `true` (the default and
+  // historical behavior) so existing FileSort values and encoded strings still work.
+  foldersFirst?: boolean;
 }
 
-export const defaultFileSort: FileSort = { type: 'Filename', direction: 'Asc' };
+export const defaultFileSort: FileSort = {
+  type: 'Filename',
+  direction: 'Asc',
+  foldersFirst: true,
+};
 
 // Compact encoding used by the URL hash, the app, and Branding.defaultFileSort.
-// `<typeChar>` plus an optional `a` suffix for ascending (descending omits it).
+// `<typeChar>` plus an optional `a` suffix for ascending (descending omits it),
+// plus an optional `i` suffix ("interleaved") when folders are NOT grouped first.
+// The `i` is only emitted for the non-default case, so every string produced
+// before folders-first existed stays byte-for-byte identical.
 const fileSortEncoding: { [key in FileSortType]: string } = {
   Filename: 'f',
   LastModified: 'm',
@@ -27,8 +38,12 @@ const fileSortEncoding: { [key in FileSortType]: string } = {
   Rating: 'r',
 };
 
+const foldersFirstOff = 'i';
+
 export const encodeFileSort = (sort: FileSort): string =>
-  fileSortEncoding[sort.type] + (sort.direction === 'Asc' ? 'a' : '');
+  fileSortEncoding[sort.type] +
+  (sort.direction === 'Asc' ? 'a' : '') +
+  (sort.foldersFirst === false ? foldersFirstOff : '');
 
 // Natural default direction when a sort type is freshly selected. Filename
 // reads A→Z and Date taken reads oldest→newest (a timeline); date/score sorts
@@ -51,29 +66,53 @@ export const decodeFileSort = (
   const typeEntry = Object.entries(fileSortEncoding).find(
     ([, v]) => v === encoded[0],
   );
-  // Only accept the exact shapes we produce: "<typeChar>" (Desc) or
-  // "<typeChar>a" (Asc). Anything unknown/malformed (e.g. stale or hand-edited
-  // values) reverts to the default rather than silently inferring an odd sort.
-  const validShape =
-    !!typeEntry &&
-    (encoded.length === 1 || (encoded.length === 2 && encoded[1] === 'a'));
-  if (!validShape) return defaultFileSort;
+  if (!typeEntry) return defaultFileSort;
+  // Parse positionally: "<typeChar>" then optional "a" (Asc) then optional "i"
+  // (folders NOT first). A missing "i" means foldersFirst=true, so older strings
+  // like "f"/"fa"/"m" and Branding.defaultFileSort values upgrade gracefully.
+  // Any leftover characters are treated as garbage and revert to the default
+  // rather than silently inferring an odd sort.
+  let rest = encoded.slice(1);
+  let direction: FileSortDirection = 'Desc';
+  if (rest[0] === 'a') {
+    direction = 'Asc';
+    rest = rest.slice(1);
+  }
+  let foldersFirst = true;
+  if (rest[0] === foldersFirstOff) {
+    foldersFirst = false;
+    rest = rest.slice(1);
+  }
+  if (rest.length > 0) return defaultFileSort;
   const type = typeEntry[0] as FileSortType;
-  const direction: FileSortDirection = encoded.length === 2 ? 'Asc' : 'Desc';
-  return { type, direction };
+  return { type, direction, foldersFirst };
 };
 
-// "Date taken" only makes sense when the folder has EXIF capture dates. When it
-// doesn't, fall back to LastModified so the selector display and the actual sort
-// stay in agreement (DateTaken would otherwise fall back per-file but still sort
-// subfolders differently).
+// The type of sort actually applied to subfolders (which have no rating,
+// comments or capture date). Mirrors the folderSort mapping in
+// sortFolderContents: date-ish sorts collapse to LastModified, everything else
+// to Filename.
+const folderEffectiveType = (type: FileSortType): FileSortType =>
+  type === 'LastModified' || type === 'DateTaken' ? 'LastModified' : 'Filename';
+
+// Normalizes a stored/URL sort to what the current folder can actually honor, so
+// the selector display and the real ordering stay in agreement:
+//  - Folders-only view (no files): file-only sorts (Rating/Commented/DateTaken)
+//    have nothing to act on, so collapse to the folder-applicable equivalent.
+//  - "Date taken" only makes sense with EXIF capture dates; without them it falls
+//    back to LastModified.
 export const resolveEffectiveSort = (
   sort: FileSort,
   hasCaptureDates: boolean,
-): FileSort =>
-  sort.type === 'DateTaken' && !hasCaptureDates
+  hasFiles: boolean = true,
+): FileSort => {
+  if (!hasFiles) {
+    return { ...sort, type: folderEffectiveType(sort.type) };
+  }
+  return sort.type === 'DateTaken' && !hasCaptureDates
     ? { ...sort, type: 'LastModified' }
     : sort;
+};
 
 type SortableItem = {
   __typename?: string;
@@ -221,9 +260,13 @@ export const sortFolderContents = (
     heroImageId ?? folder.heroImage?.id,
     folder.bannerImage?.id,
   );
+  // foldersFirst groups all folders ahead of all files (the default). When off,
+  // folders and files are interleaved into one list sorted together by the same
+  // key. For file-only sorts (Rating/Commented/DateTaken) folders lack the field
+  // and fall back per sortFiles, so they naturally settle at one end.
   const items = foldersFirst
     ? [...sortedFolders, ...filesWithHero]
-    : [...filesWithHero, ...sortedFolders];
+    : sortFiles([...sortedFolders, ...filesWithHero], sort);
   const sortedFolder = {
     ...folder,
     subFolders: sortedFolders,
