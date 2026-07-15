@@ -35,6 +35,33 @@ export const mediaCapsInfoType = new GraphQLObjectType({
   }),
 });
 
+export const systemInfoType = new GraphQLObjectType({
+  name: 'SystemInfo',
+  fields: () => ({
+    nodeVersion: { type: new GraphQLNonNull(GraphQLString) },
+    // "linux x64" etc
+    platform: { type: new GraphQLNonNull(GraphQLString) },
+    // total system RAM in bytes
+    totalMemory: { type: new GraphQLNonNull(GraphQLBigInt) },
+    // process uptime in whole seconds
+    uptimeSeconds: { type: new GraphQLNonNull(GraphQLInt) },
+    // best-effort tool/runtime versions, null when unavailable
+    databaseVersion: { type: GraphQLString },
+    ffmpegVersion: { type: GraphQLString },
+    imageMagickVersion: { type: GraphQLString },
+  }),
+});
+
+// Free/total space on the volume holding the media directory (bytes).
+export const diskInfoType = new GraphQLObjectType({
+  name: 'DiskInfo',
+  fields: () => ({
+    path: { type: new GraphQLNonNull(GraphQLString) },
+    free: { type: new GraphQLNonNull(GraphQLBigInt) },
+    total: { type: new GraphQLNonNull(GraphQLBigInt) },
+  }),
+});
+
 export const inodeSupportInfoType = new GraphQLObjectType({
   name: 'InodeSupportInfo',
   fields: () => ({
@@ -104,5 +131,8 @@ export const serverInfoType = new GraphQLObjectType({
     mediaCaps: { type: new GraphQLNonNull(mediaCapsInfoType) },
     cacheSize: { type: new GraphQLNonNull(GraphQLBigInt) },
     mediaSize: { type: new GraphQLNonNull(GraphQLBigInt) },
+    system: { type: new GraphQLNonNull(systemInfoType) },
+    // null when statfs is unavailable for the media path
+    disk: { type: diskInfoType },
   }),
 });

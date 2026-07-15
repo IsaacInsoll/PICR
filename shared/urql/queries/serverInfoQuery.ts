@@ -56,6 +56,20 @@ export const serverInfoQuery = gql(/* GraphQL */ `
           }
         }
       }
+      system {
+        nodeVersion
+        platform
+        totalMemory
+        uptimeSeconds
+        databaseVersion
+        ffmpegVersion
+        imageMagickVersion
+      }
+      disk {
+        path
+        free
+        total
+      }
     }
   }
 `);

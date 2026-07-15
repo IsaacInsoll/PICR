@@ -52,5 +52,11 @@ export const checkFfmpeg = () => {
       process.stderr.write(failureMessage(check, details) + '\n');
       process.exit(1);
     }
+
+    // e.g. "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) ..." → "6.1.1-3ubuntu5"
+    if (check.name === 'ffmpeg') {
+      const match = result.stdout.match(/ffmpeg version (\S+)/);
+      if (match) picrConfig.ffmpegVersion = match[1];
+    }
   }
 };

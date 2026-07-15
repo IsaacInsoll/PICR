@@ -10,9 +10,11 @@ import {
   TbChevronRight,
   TbChevronUp,
   TbCircleCheck,
+  TbCircleCheckFilled,
   TbCircleXFilled,
   TbClipboard,
   TbClock,
+  TbCpu,
   TbCloudDownload,
   TbCloudUpload,
   TbDeviceMobileShare,
@@ -50,6 +52,8 @@ import {
   TbRefresh,
   TbSearch,
   TbSlideshow,
+  TbServer,
+  TbScan,
   TbSortAscending,
   TbSortDescending,
   TbSpy,
@@ -314,6 +318,9 @@ export const PhotoCheckIcon = (props: IconBaseProps) => (
 export const CircleCheckIcon = (props: IconBaseProps) => (
   <TbCircleCheck {...props} />
 );
+export const CircleCheckFilledIcon = (props: IconBaseProps) => (
+  <TbCircleCheckFilled {...props} />
+);
 export const CircleXIcon = (props: IconBaseProps) => (
   <TbCircleXFilled {...props} />
 );
@@ -329,6 +336,9 @@ export const GitHubIcon = (props: IconBaseProps) => <FaGithub {...props} />;
 export const StorageIcon = (props: IconBaseProps) => (
   <MdOutlineSdStorage {...props} />
 );
+export const ServerIcon = (props: IconBaseProps) => <TbServer {...props} />;
+export const SystemIcon = (props: IconBaseProps) => <TbCpu {...props} />;
+export const ScanIcon = (props: IconBaseProps) => <TbScan {...props} />;
 export const EyeIcon = (props: IconBaseProps) => <TbEye {...props} />;
 export const EyeOffIcon = (props: IconBaseProps) => <TbEyeOff {...props} />;
 export const PasswordIcon = (props: IconBaseProps) => (

@@ -5,9 +5,17 @@ type MagickFormat = 'PSD' | 'PSB' | 'HEIC' | 'HEIF';
 
 export const checkOptionalMediaTools = () => {
   const raw = commandSucceeds(picrConfig.exiftoolPath ?? 'exiftool', ['-ver']);
-  const magick = commandSucceeds(picrConfig.magickPath ?? 'magick', [
-    '-version',
-  ]);
+  const magickResult = spawnSync(
+    picrConfig.magickPath ?? 'magick',
+    ['-version'],
+    { encoding: 'utf8' },
+  );
+  const magick = !magickResult.error && magickResult.status === 0;
+  if (magick) {
+    // e.g. "Version: ImageMagick 7.1.1-15 Q16-HDRI ..." → "7.1.1-15"
+    const match = magickResult.stdout.match(/ImageMagick (\S+)/);
+    if (match) picrConfig.imageMagickVersion = match[1];
+  }
   const magickFormats = magick
     ? readMagickFormats()
     : new Map<string, string>();

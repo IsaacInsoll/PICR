@@ -124,6 +124,12 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+type DiskInfo {
+  free: BigInt!
+  path: String!
+  total: BigInt!
+}
+
 type File implements FileInterface {
   fileCreated: DateTime!
   fileHash: String!
@@ -416,15 +422,27 @@ type ServerInfo {
   databaseUrl: String!
   dev: Boolean!
   developmentBuildSha: String
+  disk: DiskInfo
   host: String!
   inodeSupport: InodeSupportInfo!
   latest: String!
   mediaCaps: MediaCapsInfo!
   mediaSize: BigInt!
   scanning: MediaScanningInfo!
+  system: SystemInfo!
   usePolling: Boolean!
   version: String!
   videoAcceleration: VideoAccelerationInfo!
+}
+
+type SystemInfo {
+  databaseVersion: String
+  ffmpegVersion: String
+  imageMagickVersion: String
+  nodeVersion: String!
+  platform: String!
+  totalMemory: BigInt!
+  uptimeSeconds: Int!
 }
 
 type Task {

@@ -59,6 +59,7 @@ import { recentUsersQuery } from '@shared/urql/queries/recentUsersQuery';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { FoldersSortType } from '@shared/gql/graphql';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
+import { useRequery } from '@shared/hooks/useRequery';
 
 const dashboardLimits = {
   desktop: {
@@ -252,11 +253,12 @@ const bytesForRoll = (bytes: string) => {
 // never block the rest of the dashboard on them.
 const LibraryStats = ({ folderId }: { folderId?: string }) => {
   const density = useDashboardDensity();
-  const [result] = useQuery({
+  const [result, reQuery] = useQuery({
     query: dashboardStatsQuery,
     variables: { folderId: folderId ?? '' },
     pause: !folderId,
   });
+  useRequery(reQuery, 20000);
   const f = result.data?.dashboardStats;
   if (!f) return null;
   const size = bytesForRoll(f.totalSize);
@@ -497,10 +499,11 @@ const YourGalleries = ({
   density: keyof typeof dashboardLimits;
 }) => {
   const setThemeMode = useSetAtom(themeModeAtom);
-  const [result] = useQuery({
+  const [result, reQuery] = useQuery({
     query: dashboardGalleriesQuery,
     variables: { id: folderId },
   });
+  useRequery(reQuery, 20000);
   const homeFolder = result.data?.folder;
   const homeBranding = homeFolder?.branding;
   useEffect(() => {
@@ -546,11 +549,12 @@ const ClientFeedback = ({
   folderId: string;
   density: keyof typeof dashboardLimits;
 }) => {
-  const [result] = useQuery({
+  const [result, reQuery] = useQuery({
     query: dashboardCommentsQuery,
     variables: { id: folderId, limit: dashboardLimits.desktop.comments },
     requestPolicy: 'cache-and-network',
   });
+  useRequery(reQuery, 20000);
   const comments = result.data?.comments ?? [];
   return (
     <SectionCard
@@ -587,11 +591,12 @@ const ClientFeedback = ({
 const ClientActivity = ({ folderId }: { folderId: string }) => {
   const navigate = useNavigate();
   const density = useDashboardDensity();
-  const [result] = useQuery({
+  const [result, reQuery] = useQuery({
     query: recentUsersQuery,
     variables: { folderId },
     requestPolicy: 'cache-and-network',
   });
+  useRequery(reQuery, 20000);
   const compact = density === 'mobile';
   const users = (result.data?.users ?? []).slice(
     0,
@@ -671,7 +676,7 @@ const RecentlyModified = ({
   folderId: string;
   density: keyof typeof dashboardLimits;
 }) => {
-  const [result] = useQuery({
+  const [result, reQuery] = useQuery({
     query: readAllFoldersQuery,
     variables: {
       id: folderId,
@@ -679,6 +684,7 @@ const RecentlyModified = ({
       sort: FoldersSortType.FolderLastModified,
     },
   });
+  useRequery(reQuery, 20000);
   const folders = (result.data?.allFolders ?? []).filter(
     (f): f is NonNullable<typeof f> => f != null,
   );

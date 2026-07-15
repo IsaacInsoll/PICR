@@ -2,13 +2,18 @@ import { useMutation, useQuery } from 'urql';
 import {
   Anchor,
   Badge,
+  Box,
   Button,
+  Card,
   Code,
+  Grid,
   Group,
   Modal,
   Stack,
-  Table,
   Text,
+  ThemeIcon,
+  Title,
+  Tooltip,
 } from '@mantine/core';
 import type { ReactNode } from 'react';
 import { Suspense, useState } from 'react';
@@ -18,9 +23,16 @@ import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { useAvifEnabled, useMe } from '../../hooks/useMe';
 import {
   BenchmarkIcon,
+  CircleCheckFilledIcon,
+  CircleXIcon,
   ClipboardIcon,
   GitHubIcon,
+  InfoIcon,
+  ScanIcon,
+  ServerIcon,
   StorageIcon,
+  SystemIcon,
+  VideoMetadataIcon,
 } from '../../PicrIcons';
 import { PicrLink } from '../../components/PicrLink';
 import {
@@ -31,253 +43,145 @@ import { runBenchmarkMutation } from '@shared/urql/mutations/runBenchmarkMutatio
 import type { BenchmarkStep, ServerInfoQueryQuery } from '@shared/gql/graphql';
 import { copyToClipboard } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
+import { useRequery } from '@shared/hooks/useRequery';
+
+type ServerInfoData = NonNullable<ServerInfoQueryQuery['serverInfo']>;
 
 export const ServerInfo = () => {
-  const [result] = useQuery({ query: serverInfoQuery });
+  const [result, reQuery] = useQuery({ query: serverInfoQuery });
+  useRequery(reQuery, 20000);
   const server = result.data?.serverInfo;
   if (!server) return null;
   return (
-    <Table striped highlightOnHover withTableBorder>
-      <TableHeader />
-      <Table.Tbody>
-        <Version
-          version={server.version}
-          latest={server.latest}
-          developmentBuildSha={server.developmentBuildSha}
-        />
-        <Row title="Client URL">{window.location.origin}</Row>
-        <Row title="Server URL">{server.host}</Row>
-        <Suspense fallback={<StorageUsageLoading />}>
-          <ServerFolderSize />
-        </Suspense>
-
-        <Row title="Database URL">
-          <Code>{server.databaseUrl}</Code>
-        </Row>
-        <Row title="Dev Mode">
-          <Bool value={server.dev} />
-        </Row>
-        <Row title="Use Polling">
-          <Bool value={server.usePolling} />
-        </Row>
-        <Scanning info={server.scanning} />
-        <Row title="Can write">
-          <Bool value={server.canWrite} />
-        </Row>
-        <Suspense>
-          <AvifEnabled />
-        </Suspense>
-        <AdditionalImageFormats caps={server.mediaCaps} />
-        <VideoAcceleration info={server.videoAcceleration} />
-        <InodeSupport info={server.inodeSupport} />
-        <Benchmark />
-      </Table.Tbody>
-    </Table>
-  );
-};
-
-const AvifEnabled = () => {
-  const avif = useAvifEnabled();
-  return (
-    <Row title="AVIF Enabled">
-      <Bool value={avif} />
-    </Row>
-  );
-};
-
-type VideoAccelerationInfo = NonNullable<
-  ServerInfoQueryQuery['serverInfo']
->['videoAcceleration'];
-
-type MediaCapsInfo = NonNullable<
-  ServerInfoQueryQuery['serverInfo']
->['mediaCaps'];
-
-type InodeSupportInfo = NonNullable<
-  ServerInfoQueryQuery['serverInfo']
->['inodeSupport'];
-
-type ScanningInfo = NonNullable<ServerInfoQueryQuery['serverInfo']>['scanning'];
-
-type ScheduledScanStatusInfo = ScanningInfo['scheduledScan'];
-
-const AdditionalImageFormats = ({ caps }: { caps: MediaCapsInfo }) => {
-  const formats = [
-    { label: 'RAW', enabled: caps.raw },
-    { label: 'PSD', enabled: caps.psd },
-    { label: 'PSB', enabled: caps.psb },
-    { label: 'HEIC / HEIF', enabled: caps.heic },
-  ];
-
-  return (
-    <Row title="Additional Image Formats">
-      {formats.map((format) => (
-        <Badge
-          key={format.label}
-          color={format.enabled ? 'green' : 'gray'}
-          variant={format.enabled ? 'light' : 'outline'}
-        >
-          {format.label}
-        </Badge>
-      ))}
-    </Row>
-  );
-};
-
-const Scanning = ({ info }: { info: ScanningInfo }) => {
-  const scheduled = info.scheduledScan;
-  return (
-    <>
-      <Row title="File Watcher">
-        <Code>{scanModeLabel(info.fileWatcherMode)}</Code>
-      </Row>
-      <Row title="On-view Scan">
-        <Code>{scanModeLabel(info.onViewScanMode)}</Code>
-      </Row>
-      <Row title="Scheduled Scan">
-        <Badge
-          color={info.scheduledScanHours > 0 ? 'green' : 'gray'}
-          variant="light"
-        >
-          {info.scheduledScanHours > 0
-            ? `Every ${info.scheduledScanHours}h`
-            : 'Off'}
-        </Badge>
-        {scheduled.running ? (
-          <Badge color="blue" variant="light">
-            Running
-          </Badge>
-        ) : null}
-        {scheduled.nextScanAt ? (
-          <Text size="sm" c="dimmed">
-            Next: {prettyDate(scheduled.nextScanAt)}
-          </Text>
-        ) : null}
-      </Row>
-      <Row title="Last Scheduled Scan">
-        <ScheduledScanStatus status={scheduled} />
-      </Row>
-    </>
-  );
-};
-
-const ScheduledScanStatus = ({
-  status,
-}: {
-  status: ScheduledScanStatusInfo;
-}) => {
-  if (!status.lastStartedAt) {
-    return (
-      <Text size="sm" c="dimmed">
-        Never run
-      </Text>
-    );
-  }
-
-  const result = status.lastResult;
-  const moved = (result?.movedFiles ?? 0) + (result?.movedFolders ?? 0);
-  const removed = (result?.removedFiles ?? 0) + (result?.removedFolders ?? 0);
-
-  return (
-    <Stack gap={2}>
-      <Group gap="xs">
-        <Text size="sm">Started: {prettyDate(status.lastStartedAt)}</Text>
-        {status.lastCompletedAt ? (
-          <Text size="sm" c="dimmed">
-            Finished: {prettyDate(status.lastCompletedAt)}
-          </Text>
-        ) : null}
-        {typeof status.lastDurationMs === 'number' ? (
-          <Text size="sm" c="dimmed">
-            Duration: {formatDuration(status.lastDurationMs)}
-          </Text>
-        ) : null}
-      </Group>
-      {status.lastError ? (
-        <Text size="sm" c="red">
-          {status.lastError}
-        </Text>
-      ) : result ? (
-        <Text size="sm" c={result.completed ? 'dimmed' : 'yellow'}>
-          {result.completed ? 'Completed' : 'Unsettled'} after{' '}
-          {result.scanPasses} pass{result.scanPasses === 1 ? '' : 'es'}:{' '}
-          {result.addedFiles} added, {result.changedFiles} changed, {moved}{' '}
-          moved, {removed} removed, {result.skippedEntries} skipped
-        </Text>
-      ) : null}
+    <Stack gap="lg" pt="md" pb="xl">
+      <Grid columns={5} gap="lg">
+        <Grid.Col span={{ base: 5, md: 3 }}>
+          <StorageCard disk={server.disk} />
+        </Grid.Col>
+        <Grid.Col span={{ base: 5, md: 2 }}>
+          <VersionCard
+            version={server.version}
+            latest={server.latest}
+            developmentBuildSha={server.developmentBuildSha}
+            dev={server.dev}
+          />
+        </Grid.Col>
+      </Grid>
+      <MediaCard server={server} />
+      <ScanningCard scanning={server.scanning} inode={server.inodeSupport} />
+      <Grid columns={5} gap="lg">
+        <Grid.Col span={{ base: 5, md: 3 }}>
+          <ServerCard server={server} />
+        </Grid.Col>
+        <Grid.Col span={{ base: 5, md: 2 }}>
+          <SystemCard system={server.system} />
+        </Grid.Col>
+      </Grid>
     </Stack>
   );
 };
 
-const scanModeLabel = (mode: string): string =>
-  mode
-    .split('_')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
+// ---------------------------------------------------------------------------
+// Presentational building blocks (dashboard-style cards + labelled rows)
+// ---------------------------------------------------------------------------
 
-const formatDuration = (durationMs: number): string => {
-  if (durationMs < 1000) return `${durationMs}ms`;
-  const seconds = durationMs / 1000;
-  if (seconds < 60) return `${seconds.toFixed(1)}s`;
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.round(seconds % 60);
-  return `${minutes}m ${remainingSeconds}s`;
-};
-
-const InodeSupport = ({ info }: { info: InodeSupportInfo }) => {
-  const color =
-    info.status === 'enabled'
-      ? 'green'
-      : info.status === 'disabled'
-        ? 'red'
-        : 'gray';
-  const label =
-    info.status === 'enabled'
-      ? 'Enabled'
-      : info.status === 'disabled'
-        ? 'Disabled'
-        : 'Unknown';
-
-  return (
-    <Row title="Inode Tracking">
-      <Badge color={color} variant="light">
-        {label}
-      </Badge>
-      <Text size="sm" c="dimmed">
-        {info.reason}
+const InfoCard = ({
+  title,
+  icon,
+  description,
+  footer,
+  children,
+}: {
+  title: string;
+  icon: ReactNode;
+  description?: string;
+  footer?: ReactNode;
+  children: ReactNode;
+}) => (
+  <Card
+    withBorder
+    padding="lg"
+    radius="md"
+    h="100%"
+    style={{ display: 'flex', flexDirection: 'column' }}
+  >
+    <Group gap="xs" wrap="nowrap" mb={description ? 4 : 'md'}>
+      <ThemeIcon variant="transparent" color="gray" size="sm">
+        {icon}
+      </ThemeIcon>
+      <Title order={5}>{title}</Title>
+    </Group>
+    {description ? (
+      <Text size="xs" c="dimmed" mb="md">
+        {description}
       </Text>
-    </Row>
-  );
-};
+    ) : null}
+    <Stack gap="sm">{children}</Stack>
+    {footer ? (
+      <Group justify="flex-end" gap="md" pt="md" style={{ marginTop: 'auto' }}>
+        {footer}
+      </Group>
+    ) : null}
+  </Card>
+);
 
-const VideoAcceleration = ({ info }: { info: VideoAccelerationInfo }) => {
-  const active = info.mode === 'vaapi';
-  return (
-    <Row title="Video Acceleration">
-      <Code c={active ? 'green' : 'dimmed'}>
-        {active ? 'VAAPI' : 'CPU only'}
-      </Code>
-      {active ? (
-        <Text size="sm">
-          {[info.driver, info.codecs.join(', ')].filter(Boolean).join(' — ')}
-        </Text>
-      ) : (
-        <Text size="sm" c="dimmed">
-          {info.reason}
-        </Text>
-      )}
-    </Row>
-  );
-};
+// A labelled row: label + value share one aligned top line (label left, value
+// right); the optional plain-English hint drops to its own full-width line
+// below so it never squeezes the value cell (which truncated buttons/badges).
+const InfoRow = ({
+  label,
+  description,
+  children,
+}: {
+  label: string;
+  description?: string;
+  children: ReactNode;
+}) => (
+  <Box>
+    <Group justify="space-between" align="center" wrap="nowrap" gap="md">
+      <Text size="sm" fw={500} style={{ flexShrink: 0 }}>
+        {label}
+      </Text>
+      <Group gap="xs" wrap="wrap" justify="flex-end" style={{ minWidth: 0 }}>
+        {children}
+      </Group>
+    </Group>
+    {description ? (
+      <Text size="xs" c="dimmed" mt={2}>
+        {description}
+      </Text>
+    ) : null}
+  </Box>
+);
 
-const Version = ({
+// Green/red badge with a leading tick/cross icon (icon inherits the badge's
+// colour via currentColor).
+const BoolValue = ({ value }: { value?: boolean }) => (
+  <Badge
+    color={value ? 'green' : 'red'}
+    variant="light"
+    leftSection={
+      value ? <CircleCheckFilledIcon size={14} /> : <CircleXIcon size={14} />
+    }
+  >
+    {value ? 'Yes' : 'No'}
+  </Badge>
+);
+
+// ---------------------------------------------------------------------------
+// Version & updates
+// ---------------------------------------------------------------------------
+
+const VersionCard = ({
   version,
   latest,
   developmentBuildSha,
+  dev,
 }: {
   version: string;
   latest: string;
   developmentBuildSha?: string | null;
+  dev: boolean;
 }) => {
   const isLatest = latest === version;
   const versionColor = developmentBuildSha
@@ -287,31 +191,83 @@ const Version = ({
       : 'red';
 
   return (
-    <>
-      <Row title="PICR Version">
-        <Code c={versionColor}>{version}</Code>
-        {!isLatest ? (
-          <>
-            Latest: <Code>{latest}</Code>
-          </>
-        ) : null}
+    <InfoCard
+      title="Version & Updates"
+      icon={<InfoIcon />}
+      description="The version of PICR you're running. Keeping it up to date gives you the latest features and fixes."
+      footer={
         <Anchor
           href="https://github.com/IsaacInsoll/PICR/releases"
           size="xs"
           target="_blank"
           rel="noreferrer"
         >
-          <GitHubIcon /> View PICR Releases
+          <Group gap={4} wrap="nowrap" component="span">
+            <GitHubIcon /> View PICR releases
+          </Group>
         </Anchor>
-      </Row>
-      {developmentBuildSha ? (
-        <Row title="Development Build">
-          <Code c="yellow">{developmentBuildSha}</Code>
-        </Row>
+      }
+    >
+      <InfoRow label="PICR version">
+        <Code c={versionColor}>{version}</Code>
+        {developmentBuildSha ? (
+          <Badge color="yellow" variant="light">
+            Dev build
+          </Badge>
+        ) : isLatest ? (
+          <Badge color="green" variant="light">
+            Up to date
+          </Badge>
+        ) : (
+          <Badge color="red" variant="light">
+            Update available
+          </Badge>
+        )}
+      </InfoRow>
+      {!isLatest && !developmentBuildSha ? (
+        <InfoRow
+          label="Latest release"
+          description="The newest version available to download."
+        >
+          <Code>{latest}</Code>
+        </InfoRow>
       ) : null}
-    </>
+      {developmentBuildSha ? (
+        <InfoRow
+          label="Development build"
+          description="Built from source rather than an official release."
+        >
+          <Code c="yellow">{developmentBuildSha}</Code>
+        </InfoRow>
+      ) : null}
+      {dev ? (
+        <InfoRow
+          label="Developer mode"
+          description="On only for development builds of PICR."
+        >
+          <BoolValue value={dev} />
+        </InfoRow>
+      ) : null}
+    </InfoCard>
   );
 };
+
+// ---------------------------------------------------------------------------
+// Storage
+// ---------------------------------------------------------------------------
+
+const StorageCard = ({ disk }: { disk: ServerInfoData['disk'] }) => (
+  <InfoCard
+    title="Storage"
+    icon={<StorageIcon />}
+    description="Disk space used by your original photos and the thumbnails PICR generates."
+    footer={<TreesizeLink />}
+  >
+    <Suspense fallback={<StorageUsageLoading />}>
+      <ServerFolderSize disk={disk} />
+    </Suspense>
+  </InfoCard>
+);
 
 const TreesizeLink = () => {
   const me = useMe();
@@ -324,33 +280,10 @@ const TreesizeLink = () => {
   );
 };
 
-const Bool = ({ value }: { value?: boolean }) => {
-  return <Code c={value ? 'green' : 'red'}>{value ? 'YES' : 'NO'}</Code>;
-};
-
-const Row = ({ title, children }: { title: string; children: ReactNode }) => {
-  return (
-    <Table.Tr>
-      <Table.Td>{title}</Table.Td>
-      <Table.Td>
-        <Group gap="md">{children}</Group>
-      </Table.Td>
-    </Table.Tr>
-  );
-};
-
-const TableHeader = () => {
-  return (
-    <Table.Thead>
-      <Table.Tr>
-        <Table.Th>Property</Table.Th>
-        <Table.Th>Value</Table.Th>
-      </Table.Tr>
-    </Table.Thead>
-  );
-};
-
-const ServerFolderSize = () => {
+// Disk free space is cheap to fetch, but it's confusing on its own (free
+// without used), so it's held back until the user calculates media/cache usage
+// and shown alongside them.
+const ServerFolderSize = ({ disk }: { disk: ServerInfoData['disk'] }) => {
   const [requested, setRequested] = useState(false);
   const [result] = useQuery({
     query: expensiveServerFileSizeQuery,
@@ -359,7 +292,10 @@ const ServerFolderSize = () => {
   const server = result.data?.serverInfo;
   if (!requested) {
     return (
-      <Row title="Storage Usage">
+      <InfoRow
+        label="Storage usage"
+        description="Adds up disk space for your media and cache. This scans your folders, so it can take a moment."
+      >
         <Button
           size="xs"
           variant="light"
@@ -368,28 +304,445 @@ const ServerFolderSize = () => {
         >
           Calculate
         </Button>
-        <TreesizeLink />
-      </Row>
+      </InfoRow>
     );
   }
   if (!server) return null;
   return (
-    <Row title="Storage Usage">
-      <Text size="sm">Media: {prettyBytes(server.mediaSize)}</Text>
-      <Text size="sm">Cache: {prettyBytes(server.cacheSize)}</Text>
-      <TreesizeLink />
-    </Row>
+    <>
+      <InfoRow label="Media" description="Your original photos and videos.">
+        <Text size="sm">{prettyBytes(server.mediaSize)}</Text>
+      </InfoRow>
+      <InfoRow
+        label="Cache"
+        description="Thumbnails and previews PICR created. Safe to delete — they regenerate automatically."
+      >
+        <Text size="sm">{prettyBytes(server.cacheSize)}</Text>
+      </InfoRow>
+      {disk ? (
+        <InfoRow
+          label="Disk space"
+          description="Free space on the drive that holds your media."
+        >
+          <Text size="sm">
+            {prettyBytes(disk.free)} free of {prettyBytes(disk.total)}
+          </Text>
+        </InfoRow>
+      ) : null}
+    </>
   );
 };
 
 const StorageUsageLoading = () => (
-  <Row title="Storage Usage">
-    <LoadingIndicator size="small" />
-    <Text size="sm" c="dimmed">
-      Calculating...
-    </Text>
-  </Row>
+  <InfoRow label="Storage usage">
+    <Group gap="xs" wrap="nowrap">
+      <LoadingIndicator size="small" />
+      <Text size="sm" c="dimmed">
+        Calculating…
+      </Text>
+    </Group>
+  </InfoRow>
 );
+
+// ---------------------------------------------------------------------------
+// Media & performance
+// ---------------------------------------------------------------------------
+
+type VideoAccelerationInfo = ServerInfoData['videoAcceleration'];
+type MediaCapsInfo = ServerInfoData['mediaCaps'];
+
+const MediaCard = ({ server }: { server: ServerInfoData }) => (
+  <InfoCard
+    title="Media & Performance"
+    icon={<VideoMetadataIcon />}
+    description="Extra photo and video formats this server can process, plus hardware acceleration for video."
+    footer={<Benchmark />}
+  >
+    <AdditionalImageFormats caps={server.mediaCaps} />
+    <Suspense fallback={<AvifRowFallback />}>
+      <AvifEnabled />
+    </Suspense>
+    <VideoAcceleration info={server.videoAcceleration} />
+  </InfoCard>
+);
+
+const AvifEnabled = () => {
+  const avif = useAvifEnabled();
+  return (
+    <InfoRow
+      label="AVIF thumbnails"
+      description="A modern image format for smaller, sharper thumbnails."
+    >
+      <BoolValue value={avif} />
+    </InfoRow>
+  );
+};
+
+const AvifRowFallback = () => (
+  <InfoRow label="AVIF thumbnails">
+    <LoadingIndicator size="small" />
+  </InfoRow>
+);
+
+const AdditionalImageFormats = ({ caps }: { caps: MediaCapsInfo }) => {
+  const formats = [
+    { label: 'RAW', enabled: caps.raw },
+    { label: 'PSD', enabled: caps.psd },
+    { label: 'PSB', enabled: caps.psb },
+    { label: 'HEIC / HEIF', enabled: caps.heic },
+  ];
+
+  return (
+    <InfoRow
+      label="Image formats"
+      description="Camera and design file types PICR can open in addition to JPEG and PNG."
+    >
+      {formats.map((format) => (
+        <Badge
+          key={format.label}
+          color={format.enabled ? 'green' : 'gray'}
+          variant={format.enabled ? 'light' : 'outline'}
+        >
+          {format.label}
+        </Badge>
+      ))}
+    </InfoRow>
+  );
+};
+
+// Codec labels ffmpeg/VAAPI report vary in punctuation ("H.264", "VC-1",
+// "MPEG-2"), so normalise before ranking them.
+const normaliseCodec = (codec: string) =>
+  codec.toUpperCase().replace(/[\s._-]/g, '');
+
+// H.264/HEVC are the formats videographers actually deliver in, so they lead
+// (green); AV1 follows (gray) as the forward-looking codec. Everything else
+// (VP8/VP9, MPEG-2, VC-1, MJPEG…) is collapsed behind a "+N" chip but still
+// shown in the hover tooltip.
+const primaryCodecs = new Set(['H264', 'AVC', 'HEVC', 'H265']);
+const secondaryCodecs = new Set(['AV1']);
+
+const codecRank = (codec: string) => {
+  const key = normaliseCodec(codec);
+  if (primaryCodecs.has(key)) return 0;
+  if (secondaryCodecs.has(key)) return 1;
+  return 2;
+};
+
+const VideoAcceleration = ({ info }: { info: VideoAccelerationInfo }) => {
+  if (info.mode !== 'vaapi') {
+    return (
+      <InfoRow
+        label="Video acceleration"
+        description="Uses your graphics hardware to speed up video thumbnails and playback when available."
+      >
+        <Badge color="gray" variant="outline">
+          CPU only
+        </Badge>
+        {info.reason ? (
+          <Text size="xs" c="dimmed" ta="right">
+            {info.reason}
+          </Text>
+        ) : null}
+      </InfoRow>
+    );
+  }
+
+  const ranked = [...info.codecs].sort((a, b) => codecRank(a) - codecRank(b));
+  let visible = ranked.filter((codec) => codecRank(codec) <= 1);
+  let hidden = ranked.filter((codec) => codecRank(codec) === 2);
+  // If none are recognised, fall back to showing a few raw codecs so the
+  // summary is never empty.
+  if (visible.length === 0) {
+    visible = hidden.slice(0, 3);
+    hidden = hidden.slice(3);
+  }
+
+  const fullString = [info.driver, info.codecs.join(', ')]
+    .filter(Boolean)
+    .join(' — ');
+
+  return (
+    <InfoRow
+      label="Video acceleration"
+      description="Uses your graphics hardware to speed up video thumbnails and playback."
+    >
+      <Tooltip label={fullString} multiline w={300} withArrow position="top">
+        <Stack gap={6} align="flex-end" style={{ minWidth: 0 }}>
+          <Group gap={6} justify="flex-end" wrap="wrap">
+            {visible.map((codec) => (
+              <Badge
+                key={codec}
+                color={codecRank(codec) === 0 ? 'green' : 'gray'}
+                variant="light"
+              >
+                {codec}
+              </Badge>
+            ))}
+            {hidden.length > 0 ? (
+              <Badge color="gray" variant="outline">
+                +{hidden.length}
+              </Badge>
+            ) : null}
+          </Group>
+          <Text
+            size="xs"
+            c="dimmed"
+            ta="right"
+            style={{ wordBreak: 'break-word' }}
+          >
+            {info.driver ? `VAAPI · ${info.driver}` : 'VAAPI'}
+          </Text>
+        </Stack>
+      </Tooltip>
+    </InfoRow>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Server / environment
+// ---------------------------------------------------------------------------
+
+const normaliseUrl = (url: string) => url.replace(/\/+$/, '');
+
+const ServerCard = ({ server }: { server: ServerInfoData }) => {
+  const clientUrl = window.location.origin;
+  // Usually identical to the server URL (bar a trailing slash); only surface it
+  // when it genuinely differs, which hints at a BASE_URL misconfiguration.
+  const clientDiffers = normaliseUrl(clientUrl) !== normaliseUrl(server.host);
+  return (
+    <InfoCard
+      title="Server"
+      icon={<ServerIcon />}
+      description="Where PICR is running and how it's configured."
+    >
+      {clientDiffers ? (
+        <InfoRow
+          label="Client URL"
+          description="The address you're using in your browser — it differs from the server URL below, which can break share-link previews."
+        >
+          <Code style={{ wordBreak: 'break-all' }}>{clientUrl}</Code>
+        </InfoRow>
+      ) : null}
+      <InfoRow
+        label="Server URL"
+        description="The public address used for share links and social previews."
+      >
+        <Code style={{ wordBreak: 'break-all' }}>{server.host}</Code>
+      </InfoRow>
+      <InfoRow
+        label="Can write"
+        description="Whether PICR is allowed to make changes to your photo folders."
+      >
+        <BoolValue value={server.canWrite} />
+      </InfoRow>
+      <InfoRow
+        label="File polling"
+        description="Re-scans folders on a timer instead of watching for changes. Needed on some NAS and network drives."
+      >
+        <BoolValue value={server.usePolling} />
+      </InfoRow>
+    </InfoCard>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// System / runtime
+// ---------------------------------------------------------------------------
+
+const formatUptime = (seconds: number) => {
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const parts: string[] = [];
+  if (days) parts.push(`${days}d`);
+  if (hours) parts.push(`${hours}h`);
+  if (minutes || parts.length === 0) parts.push(`${minutes}m`);
+  return parts.join(' ');
+};
+
+const SystemCard = ({ system }: { system: ServerInfoData['system'] }) => (
+  <InfoCard
+    title="System"
+    icon={<SystemIcon />}
+    description="The runtime and media tools this server is using."
+  >
+    <InfoRow label="Uptime">
+      <Code>{formatUptime(system.uptimeSeconds)}</Code>
+    </InfoRow>
+    <InfoRow label="Platform">
+      <Code>{system.platform}</Code>
+    </InfoRow>
+    <InfoRow label="Memory">
+      <Code>{prettyBytes(system.totalMemory)}</Code>
+    </InfoRow>
+    <InfoRow label="Node.js">
+      <Code>{system.nodeVersion}</Code>
+    </InfoRow>
+    {system.databaseVersion ? (
+      <InfoRow label="Database">
+        <Code>{system.databaseVersion}</Code>
+      </InfoRow>
+    ) : null}
+    {system.ffmpegVersion ? (
+      <InfoRow label="ffmpeg">
+        <Code>{system.ffmpegVersion}</Code>
+      </InfoRow>
+    ) : null}
+    {system.imageMagickVersion ? (
+      <InfoRow label="ImageMagick">
+        <Code>{system.imageMagickVersion}</Code>
+      </InfoRow>
+    ) : null}
+  </InfoCard>
+);
+
+// ---------------------------------------------------------------------------
+// Media scanning + inode tracking
+// ---------------------------------------------------------------------------
+
+type ScanningInfo = ServerInfoData['scanning'];
+type InodeSupportInfo = ServerInfoData['inodeSupport'];
+type ScheduledScanStatusInfo = ScanningInfo['scheduledScan'];
+
+// "direct_and_new" -> "Direct And New"
+const scanModeLabel = (mode: string) =>
+  mode
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+
+const formatDuration = (durationMs: number) => {
+  if (durationMs < 1000) return `${durationMs}ms`;
+  const seconds = durationMs / 1000;
+  if (seconds < 60) return `${seconds.toFixed(1)}s`;
+  const minutes = Math.floor(seconds / 60);
+  return `${minutes}m ${Math.round(seconds % 60)}s`;
+};
+
+const InodeBadge = ({ status }: { status: string }) => {
+  const color =
+    status === 'enabled' ? 'green' : status === 'disabled' ? 'red' : 'gray';
+  const label =
+    status === 'enabled'
+      ? 'Enabled'
+      : status === 'disabled'
+        ? 'Disabled'
+        : 'Unknown';
+  return (
+    <Badge color={color} variant="light">
+      {label}
+    </Badge>
+  );
+};
+
+// The last scheduled scan reads as a short summary line, so it gets a labelled
+// top row (when it ran + how long) with the added/changed/moved breakdown on
+// its own full-width line beneath, matching the InfoRow description pattern.
+const LastScan = ({ status }: { status: ScheduledScanStatusInfo }) => {
+  if (!status.lastStartedAt) {
+    return (
+      <InfoRow label="Last scheduled scan">
+        <Text size="sm" c="dimmed">
+          Never run
+        </Text>
+      </InfoRow>
+    );
+  }
+  const result = status.lastResult;
+  const moved = (result?.movedFiles ?? 0) + (result?.movedFolders ?? 0);
+  const removed = (result?.removedFiles ?? 0) + (result?.removedFolders ?? 0);
+  return (
+    <Box>
+      <Group justify="space-between" align="center" wrap="nowrap" gap="md">
+        <Text size="sm" fw={500} style={{ flexShrink: 0 }}>
+          Last scheduled scan
+        </Text>
+        <Group gap="xs" wrap="wrap" justify="flex-end" style={{ minWidth: 0 }}>
+          <Text size="sm">{prettyDate(status.lastStartedAt)}</Text>
+          {typeof status.lastDurationMs === 'number' ? (
+            <Badge color="gray" variant="light">
+              {formatDuration(status.lastDurationMs)}
+            </Badge>
+          ) : null}
+        </Group>
+      </Group>
+      {status.lastError ? (
+        <Text size="xs" c="red" mt={2}>
+          {status.lastError}
+        </Text>
+      ) : result ? (
+        <Text size="xs" c={result.completed ? 'dimmed' : 'yellow'} mt={2}>
+          {result.completed ? 'Completed' : 'Unsettled'} after{' '}
+          {result.scanPasses} pass{result.scanPasses === 1 ? '' : 'es'} —{' '}
+          {result.addedFiles} added, {result.changedFiles} changed, {moved}{' '}
+          moved, {removed} removed, {result.skippedEntries} skipped
+        </Text>
+      ) : null}
+    </Box>
+  );
+};
+
+const ScanningCard = ({
+  scanning,
+  inode,
+}: {
+  scanning: ScanningInfo;
+  inode: InodeSupportInfo;
+}) => {
+  const scheduled = scanning.scheduledScan;
+  return (
+    <InfoCard
+      title="Media Scanning"
+      icon={<ScanIcon />}
+      description="How PICR detects new, changed and moved files in your media folder."
+    >
+      <InfoRow
+        label="File watcher"
+        description="Watches the media folder for live changes."
+      >
+        <Code>{scanModeLabel(scanning.fileWatcherMode)}</Code>
+      </InfoRow>
+      <InfoRow
+        label="On-view scan"
+        description="Re-checks a folder when someone opens it."
+      >
+        <Code>{scanModeLabel(scanning.onViewScanMode)}</Code>
+      </InfoRow>
+      <InfoRow
+        label="Scheduled scan"
+        description="Periodic full reconcile of the whole library."
+      >
+        <Badge
+          color={scanning.scheduledScanHours > 0 ? 'green' : 'gray'}
+          variant="light"
+        >
+          {scanning.scheduledScanHours > 0
+            ? `Every ${scanning.scheduledScanHours}h`
+            : 'Off'}
+        </Badge>
+        {scheduled.running ? (
+          <Badge color="blue" variant="light">
+            Running
+          </Badge>
+        ) : null}
+        {scheduled.nextScanAt ? (
+          <Text size="sm" c="dimmed">
+            Next: {prettyDate(scheduled.nextScanAt)}
+          </Text>
+        ) : null}
+      </InfoRow>
+      <InfoRow label="Inode tracking" description={inode.reason}>
+        <InodeBadge status={inode.status} />
+      </InfoRow>
+      <LastScan status={scheduled} />
+    </InfoCard>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Benchmark (unchanged behaviour, now rendered inside a card row)
+// ---------------------------------------------------------------------------
 
 const Benchmark = () => {
   const [result, runBenchmark] = useMutation(runBenchmarkMutation);
@@ -408,7 +761,7 @@ const Benchmark = () => {
   };
 
   return (
-    <Row title="Benchmark">
+    <>
       <Anchor
         component="button"
         size="xs"
@@ -549,7 +902,7 @@ const Benchmark = () => {
           ) : null}
         </Stack>
       </Modal>
-    </Row>
+    </>
   );
 };
 

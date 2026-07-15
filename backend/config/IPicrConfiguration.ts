@@ -9,6 +9,9 @@ export interface IPicrConfiguration {
   ffprobePath?: string;
   exiftoolPath?: string;
   magickPath?: string;
+  // Tool versions captured at boot (best effort) for display in ServerInfo.
+  ffmpegVersion?: string;
+  imageMagickVersion?: string;
   mediaCaps: {
     raw: boolean;
     psd: boolean;
