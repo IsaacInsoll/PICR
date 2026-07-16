@@ -194,7 +194,7 @@ npm run start:db             # Database only (Docker)
 # Type checking runs separately via `npx tsc --noEmit -w`.
 # Build/test/docker still run the compiled backend from `dist/server`.
 # If compiled runtime fails with ERR_MODULE_NOT_FOUND from `dist/server`, run:
-# bash ./copy-backend-files.sh && npm --prefix dist ci
+# sh ./copy-backend-files.sh && npm --prefix dist ci
 
 # Building
 cd backend && npm run build  # TypeScript → dist/server (for Docker image)

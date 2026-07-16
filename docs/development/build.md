@@ -35,3 +35,7 @@ To avoid repeated folder hopping:
 | --------------------- | ------------------------------------------------------------------------------------- |
 | `npm run install-all` | Install root + shared + backend + frontend + app + dist dependencies                  |
 | `npm run build:local` | Build backend artifact, package Lightroom plugin, build frontend, install `dist` deps |
+
+`copy-backend-files.sh` is used by both local helper commands and container-style
+source builds. Keep it POSIX `sh` compatible so it works in Alpine/minimal Node
+images that do not ship Bash.

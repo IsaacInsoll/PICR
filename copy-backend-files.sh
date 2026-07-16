@@ -1,8 +1,11 @@
-#!/usr/bin/env bash
+#!/bin/sh
+
+set -eu
 
 # The release artifact has a few files added after the frontend and backend builds
 # They are here so we can use the same list locally for development and in github CI
 
+mkdir -p ./dist
 cp ./backend/package*.json ./dist/
 node -p "require('./package.json').version" > ./dist/version.txt
 
