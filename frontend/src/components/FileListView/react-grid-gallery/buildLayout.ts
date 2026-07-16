@@ -5,31 +5,6 @@ import type {
   ImageExtendedRow,
 } from './types';
 
-const calculateCutOff = <T extends ImageExtended = ImageExtended>(
-  items: T[],
-  totalRowWidth: number,
-  protrudingWidth: number,
-) => {
-  const cutOff: number[] = [];
-  let cutSum = 0;
-  for (const i in items) {
-    const item = items[i];
-    const fractionOfWidth = item.scaledWidth / totalRowWidth;
-    cutOff[i] = Math.floor(fractionOfWidth * protrudingWidth);
-    cutSum += cutOff[i];
-  }
-
-  let stillToCutOff = protrudingWidth - cutSum;
-  while (stillToCutOff > 0) {
-    for (const i in cutOff) {
-      cutOff[i]++;
-      stillToCutOff--;
-      if (stillToCutOff < 0) break;
-    }
-  }
-  return cutOff;
-};
-
 const getRow = <T extends Image = Image>(
   images: T[],
   { containerWidth, rowHeight, margin }: BuildLayoutOptions,
@@ -58,14 +33,35 @@ const getRow = <T extends Image = Image>(
     totalRowWidth += extendedItem.scaledWidth + imgMargin;
   }
 
+  // Justify by rescaling the whole row to fit the container (standard
+  // justified-gallery behaviour) instead of horizontally cropping each image.
+  // Cropping cut into compositions: subjects on a rule-of-thirds line lost a
+  // flank of the frame, which read as badly framed thumbnails to clients.
   const protrudingWidth = totalRowWidth - containerWidth;
   if (row.length > 0 && protrudingWidth > 0) {
-    const cutoff = calculateCutOff(row, totalRowWidth, protrudingWidth);
-    for (const i in row) {
-      const pixelsToRemove = cutoff[i];
-      const item = row[i];
-      item.marginLeft = -Math.abs(Math.floor(pixelsToRemove / 2));
-      item.viewportWidth = item.scaledWidth - pixelsToRemove;
+    const marginsWidth = row.length * imgMargin;
+    const availableWidth = containerWidth - marginsWidth;
+    const naturalWidth = totalRowWidth - marginsWidth;
+    const scale = availableWidth / naturalWidth;
+    const scaledRowHeight = Math.floor(effectiveRowHeight * scale);
+    let usedWidth = 0;
+    for (const item of row) {
+      item.scaledHeight = scaledRowHeight;
+      item.scaledWidth = Math.floor(item.scaledWidth * scale);
+      usedWidth += item.scaledWidth;
+    }
+    // Hand the flooring remainder back one pixel at a time so the row fills
+    // the container edge-to-edge without ever overflowing it (overflow would
+    // break the flex-wrap row alignment).
+    let leftover = availableWidth - usedWidth;
+    for (const item of row) {
+      if (leftover <= 0) break;
+      item.scaledWidth += 1;
+      leftover -= 1;
+    }
+    for (const item of row) {
+      item.viewportWidth = item.scaledWidth;
+      item.marginLeft = 0;
     }
   }
 
