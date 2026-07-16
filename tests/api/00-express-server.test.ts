@@ -12,6 +12,16 @@ test('Express Server Online', async () => {
   expect(text).toContain('<div id="root"></div>');
 });
 
+test('Health endpoints are served before the frontend catch-all', async () => {
+  const healthResponse = await fetch(`${testUrl}healthz`);
+  expect(healthResponse.status).toBe(200);
+  await expect(healthResponse.json()).resolves.toEqual({ status: 'ok' });
+
+  const readyResponse = await fetch(`${testUrl}readyz`);
+  expect(readyResponse.status).toBe(200);
+  await expect(readyResponse.json()).resolves.toEqual({ status: 'ok' });
+});
+
 test('Request Image from Express Server', async () => {
   const headers = await getUserHeader(defaultCredentials);
   const client = await createTestGraphqlClient(headers);

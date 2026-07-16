@@ -21,6 +21,7 @@ services:
   picr:
     container_name: 'picr'
     image: 'isaacinsoll/picr'
+    restart: unless-stopped
     # user: "<uid>:<gid>" # if enabling write access on NAS, see can_write.md to find exact IDs
     volumes:
       - <path-to-your-shared-images>:/home/node/app/media:ro # read only access to your 'files i give to clients' folder
@@ -55,6 +56,8 @@ services:
 ```
 
 The `healthcheck` and `depends_on.condition: service_healthy` pairing is recommended so PICR waits for Postgres to be ready, not just started. PICR also retries its startup migrations once after 10 seconds if the database is still unavailable, which helps with slower disks or NAS startup timing.
+
+The PICR image also includes its own Docker healthcheck. It checks that the app can answer HTTP requests and reach Postgres, without probing media write access or scanning your media folder.
 
 ## Upgrades
 

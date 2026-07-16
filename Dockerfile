@@ -35,5 +35,6 @@ ENV PICR_BUILD_CHANNEL=$PICR_BUILD_CHANNEL
 ENV PICR_DEVELOPMENT_BUILD_SHA=$PICR_DEVELOPMENT_BUILD_SHA
 ENV PICR_GIT_SHA=$PICR_GIT_SHA
 EXPOSE 6900
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 CMD [ "node", "./server/backend/healthcheck.js" ]
 
 CMD [ "node", "./server/backend/app.js" ]
