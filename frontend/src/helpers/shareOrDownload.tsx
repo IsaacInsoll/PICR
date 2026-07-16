@@ -1,6 +1,7 @@
 import { notifications } from '@mantine/notifications';
 import { Progress, Stack, Text } from '@mantine/core';
 import type { PicrFile } from '@shared/types/picr';
+import { prettyBytes } from '@shared/prettyBytes';
 
 // iOS (including iPadOS, which reports itself as desktop Safari) does not honor the
 // HTML5 anchor `download` attribute for same-origin files — it opens the "Save to
@@ -38,41 +39,122 @@ const anchorDownload = (url: string, filename?: string) => {
   document.body.removeChild(link);
 };
 
-const progressMessage = (filename: string, percent?: number) => (
-  <Stack gap={4}>
-    <Text size="sm" lineClamp={1}>
-      {filename}
-    </Text>
-    {percent !== undefined ? (
-      <Progress value={percent} size="sm" transitionDuration={150} animated />
-    ) : null}
-  </Stack>
-);
+interface DownloadProgress {
+  received: number;
+  total?: number;
+  bytesPerSecond?: number;
+}
+
+const formatEta = (seconds: number): string => {
+  if (seconds < 1) return 'less than 1s left';
+  if (seconds < 60) return `${Math.ceil(seconds)}s left`;
+
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.ceil(seconds % 60);
+  if (minutes < 60) {
+    return remainingSeconds
+      ? `${minutes}m ${remainingSeconds}s left`
+      : `${minutes}m left`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  return remainingMinutes
+    ? `${hours}h ${remainingMinutes}m left`
+    : `${hours}h left`;
+};
+
+const progressDetails = (progress?: DownloadProgress): string | undefined => {
+  if (!progress) return undefined;
+
+  const parts = [
+    progress.total
+      ? `${prettyBytes(progress.received)} / ${prettyBytes(progress.total)}`
+      : prettyBytes(progress.received),
+  ];
+
+  if (progress.bytesPerSecond && progress.bytesPerSecond > 0) {
+    parts.push(`${prettyBytes(progress.bytesPerSecond)}/s`);
+  }
+
+  if (
+    progress.total &&
+    progress.bytesPerSecond &&
+    progress.bytesPerSecond > 0 &&
+    progress.received < progress.total
+  ) {
+    parts.push(
+      formatEta((progress.total - progress.received) / progress.bytesPerSecond),
+    );
+  }
+
+  return parts.join(' • ');
+};
+
+const progressMessage = (
+  filename: string,
+  percent?: number,
+  progress?: DownloadProgress,
+) => {
+  const details = progressDetails(progress);
+
+  return (
+    <Stack gap={4}>
+      <Text size="sm" lineClamp={1}>
+        {filename}
+      </Text>
+      {details ? (
+        <Text size="xs" c="dimmed">
+          {details}
+        </Text>
+      ) : null}
+      {percent !== undefined ? (
+        <Progress value={percent} size="sm" transitionDuration={150} animated />
+      ) : null}
+    </Stack>
+  );
+};
 
 // Streams the response body so we can report download progress, falling back to
 // response.blob() when the length is unknown (e.g. no Content-Length header).
 const fetchBlobWithProgress = async (
   response: Response,
-  onProgress: (percent: number) => void,
+  onProgress: (progress: DownloadProgress, percent?: number) => void,
 ): Promise<Blob> => {
-  const total = Number(response.headers.get('Content-Length'));
+  const contentLength = Number(response.headers.get('Content-Length'));
+  const total =
+    Number.isFinite(contentLength) && contentLength > 0
+      ? contentLength
+      : undefined;
   const reader = response.body?.getReader();
-  if (!reader || !total) {
+  if (!reader) {
     return response.blob();
   }
 
   const chunks: Uint8Array[] = [];
   let received = 0;
-  let lastPercent = -1;
+  let lastPercent: number | undefined = -1;
+  let lastUpdate = 0;
+  const startedAt = performance.now();
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
     chunks.push(value);
     received += value.length;
-    const percent = Math.min(100, Math.round((received / total) * 100));
-    if (percent !== lastPercent) {
+    const now = performance.now();
+    const elapsedSeconds = Math.max((now - startedAt) / 1000, 0.001);
+    const bytesPerSecond = received / elapsedSeconds;
+    const percent = total
+      ? Math.min(100, Math.round((received / total) * 100))
+      : undefined;
+    if (
+      percent !== lastPercent ||
+      now - lastUpdate >= 500 ||
+      (total && received >= total)
+    ) {
       lastPercent = percent;
-      onProgress(percent);
+      lastUpdate = now;
+      onProgress({ received, total, bytesPerSecond }, percent);
     }
   }
   // Cast is safe: fetch yields ArrayBuffer-backed Uint8Arrays (never SharedArrayBuffer),
@@ -110,12 +192,12 @@ export const shareOrDownload = async (url: string, filename: string) => {
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const blob = await fetchBlobWithProgress(response, (percent) => {
+    const blob = await fetchBlobWithProgress(response, (progress, percent) => {
       notifications.update({
         id: notificationId,
         loading: false,
         title: 'Preparing download…',
-        message: progressMessage(filename, percent),
+        message: progressMessage(filename, percent, progress),
       });
     });
     const file = new File([blob], filename, { type: blob.type });
