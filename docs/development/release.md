@@ -43,6 +43,26 @@ Do not manually create normal Docker/backend release tags or GitHub releases. If
 the release verification guard fails, fix the tag/version mismatch before
 publishing a GitHub release.
 
+### Emergency manual fallback
+
+Use this only when `npm run release` cannot create the GitHub release because
+the GitHub release API is unavailable. Keep the same invariant as
+`scripts/verify-release.mjs`: the release tag must point at the commit whose
+root `package.json` contains the matching version.
+
+If `release-it` already pushed the release commit and tag, create the GitHub
+release from the existing tag in the GitHub web UI and publish it.
+
+If the release commit/tag does not exist yet:
+
+1. Commit the version bump to `master` first. Update root `package.json`, root
+   `package-lock.json`, and `lightroom/picr.lrplugin/Info.lua`, then commit as
+   `🚀 Release <version>`.
+2. In GitHub's release UI, create or select the tag named exactly `<version>`
+   with no `v` prefix, targeting that release commit.
+3. Publish the release. The published release event triggers the Docker build
+   and publish workflow.
+
 Do not recreate or commit a root `version.txt`; it is generated in `dist/` during
 the backend build.
 
