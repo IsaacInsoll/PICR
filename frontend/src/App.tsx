@@ -27,6 +27,7 @@ import { fontFamilies } from './fonts.generated';
 import { GlobalErrorOverlay } from './components/GlobalErrorOverlay';
 import { normalizeFontKey } from '@shared/branding/fontRegistry';
 import { DevBackendOverrideBanner } from './components/DevBackendOverrideBanner';
+import { DownloadSharePromptHost } from './helpers/shareOrDownload';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
@@ -86,6 +87,7 @@ const App = () => {
           <PicrErrorBoundary>
             <Suspense fallback={<PicrLoadingOverlay />}>
               <UserProvider />
+              <DownloadSharePromptHost />
               <Notifications pauseResetOnHover="notification" />
             </Suspense>
           </PicrErrorBoundary>

@@ -294,7 +294,28 @@ function MyComponent() {
   normal anchor download. While fetching (large videos take time) it shows a Mantine
   notification with a real progress bar driven by streaming the response body against
   its `Content-Length` (falls back to an indeterminate spinner if the length is
-  unknown), and swallows the share-sheet `AbortError`.
+  unknown), and swallows the share-sheet `AbortError`. If the fetch takes long enough
+  for Safari's user activation to expire, the flow switches to a modal and waits for a
+  fresh "Save to Photos" tap before calling `navigator.share()`. Keep that call inside
+  the fresh button handler; moving it back after the async fetch reintroduces
+  `NotAllowedError` failures on larger videos. The helper intentionally allows only one
+  active iOS share download at a time so simultaneous downloads cannot overwrite the
+  pending modal state.
+- **Transient activation is the whole reason that helper is shaped the way it is.**
+  `navigator.share({ files })` needs transient activation, which expires "at most a few
+  seconds" after a tap (Chrome documents ~1s; WebKit deliberately does not expose
+  Safari's timer). A slow fetch followed by `share()` is WebKit's own worked example of
+  the problem, and they state there is no platform fix:
+  <https://webkit.org/blog/13862/the-user-activation-api/>. A fresh tap is the only
+  workaround. Consequently:
+  - `SHARE_PROMPT_UI_DELAY_MS` (2.5s) is **presentation only** — when the toast becomes
+    a modal. It is not an activation guess. Do not "fix" it to match some timer value.
+  - Auto-share (skipping the extra tap on fast downloads) is gated by
+    `hasTransientActivation()`, which prefers `navigator.userActivation.isActive`
+    (Safari/iOS 16.4+) and falls back to a pessimistic elapsed-time check on older iOS.
+  - Correctness does not depend on either heuristic: a `NotAllowedError` from
+    auto-share recovers into the same ready modal, so a wrong guess costs one extra tap
+    rather than a failed download. Preserve that recovery path.
 - Existing entry points wired up: the lightbox Download button
   (`SelectedFile/SelectedFileView.tsx` via the YARL `download` custom function), the
   image-feed per-file button (`ImageFeed.tsx`), and the list-view file menu
