@@ -199,6 +199,18 @@ sequenceDiagram
     E-->>C: JSON response
 ```
 
+### Release Update Lookup
+
+`backend/helpers/latestBuild.ts` checks GitHub releases for the newest PICR
+version. GitHub/API failures return an empty string when there is no stale cache;
+that means "unknown", not "update available". Keep release tags normalized to
+semver before caching/comparing them so values like `v1.2.2` and `1.2.2` are
+treated as the same release, and skip prerelease tags (e.g. `1.3.0-beta.1`) when
+selecting the latest release so a prerelease is never surfaced as an update. The
+Settings page polls `serverInfo` regularly, so
+that resolver should use the normal cached lookup instead of force-refreshing
+GitHub on every request.
+
 ### FFmpeg/FFprobe Configuration
 
 - Direct `fluent-ffmpeg` calls must respect both configured binary paths. Use

@@ -13,7 +13,7 @@ import { db } from '../../db/picrDb.js';
 const resolver: PicrResolver = async (_, _params, context) => {
   await requireFullAdmin(context);
 
-  const latest = await getLatestBuild({ forceRefresh: true });
+  const latest = await getLatestBuild();
 
   return {
     version: picrConfig.version,

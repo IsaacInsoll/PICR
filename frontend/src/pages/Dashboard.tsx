@@ -60,6 +60,7 @@ import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { FoldersSortType } from '@shared/gql/graphql';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
 import { useRequery } from '@shared/hooks/useRequery';
+import { isNewerPicrVersion } from '../helpers/versionUpdates';
 
 const dashboardLimits = {
   desktop: {
@@ -307,7 +308,9 @@ const LibraryStats = ({ folderId }: { folderId?: string }) => {
 const UpdateIndicator = () => {
   const [result] = useQuery({ query: dashboardUpdateInfoQuery });
   const info = result.data?.dashboardUpdateInfo;
-  if (!info?.latest || info.latest === info.version) return null;
+  if (!info?.latest || !isNewerPicrVersion(info.latest, info.version)) {
+    return null;
+  }
   return (
     <Anchor
       href="https://github.com/IsaacInsoll/PICR/releases"

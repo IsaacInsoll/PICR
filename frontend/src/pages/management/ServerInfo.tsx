@@ -44,6 +44,7 @@ import type { BenchmarkStep, ServerInfoQueryQuery } from '@shared/gql/graphql';
 import { copyToClipboard } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
 import { useRequery } from '@shared/hooks/useRequery';
+import { isNewerPicrVersion } from '../../helpers/versionUpdates';
 
 type ServerInfoData = NonNullable<ServerInfoQueryQuery['serverInfo']>;
 
@@ -183,12 +184,12 @@ const VersionCard = ({
   developmentBuildSha?: string | null;
   dev: boolean;
 }) => {
-  const isLatest = latest === version;
+  const updateAvailable = isNewerPicrVersion(latest, version);
   const versionColor = developmentBuildSha
     ? 'yellow'
-    : isLatest
-      ? 'green'
-      : 'red';
+    : updateAvailable
+      ? 'red'
+      : 'green';
 
   return (
     <InfoCard
@@ -214,17 +215,17 @@ const VersionCard = ({
           <Badge color="yellow" variant="light">
             Dev build
           </Badge>
-        ) : isLatest ? (
+        ) : updateAvailable ? (
+          <Badge color="red" variant="light">
+            Update available: v{latest}
+          </Badge>
+        ) : (
           <Badge color="green" variant="light">
             Up to date
           </Badge>
-        ) : (
-          <Badge color="red" variant="light">
-            Update available
-          </Badge>
         )}
       </InfoRow>
-      {!isLatest && !developmentBuildSha ? (
+      {updateAvailable && !developmentBuildSha ? (
         <InfoRow
           label="Latest release"
           description="The newest version available to download."

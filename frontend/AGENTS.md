@@ -160,6 +160,11 @@ created. For example, gallery passcodes are entered after `/s/:uuid/...` loads
 and are stored in `sessionStorage`. Keep public-link header values read inside
 `fetchOptions` for each request rather than closing over a fixed header object.
 
+Release/update queries may return an empty `latest` string when the backend
+cannot reach GitHub and has no stale cache. Do not show that as "update
+available"; only show update UI when the normalized latest semantic version is
+newer than the running version.
+
 ### Queries
 
 ```typescript
