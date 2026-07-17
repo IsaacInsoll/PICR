@@ -68,6 +68,40 @@ interface FolderRouteParams {
 }
 ```
 
+### Lightbox History (back button)
+
+Opening a file **from the folder you are already viewing** is a history **push**;
+closing it must **pop** that entry, not push the folder URL again. Route those
+opens through `hooks/useSelectedFileId.ts` rather than calling `useSetFolder`
+directly — it stamps `{ openedFromFolder: true }` onto the pushed entry and reads
+it back on close to choose between `navigate(-1)` and a `replace` to the folder.
+
+The marker means "the entry behind me is this folder's listing". Only stamp it
+when that is actually true — an unmarked push is the correct choice for a file in
+some _other_ folder, and the two callers below rely on that distinction.
+
+- Pushing on close is what caused issue #68: history became
+  `folder → file → folder`, so back reopened the just-closed image, and each
+  open/close cycle added another pair of entries to escape from.
+- The `replace` fallback is required, not defensive, and carries real behaviour:
+  a file URL opened directly (shared deep link, reload) has no folder entry
+  behind it, and `navigate(-1)` there would eject the viewer off the site.
+- **QuickFind is a deliberate split** (`QuickFind.tsx`). A hit in the folder
+  currently being viewed goes through the hook. A cross-folder hit does not: the
+  unmarked push plus replace-on-close leaves the viewer in the folder the file
+  lives in, with back returning to where they searched from. Do not "fix" this
+  into an unconditional hook call.
+- Callers that open a file must be checked against this rule, not assumed —
+  `FileMenu.tsx` ("View {file}") and the feed's "Open in Slideshow" button both
+  open the lightbox down paths separate from the grid/list click handler.
+- Navigation **between** slides (the YARL `view` event) replaces rather than
+  pushes, and must forward `state: location.state`. Dropping the marker there
+  strands the entry and makes back appear to do nothing.
+- Subfolder navigation stays a plain `useSetFolder` push — only file open/close
+  is special.
+- Hash-backed atoms (`atomWithHash` with `setHash: 'replaceState'`) preserve
+  `history.state`, so modal/sort/view hash changes do not clear the marker.
+
 ## State Management (Jotai)
 
 Jotai provides atomic state - small, independent pieces of state.

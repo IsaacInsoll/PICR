@@ -21,6 +21,7 @@ import { LoadingIndicator } from '../LoadingIndicator';
 import { useQuery } from 'urql';
 import { PrettyFolderPath } from '../PrettyFolderPath';
 import { useSetFolder } from '../../hooks/useSetFolder';
+import { useSelectedFileId } from '../../hooks/useSelectedFileId';
 import { InfoIcon } from '../../PicrIcons';
 import { Joiner } from '../FolderName';
 import { useQuickFind } from './useQuickFind';
@@ -117,6 +118,7 @@ const Results = ({
   close: () => void;
 }) => {
   const setFolder = useSetFolder();
+  const setSelectedFileId = useSelectedFileId(folder?.id ?? '');
   const me = useMe();
   const query = useAtomValue(quickFindQueryAtom);
   const scope = useAtomValue(scopeAtom);
@@ -144,13 +146,25 @@ const Results = ({
 
   const handleClick = (
     e: React.MouseEvent | KeyboardEvent | undefined,
-    folder: PicrFolder,
+    targetFolder: PicrFolder,
     file?: AppSearchFileFragmentFragment,
   ) => {
     close();
     e?.preventDefault();
     e?.stopPropagation();
-    setFolder(folder, file);
+    // A hit in the folder we're already viewing is indistinguishable from opening
+    // that file out of the listing behind the drawer, so it gets the marked push
+    // and closing pops back to the folder.
+    //
+    // A hit in a *different* folder deliberately does not: closing should leave the
+    // viewer in the folder the file actually lives in (so they can keep browsing it),
+    // with back returning to where they searched from. The unmarked push plus the
+    // hook's replace-on-close fallback gives exactly that.
+    if (file && folder?.id && targetFolder.id === folder.id) {
+      setSelectedFileId(file.id);
+    } else {
+      setFolder(targetFolder, file);
+    }
   };
 
   useEffect(() => {

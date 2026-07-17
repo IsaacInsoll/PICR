@@ -13,7 +13,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { FilteringOptions } from './Filtering/FilteringOptions';
 import { Transition } from '@mantine/core';
 import { useParams } from 'react-router';
-import { useSetFolder } from '../../hooks/useSetFolder';
+import { useSelectedFileId } from '../../hooks/useSelectedFileId';
 import { FileListView } from './FileListView';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import type {
@@ -79,7 +79,6 @@ export const FolderContentsView = ({
   const fileId = ['manage', 'activity'].includes(fileIdParam ?? '')
     ? undefined
     : fileIdParam;
-  const setFolder = useSetFolder();
   const [view, setView] = useAtom(selectedViewAtom);
   const me = useMe();
   const branding = folder.branding;
@@ -139,10 +138,7 @@ export const FolderContentsView = ({
   ]);
   const canDownload = useCanDownload();
 
-  const setSelectedFileId = (fileId: string | undefined) => {
-    const file = fileId ? { id: fileId } : undefined;
-    setFolder({ id: folderId }, file);
-  };
+  const setSelectedFileId = useSelectedFileId(folderId);
 
   useEffect(() => resetFilters(), [resetFilters, folderId]);
 

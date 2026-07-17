@@ -1,6 +1,6 @@
 import type { PicrFile } from '@shared/types/picr';
 import { normalizeDisplayName } from '@shared/displayName';
-import { useSetFolder } from '../../hooks/useSetFolder';
+import { useSelectedFileId } from '../../hooks/useSelectedFileId';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import {
   useOpenCommentsModal,
@@ -29,7 +29,7 @@ import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 
 export const FileMenu = ({ file }: { file: PicrFile }) => {
   const fileName = normalizeDisplayName(file.name);
-  const setFolder = useSetFolder();
+  const setSelectedFileId = useSelectedFileId(file.folderId ?? '');
   const { canView } = useCommentPermissions();
   const canDownload = useCanDownload();
   const me = useMe();
@@ -46,7 +46,7 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
         key={1}
         onClick={() => {
           if (!file.folderId) return;
-          setFolder({ id: file.folderId }, file);
+          setSelectedFileId(file.id);
         }}
       >
         View {fileName}

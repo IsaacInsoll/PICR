@@ -17,7 +17,7 @@ import type { ViewFolderFileWithHero } from '@shared/files/sortFiles';
 import { theme } from '../../../theme';
 import { useSetFolder } from '../../../hooks/useSetFolder';
 import { useEffect, useRef, useMemo, useState } from 'react';
-import { useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import { LightboxFileRating } from './LightboxFileRating';
 import { filesForLightbox } from './filesForLightbox';
 import { LightboxInfoButton } from './LightboxInfoButton';
@@ -49,6 +49,7 @@ export const SelectedFileView = ({
   const selectedImage = files.find(({ id }) => id === selectedFileId);
   const ref = useRef<ControllerRef | null>(null);
   const { fileId } = useParams();
+  const location = useLocation();
   const portal = useAtomValue(lightboxRefAtom);
   const [showThumbnails, setShowThumbnails] = useState(false);
 
@@ -133,7 +134,14 @@ export const SelectedFileView = ({
           const f = files[index];
           // don't change URL if we are already on that URL (IE: first opening gallery)
           if (f.id !== fileId) {
-            setFolder({ id: folderId }, f, { replace: true });
+            // carry the current entry's state across: it marks whether this lightbox
+            // was opened from the folder, which is what lets close() pop instead of
+            // push (see useSelectedFileId). Replacing without it would strand the
+            // entry and make the back button appear to do nothing.
+            setFolder({ id: folderId }, f, {
+              replace: true,
+              state: location.state,
+            });
           }
         },
       }}

@@ -22,6 +22,7 @@ import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { useOpenFileInfoModal } from '../../atoms/modalAtom';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useSetFolder } from '../../hooks/useSetFolder';
+import { useSelectedFileId } from '../../hooks/useSelectedFileId';
 import { CloudDownloadIcon, InfoIcon, SlideshowIcon } from '../../PicrIcons';
 import {
   canUseShareSheet,
@@ -246,14 +247,14 @@ const FileInfoButton = ({ file }: { file: ViewFolderFileWithHero }) => {
   );
 };
 const OpenFileButton = ({ file }: { file: ViewFolderFileWithHero }) => {
-  const setFolder = useSetFolder();
+  const setSelectedFileId = useSelectedFileId(file.folderId);
 
   return (
     <Tooltip label={`Open in Slideshow View`}>
       <ActionIcon
         variant="default"
         onClick={() => {
-          setFolder({ id: file.folderId }, file);
+          setSelectedFileId(file.id);
         }}
       >
         <SlideshowIcon />
