@@ -62,13 +62,25 @@ interface SharePromptState {
   progress?: DownloadProgress;
   status: 'downloading' | 'ready' | 'saving';
   url: string;
+  // Aborts the in-flight fetch. Only set while status is 'downloading' — once the
+  // file is in hand there is nothing left to cancel.
+  cancel?: () => void;
 }
 
-// Presentation only: how long a download may run before the progress toast is
-// replaced by the modal. This is NOT an attempt to guess Safari's transient
-// activation timer — auto-share is gated by hasTransientActivation() instead.
-// Tuning this changes only when the modal appears, never whether sharing works.
-const SHARE_PROMPT_UI_DELAY_MS = 2500;
+// Presentation only: how long after the tap a download may run before the progress
+// modal appears. Downloads that finish first show no UI at all and go straight to
+// the share sheet, which is the common case for images.
+//
+// This is NOT an attempt to guess Safari's transient activation timer — auto-share
+// is gated by hasTransientActivation() instead, and tuning this changes only when
+// the modal appears, never whether sharing works. Do not "fix" it to match some
+// timer value.
+//
+// 1s rather than something longer because once the modal is up we ask for a fresh
+// tap unconditionally (see the promptShown check below). Any download still running
+// at 1s has most likely outlived activation and was going to need that tap anyway,
+// so the modal rarely costs a tap that we would otherwise have skipped.
+const SHARE_PROMPT_UI_DELAY_MS = 1000;
 
 // Only consulted on browsers without navigator.userActivation (Safari/iOS < 16.4).
 // Chrome documents its transient activation as "about a second", and the HTML spec
@@ -150,36 +162,19 @@ const fallbackNotificationContent = (error: unknown) => (
   </Stack>
 );
 
-const showFallbackNotification = (
-  notificationId: string,
-  error: unknown,
-  mode: 'show' | 'update' = 'update',
-) => {
-  const notification = {
+const showFallbackNotification = (notificationId: string, error: unknown) => {
+  notifications.show({
     id: notificationId,
     color: 'red',
     title: 'Download failed',
     message: fallbackNotificationContent(error),
     autoClose: 6000,
     withCloseButton: true,
-  };
-
-  if (mode === 'show') {
-    notifications.show(notification);
-    return;
-  }
-
-  notifications.update({
-    ...notification,
-    loading: false,
   });
 };
 
-const showCanShareFallbackNotification = (
-  notificationId: string,
-  mode: 'show' | 'update' = 'update',
-) => {
-  const notification = {
+const showCanShareFallbackNotification = (notificationId: string) => {
+  notifications.show({
     id: notificationId,
     color: 'yellow',
     title: 'Download fallback',
@@ -193,16 +188,6 @@ const showCanShareFallbackNotification = (
     ),
     autoClose: 6000,
     withCloseButton: true,
-  };
-
-  if (mode === 'show') {
-    notifications.show(notification);
-    return;
-  }
-
-  notifications.update({
-    ...notification,
-    loading: false,
   });
 };
 
@@ -259,30 +244,6 @@ const completedDetails = (progress?: DownloadProgress): string | undefined => {
   return prettyBytes(progress.total ?? progress.received);
 };
 
-const progressMessage = (
-  filename: string,
-  percent?: number,
-  progress?: DownloadProgress,
-) => {
-  const details = progressDetails(progress);
-
-  return (
-    <Stack gap={4}>
-      <Text size="sm" lineClamp={1}>
-        {filename}
-      </Text>
-      {details ? (
-        <Text size="xs" c="dimmed">
-          {details}
-        </Text>
-      ) : null}
-      {percent !== undefined ? (
-        <Progress value={percent} size="sm" transitionDuration={150} animated />
-      ) : null}
-    </Stack>
-  );
-};
-
 export const DownloadSharePromptHost = () => {
   const state = useSyncExternalStore(
     subscribeToSharePrompt,
@@ -298,8 +259,13 @@ export const DownloadSharePromptHost = () => {
     ? progressDetails(state.progress)
     : completedDetails(state?.progress);
 
+  // While downloading this cancels the fetch; once the file is ready it just
+  // dismisses the modal (cancel is unset by then).
   const close = () => {
-    if (state) clearActiveShareDownload(state.id);
+    if (state) {
+      state.cancel?.();
+      clearActiveShareDownload(state.id);
+    }
     setSharePromptState(null);
   };
 
@@ -348,10 +314,13 @@ export const DownloadSharePromptHost = () => {
   return (
     <Modal
       opened={!!state}
-      onClose={isBusy ? () => undefined : close}
+      // Downloading is dismissable (the X cancels the fetch); saving is not, since
+      // the native share sheet owns the interaction at that point. Click-outside
+      // stays disabled throughout so a stray tap can't kill a long video download.
+      onClose={isSaving ? () => undefined : close}
       closeOnClickOutside={!isBusy}
-      closeOnEscape={!isBusy}
-      withCloseButton={!isBusy}
+      closeOnEscape={!isSaving}
+      withCloseButton={!isSaving}
       title={
         isDownloading
           ? 'Downloading file'
@@ -384,7 +353,8 @@ export const DownloadSharePromptHost = () => {
           ) : null}
           {isDownloading ? (
             <Text size="sm" c="dimmed">
-              Keep this page open while the file downloads.
+              Keep this page open while the file downloads, or close this window
+              to cancel.
             </Text>
           ) : (
             <>
@@ -476,40 +446,44 @@ export const shareOrDownload = async (url: string, filename: string) => {
   }
 
   // The raw file has to be fetched before the share sheet can open, which can take
-  // a while for large videos — show progress so the button feels responsive.
+  // a while for large videos. Nothing is shown up front: downloads that beat the
+  // timer below go straight to the share sheet with no UI at all.
   // Runs inside the tap handler, so this is a good proxy for when activation started.
   const tappedAt = performance.now();
   const downloadId = String(shareCounter++);
   activeShareDownloadId = downloadId;
   const notificationId = `share-download-${downloadId}`;
+  const controller = new AbortController();
   let latestPercent: number | undefined;
   let latestProgress: DownloadProgress | undefined;
-  let promptTimer: number | undefined;
   const isPromptShown = () => sharePromptState?.id === downloadId;
-  notifications.show({
-    id: notificationId,
-    loading: true,
-    autoClose: false,
-    withCloseButton: false,
-    title: 'Downloading…',
-    message: progressMessage(filename),
-  });
+
+  const showDownloadingPrompt = (
+    percent?: number,
+    progress?: DownloadProgress,
+  ) => {
+    setSharePromptState({
+      id: downloadId,
+      filename,
+      percent,
+      progress,
+      status: 'downloading',
+      url,
+      cancel: () => controller.abort(),
+    });
+  };
+
+  // Armed at tap time, not once the response headers arrive: a slow server can burn
+  // seconds before the first byte, and that wait needs the modal too (it renders an
+  // indeterminate spinner until Content-Length gives us a percentage).
+  const promptTimer = window.setTimeout(
+    () => showDownloadingPrompt(latestPercent, latestProgress),
+    SHARE_PROMPT_UI_DELAY_MS,
+  );
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { signal: controller.signal });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    promptTimer = window.setTimeout(() => {
-      notifications.hide(notificationId);
-      setSharePromptState({
-        id: downloadId,
-        filename,
-        percent: latestPercent,
-        progress: latestProgress,
-        status: 'downloading',
-        url,
-      });
-    }, SHARE_PROMPT_UI_DELAY_MS);
 
     const file = await fetchFileWithProgress(
       response,
@@ -517,23 +491,7 @@ export const shareOrDownload = async (url: string, filename: string) => {
       (progress, percent) => {
         latestPercent = percent;
         latestProgress = progress;
-        if (isPromptShown()) {
-          setSharePromptState({
-            id: downloadId,
-            filename,
-            percent,
-            progress,
-            status: 'downloading',
-            url,
-          });
-        } else {
-          notifications.update({
-            id: notificationId,
-            loading: false,
-            title: 'Downloading…',
-            message: progressMessage(filename, percent, progress),
-          });
-        }
+        if (isPromptShown()) showDownloadingPrompt(percent, progress);
       },
     );
     window.clearTimeout(promptTimer);
@@ -542,18 +500,15 @@ export const shareOrDownload = async (url: string, filename: string) => {
     // canShare rejected these files — nothing to share, fall back to a normal download.
     if (!navigator.canShare({ files: [file] })) {
       if (promptShown) setSharePromptState(null);
-      showCanShareFallbackNotification(
-        notificationId,
-        promptShown ? 'show' : 'update',
-      );
+      showCanShareFallbackNotification(notificationId);
       anchorDownload(url, filename);
       clearActiveShareDownload(downloadId);
       return;
     }
 
     // Hand the finished file to the modal and wait for a fresh tap to share it.
+    // No `cancel`: the fetch is done, so the modal's X becomes a plain dismiss.
     const askForFreshTap = () => {
-      notifications.hide(notificationId);
       setSharePromptState({
         id: downloadId,
         file,
@@ -574,13 +529,11 @@ export const shareOrDownload = async (url: string, filename: string) => {
 
     try {
       await navigator.share({ files: [file], title: filename });
-      notifications.hide(notificationId);
       clearActiveShareDownload(downloadId);
       return;
     } catch (error) {
       // User dismissed the share sheet — not a failure.
       if (error instanceof DOMException && error.name === 'AbortError') {
-        notifications.hide(notificationId);
         clearActiveShareDownload(downloadId);
         return;
       }
@@ -594,25 +547,19 @@ export const shareOrDownload = async (url: string, filename: string) => {
     }
   } catch (error) {
     const hadPrompt = isPromptShown();
-    if (promptTimer !== undefined) {
-      window.clearTimeout(promptTimer);
-    }
+    window.clearTimeout(promptTimer);
     if (hadPrompt) {
       setSharePromptState(null);
     }
     // Share-sheet aborts are handled at the share() call above, so reaching here with
-    // an AbortError means the fetch itself was cancelled — also not a failure.
+    // an AbortError means the fetch itself was cancelled — either by the modal's X or
+    // by the browser. Not a failure: no fallback download, no error toast.
     if (error instanceof DOMException && error.name === 'AbortError') {
-      notifications.hide(notificationId);
       clearActiveShareDownload(downloadId);
       return;
     }
     // Anything else: fall back to a normal download and let the user know.
-    showFallbackNotification(
-      notificationId,
-      error,
-      hadPrompt ? 'show' : 'update',
-    );
+    showFallbackNotification(notificationId, error);
     anchorDownload(url, filename);
     clearActiveShareDownload(downloadId);
   }

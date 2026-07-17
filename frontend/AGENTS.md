@@ -291,16 +291,32 @@ function MyComponent() {
 - Route per-file **media** downloads (Image/Video) through
   `helpers/shareOrDownload.ts` (`shareOrDownload`), which on iOS fetches the file and
   opens the native Web Share sheet ("Save to Photos"), and elsewhere falls back to the
-  normal anchor download. While fetching (large videos take time) it shows a Mantine
-  notification with a real progress bar driven by streaming the response body against
-  its `Content-Length` (falls back to an indeterminate spinner if the length is
-  unknown), and swallows the share-sheet `AbortError`. If the fetch takes long enough
-  for Safari's user activation to expire, the flow switches to a modal and waits for a
-  fresh "Save to Photos" tap before calling `navigator.share()`. Keep that call inside
-  the fresh button handler; moving it back after the async fetch reintroduces
-  `NotAllowedError` failures on larger videos. The helper intentionally allows only one
-  active iOS share download at a time so simultaneous downloads cannot overwrite the
-  pending modal state.
+  normal anchor download. It swallows the share-sheet `AbortError`.
+- **Progress UI: one surface, shown late.** Nothing is displayed for the first
+  `SHARE_PROMPT_UI_DELAY_MS` (1s) after the tap — a download that beats the timer goes
+  straight to the share sheet with no UI at all, which is the common case for images.
+  If it's still running, a modal appears with a progress bar driven by streaming the
+  response body against its `Content-Length` (an indeterminate spinner when the length
+  is unknown, which is also what covers the pre-first-byte wait). There is deliberately
+  no progress toast — do not reintroduce one, and note the timer is armed at tap time,
+  **not** after the `fetch` resolves, so a slow server response is still covered.
+- If the fetch outlives Safari's user activation, the modal waits for a fresh
+  "Save to Photos" tap before calling `navigator.share()`. Keep that call inside the
+  fresh button handler; moving it back after the async fetch reintroduces
+  `NotAllowedError` failures on larger videos.
+- **Cancellation:** the fetch runs under an `AbortController`, exposed as `cancel` on
+  `SharePromptState` (set only while `status === 'downloading'`; once the file is in
+  hand the modal's X is a plain dismiss). The X and Escape abort; click-outside stays
+  disabled while busy so a stray tap can't kill a long video download. An aborted fetch
+  rejects the in-flight `reader.read()` and lands in the outer catch's `AbortError`
+  branch, which must stay silent — no error toast, no `anchorDownload` fallback.
+- The helper intentionally allows only one active iOS share download at a time so
+  simultaneous downloads cannot overwrite the pending modal state. **Every terminal path
+  must either call `clearActiveShareDownload` or leave the id for the modal's `close()`
+  to clear.** Leak it and the single-flight guard wedges every later download behind the
+  "Download already running" toast until a page reload. The id-guard inside
+  `clearActiveShareDownload` is what makes cancel-then-immediately-retap safe — a stale
+  download's unwind cannot clear a newer download's id.
 - **Transient activation is the whole reason that helper is shaped the way it is.**
   `navigator.share({ files })` needs transient activation, which expires "at most a few
   seconds" after a tap (Chrome documents ~1s; WebKit deliberately does not expose
@@ -308,8 +324,11 @@ function MyComponent() {
   the problem, and they state there is no platform fix:
   <https://webkit.org/blog/13862/the-user-activation-api/>. A fresh tap is the only
   workaround. Consequently:
-  - `SHARE_PROMPT_UI_DELAY_MS` (2.5s) is **presentation only** — when the toast becomes
-    a modal. It is not an activation guess. Do not "fix" it to match some timer value.
+  - `SHARE_PROMPT_UI_DELAY_MS` (1s) is **presentation only** — when the modal appears.
+    It is not an activation guess. Do not "fix" it to match some timer value. It is 1s
+    rather than longer because once the modal is up we ask for a fresh tap
+    unconditionally, and a download still running at 1s has most likely outlived
+    activation and needed that tap anyway.
   - Auto-share (skipping the extra tap on fast downloads) is gated by
     `hasTransientActivation()`, which prefers `navigator.userActivation.isActive`
     (Safari/iOS 16.4+) and falls back to a pessimistic elapsed-time check on older iOS.
