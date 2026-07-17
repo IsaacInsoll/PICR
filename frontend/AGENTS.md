@@ -68,6 +68,130 @@ interface FolderRouteParams {
 }
 ```
 
+### Folder Links Must Be Real Links
+
+Anything a user clicks to navigate to a folder must render an actual `<a>`, so
+"open in new tab", middle-click and "copy link address" work. Use
+`useFolderLink` (returns `{ to, component: NavLink }`), `PicrLink`, or
+`PicrMenuItem` — never a bare `onClick` + `navigate()`, and never `role="link"`
+with a keydown handler, which imitates a link without any of the browser
+behaviour.
+
+- Do not call `e.preventDefault()` unconditionally in a link's `onClick` — it
+  blocks modifier-click and middle-click. That bug is why `FolderName` looked
+  like a link but couldn't be opened in a new tab.
+- Do not nest `<a>` inside a button/menu/anchor. Where a card has its own action
+  button (see `FolderCard` in `Dashboard.tsx`), the anchor wraps the cover+title
+  only and the action sits beside it as a sibling.
+- `useSetFolder` still exists for genuinely imperative navigation — redirects,
+  drawer `onClose` — not for things people click.
+
+**Known non-compliant surfaces (not yet converted).** The rule above is the
+target, not a description of every call site. These still navigate on click
+only, so "open in new tab" does not work on them:
+
+| Surface                             | Why it's still `onClick`                                                                                                                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FileListView/GridGallery.tsx`      | `react-grid-gallery` owns the click and hands back an index; it renders no anchors. Needs a custom tile or a different library — a real design decision, not an oversight. |
+| `FileListView/FileListView.tsx`     | `onClick` on `Table.Td`; needs the cell content wrapped in an anchor                                                                                                       |
+| `FileListView/FileDataListView.tsx` | `PicrDataGrid onClick={(row)}`; same shape as above                                                                                                                        |
+| `ViewFolderButton.tsx`              | Trivial: `<Button {...useFolderLink(folder)}>`                                                                                                                             |
+| `BrandingFolderChips.tsx`           | Trivial, same spread                                                                                                                                                       |
+| `QuickFind/QuickFind.tsx`           | Results list                                                                                                                                                               |
+
+If you are adding a **new** folder link, follow the rule. If you are converting
+one of the above, `useFolderLink` returns `component: NavLink` precisely so it
+can be spread onto a Mantine component: `<Button {...useFolderLink(folder)}>`.
+
+### Folder Fragments: Two Tiers
+
+There are exactly two answers to "how much folder data do I select?", and
+hand-rolling a third is what caused the bugs below.
+
+- **Any folder rendered _as a folder_** — card, row, link, breadcrumb, chip,
+  search hit, access log row — selects **`MinimumFolderFragment`**. It carries
+  everything needed to render the folder _and_ its loading placeholder.
+- **The folder you are viewing** selects `FolderFragment`, which is Minimum plus
+  `branding`, `permissions` and `brandingId`, via `viewFolderQuery` (which also
+  adds `files`/`subFolders`).
+- **Exempt:** aggregate selections that render no folder identity and aren't
+  navigation sources — `TreeSizeFragment` (recurses the whole library for a size
+  chart), and `dashboardGalleriesQuery.folder` (a container, not a link).
+
+`HeroImageFragment` and `FolderBannerFragment` are composition atoms _inside_
+Minimum, not a third tier. **`bannerImage` and `bannerSize`/`bannerTextHAlign`/
+`bannerTextVAlign` must never be separable**: `bannerSize: null` legitimately
+means "classic" _and_ is what graphcache returns for a partial hit, so a reader
+cannot tell "default size" from "not cached" and would render the banner at a
+guessed height. `HeroImageFragment` used to hand out `bannerImage` without them.
+
+Do not put `branding` in Minimum. It drags a 17-field `BrandingFragment` (incl.
+a `socialLinks` JSON blob) onto every folder in every list.
+
+### Loading Folder Names (placeholder)
+
+While a folder view loads, `PlaceholderFolderHeader` shows the destination
+folder's real name, breadcrumbs and banner. It gets them from a **graphcache
+lookup keyed off the URL's `folderId`** (`hooks/useFolderPlaceholder.ts`), so it
+either shows the right folder or a generic "Loading" — never a different
+folder's.
+
+**No navigation surface pushes placeholder data in.** The folder is already in
+the cache from whichever query rendered the link, so links need a `to` and
+nothing else. This replaced a `placeholderFolder` atom that held the last
+_clicked_ folder: it had no key, so it went stale on back/forward and showed the
+wrong name. Do not reintroduce that pattern.
+
+`folderPlaceholderQuery` selects `MinimumFolderFragment` — the same document the
+sources write — so "did the source cache enough?" has one answer rather than a
+per-field matrix. **This is why the two-tier rule matters:** Minimum carries the
+non-null `folderLastModified`, so a thinner hand-rolled selection is a hard miss
+(generic "Loading") rather than a partial hit that would still show the name.
+
+`PlaceholderFolderHeader`'s banner branches must mirror `ViewFolder`'s, including
+the `activity` mode (both use `helpers/viewFolderMode.ts`) — a placeholder that
+disagrees renders a layout the real page then tears down. Render
+`FolderBannerView`, never `FolderBanner`: the latter mounts
+`useMutation(editFolderMutation)` and admin buttons inside a subtree that
+unmounts in ~200ms.
+
+Four things this depends on, all of which break it **silently** — you get a
+generic "Loading" or no placeholder at all, never an error:
+
+- **The `key` must be on the `<Suspense>` boundary in `ViewFolder.tsx`, not on
+  `ViewFolderBody`.** React Router wraps navigation in `React.startTransition`
+  by default, and during a transition React deliberately keeps already-revealed
+  content on screen instead of showing a fallback. A keyed _child_ doesn't help:
+  the boundary survives, sees it already has content revealed, and holds the
+  previous folder on screen until the new one has fully loaded — network
+  requests and all. Keying the _boundary_ makes it new, so there is nothing
+  revealed to preserve and the fallback renders immediately. Symptom if you get
+  this wrong: clicking a folder appears to do nothing for a beat, then jumps
+  straight to the loaded folder, skipping the placeholder entirely.
+- The `Query.folder` resolver in `urql/urqlCacheExchange.ts`. Graphcache caches
+  root fields as links keyed by field name **+ arguments**, so a folder
+  normalized from someone's `subFolders` is in the cache as an entity while
+  `folder(id: X)` still misses. The resolver bridges the two. Without it the
+  placeholder silently falls back to "Loading" — which looks exactly like the
+  bug it fixes.
+- `requestPolicy: 'cache-only'` + `context: { suspense: false }`. The hook runs
+  inside a `<Suspense>` fallback; a fallback that suspends throws, and the
+  client sets `suspense: true` globally.
+- A folder link's source selecting less than `MinimumFolderFragment` (see the
+  two-tier rule above).
+
+None of these are visible to lint or `tsc`, and the Playwright smoke tests don't
+cover the loading state. **Check this in a browser**, with the network throttled
+so the fallback is visible — click a subfolder and confirm its name (and banner,
+at the right height) appear while the contents load.
+
+**Known residual:** `themeModeAtom` holds the _previous_ folder's branding during
+the fallback, since `ViewFolderBody` only calls `setThemeMode` once the real
+query lands. So `headingFontSize`/alignment can still shift on the banner title
+between differently-branded galleries. The fix would be putting `branding` in
+Minimum — don't; see the payload note above. Banner _layout_ no longer shifts,
+which is the part that mattered.
+
 ### Lightbox History (back button)
 
 Opening a file **from the folder you are already viewing** is a history **push**;

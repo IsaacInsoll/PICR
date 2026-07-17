@@ -4,7 +4,9 @@ import { FolderLink } from '../FolderLink';
 import type React from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
-import { placeholderFolder } from './PlaceholderFolder';
+import { useFolderPlaceholder } from '../../hooks/useFolderPlaceholder';
+import { FolderBannerView } from '../FolderBanner';
+import type { ViewFolderMode } from '../../helpers/viewFolderMode';
 import { themeModeAtom } from '../../atoms/themeModeAtom';
 import { Page } from '../Page';
 import {
@@ -55,17 +57,38 @@ export const FolderHeader = ({
   );
 };
 
-export const PlaceholderFolderHeader = () => {
-  //todo ditch atom
-  // i really want to do a graphicache lookup of folder(with certain id) and get it's .name as we probably have it in the cache
-  const folder = useAtomValue(placeholderFolder);
+// Shown while a folder view loads. The folder comes from the graphcache (see
+// useFolderPlaceholder) - we almost always already have it from whichever query
+// rendered the link that was clicked. Falls back to a generic "Loading" on a
+// cache miss, e.g. a direct URL into a cold tab.
+//
+// The banner branches here MUST mirror ViewFolder's, or the placeholder renders
+// a layout the real page then tears down. A wrong banner isn't possible: it
+// needs a real bannerImage object to build a URL from, which a cache miss cannot
+// fabricate - the failure mode is no banner, i.e. today's behaviour.
+export const PlaceholderFolderHeader = ({
+  folderId,
+  mode = 'files',
+}: {
+  folderId?: string;
+  mode?: ViewFolderMode;
+}) => {
+  const folder = useFolderPlaceholder(folderId);
+  const activity = mode === 'activity';
+  const hasBanner = Boolean(folder?.bannerImage) && !activity;
   return (
     <>
-      <LoggedInHeader folder={folder} />
+      <LoggedInHeader folder={folder ?? undefined} flushBottom={hasBanner} />
+      {hasBanner && folder ? <FolderBannerView folder={folder} /> : null}
       <HeaderWrapper
-        title={normalizeDisplayName(folder?.name) ?? 'Loading'}
+        // `title ?? name` matches FolderHeader's precedence, so the heading
+        // doesn't change once the real query lands.
+        title={folder?.title ?? normalizeDisplayName(folder?.name) ?? 'Loading'}
         subtitle={<Loader type="dots" />}
         parent={folder?.parents}
+        hideTitleAndCustomSubtitle={hasBanner}
+        hideBreadcrumbs={hasBanner}
+        hasBannerLayout={hasBanner}
       />
       <Page>
         <Skeleton width="100%" height="300" />

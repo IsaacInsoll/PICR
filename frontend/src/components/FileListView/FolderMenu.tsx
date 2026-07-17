@@ -1,6 +1,7 @@
 import type { PicrFolder } from '@shared/types/picr';
 import { normalizeDisplayName } from '@shared/displayName';
-import { useSetFolder } from '../../hooks/useSetFolder';
+import { useFolderLink } from '../../hooks/useSetFolder';
+import { PicrMenuItem } from '../PicrLink';
 import { Menu } from '@mantine/core';
 import {
   BrandingIcon,
@@ -33,7 +34,9 @@ export const FolderMenuItems = ({
   onBranding,
 }: FolderMenuItemsProps) => {
   const folderName = normalizeDisplayName(folder.name);
-  const setFolder = useSetFolder();
+  const openLink = useFolderLink(folder);
+  const activityLink = useFolderLink(folder, 'activity');
+  const manageLink = useFolderLink(folder, 'manage/links');
   const generateZip = useGenerateZip(folder);
   const me = useMe();
   const openMoveModal = useOpenMoveRenameFolderModal();
@@ -45,15 +48,13 @@ export const FolderMenuItems = ({
   return (
     <>
       {showOpenItem ? (
-        <Menu.Item
+        <PicrMenuItem
           leftSection={<FolderIcon size="20" />}
           key="open"
-          onClick={() => {
-            setFolder(folder);
-          }}
+          to={openLink.to}
         >
           Open {folderName}
-        </Menu.Item>
+        </PicrMenuItem>
       ) : null}
       {onFilterFiles ? (
         <Menu.Item leftSection={<FilterIcon />} onClick={onFilterFiles}>
@@ -72,27 +73,22 @@ export const FolderMenuItems = ({
       {canView ? (
         <>
           <Menu.Label>Comments & Ratings</Menu.Label>
-          <Menu.Item
-            leftSection={<CommentIcon />}
-            onClick={() => setFolder(folder, 'activity')}
-          >
+          <PicrMenuItem leftSection={<CommentIcon />} to={activityLink.to}>
             View Activity
-          </Menu.Item>
+          </PicrMenuItem>
         </>
       ) : null}
       {me?.isUser ? (
         <>
           <Menu.Divider />
           <Menu.Label>Admin</Menu.Label>
-          <Menu.Item
+          <PicrMenuItem
             leftSection={<ManageFolderIcon size="20" />}
             key="manage"
-            onClick={() => {
-              setFolder(folder, 'manage/links');
-            }}
+            to={manageLink.to}
           >
             Manage {folderName}
-          </Menu.Item>
+          </PicrMenuItem>
           {me.isAdmin && me.clientInfo.canWrite ? (
             <Menu.Item
               leftSection={<MoveFolderIcon size="20" />}

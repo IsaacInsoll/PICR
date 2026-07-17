@@ -55,6 +55,7 @@ import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 import { FolderBanner } from '../components/FolderBanner';
 import { GalleryFooter } from '../components/GalleryFooter';
 import { DownloadZipButton } from '../components/DownloadZipButton';
+import { viewFolderModeFromFileId } from '../helpers/viewFolderMode';
 
 const LoggedInHeader = lazy(() =>
   import('../components/Header/LoggedInHeader').then((module) => ({
@@ -82,15 +83,29 @@ const ManageFolderDrawer = lazy(() =>
   })),
 );
 
-type ViewFolderMode = 'files' | 'manage' | 'activity';
-
 export const ViewFolder = () => {
-  const { folderId } = useParams();
+  const { folderId, fileId } = useParams();
+  const currentFolderId = folderId ?? '1';
 
   return (
     <>
-      <Suspense fallback={<PlaceholderFolderHeader />}>
-        <ViewFolderBody key={folderId ?? '1'} />
+      {/* The key must be on the Suspense boundary, not on ViewFolderBody.
+          React Router wraps navigation in startTransition, and during a
+          transition React deliberately keeps already-revealed content on screen
+          rather than showing a fallback - so a keyed child alone leaves you
+          staring at the previous folder until the new one has fully loaded.
+          Keying the boundary tells React this is different content, so the
+          placeholder header shows immediately. */}
+      <Suspense
+        key={currentFolderId}
+        fallback={
+          <PlaceholderFolderHeader
+            folderId={currentFolderId}
+            mode={viewFolderModeFromFileId(fileId)}
+          />
+        }
+      >
+        <ViewFolderBody />
       </Suspense>
     </>
   );
@@ -112,9 +127,7 @@ const ViewFolderBody = () => {
   );
   const [, setFolderBranding] = useMutation(setFolderBrandingMutation);
 
-  const mode: ViewFolderMode = ['manage', 'activity'].includes(fileId ?? '')
-    ? (fileId as ViewFolderMode)
-    : 'files';
+  const mode = viewFolderModeFromFileId(fileId);
   const managing = mode === 'manage';
   const activity = mode === 'activity';
   const currentFolderId = folderId && folderId !== '' ? folderId : '1';

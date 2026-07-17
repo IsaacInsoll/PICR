@@ -26,7 +26,6 @@ import {
 import { useMediaQuery } from '@mantine/hooks';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { useAtom, useSetAtom } from 'jotai';
 import { useQuery } from 'urql';
 import styles from './Dashboard.module.css';
@@ -40,6 +39,8 @@ import {
   SearchIcon,
 } from '../PicrIcons';
 import type { PicrFolder } from '@shared/types/picr';
+import type { RecentUsersQueryQuery } from '@shared/gql/graphql';
+import { useFolderLink } from '../hooks/useSetFolder';
 import { prettyBytes } from '@shared/prettyBytes';
 import { imageURL } from '../helpers/imageURL';
 import type { ImageUrlFileInput } from '@shared/types/ui';
@@ -392,8 +393,7 @@ const FolderCard = ({
   showPathTooltip?: boolean;
   compact?: boolean;
 }) => {
-  const navigate = useNavigate();
-  const to = `/admin/f/${folder.id}`;
+  const { to } = useFolderLink(folder);
   const title = folder.title ?? folder.name ?? '';
   const coverSize = compact ? 48 : 60;
   return (
@@ -409,34 +409,31 @@ const FolderCard = ({
         radius="md"
         className={styles.folderCard}
         style={{ overflow: 'hidden' }}
-        role="link"
-        tabIndex={0}
-        onClick={() => void navigate(to)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            void navigate(to);
-          }
-        }}
       >
         <Group gap={0} wrap="nowrap" align="stretch">
-          <FolderCover heroImage={folder.heroImage} size={coverSize} fill />
-          <Box p="xs" style={{ flexGrow: 1, minWidth: 0, alignSelf: 'center' }}>
-            <Text fw={600} size="sm" truncate>
-              {title}
-            </Text>
-            {compact ? null : (
-              <DateDisplay
-                dateString={folder.folderLastModified ?? undefined}
-              />
-            )}
-          </Box>
-          {action ? (
+          <PicrLink
+            to={to}
+            underline="never"
+            className={styles.folderCardLink}
+            aria-label={title}
+          >
+            <FolderCover heroImage={folder.heroImage} size={coverSize} fill />
             <Box
-              pr="xs"
-              style={{ alignSelf: 'center' }}
-              onClick={(e) => e.stopPropagation()}
+              p="xs"
+              style={{ flexGrow: 1, minWidth: 0, alignSelf: 'center' }}
             >
+              <Text fw={600} size="sm" truncate>
+                {title}
+              </Text>
+              {compact ? null : (
+                <DateDisplay
+                  dateString={folder.folderLastModified ?? undefined}
+                />
+              )}
+            </Box>
+          </PicrLink>
+          {action ? (
+            <Box pr="xs" style={{ alignSelf: 'center' }}>
               {action}
             </Box>
           ) : null}
@@ -591,8 +588,52 @@ const ClientFeedback = ({
 // each, most-recent first (capped at 10 by the backend).
 // ---------------------------------------------------------------------------
 
+type ClientActivityUser = RecentUsersQueryQuery['users'][number];
+
+// Extracted so each row can call useFolderLink - hooks can't be called inside
+// the .map() over users.
+const ClientActivityRow = ({
+  user,
+  compact,
+}: {
+  user: ClientActivityUser;
+  compact: boolean;
+}) => {
+  const { to } = useFolderLink({ id: user.folderId });
+  return (
+    <PicrLink
+      to={to}
+      underline="never"
+      p={6}
+      className={`${styles.clickableRow} ${styles.rowLink}`}
+    >
+      <FolderCover
+        heroImage={user.folder?.heroImage}
+        size={compact ? 36 : 44}
+      />
+      <Box style={{ flexGrow: 1, minWidth: 0 }}>
+        <Group gap={6} wrap="nowrap">
+          <PicrAvatar user={user} size={18} radius="xl" />
+          <Text size="sm" fw={600} truncate>
+            {user.name}
+          </Text>
+        </Group>
+        {compact ? null : (
+          <Text size="xs" c="dimmed" truncate>
+            {user.folder?.name}
+          </Text>
+        )}
+      </Box>
+      {compact ? null : (
+        <Box style={{ whiteSpace: 'nowrap' }}>
+          <DateDisplay dateString={user.lastAccess ?? undefined} />
+        </Box>
+      )}
+    </PicrLink>
+  );
+};
+
 const ClientActivity = ({ folderId }: { folderId: string }) => {
-  const navigate = useNavigate();
   const density = useDashboardDensity();
   const [result, reQuery] = useQuery({
     query: recentUsersQuery,
@@ -621,45 +662,7 @@ const ClientActivity = ({ folderId }: { folderId: string }) => {
       ) : (
         <Stack gap={4}>
           {users.map((u) => (
-            <Group
-              key={u.id}
-              gap="sm"
-              wrap="nowrap"
-              p={6}
-              className={styles.clickableRow}
-              role="link"
-              tabIndex={0}
-              onClick={() => void navigate(`/admin/f/${u.folderId}`)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  void navigate(`/admin/f/${u.folderId}`);
-                }
-              }}
-            >
-              <FolderCover
-                heroImage={u.folder?.heroImage}
-                size={compact ? 36 : 44}
-              />
-              <Box style={{ flexGrow: 1, minWidth: 0 }}>
-                <Group gap={6} wrap="nowrap">
-                  <PicrAvatar user={u} size={18} radius="xl" />
-                  <Text size="sm" fw={600} truncate>
-                    {u.name}
-                  </Text>
-                </Group>
-                {compact ? null : (
-                  <Text size="xs" c="dimmed" truncate>
-                    {u.folder?.name}
-                  </Text>
-                )}
-              </Box>
-              {compact ? null : (
-                <Box style={{ whiteSpace: 'nowrap' }}>
-                  <DateDisplay dateString={u.lastAccess ?? undefined} />
-                </Box>
-              )}
-            </Group>
+            <ClientActivityRow key={u.id} user={u} compact={compact} />
           ))}
         </Stack>
       )}

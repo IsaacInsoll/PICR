@@ -11,8 +11,7 @@ export const meQuery = gql(/* GraphQL */ `
       commentPermissions
       linkMode
       folder {
-        id
-        name
+        ...MinimumFolderFragment
       }
     }
     clientInfo {

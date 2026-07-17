@@ -1,9 +1,5 @@
 import type { NavigateOptions } from 'react-router';
 import { NavLink, useLocation, useNavigate } from 'react-router';
-import { useSetAtom } from 'jotai';
-import { placeholderFolder } from '../components/FolderHeader/PlaceholderFolder';
-import type { PicrFolder } from '@shared/types/picr';
-import { normalizeDisplayName } from '@shared/displayName';
 import type {
   FileNavigationTarget,
   FolderNavigationTarget,
@@ -11,47 +7,38 @@ import type {
 
 import { useBaseViewFolderURL } from './useBaseViewFolderURL';
 
+const useFolderUrl = () => {
+  const baseUrl = useBaseViewFolderURL();
+  const location = useLocation();
+
+  return (folder: FolderNavigationTarget, file?: FileNavigationTarget) => {
+    const fileId = typeof file === 'string' ? file : file?.id;
+    return baseUrl + folder.id + (fileId ? `/${fileId}` : '') + location.hash;
+  };
+};
+
+// Imperative navigation, for redirects and other non-clickable flows. Anything a
+// user clicks should use useFolderLink so it behaves like a real link.
 export const useSetFolder = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const setPlaceholderFolder = useSetAtom(placeholderFolder);
-  const baseUrl = useBaseViewFolderURL();
+  const folderUrl = useFolderUrl();
   return (
     folder: FolderNavigationTarget,
     file?: FileNavigationTarget,
     options?: NavigateOptions,
   ) => {
-    setPlaceholderFolder(toPlaceholderFolder(folder));
-    const base = baseUrl + folder.id;
-    const fileId = typeof file === 'string' ? file : file?.id;
-    const f = fileId ? `/${fileId}` : '';
-    void navigate(base + f + location.hash, options);
+    void navigate(folderUrl(folder, file), options);
   };
 };
 
-// converts any Mantine component to a link that preloads (placeholder) and behaves like a real link (IE: open in new tab)
+// Converts any Mantine component into a real link (so "open in new tab",
+// middle-click and "copy link address" all work). The destination folder's name
+// appears while it loads via a graphcache lookup - see PlaceholderFolderHeader -
+// so there is nothing to push in on click.
 export const useFolderLink = (
   folder: FolderNavigationTarget,
   file?: FileNavigationTarget,
 ) => {
-  const setPlaceholderFolder = useSetAtom(placeholderFolder);
-  const baseUrl = useBaseViewFolderURL();
-  const location = useLocation();
-
-  const to =
-    baseUrl +
-    folder.id +
-    (typeof file === 'string' ? `/${file}` : file?.id ? `/${file.id}` : '') +
-    location.hash;
-
-  const onClick = () => setPlaceholderFolder(toPlaceholderFolder(folder));
-
-  return { to, onClick, component: NavLink };
+  const folderUrl = useFolderUrl();
+  return { to: folderUrl(folder, file), component: NavLink };
 };
-
-const toPlaceholderFolder = (folder: FolderNavigationTarget): PicrFolder => ({
-  ...folder,
-  id: folder.id,
-  name: normalizeDisplayName(folder.name) ?? 'Loading...',
-  parents: folder.parents ?? [],
-});

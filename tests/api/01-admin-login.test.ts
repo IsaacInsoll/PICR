@@ -73,7 +73,10 @@ test('Admin has correct user config', async () => {
   const { me } = result.data!;
   expect(me?.id).toEqual('1');
   expect(me?.commentPermissions).toEqual('edit');
-  expect(me?.folder).toStrictEqual({ id: '1', name: 'Home' });
+  // toMatchObject, not toStrictEqual: me.folder selects MinimumFolderFragment, so
+  // its exact shape follows that fragment. Pinning the whole object here would
+  // fail every time the shared fragment gains a field.
+  expect(me?.folder).toMatchObject({ id: '1', name: 'Home' });
 });
 
 test('Server Info Query (kinda slow)', async () => {

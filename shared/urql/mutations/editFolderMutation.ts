@@ -21,8 +21,9 @@ export const editFolderMutation = gql(/* GraphQL */ `
       title: $title
       subtitle: $subtitle
     ) {
+      # FolderFragment -> MinimumFolderFragment -> HeroImageFragment +
+      # FolderBannerFragment, so this covers the banner write-back on clear.
       ...FolderFragment
-      ...HeroImageFragment
     }
   }
 `);

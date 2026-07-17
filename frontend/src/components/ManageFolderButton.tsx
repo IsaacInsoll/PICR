@@ -3,8 +3,6 @@ import { NavLink } from 'react-router';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 import { FolderIcon, ManageFolderIcon } from '../PicrIcons';
 import { ActionIcon, Button } from '@mantine/core';
-import { useSetAtom } from 'jotai';
-import { placeholderFolder } from './FolderHeader/PlaceholderFolder';
 
 export const ManageFolderButton = ({
   folder,
@@ -14,16 +12,11 @@ export const ManageFolderButton = ({
   managing: boolean;
 }) => {
   const baseUrl = useBaseViewFolderURL();
-  const setPlaceholderFolder = useSetAtom(placeholderFolder);
   const icon = managing ? <FolderIcon /> : <ManageFolderIcon />;
-  const onClick = () => {
-    setPlaceholderFolder({ ...folder });
-  };
   return (
     <Button
       component={NavLink}
       to={baseUrl + folder.id + (managing ? '' : '/manage/links')}
-      onClick={onClick}
       variant="outline"
       leftSection={icon}
       size="xs"
@@ -43,15 +36,10 @@ export const ManageFolderIconButton = ({
   color?: string;
 }) => {
   const baseUrl = useBaseViewFolderURL();
-  const setPlaceholderFolder = useSetAtom(placeholderFolder);
-  const onClick = () => {
-    setPlaceholderFolder({ ...folder });
-  };
   return (
     <ActionIcon
       component={NavLink}
       to={baseUrl + folder.id + '/manage/links'}
-      onClick={onClick}
       variant={variant}
       color={color}
       // size="xs"

@@ -8,13 +8,7 @@ export const appRecentUserFragment = gql(/* GraphQL */ `
     lastAccess
     gravatar
     folder {
-      id
-      name
-      parents {
-        id
-        name
-      }
-      ...HeroImageFragment
+      ...MinimumFolderFragment
     }
   }
 `);

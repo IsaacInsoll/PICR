@@ -57,11 +57,7 @@ export const editBrandingMutation = gql(/* GraphQL */ `
       footerUrl
       socialLinks
       folders {
-        id
-        name
-        parents {
-          id
-        }
+        ...MinimumFolderFragment
       }
     }
   }

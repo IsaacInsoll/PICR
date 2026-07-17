@@ -24,6 +24,25 @@
   border-color: var(--mantine-color-dimmed);
 }
 
+/* The anchor covers the cover + title only, so a card action button can sit
+   outside it - nesting a button inside an <a> is invalid HTML. */
+.folderCardLink {
+  display: flex;
+  align-items: stretch;
+  flex-grow: 1;
+  min-width: 0;
+  color: inherit;
+}
+
+.rowLink {
+  display: flex;
+  flex-grow: 1;
+  min-width: 0;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+  color: inherit;
+}
+
 .clickableRow {
   cursor: pointer;
   border-radius: var(--mantine-radius-sm);

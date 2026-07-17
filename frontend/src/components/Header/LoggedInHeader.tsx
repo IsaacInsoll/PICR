@@ -166,11 +166,7 @@ const RightSide = ({ me }: { me: MeUser }) => {
           <PicrMenuItem leftSection={<DashboardIcon />} to="/admin">
             Dashboard
           </PicrMenuItem>
-          <PicrMenuItem
-            leftSection={<HomeIcon />}
-            to={homeFolderLink.to}
-            onClick={homeFolderLink.onClick}
-          >
+          <PicrMenuItem leftSection={<HomeIcon />} to={homeFolderLink.to}>
             {me.folder?.name ?? 'Home'}
           </PicrMenuItem>
           <Menu.Item

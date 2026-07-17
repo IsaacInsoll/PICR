@@ -4,6 +4,20 @@ import { invalidateQueries } from '../helpers/invalidateQueries';
 
 export const urqlCacheExchange = cacheExchange({
   schema,
+  resolvers: {
+    Query: {
+      // Links the root `folder(id:)` field to the already-normalized Folder
+      // entity. Without this, a folder we only know about via another query's
+      // `subFolders` (or a user's `folder`) is in the cache as an entity but
+      // `folder(id: X)` still misses, because root fields are cached as links
+      // keyed by field name + arguments. This is what lets the loading header
+      // show the destination folder's name - see PlaceholderFolderHeader.
+      folder: (_parent, args) => ({
+        __typename: 'Folder',
+        id: String(args['id']),
+      }),
+    },
+  },
   keys: {
     ClientInfo: () => null,
     FolderFileExport: () => null,

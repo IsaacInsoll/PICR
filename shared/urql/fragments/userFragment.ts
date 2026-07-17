@@ -16,12 +16,7 @@ export const userFragment = gql(/* GraphQL */ `
     ntfy
     ntfyEmail
     folder {
-      id
-      name
-      parents {
-        id
-        name
-      }
+      ...MinimumFolderFragment
     }
   }
 `);

@@ -21,9 +21,6 @@ export const viewBrandingsQuery = gql(/*GraphQL*/ `
             socialLinks
             folders {
                ...MinimumFolderFragment
-               parents {
-                 id
-               }
             }
         }
     }

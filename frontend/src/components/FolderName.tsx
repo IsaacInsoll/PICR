@@ -3,13 +3,11 @@ import { normalizeDisplayName } from '@shared/displayName';
 import { Code, Tooltip } from '@mantine/core';
 import { ChevronRightIcon, HomeIcon } from '../PicrIcons';
 import { PrettyFolderPath } from './PrettyFolderPath';
-import { useSetFolder } from '../hooks/useSetFolder';
-import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
+import { useFolderLink } from '../hooks/useSetFolder';
 import { PicrLink } from './PicrLink';
 
 export const FolderName = ({ folder }: { folder: PicrFolder }) => {
-  const setFolder = useSetFolder();
-  const baseURL = useBaseViewFolderURL();
+  const { to } = useFolderLink(folder);
   const folderName = normalizeDisplayName(folder.name);
 
   return (
@@ -19,14 +17,7 @@ export const FolderName = ({ folder }: { folder: PicrFolder }) => {
       disabled={folder.parents?.length === 0}
       label={<PrettyFolderPath folder={folder} subColor="blue.8" />}
     >
-      <PicrLink
-        to={baseURL + folder.id}
-        underline="never"
-        onClick={(e) => {
-          e.preventDefault();
-          setFolder(folder);
-        }}
-      >
+      <PicrLink to={to} underline="never">
         <Code>
           {folder.id === '1' ? (
             <HomeIcon opacity={0.5} style={{ paddingTop: 3, marginRight: 2 }} />
