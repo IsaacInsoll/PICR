@@ -28,6 +28,7 @@ import { GlobalErrorOverlay } from './components/GlobalErrorOverlay';
 import { normalizeFontKey } from '@shared/branding/fontRegistry';
 import { DevBackendOverrideBanner } from './components/DevBackendOverrideBanner';
 import { DownloadSharePromptHost } from './helpers/shareOrDownload';
+import { VersionWatcher } from './components/VersionWatcher';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
@@ -92,6 +93,7 @@ const App = () => {
             </Suspense>
           </PicrErrorBoundary>
           <GlobalErrorOverlay />
+          <VersionWatcher />
         </MantineProvider>
       </BrowserRouter>
     </URQLProvider>
