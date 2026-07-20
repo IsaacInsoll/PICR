@@ -62,24 +62,25 @@ export const GridGallery = ({
       event?: MouseEvent<HTMLElement>,
     ) => {
       const item = orderedItems[index];
+      // Folder tiles, and image-file tiles, are real <a href>. Let the browser
+      // handle modifier/non-left clicks (open in new tab); only intercept a plain
+      // left click for in-app navigation. (Middle-click fires auxclick, not
+      // click, so it never reaches here.) Non-image files have no href and this
+      // preventDefault is a harmless no-op on their <div>.
+      if (
+        event &&
+        (event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey ||
+          event.button !== 0)
+      ) {
+        return;
+      }
+      event?.preventDefault();
       if (isFolderContentsFile(item)) {
         setSelectedFileId(item.id);
       } else {
-        // The folder tile is a real <a href>. Let the browser handle
-        // modifier/non-left clicks (open in new tab); only intercept a plain
-        // left click for in-app navigation. (Middle-click fires auxclick, not
-        // click, so it never reaches here.)
-        if (
-          event &&
-          (event.metaKey ||
-            event.ctrlKey ||
-            event.shiftKey ||
-            event.altKey ||
-            event.button !== 0)
-        ) {
-          return;
-        }
-        event?.preventDefault();
         setFolder(item);
       }
     },
@@ -99,6 +100,11 @@ export const GridGallery = ({
             width: thumbnailSize,
             height: thumbnailSize / imageRatio,
             file: item,
+            // Images are real links; videos/other files keep their plain click.
+            href:
+              item.type === 'Image'
+                ? folderUrl({ id: item.folderId }, item.id)
+                : undefined,
           };
         }
         return {

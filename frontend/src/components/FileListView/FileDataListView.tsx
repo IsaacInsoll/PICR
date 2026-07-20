@@ -19,21 +19,32 @@ import type { FolderContentsItem } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 import { normalizeDisplayName } from '@shared/displayName';
 import { PicrLink } from '../PicrLink';
+import { FileLink } from '../FileLink';
 
 const folderContentsColumn = createPicrColumns<FolderContentsItem>();
 
-// Folder names render as real links so they can be opened in a new tab; files
-// stay plain text (their row click opens the lightbox). The row onClick bails on
-// a link's plain click via event.defaultPrevented, so the two don't both fire.
-const FolderNameCell = ({ item }: { item: FolderContentsItem }) => {
+// Names render as real links so they can be opened in a new tab: folders link to
+// the folder, image files to the lightbox URL. Videos and other files stay plain
+// text (their row click still opens the lightbox). The row onClick bails on a
+// link's plain click via event.defaultPrevented, so the two don't both fire.
+const NameCell = ({ item }: { item: FolderContentsItem }) => {
   const folderUrl = useFolderUrl();
   const name = normalizeDisplayName(item.name);
-  if (isFolderContentsFile(item)) return <>{name}</>;
-  return (
-    <PicrLink to={folderUrl(item)} underline="never" c="inherit">
-      {name}
-    </PicrLink>
-  );
+  if (!isFolderContentsFile(item)) {
+    return (
+      <PicrLink to={folderUrl(item)} underline="never" c="inherit">
+        {name}
+      </PicrLink>
+    );
+  }
+  if (item.type === 'Image') {
+    return (
+      <FileLink folderId={item.folderId} fileId={item.id} c="inherit">
+        {name}
+      </FileLink>
+    );
+  }
+  return <>{name}</>;
 };
 
 export const FileDataListView = ({
@@ -63,13 +74,9 @@ export const FileDataListView = ({
         columns={cols}
         data={(items ?? [...folders, ...files]) as FolderContentsItem[]}
         onClick={(row, event) => {
-          if (isFolderContentsFile(row)) {
-            setSelectedFileId(row.id);
-            return;
-          }
-          // Folder: the name cell is a real link. Skip if it already handled the
-          // click (plain click -> NavLink preventDefault) or it's a modified
-          // click (let the browser open a new tab).
+          // The name cell is a real link (folder, or image file). Skip if it
+          // already handled the click (plain click -> preventDefault) or it's a
+          // modified/middle click (let the browser open a new tab).
           if (
             event.defaultPrevented ||
             event.metaKey ||
@@ -80,7 +87,11 @@ export const FileDataListView = ({
           ) {
             return;
           }
-          setFolder(row);
+          if (isFolderContentsFile(row)) {
+            setSelectedFileId(row.id);
+          } else {
+            setFolder(row);
+          }
         }}
         menuItems={({ row }) =>
           !isFolderContentsFile(row.original) ? (
@@ -102,7 +113,7 @@ const columns: (PicrColumns<FolderContentsItem> & {
     ...folderContentsColumn.accessor('name', {
       header: 'Name',
       widthPercent: 10,
-      cell: ({ row }) => <FolderNameCell item={row.original} />,
+      cell: ({ row }) => <NameCell item={row.original} />,
     }),
     visibleFor: 'xs',
     isComment: false,

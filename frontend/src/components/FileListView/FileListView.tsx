@@ -5,6 +5,7 @@ import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useFolderUrl, useSetFolder } from '../../hooks/useSetFolder';
 import { PicrLink } from '../PicrLink';
+import { FileLink } from '../FileLink';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
 import type { FolderContentsItem } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
@@ -118,17 +119,17 @@ const Row = ({
         ) : null}
       </>
     ) : null;
-  // The folder name is a real link (see below), so a plain click on it is
-  // already handled by the router - NavLink calls preventDefault, and this row
-  // handler bails on defaultPrevented so it doesn't navigate twice. Clicking
-  // elsewhere on a folder row still navigates for convenience; a modified click
-  // there does nothing (only the name is the link).
+  // The name (folder, or image file) is a real link, so a plain click on it is
+  // already handled - the link calls preventDefault, and this row handler bails
+  // on defaultPrevented so it doesn't fire twice. It also ignores modified/middle
+  // clicks so the browser can open a new tab; clicking elsewhere on the row still
+  // navigates/opens on a plain click for convenience.
   const onClick = (e: MouseEvent<HTMLElement>) => {
     if (e.defaultPrevented) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+      return;
+    }
     if (isFolder) {
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
-        return;
-      }
       setFolder(file);
     } else {
       setSelectedFileId(file.id);
@@ -162,6 +163,18 @@ const Row = ({
               >
                 {fileName}
               </PicrLink>
+            ) : file.type === 'Image' ? (
+              <FileLink
+                folderId={file.folderId}
+                fileId={file.id}
+                underline="never"
+                c="inherit"
+                fz="md"
+                fw={500}
+                title={title}
+              >
+                {fileName}
+              </FileLink>
             ) : (
               <Text fz="md" fw={500} title={title}>
                 {fileName}

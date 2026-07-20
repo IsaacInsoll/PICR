@@ -30,6 +30,7 @@ import {
   shareOrDownload,
 } from '../../helpers/shareOrDownload';
 import { PicrFolder, PicrGenericFile } from '../PicrFolder';
+import { FileLink } from '../FileLink';
 import { useInView } from 'react-intersection-observer';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
 import { useCanDownload } from '../../hooks/useMe';
@@ -46,7 +47,6 @@ export const ImageFeed = ({
   files,
   folders,
   items,
-  setSelectedFileId,
   width,
 }: FileListViewStyleComponentProps) => {
   const [ref, bounds] = useMeasure();
@@ -64,7 +64,6 @@ export const ImageFeed = ({
           <FeedItem
             file={item}
             key={item.id}
-            onClick={setSelectedFileId}
             width={effectiveWidth}
             onBecomeVisible={() => onBecomeVisible(i)}
           />
@@ -83,12 +82,10 @@ export const ImageFeed = ({
 //I've done a bunch of 'detect if image loaded' because it feels shit without it
 const FeedItem = ({
   file,
-  onClick,
   width,
   onBecomeVisible,
 }: {
   file: ViewFolderFileWithHero;
-  onClick: (str: string) => void;
   width: number;
   onBecomeVisible?: () => void;
 }) => {
@@ -136,15 +133,20 @@ const FeedItem = ({
         {/*) : null}*/}
         {/*<Link to={`./${file.id}`}>*/}
         {type === 'Image' ? (
-          <Box style={{ ...dimensions, overflowY: 'hidden' }}>
-            <PicrImage
-              file={file}
-              size="lg"
-              onClick={() => onClick(file.id)}
-              clickable={true}
-              style={dimensions}
-            />
-          </Box>
+          <FileLink
+            folderId={file.folderId}
+            fileId={file.id}
+            style={{ display: 'block' }}
+          >
+            <Box style={{ ...dimensions, overflowY: 'hidden' }}>
+              <PicrImage
+                file={file}
+                size="lg"
+                clickable={true}
+                style={dimensions}
+              />
+            </Box>
+          </FileLink>
         ) : null}
         {/*</Link>*/}
         {file.type === 'Video' ? (
