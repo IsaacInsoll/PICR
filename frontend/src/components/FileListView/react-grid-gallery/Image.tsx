@@ -116,21 +116,58 @@ export const Image = <T extends ImageExtended>({
         })}
       />
 
-      <div
-        className="ReactGridGallery_tile-viewport"
-        data-testid="grid-gallery-item_viewport"
-        style={getStyle(tileViewportStyle, tileViewportFallback, styleContext)}
-        onClick={handleViewportClick}
-      >
-        {ThumbnailImageComponent ? (
-          <ThumbnailImageComponent
-            {...thumbnailImageProps}
-            imageProps={thumbnailProps}
-          />
-        ) : (
-          <img {...thumbnailProps} title={thumbnailProps.title ?? undefined} />
-        )}
-      </div>
+      {/* PICR fork: a folder tile carries an href so it is a real link (open in
+          new tab / middle-click). Files have no href and stay a plain div; their
+          click opens the lightbox, which has its own history handling. */}
+      {item.href ? (
+        <a
+          className="ReactGridGallery_tile-viewport"
+          data-testid="grid-gallery-item_viewport"
+          href={item.href}
+          style={{
+            display: 'block',
+            color: 'inherit',
+            textDecoration: 'none',
+            ...getStyle(tileViewportStyle, tileViewportFallback, styleContext),
+          }}
+          onClick={handleViewportClick}
+        >
+          {ThumbnailImageComponent ? (
+            <ThumbnailImageComponent
+              {...thumbnailImageProps}
+              imageProps={thumbnailProps}
+            />
+          ) : (
+            <img
+              {...thumbnailProps}
+              title={thumbnailProps.title ?? undefined}
+            />
+          )}
+        </a>
+      ) : (
+        <div
+          className="ReactGridGallery_tile-viewport"
+          data-testid="grid-gallery-item_viewport"
+          style={getStyle(
+            tileViewportStyle,
+            tileViewportFallback,
+            styleContext,
+          )}
+          onClick={handleViewportClick}
+        >
+          {ThumbnailImageComponent ? (
+            <ThumbnailImageComponent
+              {...thumbnailImageProps}
+              imageProps={thumbnailProps}
+            />
+          ) : (
+            <img
+              {...thumbnailProps}
+              title={thumbnailProps.title ?? undefined}
+            />
+          )}
+        </div>
+      )}
       {item.thumbnailCaption && (
         <div
           className="ReactGridGallery_tile-description"

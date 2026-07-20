@@ -3,7 +3,8 @@ import { normalizeDisplayName } from '@shared/displayName';
 import { Page } from '../Page';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import { useSetFolder } from '../../hooks/useSetFolder';
+import { useFolderUrl, useSetFolder } from '../../hooks/useSetFolder';
+import { PicrLink } from '../PicrLink';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
 import type { FolderContentsItem } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
@@ -20,6 +21,7 @@ import {
 } from '@mantine/core';
 import { FileFlagBadge } from './Review/FileFlagBadge';
 import { useInView } from 'react-intersection-observer';
+import type { MouseEvent } from 'react';
 import { useEffect } from 'react';
 import { SmallPreview } from './SmallPreview';
 import { FileMenu } from './FileMenu';
@@ -74,6 +76,7 @@ const Row = ({
 }) => {
   const { canView } = useCommentPermissions();
   const setFolder = useSetFolder();
+  const folderUrl = useFolderUrl();
   const isMobile = useIsMobile();
   const isFile = isFolderContentsFile(file);
   const isFolder = !isFile;
@@ -115,8 +118,17 @@ const Row = ({
         ) : null}
       </>
     ) : null;
-  const onClick = () => {
+  // The folder name is a real link (see below), so a plain click on it is
+  // already handled by the router - NavLink calls preventDefault, and this row
+  // handler bails on defaultPrevented so it doesn't navigate twice. Clicking
+  // elsewhere on a folder row still navigates for convenience; a modified click
+  // there does nothing (only the name is the link).
+  const onClick = (e: MouseEvent<HTMLElement>) => {
+    if (e.defaultPrevented) return;
     if (isFolder) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+        return;
+      }
       setFolder(file);
     } else {
       setSelectedFileId(file.id);
@@ -139,9 +151,22 @@ const Row = ({
         <Group gap="sm">
           {/*<Avatar size={40} src={item.avatar} radius={40} />*/}
           <div>
-            <Text fz="md" fw={500} title={title}>
-              {fileName}
-            </Text>
+            {isFolder ? (
+              <PicrLink
+                to={folderUrl(file)}
+                underline="never"
+                c="inherit"
+                fz="md"
+                fw={500}
+                title={title}
+              >
+                {fileName}
+              </PicrLink>
+            ) : (
+              <Text fz="md" fw={500} title={title}>
+                {fileName}
+              </Text>
+            )}
             {/*{isMobile ? (*/}
             {/*  <Text c="dimmed" fz="xs">*/}
             {/*    {file.type ?? 'Folder'}{' '}*/}

@@ -86,22 +86,29 @@ behaviour.
 - `useSetFolder` still exists for genuinely imperative navigation — redirects,
   drawer `onClose` — not for things people click.
 
-**Known non-compliant surfaces (not yet converted).** The rule above is the
-target, not a description of every call site. These still navigate on click
-only, so "open in new tab" does not work on them:
+**Patterns for the list/grid surfaces.** Folder rows in the list/table/grid
+views are now real links, but the mechanism differs because each surface owns its
+own click:
 
-| Surface                             | Why it's still `onClick`                                                                                                                                                   |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `FileListView/GridGallery.tsx`      | `react-grid-gallery` owns the click and hands back an index; it renders no anchors. Needs a custom tile or a different library — a real design decision, not an oversight. |
-| `FileListView/FileListView.tsx`     | `onClick` on `Table.Td`; needs the cell content wrapped in an anchor                                                                                                       |
-| `FileListView/FileDataListView.tsx` | `PicrDataGrid onClick={(row)}`; same shape as above                                                                                                                        |
-| `ViewFolderButton.tsx`              | Trivial: `<Button {...useFolderLink(folder)}>`                                                                                                                             |
-| `BrandingFolderChips.tsx`           | Trivial, same spread                                                                                                                                                       |
-| `QuickFind/QuickFind.tsx`           | Results list                                                                                                                                                               |
+- **Feed** (`ImageFeed`) and buttons/chips (`ViewFolderButton`,
+  `BrandingFolderChips`): straight `useFolderLink` — spread it, or pass `to`. A
+  Mantine component becomes a link via `<Button {...useFolderLink(folder)}>`.
+- **Grid** (`GridGallery` + the vendored `react-grid-gallery`): the tile is a
+  real `<a href>`. `react-grid-gallery` is a local fork (`./react-grid-gallery/`,
+  not a dependency), so the tile viewport in `Image.tsx` renders an anchor when
+  the gallery item carries an `href`. File tiles carry none and stay a `<div>`
+  (their click opens the lightbox).
+- **Tables** (`FileListView`, `FileDataListView`): the row keeps its `onClick`
+  for convenience, and the folder **name** cell is a real link. To stop the two
+  fighting, the row handler bails on `event.defaultPrevented` — `NavLink` calls
+  `preventDefault` on a plain click, so the row won't also navigate — and ignores
+  modified/middle clicks so the browser can open a new tab. This is the pattern
+  to copy for any "clickable row that contains a link".
 
-If you are adding a **new** folder link, follow the rule. If you are converting
-one of the above, `useFolderLink` returns `component: NavLink` precisely so it
-can be spread onto a Mantine component: `<Button {...useFolderLink(folder)}>`.
+**Still `onClick`-only:** `QuickFind` results. Deliberately deferred — the
+handler fuses mouse click, keyboard (arrow/Enter) selection, drawer close, and
+the lightbox history rules below, so converting it is not a spread. Do it as its
+own change if you pick it up.
 
 ### Folder Fragments: Two Tiers
 

@@ -4,6 +4,7 @@ import type {
 } from '@shared/types/picr';
 import { normalizeDisplayName } from '@shared/displayName';
 import { BackgroundImage, Box, Button } from '@mantine/core';
+import { NavLink } from 'react-router';
 import { FileIcon, FolderIcon } from '../PicrIcons';
 import { imageURL } from '../helpers/imageURL';
 import { useHover } from '@mantine/hooks';
@@ -12,17 +13,20 @@ import type { CSSProperties } from 'react';
 // This import doesn't work with vite :/
 // import { getInitialsColor } from '@mantine/core/lib/components/Avatar/get-initials-color/get-initials-color';
 
-// "Thumbnail Preview" of a folder so you can see it inline with images
+// "Thumbnail Preview" of a folder so you can see it inline with images.
+// Pass `to` for a real link (feed view). Pass neither `to` when the caller wraps
+// this in its own anchor (grid tile) - the name then renders as a static span so
+// it isn't a nested interactive element.
 export const PicrFolder = ({
   folder,
   style,
-  ...props
+  to,
+  title,
 }: {
   folder: PicrFolderType;
 } & {
-  onClick?: () => void;
+  to?: string;
   style?: CSSProperties;
-  disabled?: boolean;
   title?: string;
 }) => {
   const folderName = normalizeDisplayName(folder.name);
@@ -33,6 +37,14 @@ export const PicrFolder = ({
   const { hovered, ref } = useHover();
 
   const dark = useIsDarkMode();
+  const buttonProps = {
+    title,
+    leftSection: <FolderIcon />,
+    fullWidth: true,
+    variant: 'transparent' as const,
+    color: hovered ? 'blue' : dark ? '#ddd' : '#333',
+    style: { height: '100%' },
+  };
   return (
     <BackgroundImage
       src={src ? src.replace(' ', '%20') : ''}
@@ -47,16 +59,15 @@ export const PicrFolder = ({
           backgroundColor: dark ? '#2229' : '#ddd9',
         }}
       >
-        <Button
-          {...props}
-          leftSection={<FolderIcon />}
-          fullWidth
-          variant="transparent"
-          color={hovered ? 'blue' : dark ? '#ddd' : '#333'}
-          style={{ height: '100%' }}
-        >
-          {folderName}
-        </Button>
+        {to ? (
+          <Button component={NavLink} to={to} {...buttonProps}>
+            {folderName}
+          </Button>
+        ) : (
+          <Button component="span" {...buttonProps}>
+            {folderName}
+          </Button>
+        )}
       </Box>
     </BackgroundImage>
   );

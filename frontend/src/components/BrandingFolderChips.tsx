@@ -1,13 +1,25 @@
 import { Badge, Group, Text, Tooltip } from '@mantine/core';
 import { normalizeDisplayName } from '@shared/displayName';
 import { useMe } from '../hooks/useMe';
-import { useSetFolder } from '../hooks/useSetFolder';
+import { useFolderLink } from '../hooks/useSetFolder';
 
 type FolderChip = {
   id: string;
   name?: string | null;
   parents?: Array<{ id: string }> | null;
 };
+
+// Extracted so each chip can call useFolderLink - hooks can't run inside the
+// .map() over folders.
+const AccessibleFolderChip = ({ folder }: { folder: FolderChip }) => (
+  <Badge
+    variant="light"
+    style={{ cursor: 'pointer' }}
+    {...useFolderLink({ id: folder.id })}
+  >
+    {normalizeDisplayName(folder.name) ?? folder.id}
+  </Badge>
+);
 
 const isAccessible = (folder: FolderChip, myFolderId: string | undefined) => {
   if (!myFolderId || myFolderId === '1') return true;
@@ -24,7 +36,6 @@ export const BrandingFolderChips = ({
   showLabel?: boolean;
 }) => {
   const me = useMe();
-  const setFolder = useSetFolder();
 
   if (!folders || folders.length === 0) return null;
 
@@ -40,18 +51,7 @@ export const BrandingFolderChips = ({
       {folders.map((folder) => {
         const accessible = isAccessible(folder, myFolderId);
         if (accessible) {
-          return (
-            <Badge
-              key={folder.id}
-              variant="light"
-              style={{ cursor: 'pointer' }}
-              onClick={() =>
-                setFolder({ id: folder.id, name: folder.name ?? undefined })
-              }
-            >
-              {normalizeDisplayName(folder.name) ?? folder.id}
-            </Badge>
-          );
+          return <AccessibleFolderChip key={folder.id} folder={folder} />;
         }
         return (
           <Tooltip

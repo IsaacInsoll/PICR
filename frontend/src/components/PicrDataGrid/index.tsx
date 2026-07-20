@@ -13,7 +13,7 @@ import {
   Table,
   Text,
 } from '@mantine/core';
-import type { ReactNode } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 import { useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon, DotsIcon } from '../../PicrIcons';
 import type { MenuItemsProps, PicrColumns } from './types';
@@ -36,7 +36,9 @@ export const PicrDataGrid = <TData,>({
 }: {
   columns: PicrColumns<TData>[];
   data: TData[] | undefined;
-  onClick?: (row: TData) => void;
+  // event is forwarded so a caller can honour a link inside a cell (bail on
+  // event.defaultPrevented) and skip modified clicks.
+  onClick?: (row: TData, event: MouseEvent<HTMLElement>) => void;
   onMouseover?: (row: TData) => void;
   menuItems?: (props: MenuItemsProps<TData>) => ReactNode;
 }) => {
@@ -98,7 +100,9 @@ export const PicrDataGrid = <TData,>({
           {table.getRowModel().rows.map((row) => (
             <Table.Tr
               key={row.id}
-              onClick={onClick ? () => onClick(row.original) : undefined}
+              onClick={
+                onClick ? (event) => onClick(row.original, event) : undefined
+              }
               onMouseOver={() => onMouseover?.(row.original)}
               style={{ cursor: onClick ? 'pointer' : undefined }}
             >

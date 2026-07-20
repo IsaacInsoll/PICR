@@ -4,6 +4,7 @@ import { imageURL } from '../../helpers/imageURL';
 import { Gallery } from './react-grid-gallery';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from '../../atoms/themeModeAtom';
+import type { MouseEvent } from 'react';
 import { useCallback, useMemo } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import { Box } from '@mantine/core';
@@ -17,7 +18,7 @@ import 'yet-another-react-lightbox/styles.css';
 import './GridGallery.css';
 import { FilePreview } from './FilePreview';
 import { PicrFolder, PicrGenericFile } from '../PicrFolder';
-import { useSetFolder } from '../../hooks/useSetFolder';
+import { useFolderUrl, useSetFolder } from '../../hooks/useSetFolder';
 import type {
   FolderContentsItem,
   ViewFolderFileWithHero,
@@ -43,6 +44,7 @@ export const GridGallery = ({
   width,
 }: FileListViewStyleComponentProps) => {
   const setFolder = useSetFolder();
+  const folderUrl = useFolderUrl();
   const theme = useAtomValue(themeModeAtom);
   const thumbnailSize = theme.thumbnailSize ?? DEFAULT_THUMBNAIL_SIZE;
   const margin = theme.thumbnailSpacing ?? DEFAULT_SPACING;
@@ -54,11 +56,30 @@ export const GridGallery = ({
     [files, folders, items],
   );
   const handleClick = useCallback(
-    (index: number) => {
+    (
+      index: number,
+      _galleryItem: GalleryItem,
+      event?: MouseEvent<HTMLElement>,
+    ) => {
       const item = orderedItems[index];
       if (isFolderContentsFile(item)) {
         setSelectedFileId(item.id);
       } else {
+        // The folder tile is a real <a href>. Let the browser handle
+        // modifier/non-left clicks (open in new tab); only intercept a plain
+        // left click for in-app navigation. (Middle-click fires auxclick, not
+        // click, so it never reaches here.)
+        if (
+          event &&
+          (event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey ||
+            event.button !== 0)
+        ) {
+          return;
+        }
+        event?.preventDefault();
         setFolder(item);
       }
     },
@@ -86,9 +107,10 @@ export const GridGallery = ({
           width: thumbnailSize * 2,
           height: thumbnailSize,
           folder: item,
+          href: folderUrl(item),
         };
       }),
-    [orderedItems, thumbnailSize],
+    [orderedItems, thumbnailSize, folderUrl],
   );
   const tileViewportStyle = useCallback(
     (context: { item: ImageExtended<GalleryItem> }) => ({

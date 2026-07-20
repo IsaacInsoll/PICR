@@ -21,7 +21,7 @@ import { FileReview } from './Review/FileReview';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { useOpenFileInfoModal } from '../../atoms/modalAtom';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import { useSetFolder } from '../../hooks/useSetFolder';
+import { useFolderLink } from '../../hooks/useSetFolder';
 import { useSelectedFileId } from '../../hooks/useSelectedFileId';
 import { CloudDownloadIcon, InfoIcon, SlideshowIcon } from '../../PicrIcons';
 import {
@@ -49,7 +49,6 @@ export const ImageFeed = ({
   setSelectedFileId,
   width,
 }: FileListViewStyleComponentProps) => {
-  const setFolder = useSetFolder();
   const [ref, bounds] = useMeasure();
   const orderedItems: FolderContentsItem[] = items ?? [...folders, ...files];
 
@@ -73,7 +72,6 @@ export const ImageFeed = ({
           <FeedFolderItem
             folder={item}
             key={item.id}
-            onClick={() => setFolder(item)}
             onBecomeVisible={() => onBecomeVisible(i)}
           />
         ),
@@ -189,14 +187,13 @@ const FeedItem = ({
 
 const FeedFolderItem = ({
   folder,
-  onClick,
   onBecomeVisible,
 }: {
   folder: ViewFolderSubFolder;
-  onClick: () => void;
   onBecomeVisible?: () => void;
 }) => {
   const { ref, inView } = useInView({ threshold: 0 });
+  const { to } = useFolderLink(folder);
   useEffect(() => {
     if (inView && onBecomeVisible) {
       onBecomeVisible();
@@ -206,7 +203,7 @@ const FeedFolderItem = ({
   return (
     <Box ref={ref}>
       <Page key={folder.id}>
-        <PicrFolder folder={folder} style={{ height: 75 }} onClick={onClick} />
+        <PicrFolder folder={folder} style={{ height: 75 }} to={to} />
       </Page>
     </Box>
   );

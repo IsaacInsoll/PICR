@@ -1,5 +1,6 @@
 import type { NavigateOptions } from 'react-router';
 import { NavLink, useLocation, useNavigate } from 'react-router';
+import { useCallback } from 'react';
 import type {
   FileNavigationTarget,
   FolderNavigationTarget,
@@ -7,14 +8,22 @@ import type {
 
 import { useBaseViewFolderURL } from './useBaseViewFolderURL';
 
-const useFolderUrl = () => {
+// Returns a builder for the folder/file URL, preserving the current hash (which
+// carries #s= sort and #m= modal state). Exported for surfaces that need the URL
+// string directly rather than as link props - e.g. a folder tile inside a
+// third-party gallery that renders its own anchor. Stable across renders (unless
+// base URL or hash change) so callers can safely use it in useMemo deps.
+export const useFolderUrl = () => {
   const baseUrl = useBaseViewFolderURL();
   const location = useLocation();
 
-  return (folder: FolderNavigationTarget, file?: FileNavigationTarget) => {
-    const fileId = typeof file === 'string' ? file : file?.id;
-    return baseUrl + folder.id + (fileId ? `/${fileId}` : '') + location.hash;
-  };
+  return useCallback(
+    (folder: FolderNavigationTarget, file?: FileNavigationTarget) => {
+      const fileId = typeof file === 'string' ? file : file?.id;
+      return baseUrl + folder.id + (fileId ? `/${fileId}` : '') + location.hash;
+    },
+    [baseUrl, location.hash],
+  );
 };
 
 // Imperative navigation, for redirects and other non-clickable flows. Anything a

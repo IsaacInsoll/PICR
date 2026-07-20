@@ -26,6 +26,10 @@ export interface Image {
   customOverlay?: ReactNode;
   thumbnailCaption?: ReactNode;
   orientation?: number;
+  // PICR fork: when set, the tile viewport renders as a real <a href> so a folder
+  // tile can be opened in a new tab / middle-clicked. onClick still fires for the
+  // in-app navigation on a plain click. Not upstream.
+  href?: string;
 }
 
 export type ImageExtended<T extends Image = Image> = T & {
