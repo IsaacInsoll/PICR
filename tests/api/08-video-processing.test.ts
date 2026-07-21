@@ -3,6 +3,7 @@ import { createTestGraphqlClient, getUserHeader } from './testGraphqlClient';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
 import { testUrl, videoFolderId } from './testVariables';
+import { openSharp } from '../../backend/media/openSharp';
 
 const getVideoFile = async () => {
   const headers = await getUserHeader(defaultCredentials);
@@ -44,15 +45,75 @@ test('Video sample has extracted metadata', async () => {
   expect(video.metadata?.AudioCodec).toBe('aac');
 });
 
-test('Video thumbnail montage is generated and served', async () => {
+test('Video-only folder uses a video poster as the hero image', async () => {
+  const headers = await getUserHeader(defaultCredentials);
+  const client = await createTestGraphqlClient(headers);
+  const result = await client
+    .query(viewFolderQuery, { folderId: videoFolderId })
+    .toPromise();
+
+  expect(result.error).toBeUndefined();
+  const folder = result.data?.folder;
+  const video = folder?.files.find((item) => item.__typename === 'Video');
+  expect(video).toBeDefined();
+  const heroImage = folder?.heroImage;
+  expect(heroImage?.__typename).toBe('Video');
+  expect(heroImage?.id).toBe(video?.id);
+  if (heroImage?.__typename !== 'Video') throw new Error('Expected video hero');
+  expect(heroImage.imageRatio).toBeGreaterThan(0.55);
+  expect(heroImage.imageRatio).toBeLessThan(0.57);
+});
+
+test('Video poster thumbnails and scrub sprite are generated and served', async () => {
   const video = await getVideoFile();
 
-  const response = await fetch(
-    `${testUrl}image/${video.id}/md/${video.fileHash}/joined.jpg`,
+  const posterResponses = await Promise.all(
+    (['sm', 'md', 'lg'] as const).map(async (size) => {
+      const response = await fetch(
+        `${testUrl}image/${video.id}/${size}/${video.fileHash}/poster.jpg`,
+      );
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-type')).toContain('image/jpeg');
+      return {
+        size,
+        bytes: new Uint8Array(await response.arrayBuffer()),
+      };
+    }),
   );
 
-  expect(response.status).toBe(200);
-  expect(response.headers.get('content-type')).toContain('image/jpeg');
-  const bytes = new Uint8Array(await response.arrayBuffer());
-  expect(bytes.length).toBeGreaterThan(10_000);
+  const dimensions = await Promise.all(
+    posterResponses.map(async ({ size, bytes }) => ({
+      size,
+      metadata: await openSharp(Buffer.from(bytes)).metadata(),
+      bytes,
+    })),
+  );
+  expect(dimensions.find(({ size }) => size === 'sm')?.metadata).toMatchObject({
+    width: 141,
+    height: 250,
+  });
+  expect(dimensions.find(({ size }) => size === 'md')?.metadata).toMatchObject({
+    width: 281,
+    height: 500,
+  });
+  expect(dimensions.find(({ size }) => size === 'lg')?.metadata).toMatchObject({
+    width: 1080,
+    height: 1920,
+  });
+  expect(
+    dimensions.find(({ size }) => size === 'lg')?.bytes.length,
+  ).toBeGreaterThan(50_000);
+
+  const scrubResponse = await fetch(
+    `${testUrl}image/${video.id}/scrub/${video.fileHash}/scrub.jpg`,
+  );
+  expect(scrubResponse.status).toBe(200);
+  expect(scrubResponse.headers.get('content-type')).toContain('image/jpeg');
+  const scrubBytes = new Uint8Array(await scrubResponse.arrayBuffer());
+  const scrubMetadata = await openSharp(Buffer.from(scrubBytes)).metadata();
+  expect(scrubMetadata).toMatchObject({
+    width: 281,
+    height: 5000,
+  });
+  expect(scrubBytes.length).toBeGreaterThan(100_000);
 });

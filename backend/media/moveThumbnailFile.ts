@@ -124,14 +124,15 @@ const replicateDirectoryContentsNoOverwrite = async (
  * intact until the destination exists, and an existing destination file is never
  * replaced (`EEXIST` -> caller treats it as a conflict).
  *
- * Directories (video montages): move the whole subtree in one atomic `fs.rename`.
- * This travels any nested content along untouched — including foreign NAS sidecar
- * dirs such as Synology `@eaDir` — and never invokes `copyFile` on a directory.
- * A pre-existing non-empty destination fails `ENOTEMPTY`/`EEXIST` and is reported
- * as a conflict (both left intact). `rename` cannot cross filesystems, but cache
- * moves stay within the cache dir, so the recursive `EXDEV` fallback below is
- * defensive only; it replicates entries non-destructively (source intact on a
- * mid-way failure) before dropping the source.
+ * Directories (legacy pre-v2 video montages): move the whole subtree in one
+ * atomic `fs.rename`. This travels any nested content along untouched —
+ * including foreign NAS sidecar dirs such as Synology `@eaDir` — and never
+ * invokes `copyFile` on a directory. A pre-existing non-empty destination fails
+ * `ENOTEMPTY`/`EEXIST` and is reported as a conflict (both left intact).
+ * `rename` cannot cross filesystems, but cache moves stay within the cache dir,
+ * so the recursive `EXDEV` fallback below is defensive only; it replicates
+ * entries non-destructively (source intact on a mid-way failure) before dropping
+ * the source.
  */
 export const moveEntryNoOverwrite = async (
   from: string,
@@ -147,7 +148,7 @@ export const moveEntryNoOverwrite = async (
     } catch (err) {
       const code = (err as NodeJS.ErrnoException).code;
       // Destination already present: rename replaces an *empty* dir, so a real
-      // montage (non-empty) surfaces as ENOTEMPTY/EEXIST -> leave both, conflict.
+      // legacy montage (non-empty) surfaces as ENOTEMPTY/EEXIST -> leave both.
       if (code === 'EEXIST' || code === 'ENOTEMPTY') return 'conflict';
       // Only a cross-device move needs the manual copy fallback below.
       if (code !== 'EXDEV') throw err;
@@ -161,7 +162,7 @@ export const moveEntryNoOverwrite = async (
     }
     const replicated = await replicateDirectoryContentsNoOverwrite(from, to);
     if (!replicated) return 'conflict';
-    // Destination montage is complete -> drop the source.
+    // Destination legacy montage is complete -> drop the source.
     await removeDirIfExists(from);
     return 'moved';
   }
@@ -176,7 +177,7 @@ export const moveEntryNoOverwrite = async (
  * Non-destructive per-file thumbnail relocation. Moves every cache variant for a
  * file from its old (`relativePath`, `name`) location to a new one, keeping the
  * same content hash (a pure move never changes the hash). Handles both image
- * files and the video montage directory.
+ * files and any legacy pre-v2 video montage directory.
  *
  * Never discards existing cache data — a variant is relocated (its source removed
  * only once the destination is in place) and an existing destination is never

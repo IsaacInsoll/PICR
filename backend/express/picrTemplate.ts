@@ -105,6 +105,6 @@ const imagePathFor = (
   size: 'raw' | 'sm' | 'md' | 'lg',
 ) => {
   const path = `/image/${file.id}/${size}/${file.fileHash}/`;
-  if (file.type === 'Video' && size !== 'raw') return path + 'joined.jpg';
+  if (file.type === 'Video' && size !== 'raw') return path + 'poster.jpg';
   return path + file.name;
 };

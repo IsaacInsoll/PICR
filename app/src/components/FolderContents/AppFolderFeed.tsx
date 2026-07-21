@@ -67,11 +67,14 @@ const FlashFolder = ({
   folder: ViewFolderSubFolder;
   width: number;
 }) => {
+  const heroImage = folder.heroImage;
+  const hasHeroImage =
+    heroImage?.__typename === 'Image' || heroImage?.__typename === 'Video';
   return (
     <AppFolderLink folder={folder} asChild>
       <TouchableOpacity>
-        {folder.heroImage?.id ? (
-          <AppImage file={folder.heroImage} width={width} />
+        {hasHeroImage ? (
+          <AppImage file={heroImage} width={width} />
         ) : (
           <PFileFolderThumbnail folder={folder} style={{ minHeight: 200 }} />
         )}

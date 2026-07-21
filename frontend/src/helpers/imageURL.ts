@@ -12,9 +12,16 @@ export const imageURL = (
 
   // if you change the path on the following line, also update imagePathFor in picrTemplate.ts (used by backend)
   const path = withBasePath(`/image/${id}/${size}/${fileHash}/`);
-  if (type === 'Video' && size !== 'raw') return path + `joined.jpg`;
+  if (type === 'Video' && size !== 'raw') {
+    return path + (extension === '.avif' ? 'poster.avif' : 'poster.jpg');
+  }
 
   return path + (extension ? name + extension : name);
+};
+
+export const videoScrubURL = (file: ImageUrlFileInput) => {
+  const { id, fileHash } = file;
+  return withBasePath(`/image/${id}/scrub/${fileHash}/scrub.jpg`);
 };
 
 // export const imageDimensions = (file: PicrFile, size: ThumbnailSize) => {

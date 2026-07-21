@@ -183,6 +183,7 @@ export const addFile = async (
         meta.Height && meta.Width && meta.Height > 0
           ? meta.Width / meta.Height
           : 0;
+      if (generateThumbs) await generateAllThumbs(file);
     }
   } else if (picrConfig.updateMetadata) {
     log('info', '🔄️ update metadata: ' + file.id);

@@ -6,7 +6,7 @@ import { VideoProgressIndicator } from './VideoProgressIndicator';
 import type { ThumbnailImageComponentImageProps } from './react-grid-gallery';
 import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
-import { imageURL } from '../../helpers/imageURL';
+import { videoScrubURL } from '../../helpers/imageURL';
 import { useNoDownloadMediaProps } from '../../hooks/useNoDownloadMediaProps';
 
 // Video 'scrubber' image preview. Requires either a `style` prop for dimensions or will work it out based on container width
@@ -71,7 +71,7 @@ export const PicrVideoPreview = ({
         title={imageProps.title ?? undefined}
         style={{ ...finalStyle, ...noDownloadMediaProps.style }}
         ref={mouseRef}
-        src={imageURL(file, 'md')}
+        src={videoScrubURL(file)}
         onLoad={() => {
           setLoaded(true);
           // if (onImageLoaded) onImageLoaded(file);

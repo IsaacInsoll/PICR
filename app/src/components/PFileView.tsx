@@ -53,6 +53,14 @@ const PFileViewComponent = ({
       />
     );
   }
+  if (isFolder && file.heroImage?.type === 'Video') {
+    return (
+      <PFileVideo
+        {...p}
+        file={{ ...file.heroImage, name: file.heroImage.name ?? undefined }}
+      />
+    );
+  }
 
   if (isFolder) return <PFileFolderThumbnail {...p} folder={file} />;
 

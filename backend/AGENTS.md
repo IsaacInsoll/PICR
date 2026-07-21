@@ -213,11 +213,12 @@ GitHub on every request.
 
 ### FFmpeg/FFprobe Configuration
 
-- Direct `fluent-ffmpeg` calls must respect both configured binary paths. Use
-  `.setFfmpegPath(picrConfig.ffmpegPath ?? 'ffmpeg')` for ffmpeg commands and
-  call `ffmpeg.setFfprobePath(picrConfig.ffprobePath ?? 'ffprobe')` before
-  `ffmpeg.ffprobe(...)`. Some self-hosted installs set `FFPROBE_PATH` because
-  `ffprobe` is not on `PATH`.
+- Use `backend/media/ffmpeg.ts` for ffmpeg/ffprobe calls. It runs the configured
+  binaries from `picrConfig.ffmpegPath ?? 'ffmpeg'` and
+  `picrConfig.ffprobePath ?? 'ffprobe'`, accepts explicit argument arrays, and
+  applies timeouts. Some self-hosted installs set `FFPROBE_PATH` because
+  `ffprobe` is not on `PATH`; do not shell out to raw `ffprobe` without the
+  wrapper.
 
 ### Hardware Video Acceleration (VAAPI)
 
@@ -236,12 +237,13 @@ GitHub on every request.
   and always resolves to CPU. Anything that runs ffmpeg VAAPI filters must
   therefore tolerate the drivers being absent.
 - **Production video thumbnails are intentionally CPU-only.** VAAPI benchmarked
-  ~16-19% slower than CPU for the 10-frame seek montage (GPU upload/download
-  overhead dominates), so `generateVideoThumbnail.ts` does not use VAAPI. The
-  VAAPI thumbnail helper (`media/vaapiVideo.ts`, `extractVaapiThumbnailFrames`)
-  is benchmark/reference-only. VAAPI is retained because it is ~2.5-2.9x faster
-  for whole-video transcode — groundwork for a future transcoding feature. Don't
-  wire VAAPI into the thumbnail path without re-benchmarking.
+  ~16-19% slower than CPU for seek-based poster/scrub extraction (GPU
+  upload/download overhead dominates), so `generateVideoThumbnail.ts` does not
+  use VAAPI. The VAAPI thumbnail helper (`media/vaapiVideo.ts`,
+  `extractVaapiThumbnailFrames`) is benchmark/reference-only. VAAPI is retained
+  because it is ~2.5-2.9x faster for whole-video transcode — groundwork for a
+  future transcoding feature. Don't wire VAAPI into the thumbnail path without
+  re-benchmarking.
 
 ### Media Write Access
 
@@ -488,19 +490,39 @@ contracts between watcher, on-view, scheduled, and manual scans.
 - `addFile()` uses a `typeChanged` gate so existing files reclassify during the
   normal boot scan when optional decoder capabilities appear. Do not bulk-clear
   `fileHash` to force this.
-- Cache directories can contain non-PICR metadata directories from NAS filesystems
-  (for example Synology `@eaDir` inside video montage cache folders). Code that
-  moves or migrates thumbnail cache directories must handle nested directories;
-  do not assume video montage cache folders contain only flat image files.
+- Legacy pre-v2 video montage cache directories can contain non-PICR metadata
+  directories from NAS filesystems (for example Synology `@eaDir`). New video
+  thumbnails are versioned files, but cleanup/rename code still sees old
+  directories during transition and must handle nested directories rather than
+  assuming flat image files.
 
 ### Video Processing
 
 ```typescript
-// Uses FFmpeg via fluent-ffmpeg
-// Extracts 10 frames at equal intervals
-// Merges into vertical montage thumbnail
-// Queued to prevent concurrent FFmpeg processes
+// Uses backend/media/ffmpeg.ts with explicit ffmpeg/ffprobe argument arrays
+// Extracts 10 candidate frames away from the exact start/end
+// Picks a poster frame, writes versioned sm/md/lg poster files, and writes a scrub sprite
+// Stores video imageRatio + blurHash for poster placeholders and folder heroes
+// Uses a single-flight queue to prevent duplicate concurrent generation per video
+// Writes poster/scrub cache artifacts atomically via temp-file rename promotion
 ```
+
+- Video poster files are named
+  `<name>-v${VIDEO_THUMBNAIL_CACHE_VERSION}-<size>-<hash>.jpg`, plus `.avif`
+  when AVIF is enabled. The scrub sprite is JPEG-only:
+  `<name>-v${VIDEO_THUMBNAIL_CACHE_VERSION}-scrub-<hash>.jpg`.
+- Client poster URLs use the normal `/image/:id/:size/:hash/poster.jpg` path
+  for `sm`/`md`/`lg`. The scrub sprite is served by the backend-local
+  `/image/:id/scrub/:hash/scrub.jpg` token; do not add `scrub` to shared
+  `ThumbnailSize`/`allSizes`.
+- New video thumbnail generation does not write legacy
+  `<name>-md-<hash>.<ext>/joined.jpg` montage directories. Rename/delete cleanup
+  still includes those pre-v2 directories as transitional variants, and they can
+  be manually deleted from the cache; posters regenerate lazily on first
+  request.
+- `Files.blurHash` is nullable in the database and GraphQL schema. Existing rows
+  can lack placeholders, and videos receive blur hashes lazily from generated
+  poster frames.
 
 ---
 

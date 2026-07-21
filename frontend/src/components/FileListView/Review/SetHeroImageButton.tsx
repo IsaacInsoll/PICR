@@ -19,11 +19,13 @@ export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
   const [, mutate] = useMutation(editFolderMutation);
   const [loading, setLoading] = useState(false);
   const openBannerModal = useOpenSetBannerImageModal();
+  const canSetHero = file.type === 'Image' || file.type === 'Video';
+  const canSetBanner = file.type === 'Image';
 
   const id = useId();
   const { reward } = useReward(id, 'confetti', confettiOptions);
 
-  if (!me?.isUser || file.type !== 'Image') return null;
+  if (!me?.isUser || !canSetHero) return null;
 
   const onSetHero = () => {
     if (!file.folderId) return;
@@ -41,13 +43,17 @@ export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
     openBannerModal(file);
   };
 
-  const isActive = file.isHeroImage || file.isBannerImage;
+  const isActive = file.isHeroImage || (canSetBanner && file.isBannerImage);
 
   return (
     <>
       <span id={id} />
       <Menu shadow="md" width={200}>
-        <Tooltip label="Set as Hero / Banner Image">
+        <Tooltip
+          label={
+            canSetBanner ? 'Set as Hero / Banner Image' : 'Set as Hero Image'
+          }
+        >
           <Menu.Target>
             <ActionIcon
               variant={isActive ? 'filled' : 'default'}
@@ -66,9 +72,13 @@ export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
           >
             Set as Hero Image
           </Menu.Item>
-          <Menu.Item leftSection={<BannerImageIcon />} onClick={onSetBanner}>
-            {file.isBannerImage ? 'Change Banner Size' : 'Set as Banner Image'}
-          </Menu.Item>
+          {canSetBanner ? (
+            <Menu.Item leftSection={<BannerImageIcon />} onClick={onSetBanner}>
+              {file.isBannerImage
+                ? 'Change Banner Size'
+                : 'Set as Banner Image'}
+            </Menu.Item>
+          ) : null}
         </Menu.Dropdown>
       </Menu>
     </>

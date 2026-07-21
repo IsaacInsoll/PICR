@@ -183,7 +183,7 @@ type Folder {
   brandingId: ID
   files: [FileInterface!]!
   folderLastModified: DateTime!
-  heroImage: Image
+  heroImage: FileInterface
   id: ID!
   name: String!
   parentId: ID
@@ -254,7 +254,7 @@ enum HeadingFontKey {
 }
 
 type Image implements FileInterface {
-  blurHash: String!
+  blurHash: String
   fileCreated: DateTime!
   fileHash: String!
   fileLastModified: DateTime!
@@ -497,6 +497,7 @@ enum UserType {
 }
 
 type Video implements FileInterface {
+  blurHash: String
   duration: Float
   fileCreated: DateTime!
   fileHash: String!

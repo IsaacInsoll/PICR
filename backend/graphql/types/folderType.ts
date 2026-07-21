@@ -73,7 +73,7 @@ export const folderType: GraphQLObjectType<FolderFields, PicrRequestContext> =
         resolve: async (f: FolderFields) => getFilesForFolder(f.id),
       },
       heroImage: {
-        type: imageFileType,
+        type: fileInterface,
         resolve: async (f: FolderFields) => heroImageForFolder(f),
       },
       bannerSize: {

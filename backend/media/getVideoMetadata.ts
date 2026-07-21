@@ -1,42 +1,27 @@
-import ffmpeg from 'fluent-ffmpeg';
-//{ ffprobe, FfprobeData, setFfprobePath }
-import util from 'node:util';
 import type { PicrVideoMetadata } from '@shared/types/metadata.js';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import type { FileFields } from '../db/picrDb.js';
 import { log } from '../logger.js';
-import { picrConfig } from '../config/picrConfig.js';
+import { probe, type FfprobeStream } from './ffmpeg.js';
 
 export const getVideoMetadata = async (file: FileFields) => {
-  ffmpeg.setFfprobePath(picrConfig.ffprobePath ?? 'ffprobe');
-
-  //ffprobe is 'traditional callback' style so lets promise-ify it
-  const ffprobePromise = util.promisify(ffmpeg.ffprobe);
-
   try {
-    const fullPath = fullPathForFile(file);
-    const metadata = (await ffprobePromise(fullPath)) as ffmpeg.FfprobeData;
-
+    const metadata = await probe(fullPathForFile(file));
     const m: PicrVideoMetadata = {};
 
-    // if (err) {
-    //   console.log('Error reading metadata for: ' + file.fullPath());
-    //   console.log(err);
-    // }
     const { format, streams } = metadata;
-    m.Bitrate = format.bit_rate;
-    m.Duration = format.duration;
+    m.Bitrate = numberOrUndefined(format.bit_rate);
+    m.Duration = numberOrUndefined(format.duration);
     m.Format = format.format_long_name;
 
     const video = streams.find(({ codec_type }) => codec_type === 'video');
     if (video) {
+      const { width, height } = displayedDimensionsForVideoStream(video);
       m.VideoCodec = video.codec_name;
       m.VideoCodecDescription = video.codec_long_name;
-      m.Width = video.width;
-      m.Height = video.height;
-      m.Framerate = video.avg_frame_rate
-        ? (eval(video.avg_frame_rate) ?? 0)
-        : 0; // TODO: convert "25/1" to
+      m.Width = width;
+      m.Height = height;
+      m.Framerate = parseFrameRate(video.avg_frame_rate);
     }
 
     const audio = streams.find(({ codec_type }) => codec_type === 'audio');
@@ -49,4 +34,53 @@ export const getVideoMetadata = async (file: FileFields) => {
     log('error', `Error reading video metadata for ${file.name}: ${String(e)}`);
     return {};
   }
+};
+
+const numberOrUndefined = (
+  value: number | string | null | undefined,
+): number | undefined => {
+  if (typeof value === 'number')
+    return Number.isFinite(value) ? value : undefined;
+  if (typeof value !== 'string') return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+};
+
+const parseFrameRate = (value: string | undefined): number => {
+  if (!value) return 0;
+  const [numerator, denominator] = value.split('/').map(Number);
+  if (
+    !Number.isFinite(numerator) ||
+    !Number.isFinite(denominator) ||
+    denominator === 0
+  ) {
+    return 0;
+  }
+  return numerator / denominator;
+};
+
+export const displayedDimensionsForVideoStream = (
+  stream: FfprobeStream,
+): { width?: number; height?: number } => {
+  const { width, height } = stream;
+  if (!width || !height) return { width, height };
+
+  return shouldSwapDimensions(rotationForStream(stream))
+    ? { width: height, height: width }
+    : { width, height };
+};
+
+export const shouldSwapDimensions = (rotation: number): boolean => {
+  const normalized = Math.abs(((rotation % 360) + 360) % 360);
+  return normalized === 90 || normalized === 270;
+};
+
+const rotationForStream = (stream: FfprobeStream): number => {
+  const tagRotation = numberOrUndefined(stream.tags?.['rotate']);
+  if (tagRotation !== undefined) return tagRotation;
+
+  const sideDataRotation = stream.side_data_list
+    ?.map((sideData) => numberOrUndefined(sideData.rotation))
+    .find((rotation) => rotation !== undefined);
+  return sideDataRotation ?? 0;
 };

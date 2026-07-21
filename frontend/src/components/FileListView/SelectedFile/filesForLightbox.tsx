@@ -30,7 +30,7 @@ export const filesForLightbox = (
         : file.type === 'Video'
           ? {
               type: 'video',
-              poster: undefined, //todo: poster
+              poster: imageURL(file, 'lg'),
               sources: [{ src: imageURL(file, 'raw'), type: 'video/mp4' }], //TODO: generate multiple bitrates of video for different sizes
             }
           : {

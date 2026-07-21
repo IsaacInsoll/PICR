@@ -1,21 +1,12 @@
-import type {
-  AvifOptions,
-  JpegOptions,
-  OutputInfo,
-  ResizeOptions,
-} from 'sharp';
-import { openSharp } from './openSharp.js';
 import { fullPath } from '../filesystem/fileManager.js';
-import { existsSync, mkdirSync } from 'node:fs';
-import { dirname } from 'path';
-import { thumbnailDimensions } from '@shared/thumbnailDimensions.js';
+import { existsSync } from 'node:fs';
 import type { AllSize, ThumbnailSize } from '@shared/thumbnailSize.js';
 import { log } from '../logger.js';
 import { thumbnailPath } from './thumbnailPath.js';
 import { generateVideoThumbnail } from './generateVideoThumbnail.js';
 import type { FileFields } from '../db/picrDb.js';
-import { getServerOptions } from '../db/picrDb.js';
 import { ensureDecodedImage } from './ensureDecodedImage.js';
+import { encodeThumbnail } from './encodeThumbnail.js';
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
 export const generateAllThumbs = async (file: FileFields) => {
@@ -32,9 +23,14 @@ export const generateAllThumbs = async (file: FileFields) => {
   }
 
   if (file.type === 'Video') {
-    await generateVideoThumbnail(file, 'sm');
-    await generateVideoThumbnail(file, 'md');
-    await generateVideoThumbnail(file, 'lg');
+    try {
+      await generateVideoThumbnail(file, 'md');
+    } catch (e) {
+      log(
+        'error',
+        `Error generating video thumbnails for ${file.name}: ${String(e)}`,
+      );
+    }
   }
   // thumbnailSizes.forEach((size: ThumbnailSize) => {
   //   const path = thumbnailPath(file, size as ThumbnailSize);
@@ -60,24 +56,10 @@ export const generateThumbnail = async (
 ) => {
   log('info', `🖼️ Generating ${size} thumbnail for ${file.name}`);
   try {
-    mkdirSync(dirname(thumbnailPath(file, size)), { recursive: true });
-    const px = thumbnailDimensions[size];
-    const fullPath = await ensureDecodedImage(file);
-
-    const img = openSharp(fullPath).withMetadata().resize(px, px, sharpOpts);
-
-    const opts = await getServerOptions();
-
-    const promises: Promise<OutputInfo>[] = [];
-    promises.push(
-      img.jpeg(jpegOptions).toFile(thumbnailPath(file, size, '.jpg')),
+    const sourcePath = await ensureDecodedImage(file);
+    return await encodeThumbnail(sourcePath, size, (extension) =>
+      thumbnailPath(file, size, extension),
     );
-    if (opts.avifEnabled) {
-      promises.push(
-        img.avif(avifOptions).toFile(thumbnailPath(file, size, '.avif')),
-      );
-    }
-    return await Promise.all(promises);
   } catch (e) {
     log(
       'error',
@@ -86,14 +68,6 @@ export const generateThumbnail = async (
   }
   return null;
 };
-
-const sharpOpts: ResizeOptions = {
-  fit: 'inside', // clients probably get confused if thumbs are square crops rather than just smaller
-  withoutEnlargement: true, //don't upsize in case the originals are low resolution (EG: proofs)
-};
-
-const jpegOptions: JpegOptions = { quality: 60 };
-const avifOptions: AvifOptions = { quality: 45 }; // avif 45 visually better than jpeg60 from looking at sooty-001 @ 50-80% file size of the jpeg
 
 export const fullPathFor = (
   file: FileFields,

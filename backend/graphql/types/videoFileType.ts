@@ -1,4 +1,4 @@
-import { GraphQLFloat, GraphQLObjectType } from 'graphql';
+import { GraphQLFloat, GraphQLObjectType, GraphQLString } from 'graphql';
 import {
   fileInterface,
   fileInterfaceFields,
@@ -13,5 +13,6 @@ export const videoFileType = new GraphQLObjectType({
     imageRatio: { type: GraphQLFloat },
     metadata: { type: videoMetadataSummaryType },
     duration: { type: GraphQLFloat },
+    blurHash: { type: GraphQLString },
   },
 });

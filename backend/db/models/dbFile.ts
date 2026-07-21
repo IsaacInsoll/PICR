@@ -21,7 +21,7 @@ import { relations } from 'drizzle-orm';
  * - `type`: Discriminator for File/Image/Video (maps to GraphQL interface)
  * - `imageRatio`: width/height for layout before image loads (images and videos only)
  * - `duration`: length in seconds (videos only)
- * - `blurHash`: tiny placeholder hash for progressive loading (images)
+ * - `blurHash`: nullable tiny placeholder hash for progressive loading (images and video posters)
  * - `metadata`: JSON string with EXIF/media metadata
  * - `flag`: approval status for proofing workflows (approved/rejected/none)
  * - `exists`: set false at boot, then true when found - detects deleted files
@@ -33,7 +33,7 @@ export const dbFile = pgTable(
     ...baseColumns,
     name: varchar('name', { length: 255 }).notNull(),
     fileHash: varchar('fileHash', { length: 255 }),
-    blurHash: varchar('blurHash', { length: 255 }), // string for Images describing its 'micro thumbnail' https://www.npmjs.com/package/blurhash
+    blurHash: varchar('blurHash', { length: 255 }), // nullable "micro thumbnail" for images and video posters https://www.npmjs.com/package/blurhash
     relativePath: varchar('relativePath', { length: 255 }).notNull(),
     metadata: text('metadata'),
     rating: integer('rating').notNull(), // 0-5

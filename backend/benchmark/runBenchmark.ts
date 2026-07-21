@@ -1,5 +1,4 @@
 import decompress from 'decompress';
-import ffmpeg from 'fluent-ffmpeg';
 import * as ji from 'join-images';
 import { mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -8,9 +7,11 @@ import { thumbnailDimensions } from '@shared/thumbnailDimensions.js';
 import { openSharp } from '../media/openSharp.js';
 import { extractVaapiThumbnailFrames } from '../media/vaapiVideo.js';
 import { picrConfig } from '../config/picrConfig.js';
+import { probe, runFfmpeg } from '../media/ffmpeg.js';
 
 const benchmarkAssetUrl = 'https://photosummaryapp.com/picr-demo-data.zip';
 const benchmarkAssetDownloadTimeoutMs = 60_000;
+const benchmarkFfmpegTimeoutMs = 10 * 60_000;
 const benchmarkRoot = () => path.join(picrConfig.cachePath, 'benchmark');
 const zipPath = () => path.join(benchmarkRoot(), 'assets.zip');
 const assetPath = () => path.join(benchmarkRoot(), 'assets');
@@ -229,18 +230,14 @@ const generateVideoMontage = async (file: string, accelerated: boolean) => {
       'md',
     );
   } else {
-    await new Promise<void>((resolve, reject) => {
-      ffmpeg({ source: file })
-        .setFfmpegPath(picrConfig.ffmpegPath ?? 'ffmpeg')
-        .on('end', () => resolve())
-        .on('error', reject)
-        .takeScreenshots({
-          filename: 'md.jpg',
-          timemarks,
-          folder: framesDir,
-          size: targetHeight ? `${px}x${targetHeight}` : `${px}x?`,
-        });
-    });
+    await extractCpuThumbnailFrames(
+      file,
+      timemarks,
+      px,
+      targetHeight,
+      framesDir,
+      'md',
+    );
   }
 
   const files = Array.from({ length: 10 }, (_, index) =>
@@ -273,32 +270,41 @@ const transcodeVideo = async (file: string, accelerated: boolean) => {
   // scale_vaapi needs an explicit width (no `-2` auto-sizing), so derive an
   // even 720p width from the source aspect ratio.
   const accelWidth = accelerated ? await transcodeWidthFor720(file) : 0;
-  await new Promise<void>((resolve, reject) => {
-    const command = ffmpeg({ source: file }).setFfmpegPath(
-      picrConfig.ffmpegPath ?? 'ffmpeg',
-    );
-    if (accelerated) {
-      command
-        .inputOptions([
-          ...vaapiDecodeOptions(),
-          '-hwaccel_output_format',
-          'vaapi',
-        ])
-        .videoFilter(`scale_vaapi=w=${accelWidth}:h=720`)
-        .videoCodec('h264_vaapi')
-        .outputOptions(['-an']);
-    } else {
-      command
-        .videoCodec('libx264')
-        .size('?x720')
-        .outputOptions(['-preset veryfast', '-pix_fmt yuv420p', '-an']);
-    }
-    command
-      .output(out)
-      .on('end', () => resolve())
-      .on('error', reject)
-      .run();
-  });
+
+  const args = accelerated
+    ? [
+        '-y',
+        '-hide_banner',
+        ...vaapiDecodeOptions(),
+        '-hwaccel_output_format',
+        'vaapi',
+        '-i',
+        file,
+        '-vf',
+        `scale_vaapi=w=${accelWidth}:h=720`,
+        '-c:v',
+        'h264_vaapi',
+        '-an',
+        out,
+      ]
+    : [
+        '-y',
+        '-hide_banner',
+        '-i',
+        file,
+        '-vf',
+        'scale=-2:720',
+        '-c:v',
+        'libx264',
+        '-preset',
+        'veryfast',
+        '-pix_fmt',
+        'yuv420p',
+        '-an',
+        out,
+      ];
+
+  await runFfmpeg(args, { timeoutMs: benchmarkFfmpegTimeoutMs });
 };
 
 interface VideoInfo {
@@ -308,21 +314,60 @@ interface VideoInfo {
 }
 
 const videoInfo = async (file: string): Promise<VideoInfo> => {
-  return new Promise((resolve, reject) => {
-    ffmpeg.setFfprobePath(picrConfig.ffprobePath ?? 'ffprobe');
-    ffmpeg.ffprobe(file, (error, data) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-      const stream = data.streams.find((s) => s.width && s.height);
-      resolve({
-        duration: data.format.duration ?? null,
-        width: stream?.width ?? null,
-        height: stream?.height ?? null,
-      });
-    });
+  const data = await probe(file);
+  const stream = data.streams.find((s) => s.width && s.height);
+  return {
+    duration: numericProbeValue(data.format.duration),
+    width: stream?.width ?? null,
+    height: stream?.height ?? null,
+  };
+};
+
+const extractCpuThumbnailFrames = async (
+  source: string,
+  timemarks: number[],
+  width: number,
+  height: number | undefined,
+  framesDir: string,
+  filenamePrefix: string,
+) => {
+  const count = timemarks.length;
+  const first = timemarks[0] ?? 0;
+  const splitLabels = Array.from(
+    { length: count },
+    (_, index) => `[s${index}]`,
+  ).join('');
+  const filterHeight = height ?? -2;
+  const args = [
+    '-y',
+    '-hide_banner',
+    '-ss',
+    String(first),
+    '-i',
+    source,
+    '-filter_complex',
+    `[0:v]scale=w=${width}:h=${filterHeight},split=${count}${splitLabels}`,
+  ];
+
+  timemarks.forEach((time, index) => {
+    args.push('-map', `[s${index}]`);
+    if (index > 0) args.push('-ss', String(time - first));
+    args.push(
+      '-frames:v',
+      '1',
+      path.join(framesDir, `${filenamePrefix}_${index + 1}.jpg`),
+    );
   });
+
+  await runFfmpeg(args, { timeoutMs: benchmarkFfmpegTimeoutMs });
+};
+
+const numericProbeValue = (
+  value: number | string | undefined,
+): number | null => {
+  if (value == null) return null;
+  const parsed = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
 };
 
 // Even dimensions preserving aspect ratio (h.264/nv12 require even sizes).

@@ -38,6 +38,8 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
 
   const openComment = useOpenCommentsModal();
   const openFileInfo = useOpenFileInfoModal();
+  const canSetHero = file.type === 'Image' || file.type === 'Video';
+  const canSetBanner = file.type === 'Image';
 
   return (
     <>
@@ -74,7 +76,7 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
           </Group>
         </Menu.Item>
       ) : null}
-      {me?.isUser && file.type === 'Image' ? (
+      {me?.isUser && canSetHero ? (
         <>
           <Menu.Item
             leftSection={<HeroImageIcon size="20" />}
@@ -90,13 +92,17 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
           >
             Set as Hero Image
           </Menu.Item>
-          <Menu.Item
-            leftSection={<BannerImageIcon size="20" />}
-            key={6}
-            onClick={() => openBannerModal(file)}
-          >
-            {file.isBannerImage ? 'Change Banner Size' : 'Set as Banner Image'}
-          </Menu.Item>
+          {canSetBanner ? (
+            <Menu.Item
+              leftSection={<BannerImageIcon size="20" />}
+              key={6}
+              onClick={() => openBannerModal(file)}
+            >
+              {file.isBannerImage
+                ? 'Change Banner Size'
+                : 'Set as Banner Image'}
+            </Menu.Item>
+          ) : null}
         </>
       ) : null}
       {canDownload ? (

@@ -17,6 +17,7 @@ export const fileFragment = gql(/* GraphQL */ `
     folderId
     ... on Video {
       imageRatio
+      blurHash
       duration
       ...VideoMetadataFragment
     }

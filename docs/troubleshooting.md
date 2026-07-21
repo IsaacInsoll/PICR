@@ -107,10 +107,10 @@ PICR retries its startup migrations once after 10 seconds if Postgres is not rea
 
 ## Hardware video acceleration not working
 
-> Note: VAAPI does not currently speed up thumbnail generation (the CPU
-> benchmarked faster), so seeing "CPU only" does not mean anything is broken for
-> normal use. These steps are for confirming the GPU is _detected_ — useful for
-> the benchmark and for upcoming transcoding features. See
+> Note: VAAPI does not currently speed up poster/scrub thumbnail generation (the
+> CPU benchmarked faster), so seeing "CPU only" does not mean anything is broken
+> for normal use. These steps are for confirming the GPU is _detected_ — useful
+> for the benchmark and for upcoming transcoding features. See
 > [Hardware Video Acceleration](install.md#hardware-video-acceleration-vaapi).
 
 If the admin **Server Info** page shows "CPU only" when you expected VAAPI to be

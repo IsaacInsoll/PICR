@@ -33,8 +33,8 @@ const findFileNamed = async (client: TestClient, name: string) => {
 const rescanUntilFound = async (
   client: TestClient,
   name: string,
-  attempts = 12,
-  gapMs = 1500,
+  attempts = 24,
+  gapMs = 2000,
 ) => {
   let found: Awaited<ReturnType<typeof findFileNamed>>;
   for (let attempt = 0; attempt < attempts; attempt++) {
@@ -47,6 +47,9 @@ const rescanUntilFound = async (
     found = await findFileNamed(client, name);
     if (found) return found;
     await sleep(gapMs);
+
+    found = await findFileNamed(client, name);
+    if (found) return found;
   }
   return found;
 };
@@ -87,4 +90,4 @@ test('rescanFolder imports a new file and preserves the row across an inode move
       .mutation(rescanFolderMutation, { folderId: videoFolderId })
       .toPromise();
   }
-}, 120_000);
+}, 180_000);

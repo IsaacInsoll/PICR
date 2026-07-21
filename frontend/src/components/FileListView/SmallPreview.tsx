@@ -4,6 +4,7 @@ import { Avatar, Box } from '@mantine/core';
 import { PicrImage } from '../PicrImage';
 import { FileIcon, FolderIcon, VideoIcon } from '../../PicrIcons';
 import type { CSSProperties } from 'react';
+import { VideoBadge } from './VideoBadge';
 
 export const SmallPreview = ({
   file,
@@ -21,7 +22,7 @@ export const SmallPreview = ({
     alignItems: 'center',
   };
 
-  if (isFolder && file.heroImage) {
+  if (isFolder && isThumbnailFile(file.heroImage)) {
     return (
       <Box style={style}>
         <PicrImage
@@ -43,6 +44,21 @@ export const SmallPreview = ({
             height,
           }}
         />
+      </Box>
+    );
+  }
+  if (!isFolder && fileType === 'Video') {
+    return (
+      <Box style={{ ...style, position: 'relative', overflow: 'hidden' }}>
+        <PicrImage
+          file={file}
+          size="sm"
+          style={{
+            width: height * ((file.imageRatio as number | null) ?? 1),
+            height,
+          }}
+        />
+        <VideoBadge file={file} size="xs" />
       </Box>
     );
   }
@@ -72,3 +88,6 @@ export const SmallPreview = ({
 
 const isPicrFolder = (file: PicrFile | PicrFolder): file is PicrFolder =>
   !('type' in file);
+
+const isThumbnailFile = (file?: PicrFile | null): file is PicrFile =>
+  file?.type === 'Image' || file?.type === 'Video';

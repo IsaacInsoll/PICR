@@ -67,7 +67,7 @@ export const authErrorCatalog = {
   },
   [AUTH_REASON.INVALID_HERO_IMAGE_TYPE]: {
     code: 'BAD_USER_INPUT',
-    message: 'Hero image must be an image file',
+    message: 'Hero image must be an image or video file',
     globalAction: 'local_only',
   },
   [AUTH_REASON.HERO_IMAGE_OUT_OF_SCOPE]: {

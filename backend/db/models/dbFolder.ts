@@ -19,7 +19,7 @@ import { relations } from 'drizzle-orm';
  * - Self-referential via `parentId` to form a tree structure
  * - Root folder (id=1) has `parentId = null` and `relativePath = null`
  * - `exists` flag is used during boot to detect deleted folders (set false, then true when found)
- * - `heroImageId` optionally points to a featured image for the folder thumbnail
+ * - `heroImageId` optionally points to a featured image or video for the folder thumbnail
  * - `folderHash` is used for cache invalidation
  * - `brandingId` optionally points to a branding set (inherited by subfolders)
  */

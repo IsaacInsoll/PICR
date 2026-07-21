@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { AllSize } from '@shared/thumbnailSize.js';
+import type { AllSize, ThumbnailSize } from '@shared/thumbnailSize.js';
 import { allSizes } from '@shared/thumbnailSize.js';
 import { extname } from 'path';
 import {
@@ -11,15 +11,19 @@ import {
   awaitVideoThumbnailGeneration,
   generateVideoThumbnail,
 } from '../media/generateVideoThumbnail.js';
-import { db, getServerOptions } from '../db/picrDb.js';
+import { db, getServerOptions, type FileFields } from '../db/picrDb.js';
 import { dbFile } from '../db/models/index.js';
 import { and, eq } from 'drizzle-orm';
 import { thumbnailPath } from '../media/thumbnailPath.js';
+import { videoScrubPath } from '../media/videoThumbnailPaths.js';
+import { log } from '../logger.js';
+
+type ImageRouteSize = AllSize | 'scrub';
 
 export const imageRequest = async (
   req: Request<{
     id: number;
-    size: AllSize;
+    size: ImageRouteSize;
     hash: string;
     filename: string;
   }>,
@@ -41,12 +45,57 @@ export const imageRequest = async (
     res.sendStatus(404);
     return;
   }
-  if (!allSizes.includes(size)) {
+  if (!isImageRouteSize(size)) {
     res.sendStatus(400);
     return;
   }
   res.set('Cache-Control', 'public, max-age=31536000, immutable');
   const extension = extname(filename).toLowerCase(); //extension ignored for original file, only used for thumbs
+  if (size === 'scrub') {
+    if (file.type !== 'Video') {
+      res.sendStatus(404);
+      return;
+    }
+    const fp = videoScrubPath(file);
+    const videoStatus = await ensureVideoArtifact(file, 'md', fp, 'scrub');
+    if (videoStatus === 'failed') {
+      res.sendStatus(500);
+      return;
+    }
+    if (videoStatus === 'missing') {
+      res.sendStatus(404);
+      return;
+    }
+    res.sendFile(fp);
+    return;
+  }
+
+  if (file.type === 'Video' && size !== 'raw') {
+    const requestedExtension = extension === '.avif' ? '.avif' : '.jpg';
+    const opts = await getServerOptions();
+    const posterExtension =
+      requestedExtension === '.avif' && !opts.avifEnabled
+        ? '.jpg'
+        : requestedExtension;
+    const posterPath = fullPathFor(file, size, posterExtension);
+    const videoStatus = await ensureVideoArtifact(
+      file,
+      size,
+      posterPath,
+      'poster',
+    );
+    if (videoStatus === 'failed') {
+      res.sendStatus(500);
+      return;
+    }
+    if (videoStatus === 'missing') {
+      res.sendStatus(404);
+      return;
+    }
+    res.sendFile(posterPath);
+    return;
+  }
+
   const fp = fullPathFor(file, size, extension);
   if (size !== 'raw' && !existsSync(fp)) {
     if (file.type === 'Image') {
@@ -65,16 +114,38 @@ export const imageRequest = async (
       res.sendFile(tp);
       return;
     }
-    if (file.type === 'Video') {
-      await generateVideoThumbnail(file, size);
-    }
-  }
-  if (file.type === 'Video' && size !== 'raw') {
-    const p = fullPathFor(file, size) + '/' + filename;
-    // it's possible that we have started thumbnail generation for this video but haven't finished it, so extra waits
-    await awaitVideoThumbnailGeneration(file, size);
-    res.sendFile(p);
   } else {
     res.sendFile(fullPathFor(file, size, extension));
   }
+};
+
+type VideoArtifactStatus = 'ok' | 'failed' | 'missing';
+
+const ensureVideoArtifact = async (
+  file: FileFields,
+  size: ThumbnailSize,
+  path: string,
+  artifact: 'poster' | 'scrub',
+): Promise<VideoArtifactStatus> => {
+  try {
+    if (!existsSync(path)) await generateVideoThumbnail(file, size);
+    await awaitVideoThumbnailGeneration(file, size);
+  } catch (error) {
+    log(
+      'error',
+      `Failed generating video ${artifact} for ${file.name}: ${String(error)}`,
+    );
+    return 'failed';
+  }
+
+  if (existsSync(path)) return 'ok';
+  log(
+    'error',
+    `Video ${artifact} generation completed but cache file is missing for ${file.name}: ${path}`,
+  );
+  return 'missing';
+};
+
+const isImageRouteSize = (size: string): size is ImageRouteSize => {
+  return size === 'scrub' || allSizes.includes(size as AllSize);
 };

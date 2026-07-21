@@ -144,15 +144,27 @@ test('Admin can set and clear banner image, and invalid cases are rejected', asy
     .query(viewFolderQuery, { folderId: videoFolderId })
     .toPromise();
   expect(videoFolder.error).toBeUndefined();
-  const nonImageInVideoFolder = videoFolder.data?.folder?.files?.find(
-    (f) => f.__typename !== 'Image',
+  const videoInVideoFolder = videoFolder.data?.folder?.files?.find(
+    (f) => f.__typename === 'Video',
   );
-  expect(nonImageInVideoFolder?.id).toBeDefined();
+  expect(videoInVideoFolder?.id).toBeDefined();
+
+  const setVideoHero = await client
+    .mutation(editFolderMutation, {
+      folderId: videoFolderId,
+      heroImageId: videoInVideoFolder?.id,
+    })
+    .toPromise();
+  expect(setVideoHero.error).toBeUndefined();
+  expect(setVideoHero.data?.editFolder?.heroImage?.__typename).toBe('Video');
+  expect(setVideoHero.data?.editFolder?.heroImage?.id).toBe(
+    videoInVideoFolder?.id,
+  );
 
   const invalidType = await client
     .mutation(editFolderMutation, {
       folderId: videoFolderId,
-      bannerImageId: nonImageInVideoFolder?.id,
+      bannerImageId: videoInVideoFolder?.id,
     })
     .toPromise();
   expectAuthCode(

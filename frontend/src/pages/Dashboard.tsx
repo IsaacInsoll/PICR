@@ -459,8 +459,9 @@ const FolderCover = ({
   size: number;
   fill?: boolean;
 }) => {
-  const isImage = heroImage?.__typename === 'Image';
-  const src = isImage
+  const hasCover =
+    heroImage?.__typename === 'Image' || heroImage?.__typename === 'Video';
+  const src = hasCover
     ? imageURL(heroImage, 'sm').replace(' ', '%20')
     : undefined;
   return (

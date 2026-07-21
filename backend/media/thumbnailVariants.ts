@@ -1,12 +1,17 @@
-import { extname, join } from 'path';
+import { join } from 'path';
 import { picrConfig } from '../config/picrConfig.js';
 import type { FileFields } from '../db/picrDb.js';
 import { thumbnailSizes } from '@shared/thumbnailSize.js';
+import {
+  legacyVideoMontagePathForParts,
+  videoPosterPathForParts,
+  videoScrubPathForParts,
+} from './videoThumbnailPaths.js';
 
 export interface ThumbnailVariant {
   /** Absolute path to the cache entry. */
   path: string;
-  /** Video montage variants are directories; image thumbnails are files. */
+  /** Most variants are files; legacy pre-v2 video montage variants are directories. */
   isDirectory: boolean;
 }
 
@@ -15,7 +20,7 @@ export interface ThumbnailVariant {
  * (`relativePath`, `name`, `hash`). Callers treat absent entries as no-ops —
  * many variants are legitimately never generated (AVIF may be disabled, the
  * decoded intermediate only exists for RAW/PSD/HEIC, thumbnails are lazy so not
- * every size exists, video only has the `md` montage). Mirrors the paths built
+ * every size exists, video AVIF depends on server options). Mirrors the paths built
  * by `thumbnailPath.ts` and `decodedImagePath.ts`, but keyed off primitives so
  * both the runtime (a `dbFile` row) and the migration (a DB record) can use it.
  *
@@ -49,10 +54,24 @@ export const thumbnailVariantPaths = (
       isDirectory: false,
     });
   } else if (type === 'Video') {
-    // A single montage directory for the `md` size, named with the original
-    // video extension (see generateVideoThumbnail.ts).
+    for (const size of thumbnailSizes) {
+      variants.push({
+        path: videoPosterPathForParts(relativePath, name, hash, size, '.jpg'),
+        isDirectory: false,
+      });
+      variants.push({
+        path: videoPosterPathForParts(relativePath, name, hash, size, '.avif'),
+        isDirectory: false,
+      });
+    }
     variants.push({
-      path: join(dir, `${name}-md-${hash}${extname(name)}`),
+      path: videoScrubPathForParts(relativePath, name, hash),
+      isDirectory: false,
+    });
+    // Transitional cleanup for pre-v2 montage directories. New video variants
+    // are versioned files.
+    variants.push({
+      path: legacyVideoMontagePathForParts(relativePath, name, hash, 'md'),
       isDirectory: true,
     });
   }

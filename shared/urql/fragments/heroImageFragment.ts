@@ -10,9 +10,15 @@ export const heroImageFragment = gql(/* GraphQL */ `
       id
       name
       fileHash
-      imageRatio
-      blurHash
       type
+      ... on Image {
+        imageRatio
+        blurHash
+      }
+      ... on Video {
+        imageRatio
+        blurHash
+      }
     }
   }
 `);

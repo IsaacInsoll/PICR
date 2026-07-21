@@ -21,7 +21,8 @@ export const heroImageForFolder = async (
   if (
     f.heroImage &&
     f.heroImage.exists &&
-    isFileWithinFolderPath(f.heroImage.relativePath, f.relativePath)
+    isFileWithinFolderPath(f.heroImage.relativePath, f.relativePath) &&
+    (await shouldUseStoredHeroImage(f, f.heroImage))
   ) {
     return f.heroImage;
   }
@@ -33,7 +34,8 @@ export const heroImageForFolder = async (
   if (
     heroImage &&
     heroImage.exists &&
-    isFileWithinFolderPath(heroImage.relativePath, f.relativePath)
+    isFileWithinFolderPath(heroImage.relativePath, f.relativePath) &&
+    (await shouldUseStoredHeroImage(f, heroImage))
   ) {
     return heroImage;
   }
@@ -50,22 +52,35 @@ export const heroImageForFolder = async (
     await setHeroImage(first.id, f.id);
     return first;
   }
-  // 3. Hero image in subfolder
-  const subFolder = await heroImageForSubFolder([f.id]);
+  // 3. First video in this folder
+  const firstVideo = await db.query.dbFile.findFirst({
+    where: and(
+      eq(dbFile.folderId, f.id),
+      eq(dbFile.type, 'Video'),
+      eq(dbFile.exists, true),
+    ),
+    orderBy: asc(dbFile.name),
+  });
+  if (firstVideo) {
+    await setHeroImage(firstVideo.id, f.id);
+    return firstVideo;
+  }
+  // 4. Image hero in direct subfolder
+  const subFolder = await heroImageForSubFolder([f.id], 'Image');
   if (subFolder) {
     await setHeroImage(subFolder.id, f.id);
     return subFolder;
   }
 
-  // 4. First image in any subfolder
+  // 5. First image in any subfolder
   const subFolderIds = await allSubfolderIds(f);
-  const s = await heroImageForSubFolder(subFolderIds);
+  const s = await heroImageForSubFolder(subFolderIds, 'Image');
   if (s) {
     await setHeroImage(s.id, f.id);
     return s;
   }
 
-  // 5. All subfolders
+  // 6. All subfolders, image-preferring
   const allImages = await db.query.dbFile.findFirst({
     where: and(
       inArray(dbFile.folderId, subFolderIds),
@@ -78,17 +93,87 @@ export const heroImageForFolder = async (
     await setHeroImage(allImages.id, f.id);
     return allImages;
   }
+
+  const videoSubFolder = await heroImageForSubFolder([f.id], 'Video');
+  if (videoSubFolder) {
+    await setHeroImage(videoSubFolder.id, f.id);
+    return videoSubFolder;
+  }
+
+  const nestedVideoSubFolder = await heroImageForSubFolder(
+    subFolderIds,
+    'Video',
+  );
+  if (nestedVideoSubFolder) {
+    await setHeroImage(nestedVideoSubFolder.id, f.id);
+    return nestedVideoSubFolder;
+  }
+
+  const allVideos = await db.query.dbFile.findFirst({
+    where: and(
+      inArray(dbFile.folderId, subFolderIds),
+      eq(dbFile.type, 'Video'),
+      eq(dbFile.exists, true),
+    ),
+    orderBy: asc(dbFile.name),
+  });
+  if (allVideos) {
+    await setHeroImage(allVideos.id, f.id);
+    return allVideos;
+  }
 };
 
-const heroImageForSubFolder = async (parentIds: number[]) => {
-  const subFolder = await db.query.dbFolder.findFirst({
+const shouldUseStoredHeroImage = async (
+  folder: FolderFields,
+  file: FileFields,
+): Promise<boolean> => {
+  if (file.type === 'Image') return true;
+  if (file.type !== 'Video') return false;
+  if (file.folderId === folder.id) return true;
+  return !(await folderHasImageCandidate(folder));
+};
+
+const folderHasImageCandidate = async (
+  folder: FolderFields,
+): Promise<boolean> => {
+  const folderImage = await db.query.dbFile.findFirst({
+    where: and(
+      eq(dbFile.folderId, folder.id),
+      eq(dbFile.type, 'Image'),
+      eq(dbFile.exists, true),
+    ),
+  });
+  if (folderImage) return true;
+
+  const subFolderIds = await allSubfolderIds(folder);
+  if (subFolderIds.length === 0) return false;
+
+  const nestedImage = await db.query.dbFile.findFirst({
+    where: and(
+      inArray(dbFile.folderId, subFolderIds),
+      eq(dbFile.type, 'Image'),
+      eq(dbFile.exists, true),
+    ),
+  });
+  return Boolean(nestedImage);
+};
+
+const heroImageForSubFolder = async (
+  parentIds: number[],
+  type: Extract<FileFields['type'], 'Image' | 'Video'>,
+) => {
+  const subFolders = await db.query.dbFolder.findMany({
     where: and(
       inArray(dbFolder.parentId, parentIds),
       eq(dbFolder.exists, true),
       ne(dbFolder.heroImageId, 0),
     ),
+    orderBy: asc(dbFolder.name),
     with: { heroImage: true },
   });
-  if (!subFolder?.heroImage?.exists) return undefined;
-  return subFolder.heroImage;
+  const subFolder = subFolders.find(
+    (candidate) =>
+      candidate.heroImage?.exists && candidate.heroImage.type === type,
+  );
+  return subFolder?.heroImage;
 };

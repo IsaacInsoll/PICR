@@ -50,7 +50,7 @@ export type PicrFile = {
   flag?: GqlFile['flag'];
   rating?: number | null;
   totalComments?: number | null;
-  blurHash?: string;
+  blurHash?: string | null;
   imageRatio?: number | null;
   duration?: number | null;
   isHeroImage?: boolean;

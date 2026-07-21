@@ -71,13 +71,11 @@ const MasonryItemComponent = ({
   const isFolder = !isFolderContentsFile(item);
   const folder = isFolder ? item : null;
   const file = !isFolder ? item : null;
+  const heroImage = folder?.heroImage;
   const image =
-    folder?.heroImage ??
-    (file && file.__typename !== 'File' ? file : undefined);
-  const canRenderMedia =
-    file?.__typename === 'Image' ||
-    file?.__typename === 'Video' ||
-    folder?.heroImage != null;
+    (heroImage?.__typename === 'Image' || heroImage?.__typename === 'Video'
+      ? heroImage
+      : undefined) ?? (file && file.__typename !== 'File' ? file : undefined);
 
   const style = {
     width: width / colCount - border * 2,
@@ -90,7 +88,7 @@ const MasonryItemComponent = ({
     <View style={[styles.imageContainer, { borderColor }]}>
       <AppLink item={item} asChild={true}>
         <TouchableOpacity>
-          {canRenderMedia && image ? (
+          {image ? (
             <PFileView
               file={image}
               size="md"
