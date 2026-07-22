@@ -113,9 +113,19 @@ headers as untrusted/variable length; database length errors here can block
 gallery access, not just analytics.
 
 `createAccessLog()` is short-circuited at the top when `DISABLE_ACCESS_LOGS=true`,
-which also suppresses folder-view notifications (they ride on the same code
-path). Existing rows are not deleted by the flag — set it only via env, not via
-any UI mutation.
+which suppresses view/download access-log rows. Existing rows are not deleted by
+the flag — set it only via env, not via any UI mutation. Public-link view
+notifications are sent from `recordFolderVisit`, and download notifications are
+sent from `generateZip` after a download row is written.
+
+The dashboard "Recent Clients" card is backed by `Users.lastAccess`, while the
+full access-log view reads `AccessLogs`. Public-link view notifications and
+`lastAccess` are driven by `recordFolderVisit`, which uses a 30-minute real-visit
+clock; `Query.folder` only writes foreground-gated per-folder access-log rows.
+Downloads remain real actions and update logs, notifications, and `lastAccess`.
+`Query.me` must not update `lastAccess` for Link users, because that would let a
+cached/client bootstrap query change the dashboard timestamp without the matching
+visit notification.
 
 ### Enums (in `db/models/enums.ts`)
 

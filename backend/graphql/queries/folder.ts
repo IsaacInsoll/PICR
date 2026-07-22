@@ -17,7 +17,10 @@ const folderResolver: PicrResolver<Partial<Folder>, QueryFolderArgs> = async (
     params.id,
     'View',
   );
-  await createAccessLog(user, folder, context, AccessType.View);
+  const visibility = context.headers.visibility;
+  if (visibility == null || visibility === 'visible') {
+    await createAccessLog(user, folder, context, AccessType.View);
+  }
   markFolderViewedForScan(context, folder.id);
   return { ...folder, permissions };
 };

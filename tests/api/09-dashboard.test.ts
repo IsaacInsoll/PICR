@@ -13,11 +13,13 @@ import { dashboardUpdateInfoQuery } from '../../shared/urql/queries/dashboardUpd
 import { dashboardGalleriesQuery } from '../../shared/urql/queries/dashboardGalleriesQuery';
 import { readAllFoldersQuery } from '../../shared/urql/queries/readAllFoldersQuery';
 import { recentUsersQuery } from '../../shared/urql/queries/recentUsersQuery';
+import { accessLogQuery } from '../../shared/urql/queries/accessLogQuery';
 import { editAdminUserMutation } from '../../shared/urql/mutations/editAdminUserMutation';
 import { deleteUserMutation } from '../../shared/urql/mutations/deleteUserMutation';
 import { editUserMutation } from '../../shared/urql/mutations/editUserMutation';
+import { recordFolderVisitMutation } from '../../shared/urql/mutations/recordFolderVisitMutation';
 import { photoFolderId } from './testVariables';
-import { CommentPermissions } from '../../shared/gql/graphql';
+import { AccessType, CommentPermissions } from '../../shared/gql/graphql';
 
 const makeSuffix = () => Math.random().toString(36).slice(2, 8);
 
@@ -162,6 +164,133 @@ test('Dashboard queries work for a sub-folder scoped admin', async () => {
         .mutation(deleteUserMutation, { id: adminId })
         .toPromise();
     }
+  }
+});
+
+test('Public link real visits update dashboard recent client timestamp', async () => {
+  const rootHeaders = await getUserHeader(defaultCredentials);
+  const rootClient = await createTestGraphqlClient(rootHeaders);
+  const suffix = makeSuffix();
+  const linkUser = await rootClient
+    .mutation(editUserMutation, {
+      folderId: photoFolderId,
+      name: 'Dashboard Visit Link User',
+      username: `dashboard-visit-${suffix}@example.com`,
+      commentPermissions: CommentPermissions.Read,
+      enabled: true,
+      uuid: `dashboard-visit-${suffix}`,
+    })
+    .toPromise();
+  expect(linkUser.error).toBeUndefined();
+
+  const user = linkUser.data!.editUser;
+
+  try {
+    const userAgent = `dashboard-visit/${suffix}`;
+    const linkHeaders = {
+      ...(await getLinkHeader(user.uuid!)),
+      sessionid: `dashboard-visit-${suffix}`,
+      'user-agent': userAgent,
+    };
+    const linkClient = await createTestGraphqlClient(linkHeaders);
+
+    const before = await rootClient
+      .query(recentUsersQuery, { folderId: photoFolderId })
+      .toPromise();
+    expect(before.error).toBeUndefined();
+    expect(before.data!.users.some((u) => u.id === user.id)).toBe(false);
+
+    const viewed = await linkClient
+      .query(viewFolderQuery, { folderId: photoFolderId })
+      .toPromise();
+    expect(viewed.error).toBeUndefined();
+
+    const afterFolderView = await rootClient
+      .query(recentUsersQuery, { folderId: photoFolderId })
+      .toPromise();
+    expect(afterFolderView.error).toBeUndefined();
+    expect(afterFolderView.data!.users.some((u) => u.id === user.id)).toBe(
+      false,
+    );
+
+    const logs = await rootClient
+      .query(accessLogQuery, { folderId: photoFolderId, userId: user.id })
+      .toPromise();
+    expect(logs.error).toBeUndefined();
+    expect(
+      logs.data!.accessLogs.some(
+        (log) =>
+          log.type === AccessType.View &&
+          log.userId === user.id &&
+          log.userAgent === userAgent,
+      ),
+    ).toBe(true);
+
+    const visit = await linkClient
+      .mutation(recordFolderVisitMutation, { folderId: photoFolderId })
+      .toPromise();
+    expect(visit.error).toBeUndefined();
+    expect(visit.data?.recordFolderVisit).toBe(true);
+
+    const after = await rootClient
+      .query(recentUsersQuery, { folderId: photoFolderId })
+      .toPromise();
+    expect(after.error).toBeUndefined();
+
+    const recentUser = after.data!.users.find((u) => u.id === user.id);
+    expect(recentUser?.lastAccess).toBeDefined();
+
+    const duplicateVisit = await linkClient
+      .mutation(recordFolderVisitMutation, { folderId: photoFolderId })
+      .toPromise();
+    expect(duplicateVisit.error).toBeUndefined();
+    expect(duplicateVisit.data?.recordFolderVisit).toBe(false);
+  } finally {
+    await rootClient.mutation(deleteUserMutation, { id: user.id }).toPromise();
+  }
+});
+
+test('Hidden public link folder requests do not write access log rows', async () => {
+  const rootHeaders = await getUserHeader(defaultCredentials);
+  const rootClient = await createTestGraphqlClient(rootHeaders);
+  const suffix = makeSuffix();
+  const linkUser = await rootClient
+    .mutation(editUserMutation, {
+      folderId: photoFolderId,
+      name: 'Dashboard Hidden Link User',
+      username: `dashboard-hidden-${suffix}@example.com`,
+      commentPermissions: CommentPermissions.Read,
+      enabled: true,
+      uuid: `dashboard-hidden-${suffix}`,
+    })
+    .toPromise();
+  expect(linkUser.error).toBeUndefined();
+
+  const user = linkUser.data!.editUser;
+
+  try {
+    const userAgent = `dashboard-hidden/${suffix}`;
+    const hiddenClient = await createTestGraphqlClient({
+      ...(await getLinkHeader(user.uuid!)),
+      sessionid: `dashboard-hidden-${suffix}`,
+      'user-agent': userAgent,
+      visibility: 'hidden',
+    });
+
+    const viewed = await hiddenClient
+      .query(viewFolderQuery, { folderId: photoFolderId })
+      .toPromise();
+    expect(viewed.error).toBeUndefined();
+
+    const logs = await rootClient
+      .query(accessLogQuery, { folderId: photoFolderId, userId: user.id })
+      .toPromise();
+    expect(logs.error).toBeUndefined();
+    expect(
+      logs.data!.accessLogs.some((log) => log.userAgent === userAgent),
+    ).toBe(false);
+  } finally {
+    await rootClient.mutation(deleteUserMutation, { id: user.id }).toPromise();
   }
 });
 

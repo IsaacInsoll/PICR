@@ -8,4 +8,5 @@ export type IncomingCustomHeaders = IncomingHttpHeaders & {
   sessionId?: string;
   ipAddress?: string;
   userAgent?: string;
+  visibility?: string;
 };

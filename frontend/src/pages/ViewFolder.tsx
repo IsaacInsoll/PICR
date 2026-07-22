@@ -46,6 +46,7 @@ import {
 import type { PicrFolder } from '@shared/types/picr';
 import { DotsIcon, FolderIcon } from '../PicrIcons';
 import { setFolderBrandingMutation } from '@shared/urql/mutations/setFolderBrandingMutation';
+import { recordFolderVisitMutation } from '@shared/urql/mutations/recordFolderVisitMutation';
 import { defaultBranding } from '../helpers/defaultBranding';
 import type { SocialLink } from '@shared/branding/socialLinkTypes';
 import { filterAtom } from '@shared/filterAtom';
@@ -56,6 +57,7 @@ import { FolderBanner } from '../components/FolderBanner';
 import { GalleryFooter } from '../components/GalleryFooter';
 import { DownloadZipButton } from '../components/DownloadZipButton';
 import { viewFolderModeFromFileId } from '../helpers/viewFolderMode';
+import { getUUID } from '../helpers/getUUID';
 
 const LoggedInHeader = lazy(() =>
   import('../components/Header/LoggedInHeader').then((module) => ({
@@ -82,6 +84,8 @@ const ManageFolderDrawer = lazy(() =>
     default: module.ManageFolderDrawer,
   })),
 );
+
+let publicLinkVisitRecordedUuidForVisibleSession: string | null = null;
 
 export const ViewFolder = () => {
   const { folderId, fileId } = useParams();
@@ -126,6 +130,7 @@ const ViewFolderBody = () => {
     assignBrandingToFolderAtom,
   );
   const [, setFolderBranding] = useMutation(setFolderBrandingMutation);
+  const [, recordFolderVisit] = useMutation(recordFolderVisitMutation);
 
   const mode = viewFolderModeFromFileId(fileId);
   const managing = mode === 'manage';
@@ -179,6 +184,43 @@ const ViewFolderBody = () => {
   const canDownload = useCanDownload();
   const { canView } = useCommentPermissions();
   const folder = data.data?.folder;
+  const folderLoaded = !!folder;
+  const publicLinkUuid = getUUID();
+
+  useEffect(() => {
+    if (!publicLinkUuid || !me?.isLink || !folderLoaded) return;
+
+    const recordVisit = () => {
+      if (document.visibilityState !== 'visible') return;
+      if (publicLinkVisitRecordedUuidForVisibleSession === publicLinkUuid)
+        return;
+
+      publicLinkVisitRecordedUuidForVisibleSession = publicLinkUuid;
+      void recordFolderVisit({ folderId: currentFolderId });
+    };
+
+    recordVisit();
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        publicLinkVisitRecordedUuidForVisibleSession = null;
+        return;
+      }
+
+      recordVisit();
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () =>
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+  }, [
+    currentFolderId,
+    folderLoaded,
+    me?.isLink,
+    publicLinkUuid,
+    recordFolderVisit,
+  ]);
+
   const hasFiles = folder && folder.files.length > 0;
   // Sorting applies to subfolders too (see sortFolderContents), so the sort UI
   // should show whenever the folder has anything in it - not only when it has

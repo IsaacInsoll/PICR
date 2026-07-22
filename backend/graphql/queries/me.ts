@@ -7,7 +7,9 @@ const resolver: PicrResolver = async (_, params, context) => {
   const user = context.user;
   if (user) {
     const folder = await dbFolderForId(user.folderId);
-    await updateUserLastAccess(user.id);
+    if (user.userType !== 'Link') {
+      await updateUserLastAccess(user.id);
+    }
     return { ...userToJSON(user), folder: folder };
   }
 };

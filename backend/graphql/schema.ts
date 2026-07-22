@@ -4,6 +4,7 @@ import { editUser } from './mutations/editUser.js';
 import { editAdminUser } from './mutations/editAdminUser.js';
 import { generateThumbnails } from './mutations/generateThumbnails.js';
 import { generateZip } from './mutations/generateZip.js';
+import { recordFolderVisit } from './mutations/recordFolderVisit.js';
 import { folder } from './queries/folder.js';
 import { file } from './queries/file.js';
 import { tasks } from './queries/task.js';
@@ -102,6 +103,7 @@ const mutations = new GraphQLObjectType({
     editUser,
     generateThumbnails,
     generateZip,
+    recordFolderVisit,
     editFolder,
     editBranding,
     deleteBranding,

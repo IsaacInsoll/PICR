@@ -16,7 +16,6 @@ import { and, asc, desc, eq, gte, inArray } from 'drizzle-orm';
 import type { AccessType } from '@shared/gql/graphql.js';
 import { fileToJSON } from '../graphql/helpers/fileToJSON.js';
 import { picrConfig } from '../config/picrConfig.js';
-import { sendFolderViewedNotification } from '../notifications/notifications.js';
 import type { PicrRequestContext } from '../types/PicrRequestContext.js';
 
 export let db: NodePgDatabase<typeof schema>;
@@ -115,7 +114,7 @@ export const createAccessLog = async (
   context: PicrRequestContext,
   type: AccessType,
 ) => {
-  if (picrConfig.disableAccessLogs) return;
+  if (picrConfig.disableAccessLogs) return false;
 
   //Check if sessionId/ipAddress/user already accessed this in last hour and don't create if so
 
@@ -142,28 +141,13 @@ export const createAccessLog = async (
     ),
   });
 
-  if (recent) return;
-
-  //intentionally check for a recent session before writing this one
-  // we don't want to send a notification for every folder view as that means navigating folders would cause lots of notifications
-  // so ignore folderId, sessionId and userAgent
-  // EG: view on desktop, then view on mobile while still at home, browsing different folders = same IP and User so no dupe notifications within the hour
-
-  const recentSession = await db.query.dbAccessLog.findFirst({
-    where: and(
-      eq(dbAccessLog.userId, props.userId),
-      eq(dbAccessLog.type, props.type),
-      eq(dbAccessLog.ipAddress, props.ipAddress),
-      gte(dbAccessLog.createdAt, new Date(Date.now() - 3600 * 1000)),
-    ),
-  });
+  if (recent) return false;
 
   await db
     .insert(dbAccessLog)
     .values({ ...props, createdAt: new Date(), updatedAt: new Date() });
 
-  if (type === 'View' && recentSession) return;
-  await sendFolderViewedNotification(folder, user, type);
+  return true;
 };
 
 export const getAccessLogs = async (

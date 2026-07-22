@@ -9,6 +9,7 @@ import {
   getPublicLinkPasscode,
   publicLinkPasscodeHeader,
 } from './helpers/publicLinkPasscode';
+import { visibilityHeader } from '@shared/realVisit';
 
 const retry: Exchange = retryExchange({ initialDelayMs: 500 });
 
@@ -20,6 +21,9 @@ export const createClient = (authToken: string, sessionKey: string) =>
     fetchOptions: () => {
       const uuid = getUUID();
       const headers: Record<string, string> = { sessionId: sessionKey };
+      if (typeof document !== 'undefined') {
+        headers[visibilityHeader] = document.visibilityState;
+      }
       if (uuid) {
         headers['uuid'] = uuid;
         const passcode = getPublicLinkPasscode(uuid);

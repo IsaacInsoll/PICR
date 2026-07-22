@@ -43,6 +43,7 @@ type Documents = {
     "\n    mutation generateThumbnailsQuery($folderId: ID!) {\n        generateThumbnails(folderId: $folderId)\n    }": typeof types.GenerateThumbnailsQueryDocument,
     "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n": typeof types.GenerateZipDocument,
     "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": typeof types.LoginDocument,
+    "\n  mutation RecordFolderVisit($folderId: ID!) {\n    recordFolderVisit(folderId: $folderId)\n  }\n": typeof types.RecordFolderVisitDocument,
     "\n  mutation RenameFolder($folderId: ID!, $oldPath: String!, $newPath: String!) {\n    renameFolder(folderId: $folderId, oldPath: $oldPath, newPath: $newPath) {\n      ...FolderFragment\n    }\n  }\n": typeof types.RenameFolderDocument,
     "\n  mutation RescanFolder($folderId: ID!) {\n    rescanFolder(folderId: $folderId)\n  }\n": typeof types.RescanFolderDocument,
     "\n  mutation RunBenchmarkMutation {\n    runBenchmark {\n      totalMs\n      appVersion\n      imageCount\n      videoCount\n      assetSourceUrl\n      assetPath\n      assetSetup {\n        ms\n        skippedReason\n      }\n      jpegResize {\n        ms\n        skippedReason\n      }\n      avifResize {\n        ms\n        skippedReason\n      }\n      videoThumbnailCpu {\n        ms\n        skippedReason\n      }\n      videoThumbnailAccelerated {\n        ms\n        skippedReason\n      }\n      videoTranscodeCpu {\n        ms\n        skippedReason\n      }\n      videoTranscodeAccelerated {\n        ms\n        skippedReason\n      }\n      videoAccelerationMode\n      videoAccelerationReason\n    }\n  }\n": typeof types.RunBenchmarkMutationDocument,
@@ -103,6 +104,7 @@ const documents: Documents = {
     "\n    mutation generateThumbnailsQuery($folderId: ID!) {\n        generateThumbnails(folderId: $folderId)\n    }": types.GenerateThumbnailsQueryDocument,
     "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n": types.GenerateZipDocument,
     "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
+    "\n  mutation RecordFolderVisit($folderId: ID!) {\n    recordFolderVisit(folderId: $folderId)\n  }\n": types.RecordFolderVisitDocument,
     "\n  mutation RenameFolder($folderId: ID!, $oldPath: String!, $newPath: String!) {\n    renameFolder(folderId: $folderId, oldPath: $oldPath, newPath: $newPath) {\n      ...FolderFragment\n    }\n  }\n": types.RenameFolderDocument,
     "\n  mutation RescanFolder($folderId: ID!) {\n    rescanFolder(folderId: $folderId)\n  }\n": types.RescanFolderDocument,
     "\n  mutation RunBenchmarkMutation {\n    runBenchmark {\n      totalMs\n      appVersion\n      imageCount\n      videoCount\n      assetSourceUrl\n      assetPath\n      assetSetup {\n        ms\n        skippedReason\n      }\n      jpegResize {\n        ms\n        skippedReason\n      }\n      avifResize {\n        ms\n        skippedReason\n      }\n      videoThumbnailCpu {\n        ms\n        skippedReason\n      }\n      videoThumbnailAccelerated {\n        ms\n        skippedReason\n      }\n      videoTranscodeCpu {\n        ms\n        skippedReason\n      }\n      videoTranscodeAccelerated {\n        ms\n        skippedReason\n      }\n      videoAccelerationMode\n      videoAccelerationReason\n    }\n  }\n": types.RunBenchmarkMutationDocument,
@@ -264,6 +266,10 @@ export function graphql(source: "\n  mutation GenerateZip($folderId: ID!) {\n   
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"): (typeof documents)["\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation RecordFolderVisit($folderId: ID!) {\n    recordFolderVisit(folderId: $folderId)\n  }\n"): (typeof documents)["\n  mutation RecordFolderVisit($folderId: ID!) {\n    recordFolderVisit(folderId: $folderId)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

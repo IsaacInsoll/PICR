@@ -8,6 +8,7 @@ import { dbFolderForId } from '../db/picrDb.js';
 import { extraUserProps } from '@shared/extraUserProps.js';
 import { UserType } from '@shared/gql/graphql.js';
 import { galleryPasscodeHeader } from '@shared/auth/galleryPasscode.js';
+import { visibilityHeader } from '@shared/realVisit.js';
 import type { IncomingMessage } from 'node:http';
 import { createOnViewScanSet } from '../filesystem/onViewScan.js';
 
@@ -48,6 +49,7 @@ export const gqlServer = createHandler({
       sessionId: normalizedHeader(firstHeader(headers['sessionid'])), //note: header field is lower case
       userAgent: firstHeader(headers['user-agent']),
       ipAddress,
+      visibility: normalizedHeader(firstHeader(headers[visibilityHeader])),
     };
 
     const user = (await getUserFromToken(h)) ?? (await getUserFromUUID(h));
