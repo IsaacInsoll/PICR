@@ -17,7 +17,8 @@ export const urqlCacheExchange = cacheExchange({
   updates: {
     Mutation: {
       // REMINDER: name of individual operation, not the whole mutation you are posting
-      editUser: (_, args, cache) => invalidateQueries(cache, ['folder']),
+      editUser: (_, args, cache) =>
+        invalidateQueries(cache, ['folder', 'users']),
       addComment: (_, args, cache) => invalidateQueries(cache, ['comments']),
       deleteBranding: (_, args, cache) =>
         invalidateQueries(cache, ['brandings', 'folder']),

@@ -204,7 +204,8 @@ export const urqlCacheExchange = cacheExchange({
   updates: {
     Mutation: {
       // Auto-invalidate queries after mutations
-      editUser: (_, args, cache) => invalidateQueries(cache, ['folder']),
+      editUser: (_, args, cache) =>
+        invalidateQueries(cache, ['folder', 'users']),
       addComment: (_, args, cache) => invalidateQueries(cache, ['comments']),
       editBranding: (_, args, cache) =>
         invalidateQueries(cache, ['brandings', 'folder']),
@@ -212,6 +213,11 @@ export const urqlCacheExchange = cacheExchange({
   },
 });
 ```
+
+Public links are users: `editUser` must invalidate `users` as well as `folder`,
+because public-link management and recent-client views read `Query.users` lists
+and graphcache will not add a newly-created `User` entity to those lists
+automatically.
 
 ## Utility Functions
 

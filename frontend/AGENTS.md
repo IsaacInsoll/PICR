@@ -376,14 +376,25 @@ The cache exchange in `urqlCacheExchange.ts` auto-invalidates on mutations:
 ```typescript
 updates: {
   Mutation: {
-    editUser: (_, args, cache) => invalidateQueries(cache, ['folder']),
+    editUser: (_, args, cache) =>
+      invalidateQueries(cache, ['folder', 'users']),
+    editAdminUser: (_, args, cache) => invalidateQueries(cache, ['admins']),
+    deleteUser: (_, args, cache) =>
+      invalidateQueries(cache, ['admins', 'users']),
     addComment: (_, args, cache) => invalidateQueries(cache, ['comments']),
     // ...
   },
 },
 ```
 
-Consider invalidating the appropriate "list" query when adding or removing an item. Updates to an existing item should be handled automatically without doing this.
+Consider invalidating the appropriate "list" query when adding or removing an
+item. Updates to an existing item should be handled automatically without doing
+this. Public links are users: `editUser` must invalidate `users` as well as
+`folder`, because `ManagePublicLinks` and dashboard client activity read
+`Query.users` lists and graphcache will not add a newly-created `User` entity to
+those lists automatically. Admin users have the same list-cache concern:
+`editAdminUser` must invalidate `admins`, and `deleteUser` must invalidate both
+`admins` and `users` because it soft-deletes either user type.
 
 ## UI Components (Mantine)
 
