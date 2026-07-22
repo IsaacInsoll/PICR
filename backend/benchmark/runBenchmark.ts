@@ -1,4 +1,3 @@
-import decompress from 'decompress';
 import * as ji from 'join-images';
 import { mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -8,6 +7,7 @@ import { openSharp } from '../media/openSharp.js';
 import { extractVaapiThumbnailFrames } from '../media/vaapiVideo.js';
 import { picrConfig } from '../config/picrConfig.js';
 import { probe, runFfmpeg } from '../media/ffmpeg.js';
+import { extractZip } from '../helpers/extractZip.js';
 
 const benchmarkAssetUrl = 'https://photosummaryapp.com/picr-demo-data.zip';
 const benchmarkAssetDownloadTimeoutMs = 60_000;
@@ -162,7 +162,7 @@ const ensureAssets = async () => {
 
   await rm(assetPath(), { recursive: true, force: true });
   await mkdir(assetPath(), { recursive: true });
-  await decompress(zipPath(), assetPath(), { strip: 1 });
+  await extractZip(zipPath(), assetPath(), { stripComponents: 1 });
 };
 
 const resizeImages = async (files: string[], format: 'jpeg' | 'avif') => {

@@ -3,12 +3,12 @@ import { statfs } from 'node:fs/promises';
 import { sql } from 'drizzle-orm';
 import { serverInfoType } from '../types/serverInfoType.js';
 import { requireFullAdmin } from './admins.js';
-import fastFolderSizeSync from 'fast-folder-size/sync.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import { getLatestBuild } from '../../helpers/latestBuild.js';
 import { getScheduledScanStatus } from '../../filesystem/scheduledScan.js';
 import { db } from '../../db/picrDb.js';
+import { folderSize } from '../../helpers/folderSize.js';
 
 const resolver: PicrResolver = async (_, _params, context) => {
   await requireFullAdmin(context);
@@ -92,11 +92,4 @@ const diskInfo = async (path: string) => {
   } catch {
     return null;
   }
-};
-
-// This can be slow if it's a large folder
-const folderSize = async (path: string) => {
-  // console.log('getting size for ', path);
-  // await delay(2000);
-  return fastFolderSizeSync(path);
 };

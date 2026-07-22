@@ -211,6 +211,22 @@ Settings page polls `serverInfo` regularly, so
 that resolver should use the normal cached lookup instead of force-refreshing
 GitHub on every request.
 
+### Server Folder Size
+
+`serverInfo.cacheSize` and `serverInfo.mediaSize` use
+`backend/helpers/folderSize.ts`, which shells out to `du` on Linux/macOS and
+falls back to a local filesystem walk if unavailable. Keep this in-house rather
+than reintroducing `fast-folder-size`: that package pulls archive-download and
+extraction dependencies that are unrelated to calculating folder sizes.
+
+### ZIP Extraction
+
+The benchmark asset setup uses `backend/helpers/extractZip.ts`, a small ZIP-only
+extractor around `yauzl`, instead of broad archive extraction packages. Keep it
+policy-controlled: validate paths after any strip-components handling, stream
+file entries, and reject symlinks/special entries. Do not reuse it for user
+uploads without adding explicit upload limits and a fresh threat model.
+
 ### FFmpeg/FFprobe Configuration
 
 - Use `backend/media/ffmpeg.ts` for ffmpeg/ffprobe calls. It runs the configured
