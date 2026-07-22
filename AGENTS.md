@@ -229,10 +229,12 @@ npm run install-all              # Preferred install flow for all subsystems
 # If installing subsystems manually, install `shared` first, then `frontend` / `app`.
 # Do not run `npm install` for `shared`, `frontend`, and `app` in parallel.
 
-# Lockfile note after bumping a dependency (CI gotcha)
-# An incremental `npm install <pkg>@<ver>` can leave a subsystem's
-# package-lock.json out of sync (e.g. missing @emnapi/* wasm transitive nodes).
-# CI runs strict `npm ci`, which then fails with EUSAGE ("lock file ... not in sync").
+# Lockfile note after changing a dependency (CI gotcha)
+# An incremental `npm install <pkg>@<ver>` / `npm uninstall <pkg>` can leave the
+# root or subsystem package-lock.json out of sync (e.g. missing @emnapi/* wasm
+# transitive nodes such as `@emnapi/wasi-threads`, even when local macOS
+# `npm ci` passes). CI runs strict Linux `npm ci`, which then fails with EUSAGE
+# ("lock file ... not in sync").
 # A fully clean `npm install` in `frontend`/`app` will ERESOLVE because
 # mantine-react-table forces a @mantine peer override (handled via `overrides`
 # in frontend/package.json). To regenerate a CI-valid lockfile:

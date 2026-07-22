@@ -1,22 +1,14 @@
+import { execFile } from 'node:child_process';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
-import {
-  buildOne,
-  downMany,
-  type IDockerComposeOptions,
-  upMany,
-} from 'docker-compose';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { photoFolderId, testUrl, videoFolderId } from './testVariables';
 
 const services = ['test-picr', 'test-db'];
 const testApiDir = path.dirname(fileURLToPath(import.meta.url));
-
-const composeOpts: IDockerComposeOptions = {
-  cwd: testApiDir,
-  log: false,
-};
+const execFileAsync = promisify(execFile);
 
 export async function setupTestEnvironment() {
   console.log('🧪 Test Setup Starting');
@@ -30,8 +22,8 @@ export async function setupTestEnvironment() {
   rmSync(cache, { recursive: true, force: true });
   mkdirSync(cache, { recursive: true });
   console.log('\t🐋 Docker Starting');
-  await buildOne(services[0], composeOpts);
-  await upMany(services, composeOpts);
+  await runDockerCompose(['build', services[0]]);
+  await runDockerCompose(['up', '-d', ...services]);
   console.log('\t🐋 Docker Startup Complete');
   await waitForSeedMedia();
   console.log('🧪 Test Setup Complete');
@@ -39,9 +31,34 @@ export async function setupTestEnvironment() {
 
 export async function teardownTestEnvironment() {
   console.log('🧪 Test Teardown Starting');
-  await downMany(services, composeOpts);
+  await runDockerCompose(['down']);
   console.log('🧪 Test Teardown Complete');
 }
+
+const runDockerCompose = async (args: string[]) => {
+  try {
+    await execFileAsync('docker', ['compose', ...args], {
+      cwd: testApiDir,
+      maxBuffer: 10 * 1024 * 1024,
+    });
+  } catch (error) {
+    const commandError = error as Error & {
+      stdout?: string;
+      stderr?: string;
+    };
+    const details = [
+      commandError.message,
+      commandError.stdout,
+      commandError.stderr,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    throw new Error(`docker compose ${args.join(' ')} failed:\n${details}`, {
+      cause: error,
+    });
+  }
+};
 
 const waitForSeedMedia = async () => {
   const started = Date.now();

@@ -28,11 +28,9 @@ Some differences include:
 
 ## Avatars
 
-PICR uses [Gravatar](https://gravatar.com/) for avatars. Basically anyone can register their email address and upload a photo which appears on all sites that support it.
+PICR uses [Gravatar](https://gravatar.com/) for avatars. If a user's username is
+an email address, PICR creates a SHA256 hash of that email address and uses it to
+request the user's Gravatar image.
 
-Benefits include:
-
-1. You upload an avatar once and it works across multiple sites
-2. If you create a public link with an email address, we might be able to detect the avatar for that user
-
-In the (very likely) event that an avatar hasn't been registered with gravatar then PICR will show initials on a random color.
+In the event that an avatar hasn't been registered with Gravatar, PICR will show
+initials on a random color.

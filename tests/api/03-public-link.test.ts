@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { expect, test } from 'vitest';
 import {
   createTestGraphqlClient,
@@ -53,7 +54,12 @@ test('Create Public Link', async () => {
   expect(user.commentPermissions).toBe(testPublicLink.commentPermissions);
   expect(user.enabled).toBe(testPublicLink.enabled);
   expect(user.linkMode).toBe(LinkMode.FinalDelivery);
-  expect(user.gravatar).toContain('gravatar.com/avatar/');
+  const gravatarHash = createHash('sha256')
+    .update(testPublicLink.username.trim().toLowerCase())
+    .digest('hex');
+  expect(user.gravatar).toBe(
+    `https://www.gravatar.com/avatar/${gravatarHash}?d=404`,
+  );
 
   const folder = user.folder;
   expect(folder?.id).toBe(photoFolderId);

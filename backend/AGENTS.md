@@ -211,6 +211,15 @@ Settings page polls `serverInfo` regularly, so
 that resolver should use the normal cached lookup instead of force-refreshing
 GitHub on every request.
 
+### User Avatars
+
+User JSON keeps the nullable `gravatar` field for GraphQL/client compatibility,
+and `backend/graphql/helpers/userToJSON.ts` builds Gravatar URLs in-house from
+email-like usernames. Keep this dependency-free and follow Gravatar's current
+identifier rules: trim the email, lowercase it, then SHA256 hash it. Do not
+reintroduce the `gravatar` npm package or MD5-based Gravatar URLs; the package
+pulls stale transitive dependencies and MD5 email hashes are easier to reverse.
+
 ### Server Folder Size
 
 `serverInfo.cacheSize` and `serverInfo.mediaSize` use
