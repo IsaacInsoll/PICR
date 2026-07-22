@@ -33,6 +33,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@urql/exchange-graphcache": "^9.0.1",
     "@urql/exchange-retry": "^2.0.0",
+    "@vidstack/react": "1.15.6",
     "blurhash": "^2.0.5",
     "dayjs": "^1.11.19",
     "format-duration": "^3.0.2",

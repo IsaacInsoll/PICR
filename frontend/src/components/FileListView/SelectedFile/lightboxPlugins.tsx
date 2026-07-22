@@ -5,7 +5,6 @@ import {
   Fullscreen,
   Slideshow,
   Thumbnails,
-  Video,
   Zoom,
 } from 'yet-another-react-lightbox/plugins';
 
@@ -16,7 +15,6 @@ export const lightboxPlugins = [
   Fullscreen,
   Slideshow,
   Thumbnails,
-  Video,
   Zoom,
 ];
 //same as above but no downloads
@@ -26,6 +24,5 @@ export const lightboxPluginsProof = [
   Fullscreen,
   Slideshow,
   Thumbnails,
-  Video,
   Zoom,
 ];

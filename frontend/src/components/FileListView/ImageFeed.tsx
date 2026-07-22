@@ -29,6 +29,10 @@ import {
   isShareableMediaFile,
   shareOrDownload,
 } from '../../helpers/shareOrDownload';
+import {
+  videoPlaybackSource,
+  videoPosterURL,
+} from '../../helpers/videoPlaybackSource';
 import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { FileLink } from '../FileLink';
 import { useInView } from 'react-intersection-observer';
@@ -40,6 +44,7 @@ import type {
   ViewFolderSubFolder,
 } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
+import { LazyPicrVideoPlayer } from '../LazyPicrVideoPlayer';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 
@@ -151,14 +156,16 @@ const FeedItem = ({
         {/*</Link>*/}
         {file.type === 'Video' ? (
           <Box>
-            <video
-              controls
-              controlsList={canDownload ? undefined : 'nodownload'}
-              playsInline
-              style={{ maxWidth: '100%' }}
-            >
-              <source src={imageURL(file, 'raw')} />
-            </video>
+            <LazyPicrVideoPlayer
+              canDownload={canDownload}
+              duration={
+                'duration' in file ? (file.duration ?? undefined) : undefined
+              }
+              poster={videoPosterURL(file)}
+              src={videoPlaybackSource(file)}
+              style={dimensions}
+              title={fileName ?? ''}
+            />
             {/*<VideoBadge file={file} size="xl" />*/}
           </Box>
         ) : null}

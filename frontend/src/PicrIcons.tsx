@@ -49,6 +49,7 @@ import {
   TbPhotoStar,
   TbPhotoVideo,
   TbPencil,
+  TbPlayerPlayFilled,
   TbRefresh,
   TbSearch,
   TbSlideshow,
@@ -131,6 +132,9 @@ export const LogOutIcon = (props: IconBaseProps) => <TbLogout {...props} />;
 
 export const FileIcon = (props: IconBaseProps) => <TbFile {...props} />;
 export const VideoIcon = (props: IconBaseProps) => <TbVideo {...props} />;
+export const PlayIcon = (props: IconBaseProps) => (
+  <TbPlayerPlayFilled {...props} />
+);
 
 export const EmailIcon = (props: IconBaseProps) => <CiAt {...props} />;
 export const BrandingIcon = (props: IconBaseProps) => <TbTypeface {...props} />;

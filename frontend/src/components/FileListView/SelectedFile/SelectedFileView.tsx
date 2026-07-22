@@ -19,12 +19,13 @@ import { useSetFolder } from '../../../hooks/useSetFolder';
 import { useEffect, useRef, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { LightboxFileRating } from './LightboxFileRating';
-import { filesForLightbox } from './filesForLightbox';
+import { filesForLightbox, isPicrVideoSlide } from './filesForLightbox';
 import { LightboxInfoButton } from './LightboxInfoButton';
 import { lightboxPlugins, lightboxPluginsProof } from './lightboxPlugins';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { lightboxControllerRefAtom } from '../../../atoms/lightboxControllerRefAtom';
 import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
+import { videoAutoplayBlessedAtom } from '../../../atoms/videoAutoplayBlessedAtom';
 import { useCanDownload } from '../../../hooks/useMe';
 import { useNoDownloadMediaProps } from '../../../hooks/useNoDownloadMediaProps';
 import { Thumbnails } from 'yet-another-react-lightbox/plugins';
@@ -33,6 +34,8 @@ import {
   canUseShareSheet,
   shareOrDownload,
 } from '../../../helpers/shareOrDownload';
+import { LazyPicrVideoPlayer } from '../../LazyPicrVideoPlayer';
+import { wasOpenedFromFolderInCurrentDocument } from '../../../hooks/useSelectedFileId';
 
 export const SelectedFileView = ({
   files,
@@ -61,6 +64,16 @@ export const SelectedFileView = ({
 
   const setFolder = useSetFolder();
   const canDownload = useCanDownload();
+  const [autoplayBlessed, setAutoplayBlessed] = useAtom(
+    videoAutoplayBlessedAtom,
+  );
+  // Autoplay the active slide when the lightbox was opened by a folder click (a
+  // fresh user gesture) or once any video has been played this session (see
+  // videoAutoplayBlessedAtom). A deep-linked/reloaded session stays silent until
+  // the user plays one video themselves.
+  const autoPlayVideo =
+    wasOpenedFromFolderInCurrentDocument(location.state) || autoplayBlessed;
+  const isSelectedVideo = selectedImage?.type === 'Video';
   const noDownloadMediaProps = useNoDownloadMediaProps();
   const imageProps: ImageProps = {
     ...carouselImageProps,
@@ -71,23 +84,26 @@ export const SelectedFileView = ({
     },
   };
 
-  const toolbarButtons = [
-    selectedImage ? (
-      <LightboxInfoButton file={selectedImage} key="InfoButton" />
-    ) : null,
-    <button
-      key="thumbnails-toggle"
-      type="button"
-      className="yarl__button"
-      onClick={() => setShowThumbnails((prev) => !prev)}
-      aria-pressed={showThumbnails}
-      title={showThumbnails ? 'Hide thumbnails' : 'Show thumbnails'}
-    >
-      <ThumbnailsIcon size="24" />
-    </button>,
-    'slideshow',
-    'close',
-  ];
+  const toolbarButtons = useMemo(
+    () => [
+      selectedImage ? (
+        <LightboxInfoButton file={selectedImage} key="InfoButton" />
+      ) : null,
+      <button
+        key="thumbnails-toggle"
+        type="button"
+        className="yarl__button"
+        onClick={() => setShowThumbnails((prev) => !prev)}
+        aria-pressed={showThumbnails}
+        title={showThumbnails ? 'Hide thumbnails' : 'Show thumbnails'}
+      >
+        <ThumbnailsIcon size="24" />
+      </button>,
+      ...(isSelectedVideo ? [] : ['slideshow']),
+      'close',
+    ],
+    [isSelectedVideo, selectedImage, showThumbnails],
+  );
 
   const config = useMemo(() => {
     return {
@@ -96,8 +112,7 @@ export const SelectedFileView = ({
         (plugin) => showThumbnails || plugin !== Thumbnails,
       ),
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- toolbarButtons is rebuilt from local constants and intentionally not a memo dependency
-  }, [canDownload, showThumbnails]);
+  }, [canDownload, showThumbnails, toolbarButtons]);
 
   return (
     <Lightbox
@@ -111,9 +126,29 @@ export const SelectedFileView = ({
       close={() => setSelectedFileId(undefined)}
       styles={lightBoxStyles}
       download={{ download: lightboxDownload }}
-      video={videoProps}
       toolbar={{ buttons: config.buttons }}
       render={{
+        slide: ({ slide, offset, rect }) => {
+          if (!isPicrVideoSlide(slide)) return undefined;
+
+          const active = offset === 0;
+          return (
+            <LazyPicrVideoPlayer
+              active={active}
+              autoPlay={autoPlayVideo}
+              canDownload={canDownload}
+              duration={slide.duration}
+              onPlay={() => setAutoplayBlessed(true)}
+              poster={slide.poster}
+              src={slide.src}
+              style={{
+                width: rect.width,
+                height: rect.height,
+              }}
+              title={typeof slide.title === 'string' ? slide.title : ''}
+            />
+          );
+        },
         slideFooter: () =>
           selectedImage ? (
             <LightboxFileRating selected={selectedImage} />
@@ -176,7 +211,7 @@ const lightboxDownload = ({
   // regular anchor download ("Save to Files"), matching isShareableMediaFile elsewhere.
   // A non-media File slide is an empty object (see filesForLightbox), so it has neither
   // an image src nor video `sources`.
-  const isMedia = isImageSlide(slide) || 'sources' in slide;
+  const isMedia = isImageSlide(slide) || isPicrVideoSlide(slide);
   if (isMedia && canUseShareSheet()) {
     void shareOrDownload(url, filename ?? '');
   } else {
@@ -185,7 +220,6 @@ const lightboxDownload = ({
 };
 
 const counterProps = { container: { style: { top: 'unset', bottom: 0 } } };
-const videoProps = { autoPlay: true, muted: false };
 
 const carouselImageProps: ImageProps = {
   style: { objectFit: 'contain' }, // fix image getting cropped

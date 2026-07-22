@@ -11,7 +11,7 @@ export const LightboxFileRating = ({
   const { isNone } = useCommentPermissions();
   if (isNone) return null;
   return (
-    <Paper style={{ position: 'absolute', bottom: 0 }} p="xs">
+    <Paper style={{ position: 'absolute', bottom: 0, zIndex: 3 }} p="xs">
       <FileReview file={selected} />
     </Paper>
   );

@@ -13,6 +13,28 @@ React 19 SPA for the PICR admin interface and public gallery views.
 | URQL         | 5.0     | GraphQL client          |
 | Vite         | 8.x     | Build tool              |
 | TypeScript   | 6.0     | Type safety             |
+| Vidstack     | 1.15.6  | Video player wrapper    |
+
+Vidstack is pinned to `@vidstack/react@1.15.6` intentionally. The package's
+plain npm `latest` tag still points at the old 0.x line with React 18 peer
+dependencies; do not install bare `@vidstack/react` unless the dist-tags have
+been rechecked and the React 19-compatible line is actually `latest`.
+Keep Vidstack behind `LazyPicrVideoPlayer`; feed and lightbox surfaces should
+not import `PicrVideoPlayer` directly, or the large player bundle gets pulled
+into normal folder-view loading.
+Do not unconditionally autoplay lightbox videos. Browsers reject unmuted
+autoplay without a fresh user gesture, and React Router history state can survive
+a reload, so the lightbox only autoplays when either
+`wasOpenedFromFolderInCurrentDocument` is true (opened by a folder click) or the
+session has been "blessed" (`videoAutoplayBlessedAtom`). The atom flips true the
+first time any lightbox video plays — after that the browser has sticky
+activation, so each slide the user navigates to may autoplay. A deep-linked or
+reloaded session stays silent until the user plays one video manually. Blessing
+is lightbox-only (the inline feed never opts in, so it never cascade-autoplays).
+YARL keeps neighboring slides mounted within its preload window. Custom video
+slides must pass `active={offset === 0}` to `LazyPicrVideoPlayer` so inactive
+Vidstack players pause when the user navigates away and the active one (re)starts
+via the media remote when autoplay is warranted.
 
 ## Directory Structure
 

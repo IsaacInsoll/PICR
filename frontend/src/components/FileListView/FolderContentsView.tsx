@@ -37,6 +37,7 @@ import {
   useCloseSetBannerImageModal,
 } from '../../atoms/modalAtom';
 import { useCanDownload, useMe } from '../../hooks/useMe';
+import { loadPicrVideoPlayer } from '../LazyPicrVideoPlayer';
 
 const loadMoveRenameFolderModal = () =>
   import('./MoveRenameFolderModal').then((module) => ({
@@ -91,6 +92,16 @@ export const FolderContentsView = ({
     }, 1000);
     return () => window.clearTimeout(timeout);
   }, []);
+
+  useEffect(() => {
+    if (!files.some((file) => file.type === 'Video')) return;
+
+    const timeout = window.setTimeout(() => {
+      void loadPicrVideoPlayer();
+    }, 1000);
+
+    return () => window.clearTimeout(timeout);
+  }, [files]);
 
   // For link users: if saved view is not available, switch to defaultView or first shown
   useEffect(() => {

@@ -1,10 +1,32 @@
 import type { PicrFile } from '@shared/types/picr';
 import { normalizeDisplayName } from '@shared/displayName';
-import type { Slide, ImageSource } from 'yet-another-react-lightbox';
+import type {
+  GenericSlide,
+  ImageSource,
+  Slide,
+} from 'yet-another-react-lightbox';
 import { thumbnailSizes } from '@shared/thumbnailSize';
 import { thumbnailDimensions } from '@shared/thumbnailDimensions';
 import { imageURL } from '../../../helpers/imageURL';
 import { isBrowserDisplayableOriginal } from '@shared/imageFormats';
+import {
+  videoPlaybackSource,
+  videoPosterURL,
+} from '../../../helpers/videoPlaybackSource';
+
+export interface PicrVideoSlide extends GenericSlide {
+  type: 'picr-video';
+  src: string;
+  poster: string;
+  thumbnail: string;
+  duration?: number;
+}
+
+declare module 'yet-another-react-lightbox' {
+  interface SlideTypes {
+    'picr-video': PicrVideoSlide;
+  }
+}
 
 export const filesForLightbox = (
   files: PicrFile[],
@@ -28,11 +50,16 @@ export const filesForLightbox = (
             ),
           }
         : file.type === 'Video'
-          ? {
-              type: 'video',
-              poster: imageURL(file, 'lg'),
-              sources: [{ src: imageURL(file, 'raw'), type: 'video/mp4' }], //TODO: generate multiple bitrates of video for different sizes
-            }
+          ? (() => {
+              const poster = videoPosterURL(file);
+              return {
+                type: 'picr-video',
+                src: videoPlaybackSource(file),
+                poster,
+                thumbnail: poster,
+                duration: file.duration ?? undefined,
+              };
+            })()
           : {
               //TODO: normal file
             };
@@ -46,4 +73,8 @@ export const filesForLightbox = (
       ...props,
     } as Slide;
   });
+};
+
+export const isPicrVideoSlide = (slide: Slide): slide is PicrVideoSlide => {
+  return 'type' in slide && slide.type === 'picr-video';
 };
