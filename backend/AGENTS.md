@@ -118,6 +118,14 @@ the flag — set it only via env, not via any UI mutation. Public-link view
 notifications are sent from `recordFolderVisit`, and download notifications are
 sent from `generateZip` after a download row is written.
 
+Folder rows can be `exists=false` while `existsRescan=true` after a watcher
+delete, because `removeFolder()` archives the row without clearing
+`existsRescan`. `addFolder()` must reactivate rows when either flag is false;
+otherwise a scan can return that archived folder id and immediately fail through
+`dbFolderForId()`, which filters to active folders. `addFile()` folder lookup
+should also ignore archived folder rows so it falls through to `addFolder()` for
+reactivation.
+
 The dashboard "Recent Clients" card is backed by `Users.lastAccess`, while the
 full access-log view reads `AccessLogs`. Public-link view notifications and
 `lastAccess` are driven by `recordFolderVisit`, which uses a 30-minute real-visit

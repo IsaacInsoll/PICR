@@ -82,7 +82,7 @@ export const addFolder = async (
       ),
     });
 
-    if (newFolder && !newFolder.existsRescan) {
+    if (newFolder && (!newFolder.exists || !newFolder.existsRescan)) {
       await db
         .update(dbFolder)
         .set({
@@ -92,6 +92,8 @@ export const addFolder = async (
           ...(stIno && p === relative ? { stIno } : {}),
         }) // I'm intentionally not updating `lastUpdated` here (, updatedAt: new Date())
         .where(eq(dbFolder.id, newFolder.id));
+      newFolder.exists = true;
+      newFolder.existsRescan = true;
     }
 
     if (newFolder && stIno && p === relative && newFolder.stIno !== stIno) {

@@ -238,7 +238,10 @@ const findFolderId = async (fullPath: string) => {
 
     const dbFolderMatch = await db.query.dbFolder.findFirst({
       columns: { id: true },
-      where: eq(dbFolder.relativePath, relative),
+      where: and(
+        eq(dbFolder.relativePath, relative),
+        eq(dbFolder.exists, true),
+      ),
     });
     if (dbFolderMatch) {
       folderList[relative] = dbFolderMatch.id;
