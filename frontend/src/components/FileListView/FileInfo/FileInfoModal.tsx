@@ -7,13 +7,15 @@ import { useSetAtom } from 'jotai';
 import { closeModalAtom } from '../../../atoms/modalAtom';
 import { FilePreview } from '../FilePreview';
 import { prettyBytes } from '@shared/prettyBytes';
-import { prettyDate } from '@shared/prettyDate';
+import { isUnavailableFileCreatedDate, prettyDate } from '@shared/prettyDate';
 import type { PicrFile } from '@shared/types/picr';
 
 export const FileInfoModal = ({ file }: { file: PicrFile }) => {
   const onClose = useSetAtom(closeModalAtom);
   const isMobile = useIsSmallScreen();
   const fileName = normalizeDisplayName(file.name);
+  const showFileCreated =
+    !!file.fileCreated && !isUnavailableFileCreatedDate(file.fileCreated);
 
   return (
     <Modal
@@ -35,10 +37,15 @@ export const FileInfoModal = ({ file }: { file: PicrFile }) => {
         <StatCard label="File size" value={prettyBytes(file.fileSize ?? 0)} />
         <StatCard label="File type" value={file.type} />
         <StatCard
-          label="Last modified"
+          label="File modified"
           value={prettyDate(file.fileLastModified ?? '')}
         />
-        <StatCard label="Created" value={prettyDate(file.fileCreated ?? '')} />
+        {showFileCreated ? (
+          <StatCard
+            label="File created"
+            value={prettyDate(file.fileCreated ?? '')}
+          />
+        ) : null}
       </Group>
       {file.metadata != null ? (
         <Table>

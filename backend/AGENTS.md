@@ -298,6 +298,11 @@ uploads without adding explicit upload limits and a fresh threat model.
   `mtimeNs`/`birthtimeNs` to milliseconds the same way `fileStatsFromBigIntStats`
   does before calling `contentHashForStats`; raw nanosecond or truncated
   millisecond values can break move detection against existing database rows.
+- `Files.fileCreated` is sourced from filesystem birth time (`stats.birthtime` /
+  `birthtimeNs`), not EXIF/photo metadata. Some mounted or virtual filesystems
+  do not expose creation time to Node and may report Unix epoch instead. Treat
+  `1970-01-01T00:00:00.000Z` as "birth time unavailable" rather than a real
+  media creation date.
 
 ### Context Structure (`PicrRequestContext`)
 

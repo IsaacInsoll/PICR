@@ -7,7 +7,7 @@ export type AnyMetadataKey = string;
 export const metadataDescription: Partial<Record<AnyMetadataKey, string>> = {
   ExposureTime: 'Shutter Speed',
   DateTimeEdit: 'Last Edited',
-  DateTimeOriginal: 'Created',
+  DateTimeOriginal: 'Photo taken',
 };
 
 export interface MetadataPresentationResult {
