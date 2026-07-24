@@ -58,7 +58,7 @@ export const SmallPreview = ({
             height,
           }}
         />
-        <VideoBadge file={file} size="xs" />
+        <VideoBadge file={file} density="compact" />
       </Box>
     );
   }
