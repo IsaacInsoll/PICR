@@ -23,7 +23,6 @@ const resolver: PicrResolver = async (_, _params, context) => {
     developmentBuildSha: picrConfig.developmentBuildSha ?? null,
     latest,
     databaseUrl: picrConfig.databaseUrl,
-    usePolling: picrConfig.usePolling,
     dev: picrConfig.dev,
     canWrite: picrConfig.canWrite,
     mediaCaps: picrConfig.mediaCaps,

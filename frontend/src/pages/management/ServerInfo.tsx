@@ -30,8 +30,10 @@ import {
   CircleCheckFilledIcon,
   CircleXIcon,
   ClipboardIcon,
+  DatabaseIcon,
   GitHubIcon,
   InfoIcon,
+  PhotoViewIcon,
   ScanIcon,
   ServerIcon,
   StorageIcon,
@@ -116,7 +118,7 @@ export const StorageSettings = () => {
   if (!server) return null;
   return (
     <Stack gap="lg" pt="md" pb="xl">
-      <StorageCard disk={server.disk} />
+      <StorageCard disk={server.disk} canWrite={server.canWrite} />
       <ScanningCard scanning={server.scanning} inode={server.inodeSupport} />
     </Stack>
   );
@@ -297,13 +299,25 @@ const VersionCard = ({
 // Storage
 // ---------------------------------------------------------------------------
 
-const StorageCard = ({ disk }: { disk: ServerInfoData['disk'] }) => (
+const StorageCard = ({
+  disk,
+  canWrite,
+}: {
+  disk: ServerInfoData['disk'];
+  canWrite: ServerInfoData['canWrite'];
+}) => (
   <InfoCard
     title="Storage"
     icon={<StorageIcon />}
     description="Disk space used by your original photos and the thumbnails PICR generates."
     footer={<TreesizeLink />}
   >
+    <InfoRow
+      label="Can write"
+      description="Whether PICR is allowed to make changes to your photo folders."
+    >
+      <BoolValue value={canWrite} />
+    </InfoRow>
     <Suspense fallback={<StorageUsageLoading />}>
       <ServerFolderSize disk={disk} />
     </Suspense>
@@ -779,16 +793,10 @@ const ServerCard = ({ server }: { server: ServerInfoData }) => {
         <Code style={{ wordBreak: 'break-all' }}>{server.host}</Code>
       </InfoRow>
       <InfoRow
-        label="Can write"
-        description="Whether PICR is allowed to make changes to your photo folders."
+        label="Uptime"
+        description="How long this process has been running."
       >
-        <BoolValue value={server.canWrite} />
-      </InfoRow>
-      <InfoRow
-        label="File polling"
-        description="Re-scans folders on a timer instead of watching for changes. Needed on some NAS and network drives."
-      >
-        <BoolValue value={server.usePolling} />
+        <Code>{formatUptime(server.system.uptimeSeconds)}</Code>
       </InfoRow>
     </InfoCard>
   );
@@ -809,40 +817,92 @@ const formatUptime = (seconds: number) => {
   return parts.join(' ');
 };
 
-const SystemCard = ({ system }: { system: ServerInfoData['system'] }) => (
-  <InfoCard
-    title="System"
-    icon={<SystemIcon />}
-    description="The runtime and media tools this server is using."
-  >
-    <InfoRow label="Uptime">
-      <Code>{formatUptime(system.uptimeSeconds)}</Code>
-    </InfoRow>
-    <InfoRow label="Platform">
-      <Code>{system.platform}</Code>
-    </InfoRow>
-    <InfoRow label="Memory">
-      <Code>{prettyBytes(system.totalMemory)}</Code>
-    </InfoRow>
-    <InfoRow label="Node.js">
-      <Code>{system.nodeVersion}</Code>
-    </InfoRow>
-    {system.databaseVersion ? (
-      <InfoRow label="Database">
-        <Code>{system.databaseVersion}</Code>
-      </InfoRow>
-    ) : null}
-    {system.ffmpegVersion ? (
-      <InfoRow label="ffmpeg">
-        <Code>{system.ffmpegVersion}</Code>
-      </InfoRow>
-    ) : null}
-    {system.imageMagickVersion ? (
-      <InfoRow label="ImageMagick">
-        <Code>{system.imageMagickVersion}</Code>
-      </InfoRow>
-    ) : null}
-  </InfoCard>
+const SystemCard = ({ system }: { system: ServerInfoData['system'] }) => {
+  const metrics = [
+    {
+      label: 'Platform',
+      value: system.platform,
+      icon: <SystemIcon />,
+    },
+    {
+      label: 'Memory',
+      value: prettyBytes(system.totalMemory),
+      icon: <StorageIcon />,
+    },
+    {
+      label: 'Node.js',
+      value: system.nodeVersion,
+      icon: <ServerIcon />,
+    },
+    {
+      label: 'Database',
+      value: system.databaseVersion,
+      icon: <DatabaseIcon />,
+    },
+    {
+      label: 'ffmpeg',
+      value: system.ffmpegVersion,
+      icon: <VideoMetadataIcon />,
+    },
+    {
+      label: 'ImageMagick',
+      value: system.imageMagickVersion,
+      icon: <PhotoViewIcon />,
+    },
+  ];
+
+  return (
+    <Box>
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 3, xl: 6 }} spacing="sm">
+        {metrics.map((metric) => (
+          <SystemMetricCard
+            key={metric.label}
+            label={metric.label}
+            value={metric.value}
+            icon={metric.icon}
+          />
+        ))}
+      </SimpleGrid>
+    </Box>
+  );
+};
+
+const SystemMetricCard = ({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value?: string | null;
+  icon: ReactNode;
+}) => (
+  <Card withBorder padding="md" radius="md">
+    <Group gap="xs" wrap="nowrap" mb={6}>
+      <ThemeIcon variant="light" color="gray" size="sm">
+        {icon}
+      </ThemeIcon>
+      <Text size="xs" c="dimmed" fw={600}>
+        {label}
+      </Text>
+    </Group>
+    {value ? (
+      <Code
+        display="block"
+        style={{
+          maxWidth: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {value}
+      </Code>
+    ) : (
+      <Text size="sm" c="dimmed">
+        Unavailable
+      </Text>
+    )}
+  </Card>
 );
 
 // ---------------------------------------------------------------------------

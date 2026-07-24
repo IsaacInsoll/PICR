@@ -17,6 +17,7 @@ import {
   TbCpu,
   TbCloudDownload,
   TbCloudUpload,
+  TbDatabase,
   TbDeviceMobileShare,
   TbDots,
   TbDownload,
@@ -342,6 +343,7 @@ export const StorageIcon = (props: IconBaseProps) => (
 );
 export const ServerIcon = (props: IconBaseProps) => <TbServer {...props} />;
 export const SystemIcon = (props: IconBaseProps) => <TbCpu {...props} />;
+export const DatabaseIcon = (props: IconBaseProps) => <TbDatabase {...props} />;
 export const ScanIcon = (props: IconBaseProps) => <TbScan {...props} />;
 export const EyeIcon = (props: IconBaseProps) => <TbEye {...props} />;
 export const EyeOffIcon = (props: IconBaseProps) => <TbEyeOff {...props} />;

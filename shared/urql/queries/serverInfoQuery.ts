@@ -8,7 +8,6 @@ export const serverInfoQuery = gql(/* GraphQL */ `
       latest
       databaseUrl
       dev
-      usePolling
       host
       canWrite
       mediaCaps {

@@ -450,7 +450,6 @@ type ServerInfo {
   scanning: MediaScanningInfo!
   settings: ServerSettings!
   system: SystemInfo!
-  usePolling: Boolean!
   version: String!
   videoAcceleration: VideoAccelerationInfo!
 }

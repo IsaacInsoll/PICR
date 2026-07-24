@@ -74,7 +74,6 @@ export const configFromEnv = () => {
     inodeSupportReason: 'Inode support not yet detected',
     fileWatcherMode,
     onViewScanMode: d.ON_VIEW_SCAN ?? 'off',
-    usePolling: fileWatcherMode === 'polling',
     pollingSeconds,
     scheduledScanHours: d.SCHEDULED_SCAN_HOURS ?? 0,
     tokenSecret: d.TOKEN_SECRET,

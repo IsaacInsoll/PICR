@@ -123,7 +123,6 @@ export const serverInfoType = new GraphQLObjectType({
     latest: { type: new GraphQLNonNull(GraphQLString) },
     host: { type: new GraphQLNonNull(GraphQLString) },
     databaseUrl: { type: new GraphQLNonNull(GraphQLString) },
-    usePolling: { type: new GraphQLNonNull(GraphQLBoolean) },
     dev: { type: new GraphQLNonNull(GraphQLBoolean) },
     canWrite: { type: new GraphQLNonNull(GraphQLBoolean) },
     videoAcceleration: { type: new GraphQLNonNull(videoAccelerationInfoType) },

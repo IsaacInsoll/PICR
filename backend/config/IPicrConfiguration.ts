@@ -39,7 +39,6 @@ export interface IPicrConfiguration {
   consoleLogging?: boolean;
   fileWatcherMode: FileWatcherMode;
   onViewScanMode: OnViewScanMode;
-  usePolling: boolean;
   port?: number;
   pollingSeconds: number;
   scheduledScanHours: number;

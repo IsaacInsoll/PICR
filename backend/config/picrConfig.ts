@@ -25,7 +25,6 @@ export const picrConfig: IPicrConfiguration = {
   updateMetadata: false,
   fileWatcherMode: 'native',
   onViewScanMode: 'off',
-  usePolling: false,
   pollingSeconds: 20,
   scheduledScanHours: 0,
   loginRateLimitEnabled: true,
