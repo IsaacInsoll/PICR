@@ -92,9 +92,7 @@ export const SelectedFileView = ({
 
   const toolbarButtons = useMemo(
     () => [
-      selectedImage ? (
-        <LightboxInfoButton file={selectedImage} key="InfoButton" />
-      ) : null,
+      <LightboxInfoButton files={files} key="InfoButton" />,
       <button
         key="thumbnails-toggle"
         type="button"
@@ -108,7 +106,7 @@ export const SelectedFileView = ({
       ...(isSelectedVideo ? [] : ['slideshow']),
       'close',
     ],
-    [isSelectedVideo, selectedImage, showThumbnails],
+    [files, isSelectedVideo, showThumbnails],
   );
 
   const config = useMemo(() => {
@@ -160,10 +158,7 @@ export const SelectedFileView = ({
             />
           );
         },
-        slideFooter: () =>
-          selectedImage ? (
-            <LightboxFileRating selected={selectedImage} />
-          ) : null,
+        slideFooter: () => <LightboxFileRating files={files} />,
       }}
       carousel={{
         ...carouselProps,

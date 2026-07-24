@@ -35,6 +35,11 @@ YARL keeps neighboring slides mounted within its preload window. Custom video
 slides must pass `active={offset === 0}` to `LazyPicrVideoPlayer` so inactive
 Vidstack players pause when the user navigates away and the active one (re)starts
 via the media remote when autoplay is warranted.
+Custom YARL toolbar/footer controls should derive the active file from
+`useLightboxState().currentIndex` at render/click time. Do not close over the
+parent route's `selectedImage` for lightbox actions: slide navigation updates
+the lightbox state first, and a stale closure can act on the file that opened the
+lightbox instead of the currently visible slide.
 
 ## Directory Structure
 
