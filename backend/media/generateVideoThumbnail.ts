@@ -1,6 +1,5 @@
 import type { ThumbnailSize } from '@shared/thumbnailSize.js';
 import type { PicrVideoMetadata } from '@shared/types/metadata.js';
-import { thumbnailDimensions } from '@shared/thumbnailDimensions.js';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { log } from '../logger.js';
 import * as ji from 'join-images';
@@ -22,6 +21,11 @@ import { dbFile } from '../db/models/index.js';
 import { eq } from 'drizzle-orm';
 import { videoThumbnailArtifactsExist } from './videoThumbnailExistence.js';
 import { atomicWrite } from './atomicWrite.js';
+import {
+  serverThumbnailDimensions,
+  type ServerMediaSettings,
+} from '@shared/serverMediaSettings.js';
+import { getServerMediaSettings } from './serverMediaSettings.js';
 
 const numberOfVideoSnapshots = 10;
 
@@ -60,6 +64,7 @@ const processVideoThumbnail = async (
   }
 
   try {
+    const settings = await getServerMediaSettings();
     const timestamps = frameTimestamps(Duration, numberOfVideoSnapshots);
     const tempDir = await mkdtemp(join(tmpdir(), 'picr-video-thumbnail-'));
     try {
@@ -67,6 +72,7 @@ const processVideoThumbnail = async (
         file,
         timestamps,
         tempDir,
+        settings,
       );
       if (candidates.length === 0) {
         throw new Error('No candidate frames were extracted');
@@ -80,7 +86,7 @@ const processVideoThumbnail = async (
       const selected = candidates[pickPosterFrame(candidates)];
       const posterFramePath = join(tempDir, 'poster.jpg');
       await extractPosterFrame(file, selected.timestamp, posterFramePath);
-      await encodeVideoPosters(file, posterFramePath);
+      await encodeVideoPosters(file, posterFramePath, settings);
 
       const blurHash = await encodeImageToBlurhash(posterFramePath);
       if (blurHash) await persistVideoBlurHash(file, blurHash);
@@ -112,8 +118,9 @@ const extractCandidateFrames = async (
   file: FileFields,
   timestamps: number[],
   outFile: string,
+  settings: ServerMediaSettings,
 ): Promise<ExtractedCandidate[]> => {
-  const px = thumbnailDimensions.md;
+  const px = serverThumbnailDimensions(settings).md;
   const candidates: ExtractedCandidate[] = [];
 
   for (const [index, timestamp] of timestamps.entries()) {
@@ -184,11 +191,15 @@ const mergeImages = async (files: string[], outputPath: string) => {
 const encodeVideoPosters = async (
   file: FileFields,
   posterFramePath: string,
+  settings: ServerMediaSettings,
 ): Promise<void> => {
   await Promise.all(
     (['sm', 'md', 'lg'] as const).map((posterSize) =>
-      encodeThumbnail(posterFramePath, posterSize, (extension) =>
-        videoPosterPath(file, posterSize, extension),
+      encodeThumbnail(
+        posterFramePath,
+        posterSize,
+        (extension) => videoPosterPath(file, posterSize, extension),
+        { settings },
       ),
     ),
   );

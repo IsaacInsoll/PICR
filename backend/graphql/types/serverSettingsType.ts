@@ -3,12 +3,19 @@ import {
   GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
-  GraphQLString,
 } from 'graphql';
-import { thumbnailDimensionsType } from './serverSettingsType.js';
 
-export const clientInfoType = new GraphQLObjectType({
-  name: 'ClientInfo',
+export const thumbnailDimensionsType = new GraphQLObjectType({
+  name: 'ThumbnailDimensions',
+  fields: () => ({
+    sm: { type: new GraphQLNonNull(GraphQLInt) },
+    md: { type: new GraphQLNonNull(GraphQLInt) },
+    lg: { type: new GraphQLNonNull(GraphQLInt) },
+  }),
+});
+
+export const serverSettingsType = new GraphQLObjectType({
+  name: 'ServerSettings',
   fields: () => ({
     avifEnabled: { type: new GraphQLNonNull(GraphQLBoolean) },
     useOriginalsForLightbox: { type: new GraphQLNonNull(GraphQLBoolean) },
@@ -20,7 +27,5 @@ export const clientInfoType = new GraphQLObjectType({
     thumbnailDimensions: {
       type: new GraphQLNonNull(thumbnailDimensionsType),
     },
-    canWrite: { type: new GraphQLNonNull(GraphQLBoolean) },
-    baseUrl: { type: new GraphQLNonNull(GraphQLString) },
   }),
 });

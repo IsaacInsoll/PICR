@@ -7,18 +7,23 @@ import { generateVideoThumbnail } from './generateVideoThumbnail.js';
 import type { FileFields } from '../db/picrDb.js';
 import { ensureDecodedImage } from './ensureDecodedImage.js';
 import { encodeThumbnail } from './encodeThumbnail.js';
+import { getServerMediaSettings } from './serverMediaSettings.js';
+import type { ServerMediaSettings } from '@shared/serverMediaSettings.js';
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
 export const generateAllThumbs = async (file: FileFields) => {
   if (file.type === 'Image') {
-    if (!existsSync(fullPathFor(file, 'sm'))) {
-      await generateThumbnail(file, 'sm');
-    }
-    if (!existsSync(fullPathFor(file, 'md'))) {
-      await generateThumbnail(file, 'md');
-    }
-    if (!existsSync(fullPathFor(file, 'lg'))) {
-      await generateThumbnail(file, 'lg');
+    // Thumbnail settings are intentionally not part of the current disk cache
+    // filename. Existing sm/md/lg files are reused until deleted/regenerated;
+    // only missing thumbnails are generated with the latest server settings.
+    const missing = (['sm', 'md', 'lg'] as const).filter(
+      (size) => !existsSync(fullPathFor(file, size)),
+    );
+    if (missing.length > 0) {
+      const settings = await getServerMediaSettings();
+      for (const size of missing) {
+        await generateThumbnail(file, size, settings);
+      }
     }
   }
 
@@ -53,12 +58,16 @@ export const generateAllThumbs = async (file: FileFields) => {
 export const generateThumbnail = async (
   file: FileFields,
   size: ThumbnailSize,
+  settings?: ServerMediaSettings,
 ) => {
   log('info', `🖼️ Generating ${size} thumbnail for ${file.name}`);
   try {
     const sourcePath = await ensureDecodedImage(file);
-    return await encodeThumbnail(sourcePath, size, (extension) =>
-      thumbnailPath(file, size, extension),
+    return await encodeThumbnail(
+      sourcePath,
+      size,
+      (extension) => thumbnailPath(file, size, extension),
+      { settings },
     );
   } catch (e) {
     log(

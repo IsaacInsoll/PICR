@@ -6,6 +6,8 @@ export const urqlCacheExchange = cacheExchange({
   schema,
   keys: {
     ClientInfo: () => null,
+    ServerSettings: () => null,
+    ThumbnailDimensions: () => null,
     BenchmarkResult: () => null,
     BenchmarkStep: () => null,
     FolderFileExport: () => null,
@@ -24,6 +26,8 @@ export const urqlCacheExchange = cacheExchange({
         invalidateQueries(cache, ['brandings', 'folder']),
       editBranding: (_, args, cache) =>
         invalidateQueries(cache, ['brandings', 'folder']),
+      editServerSettings: (_, args, cache) =>
+        invalidateQueries(cache, ['serverInfo', 'clientInfo']),
     },
   },
 });

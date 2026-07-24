@@ -64,6 +64,11 @@ import {
   benchmarkResultType,
   benchmarkStepType,
 } from './types/benchmarkType.js';
+import { editServerSettings } from './mutations/editServerSettings.js';
+import {
+  serverSettingsType,
+  thumbnailDimensionsType,
+} from './types/serverSettingsType.js';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -112,6 +117,7 @@ const mutations = new GraphQLObjectType({
     renameFolder,
     rescanFolder,
     runBenchmark,
+    editServerSettings,
   }),
 });
 
@@ -136,7 +142,9 @@ const types = [
   publicLinkBrandingPreviewType,
   publicLinkInfoType,
   serverInfoType,
+  serverSettingsType,
   taskType,
+  thumbnailDimensionsType,
   userType,
   userDeviceType,
   videoFileType,

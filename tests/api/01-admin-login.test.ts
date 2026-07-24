@@ -5,6 +5,8 @@ import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { meQuery } from '../../shared/urql/queries/meQuery';
 import { serverInfoQuery } from '../../shared/urql/queries/serverInfoQuery';
 import { gte } from 'semver';
+import { DEFAULT_SERVER_MEDIA_SETTINGS } from '../../shared/serverMediaSettings';
+import { editServerSettingsMutation } from '../../shared/urql/mutations/editServerSettingsMutation';
 
 test('Login Mutation Works', async () => {
   const client = await createTestGraphqlClient({});
@@ -101,6 +103,14 @@ test('Server Info Query (kinda slow)', async () => {
   expect(['off', 'direct', 'direct_and_new', 'one_level']).toContain(
     info?.scanning.onViewScanMode,
   );
+  expect(info?.settings).toMatchObject({
+    ...DEFAULT_SERVER_MEDIA_SETTINGS,
+    thumbnailDimensions: {
+      sm: DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailSmallPx,
+      md: DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailMediumPx,
+      lg: DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailLargePx,
+    },
+  });
   expect(info?.scanning.scheduledScanHours).toBeGreaterThanOrEqual(0);
   expect(info?.scanning.scheduledScan.running).toBe(false);
   // `latest` comes from an unauthenticated GitHub API call which can be rate-limited in CI;
@@ -111,5 +121,51 @@ test('Server Info Query (kinda slow)', async () => {
     );
   } else {
     expect(gte(info!.latest, '0.6.0')).toBeTruthy();
+  }
+});
+
+test('Root admin can edit server media settings', async () => {
+  const headers = await getUserHeader(defaultCredentials);
+  const client = await createTestGraphqlClient(headers);
+
+  const customSettings = {
+    avifEnabled: true,
+    useOriginalsForLightbox: true,
+    thumbnailSmallPx: 240,
+    thumbnailMediumPx: 640,
+    thumbnailLargePx: 3000,
+    thumbnailJpegQuality: 72,
+    thumbnailAvifQuality: 48,
+  };
+
+  try {
+    const editResult = await client
+      .mutation(editServerSettingsMutation, { input: customSettings })
+      .toPromise();
+    expect(editResult.error).toBeUndefined();
+    expect(editResult.data?.editServerSettings).toMatchObject({
+      ...customSettings,
+      thumbnailDimensions: { sm: 240, md: 640, lg: 3000 },
+    });
+
+    const infoResult = await client.query(serverInfoQuery, {}).toPromise();
+    expect(infoResult.error).toBeUndefined();
+    expect(infoResult.data?.serverInfo?.settings).toMatchObject({
+      ...customSettings,
+      thumbnailDimensions: { sm: 240, md: 640, lg: 3000 },
+    });
+
+    const meResult = await client.query(meQuery, {}).toPromise();
+    expect(meResult.error).toBeUndefined();
+    expect(meResult.data?.clientInfo).toMatchObject({
+      ...customSettings,
+      thumbnailDimensions: { sm: 240, md: 640, lg: 3000 },
+    });
+  } finally {
+    await client
+      .mutation(editServerSettingsMutation, {
+        input: DEFAULT_SERVER_MEDIA_SETTINGS,
+      })
+      .toPromise();
   }
 });

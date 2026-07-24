@@ -49,7 +49,18 @@ export const imageRequest = async (
     res.sendStatus(400);
     return;
   }
-  res.set('Cache-Control', 'public, max-age=31536000, immutable');
+  // Generated thumbnails/posters can change at the same URL when media settings
+  // change and the disk cache is later regenerated. A one-hour TTL avoids repeat
+  // gallery views hammering the server, while later conditional requests should
+  // usually be cheap 304 responses from sendFile's ETag/Last-Modified handling.
+  // Raw originals are content-addressed by fileHash, so they can keep immutable
+  // caching without masking regenerated thumbnail bytes.
+  res.set(
+    'Cache-Control',
+    size === 'raw'
+      ? 'public, max-age=31536000, immutable'
+      : 'public, max-age=3600, must-revalidate',
+  );
   const extension = extname(filename).toLowerCase(); //extension ignored for original file, only used for thumbs
   if (size === 'scrub') {
     if (file.type !== 'Video') {

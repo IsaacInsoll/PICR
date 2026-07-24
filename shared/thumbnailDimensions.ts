@@ -1,5 +1,7 @@
+import { DEFAULT_SERVER_MEDIA_SETTINGS } from './serverMediaSettings.js';
+
 export const thumbnailDimensions = {
-  sm: 250, // baby thumbs
-  md: 500, // "250px" eg masonry view
-  lg: 2500, // full screen
+  sm: DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailSmallPx, // baby thumbs
+  md: DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailMediumPx, // "250px" eg masonry view
+  lg: DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailLargePx, // full screen
 } as const;

@@ -7,6 +7,11 @@ import { getUUID } from '../helpers/getUUID';
 import { meQuery } from '@shared/urql/queries/meQuery';
 import type { ExtraUserProps } from '@shared/extraUserProps';
 import { extraUserProps } from '@shared/extraUserProps';
+import {
+  DEFAULT_SERVER_MEDIA_SETTINGS,
+  serverThumbnailDimensions,
+  type ServerThumbnailDimensions,
+} from '@shared/serverMediaSettings';
 
 export const useMe = (
   options: { pause?: boolean } = {},
@@ -15,6 +20,13 @@ export const useMe = (
       ExtraUserProps & {
         clientInfo: {
           avifEnabled?: boolean;
+          useOriginalsForLightbox: boolean;
+          thumbnailSmallPx: number;
+          thumbnailMediumPx: number;
+          thumbnailLargePx: number;
+          thumbnailJpegQuality: number;
+          thumbnailAvifQuality: number;
+          thumbnailDimensions: ServerThumbnailDimensions;
           baseUrl: string;
           canWrite: boolean;
         };
@@ -43,6 +55,20 @@ export const useAvifEnabled = () => {
   const me = useMe();
   return me?.clientInfo.avifEnabled ?? false;
 };
+
+export const useOriginalsForLightbox = () => {
+  const me = useMe();
+  return me?.clientInfo.useOriginalsForLightbox ?? false;
+};
+
+export const useServerThumbnailDimensions = () => {
+  const me = useMe();
+  return (
+    me?.clientInfo.thumbnailDimensions ??
+    serverThumbnailDimensions(DEFAULT_SERVER_MEDIA_SETTINGS)
+  );
+};
+
 export const useBaseUrl = () => {
   const me = useMe();
   return me?.clientInfo.baseUrl;

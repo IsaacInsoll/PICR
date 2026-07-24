@@ -7,6 +7,7 @@ import {
   GraphQLString,
 } from 'graphql';
 import { GraphQLBigInt } from 'graphql-scalars';
+import { serverSettingsType } from './serverSettingsType.js';
 
 export const videoAccelerationInfoType = new GraphQLObjectType({
   name: 'VideoAccelerationInfo',
@@ -129,6 +130,7 @@ export const serverInfoType = new GraphQLObjectType({
     inodeSupport: { type: new GraphQLNonNull(inodeSupportInfoType) },
     scanning: { type: new GraphQLNonNull(mediaScanningInfoType) },
     mediaCaps: { type: new GraphQLNonNull(mediaCapsInfoType) },
+    settings: { type: new GraphQLNonNull(serverSettingsType) },
     cacheSize: { type: new GraphQLNonNull(GraphQLBigInt) },
     mediaSize: { type: new GraphQLNonNull(GraphQLBigInt) },
     system: { type: new GraphQLNonNull(systemInfoType) },

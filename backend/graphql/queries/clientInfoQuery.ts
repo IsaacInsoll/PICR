@@ -3,15 +3,18 @@ import { getServerOptions } from '../../db/picrDb.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import { doAuthError } from '../../auth/doAuthError.js';
+import { resolveServerMediaSettings } from '../../media/serverMediaSettings.js';
+import { serverThumbnailDimensions } from '@shared/serverMediaSettings.js';
 
 const resolver: PicrResolver = async (_, _params, context) => {
   //TODO: fix this doesn't work when accessing as public user
   const user = context.user;
   if (!user) return doAuthError('NOT_LOGGED_IN');
-  const opts = await getServerOptions();
+  const opts = resolveServerMediaSettings(await getServerOptions());
 
   return {
-    avifEnabled: opts.avifEnabled ?? false,
+    ...opts,
+    thumbnailDimensions: serverThumbnailDimensions(opts),
     canWrite: user.userType === 'Admin' && picrConfig.canWrite,
     baseUrl: picrConfig.baseUrl,
   };

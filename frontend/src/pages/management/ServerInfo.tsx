@@ -9,7 +9,10 @@ import {
   Grid,
   Group,
   Modal,
+  NumberInput,
+  SimpleGrid,
   Stack,
+  Switch,
   Text,
   ThemeIcon,
   Title,
@@ -20,9 +23,10 @@ import { Suspense, useState } from 'react';
 import { prettyBytes } from '@shared/prettyBytes';
 import { prettyDate } from '@shared/prettyDate';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
-import { useAvifEnabled, useMe } from '../../hooks/useMe';
+import { useMe } from '../../hooks/useMe';
 import {
   BenchmarkIcon,
+  BitrateIcon,
   CircleCheckFilledIcon,
   CircleXIcon,
   ClipboardIcon,
@@ -32,6 +36,7 @@ import {
   ServerIcon,
   StorageIcon,
   SystemIcon,
+  ThumbnailsIcon,
   VideoMetadataIcon,
 } from '../../PicrIcons';
 import { PicrLink } from '../../components/PicrLink';
@@ -40,11 +45,13 @@ import {
   serverInfoQuery,
 } from '@shared/urql/queries/serverInfoQuery';
 import { runBenchmarkMutation } from '@shared/urql/mutations/runBenchmarkMutation';
+import { editServerSettingsMutation } from '@shared/urql/mutations/editServerSettingsMutation';
 import type { BenchmarkStep, ServerInfoQueryQuery } from '@shared/gql/graphql';
 import { copyToClipboard } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
 import { useRequery } from '@shared/hooks/useRequery';
 import { isNewerPicrVersion } from '../../helpers/versionUpdates';
+import { DEFAULT_SERVER_MEDIA_SETTINGS } from '@shared/serverMediaSettings';
 
 type ServerInfoData = NonNullable<ServerInfoQueryQuery['serverInfo']>;
 
@@ -54,13 +61,15 @@ type ServerInfoData = NonNullable<ServerInfoQueryQuery['serverInfo']>;
 const useServerInfoData = () => {
   const [result, reQuery] = useQuery({ query: serverInfoQuery });
   useRequery(reQuery, 20000);
-  return result.data?.serverInfo;
+  return { server: result.data?.serverInfo, reQuery };
 };
+
+type ServerInfoRequery = ReturnType<typeof useServerInfoData>['reQuery'];
 
 // Info tab: "about this server" — version/updates plus the server URL and
 // runtime environment. Media-processing details live under the Media tab.
 export const ServerInfo = () => {
-  const server = useServerInfoData();
+  const { server } = useServerInfoData();
   if (!server) return null;
   return (
     <Stack gap="lg" pt="md" pb="xl">
@@ -86,11 +95,15 @@ export const ServerInfo = () => {
 // acceleration today. Configurable media settings (thumbnail sizes, video
 // encoding) will be added here alongside this read-only capability card.
 export const MediaSettings = () => {
-  const server = useServerInfoData();
+  const { server, reQuery } = useServerInfoData();
   if (!server) return null;
   return (
     <Stack gap="lg" pt="md" pb="xl">
-      <MediaCard server={server} />
+      <MediaSettingsCard server={server} reQuery={reQuery} />
+      <ServerCapabilitiesCard
+        caps={server.mediaCaps}
+        videoAcceleration={server.videoAcceleration}
+      />
     </Stack>
   );
 };
@@ -99,7 +112,7 @@ export const MediaSettings = () => {
 // the Storage Analytics deep-dive) and file-scanning behaviour. Configurable
 // options (scan schedule, cache clearing) will slot in here later.
 export const StorageSettings = () => {
-  const server = useServerInfoData();
+  const { server } = useServerInfoData();
   if (!server) return null;
   return (
     <Stack gap="lg" pt="md" pb="xl">
@@ -379,37 +392,244 @@ const StorageUsageLoading = () => (
 type VideoAccelerationInfo = ServerInfoData['videoAcceleration'];
 type MediaCapsInfo = ServerInfoData['mediaCaps'];
 
-const MediaCard = ({ server }: { server: ServerInfoData }) => (
+const MediaSettingsCard = ({
+  server,
+  reQuery,
+}: {
+  server: ServerInfoData;
+  reQuery: ServerInfoRequery;
+}) => (
   <InfoCard
     title="Media & Performance"
     icon={<VideoMetadataIcon />}
-    description="Extra photo and video formats this server can process, plus hardware acceleration for video."
-    footer={<Benchmark />}
+    description="How PICR generates previews and which extra media formats this server can process."
   >
-    <AdditionalImageFormats caps={server.mediaCaps} />
-    <Suspense fallback={<AvifRowFallback />}>
-      <AvifEnabled />
-    </Suspense>
-    <VideoAcceleration info={server.videoAcceleration} />
+    <MediaSettingsControls
+      key={serverSettingsKey(server.settings)}
+      settings={server.settings}
+      reQuery={reQuery}
+    />
   </InfoCard>
 );
 
-const AvifEnabled = () => {
-  const avif = useAvifEnabled();
+type ServerSettingsData = ServerInfoData['settings'];
+type NumericSetting = number | '';
+
+interface MediaSettingsFormState {
+  useOriginalsForLightbox: boolean;
+  thumbnailSmallPx: NumericSetting;
+  thumbnailMediumPx: NumericSetting;
+  thumbnailLargePx: NumericSetting;
+  thumbnailJpegQuality: NumericSetting;
+}
+
+const formStateFor = (
+  settings: ServerSettingsData,
+): MediaSettingsFormState => ({
+  useOriginalsForLightbox: settings.useOriginalsForLightbox,
+  thumbnailSmallPx: settings.thumbnailSmallPx,
+  thumbnailMediumPx: settings.thumbnailMediumPx,
+  thumbnailLargePx: settings.thumbnailLargePx,
+  thumbnailJpegQuality: settings.thumbnailJpegQuality,
+});
+
+const MediaSettingsControls = ({
+  settings,
+  reQuery,
+}: {
+  settings: ServerSettingsData;
+  reQuery: ServerInfoRequery;
+}) => {
+  const [form, setForm] = useState<MediaSettingsFormState>(() =>
+    formStateFor(settings),
+  );
+  const [result, editSettings] = useMutation(editServerSettingsMutation);
+
+  const setField = <K extends keyof MediaSettingsFormState>(
+    field: K,
+    value: MediaSettingsFormState[K],
+  ) => setForm((current) => ({ ...current, [field]: value }));
+
+  const save = async () => {
+    const payload = payloadFor(form);
+    const update = await editSettings({ input: payload });
+    if (update.error) {
+      notifications.show({
+        color: 'red',
+        title: 'Could not save media settings',
+        message: update.error.message,
+      });
+      return;
+    }
+    notifications.show({
+      color: 'green',
+      title: 'Media settings saved',
+      message: 'New thumbnail settings apply the next time previews generate.',
+    });
+    reQuery({ requestPolicy: 'network-only' });
+  };
+
   return (
-    <InfoRow
-      label="AVIF thumbnails"
-      description="A modern image format for smaller, sharper thumbnails."
-    >
-      <BoolValue value={avif} />
-    </InfoRow>
+    <Stack gap="md">
+      <Box>
+        <Title order={6}>Thumbnails</Title>
+        <Text size="xs" c="dimmed" mt={2}>
+          Changes apply when thumbnails are generated again; existing previews
+          stay as they are until regenerated or cleared.
+        </Text>
+      </Box>
+      <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="sm">
+        <PixelInput
+          label="Small width"
+          icon={<ThumbnailsIcon />}
+          value={form.thumbnailSmallPx}
+          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailSmallPx}
+          onChange={(value) => setField('thumbnailSmallPx', value)}
+        />
+        <PixelInput
+          label="Medium width"
+          icon={<ThumbnailsIcon />}
+          value={form.thumbnailMediumPx}
+          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailMediumPx}
+          onChange={(value) => setField('thumbnailMediumPx', value)}
+        />
+        <PixelInput
+          label="Large width"
+          icon={<ThumbnailsIcon />}
+          value={form.thumbnailLargePx}
+          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailLargePx}
+          onChange={(value) => setField('thumbnailLargePx', value)}
+        />
+        <QualityInput
+          label="JPEG quality"
+          icon={<BitrateIcon />}
+          value={form.thumbnailJpegQuality}
+          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailJpegQuality}
+          onChange={(value) => setField('thumbnailJpegQuality', value)}
+        />
+      </SimpleGrid>
+      <Switch
+        checked={form.useOriginalsForLightbox}
+        label="Use originals for lightbox"
+        description="Only for downloadable, browser-displayable images (IE: JPEG not PSD). Proof links keep optimized previews."
+        onChange={(event) =>
+          setField('useOriginalsForLightbox', event.currentTarget.checked)
+        }
+      />
+      <Group justify="flex-end">
+        <Button
+          size="xs"
+          variant="light"
+          onClick={() => void save()}
+          loading={result.fetching}
+        >
+          Save media settings
+        </Button>
+      </Group>
+    </Stack>
   );
 };
 
-const AvifRowFallback = () => (
-  <InfoRow label="AVIF thumbnails">
-    <LoadingIndicator size="small" />
-  </InfoRow>
+const PixelInput = ({
+  label,
+  icon,
+  value,
+  defaultValue,
+  onChange,
+}: {
+  label: string;
+  icon: ReactNode;
+  value: NumericSetting;
+  defaultValue: number;
+  onChange: (value: NumericSetting) => void;
+}) => (
+  <NumberInput
+    label={label}
+    value={value}
+    placeholder={String(defaultValue)}
+    min={16}
+    max={20000}
+    allowDecimal={false}
+    suffix=" px"
+    leftSection={icon}
+    onChange={(next) => onChange(numberInputValue(next))}
+  />
+);
+
+const QualityInput = ({
+  label,
+  icon,
+  value,
+  defaultValue,
+  onChange,
+}: {
+  label: string;
+  icon: ReactNode;
+  value: NumericSetting;
+  defaultValue: number;
+  onChange: (value: NumericSetting) => void;
+}) => (
+  <NumberInput
+    label={label}
+    value={value}
+    placeholder={String(defaultValue)}
+    min={1}
+    max={100}
+    allowDecimal={false}
+    suffix="%"
+    leftSection={icon}
+    onChange={(next) => onChange(numberInputValue(next))}
+  />
+);
+
+const numberInputValue = (value: string | number): NumericSetting =>
+  typeof value === 'number' && Number.isFinite(value) ? value : '';
+
+const payloadFor = (form: MediaSettingsFormState) => ({
+  useOriginalsForLightbox: form.useOriginalsForLightbox,
+  thumbnailSmallPx:
+    form.thumbnailSmallPx === ''
+      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailSmallPx
+      : form.thumbnailSmallPx,
+  thumbnailMediumPx:
+    form.thumbnailMediumPx === ''
+      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailMediumPx
+      : form.thumbnailMediumPx,
+  thumbnailLargePx:
+    form.thumbnailLargePx === ''
+      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailLargePx
+      : form.thumbnailLargePx,
+  thumbnailJpegQuality:
+    form.thumbnailJpegQuality === ''
+      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailJpegQuality
+      : form.thumbnailJpegQuality,
+});
+
+const serverSettingsKey = (settings: ServerSettingsData) =>
+  [
+    settings.useOriginalsForLightbox,
+    settings.thumbnailSmallPx,
+    settings.thumbnailMediumPx,
+    settings.thumbnailLargePx,
+    settings.thumbnailJpegQuality,
+  ].join(':');
+
+const ServerCapabilitiesCard = ({
+  caps,
+  videoAcceleration,
+}: {
+  caps: MediaCapsInfo;
+  videoAcceleration: VideoAccelerationInfo;
+}) => (
+  <InfoCard
+    title="Server Capabilities"
+    icon={<ServerIcon />}
+    description="Formats and acceleration detected from this server environment."
+    footer={<Benchmark />}
+  >
+    <AdditionalImageFormats caps={caps} />
+    <VideoAcceleration info={videoAcceleration} />
+  </InfoCard>
 );
 
 const AdditionalImageFormats = ({ caps }: { caps: MediaCapsInfo }) => {

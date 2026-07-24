@@ -17,6 +17,7 @@ import type { AccessType } from '@shared/gql/graphql.js';
 import { fileToJSON } from '../graphql/helpers/fileToJSON.js';
 import { picrConfig } from '../config/picrConfig.js';
 import type { PicrRequestContext } from '../types/PicrRequestContext.js';
+import { DEFAULT_SERVER_MEDIA_SETTINGS } from '@shared/serverMediaSettings.js';
 
 export let db: NodePgDatabase<typeof schema>;
 
@@ -81,7 +82,7 @@ export const getServerOptions = async (): Promise<ServerOptionsFields> => {
         id: 1,
         updatedAt: new Date(),
         createdAt: new Date(),
-        avifEnabled: false,
+        ...DEFAULT_SERVER_MEDIA_SETTINGS,
       })
       .returning()
       .then((f) => f[0]);

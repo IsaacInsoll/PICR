@@ -26,7 +26,11 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { lightboxControllerRefAtom } from '../../../atoms/lightboxControllerRefAtom';
 import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
 import { videoAutoplayBlessedAtom } from '../../../atoms/videoAutoplayBlessedAtom';
-import { useCanDownload } from '../../../hooks/useMe';
+import {
+  useCanDownload,
+  useOriginalsForLightbox,
+  useServerThumbnailDimensions,
+} from '../../../hooks/useMe';
 import { useNoDownloadMediaProps } from '../../../hooks/useNoDownloadMediaProps';
 import { Thumbnails } from 'yet-another-react-lightbox/plugins';
 import { ThumbnailsIcon } from '../../../PicrIcons';
@@ -64,6 +68,8 @@ export const SelectedFileView = ({
 
   const setFolder = useSetFolder();
   const canDownload = useCanDownload();
+  const useOriginals = useOriginalsForLightbox();
+  const thumbnailDimensions = useServerThumbnailDimensions();
   const [autoplayBlessed, setAutoplayBlessed] = useAtom(
     videoAutoplayBlessedAtom,
   );
@@ -120,7 +126,12 @@ export const SelectedFileView = ({
       controller={{ ref }}
       plugins={config.plugins}
       counter={counterProps}
-      slides={filesForLightbox(files, canDownload)}
+      slides={filesForLightbox(
+        files,
+        canDownload,
+        useOriginals,
+        thumbnailDimensions,
+      )}
       open={!!selectedFileId}
       index={selectedImageIndex}
       close={() => setSelectedFileId(undefined)}

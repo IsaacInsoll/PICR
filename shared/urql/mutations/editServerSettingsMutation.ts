@@ -1,21 +1,8 @@
 import { gql } from '../gql';
 
-export const meQuery = gql(/* GraphQL */ `
-  query MeQuery {
-    me {
-      id
-      userType
-      name
-      folderId
-      uuid
-      commentPermissions
-      linkMode
-      folder {
-        ...MinimumFolderFragment
-      }
-    }
-    clientInfo {
-      baseUrl
+export const editServerSettingsMutation = gql(/* GraphQL */ `
+  mutation EditServerSettingsMutation($input: EditServerSettingsInput!) {
+    editServerSettings(input: $input) {
       avifEnabled
       useOriginalsForLightbox
       thumbnailSmallPx
@@ -28,7 +15,6 @@ export const meQuery = gql(/* GraphQL */ `
         md
         lg
       }
-      canWrite
     }
   }
 `);

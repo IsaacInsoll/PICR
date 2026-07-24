@@ -6,9 +6,9 @@ import type {
   Slide,
 } from 'yet-another-react-lightbox';
 import { thumbnailSizes } from '@shared/thumbnailSize';
-import { thumbnailDimensions } from '@shared/thumbnailDimensions';
 import { imageURL } from '../../../helpers/imageURL';
 import { isBrowserDisplayableOriginal } from '@shared/imageFormats';
+import type { ServerThumbnailDimensions } from '@shared/serverMediaSettings';
 import {
   videoPlaybackSource,
   videoPosterURL,
@@ -31,24 +31,29 @@ declare module 'yet-another-react-lightbox' {
 export const filesForLightbox = (
   files: PicrFile[],
   canDownload: boolean,
+  useOriginalsForLightbox: boolean,
+  thumbnailDimensions: ServerThumbnailDimensions,
 ): Slide[] => {
   return files.map((file) => {
     const title = normalizeDisplayName(file.name) ?? '';
+    const useOriginal =
+      useOriginalsForLightbox &&
+      canDownload &&
+      isBrowserDisplayableOriginal(file.name ?? '');
     const props =
       file.type === 'Image'
-        ? {
-            srcSet: thumbnailSizes.map((size): ImageSource => {
-              const width = thumbnailDimensions[size];
-              const height = width / (file.imageRatio ?? 1);
-              return { src: imageURL(file, size), width, height };
-            }),
-            src: imageURL(
-              file,
-              canDownload && isBrowserDisplayableOriginal(file.name ?? '')
-                ? 'raw'
-                : 'lg',
-            ),
-          }
+        ? useOriginal
+          ? {
+              src: imageURL(file, 'raw'),
+            }
+          : {
+              srcSet: thumbnailSizes.map((size): ImageSource => {
+                const width = thumbnailDimensions[size];
+                const height = width / (file.imageRatio ?? 1);
+                return { src: imageURL(file, size), width, height };
+              }),
+              src: imageURL(file, 'lg'),
+            }
         : file.type === 'Video'
           ? (() => {
               const poster = videoPosterURL(file);

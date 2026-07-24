@@ -169,6 +169,13 @@
       "when": 1783424600187,
       "tag": "0023_st-ino-indexes",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1784867059287,
+      "tag": "0024_server-settings",
+      "breakpoints": true
     }
   ]
 }

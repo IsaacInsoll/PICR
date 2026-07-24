@@ -509,18 +509,24 @@ contracts between watcher, on-view, scheduled, and manual scans.
 
 ### Thumbnail Sizes
 
-| Size  | Dimension | Purpose          |
-| ----- | --------- | ---------------- |
-| `sm`  | 250px     | Grid thumbnails  |
-| `md`  | 500px     | Medium previews  |
-| `lg`  | 2500px    | Full-screen view |
-| `raw` | Original  | Direct download  |
+| Size  | Dimension                                | Purpose          |
+| ----- | ---------------------------------------- | ---------------- |
+| `sm`  | Default 250px, configurable server-wide  | Grid thumbnails  |
+| `md`  | Default 500px, configurable server-wide  | Medium previews  |
+| `lg`  | Default 2500px, configurable server-wide | Full-screen view |
+| `raw` | Original                                 | Direct download  |
+
+Thumbnail dimensions and JPEG/AVIF quality are stored on the singleton
+`ServerOptions` row. The disk cache filename is still tier-based (`sm`/`md`/`lg`)
+rather than config-keyed, so changing media settings affects only newly generated
+or regenerated thumbnails. Existing cache files continue to be served until they
+are deleted, regenerated, or the source media hash changes.
 
 ### Image Processing
 
 ```typescript
 // Uses sharp library
-// Generates JPEG (quality 60) and optional AVIF (quality 45)
+// Generates JPEG and optional AVIF with ServerOptions quality settings
 // Creates blurhash for placeholder
 ```
 
@@ -631,6 +637,11 @@ flowchart TB
 2. Check if thumbnail exists
 3. Generate on-demand if missing
 4. Return JPEG or AVIF based on config
+
+Generated thumbnail/poster responses use a one-hour `Cache-Control` TTL with
+revalidation, not year-long immutable caching, because regenerated cache files can
+change bytes without changing the URL. Raw originals remain content-addressed by
+`fileHash` and can keep long immutable caching.
 
 ### ZIP Generation
 

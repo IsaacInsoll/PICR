@@ -26,6 +26,7 @@ import { deleteBrandingMutation } from '../../shared/urql/mutations/deleteBrandi
 import { generateThumbnailsMutation } from '../../shared/urql/mutations/generateThumbnailsMutation';
 import { rescanFolderMutation } from '../../shared/urql/mutations/rescanFolderMutation';
 import { runBenchmarkMutation } from '../../shared/urql/mutations/runBenchmarkMutation';
+import { editServerSettingsMutation } from '../../shared/urql/mutations/editServerSettingsMutation';
 import { userDeviceQuery } from '../../shared/urql/queries/userDeviceQuery';
 import { editUserDeviceMutation } from '../../shared/urql/mutations/editUserDeviceMutation';
 import { viewFileQuery } from '../../shared/urql/queries/viewFileQuery';
@@ -360,6 +361,15 @@ test('Admin-only mutations are blocked for public links', async () => {
     'FORBIDDEN',
     'INVALID_LINK',
   );
+  expectAuthCode(
+    await linkClient
+      .mutation(editServerSettingsMutation, {
+        input: { useOriginalsForLightbox: true },
+      })
+      .toPromise(),
+    'FORBIDDEN',
+    'INVALID_LINK',
+  );
 
   const adminHeaders = await getUserHeader(defaultCredentials);
   const adminClient = await createTestGraphqlClient(adminHeaders);
@@ -446,6 +456,15 @@ test('Admin-only mutations are blocked for unauthenticated requests', async () =
   );
   expectAuthCode(
     await client.mutation(runBenchmarkMutation, {}).toPromise(),
+    'UNAUTHENTICATED',
+    'NOT_LOGGED_IN',
+  );
+  expectAuthCode(
+    await client
+      .mutation(editServerSettingsMutation, {
+        input: { useOriginalsForLightbox: true },
+      })
+      .toPromise(),
     'UNAUTHENTICATED',
     'NOT_LOGGED_IN',
   );

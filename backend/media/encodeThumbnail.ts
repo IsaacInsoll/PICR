@@ -4,11 +4,14 @@ import type {
   OutputInfo,
   ResizeOptions,
 } from 'sharp';
-import { thumbnailDimensions } from '@shared/thumbnailDimensions.js';
 import type { ThumbnailSize } from '@shared/thumbnailSize.js';
-import { getServerOptions } from '../db/picrDb.js';
 import { openSharp, type SharpInput } from './openSharp.js';
 import { atomicWrite } from './atomicWrite.js';
+import {
+  serverThumbnailDimensions,
+  type ServerMediaSettings,
+} from '@shared/serverMediaSettings.js';
+import { getServerMediaSettings } from './serverMediaSettings.js';
 
 type ThumbnailOutputExtension = '.jpg' | '.avif';
 
@@ -17,7 +20,7 @@ export type ThumbnailOutputPath = (
 ) => string;
 
 export interface EncodeThumbnailOptions {
-  avifEnabled?: boolean;
+  settings?: ServerMediaSettings;
 }
 
 export const encodeThumbnail = async (
@@ -26,23 +29,27 @@ export const encodeThumbnail = async (
   outputPath: ThumbnailOutputPath,
   options?: EncodeThumbnailOptions,
 ): Promise<OutputInfo[]> => {
-  const px = thumbnailDimensions[size];
+  const settings = options?.settings ?? (await getServerMediaSettings());
+  const px = serverThumbnailDimensions(settings)[size];
   const jpgPath = outputPath('.jpg');
 
   const img = openSharp(input).withMetadata().resize(px, px, sharpOpts);
-  const opts =
-    options?.avifEnabled === undefined ? await getServerOptions() : null;
-  const avifEnabled = options?.avifEnabled ?? opts?.avifEnabled ?? false;
 
   const promises: Promise<OutputInfo>[] = [
     atomicWrite(jpgPath, (tempPath) =>
-      img.clone().jpeg(jpegOptions).toFile(tempPath),
+      img
+        .clone()
+        .jpeg({ ...jpegOptions, quality: settings.thumbnailJpegQuality })
+        .toFile(tempPath),
     ),
   ];
-  if (avifEnabled) {
+  if (settings.avifEnabled) {
     promises.push(
       atomicWrite(outputPath('.avif'), (tempPath) =>
-        img.clone().avif(avifOptions).toFile(tempPath),
+        img
+          .clone()
+          .avif({ ...avifOptions, quality: settings.thumbnailAvifQuality })
+          .toFile(tempPath),
       ),
     );
   }
@@ -54,5 +61,5 @@ const sharpOpts: ResizeOptions = {
   withoutEnlargement: true, //don't upsize in case the originals are low resolution (EG: proofs)
 };
 
-const jpegOptions: JpegOptions = { quality: 60 };
-const avifOptions: AvifOptions = { quality: 45 }; // avif 45 visually better than jpeg60 from looking at sooty-001 @ 50-80% file size of the jpeg
+const jpegOptions: JpegOptions = {};
+const avifOptions: AvifOptions = {};

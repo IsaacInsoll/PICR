@@ -7,13 +7,16 @@ import { picrConfig } from '../../config/picrConfig.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import { getLatestBuild } from '../../helpers/latestBuild.js';
 import { getScheduledScanStatus } from '../../filesystem/scheduledScan.js';
-import { db } from '../../db/picrDb.js';
+import { db, getServerOptions } from '../../db/picrDb.js';
 import { folderSize } from '../../helpers/folderSize.js';
+import { resolveServerMediaSettings } from '../../media/serverMediaSettings.js';
+import { serverThumbnailDimensions } from '@shared/serverMediaSettings.js';
 
 const resolver: PicrResolver = async (_, _params, context) => {
   await requireFullAdmin(context);
 
   const latest = await getLatestBuild();
+  const settings = resolveServerMediaSettings(await getServerOptions());
 
   return {
     version: picrConfig.version,
@@ -24,6 +27,10 @@ const resolver: PicrResolver = async (_, _params, context) => {
     dev: picrConfig.dev,
     canWrite: picrConfig.canWrite,
     mediaCaps: picrConfig.mediaCaps,
+    settings: {
+      ...settings,
+      thumbnailDimensions: serverThumbnailDimensions(settings),
+    },
     videoAcceleration: {
       mode: picrConfig.videoAccelerationMode,
       reason: picrConfig.videoAccelerationReason,

@@ -17,6 +17,20 @@ export const serverInfoQuery = gql(/* GraphQL */ `
         psb
         heic
       }
+      settings {
+        avifEnabled
+        useOriginalsForLightbox
+        thumbnailSmallPx
+        thumbnailMediumPx
+        thumbnailLargePx
+        thumbnailJpegQuality
+        thumbnailAvifQuality
+        thumbnailDimensions {
+          sm
+          md
+          lg
+        }
+      }
       videoAcceleration {
         mode
         reason
