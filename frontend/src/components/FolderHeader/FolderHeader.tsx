@@ -4,7 +4,10 @@ import { FolderLink } from '../FolderLink';
 import type React from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
-import { useFolderPlaceholder } from '../../hooks/useFolderPlaceholder';
+import {
+  useFolderPlaceholder,
+  useFolderPlaceholderIdentity,
+} from '../../hooks/useFolderPlaceholder';
 import { FolderBannerView } from '../FolderBanner';
 import type { ViewFolderMode } from '../../helpers/viewFolderMode';
 import { themeModeAtom } from '../../atoms/themeModeAtom';
@@ -57,10 +60,12 @@ export const FolderHeader = ({
   );
 };
 
-// Shown while a folder view loads. The folder comes from the graphcache (see
-// useFolderPlaceholder) - we almost always already have it from whichever query
-// rendered the link that was clicked. Falls back to a generic "Loading" on a
-// cache miss, e.g. a direct URL into a cold tab.
+// Shown while a folder view loads. Folder identity comes from graphcache (see
+// useFolderPlaceholderIdentity) - breadcrumb parents may only have enough cached
+// fields for the heading. Full placeholder data (breadcrumbs/banner) comes from
+// useFolderPlaceholder when the full MinimumFolderFragment is cached. Falls back
+// to a generic "Loading" on a total cache miss, e.g. a direct URL into a cold
+// tab.
 //
 // The banner branches here MUST mirror ViewFolder's, or the placeholder renders
 // a layout the real page then tears down. A wrong banner isn't possible: it
@@ -73,19 +78,23 @@ export const PlaceholderFolderHeader = ({
   folderId?: string;
   mode?: ViewFolderMode;
 }) => {
-  const folder = useFolderPlaceholder(folderId);
+  const identityFolder = useFolderPlaceholderIdentity(folderId);
+  const fullFolder = useFolderPlaceholder(folderId);
+  const folder = fullFolder ?? identityFolder;
   const activity = mode === 'activity';
-  const hasBanner = Boolean(folder?.bannerImage) && !activity;
+  const hasBanner = Boolean(fullFolder?.bannerImage) && !activity;
   return (
     <>
       <LoggedInHeader folder={folder ?? undefined} flushBottom={hasBanner} />
-      {hasBanner && folder ? <FolderBannerView folder={folder} /> : null}
+      {hasBanner && fullFolder ? (
+        <FolderBannerView folder={fullFolder} />
+      ) : null}
       <HeaderWrapper
         // `title ?? name` matches FolderHeader's precedence, so the heading
         // doesn't change once the real query lands.
         title={folder?.title ?? normalizeDisplayName(folder?.name) ?? 'Loading'}
         subtitle={<Loader type="dots" />}
-        parent={folder?.parents}
+        parent={fullFolder?.parents}
         hideTitleAndCustomSubtitle={hasBanner}
         hideBreadcrumbs={hasBanner}
         hasBannerLayout={hasBanner}

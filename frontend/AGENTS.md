@@ -159,11 +159,13 @@ a `socialLinks` JSON blob) onto every folder in every list.
 
 ### Loading Folder Names (placeholder)
 
-While a folder view loads, `PlaceholderFolderHeader` shows the destination
-folder's real name, breadcrumbs and banner. It gets them from a **graphcache
-lookup keyed off the URL's `folderId`** (`hooks/useFolderPlaceholder.ts`), so it
-either shows the right folder or a generic "Loading" — never a different
-folder's.
+While a folder view loads, `PlaceholderFolderHeader` shows cached destination
+folder identity from a **graphcache lookup keyed off the URL's `folderId`**
+(`hooks/useFolderPlaceholder.ts`), so it either shows the right folder or a
+generic "Loading" — never a different folder's. It uses two cache reads:
+`folderPlaceholderIdentityQuery` for the heading (`id`/`name`/`title`/`subtitle`/
+`parentId`), and `folderPlaceholderQuery` for the full renderable placeholder
+(breadcrumbs and banner) when the full `MinimumFolderFragment` is cached.
 
 **No navigation surface pushes placeholder data in.** The folder is already in
 the cache from whichever query rendered the link, so links need a `to` and
@@ -172,10 +174,12 @@ _clicked_ folder: it had no key, so it went stale on back/forward and showed the
 wrong name. Do not reintroduce that pattern.
 
 `folderPlaceholderQuery` selects `MinimumFolderFragment` — the same document the
-sources write — so "did the source cache enough?" has one answer rather than a
-per-field matrix. **This is why the two-tier rule matters:** Minimum carries the
-non-null `folderLastModified`, so a thinner hand-rolled selection is a hard miss
-(generic "Loading") rather than a partial hit that would still show the name.
+normal link sources write — so "did the source cache enough for the full
+placeholder?" has one answer rather than a per-field matrix. The lighter
+`folderPlaceholderIdentityQuery` exists because breadcrumbs are backed by parent
+entities that may only have identity fields cached; those should still show the
+real destination title/name while loading, but must not pretend a banner or full
+breadcrumb trail is renderable.
 
 `PlaceholderFolderHeader`'s banner branches must mirror `ViewFolder`'s, including
 the `activity` mode (both use `helpers/viewFolderMode.ts`) — a placeholder that
@@ -206,8 +210,9 @@ generic "Loading" or no placeholder at all, never an error:
 - `requestPolicy: 'cache-only'` + `context: { suspense: false }`. The hook runs
   inside a `<Suspense>` fallback; a fallback that suspends throws, and the
   client sets `suspense: true` globally.
-- A folder link's source selecting less than `MinimumFolderFragment` (see the
-  two-tier rule above).
+- A folder link's source selecting less than `FolderPlaceholderIdentityFragment`
+  breaks the heading fallback; selecting less than `MinimumFolderFragment`
+  breaks the full breadcrumb/banner placeholder (see the two-tier rule above).
 
 None of these are visible to lint or `tsc`, and the Playwright smoke tests don't
 cover the loading state. **Check this in a browser**, with the network throttled

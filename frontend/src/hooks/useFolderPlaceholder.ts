@@ -1,5 +1,6 @@
 import { useQuery } from 'urql';
 import { folderPlaceholderQuery } from '@shared/urql/queries/folderPlaceholderQuery';
+import { folderPlaceholderIdentityQuery } from '@shared/urql/queries/folderPlaceholderIdentityQuery';
 
 // Looks up a folder we've almost certainly already loaded (as someone's
 // `subFolders`, or a user's `folder`) so a loading folder view can show its real
@@ -22,6 +23,18 @@ import { folderPlaceholderQuery } from '@shared/urql/queries/folderPlaceholderQu
 // Hoisted: urql keys its internal memo on the context reference, so an inline
 // object would rebuild the query source on every render.
 const noSuspense = { suspense: false };
+
+export const useFolderPlaceholderIdentity = (folderId: string | undefined) => {
+  const [{ data }] = useQuery({
+    query: folderPlaceholderIdentityQuery,
+    variables: { folderId: folderId ?? '' },
+    pause: !folderId,
+    requestPolicy: 'cache-only',
+    context: noSuspense,
+  });
+
+  return data?.folder ?? undefined;
+};
 
 export const useFolderPlaceholder = (folderId: string | undefined) => {
   const [{ data }] = useQuery({
