@@ -322,10 +322,15 @@ export const picrIndexVarsDev = (env: Record<string, string>): Plugin => ({
     const devBackendOverrideScript = devBackendOverrideUrl
       ? `<script>window.__PICR_DEV_BACKEND_URL__=${JSON.stringify(devBackendOverrideUrl.href).replaceAll('<', '\\u003c')};</script>`
       : '';
-    return html
-      .replace('{base}', base)
-      .replace('{title}', 'PICR')
-      .replace('</head>', `${devBackendOverrideScript}</head>`);
+    return (
+      html
+        .replace('{base}', base)
+        .replace('{title}', 'PICR')
+        // The Vite dev server only runs for local development, which is a dev
+        // environment by definition, so always use the beta logo favicon here.
+        .replace('{favicon}', 'favicon-beta.png')
+        .replace('</head>', `${devBackendOverrideScript}</head>`)
+    );
   },
 });
 

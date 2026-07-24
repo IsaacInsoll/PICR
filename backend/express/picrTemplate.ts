@@ -19,6 +19,7 @@ interface ITemplateFields {
   image: string;
   url: string;
   base: string;
+  favicon: string;
 }
 
 type TemplateMediaFile = {
@@ -37,6 +38,9 @@ export const picrTemplate = async (req: Request, res: Response) => {
     ...fieldDefaults,
     url: strippedBase + requestPath,
     base: picrConfig.baseUrlPathname,
+    // Dev/staging servers (NODE_ENV=development) get the beta logo favicon so
+    // they're distinguishable from a production instance at a glance.
+    favicon: picrConfig.dev ? 'favicon-beta.png' : 'favicon.ico',
   };
 
   //FB messenger was adding `%E2%81%A9` to outgoing links so we need to strip that. - observed december 25th, 2024
@@ -89,6 +93,7 @@ const fieldDefaults: ITemplateFields = {
   image: '',
   url: '',
   base: '/',
+  favicon: 'favicon.ico',
 };
 
 const fileFieldsToTemplateFile = (f: FileFields): TemplateMediaFile => {
