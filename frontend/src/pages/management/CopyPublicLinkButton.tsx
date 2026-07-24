@@ -1,5 +1,5 @@
 import type { ButtonProps } from '@mantine/core';
-import { Button } from '@mantine/core';
+import { Button, Tooltip } from '@mantine/core';
 import { copyToClipboard, publicURLFor } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
 import { ClipboardIcon } from '../../PicrIcons';
@@ -9,11 +9,13 @@ export const CopyPublicLinkButton = ({
   disabled,
   hash,
   folderId,
+  iconOnly = false,
   ...props
 }: {
   disabled: boolean;
   hash?: string;
   folderId?: string;
+  iconOnly?: boolean;
 } & ButtonProps) => {
   const baseUrl = useBaseUrl();
   const url =
@@ -23,10 +25,11 @@ export const CopyPublicLinkButton = ({
     message: url ?? '',
     icon: <ClipboardIcon />,
   };
-  return (
+  const button = (
     <Button
       {...props}
       disabled={disabled || !url}
+      aria-label={iconOnly ? 'Copy link' : undefined}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -36,7 +39,15 @@ export const CopyPublicLinkButton = ({
       }}
     >
       <ClipboardIcon />
-      Copy Link
+      {iconOnly ? null : 'Copy Link'}
     </Button>
+  );
+
+  return iconOnly ? (
+    <Tooltip label="Copy link">
+      <span>{button}</span>
+    </Tooltip>
+  ) : (
+    button
   );
 };

@@ -8,13 +8,16 @@ import { deleteUserMutation } from '@shared/urql/mutations/deleteUserMutation';
 import type { MutationEditUserArgs } from '@shared/gql/graphql';
 import {
   ActionIcon,
+  Box,
   Button,
-  Checkbox,
   Code,
+  Divider,
   Group,
   Modal,
   PasswordInput,
+  SimpleGrid,
   Stack,
+  Switch,
   Text,
   TextInput,
   Tooltip,
@@ -118,115 +121,141 @@ export const ManagePublicLink = ({
       }
       centered
       opened={true}
+      size="xl"
     >
-      <Stack gap="lg">
-        <TextInput
-          leftSection={<UsersGroupIcon />}
-          placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
-          value={name}
-          label="Name"
-          onChange={(e) => setName(e.currentTarget.value)}
-          error={name.length === 0 ? 'Name is required' : undefined}
-        />
-        <TextInput
-          leftSection={<EmailIcon />}
-          label="Email Address"
-          value={username}
-          description="(optional)"
-          onChange={(e) => setUsername(e.currentTarget.value)}
-        />
-
-        <Group gap="xs" style={{ alignItems: 'center' }}>
-          <TextInput
-            style={{ flexGrow: 1 }}
-            leftSection={<PublicLinkIcon />}
-            placeholder="Link ID (required)"
-            value={link}
-            label="Public Link"
-            description="this should be impossible to guess"
-            onChange={(e) => setLink(e.currentTarget.value)}
-            error={
-              badLink.length > 0 ? (
-                <Group gap="xs">
-                  <Text size="xs">Can't use:</Text>
-                  {badLink.map((l) => (
-                    <Code key={l}>{l === ' ' ? 'space' : l}</Code>
-                  ))}
-                </Group>
-              ) : link.length < 6 ? (
-                'Must be at least 6 characters long'
-              ) : undefined
-            }
-          />
-          <Stack style={{ alignContent: 'center' }} gap="xs" pt="xl">
-            <Tooltip label="Generate a 'pretty' link">
-              <ActionIcon
-                variant="default"
-                onClick={() => {
-                  const pretty =
-                    normalizeDisplayName(folder?.name)?.replaceAll(' ', '-') +
-                    '-' +
-                    randomString().substring(0, 4);
-                  setLink(pretty);
-                }}
-              >
-                <LabelIcon />
-              </ActionIcon>
-            </Tooltip>
-            <Tooltip label="Generate very-hard-to-guess link">
-              <ActionIcon
-                variant="default"
-                onClick={() => setLink(randomString())}
-              >
-                <RefreshIcon />
-              </ActionIcon>
-            </Tooltip>
-          </Stack>
-        </Group>
-
-        <CommentPermissionsSelector
-          value={commentPermissions}
-          onChange={setCommentPermissions}
-        />
-        <LinkModeSelector value={linkMode} onChange={setLinkMode} />
-        <PasswordInput
-          leftSection={<PasswordIcon />}
-          label="Gallery passcode"
-          value={galleryPasscode}
-          description="Optional"
-          onChange={(e) => setGalleryPasscode(e.currentTarget.value)}
-        />
-
-        <Checkbox
-          checked={enabled}
-          label="Enabled"
-          description="link will only work if this is 'on'"
-          onChange={(event) => setEnabled(event.currentTarget.checked)}
-        />
-        <ErrorAlert message={error} />
-        <Group justify="space-between">
-          <Group>
-            <CopyPublicLinkButton
-              disabled={invalidLink}
-              folderId={f?.id}
-              hash={link}
+      <Stack gap="md">
+        <Stack gap="xs">
+          <Divider label="Public URL" labelPosition="left" />
+          <Group gap="xs" align="flex-end" wrap="nowrap">
+            <TextInput
+              flex={1}
+              miw={0}
+              leftSection={<PublicLinkIcon />}
+              placeholder="Link ID (required)"
+              value={link}
+              label="Public Link"
+              description="this should be impossible to guess"
+              onChange={(e) => setLink(e.currentTarget.value)}
+              error={
+                badLink.length > 0 ? (
+                  <Group gap="xs">
+                    <Text size="xs">Can't use:</Text>
+                    {badLink.map((l) => (
+                      <Code key={l}>{l === ' ' ? 'space' : l}</Code>
+                    ))}
+                  </Group>
+                ) : link.length < 6 ? (
+                  'Must be at least 6 characters long'
+                ) : undefined
+              }
             />
-            <Button disabled={invalidLink} onClick={onSave}>
-              <SaveIcon />
-              {exists ? 'Save' : 'Create Link'}
-            </Button>
+            <ActionIcon.Group>
+              <Tooltip label="Generate a 'pretty' link">
+                <ActionIcon
+                  size="lg"
+                  variant="default"
+                  onClick={() => {
+                    const pretty =
+                      normalizeDisplayName(folder?.name)?.replaceAll(' ', '-') +
+                      '-' +
+                      randomString().substring(0, 4);
+                    setLink(pretty);
+                  }}
+                >
+                  <LabelIcon />
+                </ActionIcon>
+              </Tooltip>
+              <Tooltip label="Generate very-hard-to-guess link">
+                <ActionIcon
+                  size="lg"
+                  variant="default"
+                  onClick={() => setLink(randomString())}
+                >
+                  <RefreshIcon />
+                </ActionIcon>
+              </Tooltip>
+            </ActionIcon.Group>
           </Group>
-          {exists && (
-            <Button
-              color="red"
-              variant="outline"
-              onClick={() => setShowDeleteConfirm(true)}
-              leftSection={<DeleteIcon />}
-            >
-              Delete
-            </Button>
-          )}
-        </Group>
+        </Stack>
+
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" verticalSpacing="md">
+          <Stack gap="md">
+            <Divider label="Recipient" labelPosition="left" />
+            <TextInput
+              leftSection={<UsersGroupIcon />}
+              placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
+              value={name}
+              label="Name"
+              onChange={(e) => setName(e.currentTarget.value)}
+              error={name.length === 0 ? 'Name is required' : undefined}
+            />
+            <TextInput
+              leftSection={<EmailIcon />}
+              label="Email Address"
+              value={username}
+              description="(optional)"
+              onChange={(e) => setUsername(e.currentTarget.value)}
+            />
+            <PasswordInput
+              leftSection={<PasswordIcon />}
+              label="Gallery passcode"
+              value={galleryPasscode}
+              description="Optional"
+              onChange={(e) => setGalleryPasscode(e.currentTarget.value)}
+            />
+            <Switch
+              checked={enabled}
+              label="Enabled"
+              description="link will only work if this is 'on'"
+              onChange={(event) => setEnabled(event.currentTarget.checked)}
+            />
+          </Stack>
+
+          <Stack gap="md">
+            <Divider label="Access" labelPosition="left" />
+            <LinkModeSelector value={linkMode} onChange={setLinkMode} />
+            <CommentPermissionsSelector
+              value={commentPermissions}
+              onChange={setCommentPermissions}
+            />
+          </Stack>
+        </SimpleGrid>
+
+        {/* Advanced section reserved for future lower-priority link options. */}
+
+        <ErrorAlert message={error} />
+
+        <Box
+          bg="var(--mantine-color-body)"
+          pt="sm"
+          style={{ position: 'sticky', bottom: 0, zIndex: 1 }}
+        >
+          <Group justify="space-between" align="center">
+            {exists ? (
+              <Button
+                color="red"
+                variant="outline"
+                onClick={() => setShowDeleteConfirm(true)}
+                leftSection={<DeleteIcon />}
+              >
+                Delete
+              </Button>
+            ) : (
+              <Box />
+            )}
+            <Group justify="flex-end">
+              <CopyPublicLinkButton
+                disabled={invalidLink}
+                folderId={f?.id}
+                hash={link}
+              />
+              <Button disabled={invalidLink} onClick={onSave}>
+                <SaveIcon />
+                {exists ? 'Save' : 'Create Link'}
+              </Button>
+            </Group>
+          </Group>
+        </Box>
       </Stack>
 
       {showDeleteConfirm ? (

@@ -8,6 +8,7 @@ export const userFragment = gql(/* GraphQL */ `
     enabled
     uuid
     folderId
+    lastAccess
     commentPermissions
     linkMode
     hasGalleryPasscode

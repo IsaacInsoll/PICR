@@ -83,6 +83,7 @@ export type PicrUser = {
   enabled?: boolean | null;
   uuid?: string | null;
   folderId?: string;
+  lastAccess?: string | null;
   commentPermissions?: UserFragmentFragment['commentPermissions'];
   linkMode?: UserFragmentFragment['linkMode'];
   hasGalleryPasscode?: UserFragmentFragment['hasGalleryPasscode'];

@@ -3,12 +3,15 @@ import { normalizeDisplayName } from '@shared/displayName';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import {
+  Box,
   Button,
-  Checkbox,
+  Divider,
   Group,
   Modal,
   PasswordInput,
+  SimpleGrid,
   Stack,
+  Switch,
   Text,
   TextInput,
 } from '@mantine/core';
@@ -99,79 +102,107 @@ export const ManageUser = ({
       title={`Manage User${folder.id !== '1' ? ' for: ' + folderName : ''}`}
       centered
       opened={true}
+      size="xl"
     >
-      <Stack gap="lg">
-        <TextInput
-          leftSection={<UserIcon />}
-          placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
-          value={name}
-          label="Name"
-          onChange={(e) => setName(e.currentTarget.value)}
-        />
+      <Stack gap="md">
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" verticalSpacing="md">
+          <Stack gap="md">
+            <Divider label="Account" labelPosition="left" />
+            <TextInput
+              leftSection={<UserIcon />}
+              placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
+              value={name}
+              label="Name"
+              onChange={(e) => setName(e.currentTarget.value)}
+            />
 
-        <TextInput
-          leftSection={<EmailIcon />}
-          placeholder="EG: kimk or kim@k.com"
-          value={username}
-          label="Email"
-          onChange={(e) => setUsername(e.currentTarget.value)}
-        />
+            <TextInput
+              leftSection={<EmailIcon />}
+              placeholder="EG: kimk or kim@k.com"
+              value={username}
+              label="Email"
+              onChange={(e) => setUsername(e.currentTarget.value)}
+            />
 
-        <PasswordInput
-          // leftSection={<TbPassword />}
-          // placeholder="randomchars"
-          value={password ?? ''}
-          label="Password"
-          onChange={(e) => setPassword(e.currentTarget.value)}
-        />
+            <PasswordInput
+              // leftSection={<TbPassword />}
+              // placeholder="randomchars"
+              value={password ?? ''}
+              label="Password"
+              onChange={(e) => setPassword(e.currentTarget.value)}
+            />
 
-        <FolderSelector folder={folder} setFolder={setFolder} />
+            <Switch
+              checked={enabled}
+              label="Enabled"
+              description="Can user log in?"
+              onChange={(event) => setEnabled(event.currentTarget.checked)}
+            />
+          </Stack>
 
-        <CommentPermissionsSelector
-          value={commentPermissions}
-          onChange={setCommentPermissions}
-        />
+          <Stack gap="md">
+            <Divider label="Access" labelPosition="left" />
+            <FolderSelector folder={folder} setFolder={setFolder} />
 
-        <TextInput
-          leftSection={<NotificationIcon />}
-          placeholder="EG: https://ntfy.sh/xyz"
-          value={ntfy ?? ''}
-          label="NTFY Notifications URL"
-          description="Get notifications on your phone"
-          onChange={(e) => setNtfy(e.currentTarget.value)}
-        />
+            <CommentPermissionsSelector
+              value={commentPermissions}
+              onChange={setCommentPermissions}
+            />
+          </Stack>
+        </SimpleGrid>
 
-        <Checkbox
-          checked={ntfyEmail}
-          label="Email NTFY notifications"
-          description="Also send NTFY alerts to this account email"
-          disabled={!ntfy}
-          onChange={(event) => setNtfyEmail(event.currentTarget.checked)}
-        />
+        <Stack gap="md">
+          <Divider label="Notifications" labelPosition="left" />
+          <SimpleGrid
+            cols={{ base: 1, sm: 2 }}
+            spacing="lg"
+            verticalSpacing="md"
+          >
+            <TextInput
+              leftSection={<NotificationIcon />}
+              placeholder="EG: https://ntfy.sh/xyz"
+              value={ntfy ?? ''}
+              label="NTFY Notifications URL"
+              description="Get notifications on your phone"
+              onChange={(e) => setNtfy(e.currentTarget.value)}
+            />
 
-        <Checkbox
-          checked={enabled}
-          label="Enabled"
-          description="Can user log in?"
-          onChange={(event) => setEnabled(event.currentTarget.checked)}
-        />
+            <Switch
+              checked={ntfyEmail}
+              label="Email NTFY notifications"
+              description="Also send NTFY alerts to this account email"
+              disabled={!ntfy}
+              onChange={(event) => setNtfyEmail(event.currentTarget.checked)}
+            />
+          </SimpleGrid>
+        </Stack>
+
         <ErrorAlert message={error} />
-        <Group justify="space-between">
-          <Button disabled={invalidUsername} onClick={onSave}>
-            <SaveIcon />
-            {exists ? 'Save' : 'Create User'}
-          </Button>
-          {exists && !isRootAdmin && (
-            <Button
-              color="red"
-              variant="outline"
-              onClick={() => setShowDeleteConfirm(true)}
-              leftSection={<DeleteIcon />}
-            >
-              Delete
+
+        <Box
+          bg="var(--mantine-color-body)"
+          pt="sm"
+          style={{ position: 'sticky', bottom: 0, zIndex: 1 }}
+        >
+          <Group justify="space-between" align="center">
+            {exists && !isRootAdmin ? (
+              <Button
+                color="red"
+                variant="outline"
+                onClick={() => setShowDeleteConfirm(true)}
+                leftSection={<DeleteIcon />}
+              >
+                Delete
+              </Button>
+            ) : (
+              <Box />
+            )}
+            <Button disabled={invalidUsername} onClick={onSave}>
+              <SaveIcon />
+              {exists ? 'Save' : 'Create User'}
             </Button>
-          )}
-        </Group>
+          </Group>
+        </Box>
       </Stack>
 
       <Modal

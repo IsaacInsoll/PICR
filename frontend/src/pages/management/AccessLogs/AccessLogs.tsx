@@ -26,13 +26,19 @@ export const AccessLogs = ({
   folderId,
   includeChildren,
   variant = 'table',
+  selectedUserId,
+  onSelectUserId,
 }: {
   folderId: string;
   users?: PicrUser[];
   includeChildren?: boolean;
   variant?: 'table' | 'list';
+  selectedUserId?: string;
+  onSelectUserId?: (userId?: string) => void;
 }) => {
-  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const [localUserId, setLocalUserId] = useState<string | undefined>(undefined);
+  const userId = onSelectUserId ? selectedUserId : localUserId;
+  const setUserId = onSelectUserId ?? setLocalUserId;
 
   return (
     <Stack>

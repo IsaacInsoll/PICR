@@ -1,0 +1,22 @@
+.brandingCard {
+  position: relative;
+  overflow: hidden;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.brandingCard:hover,
+.brandingCard:focus-visible {
+  border-color: var(--branding-accent);
+  box-shadow: var(--mantine-shadow-sm);
+  transform: translateY(-1px);
+}
+
+.accentRail {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--branding-accent);
+}

@@ -23,7 +23,7 @@ export const Tips = ({
       variant="light"
       title=""
       icon={icon ?? <InfoIcon />}
-      m="sm"
+      my="sm"
       p="sm"
       {...props}
     >

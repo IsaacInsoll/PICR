@@ -48,16 +48,25 @@ import { isNewerPicrVersion } from '../../helpers/versionUpdates';
 
 type ServerInfoData = NonNullable<ServerInfoQueryQuery['serverInfo']>;
 
-export const ServerInfo = () => {
+// Shared live query for both the Info and Media tabs. urql caches by document,
+// and only one tab is mounted at a time (keepMounted={false}), so the two
+// callers never issue overlapping requests.
+const useServerInfoData = () => {
   const [result, reQuery] = useQuery({ query: serverInfoQuery });
   useRequery(reQuery, 20000);
-  const server = result.data?.serverInfo;
+  return result.data?.serverInfo;
+};
+
+// Info tab: "about this server" — version/updates plus the server URL and
+// runtime environment. Media-processing details live under the Media tab.
+export const ServerInfo = () => {
+  const server = useServerInfoData();
   if (!server) return null;
   return (
     <Stack gap="lg" pt="md" pb="xl">
       <Grid columns={5} gap="lg">
         <Grid.Col span={{ base: 5, md: 3 }}>
-          <StorageCard disk={server.disk} />
+          <ServerCard server={server} />
         </Grid.Col>
         <Grid.Col span={{ base: 5, md: 2 }}>
           <VersionCard
@@ -68,16 +77,34 @@ export const ServerInfo = () => {
           />
         </Grid.Col>
       </Grid>
+      <SystemCard system={server.system} />
+    </Stack>
+  );
+};
+
+// Media tab: how PICR processes media — supported formats and hardware
+// acceleration today. Configurable media settings (thumbnail sizes, video
+// encoding) will be added here alongside this read-only capability card.
+export const MediaSettings = () => {
+  const server = useServerInfoData();
+  if (!server) return null;
+  return (
+    <Stack gap="lg" pt="md" pb="xl">
       <MediaCard server={server} />
+    </Stack>
+  );
+};
+
+// Storage tab: media on disk and how PICR keeps it in sync — disk usage (with
+// the Storage Analytics deep-dive) and file-scanning behaviour. Configurable
+// options (scan schedule, cache clearing) will slot in here later.
+export const StorageSettings = () => {
+  const server = useServerInfoData();
+  if (!server) return null;
+  return (
+    <Stack gap="lg" pt="md" pb="xl">
+      <StorageCard disk={server.disk} />
       <ScanningCard scanning={server.scanning} inode={server.inodeSupport} />
-      <Grid columns={5} gap="lg">
-        <Grid.Col span={{ base: 5, md: 3 }}>
-          <ServerCard server={server} />
-        </Grid.Col>
-        <Grid.Col span={{ base: 5, md: 2 }}>
-          <SystemCard system={server.system} />
-        </Grid.Col>
-      </Grid>
     </Stack>
   );
 };

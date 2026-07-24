@@ -1,19 +1,27 @@
 import type { ReactNode } from 'react';
-import { Suspense, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { useQuery } from 'urql';
 import { manageFolderQuery } from '@shared/urql/queries/manageFolderQuery';
 import QueryFeedback from '../../components/QueryFeedback';
 import { ManagePublicLink } from './ManagePublicLink';
 import type { PicrFolder } from '@shared/types/picr';
-import { DisconnectedIcon, PublicLinkIcon } from '../../PicrIcons';
+import { DisconnectedIcon, PublicLinkIcon, SearchIcon } from '../../PicrIcons';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
-import { Button, Divider, Group, Stack, Switch } from '@mantine/core';
+import {
+  Button,
+  Divider,
+  Group,
+  Stack,
+  Switch,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { PicrDataGrid } from '../../components/PicrDataGrid';
 import { EmptyPlaceholder } from '../EmptyPlaceholder';
 
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { Tips } from '../../components/Tips';
-import { publicLinkColumns } from './userColumns';
+import { publicLinkColumns, userSearchText } from './userColumns';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import type { ManageFolderUserRow } from '@shared/types/queryRows';
 import { PublicLinkListItem } from '../../components/PublicLinkListItem';
@@ -24,6 +32,10 @@ interface ManagePublicLinksProps {
   disableAddingLinks?: boolean;
   relations: 'none' | 'parents' | 'children' | 'options';
   variant?: 'table' | 'list';
+  selectedLinkId?: string | null;
+  onSelectLink?: (id: string) => void;
+  onCreateLink?: () => void;
+  onCloseLink?: () => void;
 }
 
 export const ManagePublicLinks = ({
@@ -32,23 +44,62 @@ export const ManagePublicLinks = ({
   disableAddingLinks,
   relations,
   variant = 'table',
+  selectedLinkId,
+  onSelectLink,
+  onCreateLink,
+  onCloseLink,
 }: ManagePublicLinksProps) => {
   const isMobile = useIsMobile();
   const [includeParents, setIncludeParents] = useState(relations === 'parents');
   const [includeChildren, setIncludeChildren] = useState(
     relations === 'children',
   );
+  const [search, setSearch] = useState('');
 
-  const [linkId, setLinkId] = useState<string | null>(null);
+  const [localLinkId, setLocalLinkId] = useState<string | null>(null);
+  const isControlled =
+    selectedLinkId !== undefined ||
+    onSelectLink != null ||
+    onCreateLink != null ||
+    onCloseLink != null;
+  const linkId = isControlled ? (selectedLinkId ?? null) : localLinkId;
+  const manageLinkId = linkId === NEW_ITEM_SLUG ? '' : linkId;
+
+  const selectLink = (id: string) => {
+    if (onSelectLink) {
+      onSelectLink(id);
+      return;
+    }
+
+    setLocalLinkId(id);
+  };
+
+  const createLink = () => {
+    if (onCreateLink) {
+      onCreateLink();
+      return;
+    }
+
+    setLocalLinkId('');
+  };
+
+  const closeLink = () => {
+    if (onCloseLink) {
+      onCloseLink();
+      return;
+    }
+
+    setLocalLinkId(null);
+  };
+
   return (
     <>
       {linkId !== null ? (
         <Suspense fallback={<ModalLoadingIndicator />}>
           <ManagePublicLink
-            onClose={() => {
-              setLinkId(null);
-            }}
-            id={linkId}
+            key={manageLinkId ?? NEW_ITEM_SLUG}
+            onClose={closeLink}
+            id={manageLinkId ?? ''}
             folder={folder}
           />
         </Suspense>
@@ -75,14 +126,16 @@ export const ManagePublicLinks = ({
         <Body
           includeChildren={includeChildren}
           includeParents={includeParents}
-          setLinkId={setLinkId}
+          onSelectLink={selectLink}
           folderId={folder.id}
           variant={variant}
+          search={search}
+          setSearch={setSearch}
         />
       </Suspense>
       <Group gap="md" pt="md" justify="space-evenly">
         {!disableAddingLinks ? (
-          <Button variant="default" onClick={() => setLinkId('')}>
+          <Button variant="default" onClick={createLink}>
             <PublicLinkIcon />
             Create Link
           </Button>
@@ -97,14 +150,18 @@ const Body = ({
   folderId,
   includeParents,
   includeChildren,
-  setLinkId,
+  onSelectLink,
   variant,
+  search,
+  setSearch,
 }: {
   folderId: string;
   includeParents: boolean;
   includeChildren: boolean;
-  setLinkId: (id: string | null) => void;
+  onSelectLink: (id: string) => void;
   variant: 'table' | 'list';
+  search: string;
+  setSearch: (search: string) => void;
 }) => {
   const [result, reQuery] = useQuery({
     query: manageFolderQuery,
@@ -114,20 +171,43 @@ const Body = ({
   return (
     <>
       <QueryFeedback result={result} reQuery={reQuery} />
-      <PublicLinksView links={users} onSelect={setLinkId} variant={variant} />
+      <PublicLinksView
+        links={users}
+        onSelect={onSelectLink}
+        variant={variant}
+        search={search}
+        setSearch={setSearch}
+      />
     </>
   );
 };
+
+const NEW_ITEM_SLUG = 'new';
 
 const PublicLinksView = ({
   links,
   onSelect,
   variant,
+  search,
+  setSearch,
 }: {
   links: ManageFolderUserRow[];
   onSelect: (id: string) => void;
   variant: 'table' | 'list';
+  search: string;
+  setSearch: (search: string) => void;
 }) => {
+  const normalizedSearch = search.trim().toLowerCase();
+  const filteredLinks = useMemo(
+    () =>
+      normalizedSearch
+        ? links.filter((link) =>
+            userSearchText(link).includes(normalizedSearch),
+          )
+        : links,
+    [links, normalizedSearch],
+  );
+
   if (links.length === 0) {
     return (
       <EmptyPlaceholder
@@ -139,7 +219,7 @@ const PublicLinksView = ({
   if (variant === 'list') {
     return (
       <Stack gap="xs">
-        {links.map((link) => (
+        {filteredLinks.map((link) => (
           <PublicLinkListItem
             key={link.id}
             user={link}
@@ -152,12 +232,26 @@ const PublicLinksView = ({
     );
   }
   return (
-    <PicrDataGrid
-      columns={publicLinkColumns}
-      data={links}
-      onClick={(row) => {
-        if (row.id) onSelect(row.id);
-      }}
-    />
+    <Stack gap="sm">
+      <Group justify="space-between" align="flex-end">
+        <TextInput
+          value={search}
+          onChange={(event) => setSearch(event.currentTarget.value)}
+          placeholder="Search links"
+          leftSection={<SearchIcon />}
+          style={{ flexGrow: 1, maxWidth: 420 }}
+        />
+        <Text size="sm" c="dimmed">
+          {filteredLinks.length} of {links.length}
+        </Text>
+      </Group>
+      <PicrDataGrid
+        columns={publicLinkColumns}
+        data={filteredLinks}
+        onClick={(row) => {
+          if (row.id) onSelect(row.id);
+        }}
+      />
+    </Stack>
   );
 };
