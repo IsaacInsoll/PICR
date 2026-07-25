@@ -9,7 +9,7 @@ return {
   VERSION = {
     major = 1,
     minor = 3,
-    revision = 1,
+    revision = 2,
   },
   LrLibraryMenuItems = {
     {
