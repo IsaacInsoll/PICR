@@ -16,12 +16,10 @@ import './SelectedFileView.css';
 import type { ViewFolderFileWithHero } from '@shared/files/sortFiles';
 import { theme } from '../../../theme';
 import { useSetFolder } from '../../../hooks/useSetFolder';
-import { useEffect, useRef, useMemo, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { LightboxFileRating } from './LightboxFileRating';
 import { filesForLightbox, isPicrVideoSlide } from './filesForLightbox';
-import { LightboxInfoButton } from './LightboxInfoButton';
-import { lightboxPlugins, lightboxPluginsProof } from './lightboxPlugins';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { lightboxControllerRefAtom } from '../../../atoms/lightboxControllerRefAtom';
 import { lightboxRefAtom } from '../../../atoms/lightboxRefAtom';
@@ -32,8 +30,6 @@ import {
   useServerThumbnailDimensions,
 } from '../../../hooks/useMe';
 import { useNoDownloadMediaProps } from '../../../hooks/useNoDownloadMediaProps';
-import { Thumbnails } from 'yet-another-react-lightbox/plugins';
-import { ThumbnailsIcon } from '../../../PicrIcons';
 import {
   canUseShareSheet,
   shareOrDownload,
@@ -41,6 +37,8 @@ import {
 import { LazyPicrVideoPlayer } from '../../LazyPicrVideoPlayer';
 import { wasOpenedFromFolderInCurrentDocument } from '../../../hooks/useSelectedFileId';
 import { useLightboxChromeAutoHide } from '../../../hooks/useLightboxChromeAutoHide';
+import { useLightboxThumbnails } from './useLightboxThumbnails';
+import { useLightboxToolbar } from './useLightboxToolbar';
 
 export const SelectedFileView = ({
   files,
@@ -59,27 +57,13 @@ export const SelectedFileView = ({
   const { fileId } = useParams();
   const location = useLocation();
   const portal = useAtomValue(lightboxRefAtom);
-  const [showThumbnails, setShowThumbnails] = useState(false);
-  // The filmstrip mounts lazily on first reveal (so galleries that never open it
-  // don't load thumbnails), then stays mounted so it can slide open/closed via a
-  // CSS height transition instead of popping in/out. `expanded` drives that
-  // transition; opening flips it a frame after mount (below) so the very first
-  // open animates too, while closing collapses it straight from the handler.
-  const [thumbnailsMounted, setThumbnailsMounted] = useState(false);
-  const [thumbnailsExpanded, setThumbnailsExpanded] = useState(false);
+  const thumbnails = useLightboxThumbnails();
 
   const setControllerRef = useSetAtom(lightboxControllerRefAtom);
 
   useEffect(() => {
     setControllerRef(ref);
   }, [setControllerRef, ref]);
-
-  useEffect(() => {
-    if (!thumbnailsMounted || !showThumbnails) return;
-    // Wait one frame after mount so the collapsed→expanded height transition runs.
-    const raf = requestAnimationFrame(() => setThumbnailsExpanded(true));
-    return () => cancelAnimationFrame(raf);
-  }, [showThumbnails, thumbnailsMounted]);
 
   const setFolder = useSetFolder();
   const canDownload = useCanDownload();
@@ -106,48 +90,17 @@ export const SelectedFileView = ({
     },
   };
 
-  const toolbarButtons = useMemo(
-    () => [
-      <LightboxInfoButton files={files} key="InfoButton" />,
-      <button
-        key="thumbnails-toggle"
-        type="button"
-        className="yarl__button"
-        onClick={() => {
-          if (showThumbnails) {
-            // Element is already mounted+painted, so collapsing straight away
-            // still animates via the CSS height transition.
-            setShowThumbnails(false);
-            setThumbnailsExpanded(false);
-          } else {
-            setThumbnailsMounted(true);
-            setShowThumbnails(true);
-          }
-        }}
-        aria-pressed={showThumbnails}
-        title={showThumbnails ? 'Hide thumbnails' : 'Show thumbnails'}
-      >
-        <ThumbnailsIcon size="24" />
-      </button>,
-      ...(isSelectedVideo ? [] : ['slideshow']),
-      'close',
-    ],
-    [files, isSelectedVideo, showThumbnails],
-  );
-
-  const config = useMemo(() => {
-    return {
-      buttons: canDownload ? ['download', ...toolbarButtons] : toolbarButtons,
-      plugins: (canDownload ? lightboxPlugins : lightboxPluginsProof).filter(
-        (plugin) => thumbnailsMounted || plugin !== Thumbnails,
-      ),
-    };
-  }, [canDownload, thumbnailsMounted, toolbarButtons]);
+  const { buttons, plugins } = useLightboxToolbar({
+    files,
+    canDownload,
+    isSelectedVideo,
+    thumbnails,
+  });
 
   const rootClassName =
     [
       chromeVisible ? undefined : 'picr-lightbox-idle',
-      thumbnailsMounted && !thumbnailsExpanded
+      thumbnails.mounted && !thumbnails.expanded
         ? 'picr-thumbnails-collapsed'
         : undefined,
     ]
@@ -159,7 +112,7 @@ export const SelectedFileView = ({
       className={rootClassName}
       portal={{ root: portal?.current }}
       controller={{ ref }}
-      plugins={config.plugins}
+      plugins={plugins}
       counter={counterProps}
       slides={filesForLightbox(
         files,
@@ -172,7 +125,7 @@ export const SelectedFileView = ({
       close={() => setSelectedFileId(undefined)}
       styles={lightBoxStyles}
       download={{ download: lightboxDownload }}
-      toolbar={{ buttons: config.buttons }}
+      toolbar={{ buttons }}
       render={{
         slide: ({ slide, offset, rect }) => {
           if (!isPicrVideoSlide(slide)) return undefined;
@@ -213,7 +166,7 @@ export const SelectedFileView = ({
         ...carouselProps,
         imageProps,
       }}
-      thumbnails={thumbnailsMounted ? { position: 'bottom' } : undefined}
+      thumbnails={thumbnails.mounted ? { position: 'bottom' } : undefined}
       zoom={{
         pinchZoomV4: true,
         maxZoomPixelRatio: 5,
@@ -280,8 +233,17 @@ const counterProps = {
   container: { style: { top: 'unset', bottom: 0, left: 'unset', right: 0 } },
 };
 
+// The photo is shown "contained" (whole image visible, never cropped) while
+// still filling the viewport. This deliberately uses BOTH settings, which is why
+// they look contradictory at a glance: `imageFit: 'cover'` (on carouselProps
+// below) sizes the <img> element to fill the entire slide — dropping YARL's
+// default carousel padding that otherwise wastes space, most noticeably on
+// mobile — and `objectFit: 'contain'` here then letterboxes the actual photo
+// inside that full-size element so nothing is cropped. The full-size element
+// also lets the no-download overlay cover the whole slide. Don't collapse this
+// to a single setting without re-checking mobile padding first.
 const carouselImageProps: ImageProps = {
-  style: { objectFit: 'contain' }, // fix image getting cropped
+  style: { objectFit: 'contain' },
 };
 
 const unInert = () => {
@@ -298,7 +260,7 @@ const unInert = () => {
 const carouselProps: CarouselSettings = {
   finite: false,
   preload: 2,
-  imageFit: 'cover' as const, // we want 'cover' otherwise there is too much padding on mobile
+  imageFit: 'cover' as const, // see carouselImageProps: pairs with objectFit:'contain'
   padding: 0,
   spacing: 0,
   imageProps: carouselImageProps,
