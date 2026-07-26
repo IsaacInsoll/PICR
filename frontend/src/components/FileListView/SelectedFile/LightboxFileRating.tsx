@@ -12,7 +12,11 @@ export const LightboxFileRating = ({ files }: { files: ReviewableFile[] }) => {
   if (isNone || !file) return null;
 
   return (
-    <Paper style={{ position: 'absolute', bottom: 0, zIndex: 3 }} p="xs">
+    <Paper
+      className="picr-lightbox-footer"
+      style={{ position: 'absolute', bottom: 0, zIndex: 3 }}
+      p="xs"
+    >
       <FileReview file={file} />
     </Paper>
   );

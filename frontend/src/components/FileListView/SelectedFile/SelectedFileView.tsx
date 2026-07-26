@@ -40,6 +40,7 @@ import {
 } from '../../../helpers/shareOrDownload';
 import { LazyPicrVideoPlayer } from '../../LazyPicrVideoPlayer';
 import { wasOpenedFromFolderInCurrentDocument } from '../../../hooks/useSelectedFileId';
+import { useLightboxChromeAutoHide } from '../../../hooks/useLightboxChromeAutoHide';
 
 export const SelectedFileView = ({
   files,
@@ -59,12 +60,26 @@ export const SelectedFileView = ({
   const location = useLocation();
   const portal = useAtomValue(lightboxRefAtom);
   const [showThumbnails, setShowThumbnails] = useState(false);
+  // The filmstrip mounts lazily on first reveal (so galleries that never open it
+  // don't load thumbnails), then stays mounted so it can slide open/closed via a
+  // CSS height transition instead of popping in/out. `expanded` drives that
+  // transition; opening flips it a frame after mount (below) so the very first
+  // open animates too, while closing collapses it straight from the handler.
+  const [thumbnailsMounted, setThumbnailsMounted] = useState(false);
+  const [thumbnailsExpanded, setThumbnailsExpanded] = useState(false);
 
   const setControllerRef = useSetAtom(lightboxControllerRefAtom);
 
   useEffect(() => {
     setControllerRef(ref);
   }, [setControllerRef, ref]);
+
+  useEffect(() => {
+    if (!thumbnailsMounted || !showThumbnails) return;
+    // Wait one frame after mount so the collapsed→expanded height transition runs.
+    const raf = requestAnimationFrame(() => setThumbnailsExpanded(true));
+    return () => cancelAnimationFrame(raf);
+  }, [showThumbnails, thumbnailsMounted]);
 
   const setFolder = useSetFolder();
   const canDownload = useCanDownload();
@@ -80,6 +95,7 @@ export const SelectedFileView = ({
   const autoPlayVideo =
     wasOpenedFromFolderInCurrentDocument(location.state) || autoplayBlessed;
   const isSelectedVideo = selectedImage?.type === 'Video';
+  const chromeVisible = useLightboxChromeAutoHide(!!selectedFileId);
   const noDownloadMediaProps = useNoDownloadMediaProps();
   const imageProps: ImageProps = {
     ...carouselImageProps,
@@ -97,7 +113,17 @@ export const SelectedFileView = ({
         key="thumbnails-toggle"
         type="button"
         className="yarl__button"
-        onClick={() => setShowThumbnails((prev) => !prev)}
+        onClick={() => {
+          if (showThumbnails) {
+            // Element is already mounted+painted, so collapsing straight away
+            // still animates via the CSS height transition.
+            setShowThumbnails(false);
+            setThumbnailsExpanded(false);
+          } else {
+            setThumbnailsMounted(true);
+            setShowThumbnails(true);
+          }
+        }}
         aria-pressed={showThumbnails}
         title={showThumbnails ? 'Hide thumbnails' : 'Show thumbnails'}
       >
@@ -113,13 +139,24 @@ export const SelectedFileView = ({
     return {
       buttons: canDownload ? ['download', ...toolbarButtons] : toolbarButtons,
       plugins: (canDownload ? lightboxPlugins : lightboxPluginsProof).filter(
-        (plugin) => showThumbnails || plugin !== Thumbnails,
+        (plugin) => thumbnailsMounted || plugin !== Thumbnails,
       ),
     };
-  }, [canDownload, showThumbnails, toolbarButtons]);
+  }, [canDownload, thumbnailsMounted, toolbarButtons]);
+
+  const rootClassName =
+    [
+      chromeVisible ? undefined : 'picr-lightbox-idle',
+      thumbnailsMounted && !thumbnailsExpanded
+        ? 'picr-thumbnails-collapsed'
+        : undefined,
+    ]
+      .filter(Boolean)
+      .join(' ') || undefined;
 
   return (
     <Lightbox
+      className={rootClassName}
       portal={{ root: portal?.current }}
       controller={{ ref }}
       plugins={config.plugins}
@@ -158,13 +195,25 @@ export const SelectedFileView = ({
             />
           );
         },
-        slideFooter: () => <LightboxFileRating files={files} />,
+        // Scrims keep the floating chrome legible over any image without
+        // reserving bars/letterboxing the photo (issue #47). They render inside
+        // the slide (above the image, below the title/rating), so the
+        // container-level toolbar/nav/counter naturally sit on top of them.
+        slideHeader: () => (
+          <div className="picr-lightbox-scrim picr-lightbox-scrim-top" />
+        ),
+        slideFooter: () => (
+          <>
+            <div className="picr-lightbox-scrim picr-lightbox-scrim-bottom" />
+            <LightboxFileRating files={files} />
+          </>
+        ),
       }}
       carousel={{
         ...carouselProps,
         imageProps,
       }}
-      thumbnails={showThumbnails ? { position: 'bottom' } : undefined}
+      thumbnails={thumbnailsMounted ? { position: 'bottom' } : undefined}
       zoom={{
         pinchZoomV4: true,
         maxZoomPixelRatio: 5,
@@ -225,7 +274,11 @@ const lightboxDownload = ({
   }
 };
 
-const counterProps = { container: { style: { top: 'unset', bottom: 0 } } };
+// Counter sits bottom-right so it doesn't collide with the rating footer
+// (bottom-left). See the mockup in issue #47.
+const counterProps = {
+  container: { style: { top: 'unset', bottom: 0, left: 'unset', right: 0 } },
+};
 
 const carouselImageProps: ImageProps = {
   style: { objectFit: 'contain' }, // fix image getting cropped

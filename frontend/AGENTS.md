@@ -41,6 +41,21 @@ parent route's `selectedImage` for lightbox actions: slide navigation updates
 the lightbox state first, and a stale closure can act on the file that opened the
 lightbox instead of the currently visible slide.
 
+The lightbox chrome is immersive (issue #47): the image is full-bleed
+(`imageFit: 'cover'`) and controls float over it. Legibility comes from gradient
+**scrims** plus **auto-hide** (`useLightboxChromeAutoHide` toggles
+`picr-lightbox-idle` on the lightbox root; chrome fades out when idle and returns
+on any pointer/keyboard activity), not from reserving bars. Stacking gotcha when
+adding scrims/overlays: the YARL carousel has a CSS `transform` for swipe, so it
+is its own stacking context. The title (Captions plugin) and rating footer
+(`render.slideFooter`) render **inside** that carousel, while the
+toolbar/navigation/counter render at the **container** level above it. A
+container-level scrim therefore covers the in-slide title/footer no matter its
+`z-index`. Render per-slide scrims via `render.slideHeader`/`render.slideFooter`
+(they sit above the slide image, below the in-slide title/footer, and the
+container-level chrome naturally paints on top). See `SelectedFileView.tsx` and
+`SelectedFileView.css`.
+
 ## Directory Structure
 
 ```

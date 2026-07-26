@@ -86,32 +86,131 @@
 .lightbox-portal .yarl__slide_title {
   font-family: var(--picr-heading-font);
 }
-[data-mantine-color-scheme='light']
-  .lightbox-portal
-  .yarl__toolbar
-  .yarl__button,
-[data-mantine-color-scheme='light'] .lightbox-portal .yarl__slide_title,
-[data-mantine-color-scheme='light']
-  .lightbox-portal
-  .yarl__button.yarl__navigation_next,
-[data-mantine-color-scheme='light']
-  .lightbox-portal
-  .yarl__button.yarl__navigation_prev,
-[data-mantine-color-scheme='light'] .yarl__counter {
-  opacity: 0.25; /* keep title understated on light backgrounds */
+
+/* Keep the filename above its own scrim (both live inside the slide). */
+.lightbox-portal .yarl__slide_captions_container.yarl__slide_title_container {
+  z-index: 2;
+}
+
+/*
+ * Immersive chrome (issue #47): gradient scrims sit above the full-bleed image
+ * but below the floating controls so buttons/title/counter stay legible over
+ * any photo without reserving bars. The whole chrome set fades out when the
+ * user is idle (`picr-lightbox-idle` on the lightbox root) and returns on any
+ * activity — see useLightboxChromeAutoHide.
+ */
+.lightbox-portal .picr-lightbox-scrim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 120px;
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.lightbox-portal .picr-lightbox-scrim-top {
+  top: 0;
+}
+
+.lightbox-portal .picr-lightbox-scrim-bottom {
+  bottom: 0;
+}
+
+[data-mantine-color-scheme='dark'] .lightbox-portal .picr-lightbox-scrim-top {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
 }
 
 [data-mantine-color-scheme='dark']
   .lightbox-portal
-  .yarl__toolbar
-  .yarl__button,
-[data-mantine-color-scheme='dark'] .lightbox-portal .yarl__slide_title,
-[data-mantine-color-scheme='dark']
+  .picr-lightbox-scrim-bottom {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+}
+
+[data-mantine-color-scheme='light'] .lightbox-portal .picr-lightbox-scrim-top {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.75),
+    rgba(255, 255, 255, 0)
+  );
+}
+
+[data-mantine-color-scheme='light']
   .lightbox-portal
-  .yarl__button.yarl__navigation_next,
-[data-mantine-color-scheme='dark']
-  .lightbox-portal
-  .yarl__button.yarl__navigation_prev,
-[data-mantine-color-scheme='dark'] .yarl__counter {
-  opacity: 0.5; /* slightly stronger contrast needed in dark mode */
+  .picr-lightbox-scrim-bottom {
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.75),
+    rgba(255, 255, 255, 0)
+  );
+}
+
+/*
+ * Slide the filmstrip open/closed instead of popping it in/out when the
+ * thumbnails toggle is pressed. The container is a flex sibling of the image
+ * area, so animating its height also smoothly resizes the photo above it. The
+ * expanded height is derived from YARL's own thumbnail sizing variables (so it
+ * stays correct if those defaults change): thumbnail height + its padding +
+ * border, plus the container padding, with border-box so padding is included.
+ */
+.lightbox-portal .yarl__thumbnails_container {
+  box-sizing: border-box;
+  height: calc(
+    var(--yarl__thumbnails_thumbnail_height, 80px) + 2 *
+      var(--yarl__thumbnails_thumbnail_padding, 4px) + 2 *
+      var(--yarl__thumbnails_thumbnail_border, 1px) + 2 *
+      var(--yarl__thumbnails_container_padding, 16px)
+  );
+  overflow: hidden;
+  transition:
+    height 0.3s ease,
+    padding-top 0.3s ease,
+    padding-bottom 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.picr-thumbnails-collapsed .yarl__thumbnails_container {
+  height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion) {
+  .lightbox-portal .yarl__thumbnails_container {
+    transition: none;
+  }
+}
+
+/* Chrome fades in/out smoothly as the idle state toggles. */
+.lightbox-portal .yarl__toolbar,
+.lightbox-portal .yarl__navigation_prev,
+.lightbox-portal .yarl__navigation_next,
+.lightbox-portal .yarl__counter,
+.lightbox-portal .yarl__slide_captions_container,
+.lightbox-portal .picr-lightbox-footer {
+  transition: opacity 0.35s ease;
+}
+
+.picr-lightbox-idle .yarl__toolbar,
+.picr-lightbox-idle .yarl__navigation_prev,
+.picr-lightbox-idle .yarl__navigation_next,
+.picr-lightbox-idle .yarl__counter,
+.picr-lightbox-idle .yarl__slide_captions_container,
+.picr-lightbox-idle .picr-lightbox-scrim,
+.picr-lightbox-idle .picr-lightbox-footer {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion) {
+  .lightbox-portal .picr-lightbox-scrim,
+  .lightbox-portal .yarl__toolbar,
+  .lightbox-portal .yarl__navigation_prev,
+  .lightbox-portal .yarl__navigation_next,
+  .lightbox-portal .yarl__counter,
+  .lightbox-portal .yarl__slide_captions_container,
+  .lightbox-portal .picr-lightbox-footer {
+    transition: none;
+  }
 }
