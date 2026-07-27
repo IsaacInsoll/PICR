@@ -182,13 +182,63 @@
   }
 }
 
-/* Chrome fades in/out smoothly as the idle state toggles. */
-.lightbox-portal .yarl__toolbar,
+/*
+ * Chrome reveal animation (issue #47). Two layers:
+ *  1. A one-shot entrance that plays when each chrome element first mounts
+ *     (i.e. when the lightbox opens) — top chrome drops in, bottom chrome
+ *     rises in, scrims/nav fade in, with a small delay so it follows the
+ *     backdrop rather than racing it.
+ *  2. Idle toggling: as the user goes idle/active the same top/bottom chrome
+ *     slides a few px away and back while fading, so re-revealing the chrome
+ *     feels like a gentle entrance rather than a hard opacity flip.
+ */
+@keyframes picr-chrome-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes picr-chrome-in-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes picr-chrome-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.lightbox-portal .yarl__toolbar {
+  animation: picr-chrome-in-top 0.45s ease 0.08s both;
+}
+
+.lightbox-portal .picr-lightbox-footer,
+.lightbox-portal .yarl__counter {
+  animation: picr-chrome-in-bottom 0.45s ease 0.08s both;
+}
+
 .lightbox-portal .yarl__navigation_prev,
 .lightbox-portal .yarl__navigation_next,
-.lightbox-portal .yarl__counter,
-.lightbox-portal .yarl__slide_captions_container,
-.lightbox-portal .picr-lightbox-footer {
+.lightbox-portal .picr-lightbox-scrim {
+  animation: picr-chrome-fade-in 0.5s ease 0.12s both;
+}
+
+/* Idle toggling: top/bottom chrome also gets a slide, the rest just fades. */
+.lightbox-portal .yarl__toolbar,
+.lightbox-portal .picr-lightbox-footer,
+.lightbox-portal .yarl__counter {
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.lightbox-portal .yarl__navigation_prev,
+.lightbox-portal .yarl__navigation_next,
+.lightbox-portal .yarl__slide_captions_container {
   transition: opacity 0.35s ease;
 }
 
@@ -203,7 +253,25 @@
   pointer-events: none;
 }
 
+.picr-lightbox-idle .yarl__toolbar {
+  transform: translateY(-12px);
+}
+
+.picr-lightbox-idle .picr-lightbox-footer,
+.picr-lightbox-idle .yarl__counter {
+  transform: translateY(12px);
+}
+
 @media (prefers-reduced-motion) {
+  .lightbox-portal .yarl__toolbar,
+  .lightbox-portal .picr-lightbox-footer,
+  .lightbox-portal .yarl__counter,
+  .lightbox-portal .yarl__navigation_prev,
+  .lightbox-portal .yarl__navigation_next,
+  .lightbox-portal .picr-lightbox-scrim {
+    animation: none;
+  }
+
   .lightbox-portal .picr-lightbox-scrim,
   .lightbox-portal .yarl__toolbar,
   .lightbox-portal .yarl__navigation_prev,
@@ -212,5 +280,12 @@
   .lightbox-portal .yarl__slide_captions_container,
   .lightbox-portal .picr-lightbox-footer {
     transition: none;
+  }
+
+  /* No slide offset when reduced motion is requested. */
+  .picr-lightbox-idle .yarl__toolbar,
+  .picr-lightbox-idle .picr-lightbox-footer,
+  .picr-lightbox-idle .yarl__counter {
+    transform: none;
   }
 }
