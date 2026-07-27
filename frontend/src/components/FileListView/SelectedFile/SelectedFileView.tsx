@@ -40,6 +40,7 @@ import { wasOpenedFromFolderInCurrentDocument } from '../../../hooks/useSelected
 import { useLightboxChromeAutoHide } from '../../../hooks/useLightboxChromeAutoHide';
 import { useLightboxThumbnails } from './useLightboxThumbnails';
 import { useLightboxToolbar } from './useLightboxToolbar';
+import { useLightboxShortcuts } from './useLightboxShortcuts';
 import type { SlideshowControl } from './LightboxOverflowMenu';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
@@ -86,6 +87,12 @@ export const SelectedFileView = ({
   const chromeVisible = useLightboxChromeAutoHide(!!selectedFileId);
   const isMobile = !!useIsMobile();
   const { isNone } = useCommentPermissions();
+
+  useLightboxShortcuts({
+    active: !!selectedFileId,
+    file: selectedImage,
+    controllerRef: ref,
+  });
 
   // Slideshow lives in the mobile overflow menu, so we drive it through a ref and
   // track its playing state via YARL's slideshow callbacks to label the menu item.
