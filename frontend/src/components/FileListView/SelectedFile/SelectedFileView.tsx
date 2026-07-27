@@ -143,7 +143,7 @@ export const SelectedFileView = ({
     <Lightbox
       className={rootClassName}
       portal={{ root: portal?.current }}
-      controller={{ ref }}
+      controller={{ ref, closeOnPullDown: true }}
       plugins={plugins}
       counter={counterProps}
       slides={filesForLightbox(

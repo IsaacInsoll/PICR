@@ -11,15 +11,35 @@ export interface LightboxThumbnails {
   toggle: () => void;
 }
 
-// Filmstrip visibility state for the lightbox. The Thumbnails plugin mounts
+const THUMBNAILS_KEY = 'picr-lightbox-thumbnails';
+
+const readPersistedVisible = () => {
+  try {
+    return localStorage.getItem(THUMBNAILS_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
+const persistVisible = (visible: boolean) => {
+  try {
+    localStorage.setItem(THUMBNAILS_KEY, visible ? '1' : '0');
+  } catch {
+    // ignore (private mode / storage disabled) — falls back to session state
+  }
+};
+
+// Filmstrip visibility state for the lightbox. The user's preference persists in
+// localStorage, so a gallery that was left with thumbnails open reopens that way
+// (and mounts the plugin immediately). Otherwise the Thumbnails plugin mounts
 // lazily on first reveal (so galleries that never open it don't load thumbnails)
 // then stays mounted so it can slide open/closed via a CSS height transition
 // instead of popping in/out. `expanded` flips a frame after mount so the very
 // first open animates too; closing collapses straight from the toggle since the
 // element is already painted.
 export const useLightboxThumbnails = (): LightboxThumbnails => {
-  const [visible, setVisible] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(readPersistedVisible);
+  const [mounted, setMounted] = useState(readPersistedVisible);
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
@@ -32,9 +52,11 @@ export const useLightboxThumbnails = (): LightboxThumbnails => {
     if (visible) {
       setVisible(false);
       setExpanded(false);
+      persistVisible(false);
     } else {
       setMounted(true);
       setVisible(true);
+      persistVisible(true);
     }
   }, [visible]);
 
