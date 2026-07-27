@@ -20,6 +20,7 @@ import { useSetFolder } from '../../../hooks/useSetFolder';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { LightboxFileRating } from './LightboxFileRating';
+import { LightboxBlurUp } from './LightboxBlurUp';
 import { filesForLightbox, isPicrVideoSlide } from './filesForLightbox';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { lightboxControllerRefAtom } from '../../../atoms/lightboxControllerRefAtom';
@@ -197,6 +198,15 @@ export const SelectedFileView = ({
               aria-hidden="true"
             />
             <LightboxFileRating files={files} />
+          </>
+        ),
+        // Blur-up placeholder sits above the image while it loads, then fades
+        // out to reveal it (see LightboxBlurUp). Keeping the default container
+        // children preserves YARL's slide layout/zoom.
+        slideContainer: ({ slide, children }) => (
+          <>
+            {children}
+            <LightboxBlurUp slide={slide} />
           </>
         ),
       }}

@@ -26,6 +26,11 @@ declare module 'yet-another-react-lightbox' {
   interface SlideTypes {
     'picr-video': PicrVideoSlide;
   }
+  // Carry the file's blurhash on image slides so the lightbox can show a
+  // blur-up placeholder while the full image loads (see LightboxBlurUp).
+  interface SlideImage {
+    blurHash?: string | null;
+  }
 }
 
 export const filesForLightbox = (
@@ -45,6 +50,7 @@ export const filesForLightbox = (
         ? useOriginal
           ? {
               src: imageURL(file, 'raw'),
+              blurHash: file.blurHash,
             }
           : {
               srcSet: thumbnailSizes.map((size): ImageSource => {
@@ -53,6 +59,7 @@ export const filesForLightbox = (
                 return { src: imageURL(file, size), width, height };
               }),
               src: imageURL(file, 'lg'),
+              blurHash: file.blurHash,
             }
         : file.type === 'Video'
           ? (() => {
