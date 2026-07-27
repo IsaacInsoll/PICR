@@ -1,14 +1,15 @@
 import { useMemo } from 'react';
-import { Counter, Thumbnails } from 'yet-another-react-lightbox/plugins';
+import {
+  Counter,
+  Slideshow,
+  Thumbnails,
+} from 'yet-another-react-lightbox/plugins';
 import type { ViewFolderFileWithHero } from '@shared/files/sortFiles';
 import { LightboxInfoButton } from './LightboxInfoButton';
 import { ThumbnailsIcon } from '../../../PicrIcons';
 import { lightboxPlugins, lightboxPluginsProof } from './lightboxPlugins';
 import type { LightboxThumbnails } from './useLightboxThumbnails';
-import {
-  LightboxOverflowMenu,
-  type SlideshowControl,
-} from './LightboxOverflowMenu';
+import { LightboxOverflowMenu } from './LightboxOverflowMenu';
 
 // Assembles the YARL toolbar buttons and the active plugin list. On narrow
 // screens the secondary buttons collapse into an overflow menu (see
@@ -21,7 +22,6 @@ export const useLightboxToolbar = ({
   isMobile,
   footerShowsCounter,
   thumbnails,
-  slideshow,
 }: {
   files: ViewFolderFileWithHero[];
   canDownload: boolean;
@@ -29,7 +29,6 @@ export const useLightboxToolbar = ({
   isMobile: boolean;
   footerShowsCounter: boolean;
   thumbnails: LightboxThumbnails;
-  slideshow: SlideshowControl;
 }) => {
   const { visible: thumbnailsVisible, toggle: toggleThumbnails } = thumbnails;
 
@@ -40,7 +39,6 @@ export const useLightboxToolbar = ({
             key="overflow"
             files={files}
             thumbnails={thumbnails}
-            slideshow={slideshow}
           />,
           'close',
         ]
@@ -67,7 +65,6 @@ export const useLightboxToolbar = ({
     thumbnails,
     thumbnailsVisible,
     toggleThumbnails,
-    slideshow,
     canDownload,
   ]);
 
@@ -75,12 +72,13 @@ export const useLightboxToolbar = ({
     () =>
       (canDownload ? lightboxPlugins : lightboxPluginsProof).filter(
         (plugin) => {
+          if (plugin === Slideshow) return !isMobile;
           if (plugin === Thumbnails) return thumbnails.mounted;
           if (plugin === Counter) return !footerShowsCounter;
           return true;
         },
       ),
-    [canDownload, thumbnails.mounted, footerShowsCounter],
+    [canDownload, isMobile, thumbnails.mounted, footerShowsCounter],
   );
 
   return { buttons, plugins };

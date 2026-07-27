@@ -12,6 +12,14 @@ import type { ReviewableFile } from '../Review/FileReview';
 
 const CAPSLOCK_HINT_KEY = 'picr-lightbox-capslock-hint';
 const TOAST_ID = 'lightbox-shortcut';
+const LETTER_KEY = /^[a-z]$/i;
+
+const shortcutKey = (e: KeyboardEvent) =>
+  e.key.length === 1 ? e.key.toLowerCase() : e.key;
+
+const capsLockEnabled = (e: KeyboardEvent) =>
+  e.getModifierState('CapsLock') ||
+  (LETTER_KEY.test(e.key) && e.key === e.key.toUpperCase() && !e.shiftKey);
 
 // Keyboard shortcuts for the lightbox rating/review workflow. Active only while
 // the lightbox is open and no modal/input has focus. Each action shows a brief
@@ -105,7 +113,9 @@ export const useLightboxShortcuts = ({
       if (modalOpen || !file) return;
 
       // Comment is available to anyone who can view comments.
-      if (e.key === 'c') {
+      const key = shortcutKey(e);
+
+      if (key === 'c') {
         if (!canView) return;
         e.preventDefault();
         openComment(file.id);
@@ -115,24 +125,24 @@ export const useLightboxShortcuts = ({
       // The remaining shortcuts mutate, so require edit permission.
       if (!canEdit) return;
 
-      const capsLock = e.getModifierState('CapsLock');
+      const capsLock = capsLockEnabled(e);
 
-      if (e.key >= '1' && e.key <= '5') {
-        const rating = Number(e.key);
+      if (key >= '1' && key <= '5') {
+        const rating = Number(key);
         e.preventDefault();
         void mutate({ id: file.id, rating });
         toast(`Rated ${'★'.repeat(rating)}`);
         maybeAutoAdvance(capsLock);
         return;
       }
-      if (e.key === '0') {
+      if (key === '0') {
         e.preventDefault();
         void mutate({ id: file.id, rating: 0 });
         toast('Rating cleared');
         maybeAutoAdvance(capsLock);
         return;
       }
-      if (e.key === 'p' || e.key === 'f') {
+      if (key === 'p' || key === 'f') {
         e.preventDefault();
         const approving = file.flag !== FileFlag.Approved;
         void mutate({
@@ -143,7 +153,7 @@ export const useLightboxShortcuts = ({
         maybeAutoAdvance(capsLock);
         return;
       }
-      if (e.key === 'x') {
+      if (key === 'x') {
         e.preventDefault();
         const rejecting = file.flag !== FileFlag.Rejected;
         void mutate({

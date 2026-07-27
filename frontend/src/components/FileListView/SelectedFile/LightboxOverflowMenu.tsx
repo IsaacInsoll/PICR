@@ -1,31 +1,19 @@
 import { Menu } from '@mantine/core';
 import { useLightboxState } from 'yet-another-react-lightbox';
 import type { PicrFile } from '@shared/types/picr';
-import {
-  DotsIcon,
-  InfoIcon,
-  SlideshowIcon,
-  ThumbnailsIcon,
-} from '../../../PicrIcons';
+import { DotsIcon, InfoIcon, ThumbnailsIcon } from '../../../PicrIcons';
 import { useOpenFileInfoModal } from '../../../atoms/modalAtom';
 import type { LightboxThumbnails } from './useLightboxThumbnails';
 
-export interface SlideshowControl {
-  playing: boolean;
-  toggle: () => void;
-}
-
-// Collapses the secondary toolbar actions (info, thumbnails, slideshow) into a
+// Collapses the secondary toolbar actions (info, thumbnails) into a
 // single kebab menu on narrow screens, freeing horizontal space so the filename
 // isn't crushed by a full row of icons.
 export const LightboxOverflowMenu = ({
   files,
   thumbnails,
-  slideshow,
 }: {
   files: PicrFile[];
   thumbnails: LightboxThumbnails;
-  slideshow: SlideshowControl;
 }) => {
   const { currentIndex } = useLightboxState();
   const openFileInfo = useOpenFileInfoModal();
@@ -54,9 +42,6 @@ export const LightboxOverflowMenu = ({
         ) : null}
         <Menu.Item leftSection={<ThumbnailsIcon />} onClick={thumbnails.toggle}>
           {thumbnails.visible ? 'Hide thumbnails' : 'Show thumbnails'}
-        </Menu.Item>
-        <Menu.Item leftSection={<SlideshowIcon />} onClick={slideshow.toggle}>
-          {slideshow.playing ? 'Stop slideshow' : 'Start slideshow'}
         </Menu.Item>
       </Menu.Dropdown>
     </Menu>

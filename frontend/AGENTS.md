@@ -55,6 +55,14 @@ container-level scrim therefore covers the in-slide title/footer no matter its
 (they sit above the slide image, below the in-slide title/footer, and the
 container-level chrome naturally paints on top). See `SelectedFileView.tsx` and
 `SelectedFileView.css`.
+Mobile lightbox chrome deliberately keeps the top bar sparse: slideshow is not
+loaded on mobile, and the Zoom plugin toolbar button is hidden with
+`render.buttonZoom` while the Zoom plugin stays enabled so pinch-to-zoom keeps
+working.
+Lightbox letter shortcuts must normalize `KeyboardEvent.key` to lowercase before
+matching. Chrome on macOS reports Caps Lock letter shortcuts as uppercase keys,
+so checking only lowercase `p`/`f`/`x`/`c` skips the shortcut before the
+auto-advance path can run.
 
 ## Directory Structure
 
