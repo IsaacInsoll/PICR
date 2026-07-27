@@ -185,11 +185,17 @@ export const SelectedFileView = ({
         // the slide (above the image, below the title/rating), so the
         // container-level toolbar/nav/counter naturally sit on top of them.
         slideHeader: () => (
-          <div className="picr-lightbox-scrim picr-lightbox-scrim-top" />
+          <div
+            className="picr-lightbox-scrim picr-lightbox-scrim-top"
+            aria-hidden="true"
+          />
         ),
         slideFooter: () => (
           <>
-            <div className="picr-lightbox-scrim picr-lightbox-scrim-bottom" />
+            <div
+              className="picr-lightbox-scrim picr-lightbox-scrim-bottom"
+              aria-hidden="true"
+            />
             <LightboxFileRating files={files} />
           </>
         ),

@@ -23,7 +23,14 @@ export const LightboxFileRating = ({ files }: { files: ReviewableFile[] }) => {
       <Group gap="sm" wrap="nowrap">
         <FileReview file={file} />
         {files.length > 1 ? (
-          <Text size="sm" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
+          <Text
+            size="sm"
+            c="dimmed"
+            style={{ whiteSpace: 'nowrap' }}
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={`Photo ${currentIndex + 1} of ${files.length}`}
+          >
             {currentIndex + 1} / {files.length}
           </Text>
         ) : null}
