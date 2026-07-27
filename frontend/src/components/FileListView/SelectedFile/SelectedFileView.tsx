@@ -4,6 +4,7 @@ import type {
   ControllerRef,
   ImageProps,
   Slide,
+  SlideshowRef,
   SlotStyles,
 } from 'yet-another-react-lightbox';
 import { isImageSlide, Lightbox } from 'yet-another-react-lightbox';
@@ -16,7 +17,7 @@ import './SelectedFileView.css';
 import type { ViewFolderFileWithHero } from '@shared/files/sortFiles';
 import { theme } from '../../../theme';
 import { useSetFolder } from '../../../hooks/useSetFolder';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { LightboxFileRating } from './LightboxFileRating';
 import { filesForLightbox, isPicrVideoSlide } from './filesForLightbox';
@@ -39,6 +40,9 @@ import { wasOpenedFromFolderInCurrentDocument } from '../../../hooks/useSelected
 import { useLightboxChromeAutoHide } from '../../../hooks/useLightboxChromeAutoHide';
 import { useLightboxThumbnails } from './useLightboxThumbnails';
 import { useLightboxToolbar } from './useLightboxToolbar';
+import type { SlideshowControl } from './LightboxOverflowMenu';
+import { useIsMobile } from '../../../hooks/useIsMobile';
+import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 
 export const SelectedFileView = ({
   files,
@@ -80,6 +84,24 @@ export const SelectedFileView = ({
     wasOpenedFromFolderInCurrentDocument(location.state) || autoplayBlessed;
   const isSelectedVideo = selectedImage?.type === 'Video';
   const chromeVisible = useLightboxChromeAutoHide(!!selectedFileId);
+  const isMobile = !!useIsMobile();
+  const { isNone } = useCommentPermissions();
+
+  // Slideshow lives in the mobile overflow menu, so we drive it through a ref and
+  // track its playing state via YARL's slideshow callbacks to label the menu item.
+  const slideshowRef = useRef<SlideshowRef | null>(null);
+  const [slideshowPlaying, setSlideshowPlaying] = useState(false);
+  const toggleSlideshow = useCallback(() => {
+    const s = slideshowRef.current;
+    if (!s) return;
+    if (s.playing) s.pause();
+    else s.play();
+  }, []);
+  const slideshow = useMemo<SlideshowControl>(
+    () => ({ playing: slideshowPlaying, toggle: toggleSlideshow }),
+    [slideshowPlaying, toggleSlideshow],
+  );
+
   const noDownloadMediaProps = useNoDownloadMediaProps();
   const imageProps: ImageProps = {
     ...carouselImageProps,
@@ -94,7 +116,10 @@ export const SelectedFileView = ({
     files,
     canDownload,
     isSelectedVideo,
+    isMobile,
+    footerShowsCounter: !isNone && files.length > 1,
     thumbnails,
+    slideshow,
   });
 
   const rootClassName =
@@ -167,12 +192,15 @@ export const SelectedFileView = ({
         imageProps,
       }}
       thumbnails={thumbnails.mounted ? { position: 'bottom' } : undefined}
+      slideshow={{ ref: slideshowRef }}
       zoom={{
         pinchZoomV4: true,
         maxZoomPixelRatio: 5,
       }}
       on={{
         entered: unInert,
+        slideshowStart: () => setSlideshowPlaying(true),
+        slideshowStop: () => setSlideshowPlaying(false),
         view: ({ index }) => {
           const f = files[index];
           // don't change URL if we are already on that URL (IE: first opening gallery)

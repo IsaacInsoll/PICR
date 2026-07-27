@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface LightboxThumbnails {
   /** Whether the Thumbnails plugin is mounted (lazily, then kept mounted). */
@@ -28,7 +28,7 @@ export const useLightboxThumbnails = (): LightboxThumbnails => {
     return () => cancelAnimationFrame(raf);
   }, [visible, mounted]);
 
-  const toggle = () => {
+  const toggle = useCallback(() => {
     if (visible) {
       setVisible(false);
       setExpanded(false);
@@ -36,7 +36,10 @@ export const useLightboxThumbnails = (): LightboxThumbnails => {
       setMounted(true);
       setVisible(true);
     }
-  };
+  }, [visible]);
 
-  return { mounted, expanded, visible, toggle };
+  return useMemo(
+    () => ({ mounted, expanded, visible, toggle }),
+    [mounted, expanded, visible, toggle],
+  );
 };

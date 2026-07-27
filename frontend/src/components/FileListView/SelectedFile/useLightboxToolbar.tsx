@@ -1,58 +1,86 @@
 import { useMemo } from 'react';
-import { Thumbnails } from 'yet-another-react-lightbox/plugins';
+import { Counter, Thumbnails } from 'yet-another-react-lightbox/plugins';
 import type { ViewFolderFileWithHero } from '@shared/files/sortFiles';
 import { LightboxInfoButton } from './LightboxInfoButton';
 import { ThumbnailsIcon } from '../../../PicrIcons';
 import { lightboxPlugins, lightboxPluginsProof } from './lightboxPlugins';
 import type { LightboxThumbnails } from './useLightboxThumbnails';
+import {
+  LightboxOverflowMenu,
+  type SlideshowControl,
+} from './LightboxOverflowMenu';
 
-// Assembles the YARL toolbar buttons and the active plugin list. Kept out of
-// SelectedFileView so the toolbar can grow (overflow menu, extra actions)
-// without bloating the component.
+// Assembles the YARL toolbar buttons and the active plugin list. On narrow
+// screens the secondary buttons collapse into an overflow menu (see
+// LightboxOverflowMenu). When the rating footer is shown it renders its own
+// slide counter, so YARL's standalone Counter plugin is dropped to avoid two.
 export const useLightboxToolbar = ({
   files,
   canDownload,
   isSelectedVideo,
+  isMobile,
+  footerShowsCounter,
   thumbnails,
+  slideshow,
 }: {
   files: ViewFolderFileWithHero[];
   canDownload: boolean;
   isSelectedVideo: boolean;
+  isMobile: boolean;
+  footerShowsCounter: boolean;
   thumbnails: LightboxThumbnails;
+  slideshow: SlideshowControl;
 }) => {
   const { visible: thumbnailsVisible, toggle: toggleThumbnails } = thumbnails;
 
   const buttons = useMemo(() => {
-    const items = [
-      <LightboxInfoButton files={files} key="InfoButton" />,
-      <button
-        key="thumbnails-toggle"
-        type="button"
-        className="yarl__button"
-        onClick={toggleThumbnails}
-        aria-pressed={thumbnailsVisible}
-        title={thumbnailsVisible ? 'Hide thumbnails' : 'Show thumbnails'}
-      >
-        <ThumbnailsIcon size="24" />
-      </button>,
-      ...(isSelectedVideo ? [] : ['slideshow']),
-      'close',
-    ];
+    const items = isMobile
+      ? [
+          <LightboxOverflowMenu
+            key="overflow"
+            files={files}
+            thumbnails={thumbnails}
+            slideshow={slideshow}
+          />,
+          'close',
+        ]
+      : [
+          <LightboxInfoButton files={files} key="InfoButton" />,
+          <button
+            key="thumbnails-toggle"
+            type="button"
+            className="yarl__button"
+            onClick={toggleThumbnails}
+            aria-pressed={thumbnailsVisible}
+            title={thumbnailsVisible ? 'Hide thumbnails' : 'Show thumbnails'}
+          >
+            <ThumbnailsIcon size="24" />
+          </button>,
+          ...(isSelectedVideo ? [] : ['slideshow']),
+          'close',
+        ];
     return canDownload ? ['download', ...items] : items;
   }, [
+    isMobile,
     files,
     isSelectedVideo,
+    thumbnails,
     thumbnailsVisible,
     toggleThumbnails,
+    slideshow,
     canDownload,
   ]);
 
   const plugins = useMemo(
     () =>
       (canDownload ? lightboxPlugins : lightboxPluginsProof).filter(
-        (plugin) => thumbnails.mounted || plugin !== Thumbnails,
+        (plugin) => {
+          if (plugin === Thumbnails) return thumbnails.mounted;
+          if (plugin === Counter) return !footerShowsCounter;
+          return true;
+        },
       ),
-    [canDownload, thumbnails.mounted],
+    [canDownload, thumbnails.mounted, footerShowsCounter],
   );
 
   return { buttons, plugins };
