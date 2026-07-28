@@ -611,6 +611,18 @@
             "deprecationReason": null
           },
           {
+            "name": "galleryLayout",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "defaultView",
             "description": null,
             "args": [],
@@ -3650,6 +3662,18 @@
               },
               {
                 "name": "defaultFileSort",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "galleryLayout",
                 "description": null,
                 "type": {
                   "kind": "SCALAR",

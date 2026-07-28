@@ -49,6 +49,20 @@ export const normalizeHeadingAlignment = (
 ): HeadingAlignment =>
   alignment === 'center' ? 'center' : DEFAULT_HEADING_ALIGNMENT;
 
+export const GALLERY_LAYOUTS = ['justified', 'masonry'] as const;
+export type GalleryLayout = (typeof GALLERY_LAYOUTS)[number];
+export const DEFAULT_GALLERY_LAYOUT: GalleryLayout = 'justified';
+
+// 'justified' = fixed rows (uniform row height, varies per row to fit width);
+// 'masonry' = fixed columns (natural image heights, packed without gaps).
+// Explicit stored values are preserved; unknown/null collapses to the default.
+export const normalizeGalleryLayout = (
+  layout?: string | null,
+): GalleryLayout =>
+  layout === 'justified' || layout === 'masonry'
+    ? layout
+    : DEFAULT_GALLERY_LAYOUT;
+
 export const BANNER_SIZES = [
   'classic',
   'widescreen',

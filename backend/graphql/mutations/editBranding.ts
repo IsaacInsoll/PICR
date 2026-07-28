@@ -22,6 +22,7 @@ import type { MutationEditBrandingArgs } from '@shared/gql/graphql.js';
 import type { SocialLink } from '@shared/branding/socialLinkTypes.js';
 import { normalizeSocialLinks } from '@shared/branding/socialLinkTypes.js';
 import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
+import { normalizeGalleryLayout } from '@shared/branding/galleryPresets.js';
 import { GraphQLError } from 'graphql/error/index.js';
 import type { HeadingAlignment } from '@shared/branding/galleryPresets.js';
 
@@ -33,6 +34,7 @@ type EditBrandingArgs = MutationEditBrandingArgs & {
   availableViews?: string[] | null;
   defaultView?: string | null;
   defaultFileSort?: string | null;
+  galleryLayout?: string | null;
   thumbnailSize?: number | null;
   thumbnailSpacing?: number | null;
   thumbnailBorderRadius?: number | null;
@@ -104,6 +106,14 @@ const resolver: PicrResolver<object, EditBrandingArgs> = async (
     defaultView = availableViews[0];
   }
 
+  // Unknown layout values collapse to the default
+  const galleryLayout =
+    params.galleryLayout === undefined
+      ? undefined
+      : params.galleryLayout === null
+        ? null
+        : normalizeGalleryLayout(params.galleryLayout);
+
   const props = {
     name: params.name,
     mode: params.mode,
@@ -113,6 +123,7 @@ const resolver: PicrResolver<object, EditBrandingArgs> = async (
     availableViews,
     defaultView,
     defaultFileSort: params.defaultFileSort,
+    galleryLayout,
     thumbnailSize: params.thumbnailSize,
     thumbnailSpacing: params.thumbnailSpacing,
     thumbnailBorderRadius: params.thumbnailBorderRadius,
@@ -167,6 +178,7 @@ export const editBranding = {
     },
     defaultView: { type: GraphQLString },
     defaultFileSort: { type: GraphQLString },
+    galleryLayout: { type: GraphQLString },
     thumbnailSize: { type: GraphQLInt },
     thumbnailSpacing: { type: GraphQLInt },
     thumbnailBorderRadius: { type: GraphQLInt },

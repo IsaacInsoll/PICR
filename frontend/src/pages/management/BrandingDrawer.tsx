@@ -73,6 +73,7 @@ export const BrandingDrawer = ({
       applyBrandingDefaults({
         availableViews: branding.availableViews,
         defaultFileSort: branding.defaultFileSort,
+        galleryLayout: branding.galleryLayout,
         defaultView: branding.defaultView,
         footerTitle: debouncedTextPreviewFields.footerTitle,
         footerUrl: debouncedTextPreviewFields.footerUrl,
@@ -128,6 +129,7 @@ export const BrandingDrawer = ({
       availableViews: branding.availableViews,
       defaultView: branding.defaultView,
       defaultFileSort: branding.defaultFileSort,
+      galleryLayout: branding.galleryLayout,
       thumbnailSize: branding.thumbnailSize,
       thumbnailSpacing: branding.thumbnailSpacing,
       thumbnailBorderRadius: branding.thumbnailBorderRadius,

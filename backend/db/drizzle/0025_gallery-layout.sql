@@ -1,0 +1,1 @@
+ALTER TABLE "Brandings" ADD COLUMN "galleryLayout" varchar(16);

@@ -13,6 +13,7 @@ import {
   DEFAULT_BORDER_RADIUS,
   DEFAULT_SPACING,
   DEFAULT_THUMBNAIL_SIZE,
+  normalizeGalleryLayout,
 } from '@shared/branding/galleryPresets';
 import 'yet-another-react-lightbox/styles.css';
 import './GridGallery.css';
@@ -138,7 +139,7 @@ export const GridGallery = ({
   return (
     <Box px={outerPadding} style={{ marginTop: -margin }}>
       <Gallery
-        layout="masonry"
+        layout={normalizeGalleryLayout(theme.galleryLayout)}
         rowHeight={thumbnailSize}
         margin={margin}
         images={galleryItems}

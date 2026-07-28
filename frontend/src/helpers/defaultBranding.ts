@@ -1,6 +1,7 @@
 import { HeadingFontKey, PrimaryColor, ThemeMode } from '@shared/gql/graphql';
 import {
   DEFAULT_BORDER_RADIUS,
+  DEFAULT_GALLERY_LAYOUT,
   DEFAULT_HEADING_FONT_SIZE,
   DEFAULT_SPACING,
   DEFAULT_THUMBNAIL_SIZE,
@@ -16,4 +17,5 @@ export const defaultBranding = {
   thumbnailSpacing: DEFAULT_SPACING,
   thumbnailBorderRadius: DEFAULT_BORDER_RADIUS,
   headingFontSize: DEFAULT_HEADING_FONT_SIZE,
+  galleryLayout: DEFAULT_GALLERY_LAYOUT,
 };

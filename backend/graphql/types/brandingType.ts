@@ -18,7 +18,10 @@ import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 import { db } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
-import { normalizeHeadingAlignment } from '@shared/branding/galleryPresets.js';
+import {
+  normalizeGalleryLayout,
+  normalizeHeadingAlignment,
+} from '@shared/branding/galleryPresets.js';
 
 export const brandingType = new GraphQLObjectType({
   name: 'Branding',
@@ -37,6 +40,10 @@ export const brandingType = new GraphQLObjectType({
     },
     defaultView: { type: GraphQLString },
     defaultFileSort: { type: GraphQLString },
+    galleryLayout: {
+      type: GraphQLString,
+      resolve: (branding) => normalizeGalleryLayout(branding.galleryLayout),
+    },
     thumbnailSize: { type: GraphQLInt },
     thumbnailSpacing: { type: GraphQLInt },
     thumbnailBorderRadius: { type: GraphQLInt },

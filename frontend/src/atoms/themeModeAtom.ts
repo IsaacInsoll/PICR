@@ -8,6 +8,7 @@ import {
 } from '@shared/gql/graphql';
 import {
   DEFAULT_BORDER_RADIUS,
+  DEFAULT_GALLERY_LAYOUT,
   DEFAULT_HEADING_FONT_SIZE,
   DEFAULT_SPACING,
   DEFAULT_THUMBNAIL_SIZE,
@@ -27,6 +28,7 @@ export const defaultBranding: Branding = {
   thumbnailBorderRadius: DEFAULT_BORDER_RADIUS,
   headingFontSize: DEFAULT_HEADING_FONT_SIZE,
   headingAlignment: HeadingAlignment.Left,
+  galleryLayout: DEFAULT_GALLERY_LAYOUT,
   folders: [],
 };
 
@@ -47,5 +49,6 @@ export const applyBrandingDefaults = (
     branding?.thumbnailBorderRadius ?? defaultBranding.thumbnailBorderRadius,
   headingFontSize: branding?.headingFontSize ?? defaultBranding.headingFontSize,
   headingAlignment: branding?.headingAlignment ?? HeadingAlignment.Left,
+  galleryLayout: branding?.galleryLayout ?? defaultBranding.galleryLayout,
   folders: branding?.folders ?? defaultBranding.folders,
 });

@@ -31,6 +31,9 @@ export const dbBranding = pgTable('Brandings', {
   // Encoded default file sort (see encodeFileSort in shared/files/sortFiles).
   // null = inherit the app default (Filename ascending).
   defaultFileSort: varchar('defaultFileSort', { length: 32 }),
+  // Gallery grid layout: 'justified' (fixed rows) or 'masonry' (fixed columns);
+  // null = default. See normalizeGalleryLayout in shared/branding/galleryPresets.
+  galleryLayout: varchar('galleryLayout', { length: 16 }),
   thumbnailSize: smallint('thumbnailSize'),
   thumbnailSpacing: smallint('thumbnailSpacing'),
   thumbnailBorderRadius: smallint('thumbnailBorderRadius'),

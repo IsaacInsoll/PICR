@@ -11,6 +11,7 @@ export const brandingFragment = gql(/* GraphQL */ `
     availableViews
     defaultView
     defaultFileSort
+    galleryLayout
     thumbnailSize
     thumbnailSpacing
     thumbnailBorderRadius

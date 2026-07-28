@@ -49,6 +49,7 @@ import {
   matchPreset,
   SPACING_PRESETS,
   THUMBNAIL_SIZE_PRESETS,
+  DEFAULT_GALLERY_LAYOUT,
 } from '@shared/branding/galleryPresets';
 import type {
   SocialLink,
@@ -86,6 +87,7 @@ export interface BrandingInput {
   availableViews?: string[] | null;
   defaultView?: string | null;
   defaultFileSort?: string | null;
+  galleryLayout?: string | null;
   thumbnailSize?: number | null;
   thumbnailSpacing?: number | null;
   thumbnailBorderRadius?: number | null;
@@ -327,6 +329,32 @@ export const BrandingForm = ({
               }
             />
             <Divider label="Gallery Styling" labelPosition="left" />
+            <Box>
+              <InputLabel>Gallery layout</InputLabel>
+              <Button.Group>
+                {(
+                  [
+                    { value: 'justified', label: 'Fixed rows' },
+                    { value: 'masonry', label: 'Fixed columns' },
+                  ] as const
+                ).map((opt) => {
+                  const current =
+                    branding.galleryLayout ?? DEFAULT_GALLERY_LAYOUT;
+                  return (
+                    <Button
+                      key={opt.value}
+                      variant={current === opt.value ? 'filled' : 'default'}
+                      size="xs"
+                      onClick={() =>
+                        onChange({ ...branding, galleryLayout: opt.value })
+                      }
+                    >
+                      {opt.label}
+                    </Button>
+                  );
+                })}
+              </Button.Group>
+            </Box>
             <Box>
               <InputLabel>Thumbnail size</InputLabel>
               <PresetButtons
