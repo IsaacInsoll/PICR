@@ -1,13 +1,16 @@
 import { ActionIcon, Indicator, Tooltip } from '@mantine/core';
 import { CommentIcon, CommentsIcon } from '../../../PicrIcons';
+import type { ReviewButtonVariant } from './FileReview';
 
 // A button showing total comments, click to view/add comments
 export const CommentButton = ({
   totalComments,
   onClick,
+  variant = 'default',
 }: {
   totalComments: number;
   onClick: () => void;
+  variant?: ReviewButtonVariant;
 }) => {
   return (
     <Indicator
@@ -19,7 +22,7 @@ export const CommentButton = ({
       <Tooltip
         label={`${totalComments} Comment` + (totalComments !== 1 ? 's' : '')}
       >
-        <ActionIcon variant="default" onClick={onClick}>
+        <ActionIcon variant={variant} onClick={onClick}>
           {totalComments === 0 ? <CommentIcon /> : <CommentsIcon />}
         </ActionIcon>
       </Tooltip>

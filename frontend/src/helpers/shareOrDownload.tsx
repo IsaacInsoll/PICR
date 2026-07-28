@@ -38,7 +38,7 @@ export const isShareableMediaFile = (file: Pick<PicrFile, 'type'>): boolean =>
   file.type === 'Image' || file.type === 'Video';
 
 // Fallback download: a plain anchor click (mirrors triggerDownload in TaskSummary.tsx).
-const anchorDownload = (url: string, filename?: string) => {
+export const anchorDownload = (url: string, filename?: string) => {
   const link = document.createElement('a');
   link.href = url;
   link.download = filename ?? '';

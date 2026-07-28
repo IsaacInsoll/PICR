@@ -157,7 +157,6 @@ const FeedItem = ({
         {file.type === 'Video' ? (
           <Box>
             <LazyPicrVideoPlayer
-              canDownload={canDownload}
               duration={
                 'duration' in file ? (file.duration ?? undefined) : undefined
               }

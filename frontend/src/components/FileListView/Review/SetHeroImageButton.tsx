@@ -8,13 +8,20 @@ import { useReward } from 'react-rewards';
 import { confettiOptions } from './ConfettiOptions';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 import { useOpenSetBannerImageModal } from '../../../atoms/modalAtom';
+import type { ReviewButtonVariant } from './FileReview';
 
 type HeroImageCandidate = Pick<
   PicrFile,
   'id' | 'type' | 'folderId' | 'isHeroImage' | 'isBannerImage'
 >;
 
-export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
+export const SetHeroImageButton = ({
+  file,
+  variant = 'default',
+}: {
+  file: HeroImageCandidate;
+  variant?: ReviewButtonVariant;
+}) => {
   const me = useMe();
   const [, mutate] = useMutation(editFolderMutation);
   const [loading, setLoading] = useState(false);
@@ -56,9 +63,11 @@ export const SetHeroImageButton = ({ file }: { file: HeroImageCandidate }) => {
         >
           <Menu.Target>
             <ActionIcon
-              variant={isActive ? 'filled' : 'default'}
+              variant={isActive ? 'filled' : variant}
               loading={loading}
-              color="violet"
+              // See FileFlagButtons: `subtle` applies `color` to the icon, so it
+              // is only passed when the state is actually set.
+              color={isActive ? 'violet' : undefined}
             >
               <HeroImageIcon />
             </ActionIcon>

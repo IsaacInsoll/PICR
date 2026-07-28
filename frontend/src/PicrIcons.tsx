@@ -72,6 +72,13 @@ import {
   TbUsersGroup,
   TbVideo,
   TbVolume,
+  TbArrowsMaximize,
+  TbArrowsMinimize,
+  TbChevronLeft,
+  TbMaximize,
+  TbX,
+  TbZoomIn,
+  TbZoomOut,
 } from 'react-icons/tb';
 import { CiAt, CiDark, CiLight } from 'react-icons/ci';
 import type { IconBaseProps } from 'react-icons';
@@ -161,6 +168,28 @@ export const NotificationIcon = (props: IconBaseProps) => (
 export const ThumbnailsIcon = (props: IconBaseProps) => (
   <LuGalleryThumbnails {...props} />
 );
+// Lightbox chrome icons.
+// FocusIcon enters the lightbox "Focus" state (rails collapse, image takes the
+// whole viewport). Deliberately distinct from FullscreenIcon, which is the
+// browser-level Fullscreen API — the two sit next to each other in the toolbar.
+export const FocusIcon = (props: IconBaseProps) => (
+  <TbArrowsMaximize {...props} />
+);
+// Arrows pointing inward — the mirror of FocusIcon, used wherever the action is
+// leaving Focus rather than entering it.
+export const ExitFocusIcon = (props: IconBaseProps) => (
+  <TbArrowsMinimize {...props} />
+);
+export const FullscreenIcon = (props: IconBaseProps) => (
+  <TbMaximize {...props} />
+);
+export const ZoomInIcon = (props: IconBaseProps) => <TbZoomIn {...props} />;
+export const ZoomOutIcon = (props: IconBaseProps) => <TbZoomOut {...props} />;
+export const PreviousIcon = (props: IconBaseProps) => (
+  <TbChevronLeft {...props} />
+);
+export const NextIcon = (props: IconBaseProps) => <TbChevronRight {...props} />;
+export const CloseIcon = (props: IconBaseProps) => <TbX {...props} />;
 
 // Metadata icons
 export const CameraIcon = (props: IconBaseProps) => <BsCamera {...props} />;

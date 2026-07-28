@@ -23,8 +23,20 @@ export type ReviewableFile = Pick<
   | 'isBannerImage'
 >;
 
+// Variant for the *inactive* review buttons. Grid and list views use `default`
+// (bordered), the lightbox uses `subtle` so the controls don't sit in boxes over
+// the photograph. Active states stay `filled` either way — that background is
+// what communicates the state.
+export type ReviewButtonVariant = 'default' | 'subtle';
+
 // Horizontal component containing Flag, Rating and Comment buttons
-export const FileReview = ({ file }: { file: ReviewableFile }) => {
+export const FileReview = ({
+  file,
+  variant = 'default',
+}: {
+  file: ReviewableFile;
+  variant?: ReviewButtonVariant;
+}) => {
   const { readOnly, isNone } = useCommentPermissions();
   const [, mutate] = useMutation(addCommentMutation);
   const openComment = useOpenCommentsModal();
@@ -42,13 +54,17 @@ export const FileReview = ({ file }: { file: ReviewableFile }) => {
   // Note when plumbing in mutations:
   //Rating will probably want something like   return <Loader color="blue" size="sm" type="dots" />;
   return (
-    <Group gap="xs">
+    // Borderless buttons need less separation than bordered ones: with no box
+    // edges to read against, `xs` leaves the row looking gappy. 2px matches the
+    // lightbox toolbar and nav groups.
+    <Group gap={variant === 'subtle' ? 2 : 'xs'}>
       {readOnly ? (
         <FileFlagBadge flag={flag ?? FileFlag.None} hideIfNone={true} />
       ) : (
         <FileFlagButtons
           flag={flag ?? FileFlag.None}
           onChange={handleFlagChange}
+          variant={variant}
         />
       )}
       <Divider orientation="vertical" />
@@ -61,8 +77,9 @@ export const FileReview = ({ file }: { file: ReviewableFile }) => {
       <CommentButton
         totalComments={totalComments ?? 0}
         onClick={() => openComment(file.id)}
+        variant={variant}
       />
-      <SetHeroImageButton file={file} />
+      <SetHeroImageButton file={file} variant={variant} />
     </Group>
   );
 };

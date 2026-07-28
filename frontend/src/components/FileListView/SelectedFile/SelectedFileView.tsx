@@ -3,20 +3,22 @@ import type {
   CarouselSettings,
   ControllerRef,
   ImageProps,
-  Slide,
   SlotStyles,
 } from 'yet-another-react-lightbox';
-import { isImageSlide, Lightbox } from 'yet-another-react-lightbox';
+import {
+  Lightbox,
+  useController,
+  useLightboxState,
+} from 'yet-another-react-lightbox';
 
 import 'yet-another-react-lightbox/styles.css';
-import 'yet-another-react-lightbox/plugins/captions.css';
-import 'yet-another-react-lightbox/plugins/counter.css';
 import 'yet-another-react-lightbox/plugins/thumbnails.css';
 import './SelectedFileView.css';
 import type { ViewFolderFileWithHero } from '@shared/files/sortFiles';
 import { theme } from '../../../theme';
 import { useSetFolder } from '../../../hooks/useSetFolder';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import type { RefObject } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { LightboxFileRating } from './LightboxFileRating';
 import { LightboxBlurUp } from './LightboxBlurUp';
@@ -31,18 +33,24 @@ import {
   useServerThumbnailDimensions,
 } from '../../../hooks/useMe';
 import { useNoDownloadMediaProps } from '../../../hooks/useNoDownloadMediaProps';
-import {
-  canUseShareSheet,
-  shareOrDownload,
-} from '../../../helpers/shareOrDownload';
 import { LazyPicrVideoPlayer } from '../../LazyPicrVideoPlayer';
 import { wasOpenedFromFolderInCurrentDocument } from '../../../hooks/useSelectedFileId';
-import { useLightboxChromeAutoHide } from '../../../hooks/useLightboxChromeAutoHide';
+import { RAIL_HEIGHT } from './lightboxRailsPlugin';
+import { LightboxIconButton } from './LightboxIconButton';
+import {
+  CloseIcon,
+  ExitFocusIcon,
+  FullscreenIcon,
+  NextIcon,
+  PreviousIcon,
+  ZoomInIcon,
+  ZoomOutIcon,
+} from '../../../PicrIcons';
+import { useLightboxFocus } from '../../../hooks/useLightboxFocus';
 import { useLightboxThumbnails } from './useLightboxThumbnails';
 import { useLightboxToolbar } from './useLightboxToolbar';
 import { useLightboxShortcuts } from './useLightboxShortcuts';
 import { useIsMobile } from '../../../hooks/useIsMobile';
-import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 
 export const SelectedFileView = ({
   files,
@@ -55,7 +63,13 @@ export const SelectedFileView = ({
   setSelectedFileId: (id: string | undefined) => void;
   folderId: string;
 }) => {
-  const selectedImageIndex = files.findIndex(({ id }) => id === selectedFileId);
+  // findIndex misses when the file was deleted, is filtered out of the current
+  // view, or the URL is a stale deep link. Passing -1 to YARL's `index` is
+  // meaningless, so treat "not found" as nothing to open rather than landing on
+  // an arbitrary slide.
+  const foundIndex = files.findIndex(({ id }) => id === selectedFileId);
+  const selectedImageIndex = Math.max(foundIndex, 0);
+  const isOpen = !!selectedFileId && foundIndex >= 0;
   const selectedImage = files.find(({ id }) => id === selectedFileId);
   const ref = useRef<ControllerRef | null>(null);
   const { fileId } = useParams();
@@ -83,12 +97,11 @@ export const SelectedFileView = ({
   const autoPlayVideo =
     wasOpenedFromFolderInCurrentDocument(location.state) || autoplayBlessed;
   const isSelectedVideo = selectedImage?.type === 'Video';
-  const chromeVisible = useLightboxChromeAutoHide(!!selectedFileId);
   const isMobile = !!useIsMobile();
-  const { isNone } = useCommentPermissions();
+  const { focus, toggleFocus } = useLightboxFocus();
 
   useLightboxShortcuts({
-    active: !!selectedFileId,
+    active: isOpen,
     file: selectedImage,
     controllerRef: ref,
   });
@@ -103,23 +116,68 @@ export const SelectedFileView = ({
     },
   };
 
+  // Rebuilt only when its inputs change: `on.view` pushes a URL update on every
+  // navigation, so an inline call here would allocate a new slides array (and
+  // hand YARL new slide identities) on each one.
+  const slides = useMemo(
+    () =>
+      filesForLightbox(files, canDownload, useOriginals, thumbnailDimensions),
+    [files, canDownload, useOriginals, thumbnailDimensions],
+  );
+
+  // Video is excluded from tap-to-toggle: tapping a video means play/pause
+  // everywhere, so overloading it would break the primary interaction. Video
+  // slides use the explicit Focus button in the rail instead.
+  const handleImageTap = useCallback(() => {
+    if (isSelectedVideo) return;
+    toggleFocus();
+  }, [isSelectedVideo, toggleFocus]);
+
   const { buttons, plugins } = useLightboxToolbar({
     files,
     canDownload,
-    isSelectedVideo,
     isMobile,
-    footerShowsCounter: !isNone && files.length > 1,
     thumbnails,
+    focus,
+    onToggleFocus: toggleFocus,
   });
 
-  const hideMobileZoomButton = isMobile;
+  const railsReservedHeight = focus ? 0 : RAIL_HEIGHT * 2;
+  // Navigation and the counter are meaningless in a single-file folder.
+  const hasMultipleFiles = files.length > 1;
+
+  // Rail contents. The toolbar is not rendered here — YARL positions it
+  // absolutely at top-right, and the top rail reserves exactly that band of
+  // height, so the buttons land inside the rail rather than over the photo.
+  //
+  // Layout mirrors top and bottom: filename top-left under the toolbar's
+  // top-right stack; navigation + counter bottom-left, review controls
+  // bottom-right so each corner pairs with the one above it.
+  const railsTop = (
+    <span className="picr-rail-label">
+      {typeof selectedImage?.name === 'string' ? selectedImage.name : ''}
+    </span>
+  );
+
+  const railsBottom = (
+    <>
+      <span className="picr-rail-nav">
+        {!isMobile && hasMultipleFiles ? (
+          <LightboxNavButtons total={files.length} controllerRef={ref} />
+        ) : null}
+        {hasMultipleFiles ? <LightboxCounter total={files.length} /> : null}
+      </span>
+      <LightboxFileRating files={files} />
+    </>
+  );
 
   const rootClassName =
     [
-      chromeVisible ? undefined : 'picr-lightbox-idle',
-      thumbnails.mounted && !thumbnails.expanded
-        ? 'picr-thumbnails-collapsed'
-        : undefined,
+      focus ? 'picr-lightbox-focus' : undefined,
+      // Focus collapses the filmstrip as well as the rails — it means "the image
+      // gets the viewport". The preference itself is untouched, so leaving Focus
+      // restores whatever the viewer had open.
+      thumbnails.visible && !focus ? undefined : 'picr-thumbnails-collapsed',
     ]
       .filter(Boolean)
       .join(' ') || undefined;
@@ -130,18 +188,11 @@ export const SelectedFileView = ({
       portal={{ root: portal?.current }}
       controller={{ ref, closeOnPullDown: true }}
       plugins={plugins}
-      counter={counterProps}
-      slides={filesForLightbox(
-        files,
-        canDownload,
-        useOriginals,
-        thumbnailDimensions,
-      )}
-      open={!!selectedFileId}
+      slides={slides}
+      open={isOpen}
       index={selectedImageIndex}
       close={() => setSelectedFileId(undefined)}
       styles={lightBoxStyles}
-      download={{ download: lightboxDownload }}
       toolbar={{ buttons }}
       render={{
         slide: ({ slide, offset, rect }) => {
@@ -152,38 +203,38 @@ export const SelectedFileView = ({
             <LazyPicrVideoPlayer
               active={active}
               autoPlay={autoPlayVideo}
-              canDownload={canDownload}
               duration={slide.duration}
               onPlay={() => setAutoplayBlessed(true)}
               poster={slide.poster}
               src={slide.src}
+              // The lightbox toolbar already offers fullscreen.
+              hideFullscreenButton
+              // Only while hidden: in Controls state the toolbar already has a
+              // Focus toggle, so this would be a duplicate.
+              controlBarEnd={
+                focus ? (
+                  <span className="picr-video-focus-exit">
+                    <LightboxIconButton
+                      icon={<ExitFocusIcon size="16" />}
+                      label="Exit focus (show controls)"
+                      onClick={toggleFocus}
+                    />
+                  </span>
+                ) : undefined
+              }
               style={{
                 width: rect.width,
-                height: rect.height,
+                // YARL derives `rect` from .yarl__container, which still spans
+                // the full height — the rails shrink the carousel inside it.
+                // Images are laid out by CSS so they are unaffected, but the
+                // video player sizes itself from this rect, so subtract the
+                // rails ourselves. See lightboxRailsPlugin.
+                height: rect.height - railsReservedHeight,
               }}
               title={typeof slide.title === 'string' ? slide.title : ''}
             />
           );
         },
-        // Scrims keep the floating chrome legible over any image without
-        // reserving bars/letterboxing the photo (issue #47). They render inside
-        // the slide (above the image, below the title/rating), so the
-        // container-level toolbar/nav/counter naturally sit on top of them.
-        slideHeader: () => (
-          <div
-            className="picr-lightbox-scrim picr-lightbox-scrim-top"
-            aria-hidden="true"
-          />
-        ),
-        slideFooter: () => (
-          <>
-            <div
-              className="picr-lightbox-scrim picr-lightbox-scrim-bottom"
-              aria-hidden="true"
-            />
-            <LightboxFileRating files={files} />
-          </>
-        ),
         // Blur-up placeholder sits above the image while it loads, then fades
         // out to reveal it (see LightboxBlurUp). Keeping the default container
         // children preserves YARL's slide layout/zoom.
@@ -193,16 +244,60 @@ export const SelectedFileView = ({
             <LightboxBlurUp slide={slide} />
           </>
         ),
-        buttonZoom: hideMobileZoomButton ? () => null : undefined,
+        // Plugin buttons routed through LightboxIconButton so all chrome shares
+        // one look.
+        buttonClose: () => <LightboxCloseButton />,
+        // Icon stays the same when engaged; `active` gives it a filled
+        // background so it reads as a toggle that is on, rather than swapping to
+        // an "exit" icon that describes the action instead of the state.
+        buttonFullscreen: ({ fullscreen, disabled, enter, exit }) =>
+          disabled ? null : (
+            <LightboxIconButton
+              icon={<FullscreenIcon size="16" />}
+              label={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+              active={fullscreen}
+              onClick={fullscreen ? exit : enter}
+            />
+          ),
+        // Zoom controls are hidden on mobile, where pinch is the gesture.
+        buttonZoom: isMobile
+          ? () => null
+          : ({ zoom, maxZoom, minZoom, disabled, zoomIn, zoomOut }) => (
+              <>
+                <LightboxIconButton
+                  icon={<ZoomInIcon size="16" />}
+                  label="Zoom in"
+                  disabled={disabled || zoom >= maxZoom}
+                  onClick={zoomIn}
+                />
+                <LightboxIconButton
+                  icon={<ZoomOutIcon size="16" />}
+                  label="Zoom out"
+                  disabled={disabled || zoom <= minZoom}
+                  onClick={zoomOut}
+                />
+              </>
+            ),
       }}
       carousel={{
         ...carouselProps,
         imageProps,
       }}
-      thumbnails={thumbnails.mounted ? { position: 'bottom' } : undefined}
+      thumbnails={thumbnailsProps}
       zoom={{
         pinchZoomV4: true,
         maxZoomPixelRatio: 5,
+        // Double-click/double-tap zoom is disabled so a single tap can toggle
+        // Focus instantly. Keeping both would mean debouncing every tap by the
+        // double-click window, making the most-used gesture feel laggy. Zoom is
+        // still available via the toolbar buttons, scroll wheel and pinch.
+        doubleClickMaxStops: 0,
+      }}
+      rails={{
+        visible: !focus,
+        top: railsTop,
+        bottom: railsBottom,
+        onTap: handleImageTap,
       }}
       on={{
         entered: unInert,
@@ -225,45 +320,12 @@ export const SelectedFileView = ({
   );
 };
 
+// Constant so the filmstrip container is never re-created; open/close is a pure
+// CSS height transition driven by `picr-thumbnails-collapsed` on the root.
+const thumbnailsProps = { position: 'bottom' } as const;
+
 const lightBoxStyles: SlotStyles = {
   root: { fontFamily: theme.fontFamily, zIndex: 200 }, // mantine modals are 200
-};
-
-// On iOS, route media downloads through the native share sheet ("Save to Photos")
-// instead of the anchor `download` attribute (which opens "Save to Files").
-const lightboxDownload = ({
-  slide,
-  saveAs,
-}: {
-  slide: Slide;
-  saveAs: (source: string | Blob, name?: string) => void;
-}) => {
-  const { download } = slide;
-  const url =
-    typeof download === 'object'
-      ? download.url
-      : typeof download === 'string'
-        ? download
-        : slide.downloadUrl;
-  const filename =
-    typeof download === 'object' ? download.filename : slide.downloadFilename;
-  if (!url) return;
-  // Only route media (Image/Video) through the iOS share sheet; documents keep the
-  // regular anchor download ("Save to Files"), matching isShareableMediaFile elsewhere.
-  // A non-media File slide is an empty object (see filesForLightbox), so it has neither
-  // an image src nor video `sources`.
-  const isMedia = isImageSlide(slide) || isPicrVideoSlide(slide);
-  if (isMedia && canUseShareSheet()) {
-    void shareOrDownload(url, filename ?? '');
-  } else {
-    saveAs(url, filename);
-  }
-};
-
-// Counter sits bottom-right so it doesn't collide with the rating footer
-// (bottom-left). See the mockup in issue #47.
-const counterProps = {
-  container: { style: { top: 'unset', bottom: 0, left: 'unset', right: 0 } },
 };
 
 // The photo is shown "contained" (whole image visible, never cropped) while
@@ -272,9 +334,12 @@ const counterProps = {
 // below) sizes the <img> element to fill the entire slide — dropping YARL's
 // default carousel padding that otherwise wastes space, most noticeably on
 // mobile — and `objectFit: 'contain'` here then letterboxes the actual photo
-// inside that full-size element so nothing is cropped. The full-size element
-// also lets the no-download overlay cover the whole slide. Don't collapse this
-// to a single setting without re-checking mobile padding first.
+// inside that full-size element so nothing is cropped. Don't collapse this to a
+// single setting without re-checking mobile padding first.
+//
+// (No-download protection is unaffected either way: useNoDownloadMediaProps
+// puts draggable/onContextMenu/user-select on the <img> itself — there is no
+// covering overlay element.)
 const carouselImageProps: ImageProps = {
   style: { objectFit: 'contain' },
 };
@@ -290,11 +355,75 @@ const unInert = () => {
     });
 };
 
-const carouselProps: CarouselSettings = {
-  finite: false,
+// imageProps is supplied at the call site (it merges in the no-download props),
+// so it is excluded here rather than set twice.
+const carouselProps: Omit<CarouselSettings, 'imageProps'> = {
+  // Stop at the last photo rather than wrapping back to the first — in a client
+  // gallery, silently looping makes it unclear you have seen everything.
+  finite: true,
   preload: 2,
   imageFit: 'cover' as const, // see carouselImageProps: pairs with objectFit:'contain'
   padding: 0,
   spacing: 0,
-  imageProps: carouselImageProps,
+};
+
+// The carousel is `finite`, so the ends are dead stops rather than wrapping —
+// these have to expose that or a button silently does nothing on the first and
+// last slide. Reads YARL's own currentIndex (like LightboxCounter) rather than
+// the URL-derived index, which lags by a render during a transition and would
+// enable/disable a frame late.
+const LightboxNavButtons = ({
+  total,
+  controllerRef,
+}: {
+  total: number;
+  controllerRef: RefObject<ControllerRef | null>;
+}) => {
+  const { currentIndex } = useLightboxState();
+  return (
+    <>
+      <LightboxIconButton
+        icon={<PreviousIcon size="16" />}
+        label="Previous"
+        disabled={currentIndex <= 0}
+        onClick={() => controllerRef.current?.prev()}
+      />
+      <LightboxIconButton
+        icon={<NextIcon size="16" />}
+        label="Next"
+        disabled={currentIndex >= total - 1}
+        onClick={() => controllerRef.current?.next()}
+      />
+    </>
+  );
+};
+
+// Single source of truth for the slide counter. Reads YARL's own currentIndex
+// rather than the URL-derived index so it cannot lag behind during a transition.
+const LightboxCounter = ({ total }: { total: number }) => {
+  const { currentIndex } = useLightboxState();
+  return (
+    <span
+      className="picr-rail-label picr-rail-counter"
+      aria-live="polite"
+      aria-atomic="true"
+      aria-label={`Photo ${currentIndex + 1} of ${total}`}
+    >
+      {currentIndex + 1} / {total}
+    </span>
+  );
+};
+
+// YARL calls render.buttonClose() with no arguments, so the close action has to
+// come from controller context — which is available because the toolbar renders
+// inside the Controller.
+const LightboxCloseButton = () => {
+  const { close } = useController();
+  return (
+    <LightboxIconButton
+      icon={<CloseIcon size="16" />}
+      label="Close"
+      onClick={close}
+    />
+  );
 };

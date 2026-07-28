@@ -81,7 +81,7 @@ export const filesForLightbox = (
         ? { url: imageURL(file, 'raw'), filename: file.name ?? title }
         : false,
       alt: title,
-      title, //requires caption plugin
+      title, // shown in the rail, and used as the video player's title
       ...props,
     } as Slide;
   });

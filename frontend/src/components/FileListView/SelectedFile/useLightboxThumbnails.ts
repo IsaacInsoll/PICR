@@ -1,11 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 export interface LightboxThumbnails {
-  /** Whether the Thumbnails plugin is mounted (lazily, then kept mounted). */
-  mounted: boolean;
-  /** Drives the CSS open/close height transition on the filmstrip container. */
-  expanded: boolean;
-  /** User intent — whether the filmstrip should currently be showing. */
+  /** Whether the filmstrip is currently showing. */
   visible: boolean;
   /** Toggle the filmstrip open/closed. */
   toggle: () => void;
@@ -29,39 +25,26 @@ const persistVisible = (visible: boolean) => {
   }
 };
 
-// Filmstrip visibility state for the lightbox. The user's preference persists in
-// localStorage, so a gallery that was left with thumbnails open reopens that way
-// (and mounts the plugin immediately). Otherwise the Thumbnails plugin mounts
-// lazily on first reveal (so galleries that never open it don't load thumbnails)
-// then stays mounted so it can slide open/closed via a CSS height transition
-// instead of popping in/out. `expanded` flips a frame after mount so the very
-// first open animates too; closing collapses straight from the toggle since the
-// element is already painted.
+// Filmstrip visibility for the lightbox, persisted so a gallery left with
+// thumbnails open reopens that way.
+//
+// The Thumbnails plugin is always mounted (see lightboxPlugins). It used to be
+// mounted lazily on first reveal, but changing the `plugins` array makes YARL
+// rebuild its whole module tree, remounting every slide — which flashed the
+// image the first time the filmstrip was opened. Keeping the plugin constant
+// costs about five small thumbnail requests (the track only renders
+// `carousel.preload` items either side of the current slide, not the whole
+// gallery) and removes the remount entirely. Open/close is then a pure CSS
+// height transition on the container.
 export const useLightboxThumbnails = (): LightboxThumbnails => {
   const [visible, setVisible] = useState(readPersistedVisible);
-  const [mounted, setMounted] = useState(readPersistedVisible);
-  const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    if (!mounted || !visible) return;
-    const raf = requestAnimationFrame(() => setExpanded(true));
-    return () => cancelAnimationFrame(raf);
-  }, [visible, mounted]);
 
   const toggle = useCallback(() => {
-    if (visible) {
-      setVisible(false);
-      setExpanded(false);
-      persistVisible(false);
-    } else {
-      setMounted(true);
-      setVisible(true);
-      persistVisible(true);
-    }
-  }, [visible]);
+    setVisible((current) => {
+      persistVisible(!current);
+      return !current;
+    });
+  }, []);
 
-  return useMemo(
-    () => ({ mounted, expanded, visible, toggle }),
-    [mounted, expanded, visible, toggle],
-  );
+  return useMemo(() => ({ visible, toggle }), [visible, toggle]);
 };

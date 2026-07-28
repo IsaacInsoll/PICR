@@ -1,28 +1,73 @@
+/*
+ * Lightbox chrome lives in reserved rails, never over the photograph
+ * (issues #47, #79). A gradient scrim tints the top/bottom of a delivered image
+ * and clients read that tint as the photographer's edit; floating low-opacity
+ * controls are illegible over busy frames. Rails solve both: chrome sits on the
+ * backdrop, so it is always readable and the image is never touched.
+ *
+ * See lightboxRailsPlugin.tsx for the flex mechanism.
+ */
+
+/*
+ * Only two YARL variables still do anything here: --yarl__color_backdrop (read
+ * by .yarl__container and the filmstrip) and --yarl__color_button, which YARL no
+ * longer consumes but our own rules use as the chrome colour.
+ */
 [data-mantine-color-scheme='light'] .lightbox-portal {
   --yarl__color_backdrop: rgba(255, 255, 255, 1);
   --yarl__color_button: #111;
-  --yarl__color_button_active: #111;
-  --yarl__color_button_disabled: #8a8a8a;
-  --yarl__color_toolbar: rgba(255, 255, 255, 0.7);
-  --yarl__color_caption: #111;
-  --yarl__color_counter: #111;
-  --yarl__color_accent: var(--mantine-color-primary-6);
 }
 
 [data-mantine-color-scheme='light'] .lightbox-portal .yarl__container {
   background-color: rgba(255, 255, 255, 1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   color: #111;
 }
 
-[data-mantine-color-scheme='light'] .lightbox-portal .yarl__toolbar,
-[data-mantine-color-scheme='light'] .lightbox-portal .yarl__button,
-[data-mantine-color-scheme='light'] .lightbox-portal .yarl__navigation_prev,
-[data-mantine-color-scheme='light'] .lightbox-portal .yarl__navigation_next,
-[data-mantine-color-scheme='light'] .lightbox-portal .yarl__counter,
-[data-mantine-color-scheme='light'] .lightbox-portal .yarl__caption {
-  color: #111;
+/* Chrome buttons — every control in the lightbox is a LightboxIconButton. */
+.lightbox-portal .picr-lightbox-button {
+  --ai-color: var(--yarl__color_button, hsla(0, 0%, 100%, 0.8));
+  --ai-hover: light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.1));
+  --ai-bg: transparent;
+  color: var(--yarl__color_button, hsla(0, 0%, 100%, 0.8));
+}
+
+/*
+ * Mantine fills the background of a disabled ActionIcon, which over a photo
+ * reads as a highlighted button rather than an unavailable one (most obvious on
+ * Zoom Out at 1x). Dim the icon instead and keep the background out of it.
+ */
+.lightbox-portal .picr-lightbox-button:disabled,
+.lightbox-portal .picr-lightbox-button[data-disabled] {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--yarl__color_button, hsla(0, 0%, 100%, 0.8));
+  opacity: 0.3;
+}
+
+.lightbox-portal .picr-lightbox-divider {
+  border-color: light-dark(rgba(0, 0, 0, 0.18), rgba(255, 255, 255, 0.22));
+}
+
+/*
+ * Review buttons in their `subtle` (inactive) state take the same colour as the
+ * rest of the chrome. Active buttons keep their green/red/violet fill — this
+ * only targets [data-variant='subtle'].
+ *
+ * `color` has to be set as a plain property, not just via --ai-color: with no
+ * `color` prop Mantine falls back to the theme's primary colour and writes
+ * --ai-color *inline*, which beats any stylesheet rule. Mantine's own
+ * `color: var(--ai-color)` is a single-class selector though, so overriding the
+ * resolved property wins. Same approach as .picr-lightbox-button.
+ */
+.lightbox-portal
+  .picr-lightbox-footer
+  .mantine-ActionIcon-root[data-variant='subtle'] {
+  --ai-hover: light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.1));
+  color: var(--yarl__color_button, hsla(0, 0%, 100%, 0.8));
+}
+
+.lightbox-portal .picr-lightbox-footer .mantine-Divider-root {
+  border-color: light-dark(rgba(0, 0, 0, 0.18), rgba(255, 255, 255, 0.22));
 }
 
 [data-mantine-color-scheme='light']
@@ -38,111 +83,250 @@
   border-color: rgba(0, 0, 0, 0.08);
 }
 
-[data-mantine-color-scheme='light']
-  .lightbox-portal
-  .yarl__slide_captions_container.yarl__slide_title_container {
-  background: transparent;
-}
-
-[data-mantine-color-scheme='dark']
-  .lightbox-portal
-  .yarl__slide_captions_container.yarl__slide_title_container {
-  background: transparent;
-}
-
-[data-mantine-color-scheme='light'] .lightbox-portal .yarl__slide_title {
-  color: var(--mantine-color-primary-6);
-}
-
-[data-mantine-color-scheme='light'] .lightbox-portal .yarl__button:hover,
-[data-mantine-color-scheme='light']
-  .lightbox-portal
-  .yarl__button:focus-visible,
-[data-mantine-color-scheme='light']
-  .lightbox-portal
-  .yarl__toolbar_button:hover {
-  color: var(--mantine-color-primary-6);
-}
-
 [data-mantine-color-scheme='dark'] .lightbox-portal {
   --yarl__color_backdrop: rgba(0, 0, 0, 0.95);
-  --yarl__color_accent: var(--mantine-color-primary-6);
 }
 
 [data-mantine-color-scheme='dark'] .lightbox-portal .yarl__container {
   background-color: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-[data-mantine-color-scheme='dark'] .lightbox-portal .yarl__button:hover,
-[data-mantine-color-scheme='dark'] .lightbox-portal .yarl__button:focus-visible,
-[data-mantine-color-scheme='dark']
-  .lightbox-portal
-  .yarl__toolbar_button:hover {
-  color: var(--mantine-color-primary-6);
-}
-
-.lightbox-portal .yarl__slide_title {
-  font-family: var(--picr-heading-font);
-}
-
-/* Keep the filename above its own scrim (both live inside the slide). */
-.lightbox-portal .yarl__slide_captions_container.yarl__slide_title_container {
-  z-index: 2;
 }
 
 /*
- * Immersive chrome (issue #47): gradient scrims sit above the full-bleed image
- * but below the floating controls so buttons/title/counter stay legible over
- * any photo without reserving bars. The whole chrome set fades out when the
- * user is idle (`picr-lightbox-idle` on the lightbox root) and returns on any
- * activity — see useLightboxChromeAutoHide.
+ * Motion. Deliberately asymmetric: opening reveals UI and can be expressive,
+ * closing should feel immediate because it is the action viewers hit most.
+ * CSS transitions are declared on the state being entered, so the base rule
+ * times the open and .picr-rail-hidden times the close.
  */
-.lightbox-portal .picr-lightbox-scrim {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 120px;
-  z-index: 1;
+.lightbox-portal {
+  --picr-ease-emphasized: cubic-bezier(0.32, 0.72, 0, 1);
+  --picr-ease-exit: cubic-bezier(0.4, 0, 0.2, 1);
+  --picr-duration-open: 320ms;
+  --picr-duration-close: 180ms;
+  --picr-duration-content: 200ms;
+  --picr-rail-height: 48px;
+}
+
+/*
+ * .yarl__container carries `yarl__flex_center`, so it is a flex ROW container
+ * and this is a flex item — not a block. A flex item sizes to its content on the
+ * main axis and `min-width: auto` stops it shrinking back, and the content here
+ * is .yarl__carousel, which YARL deliberately makes several viewports wide. So
+ * without `flex: 1; min-width: 0` the rails inherit the carousel's width and get
+ * centred half a screen off to the left, throwing their contents past both edges
+ * of the viewport while still looking correctly sized and positioned vertically.
+ *
+ * Images hide this: `max-width: 100%` lets their min-content width collapse, so
+ * the item shrinks back on its own. A video slide is rendered with an explicit
+ * pixel width, which does not collapse — and `carousel.preload` mounts it
+ * alongside its neighbours, so a single video anywhere in the folder breaks the
+ * rails on every slide.
+ */
+.lightbox-portal .picr-rails {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+
+/*
+ * flex:1 + min-height:0 is what makes the image area give up space to the rails
+ * instead of overflowing the container.
+ *
+ * The flex-centring is NOT cosmetic and must not be removed. YARL renders a
+ * window of slides either side of the current one and makes .yarl__carousel
+ * deliberately wider than its parent, then relies on its parent being
+ * `yarl__flex_center` (display:flex; justify-content:center) to bring the
+ * middle — i.e. current — slide into view. There is no transform involved in
+ * the steady state: the centring *is* the positioning. .yarl__container carries
+ * that class, but the carousel's parent is now this wrapper, so it has to
+ * reproduce the same layout contract. Without it the carousel sits at left:0
+ * and you see the slide `preload` places *before* the current one.
+ */
+.lightbox-portal .picr-rails-wrapper {
+  align-content: center;
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  min-height: 0;
+  position: relative;
+}
+
+.lightbox-portal .picr-rail {
+  flex: 0 0 auto;
+  height: var(--picr-rail-height);
+  overflow: hidden;
+  transition: height var(--picr-duration-open) var(--picr-ease-emphasized);
+}
+
+.lightbox-portal .picr-rail-hidden {
+  height: 0;
+  transition: height var(--picr-duration-close) var(--picr-ease-exit);
+}
+
+.lightbox-portal .picr-rail-content {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  height: var(--picr-rail-height);
+  opacity: 1;
+  padding: 0 8px;
+  transform: none;
+  /* Content arrives slightly after the rail has opened, so it lands in space
+     that already exists rather than being squashed into a growing box. */
+  transition:
+    opacity var(--picr-duration-content) ease 70ms,
+    transform var(--picr-duration-content) var(--picr-ease-emphasized) 70ms;
+}
+
+.lightbox-portal .picr-rail-bottom .picr-rail-content {
+  justify-content: space-between;
+}
+
+/* On close everything leaves together with no stagger — a content-out-first
+   sequence would add its duration to the perceived latency of the toggle. */
+.lightbox-portal .picr-rail-hidden .picr-rail-content {
+  opacity: 0;
+  transition:
+    opacity var(--picr-duration-close) ease,
+    transform var(--picr-duration-close) var(--picr-ease-exit);
+}
+
+.lightbox-portal .picr-rail-hidden.picr-rail-top .picr-rail-content {
+  transform: translateY(-8px);
+}
+
+.lightbox-portal .picr-rail-hidden.picr-rail-bottom .picr-rail-content {
+  transform: translateY(8px);
+}
+
+.lightbox-portal .picr-rail-label {
+  color: var(--yarl__color_button, hsla(0, 0%, 100%, 0.8));
+  font-family: var(--picr-heading-font);
+  font-size: 1.0625rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The counter is a secondary label sitting beside the nav arrows. */
+.lightbox-portal .picr-rail-counter {
+  font-size: 0.9375rem;
+  opacity: 0.75;
+  padding-inline: 4px;
+}
+
+/* Navigation + counter group, bottom-left. Pairs with the review controls at
+   bottom-right and the toolbar stack at top-right. */
+.lightbox-portal .picr-rail-nav {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
+}
+
+/* The toolbar is a plain flex row; give the Mantine buttons the same rhythm as
+   the rail groups. */
+.lightbox-portal .yarl__toolbar {
+  gap: 2px;
+}
+
+/*
+ * YARL positions the toolbar absolutely at top-right. The top rail reserves
+ * exactly that band of height, so the buttons land inside the rail rather than
+ * over the photo — no reparenting needed.
+ */
+.lightbox-portal .yarl__toolbar {
+  align-items: center;
+  height: var(--picr-rail-height);
+  padding: 0 8px;
+  transition:
+    opacity var(--picr-duration-content) ease 70ms,
+    transform var(--picr-duration-content) var(--picr-ease-emphasized) 70ms;
+}
+
+/*
+ * YARL's own prev/next sit at top:50% — dead centre over the photograph, which
+ * would break the invariant. We render our own in the top rail instead
+ * (desktop); mobile uses swipe.
+ */
+.lightbox-portal .yarl__navigation_prev,
+.lightbox-portal .yarl__navigation_next {
+  display: none;
+}
+
+/* Focus state: rails collapse, so the toolbar must leave with them or it would
+   be left floating over the image. */
+.picr-lightbox-focus .yarl__toolbar {
+  opacity: 0;
   pointer-events: none;
-  transition: opacity 0.35s ease;
+  transform: translateY(-8px);
+  transition:
+    opacity var(--picr-duration-close) ease,
+    transform var(--picr-duration-close) var(--picr-ease-exit);
 }
 
-.lightbox-portal .picr-lightbox-scrim-top {
-  top: 0;
+/*
+ * ...but `opacity: 0` and `pointer-events: none` do not remove anything from the
+ * tab order, so without this a keyboard user in Focus would tab through
+ * invisible buttons — Download and Close among them — with the focus ring
+ * landing on nothing.
+ *
+ * Keyboard focus landing anywhere in the chrome reveals *all* of it, so Tab
+ * brings the whole interface back rather than one region at a time.
+ *
+ * Two details matter here:
+ *  - `:focus-visible`, not `:focus-within`. Clicking the Focus button leaves DOM
+ *    focus on it, so :focus-within would immediately undo the hide that click
+ *    just performed. :focus-visible only matches keyboard-initiated focus.
+ *  - the :has() is scoped to the toolbar and rails rather than the whole root,
+ *    because .yarl__container carries tabIndex="-1" and YARL focuses it on open.
+ */
+.picr-lightbox-focus:has(
+    .yarl__toolbar :focus-visible,
+    .picr-rail :focus-visible
+  )
+  .yarl__toolbar {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
 }
 
-.lightbox-portal .picr-lightbox-scrim-bottom {
-  bottom: 0;
+.picr-lightbox-focus:has(
+    .yarl__toolbar :focus-visible,
+    .picr-rail :focus-visible
+  )
+  .picr-rail {
+  height: var(--picr-rail-height);
 }
 
-[data-mantine-color-scheme='dark'] .lightbox-portal .picr-lightbox-scrim-top {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+.picr-lightbox-focus:has(
+    .yarl__toolbar :focus-visible,
+    .picr-rail :focus-visible
+  )
+  .picr-rail-content {
+  opacity: 1;
+  transform: none;
 }
 
-[data-mantine-color-scheme='dark']
-  .lightbox-portal
-  .picr-lightbox-scrim-bottom {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+/*
+ * The video layout is always dark (colorScheme="dark"), so chrome placed inside
+ * it has to be light regardless of the gallery's colour scheme — otherwise the
+ * exit-Focus button is a near-black icon on near-black controls in light mode.
+ * Scoped to our own wrapper rather than a Vidstack class name so it does not
+ * depend on their internals.
+ */
+.lightbox-portal .picr-video-focus-exit .picr-lightbox-button {
+  --ai-color: hsla(0, 0%, 100%, 0.9);
+  color: hsla(0, 0%, 100%, 0.9);
 }
 
-[data-mantine-color-scheme='light'] .lightbox-portal .picr-lightbox-scrim-top {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.75),
-    rgba(255, 255, 255, 0)
-  );
-}
-
-[data-mantine-color-scheme='light']
-  .lightbox-portal
-  .picr-lightbox-scrim-bottom {
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 0.75),
-    rgba(255, 255, 255, 0)
-  );
+/* The rating bar is laid out by the rail now, not absolutely positioned. */
+.lightbox-portal .picr-lightbox-footer {
+  background: transparent;
+  box-shadow: none;
 }
 
 /*
@@ -163,129 +347,39 @@
   );
   overflow: hidden;
   transition:
-    height 0.3s ease,
-    padding-top 0.3s ease,
-    padding-bottom 0.3s ease,
-    opacity 0.3s ease;
+    height var(--picr-duration-open) var(--picr-ease-emphasized),
+    padding-top var(--picr-duration-open) var(--picr-ease-emphasized),
+    padding-bottom var(--picr-duration-open) var(--picr-ease-emphasized),
+    opacity var(--picr-duration-open) var(--picr-ease-emphasized);
 }
 
 .picr-thumbnails-collapsed .yarl__thumbnails_container {
   height: 0;
-  padding-top: 0;
+  opacity: 0;
   padding-bottom: 0;
-  opacity: 0;
-}
-
-@media (prefers-reduced-motion) {
-  .lightbox-portal .yarl__thumbnails_container {
-    transition: none;
-  }
-}
-
-/*
- * Chrome reveal animation (issue #47). Two layers:
- *  1. A one-shot entrance that plays when each chrome element first mounts
- *     (i.e. when the lightbox opens) — top chrome drops in, bottom chrome
- *     rises in, scrims/nav fade in, with a small delay so it follows the
- *     backdrop rather than racing it.
- *  2. Idle toggling: as the user goes idle/active the same top/bottom chrome
- *     slides a few px away and back while fading, so re-revealing the chrome
- *     feels like a gentle entrance rather than a hard opacity flip.
- */
-@keyframes picr-chrome-in-top {
-  from {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-}
-
-@keyframes picr-chrome-in-bottom {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-}
-
-@keyframes picr-chrome-fade-in {
-  from {
-    opacity: 0;
-  }
-}
-
-.lightbox-portal .yarl__toolbar {
-  animation: picr-chrome-in-top 0.45s ease 0.08s both;
-}
-
-.lightbox-portal .picr-lightbox-footer,
-.lightbox-portal .yarl__counter {
-  animation: picr-chrome-in-bottom 0.45s ease 0.08s both;
-}
-
-.lightbox-portal .yarl__navigation_prev,
-.lightbox-portal .yarl__navigation_next,
-.lightbox-portal .picr-lightbox-scrim {
-  animation: picr-chrome-fade-in 0.5s ease 0.12s both;
-}
-
-/* Idle toggling: top/bottom chrome also gets a slide, the rest just fades. */
-.lightbox-portal .yarl__toolbar,
-.lightbox-portal .picr-lightbox-footer,
-.lightbox-portal .yarl__counter {
+  padding-top: 0;
   transition:
-    opacity 0.35s ease,
-    transform 0.35s ease;
-}
-
-.lightbox-portal .yarl__navigation_prev,
-.lightbox-portal .yarl__navigation_next,
-.lightbox-portal .yarl__slide_captions_container {
-  transition: opacity 0.35s ease;
-}
-
-.picr-lightbox-idle .yarl__toolbar,
-.picr-lightbox-idle .yarl__navigation_prev,
-.picr-lightbox-idle .yarl__navigation_next,
-.picr-lightbox-idle .yarl__counter,
-.picr-lightbox-idle .yarl__slide_captions_container,
-.picr-lightbox-idle .picr-lightbox-scrim,
-.picr-lightbox-idle .picr-lightbox-footer {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.picr-lightbox-idle .yarl__toolbar {
-  transform: translateY(-12px);
-}
-
-.picr-lightbox-idle .picr-lightbox-footer,
-.picr-lightbox-idle .yarl__counter {
-  transform: translateY(12px);
+    height var(--picr-duration-close) var(--picr-ease-exit),
+    padding-top var(--picr-duration-close) var(--picr-ease-exit),
+    padding-bottom var(--picr-duration-close) var(--picr-ease-exit),
+    opacity var(--picr-duration-close) var(--picr-ease-exit);
 }
 
 @media (prefers-reduced-motion) {
+  .lightbox-portal .picr-rail,
+  .lightbox-portal .picr-rail-hidden,
+  .lightbox-portal .picr-rail-content,
+  .lightbox-portal .picr-rail-hidden .picr-rail-content,
   .lightbox-portal .yarl__toolbar,
-  .lightbox-portal .picr-lightbox-footer,
-  .lightbox-portal .yarl__counter,
-  .lightbox-portal .yarl__navigation_prev,
-  .lightbox-portal .yarl__navigation_next,
-  .lightbox-portal .picr-lightbox-scrim {
-    animation: none;
-  }
-
-  .lightbox-portal .picr-lightbox-scrim,
-  .lightbox-portal .yarl__toolbar,
-  .lightbox-portal .yarl__navigation_prev,
-  .lightbox-portal .yarl__navigation_next,
-  .lightbox-portal .yarl__counter,
-  .lightbox-portal .yarl__slide_captions_container,
-  .lightbox-portal .picr-lightbox-footer {
+  .picr-lightbox-focus .yarl__toolbar,
+  .lightbox-portal .yarl__thumbnails_container,
+  .picr-thumbnails-collapsed .yarl__thumbnails_container {
     transition: none;
   }
 
-  /* No slide offset when reduced motion is requested. */
-  .picr-lightbox-idle .yarl__toolbar,
-  .picr-lightbox-idle .picr-lightbox-footer,
-  .picr-lightbox-idle .yarl__counter {
+  .lightbox-portal .picr-rail-hidden.picr-rail-top .picr-rail-content,
+  .lightbox-portal .picr-rail-hidden.picr-rail-bottom .picr-rail-content,
+  .picr-lightbox-focus .yarl__toolbar {
     transform: none;
   }
 }

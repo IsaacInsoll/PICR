@@ -778,6 +778,11 @@ The data flow is:
 3. On cancel, `BrandingDrawer` resets the atom to the original value from `originalTheme.current`
 4. On save, the mutation persists the change; GraphQL re-fetch updates the atom via step 1
 
+When adding a visual branding field, also add it to the hand-built `brandingKey`
+in `ViewFolder.tsx`. That key controls when `applyBrandingDefaults` is recomputed;
+omitting a field can leave stale branding when a poll or navigation changes only
+that value.
+
 **Rule:** if a component renders a branding field visually, it reads from `themeModeAtom`. If it uses branding for access control or configuration logic (e.g. `availableViews`, `defaultView`, management UI), it may read `folder.branding` directly.
 
 `thumbnailSpacing` affects more than the gap between gallery tiles on web. The gallery view also derives its outer page breathing room from that same branding field, using a dampened responsive mapping so existing saved spacing values do not explode at the page edge.
@@ -805,6 +810,58 @@ These booleans are computed in `shared/files/sortFiles.ts` (`withHeroImageFlag`)
 ### JSON Scalar (socialLinks)
 
 `socialLinks` is stored as a `JSON` column and the GraphQL scalar type is `unknown` in generated types. Cast it explicitly when reading: `(branding.socialLinks as SocialLink[] | null) ?? []`.
+
+## Lightbox (yet-another-react-lightbox)
+
+The lightbox lives in `src/components/FileListView/SelectedFile/`. Chrome sits in
+reserved top/bottom rails (`lightboxRailsPlugin.tsx`) so nothing is ever drawn
+over the photograph — see issues #47 and #79 for why.
+
+### `.yarl__container` has an implicit layout contract — read this before adding elements
+
+`.yarl__container` carries YARL's `yarl__flex_center` class
+(`display: flex; align-items: center; justify-content: center`). Two consequences
+that are invisible from the JSX and have each caused a bug already:
+
+1. **The centring _is_ the slide positioning.** YARL renders a window of slides
+   either side of the current one, makes `.yarl__carousel` deliberately several
+   viewports wide, and relies on the parent centring it to bring the middle —
+   i.e. current — slide into view. There is no transform in the steady state. Any
+   element inserted between the container and the carousel must reproduce
+   `display: flex; align-items: center; justify-content: center`, or the carousel
+   sits at `left: 0` and you see the slide `carousel.preload` places _before_ the
+   current one, while the counter still reads correctly.
+
+2. **Children of the container are flex items, not blocks.** They size to their
+   content on the main axis and `min-width: auto` stops them shrinking back — and
+   their content is that oversized carousel. Any such child needs
+   `flex: 1; min-width: 0` or it inherits the carousel's width and gets centred
+   off-screen, with its own contents thrown past both edges of the viewport while
+   still measuring a correct height and vertical position.
+
+Case 2 is masked by images (`max-width: 100%` lets their min-content width
+collapse) and exposed by video, which is rendered with an explicit pixel width.
+Because `carousel.preload` mounts neighbouring slides, **one video anywhere in
+the folder reproduces it on every slide**. If lightbox chrome is missing or
+mispositioned, measure it first — `getBoundingClientRect()` on the rail will show
+a negative `x` and a width several times the viewport.
+
+### Other YARL gotchas
+
+- `on.click` never fires for image slides. The Zoom plugin augments
+  `render.slide`, and YARL only wires `on.click` in the fallback branch that runs
+  when `render.slide` returns nothing. Tap detection is ours — see
+  `hooks/useTapGesture.ts`.
+- Plugin buttons are replaced through each plugin's `render.button*` slot, which
+  is supported API. Changing the `plugins` array identity rebuilds YARL's whole
+  module tree and remounts every slide, so it must stay constant.
+- `slideRect` is derived from the Controller's element, which still spans the
+  full height even though the rails shrink the carousel inside it. Images are laid
+  out by CSS and unaffected; anything sizing itself from `rect` must subtract
+  `RAIL_HEIGHT` (see `SelectedFileView`).
+- The video player's buttons are customisable through Vidstack's `slots` prop on
+  `DefaultVideoLayout` (`PicrVideoPlayer.tsx`) — used to drop the download button
+  on proof links and to add the exit-Focus control.
 
 ## Troubleshooting
 

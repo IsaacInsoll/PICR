@@ -10,13 +10,25 @@ import type { Slide } from 'yet-another-react-lightbox';
 // pointer-events disabled so it never blocks zoom/pan, and it fully fades to
 // opacity 0 on load (it is a loading placeholder, not a persistent blurred
 // background fill — that is the separate, deferred "gallery style" option).
+// A freshly-created Image reports complete === true synchronously when the
+// resource is already in the browser cache.
+const isCached = (src: string) => {
+  const img = new window.Image();
+  img.src = src;
+  return img.complete;
+};
+
 export const LightboxBlurUp = ({ slide }: { slide: Slide }) => {
   if (!isImageSlide(slide) || !slide.blurHash || !slide.src) return null;
   return <BlurUp hash={slide.blurHash} src={slide.src} />;
 };
 
 const BlurUp = ({ hash, src }: { hash: string; src: string }) => {
-  const [loaded, setLoaded] = useState(false);
+  // Start already-loaded when the browser has the image cached. Without this,
+  // any remount replays the blur-up over a picture that is ready to paint — most
+  // visibly the first time the filmstrip is opened, which changes the plugin
+  // list and so rebuilds YARL's whole module tree.
+  const [loaded, setLoaded] = useState(() => isCached(src));
 
   useEffect(() => {
     let cancelled = false;

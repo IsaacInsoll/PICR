@@ -2,6 +2,7 @@ import { useOpenFileInfoModal } from '../../../atoms/modalAtom';
 import { InfoIcon } from '../../../PicrIcons';
 import type { PicrFile } from '@shared/types/picr';
 import { useLightboxState } from 'yet-another-react-lightbox';
+import { LightboxIconButton } from './LightboxIconButton';
 
 export const LightboxInfoButton = ({ files }: { files: PicrFile[] }) => {
   const openFileInfo = useOpenFileInfoModal();
@@ -11,14 +12,10 @@ export const LightboxInfoButton = ({ files }: { files: PicrFile[] }) => {
   if (!file) return null;
 
   return (
-    <button
-      key="my-button"
-      type="button"
-      className="yarl__button"
-      title="View file info"
+    <LightboxIconButton
+      icon={<InfoIcon size="16" />}
+      label="File info"
       onClick={() => openFileInfo(file.id)}
-    >
-      <InfoIcon size="24" />
-    </button>
+    />
   );
 };
