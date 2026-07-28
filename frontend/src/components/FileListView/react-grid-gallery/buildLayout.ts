@@ -105,3 +105,44 @@ export const buildLayoutFlat = <T extends Image = Image>(
   const rows = buildLayout(images, options);
   return ([] as ImageExtendedRow<T>).concat(...rows);
 };
+
+export type MasonryItem<T extends Image = Image> = ImageExtended<T> & {
+  originalIndex: number;
+};
+
+// Masonry: uniform column width (columnWidth ≈ the thumbnail-size setting),
+// every image at natural aspect height, packed shortest-column-first so
+// reading order stays approximately left-to-right. No pixels are ever
+// cropped and no vertical gaps occur by construction.
+export const buildMasonryColumns = <T extends Image = Image>(
+  images: T[],
+  {
+    containerWidth,
+    columnWidth,
+    margin,
+  }: { containerWidth: number; columnWidth: number; margin: number },
+): MasonryItem<T>[][] => {
+  if (!containerWidth) return [];
+  const imgMargin = 2 * margin;
+  const columns = Math.max(
+    1,
+    Math.floor(containerWidth / (columnWidth + imgMargin)),
+  );
+  const colWidth = Math.floor((containerWidth - columns * imgMargin) / columns);
+  const heights = new Array(columns).fill(0);
+  const cols: MasonryItem<T>[][] = Array.from({ length: columns }, () => []);
+  images.forEach((item, originalIndex) => {
+    const c = heights.indexOf(Math.min(...heights));
+    const scaledHeight = Math.round(colWidth * (item.height / item.width));
+    cols[c].push({
+      ...item,
+      originalIndex,
+      scaledWidth: colWidth,
+      scaledHeight,
+      viewportWidth: colWidth,
+      marginLeft: 0,
+    });
+    heights[c] += scaledHeight + imgMargin;
+  });
+  return cols;
+};

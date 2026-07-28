@@ -138,6 +138,7 @@ export const GridGallery = ({
   return (
     <Box px={outerPadding} style={{ marginTop: -margin }}>
       <Gallery
+        layout="masonry"
         rowHeight={thumbnailSize}
         margin={margin}
         images={galleryItems}

@@ -98,6 +98,7 @@ export interface GalleryProps<T extends Image = Image> {
   id?: string;
   enableImageSelection?: boolean;
   onSelect?: EventHandler<T>;
+  layout?: 'justified' | 'masonry';
   rowHeight?: number;
   maxRows?: number;
   margin?: number;
