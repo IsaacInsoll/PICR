@@ -612,6 +612,13 @@ flowchart TB
 // HTTP POST with headers: Title, Tags, Click, Email
 ```
 
+- Node's Fetch implementation only accepts ByteString HTTP header values. Encode
+  non-ASCII ntfy header values as RFC 2047 UTF-8 encoded words; keep UTF-8
+  notification messages in the request body.
+- Ntfy delivery is best-effort. Log request and non-success response failures
+  without including the topic URL, and do not fail the originating gallery
+  action.
+
 ### Expo Push
 
 ```typescript
