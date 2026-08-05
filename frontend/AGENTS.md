@@ -59,6 +59,9 @@ Mobile lightbox chrome deliberately keeps the top bar sparse: slideshow is not
 loaded on mobile, and the Zoom plugin toolbar button is hidden with
 `render.buttonZoom` while the Zoom plugin stays enabled so pinch-to-zoom keeps
 working.
+YARL's custom `render.buttonClose` result is substituted directly into the
+toolbar's mapped children. Keep an explicit `key="close"` on that replacement or
+React emits a missing-key console error whenever the lightbox opens.
 Lightbox letter shortcuts must normalize `KeyboardEvent.key` to lowercase before
 matching. Chrome on macOS reports Caps Lock letter shortcuts as uppercase keys,
 so checking only lowercase `p`/`f`/`x`/`c` skips the shortcut before the

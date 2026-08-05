@@ -246,7 +246,10 @@ export const SelectedFileView = ({
         ),
         // Plugin buttons routed through LightboxIconButton so all chrome shares
         // one look.
-        buttonClose: () => <LightboxCloseButton />,
+        // YARL substitutes this result directly into Toolbar's mapped buttons
+        // array, so the custom replacement must carry the key that its default
+        // close button would otherwise provide.
+        buttonClose: () => <LightboxCloseButton key="close" />,
         // Icon stays the same when engaged; `active` gives it a filled
         // background so it reads as a toggle that is on, rather than swapping to
         // an "exit" icon that describes the action instead of the state.
