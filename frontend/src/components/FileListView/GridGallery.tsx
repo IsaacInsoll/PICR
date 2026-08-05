@@ -1,7 +1,13 @@
 //https://benhowell.github.io/react-grid-gallery/examples/custom-overlay
 // TODO: Could use Skeleton as placeholders before content loads?
 import { imageURL } from '../../helpers/imageURL';
-import { Gallery } from './react-grid-gallery';
+import {
+  Gallery,
+  type ImageExtended,
+  type Image as GridImage,
+  type ThumbnailImageComponentImageProps,
+  type ThumbnailImageProps,
+} from '@picr/react-grid-gallery';
 import { useAtomValue } from 'jotai';
 import { themeModeAtom } from '../../atoms/themeModeAtom';
 import type { MouseEvent } from 'react';
@@ -24,12 +30,6 @@ import type {
   ViewFolderFileWithHero,
 } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
-import type {
-  ImageExtended,
-  Image as GridImage,
-  ThumbnailImageComponentImageProps,
-  ThumbnailImageProps,
-} from './react-grid-gallery/types';
 
 type GalleryItem = GridImage & {
   file?: ViewFolderFileWithHero;

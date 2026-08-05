@@ -87,8 +87,8 @@ tests/
 - Playwright and Chromium are pinned through the exact root
   `@playwright/test` version and lockfile. Keep the visual tests on Chromium,
   light colour scheme, device scale factor 1, and the configured locale/timezone.
-- Generate inherited baselines only while the vendored gallery is active. When
-  replacing the gallery implementation, run against those same files; do not
+- These inherited baselines were generated while the vendored gallery was
+  active. Keep running package replacements against those same files; do not
   update snapshots to make a migration pass without review and an explanation
   of every visual difference.
 - Visual baselines are Linux PNGs under

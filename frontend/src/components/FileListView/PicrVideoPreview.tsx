@@ -3,7 +3,7 @@ import type { PicrFile } from '@shared/types/picr';
 import { Box, Image, LoadingOverlay } from '@mantine/core';
 import { VideoBadge } from './VideoBadge';
 import { VideoProgressIndicator } from './VideoProgressIndicator';
-import type { ThumbnailImageComponentImageProps } from './react-grid-gallery';
+import type { ThumbnailImageComponentImageProps } from '@picr/react-grid-gallery';
 import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 import { videoScrubURL } from '../../helpers/imageURL';

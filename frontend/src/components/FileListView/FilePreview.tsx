@@ -1,5 +1,5 @@
 import type { PicrFile } from '@shared/types/picr';
-import type { ThumbnailImageComponentImageProps } from './react-grid-gallery';
+import type { ThumbnailImageComponentImageProps } from '@picr/react-grid-gallery';
 import { PicrVideoPreview } from './PicrVideoPreview';
 import { PicrImage } from '../PicrImage';
 
@@ -11,10 +11,9 @@ export const FilePreview = ({
   imageProps?: ThumbnailImageComponentImageProps;
 }) => {
   if (file.type === 'Video') {
-    return (
-      <PicrVideoPreview file={file} {...imageProps} key={imageProps?.key} />
-    );
+    return <PicrVideoPreview file={file} {...imageProps} />;
   }
-  const { key, ...p } = imageProps ?? {};
-  return <PicrImage file={file} size="md" clickable={true} key={key} {...p} />;
+  return (
+    <PicrImage file={file} size="md" clickable={true} {...(imageProps ?? {})} />
+  );
 };

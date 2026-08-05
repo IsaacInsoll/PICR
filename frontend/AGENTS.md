@@ -153,11 +153,12 @@ own click:
 - **Feed** (`ImageFeed`) and buttons/chips (`ViewFolderButton`,
   `BrandingFolderChips`): straight `useFolderLink` — spread it, or pass `to`. A
   Mantine component becomes a link via `<Button {...useFolderLink(folder)}>`.
-- **Grid** (`GridGallery` + the vendored `react-grid-gallery`): the tile is a
-  real `<a href>`. `react-grid-gallery` is a local fork (`./react-grid-gallery/`,
-  not a dependency), so the tile viewport in `Image.tsx` renders an anchor when
-  the gallery item carries an `href`. File tiles carry none and stay a `<div>`
-  (their click opens the lightbox).
+- **Grid** (`GridGallery` + `@picr/react-grid-gallery`): the tile is a real
+  `<a href>`. The package contains PICR's linked-tile support, so its tile
+  viewport renders an anchor when the gallery item carries an `href`. File tiles
+  carry none and stay a `<div>` (their click opens the lightbox). Import the
+  gallery and its types from the package root only; do not deep-import its
+  source or recreate the former vendored-source alias.
 - **Tables** (`FileListView`, `FileDataListView`): the row keeps its `onClick`
   for convenience, and the folder **name** cell is a real link. To stop the two
   fighting, the row handler bails on `event.defaultPrevented` — `NavLink` calls
