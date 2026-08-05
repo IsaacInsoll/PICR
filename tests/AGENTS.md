@@ -60,17 +60,79 @@ tests/
     ├── playwright.config.ts
     ├── globalSetup.ts
     ├── globalTeardown.ts
-    └── *.smoke.spec.ts
+    ├── *.smoke.spec.ts
+    ├── *.visual.spec.ts
+    └── *.visual.spec.ts-snapshots/
 ```
 
 ## Commands
 
 - `npm run test:api`: run backend API Vitest suite (Docker)
 - `npm run test:unit`: run Docker-free backend unit tests (`*.unit.test.ts`), fast local iteration
-- `npm run test:e2e:install`: install Playwright browser binaries
-- `npm run test:e2e`: run frontend Playwright smoke suite
-- `npm run test:e2e:fresh`: rebuild local `dist` artifacts, then run frontend Playwright smoke suite
+- `npm run test:e2e:install`: install Playwright browser binaries without trying
+  to modify system packages. This is the portable local command, including on
+  Arch/Manjaro where Playwright's Ubuntu `apt-get` fallback cannot work.
+- `npm run test:e2e:install:ci`: install Playwright browsers and Ubuntu system
+  dependencies. This is for the Ubuntu GitHub Actions runner, not local use.
+- `npm run test:e2e`: run the frontend Playwright browser suite
+- `npm run test:e2e:fresh`: rebuild local `dist` artifacts, then run the frontend Playwright browser suite
 - `npm run test`: run both suites in order (`api` then `e2e`)
+
+## Gallery Visual Baselines
+
+- `tests/e2e/gallery.visual.spec.ts` exercises the real authenticated PICR
+  gallery against the committed media fixtures. It controls the
+  `#ReactGridGallery` width independently of the browser viewport so row-layout
+  regressions are reproducible.
+- Playwright and Chromium are pinned through the exact root
+  `@playwright/test` version and lockfile. Keep the visual tests on Chromium,
+  light colour scheme, device scale factor 1, and the configured locale/timezone.
+- Generate inherited baselines only while the vendored gallery is active. When
+  replacing the gallery implementation, run against those same files; do not
+  update snapshots to make a migration pass without review and an explanation
+  of every visual difference.
+- Visual baselines are Linux PNGs under
+  `tests/e2e/gallery.visual.spec.ts-snapshots/` and are committed. They are
+  generated on a developer machine but also compared on the Ubuntu CI runner,
+  which shares the `-linux` platform suffix. The folder-tile baselines are the
+  only ones containing rendered text and a `backdrop-filter` blur, so they are
+  the most likely to drift between distributions.
+
+### Covered Tile Shapes
+
+Each tile shape PICR builds in `GridGallery.tsx` needs its own page, because
+one folder only produces one shape:
+
+- Image tiles (`/admin/f/3`, `Dog Photos`): justified rows, an overflowing row
+  that rescales, an underfilled final row, and the `<a href>` tile branch.
+- Folder tiles (`/admin/f/1`, root): `thumbnailSize * 2` by `thumbnailSize`
+  tiles with an empty `src` and a `PicrFolder` thumbnail drawn as a CSS
+  background, plus folder-to-folder navigation.
+- Video tiles (`/admin/f/2`, `Birthday Video`): the no-`href` branch, where the
+  tile viewport stays a `<div>`.
+- Custom branding: `thumbnailSize`/`thumbnailSpacing`/`thumbnailBorderRadius`
+  away from their defaults, since `thumbnailSpacing` feeds both row fitting in
+  `buildLayout` and the tile's own CSS margin.
+
+Deliberately not covered, because `GridGallery.tsx` never enables them:
+image selection (`enableImageSelection={false}`), `isSelected`, `tags`,
+`customOverlay`, `maxRows`, `thumbnailStyle`, `tagStyle`, and `onSelect`. The
+hover `tile-overlay` also only renders when selection is enabled, so tile
+appearance does not depend on pointer position. Generic (non image/video) file
+tiles are not covered either — no fixture produces one.
+
+### Gotchas When Adding Scenarios
+
+- A justified row ends exactly `margin` short of the container's right edge:
+  `buildLayout` fills `containerWidth - row.length * 2 * margin`, then each
+  tile adds a CSS `margin` that a bounding box excludes. Assertions that ignore
+  this only pass because the default spacing of 4 is inside their tolerance.
+- `PicrVideoPreview` advances its scrub frame on a 1s `setInterval`, so any
+  video screenshot needs `page.clock.install()` before navigating.
+- Branding scenarios must create a branding, assign it with
+  `setFolderBranding`, and unwind both in a `finally`. Specs share one database
+  within a run (`workers: 1`, no per-spec reset), so a leaked branding changes
+  later specs.
 
 ## Local Build Requirement For E2E
 

@@ -37,3 +37,37 @@ export const deleteUserMutationText = /* GraphQL */ `
     deleteUser(id: $id)
   }
 `;
+
+export const editBrandingMutationText = /* GraphQL */ `
+  mutation EditBranding(
+    $id: ID
+    $name: String
+    $thumbnailSize: Int
+    $thumbnailSpacing: Int
+    $thumbnailBorderRadius: Int
+  ) {
+    editBranding(
+      id: $id
+      name: $name
+      thumbnailSize: $thumbnailSize
+      thumbnailSpacing: $thumbnailSpacing
+      thumbnailBorderRadius: $thumbnailBorderRadius
+    ) {
+      id
+    }
+  }
+`;
+
+export const setFolderBrandingMutationText = /* GraphQL */ `
+  mutation SetFolderBranding($folderId: ID!, $brandingId: ID) {
+    setFolderBranding(folderId: $folderId, brandingId: $brandingId) {
+      id
+    }
+  }
+`;
+
+export const deleteBrandingMutationText = /* GraphQL */ `
+  mutation DeleteBranding($id: ID!) {
+    deleteBranding(id: $id)
+  }
+`;

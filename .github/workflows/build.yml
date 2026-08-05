@@ -99,7 +99,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Installing Playwright Chromium..."
-          if npm run test:e2e:install > /tmp/playwright-install.log 2>&1; then
+          if npm run test:e2e:install:ci > /tmp/playwright-install.log 2>&1; then
             echo "Playwright Chromium install succeeded."
           else
             echo "Playwright Chromium install failed. Full output:"
