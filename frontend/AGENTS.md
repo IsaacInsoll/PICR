@@ -2,6 +2,13 @@
 
 React 19 SPA for the PICR admin interface and public gallery views.
 
+LocatorJS is development-only. Its runtime entry (`src/locatorDev.ts`) is injected
+by the serve-only `locatorJsDevRuntime` Vite plugin, and its Babel transform in
+`vite.config.ts` is likewise restricted to serve mode. Do not import the runtime
+from the production `src/index.tsx` entry: in this transform pipeline an
+`import.meta.env.DEV` guard was compiled as enabled and shipped the LocatorJS UI
+in the built application.
+
 ## Tech Stack
 
 | Technology   | Version | Purpose                 |

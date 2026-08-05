@@ -18,6 +18,21 @@ const ReactCompilerConfig = {
   /* ... */
 };
 
+const locatorJsDevRuntime = (): Plugin => ({
+  name: 'picr-locatorjs-dev-runtime',
+  apply: 'serve',
+  transformIndexHtml: {
+    order: 'post',
+    handler: () => [
+      {
+        tag: 'script',
+        attrs: { type: 'module', src: '/src/locatorDev.ts' },
+        injectTo: 'head',
+      },
+    ],
+  },
+});
+
 const baseFromEnv = (rawBaseUrl?: string) => {
   if (!rawBaseUrl) return '/';
   try {
@@ -357,9 +372,13 @@ export default defineConfig(async ({ command, mode }) => {
       ...(command === 'serve'
         ? [createDevBackendOverridePlugin(devBackendOverrideUrl, basePrefix)]
         : []),
+      locatorJsDevRuntime(),
       await babel({
         presets: [reactCompilerPreset(ReactCompilerConfig)],
-        plugins: [['@locator/babel-jsx/dist', { env: 'development' }]],
+        plugins:
+          command === 'serve'
+            ? [['@locator/babel-jsx/dist', { env: 'development' }]]
+            : [],
       }),
       react(),
     ],
