@@ -35,6 +35,11 @@ PICR will report `canWrite: true`.
 If `CAN_WRITE=true` but PICR still reports `canWrite: false`, the startup warning will include the actual probe error
 code/message, plus the container runtime UID/GID and media path owner/mode.
 
+On NFS mounts, check the reported mode as well as the owner. If PICR logs the same UID/GID for the runtime user and the
+media path owner, but the media path mode is `555`, the NFS mount is still exposing the directory as read-only to the
+container. In that case, changing the Docker `user:` line will not help until the NFS export, NFS client mount options,
+Synology ACLs, or Docker volume mode expose write permission.
+
 ## Short Version
 
 - Set the `CAN_WRITE=true` then run PICR.
