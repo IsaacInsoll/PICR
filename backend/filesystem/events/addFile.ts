@@ -19,6 +19,7 @@ import { delay } from '../../helpers/delay.js';
 import { existsSync, statSync } from 'node:fs';
 import { ensureDecodedImage } from '../../media/ensureDecodedImage.js';
 import type { PicrFileStats } from '../fileStats.js';
+import { findBestFileMatch, mergeDuplicateFileRows } from '../fileIdentity.js';
 import {
   isHeicFormat,
   isPsbFormat,
@@ -27,7 +28,39 @@ import {
   isSharpReadableFormat,
 } from '@shared/imageFormats.js';
 
+const inFlightPathImports = new Map<string, Promise<void>>();
+
 export const addFile = async (
+  filePath: string,
+  generateThumbs: boolean,
+  statsProp?: PicrFileStats,
+  renameFromPath?: string,
+  stIno?: bigint | null,
+) => {
+  const previous = inFlightPathImports.get(filePath) ?? Promise.resolve();
+  const next = previous
+    .catch(() => undefined)
+    .then(() =>
+      addFileUnlocked(
+        filePath,
+        generateThumbs,
+        statsProp,
+        renameFromPath,
+        stIno,
+      ),
+    );
+  inFlightPathImports.set(filePath, next);
+
+  try {
+    await next;
+  } finally {
+    if (inFlightPathImports.get(filePath) === next) {
+      inFlightPathImports.delete(filePath);
+    }
+  }
+};
+
+const addFileUnlocked = async (
   filePath: string,
   generateThumbs: boolean,
   statsProp?: PicrFileStats,
@@ -56,16 +89,26 @@ export const addFile = async (
   let renamedFromName: string | undefined;
   let renamedFromRelativePath: string | undefined;
   let renamedFromType: FileFields['type'] | undefined;
-  let file = renameFromPath
-    ? await db.query.dbFile.findFirst({
-        where: and(
-          eq(dbFile.name, basename(renameFromPath)),
-          eq(dbFile.relativePath, relativePath(dirname(renameFromPath))),
-        ),
+  const destinationFile = await findBestFileMatch(props);
+  const renamedSourceFile = renameFromPath
+    ? await findBestFileMatch({
+        name: basename(renameFromPath),
+        relativePath: relativePath(dirname(renameFromPath)),
       })
     : undefined;
 
-  if (file) {
+  let file = destinationFile ?? renamedSourceFile;
+
+  if (
+    destinationFile &&
+    renamedSourceFile &&
+    destinationFile.id !== renamedSourceFile.id
+  ) {
+    await mergeDuplicateFileRows(destinationFile, [renamedSourceFile]);
+    file = destinationFile;
+  }
+
+  if (file && file.id === renamedSourceFile?.id && !destinationFile) {
     wasRenamed = true;
     // Capture the pre-rename identity before we overwrite it, so a pure move can
     // relocate the existing thumbnails instead of regenerating them.
@@ -79,14 +122,6 @@ export const addFile = async (
     file.fileSize = stats.size;
     file.fileCreated = stats.birthtime;
     file.fileLastModified = stats.mtime;
-  } else {
-    file = await db.query.dbFile.findFirst({
-      where: and(
-        eq(dbFile.name, props.name),
-        eq(dbFile.folderId, props.folderId),
-        eq(dbFile.relativePath, props.relativePath),
-      ),
-    });
   }
 
   const created = !file;

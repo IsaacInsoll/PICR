@@ -10,19 +10,16 @@ export const removeFile = async (filePath: string) => {
     relativePath: relativePath(dirname(filePath)),
   };
 
-  const file = await db.query.dbFile.findFirst({
-    where: and(
-      eq(dbFile.name, props.name),
-      eq(dbFile.relativePath, props.relativePath),
-    ),
-  });
-
-  if (!file) return;
-
   await db
     .update(dbFile)
     .set({ exists: false, updatedAt: new Date() })
-    .where(eq(dbFile.id, file.id));
+    .where(
+      and(
+        eq(dbFile.name, props.name),
+        eq(dbFile.relativePath, props.relativePath),
+        eq(dbFile.exists, true),
+      ),
+    );
 
   // if (file.type == 'Image' || file.type =='Video') {
   //   deleteAllThumbs(filePath);

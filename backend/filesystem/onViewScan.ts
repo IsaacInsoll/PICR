@@ -5,7 +5,7 @@ import { log } from '../logger.js';
 import type { PicrRequestContext } from '../types/PicrRequestContext.js';
 import { scanFolder, type ScanFolderOptions } from './scanFolder.js';
 
-export const ON_VIEW_SCAN_COOLDOWN_MS = 15_000; // can be promoted to env var in future
+export const ON_VIEW_SCAN_COOLDOWN_MS = 60_000; // can be promoted to env var in future
 
 type OnViewScanStartResult =
   | { status: 'disabled' | 'cooldown' | 'in_flight' }
