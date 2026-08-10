@@ -501,6 +501,16 @@ contracts between watcher, on-view, scheduled, and manual scans.
   folder IDs on `PicrRequestContext.scanFolderIds`, and the Express GraphQL
   wrapper drains them from `res.on('finish')`. Do not run filesystem scans
   inline in resolvers; gallery responses must return from the DB/cache first.
+- `scanFolder()` serializes by actual `folderId`. Keep this below the caller
+  layer: parent-folder on-view scans can recurse into pending child folders, and
+  frontend polling can request a direct scan of that same child at the same time.
+- `addFolder()` serializes creation/reactivation per relative folder path.
+  `addFile()` can call it while resolving a missing parent folder, so do not rely
+  only on scan-folder or file-queue serialization to prevent duplicate folder
+  rows.
+- Recursive scanner calls carry a visited-folder set. If corrupt `parentId`
+  data creates a folder cycle, skip the repeated folder and log a warning;
+  waiting on the per-folder lock from the same scan stack would deadlock.
 - `SCHEDULED_SCAN_HOURS` runs an in-process whole-library reconcile backstop.
   It skips overlapping ticks and queues thumbnail generation only when the
   scheduled run's new-file count is within `SCHEDULED_SCAN_THUMB_LIMIT`.

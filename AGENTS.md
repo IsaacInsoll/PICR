@@ -20,6 +20,28 @@ If a claim has not been verified, say so explicitly with language like "I have n
 
 Before giving a confident answer, ask: "What would I need to inspect to prove this?" If that inspection is cheap, do it first.
 
+## Evidence-First Debugging
+
+When the cause of a production or concurrency issue is not confirmed, gather
+targeted evidence before committing to a mechanism. Ask for logs, SQL query
+results, filesystem counts, environment values, timestamps, and reproduction
+details when those facts can cheaply distinguish between plausible causes.
+
+Keep requests specific and low-risk:
+
+- Prefer read-only SQL and log greps first. If a write is needed, wrap it in a
+  transaction and ask the user to inspect `RETURNING` rows before commit.
+- Ask for exact timestamps and timezone context when correlating logs with user
+  actions.
+- Compare independent sources, such as disk file counts vs database row counts,
+  or application logs vs SQL aggregates.
+- Re-check assumptions when new evidence contradicts them. State what changed:
+  the observed fact, the inference it invalidated, and the new working theory.
+
+Do not turn debugging into a fishing expedition. Each requested query/log should
+answer a concrete question, such as "are these real duplicate rows?", "which code
+path produced them?", or "would cleanup lose comments/flags/foreign-key refs?".
+
 ## Agent Operating Standard
 
 Work like a senior developer, not a command runner. Before changing code or giving architectural guidance, inspect the existing implementation, nearby patterns, relevant subsystem `AGENTS.md`, tests, and configuration. Do not implement from memory when the repo can answer the question cheaply.
