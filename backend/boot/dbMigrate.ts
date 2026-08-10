@@ -25,6 +25,10 @@ import {
 import { log } from '../logger.js';
 import { runThumbnailHashMigrationIfNeeded } from './migrateThumbnailHashes.js';
 import { assertDatabaseVersionCompatible } from './dbVersionGuard.js';
+import {
+  compareFilesForIdentity,
+  mergeDuplicateFileRows,
+} from '../filesystem/fileIdentity.js';
 
 // This does the "picr" side of migrations, for the DB side see schemaMigration.ts
 export const dbMigrate = async (config: IPicrConfiguration) => {
@@ -62,6 +66,14 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
     if (lt(lastBootedVersion, '0.9.6')) {
       await migrateBrandingRelationship();
     }
+  }
+  if (
+    shouldRunVersionMigration(
+      lastBootedVersion,
+      DUPLICATE_LIVE_FILE_CLEANUP_VERSION,
+    )
+  ) {
+    await removeDuplicateLiveFiles();
   }
 
   // Gated internally (also handles a missing/invalid lastBootedVersion when files
@@ -142,7 +154,7 @@ const removeDuplicates = async () => {
         );
         return Promise.resolve();
       }
-      return processDuplicateFile(relativePath, name);
+      return processDuplicateFile({ relativePath, name });
     }),
   );
 
@@ -209,6 +221,45 @@ const migrateBrandingRelationship = async () => {
   );
 };
 
+const DUPLICATE_LIVE_FILE_CLEANUP_VERSION = '1.3.3';
+
+const shouldRunVersionMigration = (
+  lastBootedVersion: string | null | undefined,
+  migrationVersion: string,
+): boolean =>
+  !lastBootedVersion ||
+  !valid(lastBootedVersion) ||
+  lt(lastBootedVersion, migrationVersion);
+
+const removeDuplicateLiveFiles = async () => {
+  log('info', '🔂 PICR Migration: cleanup duplicate live file entries', true);
+
+  const duplicateFiles = await db
+    .select({
+      count: count(),
+      folderId: dbFile.folderId,
+      relativePath: dbFile.relativePath,
+      name: dbFile.name,
+    })
+    .from(dbFile)
+    .where(eq(dbFile.exists, true))
+    .groupBy(dbFile.folderId, dbFile.relativePath, dbFile.name)
+    .having(sql`count(*) > 1`);
+
+  for (const duplicateFile of duplicateFiles) {
+    await processDuplicateFile({
+      ...duplicateFile,
+      liveOnly: true,
+    });
+  }
+
+  log(
+    'info',
+    `🔂 PICR Migration complete: cleaned ${duplicateFiles.length} duplicate live file path(s)`,
+    true,
+  );
+};
+
 const processDuplicateFolder = async (relativePath: string) => {
   const matching = await db.query.dbFolder.findMany({
     where: eq(dbFolder.relativePath, relativePath),
@@ -250,22 +301,30 @@ const processDuplicateFolder = async (relativePath: string) => {
   await db.delete(dbFolder).where(inArray(dbFolder.id, otherIds));
 };
 
-const processDuplicateFile = async (relativePath: string, name: string) => {
-  //NOTE: doesn't merge things like TotalComments count
+const processDuplicateFile = async ({
+  relativePath,
+  name,
+  folderId,
+  liveOnly = false,
+}: {
+  relativePath: string;
+  name: string;
+  folderId?: number;
+  liveOnly?: boolean;
+}) => {
   const matching = await db.query.dbFile.findMany({
-    where: and(eq(dbFile.relativePath, relativePath), eq(dbFile.name, name)),
+    where: and(
+      eq(dbFile.relativePath, relativePath),
+      eq(dbFile.name, name),
+      ...(folderId === undefined ? [] : [eq(dbFile.folderId, folderId)]),
+    ),
   });
-  const firstId = matching.shift()?.id;
-  const otherIds = matching.map((id) => id.id);
-
-  await db
-    .update(dbComment)
-    .set({ fileId: firstId })
-    .where(inArray(dbComment.fileId, otherIds));
-
-  await db
-    .update(dbFolder)
-    .set({ heroImageId: firstId })
-    .where(inArray(dbFolder.heroImageId, otherIds));
-  await db.delete(dbFile).where(inArray(dbFile.id, otherIds));
+  const sorted = matching.toSorted(compareFilesForIdentity);
+  const keeper = sorted.at(0);
+  if (keeper === undefined) return;
+  const duplicateRows = liveOnly
+    ? sorted.filter((file) => file.exists && file.id !== keeper.id)
+    : sorted.slice(1);
+  if (duplicateRows.length === 0) return;
+  await mergeDuplicateFileRows(keeper, duplicateRows);
 };

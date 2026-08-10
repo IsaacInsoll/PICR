@@ -22,12 +22,17 @@ export const SCAN_FASTPATH_MAX_BYTES = 5 * 1024 * 1024;
 
 const PENDING_FOLDER_TTL_MS = 24 * 60 * 60 * 1000;
 const SCAN_SETTLE_MS = SCAN_SETTLE_SECONDS * 1000;
+const inFlightFolderScans = new Map<number, Promise<unknown>>();
 
 export interface ScanFolderOptions {
   generateThumbs?: boolean;
   depth?: number;
   removeMissing?: boolean;
   scanExistingFolders?: boolean;
+}
+
+interface InternalScanFolderOptions extends ScanFolderOptions {
+  visitedFolderIds: Set<number>;
 }
 
 export interface ScanFolderResult {
@@ -141,6 +146,48 @@ export const scanFolderTree = async (
 export const scanFolder = async (
   folderId: number,
   options: ScanFolderOptions = {},
+): Promise<ScanFolderResult> => {
+  return scanFolderWithLock(folderId, {
+    ...options,
+    visitedFolderIds: new Set<number>(),
+  });
+};
+
+const scanFolderWithLock = async (
+  folderId: number,
+  options: InternalScanFolderOptions,
+): Promise<ScanFolderResult> => {
+  if (options.visitedFolderIds.has(folderId)) {
+    log('warn', `Skipping recursive scan cycle at folder ${folderId}`, true);
+    return emptyScanFolderResult();
+  }
+
+  // This prevents self-recursion from deadlocking on its own folder lock. It
+  // does not try to solve simultaneous scans entering corrupt cycles from
+  // different roots; that would need a cross-scan lock ordering strategy.
+  const previous = inFlightFolderScans.get(folderId) ?? Promise.resolve();
+  const next = previous
+    .catch(() => undefined)
+    .then(() =>
+      scanFolderUnlocked(folderId, {
+        ...options,
+        visitedFolderIds: new Set(options.visitedFolderIds).add(folderId),
+      }),
+    );
+  inFlightFolderScans.set(folderId, next);
+
+  try {
+    return await next;
+  } finally {
+    if (inFlightFolderScans.get(folderId) === next) {
+      inFlightFolderScans.delete(folderId);
+    }
+  }
+};
+
+const scanFolderUnlocked = async (
+  folderId: number,
+  options: InternalScanFolderOptions,
 ): Promise<ScanFolderResult> => {
   const startedAt = Date.now();
   const folder = await dbFolderForId(folderId);
@@ -312,7 +359,7 @@ export const scanFolder = async (
 
 const scanChildFolder = async (
   folderId: number,
-  options: ScanFolderOptions,
+  options: InternalScanFolderOptions,
   parentResult: ScanFolderResult,
 ): Promise<boolean> => {
   let pendingFolder = pendingFolders.get(folderId);
@@ -329,7 +376,7 @@ const scanChildFolder = async (
 
   if ((options.depth ?? 0) <= 0) return !pendingFolder;
 
-  const childResult = await scanFolder(folderId, {
+  const childResult = await scanFolderWithLock(folderId, {
     ...options,
     depth: (options.depth ?? 0) - 1,
   });

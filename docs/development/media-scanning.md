@@ -62,7 +62,8 @@ On-view scans:
 
 - use `generateThumbs: true`;
 - have a per-folder in-memory cooldown (`ON_VIEW_SCAN_COOLDOWN_MS`, currently
-  15 seconds);
+  60 seconds), intentionally longer than the frontend folder-view refresh
+  interval;
 - coalesce concurrent scans for the same folder;
 - log and swallow background errors so unhandled rejections do not terminate the
   process.
@@ -98,6 +99,24 @@ interval.
 `scanFolder` and `scanFolderTree` are the shared reconciliation primitives.
 Important invariants:
 
+- File imports are serialized per absolute file path inside `addFile()`. Keep
+  that lock around the read-then-insert path: boot, scheduled, manual, on-view,
+  and watcher work can overlap, and the `Files` table does not currently have a
+  uniqueness constraint for live path identity.
+- Folder scans are serialized per `folderId` inside `scanFolder()`, not only at
+  the caller layer. This matters because an on-view scan of a parent can recurse
+  into a pending new child folder while a direct on-view scan of that child is
+  also requested by frontend polling.
+- Folder creation/reactivation is serialized per relative folder path inside
+  `addFolder()`. File imports can discover missing parent folders independently,
+  so the folder lock must live inside `addFolder()` rather than only in scanner
+  callers.
+- File removal archives every live row matching `(relativePath, name)`. Do not
+  derive and add a `folderId` predicate there: duplicate folder rows can split
+  files across IDs, while `relativePath` already identifies the folder path.
+- Recursive scans carry a visited-folder set. If corrupt folder parentage
+  creates a cycle, the scanner logs a warning and skips the repeated folder
+  instead of waiting on its own per-folder lock forever.
 - The global `handleInitComplete` sweep (marks everything with
   `existsRescan=false` as gone) runs **only** in `native`/`polling` mode after
   chokidar's `ready`. `scanFolder`/`scanFolderTree` never call it — they

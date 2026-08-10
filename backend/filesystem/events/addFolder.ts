@@ -12,6 +12,7 @@ import type { QueryResult, QueryResultRow } from 'pg';
 import type { PicrFileStats } from '../fileStats.js';
 
 let rootFolder: FolderFields | undefined = undefined;
+const inFlightFolderImports = new Map<string, Promise<number>>();
 
 const firstReturnedRow = <T extends QueryResultRow>(
   result: T[] | QueryResult<T>,
@@ -74,60 +75,104 @@ export const addFolder = async (
       relativePath: p,
     };
 
-    let newFolder = await db.query.dbFolder.findFirst({
-      where: and(
-        eq(dbFolder.name, props.name),
-        eq(dbFolder.parentId, props.parentId),
-        eq(dbFolder.relativePath, props.relativePath),
-      ),
-    });
-
-    if (newFolder && (!newFolder.exists || !newFolder.existsRescan)) {
-      await db
-        .update(dbFolder)
-        .set({
-          exists: true,
-          existsRescan: true,
-          folderLastModified: stats.mtime,
-          ...(stIno && p === relative ? { stIno } : {}),
-        }) // I'm intentionally not updating `lastUpdated` here (, updatedAt: new Date())
-        .where(eq(dbFolder.id, newFolder.id));
-      newFolder.exists = true;
-      newFolder.existsRescan = true;
-    }
-
-    if (newFolder && stIno && p === relative && newFolder.stIno !== stIno) {
-      await db
-        .update(dbFolder)
-        .set({ stIno })
-        .where(eq(dbFolder.id, newFolder.id));
-      newFolder.stIno = stIno;
-    }
-
-    if (!newFolder) {
-      log('info', `📁➕ ${relativePath(path)} IS NEW, CREATING`);
-      newFolder = await db
-        .insert(dbFolder)
-        .values({
-          ...props,
-          ...(stIno && p === relative ? { stIno } : {}),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          exists: true,
-          existsRescan: true,
-          folderLastModified: stats.mtime,
-        })
-        .returning()
-        .then(firstReturnedRow);
-    }
-
-    if (!newFolder) throw new Error('Failed to create/find folder');
-    folderList[p] = newFolder.id; // for caching
-    updateFolderHash(newFolder);
-    f = newFolder.id;
-    log('info', `📁➕ ${relativePath(path)}`);
+    f = await addFolderSegmentWithLock(path, relative, p, props, stats, stIno);
   }
   // console.log('finished addFolder: ' + path);
 
   return f;
+};
+
+const addFolderSegmentWithLock = async (
+  path: string,
+  relative: string,
+  p: string,
+  props: {
+    name: string;
+    parentId: number;
+    relativePath: string;
+  },
+  stats: PicrFileStats,
+  stIno?: bigint | null,
+): Promise<number> => {
+  const previous = inFlightFolderImports.get(p) ?? Promise.resolve();
+  const next = previous
+    .catch(() => undefined)
+    .then(() => addFolderSegment(path, relative, p, props, stats, stIno));
+  inFlightFolderImports.set(p, next);
+
+  try {
+    return await next;
+  } finally {
+    if (inFlightFolderImports.get(p) === next) {
+      inFlightFolderImports.delete(p);
+    }
+  }
+};
+
+const addFolderSegment = async (
+  path: string,
+  relative: string,
+  p: string,
+  props: {
+    name: string;
+    parentId: number;
+    relativePath: string;
+  },
+  stats: PicrFileStats,
+  stIno?: bigint | null,
+): Promise<number> => {
+  if (folderList[p]) return folderList[p];
+
+  let newFolder = await db.query.dbFolder.findFirst({
+    where: and(
+      eq(dbFolder.name, props.name),
+      eq(dbFolder.parentId, props.parentId),
+      eq(dbFolder.relativePath, props.relativePath),
+    ),
+  });
+
+  if (newFolder && (!newFolder.exists || !newFolder.existsRescan)) {
+    await db
+      .update(dbFolder)
+      .set({
+        exists: true,
+        existsRescan: true,
+        folderLastModified: stats.mtime,
+        ...(stIno && p === relative ? { stIno } : {}),
+      }) // I'm intentionally not updating `lastUpdated` here (, updatedAt: new Date())
+      .where(eq(dbFolder.id, newFolder.id));
+    newFolder.exists = true;
+    newFolder.existsRescan = true;
+  }
+
+  if (newFolder && stIno && p === relative && newFolder.stIno !== stIno) {
+    await db
+      .update(dbFolder)
+      .set({ stIno })
+      .where(eq(dbFolder.id, newFolder.id));
+    newFolder.stIno = stIno;
+  }
+
+  if (!newFolder) {
+    log('info', `📁➕ ${relativePath(path)} IS NEW, CREATING`);
+    newFolder = await db
+      .insert(dbFolder)
+      .values({
+        ...props,
+        ...(stIno && p === relative ? { stIno } : {}),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        exists: true,
+        existsRescan: true,
+        folderLastModified: stats.mtime,
+      })
+      .returning()
+      .then(firstReturnedRow);
+  }
+
+  if (!newFolder) throw new Error('Failed to create/find folder');
+  folderList[p] = newFolder.id; // for caching
+  updateFolderHash(newFolder);
+  log('info', `📁➕ ${relativePath(path)}`);
+  return newFolder.id;
 };

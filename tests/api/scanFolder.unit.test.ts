@@ -47,16 +47,34 @@ const setMtime = async (path: string, when: Date) => {
   await utimes(path, when, when);
 };
 
+const deferred = () => {
+  let resolve!: () => void;
+  const promise = new Promise<void>((promiseResolve) => {
+    resolve = promiseResolve;
+  });
+  return { promise, resolve };
+};
+
+const waitFor = async (predicate: () => boolean) => {
+  for (let i = 0; i < 50; i++) {
+    if (predicate()) return;
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+  throw new Error('Timed out waiting for condition');
+};
+
 const loadScanFolder = async ({
   mediaRoot,
   files = [],
   folders = [],
   folderRelativePath = '',
+  beforeAddFileCommit,
 }: {
   mediaRoot: string;
   files?: MockFileRow[];
   folders?: MockFolderRow[];
   folderRelativePath?: string;
+  beforeAddFileCommit?: () => Promise<void>;
 }) => {
   vi.resetModules();
   const { dbFile, dbFolder } = await import('../../backend/db/models/index.js');
@@ -81,7 +99,7 @@ const loadScanFolder = async ({
   let nextFileId = Math.max(0, ...files.map((file) => file.id ?? 0)) + 1;
 
   const addFile = vi.fn(
-    (
+    async (
       path: string,
       _generateThumbs: boolean,
       stats: Parameters<typeof contentHashForStats>[0],
@@ -126,6 +144,7 @@ const loadScanFolder = async ({
         return;
       }
 
+      await beforeAddFileCommit?.();
       files.push({
         id: nextFileId++,
         name: basename(path),
@@ -221,6 +240,7 @@ const loadScanFolder = async ({
   return {
     addFile,
     addFolder,
+    files,
     log,
     removeFile,
     removeFolder,
@@ -284,6 +304,71 @@ test('adds new direct files and folders while sharing watcher ignore rules', asy
   expect(log).toHaveBeenCalledWith(
     'debug',
     expect.stringContaining('scanFolder(10)'),
+  );
+});
+
+test('serializes concurrent scans of the same folder before reading db rows', async () => {
+  const mediaRoot = await createMediaRoot();
+  const newFilePath = join(mediaRoot, 'new.jpg');
+  await writeFile(newFilePath, 'image');
+  await makeOld(newFilePath);
+  const insertGate = deferred();
+  let pauseNextInsert = true;
+
+  const { addFile, files, scanFolder } = await loadScanFolder({
+    mediaRoot,
+    beforeAddFileCommit: async () => {
+      if (!pauseNextInsert) return;
+      pauseNextInsert = false;
+      await insertGate.promise;
+    },
+  });
+
+  const firstScan = scanFolder(10);
+  await waitFor(() => addFile.mock.calls.length === 1);
+  const secondScan = scanFolder(10);
+  await Promise.resolve();
+
+  expect(addFile).toHaveBeenCalledOnce();
+
+  insertGate.resolve();
+  await Promise.all([firstScan, secondScan]);
+
+  expect(addFile).toHaveBeenCalledOnce();
+  expect(files).toHaveLength(1);
+});
+
+test('skips recursive folder cycles instead of deadlocking', async () => {
+  const mediaRoot = await createMediaRoot();
+  await mkdir(join(mediaRoot, 'child'));
+  await mkdir(join(mediaRoot, 'child', 'Home'));
+
+  const { addFile, log, scanFolder } = await loadScanFolder({
+    mediaRoot,
+    folders: [
+      {
+        id: 11,
+        name: 'child',
+        relativePath: 'child',
+        parentId: 10,
+      },
+      {
+        id: 10,
+        name: 'Home',
+        relativePath: '',
+        parentId: 11,
+      },
+    ],
+  });
+
+  const result = await scanFolder(10, { depth: 3, scanExistingFolders: true });
+
+  expect(result.addedFiles).toBe(0);
+  expect(addFile).not.toHaveBeenCalled();
+  expect(log).toHaveBeenCalledWith(
+    'warn',
+    'Skipping recursive scan cycle at folder 10',
+    true,
   );
 });
 
