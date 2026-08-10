@@ -221,7 +221,11 @@ const migrateBrandingRelationship = async () => {
   );
 };
 
-const DUPLICATE_LIVE_FILE_CLEANUP_VERSION = '1.3.3';
+// MUST equal the release version that ships this migration. On first boot of
+// that release, installs last booted on an older version clean duplicate live
+// rows before scanners start. If this lags behind the released version, the
+// migration skips affected installs that already booted newer buggy releases.
+const DUPLICATE_LIVE_FILE_CLEANUP_VERSION = '1.3.6';
 
 const shouldRunVersionMigration = (
   lastBootedVersion: string | null | undefined,

@@ -27,7 +27,11 @@ const fileRow = (props: Pick<FileFields, 'exists' | 'id'>) =>
     ...props,
   }) satisfies FileFields;
 
-const loadDbMigrate = async () => {
+const loadDbMigrate = async ({
+  lastBootedVersion = '1.3.2',
+}: {
+  lastBootedVersion?: string;
+} = {}) => {
   vi.resetModules();
 
   const keeper = fileRow({ exists: true, id: 1 });
@@ -96,7 +100,7 @@ const loadDbMigrate = async () => {
       select: vi.fn(() => selectBuilder),
     },
     getServerOptions: vi.fn(async () => ({
-      lastBootedVersion: '1.3.2',
+      lastBootedVersion,
       tokenSecret: 'token',
     })),
     setServerOptions,
@@ -143,7 +147,7 @@ test('runs live duplicate cleanup on upgrade without deleting archived twins', a
   } = await loadDbMigrate();
   const config = {
     updateMetadata: false,
-    version: '1.3.3',
+    version: '1.3.6',
   } as IPicrConfiguration;
 
   await dbMigrate(config);
@@ -153,5 +157,18 @@ test('runs live duplicate cleanup on upgrade without deleting archived twins', a
     expect.anything(),
     expect.arrayContaining([archivedTwin]),
   );
-  expect(setServerOptions).toHaveBeenCalledWith({ lastBootedVersion: '1.3.3' });
+  expect(setServerOptions).toHaveBeenCalledWith({ lastBootedVersion: '1.3.6' });
+});
+
+test('runs live duplicate cleanup for the latest released buggy version', async () => {
+  const { dbMigrate, duplicateLive, keeper, mergeDuplicateFileRows } =
+    await loadDbMigrate({ lastBootedVersion: '1.3.5' });
+  const config = {
+    updateMetadata: false,
+    version: '1.3.6',
+  } as IPicrConfiguration;
+
+  await dbMigrate(config);
+
+  expect(mergeDuplicateFileRows).toHaveBeenCalledWith(keeper, [duplicateLive]);
 });
