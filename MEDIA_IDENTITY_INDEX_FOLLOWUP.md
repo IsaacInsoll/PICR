@@ -1,5 +1,34 @@
 # Media Identity Index Follow-Up
 
+## History: 1.3.6 Shipped And Reverted These Indexes
+
+1.3.6 shipped `0025_media-identity-indexes` (four plain `CREATE INDEX`
+statements on `Files`/`Folders`). On at least one install it hung boot
+indefinitely: the migration could not acquire its table lock, and because
+`schemaMigration()` had no `lock_timeout` it waited forever, before any log
+line was written. The migration was reverted in the following release and
+`lock_timeout` was added to the migration connection.
+
+**Critical for re-adding:** 1.3.6 was published, so installs where nothing held
+a lock applied `0025` _successfully_ and still have those four indexes. The
+revert removed them from the Drizzle snapshot, so a regenerated migration will
+emit the same `CREATE INDEX` statements again, and the migrator gates purely on
+timestamp (`lastDbMigration.created_at < migration.folderMillis`) — it will run
+them. On those installs a plain `CREATE INDEX` fails with "already exists" and
+hard-fails boot for the exact users who had no problem.
+
+Therefore:
+
+- The re-added migration **must** use `CREATE INDEX IF NOT EXISTS` for
+  `Files_folderId_exists_idx`, `Files_relativePath_name_idx`,
+  `Folders_parentId_exists_idx`, and `Folders_relativePath_idx`.
+- Do **not** ship a `DROP INDEX` migration to "clean up" the installs that got
+  them. Dropping needs `ACCESS EXCLUSIVE`, a stronger lock than the one that
+  already caused the hang, and the indexes are harmless.
+- `dk:generate` will not produce `IF NOT EXISTS` on its own; the generated SQL
+  needs editing, which is a deliberate exception to the usual
+  "never hand-edit generated migrations" rule. Record that in the PR.
+
 ## Goal
 
 Add database indexes and later uniqueness constraints for media path identity.

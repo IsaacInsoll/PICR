@@ -57,11 +57,7 @@ export const dbFile = pgTable(
     flag: fileFlagEnum(),
     type: fileTypeEnum(),
   },
-  (table) => [
-    index('Files_stIno_idx').on(table.stIno),
-    index('Files_folderId_exists_idx').on(table.folderId, table.exists),
-    index('Files_relativePath_name_idx').on(table.relativePath, table.name),
-  ],
+  (table) => [index('Files_stIno_idx').on(table.stIno)],
 );
 
 export const dbFileRelations = relations(dbFile, ({ one }) => ({

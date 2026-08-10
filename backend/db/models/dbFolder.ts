@@ -56,11 +56,7 @@ export const dbFolder = pgTable(
       (): AnyPgColumn => dbBranding.id,
     ),
   },
-  (table) => [
-    index('Folders_stIno_idx').on(table.stIno),
-    index('Folders_parentId_exists_idx').on(table.parentId, table.exists),
-    index('Folders_relativePath_idx').on(table.relativePath),
-  ],
+  (table) => [index('Folders_stIno_idx').on(table.stIno)],
 );
 
 export const dbFolderRelations = relations(dbFolder, ({ one, many }) => ({

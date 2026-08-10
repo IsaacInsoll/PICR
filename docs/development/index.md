@@ -109,3 +109,40 @@ For backend logging:
 - Use `logger.info/error/...` for normal runtime logging.
 - Use `log(level, message, true)` for boot/startup/migration messages that must appear in container logs.
 - Avoid adding `console.*` in backend runtime code.
+
+## Database Migration Startup Safety
+
+PICR runs Drizzle SQL migrations in `schemaMigration()` before Express starts
+listening, so anything that stalls there stalls the whole container: Docker
+reports it as running while the port never opens.
+
+Drizzle's Postgres migrator applies **every** pending migration and its
+`__drizzle_migrations` bookkeeping insert inside a **single transaction**. That
+is good news for recovery — a failure rolls back cleanly and leaves no
+half-applied schema — but it means one blocked statement blocks the entire boot.
+
+The realistic failure is lock contention, not slow work. DDL such as
+`CREATE INDEX` needs a lock on the table, and any other session holding a
+conflicting lock (an in-flight scan transaction, an `idle in transaction`
+backend, an open `psql`) makes it wait. PICR sets `lock_timeout` on the
+migration connection so a blocked migration fails fast and is retried, instead
+of hanging forever. `lock_timeout` only applies while _waiting_ for a lock, so
+it never interrupts a migration that is genuinely making progress.
+
+This bit PICR in 1.3.6: a four-index migration on a 61k-row table — normally
+sub-second — hung boot indefinitely because it could not acquire its lock, and
+produced no output at all.
+
+When writing migrations:
+
+- Assume any DDL can block, and keep migrations small so a retry is cheap.
+- Log boot/migration progress with `log(level, message, true)`. Without the
+  `important` flag, output goes only to the winston file transports; the console
+  transport is dev-only (`addDevLogger`), so plain `log('info', ...)` is
+  invisible in production container logs.
+- `CREATE INDEX CONCURRENTLY` cannot be used in a Drizzle migration, because
+  Postgres forbids it inside a transaction block. If it is ever needed it has to
+  run as app-level code in `dbMigrate.ts`, outside the migrator.
+- When re-adding a migration that was previously released and then reverted, use
+  `IF NOT EXISTS` — installs that applied the original will still have the
+  objects, and the migrator gates purely on timestamp.
