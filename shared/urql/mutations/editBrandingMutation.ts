@@ -10,6 +10,7 @@ export const editBrandingMutation = gql(/* GraphQL */ `
     $headingFontKey: HeadingFontKey
     $availableViews: [String!]
     $defaultView: String
+    $galleryLayout: GalleryLayout
     $defaultFileSort: String
     $thumbnailSize: Int
     $thumbnailSpacing: Int
@@ -29,6 +30,7 @@ export const editBrandingMutation = gql(/* GraphQL */ `
       headingFontKey: $headingFontKey
       availableViews: $availableViews
       defaultView: $defaultView
+      galleryLayout: $galleryLayout
       defaultFileSort: $defaultFileSort
       thumbnailSize: $thumbnailSize
       thumbnailSpacing: $thumbnailSpacing
@@ -47,6 +49,7 @@ export const editBrandingMutation = gql(/* GraphQL */ `
       headingFontKey
       availableViews
       defaultView
+      galleryLayout
       defaultFileSort
       thumbnailSize
       thumbnailSpacing

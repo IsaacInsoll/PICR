@@ -9,6 +9,7 @@ import {
 import { GraphQLJSON } from 'graphql-scalars';
 import { folderType } from './folderType.js';
 import {
+  galleryLayoutEnum,
   headingAlignmentEnum,
   headingFontKeyEnum,
   primaryColorEnum,
@@ -18,7 +19,10 @@ import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 import { db } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbFolder } from '../../db/models/index.js';
-import { normalizeHeadingAlignment } from '@shared/branding/galleryPresets.js';
+import {
+  normalizeGalleryLayout,
+  normalizeHeadingAlignment,
+} from '@shared/branding/galleryPresets.js';
 
 export const brandingType = new GraphQLObjectType({
   name: 'Branding',
@@ -36,6 +40,10 @@ export const brandingType = new GraphQLObjectType({
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
     },
     defaultView: { type: GraphQLString },
+    galleryLayout: {
+      type: galleryLayoutEnum,
+      resolve: (branding) => normalizeGalleryLayout(branding.galleryLayout),
+    },
     defaultFileSort: { type: GraphQLString },
     thumbnailSize: { type: GraphQLInt },
     thumbnailSpacing: { type: GraphQLInt },

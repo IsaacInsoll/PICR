@@ -176,6 +176,13 @@
       "when": 1784867059287,
       "tag": "0024_server-settings",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1786424830126,
+      "tag": "0025_gallery-layout",
+      "breakpoints": true
     }
   ]
 }

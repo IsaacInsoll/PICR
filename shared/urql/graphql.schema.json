@@ -695,6 +695,18 @@
             "deprecationReason": null
           },
           {
+            "name": "galleryLayout",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "GalleryLayout",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "headingAlignment",
             "description": null,
             "args": [],
@@ -2498,6 +2510,30 @@
       },
       {
         "kind": "ENUM",
+        "name": "GalleryLayout",
+        "description": null,
+        "isOneOf": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "justified",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "masonry",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
         "name": "HeadingAlignment",
         "description": null,
         "isOneOf": null,
@@ -3690,6 +3726,18 @@
                 "type": {
                   "kind": "SCALAR",
                   "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "galleryLayout",
+                "description": null,
+                "type": {
+                  "kind": "ENUM",
+                  "name": "GalleryLayout",
                   "ofType": null
                 },
                 "defaultValue": null,

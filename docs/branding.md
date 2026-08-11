@@ -14,8 +14,9 @@ Brandings are **named presets** that can be applied to any folder and will casca
 | **Primary Color**     | The accent color used throughout the interface                                  |
 | **Heading Font**      | The font used for folder titles and section headers                             |
 | **Heading Font Size** | Size of the folder title (XS–XL presets)                                        |
-| **Heading Alignment** | Left, center, or right alignment for the folder title                           |
-| **Thumbnail Size**    | Target row height for gallery grid thumbnails (XS–XL presets)                   |
+| **Heading Alignment** | Left or center alignment for the folder title                                   |
+| **Gallery Layout**    | Fixed justified rows or fixed masonry columns                                   |
+| **Thumbnail Size**    | Target row height or column width for gallery thumbnails (XS–XL presets)        |
 | **Thumbnail Spacing** | Gap between thumbnails in the gallery grid (XS–XL presets)                      |
 | **Thumbnail Corners** | Border radius of thumbnails — from sharp corners to pill/circle (XS–XL presets) |
 | **Available Views**   | Restrict which gallery views (List, Gallery, Feed) link users can access        |
@@ -61,8 +62,9 @@ Banner images only display on the folder they are explicitly assigned to — the
 
 The **Gallery Appearance** settings in the branding form control how thumbnails look in the Gallery view:
 
-- **Thumbnail Size** — controls the target row height (XS = 150px, SM = 200px, MD = 300px, LG = 450px, XL = 600px)
-- **Thumbnail Spacing** — gap between thumbnails (XS = 2px … XL = 32px)
+- **Gallery Layout** — choose fixed justified rows (the default) or fixed masonry columns. Masonry preserves each image's aspect ratio instead of cropping it into an aligned row.
+- **Thumbnail Size** — controls the target row height or masonry column width (XS = 150px, SM = 180px, MD = 210px, LG = 250px, XL = 300px)
+- **Thumbnail Spacing** — gap between thumbnails (XS = 0px, SM = 2px, MD = 4px, LG = 10px, XL = 16px)
 - **Thumbnail Corners** — border radius (XS = sharp corners, XL = fully rounded/pill)
 
 ## View Restrictions

@@ -1,5 +1,6 @@
 import type { Branding as BrandingType } from '@shared/gql/graphql.js';
 import {
+  GalleryLayout,
   HeadingAlignment,
   PrimaryColor,
   ThemeMode,
@@ -9,6 +10,7 @@ import {
   DEFAULT_HEADING_FONT_SIZE,
   DEFAULT_SPACING,
   DEFAULT_THUMBNAIL_SIZE,
+  normalizeGalleryLayout,
   normalizeHeadingAlignment,
 } from '@shared/branding/galleryPresets.js';
 import type { FolderFields } from '../../db/picrDb.js';
@@ -20,6 +22,11 @@ const toHeadingAlignmentEnumValue = (
   normalizeHeadingAlignment(alignment) === 'center'
     ? HeadingAlignment.Center
     : HeadingAlignment.Left;
+
+const toGalleryLayoutEnumValue = (layout?: string | null): GalleryLayout =>
+  normalizeGalleryLayout(layout) === 'masonry'
+    ? GalleryLayout.Masonry
+    : GalleryLayout.Justified;
 
 export const brandingForFolder = async (
   folder: FolderFields,
@@ -41,6 +48,7 @@ export const brandingForFolder = async (
           headingAlignment: toHeadingAlignmentEnumValue(
             branding.headingAlignment,
           ),
+          galleryLayout: toGalleryLayoutEnumValue(branding.galleryLayout),
           folders: [],
         };
       }

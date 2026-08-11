@@ -156,6 +156,7 @@ const ViewFolderBody = () => {
             mode: branding.mode,
             primaryColor: branding.primaryColor,
             headingFontKey: branding.headingFontKey,
+            galleryLayout: branding.galleryLayout,
             thumbnailSize: branding.thumbnailSize,
             thumbnailSpacing: branding.thumbnailSpacing,
             thumbnailBorderRadius: branding.thumbnailBorderRadius,

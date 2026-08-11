@@ -64,6 +64,8 @@ updates:
     open-pull-requests-limit: 5
     cooldown:
       semver-major-days: 30
+      exclude:
+        - '@picr/react-grid-gallery'
     labels:
       - dependencies
       - npm

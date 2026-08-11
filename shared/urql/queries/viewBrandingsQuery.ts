@@ -11,6 +11,7 @@ export const viewBrandingsQuery = gql(/*GraphQL*/ `
             headingFontKey
             availableViews
             defaultView
+            galleryLayout
             defaultFileSort
             thumbnailSize
             thumbnailSpacing

@@ -15,7 +15,7 @@ import {
   normalizeFontKey,
   toHeadingFontKeyEnumValue,
 } from '@shared/branding/fontRegistry';
-import { HeadingAlignment } from '@shared/gql/graphql';
+import { GalleryLayout, HeadingAlignment } from '@shared/gql/graphql';
 import { PicrDrawer } from '../../components/PicrDrawer';
 import { BrandingFolderChips } from '../../components/BrandingFolderChips';
 import { useDebouncedValue } from '@mantine/hooks';
@@ -74,6 +74,7 @@ export const BrandingDrawer = ({
         availableViews: branding.availableViews,
         defaultFileSort: branding.defaultFileSort,
         defaultView: branding.defaultView,
+        galleryLayout: branding.galleryLayout,
         footerTitle: debouncedTextPreviewFields.footerTitle,
         footerUrl: debouncedTextPreviewFields.footerUrl,
         headingAlignment: branding.headingAlignment,
@@ -91,6 +92,7 @@ export const BrandingDrawer = ({
       branding.availableViews,
       branding.defaultFileSort,
       branding.defaultView,
+      branding.galleryLayout,
       branding.headingAlignment,
       branding.headingFontKey,
       branding.headingFontSize,
@@ -127,6 +129,7 @@ export const BrandingDrawer = ({
       ),
       availableViews: branding.availableViews,
       defaultView: branding.defaultView,
+      galleryLayout: branding.galleryLayout ?? GalleryLayout.Justified,
       defaultFileSort: branding.defaultFileSort,
       thumbnailSize: branding.thumbnailSize,
       thumbnailSpacing: branding.thumbnailSpacing,

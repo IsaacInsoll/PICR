@@ -7,7 +7,11 @@ import { setFolderBrandingMutation } from '../../shared/urql/mutations/setFolder
 import { viewBrandingsQuery } from '../../shared/urql/queries/viewBrandingsQuery';
 import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
 import { photoFolderId, videoFolderId } from './testVariables';
-import { ThemeMode, PrimaryColor } from '../../shared/gql/graphql';
+import {
+  GalleryLayout,
+  ThemeMode,
+  PrimaryColor,
+} from '../../shared/gql/graphql';
 
 let createdBrandingId: string;
 
@@ -21,6 +25,7 @@ describe('Branding Management', () => {
         name: 'Test Branding',
         mode: ThemeMode.Dark,
         primaryColor: PrimaryColor.Red,
+        galleryLayout: GalleryLayout.Masonry,
       })
       .toPromise();
 
@@ -28,6 +33,7 @@ describe('Branding Management', () => {
     expect(result.data?.editBranding?.name).toBe('Test Branding');
     expect(result.data?.editBranding?.mode).toBe('dark');
     expect(result.data?.editBranding?.primaryColor).toBe('red');
+    expect(result.data?.editBranding?.galleryLayout).toBe('masonry');
     expect(result.data?.editBranding?.folders).toEqual([]);
 
     createdBrandingId = result.data?.editBranding?.id;
@@ -174,6 +180,21 @@ describe('Branding Management', () => {
     expect(result.error?.message).toContain('HeadingAlignment');
   });
 
+  test('Invalid gallery layout is rejected', async () => {
+    const headers = await getUserHeader(defaultCredentials);
+    const client = await createTestGraphqlClient(headers);
+
+    const result = await client
+      .mutation(editBrandingMutation, {
+        id: createdBrandingId,
+        galleryLayout: 'quilted' as never,
+      })
+      .toPromise();
+
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('GalleryLayout');
+  });
+
   test('Admin can assign branding to a folder', async () => {
     const headers = await getUserHeader(defaultCredentials);
     const client = await createTestGraphqlClient(headers);
@@ -258,6 +279,9 @@ describe('Branding Management', () => {
     expect(result.data?.setFolderBranding?.branding?.id).toBe('0');
     expect(result.data?.setFolderBranding?.branding?.mode).toBe('auto');
     expect(result.data?.setFolderBranding?.branding?.primaryColor).toBe('blue');
+    expect(result.data?.setFolderBranding?.branding?.galleryLayout).toBe(
+      'justified',
+    );
   });
 
   test('Admin can delete a branding', async () => {

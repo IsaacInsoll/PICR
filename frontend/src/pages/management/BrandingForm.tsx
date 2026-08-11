@@ -1,6 +1,11 @@
 import type { HeadingFontKey } from '@shared/gql/graphql';
 import type { ComponentType } from 'react';
-import { HeadingAlignment, PrimaryColor, ThemeMode } from '@shared/gql/graphql';
+import {
+  GalleryLayout,
+  HeadingAlignment,
+  PrimaryColor,
+  ThemeMode,
+} from '@shared/gql/graphql';
 import type { FileSortDirection, FileSortType } from '@shared/files/sortFiles';
 import {
   decodeFileSort,
@@ -68,7 +73,9 @@ import {
   TbArrowUp,
   TbLink,
   TbList,
+  TbLayoutColumns,
   TbLayoutGrid,
+  TbLayoutRows,
   TbPalette,
   TbPhoto,
   TbPlus,
@@ -85,6 +92,7 @@ export interface BrandingInput {
   headingFontKey?: HeadingFontKey | null;
   availableViews?: string[] | null;
   defaultView?: string | null;
+  galleryLayout?: GalleryLayout | null;
   defaultFileSort?: string | null;
   thumbnailSize?: number | null;
   thumbnailSpacing?: number | null;
@@ -327,6 +335,48 @@ export const BrandingForm = ({
               }
             />
             <Divider label="Gallery Styling" labelPosition="left" />
+            <Box>
+              <InputLabel>Gallery layout</InputLabel>
+              <InputDescription pb="xs">
+                Fixed rows crop tiles to aligned rows. Fixed columns preserve
+                each image&apos;s aspect ratio in a masonry layout.
+              </InputDescription>
+              <Button.Group>
+                {(
+                  [
+                    {
+                      value: GalleryLayout.Justified,
+                      icon: <TbLayoutRows />,
+                      label: 'Fixed rows',
+                    },
+                    {
+                      value: GalleryLayout.Masonry,
+                      icon: <TbLayoutColumns />,
+                      label: 'Fixed columns',
+                    },
+                  ] as const
+                ).map((option) => {
+                  const current =
+                    branding.galleryLayout ?? GalleryLayout.Justified;
+                  return (
+                    <Button
+                      key={option.value}
+                      leftSection={option.icon}
+                      variant={current === option.value ? 'filled' : 'default'}
+                      size="xs"
+                      onClick={() =>
+                        onChange({
+                          ...branding,
+                          galleryLayout: option.value,
+                        })
+                      }
+                    >
+                      {option.label}
+                    </Button>
+                  );
+                })}
+              </Button.Group>
+            </Box>
             <Box>
               <InputLabel>Thumbnail size</InputLabel>
               <PresetButtons

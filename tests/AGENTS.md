@@ -113,6 +113,9 @@ one folder only produces one shape:
 - Custom branding: `thumbnailSize`/`thumbnailSpacing`/`thumbnailBorderRadius`
   away from their defaults, since `thumbnailSpacing` feeds both row fitting in
   `buildLayout` and the tile's own CSS margin.
+- Masonry branding: fixed-width columns with varied natural image heights, plus
+  a redistributed tile click that proves `originalIndex` still opens the file
+  represented by the clicked link.
 
 Deliberately not covered, because `GridGallery.tsx` never enables them:
 image selection (`enableImageSelection={false}`), `isSelected`, `tags`,

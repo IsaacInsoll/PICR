@@ -15,6 +15,7 @@ import {
   BANNER_H_ALIGNS,
   BANNER_SIZES,
   BANNER_V_ALIGNS,
+  GALLERY_LAYOUT_OPTIONS,
   HEADING_ALIGNMENT_OPTIONS,
 } from '@shared/branding/galleryPresets.js';
 
@@ -45,6 +46,9 @@ export const primaryColorEnum = new GraphQLEnumType(
 );
 export const headingAlignmentEnum = new GraphQLEnumType(
   enumToGQL('HeadingAlignment', HEADING_ALIGNMENT_OPTIONS),
+);
+export const galleryLayoutEnum = new GraphQLEnumType(
+  enumToGQL('GalleryLayout', GALLERY_LAYOUT_OPTIONS),
 );
 export const bannerSizeEnum = new GraphQLEnumType(
   enumToGQL('BannerSize', BANNER_SIZES),

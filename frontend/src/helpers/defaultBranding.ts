@@ -1,4 +1,9 @@
-import { HeadingFontKey, PrimaryColor, ThemeMode } from '@shared/gql/graphql';
+import {
+  GalleryLayout,
+  HeadingFontKey,
+  PrimaryColor,
+  ThemeMode,
+} from '@shared/gql/graphql';
 import {
   DEFAULT_BORDER_RADIUS,
   DEFAULT_HEADING_FONT_SIZE,
@@ -12,6 +17,7 @@ export const defaultBranding = {
   mode: ThemeMode.Auto,
   primaryColor: PrimaryColor.Blue,
   headingFontKey: HeadingFontKey.Default,
+  galleryLayout: GalleryLayout.Justified,
   thumbnailSize: DEFAULT_THUMBNAIL_SIZE,
   thumbnailSpacing: DEFAULT_SPACING,
   thumbnailBorderRadius: DEFAULT_BORDER_RADIUS,

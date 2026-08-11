@@ -12,6 +12,7 @@ import { db } from '../../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbBranding } from '../../db/models/index.js';
 import {
+  galleryLayoutEnum,
   headingAlignmentEnum,
   headingFontKeyEnum,
   primaryColorEnum,
@@ -23,7 +24,10 @@ import type { SocialLink } from '@shared/branding/socialLinkTypes.js';
 import { normalizeSocialLinks } from '@shared/branding/socialLinkTypes.js';
 import { normalizeHeadingFontKey } from '../helpers/headingFontKey.js';
 import { GraphQLError } from 'graphql/error/index.js';
-import type { HeadingAlignment } from '@shared/branding/galleryPresets.js';
+import {
+  normalizeGalleryLayout,
+  type HeadingAlignment,
+} from '@shared/branding/galleryPresets.js';
 
 const KNOWN_VIEWS = ['list', 'gallery', 'feed'] as const;
 type KnownView = (typeof KNOWN_VIEWS)[number];
@@ -112,6 +116,12 @@ const resolver: PicrResolver<object, EditBrandingArgs> = async (
     headingFontKey,
     availableViews,
     defaultView,
+    galleryLayout:
+      params.galleryLayout === undefined
+        ? undefined
+        : params.galleryLayout === null
+          ? null
+          : normalizeGalleryLayout(params.galleryLayout),
     defaultFileSort: params.defaultFileSort,
     thumbnailSize: params.thumbnailSize,
     thumbnailSpacing: params.thumbnailSpacing,
@@ -166,6 +176,7 @@ export const editBranding = {
       type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
     },
     defaultView: { type: GraphQLString },
+    galleryLayout: { type: galleryLayoutEnum },
     defaultFileSort: { type: GraphQLString },
     thumbnailSize: { type: GraphQLInt },
     thumbnailSpacing: { type: GraphQLInt },

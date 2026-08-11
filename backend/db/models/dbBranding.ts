@@ -28,6 +28,7 @@ export const dbBranding = pgTable('Brandings', {
   headingFontKey: varchar('headingFontKey', { length: 64 }),
   availableViews: json('availableViews').$type<string[]>(),
   defaultView: varchar('defaultView', { length: 32 }),
+  galleryLayout: varchar('galleryLayout', { length: 16 }),
   // Encoded default file sort (see encodeFileSort in shared/files/sortFiles).
   // null = inherit the app default (Filename ascending).
   defaultFileSort: varchar('defaultFileSort', { length: 32 }),

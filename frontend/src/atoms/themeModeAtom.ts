@@ -1,6 +1,7 @@
 import { atom } from 'jotai';
 import type { Branding } from '@shared/gql/graphql';
 import {
+  GalleryLayout,
   HeadingAlignment,
   HeadingFontKey,
   PrimaryColor,
@@ -22,6 +23,7 @@ export const defaultBranding: Branding = {
   mode: ThemeMode.Auto,
   primaryColor: PrimaryColor.Blue,
   headingFontKey: HeadingFontKey.Default,
+  galleryLayout: GalleryLayout.Justified,
   thumbnailSize: DEFAULT_THUMBNAIL_SIZE,
   thumbnailSpacing: DEFAULT_SPACING,
   thumbnailBorderRadius: DEFAULT_BORDER_RADIUS,
@@ -40,6 +42,7 @@ export const applyBrandingDefaults = (
   mode: branding?.mode ?? defaultBranding.mode,
   primaryColor: branding?.primaryColor ?? defaultBranding.primaryColor,
   headingFontKey: branding?.headingFontKey ?? defaultBranding.headingFontKey,
+  galleryLayout: branding?.galleryLayout ?? defaultBranding.galleryLayout,
   thumbnailSize: branding?.thumbnailSize ?? defaultBranding.thumbnailSize,
   thumbnailSpacing:
     branding?.thumbnailSpacing ?? defaultBranding.thumbnailSpacing,

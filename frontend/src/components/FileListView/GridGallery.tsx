@@ -47,6 +47,7 @@ export const GridGallery = ({
   const folderUrl = useFolderUrl();
   const theme = useAtomValue(themeModeAtom);
   const thumbnailSize = theme.thumbnailSize ?? DEFAULT_THUMBNAIL_SIZE;
+  const galleryLayout = theme.galleryLayout ?? 'justified';
   const margin = theme.thumbnailSpacing ?? DEFAULT_SPACING;
   const borderRadius = theme.thumbnailBorderRadius ?? DEFAULT_BORDER_RADIUS;
   const isTabletUp = useMediaQuery('(min-width: 48em)');
@@ -138,7 +139,9 @@ export const GridGallery = ({
   return (
     <Box px={outerPadding} style={{ marginTop: -margin }}>
       <Gallery
-        rowHeight={thumbnailSize}
+        {...(galleryLayout === 'masonry'
+          ? { layout: 'masonry' as const, columnWidth: thumbnailSize }
+          : { layout: 'justified' as const, rowHeight: thumbnailSize })}
         margin={margin}
         images={galleryItems}
         onClick={handleClick}

@@ -159,6 +159,10 @@ own click:
   carry none and stay a `<div>` (their click opens the lightbox). Import the
   gallery and its types from the package root only; do not deep-import its
   source or recreate the former vendored-source alias.
+  PICR owns `@picr/react-grid-gallery`, so its `/frontend` Dependabot entry
+  permanently excludes that package from version-update cooldowns. Preserve the
+  exact package-name entry under `cooldown.exclude` so releases can be adopted
+  immediately without weakening the cooldown for unrelated dependencies.
 - **Tables** (`FileListView`, `FileDataListView`): the row keeps its `onClick`
   for convenience, and the folder **name** cell is a real link. To stop the two
   fighting, the row handler bails on `event.defaultPrevented` — `NavLink` calls

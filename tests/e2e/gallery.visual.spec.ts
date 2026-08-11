@@ -306,6 +306,77 @@ test('custom branding changes row height, spacing and corner radius', async ({
   }
 });
 
+test('masonry branding renders fixed columns and preserves tile navigation', async ({
+  page,
+}) => {
+  const headers = await adminAuthHeader();
+  let brandingId: string | undefined;
+  const failures = trackBrowserFailures(page);
+
+  try {
+    const created = await gqlRequest<{ editBranding?: { id: string } }>(
+      editBrandingMutationText,
+      {
+        name: 'Masonry Gallery Test',
+        galleryLayout: 'masonry',
+        thumbnailSize: defaultRowHeight,
+        thumbnailSpacing: defaultMargin,
+      },
+      headers,
+    );
+    expect(created.errors).toBeUndefined();
+    brandingId = created.data?.editBranding?.id;
+    expect(brandingId).toBeTruthy();
+
+    const assigned = await gqlRequest(
+      setFolderBrandingMutationText,
+      { folderId: photoFolderId, brandingId },
+      headers,
+    );
+    expect(assigned.errors).toBeUndefined();
+
+    await useGalleryView(page);
+    await login(page);
+    await openFolder(page, photoFolderId);
+
+    const gallery = page.locator('#ReactGridGallery');
+    const tiles = gallery.locator(tileSelector);
+    await expect(gallery).toBeVisible();
+    await expect(tiles).toHaveCount(10);
+    await waitForGalleryImages(page, gallery, 10);
+    await setGalleryWidth(page, gallery, 1200);
+
+    const columns = gallery.locator('.ReactGridGallery_masonry-column');
+    await expect(columns).toHaveCount(5);
+    const boxes = await tileBoxes(gallery);
+    expect(new Set(boxes.map((box) => Math.round(box.width))).size).toBe(1);
+    expect(
+      new Set(boxes.map((box) => Math.round(box.height))).size,
+    ).toBeGreaterThan(1);
+
+    // Masonry redistributes tiles into column DOM order. Clicking a tile from
+    // the end of that redistributed order must still open that tile's href,
+    // proving the package's originalIndex reaches PICR's click handler.
+    const redistributedTile = gallery.locator(`a${viewportSelector}`).last();
+    const href = await redistributedTile.getAttribute('href');
+    expect(href).not.toBeNull();
+    await redistributedTile.click();
+    await expect(page).toHaveURL(new RegExp(`${escapeRegExp(href ?? '')}$`));
+    await expect(page.locator('.yarl__container')).toBeVisible();
+
+    expectNoBrowserFailures(failures);
+  } finally {
+    await gqlRequest(
+      setFolderBrandingMutationText,
+      { folderId: photoFolderId, brandingId: null },
+      headers,
+    );
+    if (brandingId) {
+      await gqlRequest(deleteBrandingMutationText, { id: brandingId }, headers);
+    }
+  }
+});
+
 async function useGalleryView(page: Page) {
   await page.addInitScript(() => {
     window.localStorage.setItem('SelectedView', JSON.stringify('gallery'));

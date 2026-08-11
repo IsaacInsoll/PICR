@@ -40,6 +40,15 @@ export const DEFAULT_THUMBNAIL_SIZE = THUMBNAIL_SIZE_PRESETS.md;
 export const DEFAULT_SPACING = SPACING_PRESETS.md;
 export const DEFAULT_BORDER_RADIUS = BORDER_RADIUS_PRESETS.md;
 export const DEFAULT_HEADING_FONT_SIZE = HEADING_FONT_SIZE_PRESETS.md;
+export const GALLERY_LAYOUT_OPTIONS = ['justified', 'masonry'] as const;
+export type GalleryLayoutValue = (typeof GALLERY_LAYOUT_OPTIONS)[number];
+export const DEFAULT_GALLERY_LAYOUT: GalleryLayoutValue = 'justified';
+
+export const normalizeGalleryLayout = (
+  layout?: string | null,
+): GalleryLayoutValue =>
+  layout === 'masonry' ? 'masonry' : DEFAULT_GALLERY_LAYOUT;
+
 export const HEADING_ALIGNMENT_OPTIONS = ['left', 'center'] as const;
 export type HeadingAlignment = (typeof HEADING_ALIGNMENT_OPTIONS)[number];
 export const DEFAULT_HEADING_ALIGNMENT: HeadingAlignment = 'left';
