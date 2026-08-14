@@ -30,6 +30,9 @@ export const usePublicLinkPasscodeGate = (): {
   });
 
   const info = result.data?.publicLinkInfo;
+  const isLocked = !!info?.requiresPasscode && !info.unlocked;
+  const unavailable = info?.available === false;
+  const isGateVisible = !!uuid && !!info && (isLocked || unavailable);
   const gateTheme = useMemo(
     () =>
       applyBrandingDefaults(
@@ -47,11 +50,13 @@ export const usePublicLinkPasscodeGate = (): {
   );
 
   useEffect(() => {
-    if (uuid && info) setThemeMode(gateTheme);
-  }, [gateTheme, info, setThemeMode, uuid]);
+    // This preview belongs only to the passcode/unavailable screen. Once the
+    // gallery is available, ViewFolder owns the complete branding theme; a
+    // parent effect here would run after ViewFolder's effect and replace its
+    // gallery fields with defaults from this deliberately limited preview.
+    if (isGateVisible) setThemeMode(gateTheme);
+  }, [gateTheme, isGateVisible, setThemeMode]);
 
-  const isLocked = !!info?.requiresPasscode && !info.unlocked;
-  const unavailable = info?.available === false;
   const pauseMe = !!uuid && (result.fetching || isLocked || unavailable);
 
   if (!uuid) return { pauseMe: false, element: null };

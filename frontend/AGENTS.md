@@ -793,6 +793,13 @@ The data flow is:
 3. On cancel, `BrandingDrawer` resets the atom to the original value from `originalTheme.current`
 4. On save, the mutation persists the change; GraphQL re-fetch updates the atom via step 1
 
+`PublicLinkPasscodeGate` may apply its deliberately limited branding preview
+only while it is rendering the passcode or unavailable screen. Once the gate
+opens, `ViewFolder` is the sole owner of the complete gallery theme. Do not keep
+the gate effect active over the gallery or make its preview mirror every visual
+branding field: the parent gate effect runs after the child folder effect and
+would overwrite complete folder branding with preview defaults.
+
 When adding a visual branding field, also add it to the hand-built `brandingKey`
 in `ViewFolder.tsx`. That key controls when `applyBrandingDefaults` is recomputed;
 omitting a field can leave stale branding when a poll or navigation changes only

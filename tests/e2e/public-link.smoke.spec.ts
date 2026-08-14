@@ -2,9 +2,12 @@ import { expect, test, type Page } from '@playwright/test';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { photoFolderId } from '../api/testVariables';
 import {
+  deleteBrandingMutationText,
   deleteUserMutationText,
+  editBrandingMutationText,
   editUserMutationText,
   loginMutationText,
+  setFolderBrandingMutationText,
 } from './mutations';
 
 type GqlResult<T> = {
@@ -91,10 +94,35 @@ test('public link and login routes load with no browser/runtime errors', async (
   }
   const authHeader = { authorization: `Bearer ${authToken}` };
   let createdUserId: string | undefined;
+  let brandingId: string | undefined;
 
   const failures = trackBrowserFailures(page);
 
   try {
+    const createBrandingResult = await gqlRequest<{
+      editBranding?: { id: string };
+    }>(
+      editBrandingMutationText,
+      {
+        name: `Public Link Smoke Branding ${suffix}`,
+        galleryLayout: 'masonry',
+        thumbnailSize: 150,
+        thumbnailSpacing: 12,
+        thumbnailBorderRadius: 16,
+      },
+      authHeader,
+    );
+    expect(createBrandingResult.errors).toBeUndefined();
+    brandingId = createBrandingResult.data?.editBranding?.id;
+    expect(brandingId).toBeTruthy();
+
+    const assignBrandingResult = await gqlRequest(
+      setFolderBrandingMutationText,
+      { folderId, brandingId },
+      authHeader,
+    );
+    expect(assignBrandingResult.errors).toBeUndefined();
+
     const createUserResult = await gqlRequest<{
       editUser?: { id: string };
     }>(
@@ -135,6 +163,15 @@ test('public link and login routes load with no browser/runtime errors', async (
     await expect(page.getByLabel('Passcode')).toHaveCount(0);
     await expect(page.getByText('Something went wrong')).toHaveCount(0);
     await expect(page).toHaveURL(new RegExp(`/s/${uuid}/${folderId}`));
+
+    const gallery = page.locator('#ReactGridGallery');
+    await expect(gallery).toBeVisible();
+    await expect(
+      gallery.locator('.ReactGridGallery_masonry-column').first(),
+    ).toBeVisible();
+    await expect(
+      gallery.locator('[data-testid="grid-gallery-item_viewport"]').first(),
+    ).toHaveCSS('border-radius', '16px');
     expectNoBrowserFailures(failures);
 
     await page.goto('/route-that-should-hit-login', {
@@ -151,6 +188,18 @@ test('public link and login routes load with no browser/runtime errors', async (
       await gqlRequest<{ deleteUser?: boolean }>(
         deleteUserMutationText,
         { id: createdUserId },
+        authHeader,
+      );
+    }
+    await gqlRequest(
+      setFolderBrandingMutationText,
+      { folderId, brandingId: null },
+      authHeader,
+    );
+    if (brandingId) {
+      await gqlRequest(
+        deleteBrandingMutationText,
+        { id: brandingId },
         authHeader,
       );
     }
