@@ -23,6 +23,7 @@ import { prettyDate } from '@shared/prettyDate';
 import { PicrLink } from '../../PicrLink';
 import { useBaseViewFolderURL } from '../../../hooks/useBaseViewFolderURL';
 import { PrettyFolderPath } from '../../PrettyFolderPath';
+import { useLanguage } from '../../../i18n/useLanguage';
 
 export const CommentBodyItem = ({
   comment,
@@ -32,6 +33,7 @@ export const CommentBodyItem = ({
 } & CommentHistoryProps) => {
   const { id, timestamp, user, systemGenerated, file } = comment;
   const openCommentModal = useOpenCommentsModal();
+  const { formattingLocale } = useLanguage();
   const displayUser = user ?? { id: 'system', name: 'System' };
   const baseFolderUrl = useBaseViewFolderURL();
 
@@ -103,7 +105,7 @@ export const CommentBodyItem = ({
                 />
               ) : null}
               <Text c="dimmed" size="xs">
-                {prettyDate(timestamp)}
+                {prettyDate(timestamp, formattingLocale)}
               </Text>
             </Group>
           </Stack>

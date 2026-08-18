@@ -1,9 +1,13 @@
 import { useAtom } from 'jotai';
 import type { ReactNode } from 'react';
-import moment from 'moment';
 import { finePrint } from '@/src/constants';
 import { PText } from '@/src/components/PText';
 import { dateDisplayRelativeAtom } from '@shared/uiAtoms';
+import {
+  formatDate,
+  formatRelativeTime,
+  tooltipDateTimeFormatOptions,
+} from '@shared/i18n/formatting';
 
 export const AppDateDisplay = ({
   dateString,
@@ -12,9 +16,8 @@ export const AppDateDisplay = ({
 }): ReactNode => {
   const [isRelative] = useAtom(dateDisplayRelativeAtom);
   if (!dateString) return null;
-  const d = moment(new Date(dateString));
-  const ago = d.fromNow();
-  const full = d.format('llll');
+  const ago = formatRelativeTime(dateString);
+  const full = formatDate(dateString, 'en', tooltipDateTimeFormatOptions);
 
   // in web frontend (mantine) this had props: size="sm" c="dimmed"
 

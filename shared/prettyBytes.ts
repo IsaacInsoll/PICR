@@ -1,16 +1,13 @@
-import pb from 'pretty-bytes';
+import { formatBytes, type FormatBytesOptions } from './i18n/formatting';
 
-export type PrettyBytesOptions = Parameters<typeof pb>[1];
-
-const parseBytes = (bytes: number | bigint | string): number | bigint => {
-  if (typeof bytes === 'string') {
-    const parsed = Number(bytes);
-    return Number.isFinite(parsed) ? parsed : 0;
-  }
-  return bytes;
-};
+export interface PrettyBytesOptions extends FormatBytesOptions {
+  locale?: string;
+}
 
 export const prettyBytes = (
   bytes: number | bigint | string,
-  options?: PrettyBytesOptions,
-) => pb(parseBytes(bytes), options);
+  options: PrettyBytesOptions = {},
+) => formatBytes(bytes, options.locale, options).formatted;
+
+export { formatBytes };
+export type { FormattedBytes } from './i18n/formatting';

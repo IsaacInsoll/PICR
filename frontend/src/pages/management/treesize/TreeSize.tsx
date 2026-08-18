@@ -16,6 +16,7 @@ import { useNavigate, useParams } from 'react-router';
 import { FolderSummary, treeSizeTabAtom } from './FolderSummary';
 import { prettyBytes } from '@shared/prettyBytes';
 import { useSetAtom } from 'jotai';
+import { useLanguage } from '../../../i18n/useLanguage';
 
 export const TreeSize = ({ rootId }: { rootId?: string }) => {
   const { slug } = useParams();
@@ -49,6 +50,7 @@ const TreeSizeNode = ({
   folderId: string;
   setFolderId: (id: string) => void;
 }) => {
+  const { formattingLocale } = useLanguage();
   const { slices, folder } = useTreeSize(folderId);
   const [hover, setHover] = useState<string | null>(null);
 
@@ -71,7 +73,11 @@ const TreeSizeNode = ({
         <Breadcrumbs separator="→" separatorMargin="md" mt="xs">
           {crumbs}
         </Breadcrumbs>
-        <Code>{prettyBytes(Number(folder?.totalSize ?? 0))}</Code>
+        <Code>
+          {prettyBytes(Number(folder?.totalSize ?? 0), {
+            locale: formattingLocale,
+          })}
+        </Code>
       </Group>
       <Divider />
       <Group style={{ alignItems: 'start' }}>

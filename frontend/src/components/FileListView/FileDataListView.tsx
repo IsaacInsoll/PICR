@@ -20,6 +20,7 @@ import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 import { normalizeDisplayName } from '@shared/displayName';
 import { PicrLink } from '../PicrLink';
 import { FileLink } from '../FileLink';
+import { useLanguage } from '../../i18n/useLanguage';
 
 const folderContentsColumn = createPicrColumns<FolderContentsItem>();
 
@@ -45,6 +46,11 @@ const NameCell = ({ item }: { item: FolderContentsItem }) => {
     );
   }
   return <>{name}</>;
+};
+
+const FileSizeCell = ({ value }: { value: string | null }) => {
+  const { formattingLocale } = useLanguage();
+  return value ? prettyBytes(value, { locale: formattingLocale }) : null;
 };
 
 export const FileDataListView = ({
@@ -197,7 +203,7 @@ const columns: (PicrColumns<FolderContentsItem> & {
         id: 'fileSize',
         header: 'File Size',
         cell: ({ value }) => {
-          return <>{value ? prettyBytes(value) : null}</>;
+          return <FileSizeCell value={value} />;
         },
         widthPercent: 10,
       },

@@ -54,6 +54,7 @@ import { notifications } from '@mantine/notifications';
 import { useRequery } from '@shared/hooks/useRequery';
 import { isNewerPicrVersion } from '../../helpers/versionUpdates';
 import { DEFAULT_SERVER_MEDIA_SETTINGS } from '@shared/serverMediaSettings';
+import { useLanguage } from '../../i18n/useLanguage';
 
 type ServerInfoData = NonNullable<ServerInfoQueryQuery['serverInfo']>;
 
@@ -339,6 +340,7 @@ const TreesizeLink = () => {
 // without used), so it's held back until the user calculates media/cache usage
 // and shown alongside them.
 const ServerFolderSize = ({ disk }: { disk: ServerInfoData['disk'] }) => {
+  const { formattingLocale } = useLanguage();
   const [requested, setRequested] = useState(false);
   const [result] = useQuery({
     query: expensiveServerFileSizeQuery,
@@ -366,13 +368,17 @@ const ServerFolderSize = ({ disk }: { disk: ServerInfoData['disk'] }) => {
   return (
     <>
       <InfoRow label="Media" description="Your original photos and videos.">
-        <Text size="sm">{prettyBytes(server.mediaSize)}</Text>
+        <Text size="sm">
+          {prettyBytes(server.mediaSize, { locale: formattingLocale })}
+        </Text>
       </InfoRow>
       <InfoRow
         label="Cache"
         description="Thumbnails and previews PICR created. Safe to delete — they regenerate automatically."
       >
-        <Text size="sm">{prettyBytes(server.cacheSize)}</Text>
+        <Text size="sm">
+          {prettyBytes(server.cacheSize, { locale: formattingLocale })}
+        </Text>
       </InfoRow>
       {disk ? (
         <InfoRow
@@ -380,7 +386,8 @@ const ServerFolderSize = ({ disk }: { disk: ServerInfoData['disk'] }) => {
           description="Free space on the drive that holds your media."
         >
           <Text size="sm">
-            {prettyBytes(disk.free)} free of {prettyBytes(disk.total)}
+            {prettyBytes(disk.free, { locale: formattingLocale })} free of{' '}
+            {prettyBytes(disk.total, { locale: formattingLocale })}
           </Text>
         </InfoRow>
       ) : null}
@@ -818,6 +825,7 @@ const formatUptime = (seconds: number) => {
 };
 
 const SystemCard = ({ system }: { system: ServerInfoData['system'] }) => {
+  const { formattingLocale } = useLanguage();
   const metrics = [
     {
       label: 'Platform',
@@ -826,7 +834,7 @@ const SystemCard = ({ system }: { system: ServerInfoData['system'] }) => {
     },
     {
       label: 'Memory',
-      value: prettyBytes(system.totalMemory),
+      value: prettyBytes(system.totalMemory, { locale: formattingLocale }),
       icon: <StorageIcon />,
     },
     {
@@ -948,6 +956,7 @@ const InodeBadge = ({ status }: { status: string }) => {
 // top row (when it ran + how long) with the added/changed/moved breakdown on
 // its own full-width line beneath, matching the InfoRow description pattern.
 const LastScan = ({ status }: { status: ScheduledScanStatusInfo }) => {
+  const { formattingLocale } = useLanguage();
   if (!status.lastStartedAt) {
     return (
       <InfoRow label="Last scheduled scan">
@@ -967,7 +976,9 @@ const LastScan = ({ status }: { status: ScheduledScanStatusInfo }) => {
           Last scheduled scan
         </Text>
         <Group gap="xs" wrap="wrap" justify="flex-end" style={{ minWidth: 0 }}>
-          <Text size="sm">{prettyDate(status.lastStartedAt)}</Text>
+          <Text size="sm">
+            {prettyDate(status.lastStartedAt, formattingLocale)}
+          </Text>
           {typeof status.lastDurationMs === 'number' ? (
             <Badge color="gray" variant="light">
               {formatDuration(status.lastDurationMs)}
@@ -998,6 +1009,7 @@ const ScanningCard = ({
   scanning: ScanningInfo;
   inode: InodeSupportInfo;
 }) => {
+  const { formattingLocale } = useLanguage();
   const scheduled = scanning.scheduledScan;
   return (
     <InfoCard
@@ -1036,7 +1048,7 @@ const ScanningCard = ({
         ) : null}
         {scheduled.nextScanAt ? (
           <Text size="sm" c="dimmed">
-            Next: {prettyDate(scheduled.nextScanAt)}
+            Next: {prettyDate(scheduled.nextScanAt, formattingLocale)}
           </Text>
         ) : null}
       </InfoRow>

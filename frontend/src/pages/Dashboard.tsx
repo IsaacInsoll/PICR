@@ -41,7 +41,7 @@ import {
 import type { PicrFolder } from '@shared/types/picr';
 import type { RecentUsersQueryQuery } from '@shared/gql/graphql';
 import { useFolderLink } from '../hooks/useSetFolder';
-import { prettyBytes } from '@shared/prettyBytes';
+import { formatBytes } from '@shared/prettyBytes';
 import { imageURL } from '../helpers/imageURL';
 import type { ImageUrlFileInput } from '@shared/types/ui';
 import { DateDisplay } from '../components/FileListView/Filtering/PrettyDate';
@@ -62,6 +62,7 @@ import { FoldersSortType } from '@shared/gql/graphql';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
 import { useRequery } from '@shared/hooks/useRequery';
 import { isNewerPicrVersion } from '../helpers/versionUpdates';
+import { useLanguage } from '../i18n/useLanguage';
 
 const dashboardLimits = {
   desktop: {
@@ -196,6 +197,7 @@ const AnimatedNumber = ({
   suffix?: string;
   decimalScale?: number;
 }) => {
+  const { formattingLocale } = useLanguage();
   const [rollingValue, setRollingValue] = useState(0);
   const [settled, setSettled] = useState(false);
   const duration = 900;
@@ -221,11 +223,17 @@ const AnimatedNumber = ({
     };
   }, [value]);
 
+  const separatorParts = new Intl.NumberFormat(formattingLocale).formatToParts(
+    1000.1,
+  );
   const formatterProps = {
     decimalScale,
+    decimalSeparator:
+      separatorParts.find(({ type }) => type === 'decimal')?.value ?? '.',
     fixedDecimalScale: decimalScale != null && decimalScale > 0,
     suffix,
-    thousandSeparator: true,
+    thousandSeparator:
+      separatorParts.find(({ type }) => type === 'group')?.value ?? ',',
   };
 
   return settled ? (
@@ -239,21 +247,19 @@ const AnimatedNumber = ({
   );
 };
 
-// Splits prettyBytes output ("218 GB", "1.4 TB") into the numeric value, a unit
-// suffix and its decimal count so RollingNumber can roll it up too.
-const bytesForRoll = (bytes: string) => {
-  const [num, unit = ''] = prettyBytes(bytes).split(' ');
-  const decimals = num.includes('.') ? num.split('.')[1].length : 0;
+const bytesForRoll = (bytes: string, locale: string) => {
+  const { value, unit, fractionDigits } = formatBytes(bytes, locale);
   return {
-    value: parseFloat(num),
+    value,
     suffix: unit ? ` ${unit}` : undefined,
-    decimals,
+    decimals: fractionDigits,
   };
 };
 
 // Loaded in its own query — these are subtree aggregates and can be slow, so we
 // never block the rest of the dashboard on them.
 const LibraryStats = ({ folderId }: { folderId?: string }) => {
+  const { formattingLocale } = useLanguage();
   const density = useDashboardDensity();
   const [result, reQuery] = useQuery({
     query: dashboardStatsQuery,
@@ -263,7 +269,7 @@ const LibraryStats = ({ folderId }: { folderId?: string }) => {
   useRequery(reQuery, 20000);
   const f = result.data?.dashboardStats;
   if (!f) return null;
-  const size = bytesForRoll(f.totalSize);
+  const size = bytesForRoll(f.totalSize, formattingLocale);
   const showDetailedCounts = density === 'desktop';
   return (
     <>

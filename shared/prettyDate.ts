@@ -1,9 +1,8 @@
-import moment from 'moment/moment';
+import { formatDate } from './i18n/formatting';
 
-export const prettyDate = (dateString: string) => {
+export const prettyDate = (dateString: string, locale = 'en') => {
   if (!dateString) return '';
-  const d = new Date(dateString);
-  return moment(d).format('MMMM Do YYYY, h:mm:ss a');
+  return formatDate(dateString, locale);
 };
 
 // Node reports filesystem creation time as birthtime, but mounted or virtual

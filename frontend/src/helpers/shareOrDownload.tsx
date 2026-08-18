@@ -11,6 +11,7 @@ import {
 import type { PicrFile } from '@shared/types/picr';
 import { prettyBytes } from '@shared/prettyBytes';
 import { useSyncExternalStore } from 'react';
+import { useLanguage } from '../i18n/useLanguage';
 
 // iOS (including iPadOS, which reports itself as desktop Safari) does not honor the
 // HTML5 anchor `download` attribute for same-origin files — it opens the "Save to
@@ -210,17 +211,20 @@ const formatEta = (seconds: number): string => {
     : `${hours}h left`;
 };
 
-const progressDetails = (progress?: DownloadProgress): string | undefined => {
+const progressDetails = (
+  progress: DownloadProgress | undefined,
+  locale: string,
+): string | undefined => {
   if (!progress) return undefined;
 
   const parts = [
     progress.total
-      ? `${prettyBytes(progress.received)} / ${prettyBytes(progress.total)}`
-      : prettyBytes(progress.received),
+      ? `${prettyBytes(progress.received, { locale })} / ${prettyBytes(progress.total, { locale })}`
+      : prettyBytes(progress.received, { locale }),
   ];
 
   if (progress.bytesPerSecond && progress.bytesPerSecond > 0) {
-    parts.push(`${prettyBytes(progress.bytesPerSecond)}/s`);
+    parts.push(`${prettyBytes(progress.bytesPerSecond, { locale })}/s`);
   }
 
   if (
@@ -239,12 +243,16 @@ const progressDetails = (progress?: DownloadProgress): string | undefined => {
 
 // Once the file is downloaded, throughput and ETA are meaningless — only the size
 // is still worth showing.
-const completedDetails = (progress?: DownloadProgress): string | undefined => {
+const completedDetails = (
+  progress: DownloadProgress | undefined,
+  locale: string,
+): string | undefined => {
   if (!progress) return undefined;
-  return prettyBytes(progress.total ?? progress.received);
+  return prettyBytes(progress.total ?? progress.received, { locale });
 };
 
 export const DownloadSharePromptHost = () => {
+  const { formattingLocale } = useLanguage();
   const state = useSyncExternalStore(
     subscribeToSharePrompt,
     getSharePromptSnapshot,
@@ -256,8 +264,8 @@ export const DownloadSharePromptHost = () => {
   const isSaving = state?.status === 'saving';
   const isBusy = isDownloading || isSaving;
   const details = isDownloading
-    ? progressDetails(state.progress)
-    : completedDetails(state?.progress);
+    ? progressDetails(state.progress, formattingLocale)
+    : completedDetails(state?.progress, formattingLocale);
 
   // While downloading this cancels the fetch; once the file is ready it just
   // dismisses the modal (cancel is unset by then).

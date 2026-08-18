@@ -1,4 +1,7 @@
 {
+  "date": {
+    "invalid": "Invalid date"
+  },
   "language": {
     "label": "Language"
   }

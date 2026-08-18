@@ -2,7 +2,7 @@ import {
   defaultLanguage,
   isSupportedLanguage,
   type SupportedLanguage,
-} from './languages.js';
+} from './languages';
 
 export interface ResolvedLanguage {
   catalogLanguage: SupportedLanguage;
