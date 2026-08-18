@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { dynamicGalleryCatalogPatterns } from '../../i18next.config';
+import { dynamicCatalogPatterns } from '../../i18next.config';
 import {
   authErrorCatalog,
   authErrorReasons,
 } from '../../shared/auth/authErrorContract';
 import { metadataDescriptions } from '../../shared/fileMetadata';
 import { supportedLanguageCodes } from '../../shared/i18n/languages';
-import { resources } from '../../shared/i18n/resources';
+import {
+  namespaces,
+  resources,
+  type TranslationNamespace,
+} from '../../shared/i18n/resources';
 
 const translationAtPath = (
   catalog: unknown,
@@ -31,32 +35,53 @@ const translationLeafPaths = (
 
 const expectNonEmptyTranslation = (
   language: (typeof supportedLanguageCodes)[number],
+  namespace: TranslationNamespace,
   path: readonly string[],
 ) => {
-  const translation = translationAtPath(resources[language].gallery, path);
-  expect(translation, `${language}:gallery:${path.join('.')}`).toEqual(
+  const translation = translationAtPath(resources[language][namespace], path);
+  expect(translation, `${language}:${namespace}:${path.join('.')}`).toEqual(
     expect.any(String),
   );
-  expect(translation, `${language}:gallery:${path.join('.')}`).not.toBe('');
+  expect(translation, `${language}:${namespace}:${path.join('.')}`).not.toBe(
+    '',
+  );
 };
 
-const expandedDynamicPaths = (): string[][] =>
-  dynamicGalleryCatalogPatterns.flatMap((pattern) => {
-    if (pattern.at(-1) !== '*') return [[...pattern]];
+interface DynamicCatalogPath {
+  namespace: TranslationNamespace;
+  path: string[];
+}
 
-    const familyPath = pattern.slice(0, -1);
-    const primaryFamily = translationAtPath(resources.en.gallery, familyPath);
-    const leafPaths = translationLeafPaths(primaryFamily);
+const expandedDynamicPaths = (): DynamicCatalogPath[] =>
+  namespaces.flatMap((namespace) =>
+    dynamicCatalogPatterns[namespace].flatMap((pattern) => {
+      if (pattern.at(-1) !== '*') {
+        return [{ namespace, path: [...pattern] }];
+      }
 
-    expect(leafPaths, `en:gallery:${familyPath.join('.')}`).not.toHaveLength(0);
-    return leafPaths.map((leafPath) => [...familyPath, ...leafPath]);
-  });
+      const familyPath = pattern.slice(0, -1);
+      const primaryFamily = translationAtPath(
+        resources.en[namespace],
+        familyPath,
+      );
+      const leafPaths = translationLeafPaths(primaryFamily);
 
-describe('dynamic gallery translation contracts', () => {
+      expect(
+        leafPaths,
+        `en:${namespace}:${familyPath.join('.')}`,
+      ).not.toHaveLength(0);
+      return leafPaths.map((leafPath) => ({
+        namespace,
+        path: [...familyPath, ...leafPath],
+      }));
+    }),
+  );
+
+describe('dynamic translation contracts', () => {
   it('keeps every dynamic catalog path complete across locales', () => {
-    for (const path of expandedDynamicPaths()) {
+    for (const { namespace, path } of expandedDynamicPaths()) {
       for (const language of supportedLanguageCodes) {
-        expectNonEmptyTranslation(language, path);
+        expectNonEmptyTranslation(language, namespace, path);
       }
     }
   });
@@ -69,7 +94,7 @@ describe('dynamic gallery translation contracts', () => {
 
     for (const language of supportedLanguageCodes) {
       for (const reason of globalReasons) {
-        expectNonEmptyTranslation(language, [
+        expectNonEmptyTranslation(language, 'gallery', [
           'error',
           'global',
           'reason',
@@ -86,7 +111,7 @@ describe('dynamic gallery translation contracts', () => {
       );
 
       for (const language of supportedLanguageCodes) {
-        expectNonEmptyTranslation(language, ['metadata', key]);
+        expectNonEmptyTranslation(language, 'gallery', ['metadata', key]);
       }
     }
   });

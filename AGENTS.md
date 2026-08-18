@@ -283,10 +283,11 @@ npm run install-all              # Preferred install flow for all subsystems
 # it, the CLI traverses subsystem dependencies and only warns on parse failures.
 # Shared translation call sites must use an extractor-recognized `t(...)` call,
 # or the extractor configuration must be updated with the new call pattern.
-# Runtime-selected translation families must also be listed in
-# `dynamicGalleryCatalogPatterns`. `npm run i18n:check` combines the CLI's static
-# and unused-key reports with a cross-locale contract because `i18next-cli status`
-# does not include preserved dynamic keys in its missing-translation count.
+# Runtime-selected translation families must also be listed under their owning
+# namespace in `dynamicCatalogPatterns`. `npm run i18n:check` combines the CLI's
+# static and unused-key reports with a cross-locale contract because
+# `i18next-cli status` does not include preserved dynamic keys in its
+# missing-translation count.
 # Add `app` to the extraction inputs when app translation work begins.
 
 # Formatting
