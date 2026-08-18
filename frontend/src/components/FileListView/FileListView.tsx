@@ -33,9 +33,10 @@ import { DotsIcon } from '../../PicrIcons';
 import { FolderMenuItems } from './FolderMenu';
 import { PicrAvatar } from '../PicrAvatar';
 import { prettyBytes } from '@shared/prettyBytes';
-import { pluralize } from '@shared/pluralize';
 import { prettyDate } from '@shared/prettyDate';
 import type { PicrUser } from '@shared/types/picr';
+import { useLanguage } from '../../i18n/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 export const FileListView = ({
   files,
@@ -79,6 +80,8 @@ const Row = ({
   const setFolder = useSetFolder();
   const folderUrl = useFolderUrl();
   const isMobile = useIsMobile();
+  const { formattingLocale } = useLanguage();
+  const { t } = useTranslation('gallery');
   const isFile = isFolderContentsFile(file);
   const isFolder = !isFile;
   const modifiedDate = isFolder
@@ -91,8 +94,8 @@ const Row = ({
   const flag = isFile ? file.flag : null;
   const fileSize = isFile ? file.fileSize : null;
   const title = canView
-    ? `Modified: ${modifiedDate ? prettyDate(modifiedDate) : 'N/A'}\nLast Comment: ${latestComment ? prettyDate(latestComment) : 'N/A'}`
-    : `Modified: ${modifiedDate ? prettyDate(modifiedDate) : 'N/A'}`;
+    ? `Modified: ${modifiedDate ? prettyDate(modifiedDate, formattingLocale) : 'N/A'}\nLast Comment: ${latestComment ? prettyDate(latestComment, formattingLocale) : 'N/A'}`
+    : `Modified: ${modifiedDate ? prettyDate(modifiedDate, formattingLocale) : 'N/A'}`;
 
   // if filtering by RecentlyCommented or LastModified then lets show that data
   const { type } = useAtomValue(fileSortAtom);
@@ -105,7 +108,7 @@ const Row = ({
               {totalComments}
             </Badge>
             <Text c="dimmed" fz="xs">
-              Latest: {prettyDate(latestComment)}
+              Latest: {prettyDate(latestComment, formattingLocale)}
             </Text>
           </>
         ) : null}
@@ -114,7 +117,7 @@ const Row = ({
       <>
         {modifiedDate ? (
           <Text c="dimmed" fz="xs">
-            Modified: {prettyDate(modifiedDate)}
+            Modified: {prettyDate(modifiedDate, formattingLocale)}
           </Text>
         ) : null}
       </>
@@ -199,7 +202,7 @@ const Row = ({
                           : null}
                         {rating ? (
                           <Text c="dimmed" fz="xs">
-                            {pluralize(rating, 'Star')}
+                            {t('count.star', { count: rating })}
                             {/*{file.fileSize ? ', ' + prettyBytes(file.fileSize) : null}*/}
                           </Text>
                         ) : null}
@@ -207,7 +210,7 @@ const Row = ({
                     ) : null}
                     {totalComments ? (
                       <Text c="dimmed" fz="xs">
-                        {pluralize(totalComments, 'Comment')}
+                        {t('count.comment', { count: totalComments })}
                         {/*{file.fileSize ? ', ' + prettyBytes(file.fileSize) : null}*/}
                       </Text>
                     ) : null}
@@ -236,7 +239,9 @@ const Row = ({
             </Avatar.Group>
           ) : null}
           <Text fz="sm" ta="right">
-            {fileSize ? prettyBytes(fileSize) : null}
+            {fileSize
+              ? prettyBytes(fileSize, { locale: formattingLocale })
+              : null}
           </Text>
           <Text fz="xs" ta="right" c="dimmed">
             {isFolder ? 'Folder' : file.type}

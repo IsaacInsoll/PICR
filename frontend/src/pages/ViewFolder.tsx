@@ -58,6 +58,7 @@ import { GalleryFooter } from '../components/GalleryFooter';
 import { DownloadZipButton } from '../components/DownloadZipButton';
 import { viewFolderModeFromFileId } from '../helpers/viewFolderMode';
 import { getUUID } from '../helpers/getUUID';
+import { useTranslation } from 'react-i18next';
 
 const LoggedInHeader = lazy(() =>
   import('../components/Header/LoggedInHeader').then((module) => ({
@@ -116,6 +117,7 @@ export const ViewFolder = () => {
 };
 
 const ViewFolderBody = () => {
+  const { t } = useTranslation('gallery');
   const { folderId, fileId, tab } = useParams();
   const navigate = useNavigate();
   const setFolder = useSetFolder();
@@ -364,7 +366,7 @@ const ViewFolderBody = () => {
           <FolderHeader
             folder={folder}
             customSubtitle={folder.subtitle ?? undefined}
-            subtitle={folderSubtitle(folder)}
+            subtitle={folderSubtitle(folder, t)}
             actions={<Group>{actions}</Group>}
             hideTitleAndCustomSubtitle={Boolean(folder.bannerImage)}
             hideBreadcrumbs={!activity && Boolean(folder.bannerImage)}

@@ -1,12 +1,13 @@
 import type { TreeSizeQueryQuery } from '@shared/gql/graphql';
 import type { MantineStyleProp } from '@mantine/core';
 import { Alert, Box, Code, Progress, Stack, Table, Tabs } from '@mantine/core';
-import { prettyBytes } from '@shared/prettyBytes';
+import { formatBytes } from '@shared/prettyBytes';
 import { chartColorFiles } from './chartColors';
 import type { PieSlice } from './useTreeSize';
 import { FileIcon, FolderIcon, InfoIcon } from '../../../PicrIcons';
 import { atom, useAtom } from 'jotai';
-import { pluralize } from '@shared/pluralize';
+import { useLanguage } from '../../../i18n/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 export const treeSizeTabAtom = atom<'subfolders' | 'files'>('subfolders');
 
@@ -24,6 +25,7 @@ export const FolderSummary = ({
   slices: PieSlice[];
 }) => {
   const [treeSizeTab, setTreeSizeTab] = useAtom(treeSizeTabAtom);
+  const { t } = useTranslation('gallery');
   const data: { id: string; name: string; size: number; color?: string }[] =
     folder.subFolders.map((f) => ({
       ...f,
@@ -56,10 +58,10 @@ export const FolderSummary = ({
       >
         <Tabs.List>
           <Tabs.Tab value="subfolders" leftSection={<FolderIcon />}>
-            {pluralize(folder.subFolders.length, 'folder', true)}
+            {t('count.folder', { count: folder.subFolders.length })}
           </Tabs.Tab>
           <Tabs.Tab value="files" leftSection={<FileIcon />}>
-            {pluralize(folder.files.length, 'file', true)}
+            {t('count.file', { count: folder.files.length })}
           </Tabs.Tab>
         </Tabs.List>
 
@@ -188,14 +190,14 @@ export const FolderTable = ({
 };
 
 const Bytes = ({ bytes }: { bytes: number }) => {
-  const b = prettyBytes(bytes);
-  const unit = b.split(' ')[1];
-  return <Code style={bytesOpacity[unit]}>{prettyBytes(bytes)}</Code>;
+  const { formattingLocale } = useLanguage();
+  const { formatted, unit } = formatBytes(bytes, formattingLocale);
+  return <Code style={bytesOpacity[unit]}>{formatted}</Code>;
 };
 
 const bytesOpacity: { [key: string]: MantineStyleProp } = {
   B: { opacity: '20%', fontStyle: 'italic' },
-  KB: { opacity: '20%' },
+  kB: { opacity: '20%' },
   MB: { opacity: '40%', fontWeight: 'light' },
   GB: { opacity: '80%' },
   TB: { opacity: '100%', fontWeight: 'bolder' },

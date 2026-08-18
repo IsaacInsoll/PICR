@@ -1,4 +1,17 @@
 {
+  "count": {
+    "comment_one": "{{count}} Comment",
+    "comment_other": "{{count}} Comments",
+    "file_one": "{{count}} File",
+    "file_other": "{{count}} Files",
+    "folder_one": "{{count}} Folder",
+    "folder_other": "{{count}} Folders",
+    "star_one": "{{count}} Star",
+    "star_other": "{{count}} Stars"
+  },
+  "folder": {
+    "empty": "Empty Folder"
+  },
   "passcode": {
     "defaultTitle": "Gallery passcode",
     "description": "Enter the passcode to open this gallery.",

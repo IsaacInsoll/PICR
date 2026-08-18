@@ -49,12 +49,12 @@ shared/
 │   ├── sortFiles.ts        # ViewFolder types, sortFolderContents, isBannerImage/isHeroImage flags
 │   └── folderContentsViewModel.ts  # FolderContentsItem, folderContentsItems()
 ├── search/                 # Search utilities
+├── i18n/                   # Locale resolution, catalogs, and Intl helpers
 ├── validation/             # Input validation
 ├── hooks/                  # Shared React hooks
 ├── helpers/                # General utilities
 ├── prettyBytes.ts          # File size formatting
 ├── prettyDate.ts           # Date formatting
-├── pluralize.ts            # Pluralization
 └── package.json
 ```
 
@@ -242,18 +242,91 @@ if (isImage(file)) {
 ### Formatting Utilities
 
 ```typescript
-// File sizes
-import { prettyBytes } from '@shared/prettyBytes';
-prettyBytes(1048576); // "1 MB"
+// File sizes. Use the structured result when a visualization needs the number
+// and unit separately; do not parse the localized display string.
+import { formatBytes } from '@shared/i18n/formatting';
+formatBytes(1048576, 'fr').formatted; // "1,05 MB"
+formatBytes(1048576, 'fr').value; // 1.05
 
 // Dates
 import { prettyDate } from '@shared/prettyDate';
-prettyDate('2024-01-15T10:30:00Z'); // "January 15th 2024, 10:30:00 am"
-
-// Pluralization
-import { pluralize } from '@shared/pluralize';
-pluralize(5, 'photo'); // "5 photos"
+prettyDate('2024-01-15T10:30:00Z', 'fr');
 ```
+
+Shared formatting helpers are pure and default to English for app/backend
+callers that do not yet have a language context. Frontend callers must pass
+`useLanguage().formattingLocale` for numbers and absolute dates. Relative-time
+output is translated prose and must follow the catalog language. UI plurals
+belong in i18next catalogs with a numeric `count`; do not add another shared
+English-only pluralizer.
+
+Fallback strings inside these pure helpers default to English for app
+compatibility. A caller with a translator should pass the localized label (for
+example, `t('date.invalid')`) explicitly. Do not import
+`shared/i18n/resources` from a formatting helper: that would pull every catalog
+into untranslated app consumers and prevent catalog loading from becoming lazy
+at the frontend bootstrap later.
+
+#### Group quantities, not technical specs
+
+Localize every number, but only apply digit grouping when the value is a
+quantity a reader scans for magnitude. Values that are technical notation are
+localized (decimal comma in French) but never grouped, because that is how every
+other tool in this space writes them:
+
+| Group (`useGrouping` default)     | Never group (`useGrouping: false`)             |
+| --------------------------------- | ---------------------------------------------- |
+| Dashboard totals ("12,483 files") | Shutter denominators — `1/8000`, not `1/8,000` |
+| Byte counts via `formatBytes`     | Pixel dimensions — `6000 × 4000 px`            |
+|                                   | ISO, focal lengths, years, ports, identifiers  |
+
+Grouping separators exist to help judge magnitude. A shutter denominator is a
+token from a small memorized set, and pixel dimensions are pattern-matched as a
+shape, so separators only add noise — and in French they collide with the space
+already delimiting `×` (`6 000 × 4 000`). Keeping the EXIF panel consistent
+matters too: ISO renders ungrouped today, so grouping its neighbours looks wrong.
+
+#### Relative import extensions are consumer-specific
+
+There is no single specifier style that works everywhere, so the style a shared
+module uses depends on who imports it **at runtime**:
+
+| Consumer             | Runtime relative imports | Why                                                                           |
+| -------------------- | ------------------------ | ----------------------------------------------------------------------------- |
+| `app` (Expo/Metro)   | extensionless — `'./x'`  | Metro consumes the TypeScript source and will not map `./x.js` back to `x.ts` |
+| `backend` (Node ESM) | explicit — `'./x.js'`    | `backend/tsconfig.json` uses `module: NodeNext`, which requires the extension |
+| `frontend` (Vite)    | either                   | The bundler resolves both                                                     |
+
+Type-only imports are erased before any consumer sees them, so `.js` is always
+fine there.
+
+**This is a property of a module's transitive import graph, not of its
+directory.** Two files in the same folder can legitimately differ:
+
+```ts
+// shared/urql/mutations/addCommentMutation.ts   — imported by app and frontend
+import { gql } from '../gql';
+// shared/urql/mutations/deleteUserMutation.ts   — imported by frontend only
+import { gql } from '../gql.js';
+```
+
+Both are correct. Do not "fix" either to match the other, and do not assume a
+directory is uniformly one style.
+
+When you change a shared runtime import graph, check every consumer that can
+reach the changed module and validate each one — `cd backend && npx tsc --noEmit`
+for Node, and an actual `npx expo export` for Metro, since lint and Vite builds
+pass either way.
+
+A backend violation surfaces as a NodeNext extension error at type-check rather
+than a runtime failure, so it is caught — but the error appears inside a
+`shared/` file and reads confusingly, which is why reachability is worth
+checking first.
+
+If a module genuinely has to serve both `app` and `backend` at runtime, that is
+an unsolved case in this repo. Investigate and verify a project-wide approach
+against both Metro resolution and backend emit before prescribing one; do not
+adopt a solution that has only been reasoned about.
 
 ### Validation
 

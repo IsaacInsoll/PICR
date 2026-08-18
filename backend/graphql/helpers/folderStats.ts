@@ -2,7 +2,9 @@ import { allSubfolders } from '../../helpers/allSubfolders.js';
 import { db } from '../../db/picrDb.js';
 import { and, count, eq, inArray } from 'drizzle-orm';
 import { dbFile } from '../../db/models/index.js';
-import { pluralize } from '@shared/pluralize.js';
+
+const pluralizeEnglish = (count: number, noun: string): string =>
+  `${count} ${noun}${count === 1 ? '' : 's'}`;
 
 export const folderStats = async (folderId: number): Promise<FolderStat[]> => {
   const children = await allSubfolders(folderId);
@@ -64,7 +66,7 @@ export const folderStatsSummaryText = async (folderId: number) => {
   const stats = await folderStats(folderId);
   let str = stats
     .filter(({ type, total }) => type !== 'Folder' && total > 0)
-    .map(({ type, total }) => pluralize(total, type))
+    .map(({ type, total }) => pluralizeEnglish(total, type))
     .join(', ');
 
   const folder = stats.find(({ type }) => type === 'Folder')?.total;

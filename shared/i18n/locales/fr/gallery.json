@@ -1,4 +1,17 @@
 {
+  "count": {
+    "comment_one": "{{count}} commentaire",
+    "comment_other": "{{count}} commentaires",
+    "file_one": "{{count}} fichier",
+    "file_other": "{{count}} fichiers",
+    "folder_one": "{{count}} dossier",
+    "folder_other": "{{count}} dossiers",
+    "star_one": "{{count}} étoile",
+    "star_other": "{{count}} étoiles"
+  },
+  "folder": {
+    "empty": "Dossier vide"
+  },
   "passcode": {
     "defaultTitle": "Code d’accès de la galerie",
     "description": "Saisissez le code d’accès pour ouvrir cette galerie.",
