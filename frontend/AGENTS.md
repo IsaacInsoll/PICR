@@ -2,6 +2,16 @@
 
 React 19 SPA for the PICR admin interface and public gallery views.
 
+Prefer logical CSS properties in new UI (`margin-inline`, `padding-block`,
+`inset-inline-start`, and so on) so future RTL support does not require new
+physical left/right assumptions.
+
+For internationalized formatting, keep the catalog language and regional
+formatting locale distinct. Use `useLanguage().formattingLocale` for numbers and
+absolute dates. `Intl.RelativeTimeFormat` produces translated prose, so use
+`useLanguage().catalogLanguage` for relative time to keep its words in the same
+language as the surrounding catalog text.
+
 LocatorJS is development-only. Its runtime entry (`src/locatorDev.ts`) is injected
 by the serve-only `locatorJsDevRuntime` Vite plugin, and its Babel transform in
 `vite.config.ts` is likewise restricted to serve mode. Do not import the runtime

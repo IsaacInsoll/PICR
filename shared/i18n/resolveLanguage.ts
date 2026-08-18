@@ -20,6 +20,27 @@ const canonicalLocale = (languageTag: string): Intl.Locale | null => {
   }
 };
 
+export const languageFromLocale = (languageTag: string): string | null =>
+  canonicalLocale(languageTag)?.language ?? null;
+
+export const formattingLocaleForLanguage = (
+  language: SupportedLanguage,
+  preferredLanguageTags: readonly string[],
+): string => {
+  let baseLanguageMatch: string | null = null;
+
+  for (const languageTag of preferredLanguageTags) {
+    const locale = canonicalLocale(languageTag);
+    if (locale?.language !== language) continue;
+
+    const canonicalLanguageTag = locale.toString();
+    if (canonicalLanguageTag !== locale.language) return canonicalLanguageTag;
+    baseLanguageMatch ??= canonicalLanguageTag;
+  }
+
+  return baseLanguageMatch ?? language;
+};
+
 export const resolveLanguage = (
   languageTag?: string | null,
 ): ResolvedLanguage => {

@@ -6,7 +6,11 @@ import {
   supportedLanguageCodes,
   type SupportedLanguage,
 } from '@shared/i18n/languages';
-import { resolveLanguage } from '@shared/i18n/resolveLanguage';
+import {
+  formattingLocaleForLanguage,
+  languageFromLocale,
+  resolveLanguage,
+} from '@shared/i18n/resolveLanguage';
 import {
   defaultNamespace,
   namespaces,
@@ -32,28 +36,45 @@ const browserLanguageTags = (): readonly string[] => {
 const directlySupportedLanguage = (
   languageTag: string,
 ): SupportedLanguage | null => {
-  const language = languageTag
-    .trim()
-    .replaceAll('_', '-')
-    .split('-')[0]
-    ?.toLowerCase();
+  const language = languageFromLocale(languageTag);
   return language && isSupportedLanguage(language) ? language : null;
 };
 
-const detectedLanguageTag = (): string => {
+type LanguagePreferenceSource = 'query' | 'saved' | 'browser' | 'default';
+
+interface DetectedLanguagePreference {
+  languageTag: string;
+  source: LanguagePreferenceSource;
+}
+
+const detectedLanguagePreference = (): DetectedLanguagePreference => {
   const queryLanguage = new URL(window.location.href).searchParams.get('lng');
-  if (queryLanguage) return queryLanguage;
+  if (queryLanguage) return { languageTag: queryLanguage, source: 'query' };
 
   const savedLanguage = readSavedLanguage();
-  if (savedLanguage) return savedLanguage;
+  if (savedLanguage) return { languageTag: savedLanguage, source: 'saved' };
 
-  return (
-    browserLanguageTags().find(directlySupportedLanguage) ?? defaultLanguage
-  );
+  const browserLanguage = browserLanguageTags().find(directlySupportedLanguage);
+  if (browserLanguage) {
+    return { languageTag: browserLanguage, source: 'browser' };
+  }
+
+  return { languageTag: defaultLanguage, source: 'default' };
 };
 
-const detectedLanguage = resolveLanguage(detectedLanguageTag());
-let formattingLocale = detectedLanguage.formattingLocale;
+const detectedPreference = detectedLanguagePreference();
+const detectedLanguage = resolveLanguage(detectedPreference.languageTag);
+const regionalLanguageTags = [
+  detectedLanguage.formattingLocale,
+  ...browserLanguageTags(),
+];
+let formattingLocale =
+  detectedPreference.source === 'saved'
+    ? formattingLocaleForLanguage(
+        detectedLanguage.catalogLanguage,
+        regionalLanguageTags,
+      )
+    : detectedLanguage.formattingLocale;
 
 void i18n.use(initReactI18next).init({
   resources,
@@ -95,7 +116,10 @@ const clearQueryLanguage = () => {
 export const getFormattingLocale = () => formattingLocale;
 
 export const changeLanguage = async (language: SupportedLanguage) => {
-  formattingLocale = language;
+  formattingLocale = formattingLocaleForLanguage(
+    language,
+    regionalLanguageTags,
+  );
   clearQueryLanguage();
 
   try {

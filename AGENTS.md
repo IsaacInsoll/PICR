@@ -1,6 +1,6 @@
 # PICR Repository Guidelines
 
-**If a tool or command fails unexpectedly, stop and ask — do not work around it. One exception: if the failure is clearly caused by an obvious command typo, wrong file path, or shell syntax issue (for example missing quotes around a path with `[` or `]`), fix that exact mistake and retry once before checking with the user. Validation commands such as lint, typecheck, tests, builds, and format checks are different: failures from those commands are actionable project feedback, so fix the underlying issue when it is in scope, rerun the command, and report any remaining failures with evidence.**
+**If a tool or command fails unexpectedly, inspect the failure and make at most one narrowly targeted retry when there is a credible correction. This includes obvious command typos, wrong file paths, shell syntax issues (for example missing quotes around a path with `[` or `]`), and patch context that can be corrected by reading the target file. If that retry also fails, or the cause is unclear, stop and ask — do not cycle through workarounds. Validation commands such as lint, typecheck, tests, builds, and format checks are different: failures from those commands are actionable project feedback, so fix the underlying issue when it is in scope, rerun the command, and report any remaining failures with evidence.**
 
 **When you learn something about how this project works — a gotcha, a required workflow step, a pattern that isn't obvious — add it to the relevant `AGENTS.md` or `docs/` file immediately. Do not store it only in an AI-specific memory system. This project is worked on by multiple developers and multiple AI agents across different machines; anything that lives only in one agent's memory is invisible to everyone else.**
 
@@ -238,6 +238,7 @@ npm run test:e2e:fresh       # Rebuild dist artifacts, then run Playwright smoke
 
 # Code Generation
 npm run gql                  # Regenerate GraphQL types (safe to run anytime)
+npm run i18n:check           # Verify source translation keys exist in every locale catalog
 
 # Frontend CSS module types
 cd frontend && npm run css:types        # Generate/update *.module.css.d.ts files
@@ -270,6 +271,17 @@ npm run install-all              # Preferred install flow for all subsystems
 # investigate if the diff is broader than expected.
 # Run plain `npm ci` in every changed package before committing (exactly what CI
 # runs). Peer warnings may be reported, but the command must exit successfully.
+# `i18next-cli` intentionally lives in the root devDependencies. Its published
+# package directly depends on React, react-i18next, i18next and cross-platform
+# SWC binaries, so its legitimate lockfile footprint is large. Do not move it to
+# `frontend` or mistake the root React version it installs for PICR's frontend
+# runtime version.
+# `i18next.config.ts` scans both `frontend/src` and `shared` for catalog keys.
+# Keep its `**/node_modules/**` exclusion when broadening source globs; without
+# it, the CLI traverses subsystem dependencies and only warns on parse failures.
+# Shared translation call sites must use an extractor-recognized `t(...)` call,
+# or the extractor configuration must be updated with the new call pattern.
+# Add `app` to the extraction inputs when app translation work begins.
 
 # Formatting
 npm run format               # Apply Prettier formatting across the repo
@@ -412,6 +424,7 @@ Common gitmoji:
 - ⚡ Performance
 - 🔧 Configuration
 - 🚀 Release
+- 🌐 Internationalization and localization
 
 ### Important Rules
 

@@ -8,12 +8,12 @@ import { useLanguage } from './useLanguage';
 
 export const LanguageSwitcher = () => {
   const { t } = useTranslation('common');
-  const { language, setLanguage } = useLanguage();
+  const { catalogLanguage, setLanguage } = useLanguage();
 
   return (
     <Select
       label={t('language.label')}
-      value={language}
+      value={catalogLanguage}
       data={supportedLanguages.map(({ code, name }) => ({
         value: code,
         label: name,

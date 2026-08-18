@@ -34,6 +34,8 @@ jobs:
         run: npm ci
       - name: '🎨 [format] Prettier check'
         run: npm run format:check
+      - name: '🌐 [i18n] Validate locale catalogs'
+        run: npm run i18n:check
 
       # BACKEND
       - name: '🗃️ [shared] Install Dependencies'

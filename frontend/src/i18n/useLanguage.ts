@@ -6,7 +6,7 @@ import { changeLanguage, getFormattingLocale, i18n as picrI18n } from './i18n';
 
 export const useLanguage = () => {
   const { i18n } = useTranslation();
-  const language = resolveLanguage(
+  const catalogLanguage = resolveLanguage(
     i18n.resolvedLanguage ?? i18n.language,
   ).catalogLanguage;
 
@@ -16,13 +16,13 @@ export const useLanguage = () => {
   );
 
   return {
-    language,
+    catalogLanguage,
     formattingLocale: getFormattingLocale(),
     setLanguage,
   };
 };
 
 export const currentFormattingLocale = () => getFormattingLocale();
-export const currentLanguage = () =>
+export const currentCatalogLanguage = () =>
   resolveLanguage(picrI18n.resolvedLanguage ?? picrI18n.language)
     .catalogLanguage;
