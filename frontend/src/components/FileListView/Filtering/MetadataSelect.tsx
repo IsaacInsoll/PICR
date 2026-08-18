@@ -6,10 +6,10 @@ import { MultiSelect } from '@mantine/core';
 import { metadataIcons } from '../metadataIcons';
 
 import type { AnyMetadataKey } from '@shared/fileMetadata';
-import { useLanguage } from '../../../i18n/useLanguage';
 import { useTranslation } from 'react-i18next';
 import { metadataDescription } from '@shared/fileMetadata';
 import { metadataDescriptionTranslator } from '../../../i18n/galleryLabels';
+import { useDateFormatters } from '../../../i18n/useDateFormatters';
 
 export const MetadataSelect = ({
   title,
@@ -19,11 +19,16 @@ export const MetadataSelect = ({
   options: (string | number)[];
 }) => {
   const { t } = useTranslation('gallery');
-  const { formattingLocale } = useLanguage();
+  const { formattingLocale, invalidDateLabel } = useDateFormatters();
   const [fo, setFo] = useAtom(filterOptions);
   const metadata = fo.metadata as Record<string, (string | number)[]>;
   const value = options.length === 1 ? options : (metadata[title] ?? []);
-  const data = formatMetadataValues(title, options, formattingLocale);
+  const data = formatMetadataValues(
+    title,
+    options,
+    formattingLocale,
+    invalidDateLabel,
+  );
 
   const label = metadataDescription(title, metadataDescriptionTranslator(t));
   // <MultiSelect> only accepts string values so we need to do some conversion back-and-forth as some metadata is numeric such as aperture and shutter speed

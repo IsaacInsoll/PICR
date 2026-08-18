@@ -7,17 +7,17 @@ import { useSetAtom } from 'jotai';
 import { closeModalAtom } from '../../../atoms/modalAtom';
 import { FilePreview } from '../FilePreview';
 import { prettyBytes } from '@shared/prettyBytes';
-import { isUnavailableFileCreatedDate, prettyDate } from '@shared/prettyDate';
+import { isUnavailableFileCreatedDate } from '@shared/prettyDate';
 import type { PicrFile } from '@shared/types/picr';
-import { useLanguage } from '../../../i18n/useLanguage';
 import { useTranslation } from 'react-i18next';
 import { fileTypeLabel } from '../../../i18n/galleryLabels';
+import { useDateFormatters } from '../../../i18n/useDateFormatters';
 
 export const FileInfoModal = ({ file }: { file: PicrFile }) => {
   const { t } = useTranslation('gallery');
   const onClose = useSetAtom(closeModalAtom);
   const isMobile = useIsSmallScreen();
-  const { formattingLocale } = useLanguage();
+  const { formattingLocale, prettyDate } = useDateFormatters();
   const fileName = normalizeDisplayName(file.name);
   const showFileCreated =
     !!file.fileCreated && !isUnavailableFileCreatedDate(file.fileCreated);
@@ -49,12 +49,12 @@ export const FileInfoModal = ({ file }: { file: PicrFile }) => {
         <StatCard label={t('file.type')} value={fileTypeLabel(file.type, t)} />
         <StatCard
           label={t('file.modified')}
-          value={prettyDate(file.fileLastModified ?? '', formattingLocale)}
+          value={prettyDate(file.fileLastModified ?? '')}
         />
         {showFileCreated ? (
           <StatCard
             label={t('file.created')}
-            value={prettyDate(file.fileCreated ?? '', formattingLocale)}
+            value={prettyDate(file.fileCreated ?? '')}
           />
         ) : null}
       </Group>

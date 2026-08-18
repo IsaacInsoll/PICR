@@ -6,6 +6,9 @@ export const formatMetadataValues = (
   title: AnyMetadataKey,
   options: (string | number)[],
   locale: string,
+  invalidDateLabel?: string,
 ): FormattedValue[] => {
-  return options.map((o) => formatMetadataValue(title, o, locale));
+  return options.map((o) =>
+    formatMetadataValue(title, o, locale, invalidDateLabel),
+  );
 };

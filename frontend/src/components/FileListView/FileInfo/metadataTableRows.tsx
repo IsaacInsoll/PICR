@@ -4,18 +4,19 @@ import type { PicrFile } from '@shared/types/picr';
 import type { MetadataPresentationResult } from '@shared/fileMetadata';
 import { metadataForPresentation } from '@shared/fileMetadata';
 import { toReadableFraction } from 'readable-fractions';
-import { useLanguage } from '../../../i18n/useLanguage';
 import { useTranslation } from 'react-i18next';
 import { metadataDescriptionTranslator } from '../../../i18n/galleryLabels';
+import { useDateFormatters } from '../../../i18n/useDateFormatters';
 
 // get all keys, remove nulls, add/merge others as expected
 export const MetadataTableRows = (file: PicrFile) => {
   const { t } = useTranslation('gallery');
-  const { formattingLocale } = useLanguage();
+  const { formattingLocale, invalidDateLabel } = useDateFormatters();
   const list = metadataForPresentation(
     file,
     formattingLocale,
     metadataDescriptionTranslator(t),
+    invalidDateLabel,
   );
   if (!list.length) return null;
 

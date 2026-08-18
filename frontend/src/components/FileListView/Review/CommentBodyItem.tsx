@@ -19,12 +19,11 @@ import { useOpenCommentsModal } from '../../../atoms/modalAtom';
 import type { CommentHistoryProps } from './CommentHistory';
 import { PicrAvatar } from '../../PicrAvatar';
 import { useIsMobile } from '../../../hooks/useIsMobile';
-import { prettyDate } from '@shared/prettyDate';
 import { PicrLink } from '../../PicrLink';
 import { useBaseViewFolderURL } from '../../../hooks/useBaseViewFolderURL';
 import { PrettyFolderPath } from '../../PrettyFolderPath';
-import { useLanguage } from '../../../i18n/useLanguage';
 import { useTranslation } from 'react-i18next';
+import { useDateFormatters } from '../../../i18n/useDateFormatters';
 
 export const CommentBodyItem = ({
   comment,
@@ -35,7 +34,7 @@ export const CommentBodyItem = ({
   const { t } = useTranslation('gallery');
   const { id, timestamp, user, systemGenerated, file } = comment;
   const openCommentModal = useOpenCommentsModal();
-  const { formattingLocale } = useLanguage();
+  const { prettyDate } = useDateFormatters();
   const displayUser = user ?? { id: 'system', name: t('comments.system') };
   const baseFolderUrl = useBaseViewFolderURL();
 
@@ -108,7 +107,7 @@ export const CommentBodyItem = ({
                 />
               ) : null}
               <Text c="dimmed" size="xs">
-                {prettyDate(timestamp, formattingLocale)}
+                {prettyDate(timestamp)}
               </Text>
             </Group>
           </Stack>

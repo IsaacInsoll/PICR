@@ -1,8 +1,12 @@
 import { formatDate } from './i18n/formatting';
 
-export const prettyDate = (dateString: string, locale = 'en') => {
+export const prettyDate = (
+  dateString: string,
+  locale = 'en',
+  invalidLabel?: string,
+) => {
   if (!dateString) return '';
-  return formatDate(dateString, locale);
+  return formatDate(dateString, locale, undefined, invalidLabel);
 };
 
 // Node reports filesystem creation time as birthtime, but mounted or virtual

@@ -9,22 +9,32 @@ export interface FormattedValue {
   raw: string | number;
 }
 
-export const prettyDateNoTZ = (dateString: string, locale = 'en'): string => {
+export const prettyDateNoTZ = (
+  dateString: string,
+  locale = 'en',
+  invalidLabel?: string,
+): string => {
   // This was tested as matching with Adobe Lightroom perfectly for both `capture time` and `export time`
-  return formatDate(dateString, locale, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
-    timeZone: 'UTC',
-  });
+  return formatDate(
+    dateString,
+    locale,
+    {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZone: 'UTC',
+    },
+    invalidLabel,
+  );
 };
 export const formatMetadataValue = (
   title: AnyMetadataKey,
   value: string | number,
   locale = 'en',
+  invalidDateLabel?: string,
 ): FormattedValue => {
   // set default return, which can be overridden below
   const data = {
@@ -59,7 +69,7 @@ export const formatMetadataValue = (
 
   if (title.startsWith('DateTime') && typeof value === 'string') {
     data.value = value;
-    data.label = prettyDateNoTZ(value, locale);
+    data.label = prettyDateNoTZ(value, locale, invalidDateLabel);
   }
 
   if (title === 'Bitrate' && hasNumericValue) {

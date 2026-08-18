@@ -65,3 +65,28 @@ describe('metadata descriptions', () => {
     ).toBe('Shutter Speed');
   });
 });
+
+describe('metadata date fallbacks', () => {
+  const file = { metadata: { DateTimeOriginal: 'not a date' } };
+
+  it('uses a translated invalid-date label when the frontend provides one', () => {
+    const metadata = metadataForPresentation(
+      file,
+      'fr',
+      undefined,
+      'Date invalide',
+    );
+
+    expect(metadata.find(({ key }) => key === 'DateTimeOriginal')?.label).toBe(
+      'Date invalide',
+    );
+  });
+
+  it('keeps the English fallback for untranslated consumers such as the app', () => {
+    const metadata = metadataForPresentation(file);
+
+    expect(metadata.find(({ key }) => key === 'DateTimeOriginal')?.label).toBe(
+      'Invalid date',
+    );
+  });
+});

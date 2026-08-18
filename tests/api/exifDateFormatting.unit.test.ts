@@ -22,4 +22,10 @@ describe('prettyDateNoTZ', () => {
       );
     },
   );
+
+  it('uses a caller-supplied invalid-date label', () => {
+    expect(prettyDateNoTZ('not a date', 'fr', 'Date invalide')).toBe(
+      'Date invalide',
+    );
+  });
 });

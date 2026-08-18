@@ -33,11 +33,10 @@ import { DotsIcon } from '../../PicrIcons';
 import { FolderMenuItems } from './FolderMenu';
 import { PicrAvatar } from '../PicrAvatar';
 import { prettyBytes } from '@shared/prettyBytes';
-import { prettyDate } from '@shared/prettyDate';
 import type { PicrUser } from '@shared/types/picr';
-import { useLanguage } from '../../i18n/useLanguage';
 import { useTranslation } from 'react-i18next';
 import { fileTypeLabel } from '../../i18n/galleryLabels';
+import { useDateFormatters } from '../../i18n/useDateFormatters';
 
 export const FileListView = ({
   files,
@@ -81,7 +80,7 @@ const Row = ({
   const setFolder = useSetFolder();
   const folderUrl = useFolderUrl();
   const isMobile = useIsMobile();
-  const { formattingLocale } = useLanguage();
+  const { formattingLocale, prettyDate } = useDateFormatters();
   const { t } = useTranslation('gallery');
   const isFile = isFolderContentsFile(file);
   const isFolder = !isFile;
@@ -95,12 +94,8 @@ const Row = ({
   const flag = isFile ? file.flag : null;
   const fileSize = isFile ? file.fileSize : null;
   const notAvailable = t('file.notAvailable');
-  const modified = modifiedDate
-    ? prettyDate(modifiedDate, formattingLocale)
-    : notAvailable;
-  const lastComment = latestComment
-    ? prettyDate(latestComment, formattingLocale)
-    : notAvailable;
+  const modified = modifiedDate ? prettyDate(modifiedDate) : notAvailable;
+  const lastComment = latestComment ? prettyDate(latestComment) : notAvailable;
   const title = canView
     ? `${t('sort.modified')}: ${modified}\n${t('file.lastComment')}: ${lastComment}`
     : `${t('sort.modified')}: ${modified}`;
@@ -116,7 +111,7 @@ const Row = ({
               {totalComments}
             </Badge>
             <Text c="dimmed" fz="xs">
-              {t('file.latest')}: {prettyDate(latestComment, formattingLocale)}
+              {t('file.latest')}: {prettyDate(latestComment)}
             </Text>
           </>
         ) : null}
@@ -125,7 +120,7 @@ const Row = ({
       <>
         {modifiedDate ? (
           <Text c="dimmed" fz="xs">
-            {t('sort.modified')}: {prettyDate(modifiedDate, formattingLocale)}
+            {t('sort.modified')}: {prettyDate(modifiedDate)}
           </Text>
         ) : null}
       </>

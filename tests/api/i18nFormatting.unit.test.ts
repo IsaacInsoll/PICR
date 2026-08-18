@@ -4,6 +4,7 @@ import {
   formatDate,
   formatRelativeTime,
 } from '../../shared/i18n/formatting';
+import { prettyDate } from '../../shared/prettyDate';
 
 describe('formatBytes', () => {
   it('returns numeric and display values without requiring string parsing', () => {
@@ -63,6 +64,9 @@ describe('formatDate', () => {
 
   it('lets a caller supply a translated invalid-date label', () => {
     expect(formatDate('not a date', 'fr', undefined, 'Date invalide')).toBe(
+      'Date invalide',
+    );
+    expect(prettyDate('not a date', 'fr', 'Date invalide')).toBe(
       'Date invalide',
     );
   });

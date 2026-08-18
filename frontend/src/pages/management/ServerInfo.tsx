@@ -21,7 +21,6 @@ import {
 import type { ReactNode } from 'react';
 import { Suspense, useState } from 'react';
 import { prettyBytes } from '@shared/prettyBytes';
-import { prettyDate } from '@shared/prettyDate';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { useMe } from '../../hooks/useMe';
 import {
@@ -55,6 +54,7 @@ import { useRequery } from '@shared/hooks/useRequery';
 import { isNewerPicrVersion } from '../../helpers/versionUpdates';
 import { DEFAULT_SERVER_MEDIA_SETTINGS } from '@shared/serverMediaSettings';
 import { useLanguage } from '../../i18n/useLanguage';
+import { useDateFormatters } from '../../i18n/useDateFormatters';
 
 type ServerInfoData = NonNullable<ServerInfoQueryQuery['serverInfo']>;
 
@@ -956,7 +956,7 @@ const InodeBadge = ({ status }: { status: string }) => {
 // top row (when it ran + how long) with the added/changed/moved breakdown on
 // its own full-width line beneath, matching the InfoRow description pattern.
 const LastScan = ({ status }: { status: ScheduledScanStatusInfo }) => {
-  const { formattingLocale } = useLanguage();
+  const { prettyDate } = useDateFormatters();
   if (!status.lastStartedAt) {
     return (
       <InfoRow label="Last scheduled scan">
@@ -976,9 +976,7 @@ const LastScan = ({ status }: { status: ScheduledScanStatusInfo }) => {
           Last scheduled scan
         </Text>
         <Group gap="xs" wrap="wrap" justify="flex-end" style={{ minWidth: 0 }}>
-          <Text size="sm">
-            {prettyDate(status.lastStartedAt, formattingLocale)}
-          </Text>
+          <Text size="sm">{prettyDate(status.lastStartedAt)}</Text>
           {typeof status.lastDurationMs === 'number' ? (
             <Badge color="gray" variant="light">
               {formatDuration(status.lastDurationMs)}
@@ -1009,7 +1007,7 @@ const ScanningCard = ({
   scanning: ScanningInfo;
   inode: InodeSupportInfo;
 }) => {
-  const { formattingLocale } = useLanguage();
+  const { prettyDate } = useDateFormatters();
   const scheduled = scanning.scheduledScan;
   return (
     <InfoCard
@@ -1048,7 +1046,7 @@ const ScanningCard = ({
         ) : null}
         {scheduled.nextScanAt ? (
           <Text size="sm" c="dimmed">
-            Next: {prettyDate(scheduled.nextScanAt, formattingLocale)}
+            Next: {prettyDate(scheduled.nextScanAt)}
           </Text>
         ) : null}
       </InfoRow>

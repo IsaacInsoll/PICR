@@ -62,6 +62,7 @@ export const metadataForPresentation = (
   file: MetadataFile,
   locale = 'en',
   translate?: MetadataDescriptionTranslator,
+  invalidDateLabel?: string,
 ): MetadataPresentationResult[] => {
   const metadata = file.metadata;
   if (!metadata) return [];
@@ -72,8 +73,12 @@ export const metadataForPresentation = (
     key,
     icon: key,
     description: metadataDescription(key, translate),
-    label: formatMetadataValue(key, metadata[key] as string | number, locale)
-      .label,
+    label: formatMetadataValue(
+      key,
+      metadata[key] as string | number,
+      locale,
+      invalidDateLabel,
+    ).label,
   }));
 
   const remove: string[] = [];
