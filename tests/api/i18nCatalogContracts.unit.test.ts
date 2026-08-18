@@ -5,6 +5,12 @@ import {
   authErrorReasons,
 } from '../../shared/auth/authErrorContract';
 import { metadataDescriptions } from '../../shared/fileMetadata';
+import {
+  fontCategoryLabels,
+  fontHeadingOnlyLabel,
+  fontRegistry,
+  fontSuitabilityLabels,
+} from '../../shared/branding/fontRegistry';
 import { supportedLanguageCodes } from '../../shared/i18n/languages';
 import {
   namespaces,
@@ -113,6 +119,59 @@ describe('dynamic translation contracts', () => {
       for (const language of supportedLanguageCodes) {
         expectNonEmptyTranslation(language, 'gallery', ['metadata', key]);
       }
+    }
+  });
+
+  it('keeps font presentation catalogs complete and English fallbacks synchronized', () => {
+    for (const font of fontRegistry) {
+      expect(
+        translationAtPath(resources.en.admin, [
+          'font',
+          'description',
+          font.key,
+        ]),
+      ).toBe(font.description);
+
+      for (const language of supportedLanguageCodes) {
+        expectNonEmptyTranslation(language, 'admin', [
+          'font',
+          'description',
+          font.key,
+        ]);
+      }
+    }
+
+    for (const [key, englishFallback] of Object.entries(fontCategoryLabels)) {
+      expect(
+        translationAtPath(resources.en.admin, ['font', 'category', key]),
+      ).toBe(englishFallback);
+
+      for (const language of supportedLanguageCodes) {
+        expectNonEmptyTranslation(language, 'admin', ['font', 'category', key]);
+      }
+    }
+
+    for (const [key, englishFallback] of Object.entries(
+      fontSuitabilityLabels,
+    )) {
+      expect(
+        translationAtPath(resources.en.admin, ['font', 'suitability', key]),
+      ).toBe(englishFallback);
+
+      for (const language of supportedLanguageCodes) {
+        expectNonEmptyTranslation(language, 'admin', [
+          'font',
+          'suitability',
+          key,
+        ]);
+      }
+    }
+
+    expect(translationAtPath(resources.en.admin, ['font', 'headingOnly'])).toBe(
+      fontHeadingOnlyLabel,
+    );
+    for (const language of supportedLanguageCodes) {
+      expectNonEmptyTranslation(language, 'admin', ['font', 'headingOnly']);
     }
   });
 });

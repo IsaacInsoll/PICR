@@ -1,21 +1,80 @@
 import type { HeadingFontKey } from '../gql/graphql.js';
 
-export type FontCategory =
-  | 'sans'
-  | 'serif'
-  | 'display'
-  | 'script'
-  | 'mono'
-  | 'accessibility';
+export const fontCategoryLabels = {
+  sans: 'Sans Serif',
+  serif: 'Serif',
+  display: 'Display',
+  script: 'Script',
+  mono: 'Mono',
+  accessibility: 'Accessibility',
+} as const;
 
-export interface FontDefinition {
+export type FontCategory = keyof typeof fontCategoryLabels;
+
+export const fontSuitabilityLabels = {
+  family: 'family',
+  kids: 'kids',
+  casualLifestyle: 'casual lifestyle',
+  generalGalleries: 'general galleries',
+  commercial: 'commercial',
+  product: 'product',
+  documentary: 'documentary',
+  modernPortfolios: 'modern portfolios',
+  weddings: 'weddings',
+  portraits: 'portraits',
+  storytellingGalleries: 'storytelling galleries',
+  architecture: 'architecture',
+  interiors: 'interiors',
+  designForwardPortfolios: 'design-forward portfolios',
+  travel: 'travel',
+  editorial: 'editorial',
+  fashion: 'fashion',
+  boldEditorial: 'bold editorial',
+  modernBranding: 'modern branding',
+  storytelling: 'storytelling',
+  elopements: 'elopements',
+  nature: 'nature',
+  portraiture: 'portraiture',
+  fineArt: 'fine art',
+  heritage: 'heritage',
+  blackAndWhite: 'black-and-white',
+  sports: 'sports',
+  automotive: 'automotive',
+  boldBranding: 'bold branding',
+  luxury: 'luxury',
+  editorialCovers: 'editorial covers',
+  conceptual: 'conceptual',
+  boutique: 'boutique',
+  casualEvents: 'casual events',
+  creativeBrands: 'creative brands',
+  lifestyle: 'lifestyle',
+  food: 'food',
+  casualBranding: 'casual branding',
+  beachy: 'beachy',
+  casualGalleries: 'casual galleries',
+  luxuryWeddings: 'luxury weddings',
+  invitations: 'invitations',
+  romanticGalleries: 'romantic galleries',
+  archival: 'archival',
+  technicalShoots: 'technical shoots',
+  filmLabs: 'film labs',
+  accessibilityFocusedGalleries: 'accessibility-focused galleries',
+  olderAudiences: 'older audiences',
+  accessibilityMetadataHeavyViews: 'accessibility + metadata-heavy views',
+} as const;
+
+export type FontSuitabilityKey = keyof typeof fontSuitabilityLabels;
+
+export const fontHeadingOnlyLabel = 'Heading only';
+
+interface FontDefinitionShape {
   key: string;
   label: string;
   category: FontCategory;
   weights: number[];
   headingOnly: boolean;
   description: string;
-  suitableFor: string[];
+  suitableFor: readonly FontSuitabilityKey[];
 }
 
 export const fontRegistry = [
@@ -27,7 +86,7 @@ export const fontRegistry = [
     headingOnly: false,
     description:
       'Friendly, slightly rounded, approachable; current PICR heading font.',
-    suitableFor: ['family', 'kids', 'casual lifestyle', 'general galleries'],
+    suitableFor: ['family', 'kids', 'casualLifestyle', 'generalGalleries'],
   },
   {
     key: 'signika',
@@ -36,7 +95,7 @@ export const fontRegistry = [
     weights: [400, 600, 700],
     headingOnly: false,
     description: 'Friendly, slightly rounded, approachable.',
-    suitableFor: ['family', 'kids', 'casual lifestyle'],
+    suitableFor: ['family', 'kids', 'casualLifestyle'],
   },
   {
     key: 'inter',
@@ -45,7 +104,7 @@ export const fontRegistry = [
     weights: [400, 500, 700],
     headingOnly: false,
     description: 'Crisp modern UI sans; neutral and highly readable.',
-    suitableFor: ['commercial', 'product', 'documentary', 'modern portfolios'],
+    suitableFor: ['commercial', 'product', 'documentary', 'modernPortfolios'],
   },
   {
     key: 'source-sans-3',
@@ -54,7 +113,7 @@ export const fontRegistry = [
     weights: [400, 500, 700],
     headingOnly: false,
     description: 'Calm editorial sans; clean and versatile.',
-    suitableFor: ['weddings', 'portraits', 'storytelling galleries'],
+    suitableFor: ['weddings', 'portraits', 'storytellingGalleries'],
   },
   {
     key: 'manrope',
@@ -63,7 +122,7 @@ export const fontRegistry = [
     weights: [400, 500, 700],
     headingOnly: false,
     description: 'Minimal, geometric, contemporary.',
-    suitableFor: ['architecture', 'interiors', 'design-forward portfolios'],
+    suitableFor: ['architecture', 'interiors', 'designForwardPortfolios'],
   },
   {
     key: 'merriweather-sans',
@@ -81,7 +140,7 @@ export const fontRegistry = [
     weights: [200, 400, 700],
     headingOnly: false,
     description: 'Bold, geometric, branding-forward.',
-    suitableFor: ['fashion', 'bold editorial', 'modern branding'],
+    suitableFor: ['fashion', 'boldEditorial', 'modernBranding'],
   },
   {
     key: 'merriweather',
@@ -108,7 +167,7 @@ export const fontRegistry = [
     weights: [400, 700],
     headingOnly: false,
     description: 'Elegant, literary, refined.',
-    suitableFor: ['fine art', 'heritage', 'black-and-white'],
+    suitableFor: ['fineArt', 'heritage', 'blackAndWhite'],
   },
   {
     key: 'bebas-neue',
@@ -117,7 +176,7 @@ export const fontRegistry = [
     weights: [400],
     headingOnly: true,
     description: 'Bold, condensed display.',
-    suitableFor: ['sports', 'automotive', 'bold branding'],
+    suitableFor: ['sports', 'automotive', 'boldBranding'],
   },
   {
     key: 'abril-fatface',
@@ -126,7 +185,7 @@ export const fontRegistry = [
     weights: [400],
     headingOnly: true,
     description: 'High contrast, elegant display serif.',
-    suitableFor: ['fashion', 'luxury', 'editorial covers'],
+    suitableFor: ['fashion', 'luxury', 'editorialCovers'],
   },
   {
     key: 'poiret-one',
@@ -135,7 +194,7 @@ export const fontRegistry = [
     weights: [400],
     headingOnly: true,
     description: 'Thin, artistic, decorative.',
-    suitableFor: ['conceptual', 'boutique', 'fine art'],
+    suitableFor: ['conceptual', 'boutique', 'fineArt'],
   },
   {
     key: 'amatic-sc',
@@ -144,7 +203,7 @@ export const fontRegistry = [
     weights: [400],
     headingOnly: true,
     description: 'Hand-drawn, playful, informal.',
-    suitableFor: ['kids', 'casual events', 'creative brands'],
+    suitableFor: ['kids', 'casualEvents', 'creativeBrands'],
   },
   {
     key: 'oleo-script',
@@ -153,7 +212,7 @@ export const fontRegistry = [
     weights: [400],
     headingOnly: true,
     description: 'Friendly retro script.',
-    suitableFor: ['lifestyle', 'food', 'casual branding'],
+    suitableFor: ['lifestyle', 'food', 'casualBranding'],
   },
   {
     key: 'pacifico',
@@ -162,7 +221,7 @@ export const fontRegistry = [
     weights: [400],
     headingOnly: true,
     description: 'Fun and playful script.',
-    suitableFor: ['travel', 'beachy', 'casual galleries'],
+    suitableFor: ['travel', 'beachy', 'casualGalleries'],
   },
   {
     key: 'pinyon-script',
@@ -171,7 +230,7 @@ export const fontRegistry = [
     weights: [400],
     headingOnly: true,
     description: 'Formal calligraphic script.',
-    suitableFor: ['luxury weddings', 'invitations'],
+    suitableFor: ['luxuryWeddings', 'invitations'],
   },
   {
     key: 'dancing-script',
@@ -180,7 +239,7 @@ export const fontRegistry = [
     weights: [400, 700],
     headingOnly: true,
     description: 'Readable script with warmth.',
-    suitableFor: ['portraits', 'lifestyle', 'romantic galleries'],
+    suitableFor: ['portraits', 'lifestyle', 'romanticGalleries'],
   },
   {
     key: 'jetbrains-mono',
@@ -189,7 +248,7 @@ export const fontRegistry = [
     weights: [400, 700],
     headingOnly: true,
     description: 'Clean, technical mono for metadata-style displays.',
-    suitableFor: ['archival', 'technical shoots', 'film labs'],
+    suitableFor: ['archival', 'technicalShoots', 'filmLabs'],
   },
   {
     key: 'atkinson-hyperlegible-next',
@@ -198,7 +257,7 @@ export const fontRegistry = [
     weights: [400, 700],
     headingOnly: false,
     description: 'High-legibility sans designed for visual accessibility.',
-    suitableFor: ['accessibility-focused galleries', 'older audiences'],
+    suitableFor: ['accessibilityFocusedGalleries', 'olderAudiences'],
   },
   {
     key: 'atkinson-hyperlegible-mono',
@@ -207,12 +266,13 @@ export const fontRegistry = [
     weights: [400, 700],
     headingOnly: true,
     description: 'Monospaced companion optimized for legibility.',
-    suitableFor: ['accessibility + metadata-heavy views'],
+    suitableFor: ['accessibilityMetadataHeavyViews'],
   },
-] as const satisfies readonly FontDefinition[];
+] as const satisfies readonly FontDefinitionShape[];
 
 /** Font key type derived from the registry - add new fonts to fontRegistry array above */
 export type FontKey = (typeof fontRegistry)[number]['key'];
+export type FontDefinition = (typeof fontRegistry)[number];
 
 export const fontRegistryByKey = new Map<FontKey, FontDefinition>(
   fontRegistry.map((font) => [font.key, font]),
@@ -226,6 +286,26 @@ export const getFontByKey = (key?: FontKey | null): FontDefinition => {
 };
 
 export const getDefaultHeadingFont = (): FontDefinition => fontRegistry[0];
+
+export type FontDescriptionTranslator = (key: FontKey) => string;
+export type FontCategoryTranslator = (key: FontCategory) => string;
+export type FontSuitabilityTranslator = (key: FontSuitabilityKey) => string;
+
+export const fontDescription = (
+  font: FontDefinition,
+  translate: FontDescriptionTranslator = (key) => getFontByKey(key).description,
+): string => translate(font.key);
+
+export const fontCategoryLabel = (
+  category: FontCategory,
+  translate: FontCategoryTranslator = (key) => fontCategoryLabels[key],
+): string => translate(category);
+
+export const fontSuitabilityLabel = (
+  key: FontSuitabilityKey,
+  translate: FontSuitabilityTranslator = (knownKey) =>
+    fontSuitabilityLabels[knownKey],
+): string => translate(key);
 
 /** Array of all valid font keys - use for validation and GraphQL enum generation */
 export const fontKeys = fontRegistry.map((f) => f.key);

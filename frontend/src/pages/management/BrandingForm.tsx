@@ -37,13 +37,22 @@ import {
   LightModeOutlineIcon,
 } from '../../PicrIcons';
 import {
+  fontCategoryLabel,
+  fontDescription,
   fontRegistry,
+  fontSuitabilityLabel,
   normalizeFontKey,
   toHeadingFontKeyEnumValue,
   type FontDefinition,
   type FontKey,
 } from '@shared/branding/fontRegistry';
+import { useTranslation } from 'react-i18next';
 import { fontFamilies } from '../../fonts.generated';
+import {
+  fontCategoryTranslator,
+  fontDescriptionTranslator,
+  fontSuitabilityTranslator,
+} from '../../i18n/adminLabels';
 import {
   BORDER_RADIUS_PRESETS,
   DEFAULT_BORDER_RADIUS,
@@ -762,15 +771,6 @@ const SocialLinkRow = ({
   );
 };
 
-const categoryLabels: Record<string, string> = {
-  sans: 'Sans Serif',
-  serif: 'Serif',
-  display: 'Display',
-  script: 'Script',
-  mono: 'Mono',
-  accessibility: 'Accessibility',
-};
-
 const HeadingFontSelector = ({
   value,
   onChange,
@@ -778,9 +778,13 @@ const HeadingFontSelector = ({
   value: FontKey;
   onChange: (value: FontKey) => void;
 }) => {
+  const { t } = useTranslation('admin');
+  const translateCategory = fontCategoryTranslator(t);
+  const translateDescription = fontDescriptionTranslator(t);
+  const translateSuitability = fontSuitabilityTranslator(t);
   const grouped = Object.entries(
     fontRegistry.reduce<Record<string, FontDefinition[]>>((acc, font) => {
-      const group = categoryLabels[font.category] ?? font.category;
+      const group = fontCategoryLabel(font.category, translateCategory);
       if (!(group in acc)) acc[group] = [];
       acc[group].push(font);
       return acc;
@@ -790,19 +794,19 @@ const HeadingFontSelector = ({
     items: items.map((font) => ({
       value: font.key,
       label: font.label,
-      description: `${font.description}${
-        font.headingOnly ? ' (Heading only)' : ''
+      description: `${fontDescription(font, translateDescription)}${
+        font.headingOnly ? ` (${t('font.headingOnly')})` : ''
       }`,
-      suitableFor: font.suitableFor,
+      suitableFor: font.suitableFor.map((key) =>
+        fontSuitabilityLabel(key, translateSuitability),
+      ),
     })),
   }));
 
   return (
     <Box>
-      <InputLabel>Heading font</InputLabel>
-      <InputDescription>
-        Applies to titles and section headers only
-      </InputDescription>
+      <InputLabel>{t('font.label')}</InputLabel>
+      <InputDescription>{t('font.help')}</InputDescription>
       <Select
         data={grouped}
         value={value}

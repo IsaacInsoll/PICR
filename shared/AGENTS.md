@@ -460,7 +460,7 @@ shared/branding/fontRegistry.ts    <-- Single source of truth
      weights: [400, 700],           // Available weights
      headingOnly: false,            // true = heading use only, false = can be used for body
      description: 'Brief description of the font style.',
-     suitableFor: ['weddings', 'portraits'],  // Use case hints for UI
+     suitableFor: ['weddings', 'portraits'],  // Typed keys from fontSuitabilityLabels
    },
    ```
 
@@ -485,6 +485,20 @@ shared/branding/fontRegistry.ts    <-- Single source of truth
    ```
 
 5. **Test both platforms** - verify the font appears in the branding selector and renders correctly.
+
+Font names (`label`) are proper names and remain untranslated. Descriptions,
+categories, the heading-only marker, and suitability tags are presentation text:
+
+- Add new suitability concepts to `fontSuitabilityLabels`; do not put raw prose
+  in `suitableFor`.
+- Add matching English and French `admin.font.*` catalog entries. The catalog
+  contract test keeps the English entries synchronized with the shared fallbacks
+  and requires every supported locale to contain each dynamic key.
+- The untranslated app can keep using the shared English fallbacks. Frontend UI
+  should pass its catalog-backed translator callbacks to the shared helpers.
+- Presentation-only registry changes do not require regenerating font assets.
+  The generators consume font keys, names, and weights rather than descriptions
+  or suitability metadata.
 
 ### Key Files
 

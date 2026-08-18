@@ -20,7 +20,11 @@ export const dynamicCatalogPatterns = {
     ['view', 'gallery'],
     ['view', 'list'],
   ],
-  admin: [],
+  admin: [
+    ['font', 'category', '*'],
+    ['font', 'description', '*'],
+    ['font', 'suitability', '*'],
+  ],
 } as const satisfies Record<TranslationNamespace, readonly CatalogPath[]>;
 
 export default defineConfig({
