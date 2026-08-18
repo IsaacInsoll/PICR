@@ -258,6 +258,8 @@ npm run install-all              # Preferred install flow for all subsystems
 # `frontend` and `app` both depend on `shared`, but installs are now explicit.
 # If installing subsystems manually, install `shared` first, then `frontend` / `app`.
 # Do not run `npm install` for `shared`, `frontend`, and `app` in parallel.
+# `npm run i18n:check` imports shared runtime modules for its catalog contract
+# test, so install both root and `shared` dependencies before running it.
 
 # Lockfiles after changing a dependency
 # Use the Node version from `.nvmrc` and normal npm peer-dependency resolution.
