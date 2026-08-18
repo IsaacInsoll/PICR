@@ -1,6 +1,7 @@
 import { formatMetadataValue } from './formatMetadataValue';
 import { toReadableFraction } from 'readable-fractions';
 import type { PicrMetadataMap } from './types/metadata.js';
+import { formatNumber } from './i18n/formatting';
 
 export type AnyMetadataKey = string;
 
@@ -26,6 +27,7 @@ type MetadataFile = {
 
 export const metadataForPresentation = (
   file: MetadataFile,
+  locale = 'en',
 ): MetadataPresentationResult[] => {
   const metadata = file.metadata;
   if (!metadata) return [];
@@ -36,7 +38,8 @@ export const metadataForPresentation = (
     key,
     icon: key,
     description: metadataDescription[key] ?? key,
-    label: formatMetadataValue(key, metadata[key] as string | number).label,
+    label: formatMetadataValue(key, metadata[key] as string | number, locale)
+      .label,
   }));
 
   const remove: string[] = [];
@@ -76,7 +79,13 @@ export const metadataForPresentation = (
       key: 'Dimensions',
       icon: 'AspectRatio',
       description: 'Dimensions',
-      label: `${metadata['Width']} x ${metadata['Height']} px`,
+      // Pixel dimensions are a technical spec (6000 × 4000), so the numbers
+      // are localized but never grouped.
+      label: `${formatNumber(Number(metadata['Width']), locale, {
+        useGrouping: false,
+      })} × ${formatNumber(Number(metadata['Height']), locale, {
+        useGrouping: false,
+      })} px`,
     });
   }
 

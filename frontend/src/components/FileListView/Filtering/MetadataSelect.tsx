@@ -6,6 +6,7 @@ import { MultiSelect } from '@mantine/core';
 import { metadataIcons } from '../metadataIcons';
 
 import type { AnyMetadataKey } from '@shared/fileMetadata';
+import { useLanguage } from '../../../i18n/useLanguage';
 
 export const MetadataSelect = ({
   title,
@@ -14,10 +15,11 @@ export const MetadataSelect = ({
   title: AnyMetadataKey;
   options: (string | number)[];
 }) => {
+  const { formattingLocale } = useLanguage();
   const [fo, setFo] = useAtom(filterOptions);
   const metadata = fo.metadata as Record<string, (string | number)[]>;
   const value = options.length === 1 ? options : (metadata[title] ?? []);
-  const data = formatMetadataValues(title, options);
+  const data = formatMetadataValues(title, options, formattingLocale);
 
   const label = title === 'ExposureTime' ? 'Shutter Speed' : title;
   // <MultiSelect> only accepts string values so we need to do some conversion back-and-forth as some metadata is numeric such as aperture and shutter speed

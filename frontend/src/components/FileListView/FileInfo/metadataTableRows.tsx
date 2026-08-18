@@ -4,10 +4,12 @@ import type { PicrFile } from '@shared/types/picr';
 import type { MetadataPresentationResult } from '@shared/fileMetadata';
 import { metadataForPresentation } from '@shared/fileMetadata';
 import { toReadableFraction } from 'readable-fractions';
+import { useLanguage } from '../../../i18n/useLanguage';
 
 // get all keys, remove nulls, add/merge others as expected
 export const MetadataTableRows = (file: PicrFile) => {
-  const list = metadataForPresentation(file);
+  const { formattingLocale } = useLanguage();
+  const list = metadataForPresentation(file, formattingLocale);
   if (!list.length) return null;
 
   return (
@@ -59,14 +61,6 @@ const formatValue = (res: MetadataPresentationResult) => {
     const rating = Number(res.label);
     return <Rating value={Number.isFinite(rating) ? rating : 0} readOnly />;
   }
-
-  if (res.key === 'Framerate')
-    return res.label ? (
-      <>
-        {res.label}
-        <sub>/s</sub>
-      </>
-    ) : null;
 
   return res.label;
 };

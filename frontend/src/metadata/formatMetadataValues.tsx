@@ -5,6 +5,7 @@ import type { AnyMetadataKey } from '@shared/fileMetadata';
 export const formatMetadataValues = (
   title: AnyMetadataKey,
   options: (string | number)[],
+  locale: string,
 ): FormattedValue[] => {
-  return options.map((o) => formatMetadataValue(title, o));
+  return options.map((o) => formatMetadataValue(title, o, locale));
 };
