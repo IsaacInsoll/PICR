@@ -866,18 +866,18 @@ const ModeSelector = ({
       </InputDescription>
       <Button.Group>
         {modeOptions.map((opt) => {
-          const isSelected = opt === value;
-          const { icon } = themeModeStyle[opt];
+          const isSelected = opt.value === value;
+          const { icon } = themeModeStyle[opt.value];
           return (
             <Button
               leftSection={icon}
-              title={opt}
+              title={opt.label}
               variant={isSelected ? 'filled' : 'default'}
-              onClick={() => onChange(opt)}
-              key={opt}
+              onClick={() => onChange(opt.value)}
+              key={opt.value}
               size="xs"
             >
-              {opt}
+              {opt.label}
             </Button>
           );
         })}
@@ -886,10 +886,10 @@ const ModeSelector = ({
   );
 };
 
-const modeOptions: ThemeMode[] = [
-  ThemeMode.Auto,
-  ThemeMode.Light,
-  ThemeMode.Dark,
+const modeOptions: Array<{ value: ThemeMode; label: string }> = [
+  { value: ThemeMode.Auto, label: 'auto' },
+  { value: ThemeMode.Light, label: 'light' },
+  { value: ThemeMode.Dark, label: 'dark' },
 ];
 
 const themeModeStyle = {

@@ -13,11 +13,11 @@ export const MetadataTableRows = (file: PicrFile) => {
   return (
     <>
       {list.map((res) => {
-        const { subLabel, description, icon } = res;
+        const { key, subLabel, description, icon } = res;
         const label = formatValue(res);
-        const iconKey = (icon ?? description) as keyof typeof metadataIcons;
+        const iconKey = (icon ?? key) as keyof typeof metadataIcons;
         return (
-          <Table.Tr key={description}>
+          <Table.Tr key={key}>
             <Table.Td>{metadataIcons[iconKey] ?? null}</Table.Td>
             <Table.Td>
               <Text c="dimmed" style={{ fontSize: 11 }}>
@@ -46,7 +46,7 @@ export const MetadataTableRows = (file: PicrFile) => {
 };
 
 const formatValue = (res: MetadataPresentationResult) => {
-  if (res.description === 'Aspect Ratio' && typeof res.data === 'number') {
+  if (res.key === 'AspectRatio' && typeof res.data === 'number') {
     const { denominator, numerator } = toReadableFraction(res.data);
     return (
       <>
@@ -55,12 +55,12 @@ const formatValue = (res: MetadataPresentationResult) => {
     );
   }
 
-  if (res.description === 'Original Rating') {
+  if (res.key === 'OriginalRating') {
     const rating = Number(res.label);
     return <Rating value={Number.isFinite(rating) ? rating : 0} readOnly />;
   }
 
-  if (res.description === 'Framerate')
+  if (res.key === 'Framerate')
     return res.label ? (
       <>
         {res.label}

@@ -12,6 +12,7 @@ import {
 } from '../../../PicrIcons';
 import type { SelectProps } from '@mantine/core';
 import { Group, Select } from '@mantine/core';
+import type { ReactNode } from 'react';
 
 export const AspectSelector = () => {
   const [options, setOptions] = useAtom(filterOptions);
@@ -24,42 +25,35 @@ export const AspectSelector = () => {
       value={options.ratio}
       onChange={(v) => v && onChange(v as AspectFilterOptions)}
       leftSection={aspectRatioIcon[options.ratio]}
-      data={[
-        {
-          label: 'Any Ratio',
-          value: 'Any Ratio',
-        },
-        {
-          label: 'Landscape',
-          value: 'Landscape',
-        },
-        {
-          label: 'Square',
-          value: 'Square',
-        },
-        {
-          label: 'Portrait',
-          value: 'Portrait',
-        },
-      ]}
+      data={aspectRatioOptions}
       renderOption={renderOption}
     />
   );
 };
 
 const renderOption: SelectProps['renderOption'] = ({ option }) => {
-  const label = option.label as AspectFilterOptions;
+  const value = option.value as AspectFilterOptions;
   return (
     <Group flex={1} gap="sm">
-      <div>{aspectRatioIcon[label]}</div>
-      <div>{label}</div>
+      <div>{aspectRatioIcon[value]}</div>
+      <div>{option.label}</div>
     </Group>
   );
 };
 
-const aspectRatioIcon = {
-  'Any Ratio': <AspectAnyIcon />,
-  Square: <AspectSquareIcon />,
-  Landscape: <AspectLandscapeIcon />,
-  Portrait: <AspectPortraitIcon />,
+const aspectRatioOptions: Array<{
+  value: AspectFilterOptions;
+  label: string;
+}> = [
+  { value: 'any', label: 'Any Ratio' },
+  { value: 'landscape', label: 'Landscape' },
+  { value: 'square', label: 'Square' },
+  { value: 'portrait', label: 'Portrait' },
+];
+
+const aspectRatioIcon: Record<AspectFilterOptions, ReactNode> = {
+  any: <AspectAnyIcon />,
+  square: <AspectSquareIcon />,
+  landscape: <AspectLandscapeIcon />,
+  portrait: <AspectPortraitIcon />,
 } as const;

@@ -11,6 +11,7 @@ export const metadataDescription: Partial<Record<AnyMetadataKey, string>> = {
 };
 
 export interface MetadataPresentationResult {
+  key: AnyMetadataKey;
   description: string;
   label: string;
   subLabel?: string;
@@ -32,6 +33,7 @@ export const metadataForPresentation = (
   const keys = Object.keys(metadata).filter((key) => !!metadata[key]);
 
   const list: MetadataPresentationResult[] = keys.map((key) => ({
+    key,
     icon: key,
     description: metadataDescription[key] ?? key,
     label: formatMetadataValue(key, metadata[key] as string | number).label,
@@ -42,6 +44,7 @@ export const metadataForPresentation = (
   if (metadata['VideoCodec'] && metadata['VideoCodecDescription']) {
     remove.push('VideoCodec', 'VideoCodecDescription');
     list.push({
+      key: 'Video',
       description: 'Video',
       label: String(metadata['VideoCodec']),
       subLabel: String(metadata['VideoCodecDescription']),
@@ -50,6 +53,7 @@ export const metadataForPresentation = (
   if (metadata['AudioCodec'] && metadata['AudioCodecDescription']) {
     remove.push('AudioCodec', 'AudioCodecDescription');
     list.push({
+      key: 'Audio',
       description: 'Audio',
       label: String(metadata['AudioCodec']),
       subLabel: String(metadata['AudioCodecDescription']),
@@ -58,6 +62,7 @@ export const metadataForPresentation = (
 
   if (typeof file.imageRatio === 'number' && file.imageRatio > 0) {
     list.push({
+      key: 'AspectRatio',
       icon: 'AspectRatio',
       description: 'Aspect Ratio',
       label: formattedAspectRatio(file.imageRatio),
@@ -68,6 +73,7 @@ export const metadataForPresentation = (
   if (metadata['Width'] && metadata['Height']) {
     remove.push('Width', 'Height');
     list.push({
+      key: 'Dimensions',
       icon: 'AspectRatio',
       description: 'Dimensions',
       label: `${metadata['Width']} x ${metadata['Height']} px`,
@@ -77,15 +83,14 @@ export const metadataForPresentation = (
   if (metadata['Rating']) {
     remove.push('Rating');
     list.push({
+      key: 'OriginalRating',
       icon: 'Rating',
       description: 'Original Rating',
       label: String(metadata['Rating']),
     });
   }
 
-  const filtered = list.filter(
-    ({ description }) => !remove.includes(description),
-  );
+  const filtered = list.filter(({ key }) => !remove.includes(key));
   return filtered;
 };
 

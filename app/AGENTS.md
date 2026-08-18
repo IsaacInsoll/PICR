@@ -425,6 +425,13 @@ Usually means a hook is being imported from shared incorrectly. Check if the hoo
 2. Check dynamic segment names match usage
 3. Check `router.push` vs `router.replace` for desired behavior
 
+If TypeScript rejects a tracked Expo Router path that exists on disk, inspect
+`.expo/types/router.d.ts`. This ignored, generated cache can predate a newer
+route and make local type checking fail even though a clean CI checkout passes.
+Move or delete the stale declaration and rerun the type check; `npx expo start`
+will regenerate it when needed. Do not weaken the route type or cast the valid
+path to work around stale generated state.
+
 ### Images not loading
 
 1. Check server URL is correct

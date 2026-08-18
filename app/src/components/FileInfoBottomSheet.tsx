@@ -87,19 +87,19 @@ export const FileInfoBottomSheet = ({
           <View
             style={{ width: '100%', flexDirection: 'row', flexWrap: 'wrap' }}
           >
-            {list.map(({ description, label, icon }) => (
+            {list.map(({ key, description, label, icon }) => (
               <View
                 style={{
                   width: '45%',
                   padding: 8,
                   flexDirection: 'row',
                 }}
-                key={description}
+                key={key}
               >
                 <View style={{ width: 32, paddingTop: 0 }}>
                   <Ionicons
                     name={
-                      appMetadataIcons[icon ?? ''] ??
+                      appMetadataIcons[icon ?? key] ??
                       'information-circle-outline'
                     }
                     size={24}

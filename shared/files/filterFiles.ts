@@ -7,7 +7,7 @@ import type { FileFlag } from '@shared/gql/graphql';
 import type { PicrMetadataMap } from '@shared/types/metadata';
 
 export const DefaultFilterOptions: FilterOptionsInterface = {
-  ratio: 'Any Ratio',
+  ratio: 'any',
   searchText: '',
   metadata: {},
   flag: null,
@@ -50,13 +50,13 @@ const ratioFilter = (
   ratio: AspectFilterOptions,
 ): boolean => {
   const ar = file.imageRatio ?? null;
-  if (!ar) return ratio === 'Any Ratio';
+  if (!ar) return ratio === 'any';
 
   return (
-    ratio === 'Any Ratio' ||
-    (ratio === 'Square' && ar > 0.9 && ar < 1.1) ||
-    (ratio === 'Landscape' && ar > 0.9) ||
-    (ratio === 'Portrait' && ar < 1.1)
+    ratio === 'any' ||
+    (ratio === 'square' && ar > 0.9 && ar < 1.1) ||
+    (ratio === 'landscape' && ar > 0.9) ||
+    (ratio === 'portrait' && ar < 1.1)
   );
 };
 
@@ -101,8 +101,8 @@ const commentsFilter = (
     }
   }
   const tc = file.totalComments ?? 0;
-  if (comments === 'None' && tc > 0) return false;
-  if (comments === 'Some' && tc === 0) return false;
+  if (comments === 'none' && tc > 0) return false;
+  if (comments === 'some' && tc === 0) return false;
 
   return true;
 };

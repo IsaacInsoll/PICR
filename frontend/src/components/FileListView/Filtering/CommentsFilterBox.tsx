@@ -15,24 +15,24 @@ export const CommentsFilterBox = () => {
 
   return (
     <Button.Group>
-      {x.map(({ title, v, icon }) => {
-        const isSelected = v === value;
+      {commentOptions.map(({ value: optionValue, label, icon }) => {
+        const isSelected = optionValue === value;
         return (
           <Button
             style={{ flexGrow: 1 }}
-            title={title}
+            title={label}
             variant={isSelected ? 'filled' : 'default'}
             onClick={() =>
               setOptions((o: FilterOptionsInterface) => ({
                 ...o,
-                comments: isSelected ? null : v,
+                comments: isSelected ? null : optionValue,
               }))
             }
-            key={title}
+            key={optionValue}
             size="xs"
             leftSection={icon}
           >
-            {title}
+            {label}
           </Button>
         );
       })}
@@ -40,11 +40,11 @@ export const CommentsFilterBox = () => {
   );
 };
 
-const x: {
-  v: CommentsFilterOptions;
-  title: string;
+const commentOptions: {
+  value: CommentsFilterOptions;
+  label: string;
   icon: ReactNode;
 }[] = [
-  { v: 'None', title: 'No Comments', icon: <CommentIcon /> },
-  { v: 'Some', title: 'Has Comments', icon: <CommentsIcon /> },
+  { value: 'none', label: 'No Comments', icon: <CommentIcon /> },
+  { value: 'some', label: 'Has Comments', icon: <CommentsIcon /> },
 ];

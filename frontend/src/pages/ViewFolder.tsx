@@ -425,7 +425,7 @@ const ViewSelectorButton = ({ folder }: { folder: PicrFolder }) => {
   const restricted = folder.branding?.availableViews;
   const shownOptions =
     me?.isLink && restricted?.length
-      ? viewOptions.filter((v) => restricted.includes(v.name))
+      ? viewOptions.filter((v) => restricted.includes(v.key))
       : viewOptions;
 
   if (shownOptions.length <= 1) return null;
@@ -433,9 +433,7 @@ const ViewSelectorButton = ({ folder }: { folder: PicrFolder }) => {
   const restrictedLabel =
     me?.isUser && restricted?.length
       ? `Link users restricted to: ${restricted
-          .map(
-            (name) => viewOptions.find((v) => v.name === name)?.label ?? name,
-          )
+          .map((name) => viewOptions.find((v) => v.key === name)?.label ?? name)
           .join(', ')}`
       : null;
 
@@ -444,9 +442,9 @@ const ViewSelectorButton = ({ folder }: { folder: PicrFolder }) => {
       <Button.Group>
         {shownOptions.map((v) => (
           <Button
-            key={v.name}
-            variant={view === v.name ? 'filled' : 'default'}
-            onClick={() => setView(v.name)}
+            key={v.key}
+            variant={view === v.key ? 'filled' : 'default'}
+            onClick={() => setView(v.key)}
             title={v.label}
             px="xs"
           >

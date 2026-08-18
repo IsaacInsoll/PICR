@@ -15,18 +15,18 @@ export const CommentPermissionsSelector = ({
 
       <Button.Group pb="xs">
         {options.map((opt) => {
-          const isSelected = opt === value;
-          const { icon } = commentPermissionsStyle[opt];
+          const isSelected = opt.value === value;
+          const { icon } = commentPermissionsStyle[opt.value];
           return (
             <Button
               leftSection={icon}
-              title={opt}
+              title={opt.label}
               variant={isSelected ? 'filled' : 'default'}
-              onClick={() => onChange(opt)}
-              key={opt}
+              onClick={() => onChange(opt.value)}
+              key={opt.value}
               size="xs"
             >
-              {opt}
+              {opt.label}
             </Button>
           );
         })}
@@ -36,10 +36,10 @@ export const CommentPermissionsSelector = ({
   );
 };
 
-const options: CommentPermissions[] = [
-  CommentPermissions.None,
-  CommentPermissions.Read,
-  CommentPermissions.Edit,
+const options: Array<{ value: CommentPermissions; label: string }> = [
+  { value: CommentPermissions.None, label: 'none' },
+  { value: CommentPermissions.Read, label: 'read' },
+  { value: CommentPermissions.Edit, label: 'edit' },
 ];
 
 const description = {

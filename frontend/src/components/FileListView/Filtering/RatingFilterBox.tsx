@@ -51,14 +51,14 @@ const RatingComparisonSelector = ({
 }) => {
   return (
     <ActionIcon.Group>
-      {options.map(({ title, icon }) => {
-        const isSelected = title === value;
+      {options.map(({ value: optionValue, label, icon }) => {
+        const isSelected = optionValue === value;
         return (
           <ActionIcon
-            title={title}
+            title={label}
             variant={isSelected ? 'filled' : 'default'}
-            onClick={() => onChange(isSelected ? null : title)}
-            key={title}
+            onClick={() => onChange(isSelected ? null : optionValue)}
+            key={optionValue}
             size="md"
           >
             {icon}
@@ -69,8 +69,16 @@ const RatingComparisonSelector = ({
   );
 };
 
-const options: { title: RatingsComparisonOptions; icon: ReactNode }[] = [
-  { title: 'lessThan', icon: <LessThanEqualIcon /> },
-  { title: 'equal', icon: <EqualIcon /> },
-  { title: 'greaterThan', icon: <GreaterThanEqualIcon /> },
+const options: {
+  value: RatingsComparisonOptions;
+  label: string;
+  icon: ReactNode;
+}[] = [
+  { value: 'lessThan', label: 'lessThan', icon: <LessThanEqualIcon /> },
+  { value: 'equal', label: 'equal', icon: <EqualIcon /> },
+  {
+    value: 'greaterThan',
+    label: 'greaterThan',
+    icon: <GreaterThanEqualIcon />,
+  },
 ];

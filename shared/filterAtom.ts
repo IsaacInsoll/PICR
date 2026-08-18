@@ -5,14 +5,10 @@ import { DefaultFilterOptions } from './files/filterFiles';
 
 export const filterAtom = atom<boolean>(false); // is filtering enabled?
 
-export type AspectFilterOptions =
-  | 'Any Ratio'
-  | 'Landscape'
-  | 'Square'
-  | 'Portrait';
+export type AspectFilterOptions = 'any' | 'landscape' | 'square' | 'portrait';
 
 export type RatingsComparisonOptions = 'equal' | 'lessThan' | 'greaterThan';
-export type CommentsFilterOptions = 'None' | 'Some';
+export type CommentsFilterOptions = 'none' | 'some';
 
 export interface FilterOptionsInterface {
   ratio: AspectFilterOptions;
@@ -35,7 +31,7 @@ export const totalFilterOptionsSelected = atom((get) => {
     get(filterOptions);
   const totalMeta = get(totalMetadataFilterOptionsSelected);
   let total = totalMeta;
-  if (ratio !== 'Any Ratio') total++;
+  if (ratio !== 'any') total++;
   if (searchText && searchText !== '') total++;
   if (ratingComparison) total++;
   if (flag) total++;

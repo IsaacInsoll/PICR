@@ -40,18 +40,18 @@ export const selectedViewAtom = atom<SelectedView, [SelectedView], void>(
 );
 
 export const viewOptions: {
-  name: SelectedView;
+  key: SelectedView;
   icon: ReactNode;
   label: string;
 }[] = [
-  { name: 'list', icon: <ListViewIcon size={actionIconSize} />, label: 'List' },
+  { key: 'list', icon: <ListViewIcon size={actionIconSize} />, label: 'List' },
   {
-    name: 'gallery',
+    key: 'gallery',
     icon: <GridViewIcon size={actionIconSize} />,
     label: 'Gallery',
   },
   {
-    name: 'feed',
+    key: 'feed',
     icon: <PhotoViewIcon size={actionIconSize} />,
     label: 'Feed',
   },
