@@ -30,6 +30,7 @@ import { CommentPermissionsSelector } from '../../components/CommentPermissionsS
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { editAdminUserMutation } from '@shared/urql/mutations/editAdminUserMutation';
 import { deleteUserMutation } from '@shared/urql/mutations/deleteUserMutation';
+import { useTranslation } from 'react-i18next';
 
 export const ManageUser = ({
   id,
@@ -38,6 +39,7 @@ export const ManageUser = ({
   id?: string;
   onClose: () => void;
 }) => {
+  const { t } = useTranslation('admin');
   const [user, exists] = useViewUser(id);
   const [, mutate] = useMutation(editAdminUserMutation);
   const [, deleteUser] = useMutation(deleteUserMutation);
@@ -54,7 +56,7 @@ export const ManageUser = ({
       user?.commentPermissions ?? CommentPermissions.Edit,
     );
   const [folder, setFolder] = useState<PicrFolder>(
-    user?.folder ?? { id: '1', name: 'Root', parents: [] },
+    user?.folder ?? { id: '1', name: t('common.root'), parents: [] },
   );
   const [error, setError] = useState('');
 
@@ -99,7 +101,11 @@ export const ManageUser = ({
   return (
     <Modal
       onClose={onClose}
-      title={`Manage User${folder.id !== '1' ? ' for: ' + folderName : ''}`}
+      title={
+        folder.id !== '1'
+          ? t('users.editor.titleForFolder', { folder: folderName })
+          : t('users.editor.title')
+      }
       centered
       opened={true}
       size="xl"
@@ -107,20 +113,20 @@ export const ManageUser = ({
       <Stack gap="md">
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" verticalSpacing="md">
           <Stack gap="md">
-            <Divider label="Account" labelPosition="left" />
+            <Divider label={t('users.editor.account')} labelPosition="left" />
             <TextInput
               leftSection={<UserIcon />}
-              placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
+              placeholder={t('users.editor.namePlaceholder')}
               value={name}
-              label="Name"
+              label={t('users.editor.name')}
               onChange={(e) => setName(e.currentTarget.value)}
             />
 
             <TextInput
               leftSection={<EmailIcon />}
-              placeholder="EG: kimk or kim@k.com"
+              placeholder={t('users.editor.emailPlaceholder')}
               value={username}
-              label="Email"
+              label={t('users.editor.email')}
               onChange={(e) => setUsername(e.currentTarget.value)}
             />
 
@@ -128,20 +134,20 @@ export const ManageUser = ({
               // leftSection={<TbPassword />}
               // placeholder="randomchars"
               value={password ?? ''}
-              label="Password"
+              label={t('users.editor.password')}
               onChange={(e) => setPassword(e.currentTarget.value)}
             />
 
             <Switch
               checked={enabled}
-              label="Enabled"
-              description="Can user log in?"
+              label={t('users.editor.enabled')}
+              description={t('users.editor.enabledDescription')}
               onChange={(event) => setEnabled(event.currentTarget.checked)}
             />
           </Stack>
 
           <Stack gap="md">
-            <Divider label="Access" labelPosition="left" />
+            <Divider label={t('users.editor.access')} labelPosition="left" />
             <FolderSelector folder={folder} setFolder={setFolder} />
 
             <CommentPermissionsSelector
@@ -152,7 +158,10 @@ export const ManageUser = ({
         </SimpleGrid>
 
         <Stack gap="md">
-          <Divider label="Notifications" labelPosition="left" />
+          <Divider
+            label={t('users.editor.notifications')}
+            labelPosition="left"
+          />
           <SimpleGrid
             cols={{ base: 1, sm: 2 }}
             spacing="lg"
@@ -160,17 +169,17 @@ export const ManageUser = ({
           >
             <TextInput
               leftSection={<NotificationIcon />}
-              placeholder="EG: https://ntfy.sh/xyz"
+              placeholder={t('users.editor.ntfyPlaceholder')}
               value={ntfy ?? ''}
-              label="NTFY Notifications URL"
-              description="Get notifications on your phone"
+              label={t('users.editor.ntfyUrl')}
+              description={t('users.editor.ntfyDescription')}
               onChange={(e) => setNtfy(e.currentTarget.value)}
             />
 
             <Switch
               checked={ntfyEmail}
-              label="Email NTFY notifications"
-              description="Also send NTFY alerts to this account email"
+              label={t('users.editor.ntfyEmail')}
+              description={t('users.editor.ntfyEmailDescription')}
               disabled={!ntfy}
               onChange={(event) => setNtfyEmail(event.currentTarget.checked)}
             />
@@ -192,14 +201,14 @@ export const ManageUser = ({
                 onClick={() => setShowDeleteConfirm(true)}
                 leftSection={<DeleteIcon />}
               >
-                Delete
+                {t('common.delete')}
               </Button>
             ) : (
               <Box />
             )}
             <Button disabled={invalidUsername} onClick={onSave}>
               <SaveIcon />
-              {exists ? 'Save' : 'Create User'}
+              {exists ? t('common.save') : t('users.editor.create')}
             </Button>
           </Group>
         </Box>
@@ -208,24 +217,21 @@ export const ManageUser = ({
       <Modal
         opened={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
-        title="Delete User"
+        title={t('users.editor.deleteTitle')}
         centered
         size="sm"
       >
         <Stack>
-          <Text>
-            Are you sure you want to delete this user? This action cannot be
-            undone and they will no longer be able to log in.
-          </Text>
+          <Text>{t('users.editor.deleteConfirmation')}</Text>
           <Group justify="flex-end">
             <Button
               variant="default"
               onClick={() => setShowDeleteConfirm(false)}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button color="red" onClick={onDelete} leftSection={<DeleteIcon />}>
-              Delete
+              {t('common.delete')}
             </Button>
           </Group>
         </Stack>

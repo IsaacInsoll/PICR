@@ -36,6 +36,8 @@ import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
 import { UAParser } from 'ua-parser-js';
 import { appStoreLinks } from '@shared/consts';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../../i18n/LanguageSwitcher';
 
 type MeUser = NonNullable<ReturnType<typeof useMe>>;
 
@@ -91,10 +93,11 @@ const LeftSide = ({
   folder?: PicrFolder;
   managing?: boolean;
 }) => {
+  const { t } = useTranslation('admin');
   const isMobile = useIsMobile();
   const homeFolder: FolderNavigationTarget = me.folder
     ? me.folder
-    : { id: me.folderId, name: 'Home', parents: [] };
+    : { id: me.folderId, name: t('shell.home'), parents: [] };
   const homeFolderLink = useFolderLink(homeFolder);
   const [, setOpened] = useQuickFind();
   return (
@@ -111,7 +114,7 @@ const LeftSide = ({
             color="gray"
             size="xs"
           >
-            {me.folder?.name ?? 'Home'}
+            {me.folder?.name ?? t('shell.home')}
           </Button>
         ) : null}
         {!isMobile ? (
@@ -133,9 +136,10 @@ const LeftSide = ({
 };
 
 const RightSide = ({ me }: { me: MeUser }) => {
+  const { t } = useTranslation('admin');
   const homeFolder: FolderNavigationTarget = me.folder
     ? me.folder
-    : { id: me.folderId, name: 'Home', parents: [] };
+    : { id: me.folderId, name: t('shell.home'), parents: [] };
   const homeFolderLink = useFolderLink(homeFolder);
   const [, setOpened] = useQuickFind();
   const logOut = useLogout();
@@ -162,26 +166,27 @@ const RightSide = ({ me }: { me: MeUser }) => {
         </Menu.Target>
 
         <Menu.Dropdown>
-          <Menu.Label>Files & Folders</Menu.Label>
+          <Menu.Label>{t('shell.filesAndFolders')}</Menu.Label>
           <PicrMenuItem leftSection={<DashboardIcon />} to="/admin">
-            Dashboard
+            {t('shell.dashboard')}
           </PicrMenuItem>
           <PicrMenuItem leftSection={<HomeIcon />} to={homeFolderLink.to}>
-            {me.folder?.name ?? 'Home'}
+            {me.folder?.name ?? t('shell.home')}
           </PicrMenuItem>
           <Menu.Item
             leftSection={<SearchIcon />}
             onClick={() => setOpened(true)}
           >
-            Search
+            {t('shell.search')}
           </Menu.Item>
           <Menu.Label>PICR</Menu.Label>
           <OpenInApp />
           <PicrMenuItem leftSection={<UserSettingsIcon />} to="/admin/settings">
-            Settings
+            {t('shell.settings')}
           </PicrMenuItem>
+          <LanguageSwitcher />
           <Menu.Item leftSection={<LogOutIcon />} onClick={logOut}>
-            Log out
+            {t('shell.logOut')}
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
@@ -200,6 +205,7 @@ const useLogout = () => {
 const openInAppAtom = atom<string | undefined>(undefined);
 
 const OpenInApp = () => {
+  const { t } = useTranslation('admin');
   const { device } = UAParser(navigator.userAgent);
   const isMobile = device.is('mobile');
   const location = useLocation();
@@ -216,25 +222,26 @@ const OpenInApp = () => {
         to={appUrl}
         onClick={() => setOpen(appUrl)}
       >
-        Open in app
+        {t('shell.openInApp')}
       </Menu.Item>
     </>
   );
 };
 
 const OpenInAppModal = () => {
+  const { t } = useTranslation('admin');
   const [open, setOpen] = useAtom(openInAppAtom);
   return (
     <Modal
       size="xs"
       opened={!!open}
       onClose={() => setOpen(undefined)}
-      title="Download the PICR App"
+      title={t('shell.app.downloadTitle')}
       centered={true}
     >
       <Stack style={{ alignItems: 'center' }}>
         <Text size="sm" c="dimmed">
-          PICR should open automatically if it is installed.
+          {t('shell.app.openAutomatically')}
         </Text>
         <a href={appStoreLinks.ios} target="_blank" rel="noreferrer">
           <Image src="/app-store.png" style={imgProps} />
@@ -243,7 +250,7 @@ const OpenInAppModal = () => {
           <Image src="/google-play.png" style={imgProps} />
         </a>
         <Anchor href={open ?? '#'} size="sm" c="dimmed">
-          Open App
+          {t('shell.app.open')}
         </Anchor>
       </Stack>
     </Modal>

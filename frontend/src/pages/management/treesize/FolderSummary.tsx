@@ -25,7 +25,7 @@ export const FolderSummary = ({
   slices: PieSlice[];
 }) => {
   const [treeSizeTab, setTreeSizeTab] = useAtom(treeSizeTabAtom);
-  const { t } = useTranslation('gallery');
+  const { t } = useTranslation(['gallery', 'admin']);
   const data: { id: string; name: string; size: number; color?: string }[] =
     folder.subFolders.map((f) => ({
       ...f,
@@ -33,7 +33,7 @@ export const FolderSummary = ({
     }));
   data.push({
     id: 'files',
-    name: '(Files)',
+    name: t('server.storage.files', { ns: 'admin' }),
     size: parseInt(folder.totalDirectSize, 10),
     color: chartColorFiles,
   });
@@ -90,6 +90,7 @@ export const FileTable = ({
 }: {
   files: { id: string; name: string; fileSize: string }[];
 }) => {
+  const { t } = useTranslation('admin');
   const limit = 20;
   const top = files
     .slice()
@@ -106,7 +107,10 @@ export const FileTable = ({
           p="xs"
           mt="sm"
         >
-          Folder contains {files.length} files, showing largest {limit}
+          {t('server.storage.fileLimit', {
+            count: files.length,
+            limit,
+          })}
         </Alert>
       ) : null}
       <Table>

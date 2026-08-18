@@ -32,6 +32,7 @@ import {
   getSearchResultMeta,
   isFolderResult,
 } from '@shared/search/searchResults';
+import { useTranslation } from 'react-i18next';
 
 type Scope = 'all' | 'current';
 const scopeAtom = atom<Scope>('current');
@@ -41,6 +42,7 @@ const scopeTypeAtom = atom<SearchResultType>('all');
 export const quickFindQueryAtom = atom('');
 
 export const QuickFind = ({ folder }: { folder?: PicrFolder }) => {
+  const { t } = useTranslation('admin');
   const [opened, setOpened] = useQuickFind();
   const [query, setQuery] = useAtom(quickFindQueryAtom);
   const ref = useRef<HTMLInputElement | null>(null);
@@ -94,6 +96,7 @@ export const QuickFind = ({ folder }: { folder?: PicrFolder }) => {
             ref={ref}
             value={query}
             data-autofocus
+            placeholder={t('quickFind.placeholder')}
             onChange={(e) => {
               const nativeEvent = e.nativeEvent as InputEvent;
               if (nativeEvent.data === '`') return; //don't allow entry of the backtick
@@ -315,6 +318,7 @@ const QuickFindFooter = ({
   moreResults: boolean;
   inHomeFolder: boolean;
 }) => {
+  const { t } = useTranslation('admin');
   const setSelectedScope = useSetAtom(scopeAtom);
   const total = totalFiles + totalFolders;
   return (
@@ -324,7 +328,7 @@ const QuickFindFooter = ({
           <Alert
             variant="transparent"
             color="orange"
-            title="Nothing found"
+            title={t('quickFind.empty')}
             m="sm"
             p="sm"
             icon={<InfoIcon />}
@@ -337,7 +341,7 @@ const QuickFindFooter = ({
             size="xs"
             color="orange"
           >
-            Search all Folders
+            {t('quickFind.searchAllFolders')}
           </Button>
         ) : null}
       </Group>
@@ -345,11 +349,10 @@ const QuickFindFooter = ({
         <Alert
           variant="light"
           color="orange"
-          title="Search Limit Reached"
+          title={t('quickFind.limit.title')}
           icon={<InfoIcon />}
         >
-          Results are limited to 100 files and folders. Use a more specific
-          search.
+          {t('quickFind.limit.description')}
         </Alert>
       ) : null}
     </Stack>
@@ -357,6 +360,7 @@ const QuickFindFooter = ({
 };
 
 const ScopeSelector = ({ folder }: { folder?: PicrFolder }) => {
+  const { t } = useTranslation('admin');
   const me = useMe();
   const [selectedScope, setSelectedScope] = useAtom(scopeAtom);
 
@@ -368,22 +372,26 @@ const ScopeSelector = ({ folder }: { folder?: PicrFolder }) => {
       value={selectedScope}
       onChange={(next) => setSelectedScope(next as Scope)}
       data={[
-        { label: folder?.name ?? 'This Folder', value: 'current' },
-        { label: 'All Folders', value: 'all' },
+        {
+          label: folder?.name ?? t('quickFind.scope.current'),
+          value: 'current',
+        },
+        { label: t('quickFind.scope.all'), value: 'all' },
       ]}
     />
   );
 };
 const TypeSelector = () => {
+  const { t } = useTranslation('admin');
   const [selectedType, setSelectedType] = useAtom(scopeTypeAtom);
   return (
     <SegmentedControl
       value={selectedType}
       onChange={(next) => setSelectedType(next as SearchResultType)}
       data={[
-        { label: 'Everything', value: 'all' },
-        { label: 'Files', value: 'file' },
-        { label: 'Folders', value: 'folder' },
+        { label: t('quickFind.type.all'), value: 'all' },
+        { label: t('quickFind.type.file'), value: 'file' },
+        { label: t('quickFind.type.folder'), value: 'folder' },
       ]}
     />
   );

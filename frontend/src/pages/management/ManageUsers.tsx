@@ -8,6 +8,7 @@ import { PicrDataGrid } from '../../components/PicrDataGrid';
 import { ManageUser } from './ManageUser';
 import { AddUserIcon, SearchIcon } from '../../PicrIcons';
 import { userColumns, userSearchText } from './userColumns';
+import { useTranslation } from 'react-i18next';
 
 interface ManageUsersProps {
   selectedUserId?: string | null;
@@ -22,6 +23,7 @@ export const ManageUsers = ({
   onCreateUser,
   onCloseUser,
 }: ManageUsersProps) => {
+  const { t } = useTranslation('admin');
   const [result, reQuery] = useQuery({ query: viewAdminsQuery });
   const [localUserId, setLocalUserId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -38,10 +40,10 @@ export const ManageUsers = ({
     const allUsers = users ?? [];
     return normalizedSearch
       ? allUsers.filter((user) =>
-          userSearchText(user).includes(normalizedSearch),
+          userSearchText(user, t).includes(normalizedSearch),
         )
       : allUsers;
-  }, [normalizedSearch, users]);
+  }, [normalizedSearch, t, users]);
 
   const selectUser = (id: string) => {
     if (onSelectUser) {
@@ -90,20 +92,23 @@ export const ManageUsers = ({
               <TextInput
                 value={search}
                 onChange={(event) => setSearch(event.currentTarget.value)}
-                placeholder="Search users"
+                placeholder={t('users.search')}
                 leftSection={<SearchIcon />}
                 style={{ flexGrow: 1, maxWidth: 420 }}
               />
               <Text size="sm" c="dimmed" pb={6}>
-                {filteredUsers.length} of {users?.length ?? 0}
+                {t('users.filteredCount', {
+                  visible: filteredUsers.length,
+                  total: users?.length ?? 0,
+                })}
               </Text>
             </Group>
             <Button onClick={createUser} leftSection={<AddUserIcon />}>
-              Add User
+              {t('users.add')}
             </Button>
           </Group>
           <PicrDataGrid
-            columns={userColumns}
+            columns={userColumns(t)}
             data={filteredUsers}
             onClick={(row) => {
               if (row.id) selectUser(row.id);

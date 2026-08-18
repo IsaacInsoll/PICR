@@ -14,90 +14,91 @@ import { LinkModeChip } from '../../components/LinkModeChip';
 import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
 import { PicrAvatar } from '../../components/PicrAvatar';
 import { DateDisplay } from '../../components/FileListView/Filtering/PrettyDate';
+import type { AdminT } from '../../i18n/adminLabels';
 
 const userColumn = createPicrColumns<PicrUser>();
 
-export const userColumns: PicrColumns<PicrUser>[] = [
+export const userColumns = (t: AdminT): PicrColumns<PicrUser>[] => [
   userColumn.accessor('name', {
-    header: 'User',
+    header: t('users.columns.user', { ns: 'admin' }),
     minWidth: 220,
-    cell: ({ row }) => <UserIdentity user={row.original} />,
+    cell: ({ row }) => <UserIdentity user={row.original} t={t} />,
   }),
   userColumn.accessor('username', {
-    header: 'Email',
+    header: t('users.columns.email', { ns: 'admin' }),
     minWidth: 160,
   }),
   userColumn.accessor('folder.name', {
-    header: 'Folder',
+    header: t('users.columns.folder', { ns: 'admin' }),
     minWidth: 160,
     cell: ({ row }) =>
       row.original.folder ? <FolderName folder={row.original.folder} /> : null,
   }),
   userColumn.accessor('lastAccess', {
-    header: 'Last Access',
+    header: t('users.columns.lastAccess', { ns: 'admin' }),
     minWidth: 120,
-    cell: ({ value }) => <LastAccess value={value} />,
+    cell: ({ value }) => <LastAccess value={value} t={t} />,
   }),
   userColumn.accessor('enabled', {
     maxWidth: 90,
-    header: 'Status',
-    cell: ({ value }) => <StatusBadge enabled={!!value} />,
+    header: t('users.columns.status', { ns: 'admin' }),
+    cell: ({ value }) => <StatusBadge enabled={!!value} t={t} />,
   }),
 ];
 
-export const publicLinkColumns: PicrColumns<PicrUser>[] = [
+export const publicLinkColumns = (t: AdminT): PicrColumns<PicrUser>[] => [
   userColumn.accessor('name', {
-    header: 'Link',
+    header: t('links.columns.link', { ns: 'admin' }),
     minWidth: 220,
-    cell: ({ row }) => <UserIdentity user={row.original} />,
+    cell: ({ row }) => <UserIdentity user={row.original} t={t} />,
   }),
   userColumn.accessor('folder.name', {
-    header: 'Folder',
+    header: t('users.columns.folder', { ns: 'admin' }),
     minWidth: 160,
     cell: ({ row }) =>
       row.original.folder ? <FolderName folder={row.original.folder} /> : null,
   }),
   userColumn.accessor('enabled', {
     maxWidth: 90,
-    header: 'Status',
-    cell: ({ value }) => <StatusBadge enabled={!!value} />,
+    header: t('users.columns.status', { ns: 'admin' }),
+    cell: ({ value }) => <StatusBadge enabled={!!value} t={t} />,
   }),
   userColumn.accessor('lastAccess', {
-    header: 'Last Access',
+    header: t('users.columns.lastAccess', { ns: 'admin' }),
     minWidth: 120,
-    cell: ({ value }) => <LastAccess value={value} />,
+    cell: ({ value }) => <LastAccess value={value} t={t} />,
   }),
   userColumn.accessor('commentPermissions', {
-    header: 'Comments',
+    header: t('links.columns.comments', { ns: 'admin' }),
     maxWidth: 75,
     cell: ({ value }) => (
       <CommentChip commentPermissions={value ?? CommentPermissions.Read} />
     ),
   }),
   userColumn.accessor('linkMode', {
-    header: 'Mode',
+    header: t('links.columns.mode', { ns: 'admin' }),
     maxWidth: 75,
     cell: ({ value }) => (
       <LinkModeChip linkMode={value ?? LinkMode.FinalDelivery} />
     ),
   }),
   userColumn.accessor('hasGalleryPasscode', {
-    header: 'Passcode',
+    header: t('links.columns.passcode', { ns: 'admin' }),
     maxWidth: 90,
     cell: ({ value }) =>
       value ? (
         <Badge size="sm" variant="light" color="green">
-          Set
+          {t('links.passcodeSet', { ns: 'admin' })}
         </Badge>
       ) : (
         <Text size="sm" c="dimmed">
-          None
+          {t('common.none', { ns: 'admin' })}
         </Text>
       ),
   }),
   userColumn.display({
     id: 'actions',
-    header: 'Actions',
+    header: t('common.actions', { ns: 'admin' }),
     minWidth: 96,
     cell: ({ row }) => (
       <Group gap="xs" wrap="nowrap">
@@ -126,7 +127,7 @@ export const publicLinkColumns: PicrColumns<PicrUser>[] = [
   }),
 ];
 
-export const userSearchText = (user: PicrUser) =>
+export const userSearchText = (user: PicrUser, t: AdminT) =>
   [
     user.name,
     user.username,
@@ -135,6 +136,12 @@ export const userSearchText = (user: PicrUser) =>
     user.hasGalleryPasscode ? 'passcode password protected' : 'no passcode',
     user.commentPermissions,
     user.linkMode,
+    user.enabled
+      ? t('common.enabled', { ns: 'admin' })
+      : t('common.disabled', { ns: 'admin' }),
+    user.hasGalleryPasscode
+      ? t('links.passcodeProtected', { ns: 'admin' })
+      : t('links.noPasscode', { ns: 'admin' }),
     user.lastAccess,
     user.folder?.name,
     normalizeDisplayName(user.folder?.name),
@@ -146,15 +153,17 @@ export const userSearchText = (user: PicrUser) =>
 const UserIdentity = ({
   user,
   subtitle,
+  t,
 }: {
   user: PicrUser;
   subtitle?: string;
+  t: AdminT;
 }) => (
   <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
     <PicrAvatar user={user} size="sm" radius="xl" />
     <Stack gap={0} style={{ minWidth: 0 }}>
       <Text fw={500} size="sm" truncate>
-        {user.name ?? 'Unnamed'}
+        {user.name ?? t('common.unnamed', { ns: 'admin' })}
       </Text>
       {subtitle ? (
         <Text size="xs" c="dimmed" truncate>
@@ -165,22 +174,24 @@ const UserIdentity = ({
   </Group>
 );
 
-const StatusBadge = ({ enabled }: { enabled: boolean }) => (
+const StatusBadge = ({ enabled, t }: { enabled: boolean; t: AdminT }) => (
   <Badge
     size="sm"
     variant="light"
     color={enabled ? 'green' : 'red'}
     leftSection={<BooleanIcon value={enabled} />}
   >
-    {enabled ? 'Enabled' : 'Disabled'}
+    {enabled
+      ? t('common.enabled', { ns: 'admin' })
+      : t('common.disabled', { ns: 'admin' })}
   </Badge>
 );
 
-const LastAccess = ({ value }: { value?: string | null }) =>
+const LastAccess = ({ value, t }: { value?: string | null; t: AdminT }) =>
   value ? (
     <DateDisplay dateString={value} />
   ) : (
     <Text size="sm" c="dimmed">
-      Never
+      {t('common.never', { ns: 'admin' })}
     </Text>
   );

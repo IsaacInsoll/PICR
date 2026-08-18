@@ -63,6 +63,7 @@ import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
 import { useRequery } from '@shared/hooks/useRequery';
 import { isNewerPicrVersion } from '../helpers/versionUpdates';
 import { useLanguage } from '../i18n/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 const dashboardLimits = {
   desktop: {
@@ -140,12 +141,13 @@ const TopBar = ({ folder }: { folder?: PicrFolder }) => {
 // Visible search box on the dashboard. Typing pre-fills the shared QuickFind
 // query; pressing Enter opens the QuickFind drawer (which shows live results).
 const DashboardSearch = ({ folder }: { folder?: PicrFolder }) => {
+  const { t } = useTranslation('admin');
   const [query, setQuery] = useAtom(quickFindQueryAtom);
   const [, setOpened] = useQuickFind();
   return (
     <>
       <TextInput
-        placeholder="Search photos & folders…"
+        placeholder={t('dashboard.searchPlaceholder')}
         leftSection={<SearchIcon size={16} />}
         radius="md"
         value={query}
@@ -259,6 +261,7 @@ const bytesForRoll = (bytes: string, locale: string) => {
 // Loaded in its own query — these are subtree aggregates and can be slow, so we
 // never block the rest of the dashboard on them.
 const LibraryStats = ({ folderId }: { folderId?: string }) => {
+  const { t } = useTranslation('admin');
   const { formattingLocale } = useLanguage();
   const density = useDashboardDensity();
   const [result, reQuery] = useQuery({
@@ -275,7 +278,7 @@ const LibraryStats = ({ folderId }: { folderId?: string }) => {
     <>
       <StatItem
         value={<AnimatedNumber value={f.totalFiles} />}
-        label="media"
+        label={t('dashboard.stats.media', { count: f.totalFiles })}
         icon={<FileIcon size={16} />}
         color="blue"
       />
@@ -283,13 +286,13 @@ const LibraryStats = ({ folderId }: { folderId?: string }) => {
         <>
           <StatItem
             value={<AnimatedNumber value={f.totalImages} />}
-            label="photos"
+            label={t('dashboard.stats.photo', { count: f.totalImages })}
             icon={<PhotoViewIcon size={16} />}
             color="grape"
           />
           <StatItem
             value={<AnimatedNumber value={f.totalFolders} />}
-            label="folders"
+            label={t('dashboard.stats.folder', { count: f.totalFolders })}
             icon={<FolderIcon size={16} />}
             color="teal"
           />
@@ -313,6 +316,7 @@ const LibraryStats = ({ folderId }: { folderId?: string }) => {
 // Also its own query — the backend caches GitHub's latest release for dashboard
 // use so loading /admin frequently does not trigger external requests.
 const UpdateIndicator = () => {
+  const { t } = useTranslation('admin');
   const [result] = useQuery({ query: dashboardUpdateInfoQuery });
   const info = result.data?.dashboardUpdateInfo;
   if (!info?.latest || !isNewerPicrVersion(info.latest, info.version)) {
@@ -325,7 +329,7 @@ const UpdateIndicator = () => {
       rel="noreferrer"
     >
       <Badge color="green" variant="light" size="lg">
-        Update available: v{info.latest}
+        {t('dashboard.updateAvailable', { version: info.latest })}
       </Badge>
     </Anchor>
   );
@@ -505,6 +509,7 @@ const YourGalleries = ({
   folderId: string;
   density: keyof typeof dashboardLimits;
 }) => {
+  const { t } = useTranslation('admin');
   const setThemeMode = useSetAtom(themeModeAtom);
   const [result, reQuery] = useQuery({
     query: dashboardGalleriesQuery,
@@ -524,11 +529,17 @@ const YourGalleries = ({
   );
   return (
     <Stack className={styles.sectionStack} gap="md">
-      <SectionHeading title="Your Galleries" icon={<FolderIcon />} />
+      <SectionHeading
+        title={t('dashboard.galleries.title')}
+        icon={<FolderIcon />}
+      />
       {result.fetching && galleries.length === 0 ? (
         <LoadingIndicator />
       ) : galleries.length === 0 ? (
-        <EmptyPlaceholder text="No folders here yet" icon={<FolderIcon />} />
+        <EmptyPlaceholder
+          text={t('dashboard.galleries.empty')}
+          icon={<FolderIcon />}
+        />
       ) : (
         <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="sm">
           {galleries.map((g) => (
@@ -556,6 +567,7 @@ const ClientFeedback = ({
   folderId: string;
   density: keyof typeof dashboardLimits;
 }) => {
+  const { t } = useTranslation('admin');
   const [result, reQuery] = useQuery({
     query: dashboardCommentsQuery,
     variables: { id: folderId, limit: dashboardLimits.desktop.comments },
@@ -565,15 +577,18 @@ const ClientFeedback = ({
   const comments = result.data?.comments ?? [];
   return (
     <SectionCard
-      title="Client Feedback"
+      title={t('dashboard.feedback.title')}
       icon={<CommentsIcon />}
-      action={{ label: 'View all', to: `/admin/f/${folderId}/activity` }}
+      action={{
+        label: t('dashboard.viewAll'),
+        to: `/admin/f/${folderId}/activity`,
+      }}
     >
       {result.fetching && comments.length === 0 ? (
         <LoadingIndicator />
       ) : comments.length === 0 ? (
         <EmptyPlaceholder
-          text="No comments or ratings yet"
+          text={t('dashboard.feedback.empty')}
           icon={<CommentsIcon />}
         />
       ) : (
@@ -641,6 +656,7 @@ const ClientActivityRow = ({
 };
 
 const ClientActivity = ({ folderId }: { folderId: string }) => {
+  const { t } = useTranslation('admin');
   const density = useDashboardDensity();
   const [result, reQuery] = useQuery({
     query: recentUsersQuery,
@@ -655,15 +671,15 @@ const ClientActivity = ({ folderId }: { folderId: string }) => {
   );
   return (
     <SectionCard
-      title="Recent Clients"
+      title={t('dashboard.clients.title')}
       icon={<AccessLogsIcon />}
-      action={{ label: 'View all', to: '/admin/settings/logs' }}
+      action={{ label: t('dashboard.viewAll'), to: '/admin/settings/logs' }}
     >
       {result.fetching && users.length === 0 ? (
         <LoadingIndicator />
       ) : users.length === 0 ? (
         <EmptyPlaceholder
-          text="No client visits yet"
+          text={t('dashboard.clients.empty')}
           icon={<AccessLogsIcon />}
         />
       ) : (
@@ -689,6 +705,7 @@ const RecentlyModified = ({
   folderId: string;
   density: keyof typeof dashboardLimits;
 }) => {
+  const { t } = useTranslation('admin');
   const [result, reQuery] = useQuery({
     query: readAllFoldersQuery,
     variables: {
@@ -704,12 +721,15 @@ const RecentlyModified = ({
   const visibleFolders = folders.slice(0, dashboardLimits[density].modified);
   return (
     <Stack className={styles.sectionStack} gap="md">
-      <SectionHeading title="Recently Modified" icon={<FolderIcon />} />
+      <SectionHeading
+        title={t('dashboard.modified.title')}
+        icon={<FolderIcon />}
+      />
       {result.fetching && visibleFolders.length === 0 ? (
         <LoadingIndicator />
       ) : visibleFolders.length === 0 ? (
         <EmptyPlaceholder
-          text="Nothing modified recently"
+          text={t('dashboard.modified.empty')}
           icon={<FolderIcon />}
         />
       ) : (

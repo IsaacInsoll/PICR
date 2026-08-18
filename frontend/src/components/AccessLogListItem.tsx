@@ -4,8 +4,10 @@ import { Suspense } from 'react';
 import { LazyPicrAvatar } from './LazyPicrAvatar';
 import { DateDisplay } from './FileListView/Filtering/PrettyDate';
 import { AccessLogClientMeta } from './AccessLogClientMeta';
+import { useTranslation } from 'react-i18next';
 
 export const AccessLogListItem = ({ log }: { log: AccessLogRow }) => {
+  const { t } = useTranslation('admin');
   return (
     <Paper withBorder p="sm" radius="md">
       <Stack gap={6}>
@@ -19,7 +21,7 @@ export const AccessLogListItem = ({ log }: { log: AccessLogRow }) => {
               />
             ) : (
               <Text size="sm" c="dimmed">
-                Unknown
+                {t('common.unknown')}
               </Text>
             )}
           </Suspense>

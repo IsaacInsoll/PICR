@@ -25,6 +25,7 @@ import { publicLinkColumns, userSearchText } from './userColumns';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import type { ManageFolderUserRow } from '@shared/types/queryRows';
 import { PublicLinkListItem } from '../../components/PublicLinkListItem';
+import { useTranslation } from 'react-i18next';
 
 interface ManagePublicLinksProps {
   folder: PicrFolder;
@@ -197,15 +198,16 @@ const PublicLinksView = ({
   search: string;
   setSearch: (search: string) => void;
 }) => {
+  const { t } = useTranslation('admin');
   const normalizedSearch = search.trim().toLowerCase();
   const filteredLinks = useMemo(
     () =>
       normalizedSearch
         ? links.filter((link) =>
-            userSearchText(link).includes(normalizedSearch),
+            userSearchText(link, t).includes(normalizedSearch),
           )
         : links,
-    [links, normalizedSearch],
+    [links, normalizedSearch, t],
   );
 
   if (links.length === 0) {
@@ -246,7 +248,7 @@ const PublicLinksView = ({
         </Text>
       </Group>
       <PicrDataGrid
-        columns={publicLinkColumns}
+        columns={publicLinkColumns(t)}
         data={filteredLinks}
         onClick={(row) => {
           if (row.id) onSelect(row.id);

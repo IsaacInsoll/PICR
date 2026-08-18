@@ -17,6 +17,7 @@ import type { MouseEvent, ReactNode } from 'react';
 import { useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon, DotsIcon } from '../../PicrIcons';
 import type { MenuItemsProps, PicrColumns } from './types';
+import { useTranslation } from 'react-i18next';
 
 export { createPicrColumns } from './types';
 export type {
@@ -42,6 +43,7 @@ export const PicrDataGrid = <TData,>({
   onMouseover?: (row: TData) => void;
   menuItems?: (props: MenuItemsProps<TData>) => ReactNode;
 }) => {
+  const { t } = useTranslation('common');
   const [sorting, setSorting] = useState<SortingState>([]);
   const tableData = data ?? [];
   // TanStack Table intentionally returns function-heavy instances; React Compiler
@@ -123,7 +125,7 @@ export const PicrDataGrid = <TData,>({
                   <Menu position="bottom-end" withinPortal>
                     <Menu.Target>
                       <ActionIcon
-                        aria-label="Row actions"
+                        aria-label={t('table.rowActions')}
                         size="sm"
                         variant="subtle"
                       >
@@ -147,7 +149,7 @@ export const PicrDataGrid = <TData,>({
                 ta="center"
               >
                 <Text c="dimmed" size="sm">
-                  No records
+                  {t('table.noRecords')}
                 </Text>
               </Table.Td>
             </Table.Tr>

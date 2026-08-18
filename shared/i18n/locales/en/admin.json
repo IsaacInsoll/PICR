@@ -7,6 +7,299 @@
     "failed": "Login Failed. Please check your username and password",
     "submit": "Login"
   },
+  "shell": {
+    "home": "Home",
+    "filesAndFolders": "Files & Folders",
+    "dashboard": "Dashboard",
+    "search": "Search",
+    "settings": "Settings",
+    "logOut": "Log out",
+    "openInApp": "Open in app",
+    "app": {
+      "downloadTitle": "Download the PICR App",
+      "openAutomatically": "PICR should open automatically if it is installed.",
+      "open": "Open App"
+    }
+  },
+  "dashboard": {
+    "searchPlaceholder": "Search photos & folders…",
+    "stats": {
+      "media_one": "media item",
+      "media_other": "media",
+      "photo_one": "photo",
+      "photo_other": "photos",
+      "folder_one": "folder",
+      "folder_other": "folders"
+    },
+    "updateAvailable": "Update available: v{{version}}",
+    "viewAll": "View all",
+    "galleries": {
+      "title": "Your Galleries",
+      "empty": "No folders here yet"
+    },
+    "feedback": {
+      "title": "Client Feedback",
+      "empty": "No comments or ratings yet"
+    },
+    "clients": {
+      "title": "Recent Clients",
+      "empty": "No client visits yet"
+    },
+    "modified": {
+      "title": "Recently Modified",
+      "empty": "Nothing modified recently"
+    }
+  },
+  "quickFind": {
+    "placeholder": "Search photos and folders",
+    "empty": "Nothing found",
+    "searchAllFolders": "Search all folders",
+    "limit": {
+      "title": "Search Limit Reached",
+      "description": "Results are limited to 100 files and folders. Use a more specific search."
+    },
+    "scope": {
+      "current": "This Folder",
+      "all": "All Folders"
+    },
+    "type": {
+      "all": "Everything",
+      "file": "Files",
+      "folder": "Folders"
+    }
+  },
+  "tips": {
+    "publicLink": "Public Links allow your clients to access a folder with a ‘secret link’. No login required!",
+    "users": "Users have a username and password. Users who manage folders can manage users and links in their subfolders.",
+    "branding": "You can set up one or more brands containing a logo and color scheme. Brands apply to a folder and all its subfolders—for example, a dark brand for fitness photos and a bright brand for wedding photos.",
+    "logs": "PICR logs each time a folder is opened by a user so you can check who is using your links.",
+    "dashboard": "PICR enables you to share your photos and videos with your clients."
+  },
+  "settings": {
+    "title": "PICR Settings",
+    "serverInfo": "Server Info",
+    "tabs": {
+      "info": "Info",
+      "media": "Media",
+      "storage": "Storage",
+      "users": "Users",
+      "links": "Links",
+      "branding": "Branding",
+      "logs": "Logs"
+    }
+  },
+  "common": {
+    "root": "Root",
+    "actions": "Actions",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "unnamed": "Unnamed",
+    "never": "Never",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "unknown": "Unknown",
+    "unavailable": "Unavailable",
+    "save": "Save",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "close": "Close"
+  },
+  "users": {
+    "search": "Search users",
+    "filteredCount": "{{visible}} of {{total}}",
+    "add": "Add User",
+    "columns": {
+      "user": "User",
+      "email": "Email",
+      "folder": "Folder",
+      "lastAccess": "Last Access",
+      "status": "Status"
+    },
+    "editor": {
+      "title": "Manage User",
+      "titleForFolder": "Manage User for: {{folder}}",
+      "account": "Account",
+      "name": "Name",
+      "namePlaceholder": "EG: ‘Company CEO’ or ‘Valentina’ (optional)",
+      "email": "Email",
+      "emailPlaceholder": "EG: kimk or kim@k.com",
+      "password": "Password",
+      "enabled": "Enabled",
+      "enabledDescription": "Can this user log in?",
+      "access": "Access",
+      "notifications": "Notifications",
+      "ntfyPlaceholder": "EG: https://ntfy.sh/xyz",
+      "ntfyUrl": "NTFY Notifications URL",
+      "ntfyDescription": "Get notifications on your phone",
+      "ntfyEmail": "Email NTFY notifications",
+      "ntfyEmailDescription": "Also send NTFY alerts to this account email",
+      "create": "Create User",
+      "deleteTitle": "Delete User",
+      "deleteConfirmation": "Are you sure you want to delete this user? This action cannot be undone and they will no longer be able to log in."
+    }
+  },
+  "links": {
+    "columns": {
+      "link": "Link",
+      "comments": "Comments",
+      "mode": "Mode",
+      "passcode": "Passcode"
+    },
+    "passcodeSet": "Set",
+    "passcodeProtected": "passcode password protected",
+    "noPasscode": "no passcode"
+  },
+  "accessLogs": {
+    "empty": "Nobody has used a public link to view this folder yet",
+    "filterLabel": "Filter by Link",
+    "filterPlaceholder": "Any user or link",
+    "columns": {
+      "time": "Time",
+      "ipAddress": "IP Address",
+      "userAgent": "User Agent"
+    }
+  },
+  "server": {
+    "version": {
+      "title": "Version & Updates",
+      "description": "The version of PICR you're running. Keeping it up to date gives you the latest features and fixes.",
+      "viewReleases": "View PICR releases",
+      "current": "PICR version",
+      "devBuild": "Dev build",
+      "upToDate": "Up to date",
+      "latest": "Latest release",
+      "latestDescription": "The newest version available to download.",
+      "developmentBuild": "Development build",
+      "developmentBuildDescription": "Built from source rather than an official release.",
+      "developerMode": "Developer mode",
+      "developerModeDescription": "On only for development builds of PICR."
+    },
+    "storage": {
+      "title": "Storage",
+      "description": "Disk space used by your original photos and the thumbnails PICR generates.",
+      "canWrite": "Can write",
+      "canWriteDescription": "Whether PICR is allowed to make changes to your photo folders.",
+      "analytics": "Storage Analytics",
+      "usage": "Storage usage",
+      "usageDescription": "Adds up disk space for your media and cache. This scans your folders, so it can take a moment.",
+      "calculate": "Calculate",
+      "calculating": "Calculating…",
+      "media": "Media",
+      "files": "Files",
+      "fileLimit_one": "Folder contains {{count}} file; showing the largest {{limit}}",
+      "fileLimit_other": "Folder contains {{count}} files; showing the largest {{limit}}",
+      "mediaDescription": "Your original photos and videos.",
+      "cache": "Cache",
+      "cacheDescription": "Thumbnails and previews PICR created. Safe to delete—they regenerate automatically.",
+      "diskSpace": "Disk space",
+      "diskSpaceDescription": "Free space on the drive that holds your media.",
+      "freeOf": "{{free}} free of {{total}}"
+    },
+    "media": {
+      "title": "Media & Performance",
+      "description": "How PICR generates previews and which extra media formats this server can process.",
+      "saveError": "Could not save media settings",
+      "saved": "Media settings saved",
+      "savedDescription": "New thumbnail settings apply the next time previews generate.",
+      "thumbnails": "Thumbnails",
+      "thumbnailDescription": "Changes apply when thumbnails are generated again; existing previews stay as they are until regenerated or cleared.",
+      "smallWidth": "Small width",
+      "mediumWidth": "Medium width",
+      "largeWidth": "Large width",
+      "jpegQuality": "JPEG quality",
+      "useOriginals": "Use originals for lightbox",
+      "useOriginalsDescription": "Only for downloadable, browser-displayable images (for example, JPEG rather than PSD). Proof links keep optimized previews.",
+      "save": "Save media settings"
+    },
+    "capabilities": {
+      "title": "Server Capabilities",
+      "description": "Formats and acceleration detected from this server environment.",
+      "imageFormats": "Image formats",
+      "imageFormatsDescription": "Camera and design file types PICR can open in addition to JPEG and PNG.",
+      "videoAcceleration": "Video acceleration",
+      "videoAccelerationWhenAvailable": "Uses your graphics hardware to speed up video thumbnails and playback when available.",
+      "videoAccelerationDescription": "Uses your graphics hardware to speed up video thumbnails and playback.",
+      "cpuOnly": "CPU only"
+    },
+    "server": {
+      "title": "Server",
+      "description": "Where PICR is running and how it's configured.",
+      "clientUrl": "Client URL",
+      "clientUrlDescription": "The address you're using in your browser—it differs from the server URL below, which can break share-link previews.",
+      "serverUrl": "Server URL",
+      "serverUrlDescription": "The public address used for share links and social previews.",
+      "uptime": "Uptime",
+      "uptimeDescription": "How long this process has been running."
+    },
+    "duration": {
+      "dayShort_one": "{{count}}d",
+      "dayShort_other": "{{count}}d",
+      "hourShort_one": "{{count}}h",
+      "hourShort_other": "{{count}}h",
+      "minuteShort_one": "{{count}}m",
+      "minuteShort_other": "{{count}}m"
+    },
+    "system": {
+      "platform": "Platform",
+      "memory": "Memory",
+      "database": "Database"
+    },
+    "scanning": {
+      "title": "Media Scanning",
+      "description": "How PICR detects new, changed and moved files in your media folder.",
+      "fileWatcher": "File watcher",
+      "fileWatcherDescription": "Watches the media folder for live changes.",
+      "onView": "On-view scan",
+      "onViewDescription": "Re-checks a folder when someone opens it.",
+      "scheduled": "Scheduled scan",
+      "scheduledDescription": "Periodic full reconcile of the whole library.",
+      "everyHours_one": "Every {{count}}h",
+      "everyHours_other": "Every {{count}}h",
+      "off": "Off",
+      "running": "Running",
+      "next": "Next: {{date}}",
+      "inodeTracking": "Inode tracking",
+      "lastScheduled": "Last scheduled scan",
+      "neverRun": "Never run",
+      "completed": "Completed",
+      "unsettled": "Unsettled",
+      "pass_one": "{{count}} pass",
+      "pass_other": "{{count}} passes",
+      "lastResult": "{{status}} after {{passes}} — {{added}} added, {{changed}} changed, {{moved}} moved, {{removed}} removed, {{skipped}} skipped",
+      "modes": {
+        "off": "Off",
+        "native": "Native",
+        "polling": "Polling",
+        "direct": "Direct",
+        "directAndNew": "Direct and new",
+        "oneLevel": "One level"
+      }
+    },
+    "benchmark": {
+      "run": "Run Benchmark",
+      "confirmation": "This benchmark can take up to a couple of minutes and may use significant CPU while it runs. Are you sure you want to continue?",
+      "running": "Running benchmark…",
+      "version": "PICR Version",
+      "assets": "Assets",
+      "image_one": "{{count}} image",
+      "image_other": "{{count}} images",
+      "video_one": "{{count}} video",
+      "video_other": "{{count}} videos",
+      "assetCounts": "{{images}}, {{videos}}",
+      "assetSetup": "Asset Setup (not included in total)",
+      "jpegResize": "JPEG Resize",
+      "avifResize": "AVIF Resize",
+      "videoThumbnailCpu": "Video Thumbnail (CPU)",
+      "videoThumbnailVaapi": "Video Thumbnail (VAAPI)",
+      "videoTranscodeCpu": "Video Transcode (CPU)",
+      "videoTranscodeVaapi": "Video Transcode (VAAPI)",
+      "total": "Total",
+      "totalValue": "{{duration}} (asset setup excluded)",
+      "copied": "Benchmark results copied",
+      "copy": "Copy Results"
+    }
+  },
   "font": {
     "label": "Heading font",
     "help": "Applies to titles and section headers only",

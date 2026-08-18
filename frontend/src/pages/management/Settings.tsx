@@ -20,6 +20,7 @@ import { PicrTitle } from '../../components/PicrTitle';
 import { QuickFind } from '../../components/QuickFind/QuickFind';
 import { LoggedInHeader } from '../../components/Header/LoggedInHeader';
 import { TopBar } from './TopBar';
+import { useTranslation } from 'react-i18next';
 
 const AccessLogs = lazy(() =>
   import('./AccessLogs/AccessLogs').then((module) => ({
@@ -63,6 +64,7 @@ const TreeSize = lazy(() =>
 );
 
 export const Settings = () => {
+  const { t } = useTranslation('admin');
   const { tab, slug } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -103,7 +105,7 @@ export const Settings = () => {
     void navigate(settingsPath(targetTab), { replace: true });
   };
 
-  const title = 'PICR Settings';
+  const title = t('settings.title');
   const selectedUserSlug = selectedSlugFor('users');
   const selectedLinkSlug = selectedSlugFor('links');
   const selectedBrandingSlug = selectedSlugFor('branding');
@@ -118,16 +120,16 @@ export const Settings = () => {
         {me?.folderId ? <TaskSummary folderId={me.folderId} /> : null}
         <Tabs value={activeTab} onChange={onTabChange} keepMounted={false}>
           <Tabs.List>
-            {tabList.map(({ title, slug, icon }) => (
+            {tabList.map(({ labelKey, slug, icon }) => (
               <Tabs.Tab value={slug} leftSection={icon} key={slug}>
-                {title}
+                {t(labelKey)}
               </Tabs.Tab>
             ))}
           </Tabs.List>
           <Tabs.Panel value="users">
             <Tips type="Users" />
             <Suspense fallback={<LoadingIndicator />}>
-              <PicrTitle title={['Users', title]} />
+              <PicrTitle title={[t('settings.tabs.users'), title]} />
               <ManageUsers
                 selectedUserId={selectedUserSlug}
                 onSelectUser={(id) => openSelectedItem('users', id)}
@@ -139,7 +141,7 @@ export const Settings = () => {
           <Tabs.Panel value="links">
             <Tips type="PublicLink" />
             <Suspense fallback={<LoadingIndicator />}>
-              <PicrTitle title={['Links', title]} />
+              <PicrTitle title={[t('settings.tabs.links'), title]} />
               <ManagePublicLinks
                 folder={me?.folder ?? { id: me?.folderId ?? '1', name: 'Root' }}
                 disableAddingLinks={true}
@@ -155,7 +157,7 @@ export const Settings = () => {
           <Tabs.Panel value="logs">
             <Tips type="Logs" />
             <Suspense fallback={<LoadingIndicator />}>
-              <PicrTitle title={['Logs', title]} />
+              <PicrTitle title={[t('settings.tabs.logs'), title]} />
               {me?.folderId ? (
                 <AccessLogs
                   folderId={me.folderId}
@@ -173,7 +175,7 @@ export const Settings = () => {
           <Tabs.Panel value="branding">
             <Tips type="Branding" />
             <Suspense fallback={<LoadingIndicator />}>
-              <PicrTitle title={['Branding', title]} />
+              <PicrTitle title={[t('settings.tabs.branding'), title]} />
               <ManageBrandings
                 selectedBrandingId={selectedBrandingSlug}
                 onSelectBranding={(id) => openSelectedItem('branding', id)}
@@ -188,19 +190,19 @@ export const Settings = () => {
           </Tabs.Panel>
           <Tabs.Panel value="info">
             <Suspense fallback={<LoadingIndicator />}>
-              <PicrTitle title={['Server Info', title]} />
+              <PicrTitle title={[t('settings.serverInfo'), title]} />
               <ServerInfo />
             </Suspense>
           </Tabs.Panel>
           <Tabs.Panel value="media">
             <Suspense fallback={<LoadingIndicator />}>
-              <PicrTitle title={['Media', title]} />
+              <PicrTitle title={[t('settings.tabs.media'), title]} />
               <MediaSettings />
             </Suspense>
           </Tabs.Panel>
           <Tabs.Panel value="storage">
             <Suspense fallback={<LoadingIndicator />}>
-              <PicrTitle title={['Storage', title]} />
+              <PicrTitle title={[t('settings.tabs.storage'), title]} />
               <StorageSettings />
             </Suspense>
           </Tabs.Panel>
@@ -231,16 +233,35 @@ const settingsPath = (tab: string, slug?: string) =>
 
 interface SettingsTab {
   icon: ReactNode;
-  title: string;
+  labelKey:
+    | 'settings.tabs.info'
+    | 'settings.tabs.media'
+    | 'settings.tabs.storage'
+    | 'settings.tabs.users'
+    | 'settings.tabs.links'
+    | 'settings.tabs.branding'
+    | 'settings.tabs.logs';
   slug: string;
 }
 
 const tabList: SettingsTab[] = [
-  { title: 'Info', slug: 'info', icon: <InfoIcon /> },
-  { title: 'Media', slug: 'media', icon: <VideoMetadataIcon /> },
-  { title: 'Storage', slug: 'storage', icon: <StorageIcon /> },
-  { title: 'Users', slug: 'users', icon: <UserSettingsIcon /> },
-  { title: 'Links', slug: 'links', icon: <PublicLinkIcon /> },
-  { title: 'Branding', slug: 'branding', icon: <BrandingIcon /> },
-  { title: 'Logs', slug: 'logs', icon: <AccessLogsIcon /> },
+  { labelKey: 'settings.tabs.info', slug: 'info', icon: <InfoIcon /> },
+  {
+    labelKey: 'settings.tabs.media',
+    slug: 'media',
+    icon: <VideoMetadataIcon />,
+  },
+  { labelKey: 'settings.tabs.storage', slug: 'storage', icon: <StorageIcon /> },
+  {
+    labelKey: 'settings.tabs.users',
+    slug: 'users',
+    icon: <UserSettingsIcon />,
+  },
+  { labelKey: 'settings.tabs.links', slug: 'links', icon: <PublicLinkIcon /> },
+  {
+    labelKey: 'settings.tabs.branding',
+    slug: 'branding',
+    icon: <BrandingIcon />,
+  },
+  { labelKey: 'settings.tabs.logs', slug: 'logs', icon: <AccessLogsIcon /> },
 ];

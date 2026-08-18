@@ -4,5 +4,9 @@
   },
   "language": {
     "label": "Language"
+  },
+  "table": {
+    "rowActions": "Row actions",
+    "noRecords": "No records"
   }
 }

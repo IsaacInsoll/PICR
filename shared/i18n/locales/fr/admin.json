@@ -7,6 +7,299 @@
     "failed": "Échec de la connexion. Vérifiez votre nom d’utilisateur et votre mot de passe.",
     "submit": "Se connecter"
   },
+  "shell": {
+    "home": "Accueil",
+    "filesAndFolders": "Fichiers et dossiers",
+    "dashboard": "Tableau de bord",
+    "search": "Rechercher",
+    "settings": "Paramètres",
+    "logOut": "Se déconnecter",
+    "openInApp": "Ouvrir dans l’application",
+    "app": {
+      "downloadTitle": "Télécharger l’application PICR",
+      "openAutomatically": "PICR devrait s’ouvrir automatiquement si l’application est installée.",
+      "open": "Ouvrir l’application"
+    }
+  },
+  "dashboard": {
+    "searchPlaceholder": "Rechercher des photos et des dossiers…",
+    "stats": {
+      "media_one": "élément multimédia",
+      "media_other": "éléments multimédias",
+      "photo_one": "photo",
+      "photo_other": "photos",
+      "folder_one": "dossier",
+      "folder_other": "dossiers"
+    },
+    "updateAvailable": "Mise à jour disponible : v{{version}}",
+    "viewAll": "Tout afficher",
+    "galleries": {
+      "title": "Vos galeries",
+      "empty": "Aucun dossier pour le moment"
+    },
+    "feedback": {
+      "title": "Retours des clients",
+      "empty": "Aucun commentaire ni aucune note pour le moment"
+    },
+    "clients": {
+      "title": "Clients récents",
+      "empty": "Aucune visite de client pour le moment"
+    },
+    "modified": {
+      "title": "Modifications récentes",
+      "empty": "Aucune modification récente"
+    }
+  },
+  "quickFind": {
+    "placeholder": "Rechercher des photos et des dossiers",
+    "empty": "Aucun résultat",
+    "searchAllFolders": "Rechercher dans tous les dossiers",
+    "limit": {
+      "title": "Limite de recherche atteinte",
+      "description": "Les résultats sont limités à 100 fichiers et dossiers. Précisez votre recherche."
+    },
+    "scope": {
+      "current": "Ce dossier",
+      "all": "Tous les dossiers"
+    },
+    "type": {
+      "all": "Tout",
+      "file": "Fichiers",
+      "folder": "Dossiers"
+    }
+  },
+  "tips": {
+    "publicLink": "Les liens publics permettent à vos clients d’accéder à un dossier grâce à un « lien secret », sans avoir à se connecter.",
+    "users": "Les utilisateurs disposent d’un identifiant et d’un mot de passe. Ceux qui gèrent des dossiers peuvent également gérer les utilisateurs et les liens de leurs sous-dossiers.",
+    "branding": "Vous pouvez créer une ou plusieurs identités visuelles comprenant un logo et une palette de couleurs. Elles s’appliquent à un dossier et à tous ses sous-dossiers, par exemple une identité sombre pour des photos de sport et une identité lumineuse pour des photos de mariage.",
+    "logs": "PICR enregistre chaque ouverture d’un dossier par un utilisateur afin que vous puissiez vérifier qui utilise vos liens.",
+    "dashboard": "PICR vous permet de partager vos photos et vidéos avec vos clients."
+  },
+  "settings": {
+    "title": "Paramètres de PICR",
+    "serverInfo": "Informations sur le serveur",
+    "tabs": {
+      "info": "Informations",
+      "media": "Médias",
+      "storage": "Stockage",
+      "users": "Utilisateurs",
+      "links": "Liens",
+      "branding": "Identité visuelle",
+      "logs": "Journaux"
+    }
+  },
+  "common": {
+    "root": "Racine",
+    "actions": "Actions",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "unnamed": "Sans nom",
+    "never": "Jamais",
+    "none": "Aucun",
+    "yes": "Oui",
+    "no": "Non",
+    "unknown": "Inconnu",
+    "unavailable": "Indisponible",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "close": "Fermer"
+  },
+  "users": {
+    "search": "Rechercher des utilisateurs",
+    "filteredCount": "{{visible}} sur {{total}}",
+    "add": "Ajouter un utilisateur",
+    "columns": {
+      "user": "Utilisateur",
+      "email": "E-mail",
+      "folder": "Dossier",
+      "lastAccess": "Dernier accès",
+      "status": "État"
+    },
+    "editor": {
+      "title": "Gérer l’utilisateur",
+      "titleForFolder": "Gérer l’utilisateur pour : {{folder}}",
+      "account": "Compte",
+      "name": "Nom",
+      "namePlaceholder": "P. ex. « Direction » ou « Valentina » (facultatif)",
+      "email": "E-mail",
+      "emailPlaceholder": "P. ex. kimk ou kim@k.com",
+      "password": "Mot de passe",
+      "enabled": "Activé",
+      "enabledDescription": "Cet utilisateur peut-il se connecter ?",
+      "access": "Accès",
+      "notifications": "Notifications",
+      "ntfyPlaceholder": "P. ex. https://ntfy.sh/xyz",
+      "ntfyUrl": "URL des notifications NTFY",
+      "ntfyDescription": "Recevoir des notifications sur votre téléphone",
+      "ntfyEmail": "Envoyer les notifications NTFY par e-mail",
+      "ntfyEmailDescription": "Envoyer également les alertes NTFY à l’adresse e-mail de ce compte",
+      "create": "Créer l’utilisateur",
+      "deleteTitle": "Supprimer l’utilisateur",
+      "deleteConfirmation": "Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible et il ne pourra plus se connecter."
+    }
+  },
+  "links": {
+    "columns": {
+      "link": "Lien",
+      "comments": "Commentaires",
+      "mode": "Mode",
+      "passcode": "Code d’accès"
+    },
+    "passcodeSet": "Défini",
+    "passcodeProtected": "protégé par un code d’accès",
+    "noPasscode": "sans code d’accès"
+  },
+  "accessLogs": {
+    "empty": "Personne n’a encore utilisé de lien public pour consulter ce dossier",
+    "filterLabel": "Filtrer par lien",
+    "filterPlaceholder": "N’importe quel utilisateur ou lien",
+    "columns": {
+      "time": "Date",
+      "ipAddress": "Adresse IP",
+      "userAgent": "Agent utilisateur"
+    }
+  },
+  "server": {
+    "version": {
+      "title": "Version et mises à jour",
+      "description": "La version de PICR que vous utilisez. Maintenez-la à jour pour profiter des dernières fonctionnalités et corrections.",
+      "viewReleases": "Voir les versions de PICR",
+      "current": "Version de PICR",
+      "devBuild": "Version de développement",
+      "upToDate": "À jour",
+      "latest": "Dernière version",
+      "latestDescription": "La version la plus récente disponible au téléchargement.",
+      "developmentBuild": "Version de développement",
+      "developmentBuildDescription": "Compilée depuis le code source plutôt qu’à partir d’une version officielle.",
+      "developerMode": "Mode développeur",
+      "developerModeDescription": "Activé uniquement pour les versions de développement de PICR."
+    },
+    "storage": {
+      "title": "Stockage",
+      "description": "Espace disque utilisé par vos photos originales et les miniatures générées par PICR.",
+      "canWrite": "Écriture autorisée",
+      "canWriteDescription": "Indique si PICR est autorisé à modifier vos dossiers de photos.",
+      "analytics": "Analyse du stockage",
+      "usage": "Utilisation du stockage",
+      "usageDescription": "Calcule l’espace disque occupé par vos médias et le cache. Cette opération analyse vos dossiers et peut prendre un moment.",
+      "calculate": "Calculer",
+      "calculating": "Calcul en cours…",
+      "media": "Médias",
+      "files": "Fichiers",
+      "fileLimit_one": "Le dossier contient {{count}} fichier ; affichage du plus volumineux",
+      "fileLimit_other": "Le dossier contient {{count}} fichiers ; affichage des {{limit}} plus volumineux",
+      "mediaDescription": "Vos photos et vidéos originales.",
+      "cache": "Cache",
+      "cacheDescription": "Miniatures et aperçus créés par PICR. Vous pouvez les supprimer sans risque : ils seront régénérés automatiquement.",
+      "diskSpace": "Espace disque",
+      "diskSpaceDescription": "Espace libre sur le disque contenant vos médias.",
+      "freeOf": "{{free}} libres sur {{total}}"
+    },
+    "media": {
+      "title": "Médias et performances",
+      "description": "Comment PICR génère les aperçus et quels formats multimédias supplémentaires ce serveur peut traiter.",
+      "saveError": "Impossible d’enregistrer les paramètres des médias",
+      "saved": "Paramètres des médias enregistrés",
+      "savedDescription": "Les nouveaux paramètres de miniatures s’appliqueront lors de la prochaine génération des aperçus.",
+      "thumbnails": "Miniatures",
+      "thumbnailDescription": "Les modifications s’appliqueront lors de la prochaine génération des miniatures ; les aperçus existants resteront inchangés jusqu’à leur régénération ou leur suppression.",
+      "smallWidth": "Petite largeur",
+      "mediumWidth": "Largeur moyenne",
+      "largeWidth": "Grande largeur",
+      "jpegQuality": "Qualité JPEG",
+      "useOriginals": "Utiliser les originaux dans la visionneuse",
+      "useOriginalsDescription": "Uniquement pour les images téléchargeables et affichables par le navigateur, par exemple JPEG plutôt que PSD. Les liens d’épreuvage conservent les aperçus optimisés.",
+      "save": "Enregistrer les paramètres des médias"
+    },
+    "capabilities": {
+      "title": "Capacités du serveur",
+      "description": "Formats et accélération détectés dans l’environnement de ce serveur.",
+      "imageFormats": "Formats d’image",
+      "imageFormatsDescription": "Types de fichiers photo et de création que PICR peut ouvrir en plus des formats JPEG et PNG.",
+      "videoAcceleration": "Accélération vidéo",
+      "videoAccelerationWhenAvailable": "Utilise le matériel graphique pour accélérer les miniatures vidéo et la lecture lorsqu’il est disponible.",
+      "videoAccelerationDescription": "Utilise le matériel graphique pour accélérer les miniatures vidéo et la lecture.",
+      "cpuOnly": "Processeur uniquement"
+    },
+    "server": {
+      "title": "Serveur",
+      "description": "Où PICR s’exécute et comment il est configuré.",
+      "clientUrl": "URL du client",
+      "clientUrlDescription": "L’adresse utilisée dans votre navigateur diffère de l’URL du serveur ci-dessous, ce qui peut empêcher l’affichage des aperçus des liens de partage.",
+      "serverUrl": "URL du serveur",
+      "serverUrlDescription": "L’adresse publique utilisée pour les liens de partage et les aperçus sociaux.",
+      "uptime": "Durée de fonctionnement",
+      "uptimeDescription": "Durée écoulée depuis le démarrage de ce processus."
+    },
+    "duration": {
+      "dayShort_one": "{{count}} j",
+      "dayShort_other": "{{count}} j",
+      "hourShort_one": "{{count}} h",
+      "hourShort_other": "{{count}} h",
+      "minuteShort_one": "{{count}} min",
+      "minuteShort_other": "{{count}} min"
+    },
+    "system": {
+      "platform": "Plateforme",
+      "memory": "Mémoire",
+      "database": "Base de données"
+    },
+    "scanning": {
+      "title": "Analyse des médias",
+      "description": "Comment PICR détecte les fichiers nouveaux, modifiés et déplacés dans votre dossier de médias.",
+      "fileWatcher": "Surveillance des fichiers",
+      "fileWatcherDescription": "Surveille en direct les modifications du dossier de médias.",
+      "onView": "Analyse à l’ouverture",
+      "onViewDescription": "Vérifie à nouveau un dossier lorsqu’une personne l’ouvre.",
+      "scheduled": "Analyse planifiée",
+      "scheduledDescription": "Rapprochement complet et périodique de toute la bibliothèque.",
+      "everyHours_one": "Toutes les {{count}} h",
+      "everyHours_other": "Toutes les {{count}} h",
+      "off": "Désactivée",
+      "running": "En cours",
+      "next": "Prochaine : {{date}}",
+      "inodeTracking": "Suivi des inodes",
+      "lastScheduled": "Dernière analyse planifiée",
+      "neverRun": "Jamais exécutée",
+      "completed": "Terminée",
+      "unsettled": "Non stabilisée",
+      "pass_one": "{{count}} passage",
+      "pass_other": "{{count}} passages",
+      "lastResult": "{{status}} après {{passes}} — {{added}} ajoutés, {{changed}} modifiés, {{moved}} déplacés, {{removed}} supprimés, {{skipped}} ignorés",
+      "modes": {
+        "off": "Désactivé",
+        "native": "Natif",
+        "polling": "Interrogation périodique",
+        "direct": "Direct",
+        "directAndNew": "Direct et nouveaux éléments",
+        "oneLevel": "Un niveau"
+      }
+    },
+    "benchmark": {
+      "run": "Lancer le test de performances",
+      "confirmation": "Ce test peut prendre quelques minutes et solliciter fortement le processeur. Voulez-vous vraiment continuer ?",
+      "running": "Test de performances en cours…",
+      "version": "Version de PICR",
+      "assets": "Ressources",
+      "image_one": "{{count}} image",
+      "image_other": "{{count}} images",
+      "video_one": "{{count}} vidéo",
+      "video_other": "{{count}} vidéos",
+      "assetCounts": "{{images}}, {{videos}}",
+      "assetSetup": "Préparation des ressources (exclue du total)",
+      "jpegResize": "Redimensionnement JPEG",
+      "avifResize": "Redimensionnement AVIF",
+      "videoThumbnailCpu": "Miniature vidéo (processeur)",
+      "videoThumbnailVaapi": "Miniature vidéo (VAAPI)",
+      "videoTranscodeCpu": "Transcodage vidéo (processeur)",
+      "videoTranscodeVaapi": "Transcodage vidéo (VAAPI)",
+      "total": "Total",
+      "totalValue": "{{duration}} (préparation des ressources exclue)",
+      "copied": "Résultats du test copiés",
+      "copy": "Copier les résultats"
+    }
+  },
   "font": {
     "label": "Police des titres",
     "help": "S’applique uniquement aux titres et aux en-têtes de section",

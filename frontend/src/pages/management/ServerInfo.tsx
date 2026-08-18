@@ -55,6 +55,8 @@ import { isNewerPicrVersion } from '../../helpers/versionUpdates';
 import { DEFAULT_SERVER_MEDIA_SETTINGS } from '@shared/serverMediaSettings';
 import { useLanguage } from '../../i18n/useLanguage';
 import { useDateFormatters } from '../../i18n/useDateFormatters';
+import { useTranslation } from 'react-i18next';
+import type { AdminT } from '../../i18n/adminLabels';
 
 type ServerInfoData = NonNullable<ServerInfoQueryQuery['serverInfo']>;
 
@@ -200,17 +202,20 @@ const InfoRow = ({
 
 // Green/red badge with a leading tick/cross icon (icon inherits the badge's
 // colour via currentColor).
-const BoolValue = ({ value }: { value?: boolean }) => (
-  <Badge
-    color={value ? 'green' : 'red'}
-    variant="light"
-    leftSection={
-      value ? <CircleCheckFilledIcon size={14} /> : <CircleXIcon size={14} />
-    }
-  >
-    {value ? 'Yes' : 'No'}
-  </Badge>
-);
+const BoolValue = ({ value }: { value?: boolean }) => {
+  const { t } = useTranslation('admin');
+  return (
+    <Badge
+      color={value ? 'green' : 'red'}
+      variant="light"
+      leftSection={
+        value ? <CircleCheckFilledIcon size={14} /> : <CircleXIcon size={14} />
+      }
+    >
+      {value ? t('common.yes') : t('common.no')}
+    </Badge>
+  );
+};
 
 // ---------------------------------------------------------------------------
 // Version & updates
@@ -227,6 +232,7 @@ const VersionCard = ({
   developmentBuildSha?: string | null;
   dev: boolean;
 }) => {
+  const { t } = useTranslation('admin');
   const updateAvailable = isNewerPicrVersion(latest, version);
   const versionColor = developmentBuildSha
     ? 'yellow'
@@ -236,9 +242,9 @@ const VersionCard = ({
 
   return (
     <InfoCard
-      title="Version & Updates"
+      title={t('server.version.title')}
       icon={<InfoIcon />}
-      description="The version of PICR you're running. Keeping it up to date gives you the latest features and fixes."
+      description={t('server.version.description')}
       footer={
         <Anchor
           href="https://github.com/IsaacInsoll/PICR/releases"
@@ -247,47 +253,47 @@ const VersionCard = ({
           rel="noreferrer"
         >
           <Group gap={4} wrap="nowrap" component="span">
-            <GitHubIcon /> View PICR releases
+            <GitHubIcon /> {t('server.version.viewReleases')}
           </Group>
         </Anchor>
       }
     >
-      <InfoRow label="PICR version">
+      <InfoRow label={t('server.version.current')}>
         <Code c={versionColor}>{version}</Code>
         {developmentBuildSha ? (
           <Badge color="yellow" variant="light">
-            Dev build
+            {t('server.version.devBuild')}
           </Badge>
         ) : updateAvailable ? (
           <Badge color="red" variant="light">
-            Update available: v{latest}
+            {t('dashboard.updateAvailable', { version: latest })}
           </Badge>
         ) : (
           <Badge color="green" variant="light">
-            Up to date
+            {t('server.version.upToDate')}
           </Badge>
         )}
       </InfoRow>
       {updateAvailable && !developmentBuildSha ? (
         <InfoRow
-          label="Latest release"
-          description="The newest version available to download."
+          label={t('server.version.latest')}
+          description={t('server.version.latestDescription')}
         >
           <Code>{latest}</Code>
         </InfoRow>
       ) : null}
       {developmentBuildSha ? (
         <InfoRow
-          label="Development build"
-          description="Built from source rather than an official release."
+          label={t('server.version.developmentBuild')}
+          description={t('server.version.developmentBuildDescription')}
         >
           <Code c="yellow">{developmentBuildSha}</Code>
         </InfoRow>
       ) : null}
       {dev ? (
         <InfoRow
-          label="Developer mode"
-          description="On only for development builds of PICR."
+          label={t('server.version.developerMode')}
+          description={t('server.version.developerModeDescription')}
         >
           <BoolValue value={dev} />
         </InfoRow>
@@ -306,32 +312,36 @@ const StorageCard = ({
 }: {
   disk: ServerInfoData['disk'];
   canWrite: ServerInfoData['canWrite'];
-}) => (
-  <InfoCard
-    title="Storage"
-    icon={<StorageIcon />}
-    description="Disk space used by your original photos and the thumbnails PICR generates."
-    footer={<TreesizeLink />}
-  >
-    <InfoRow
-      label="Can write"
-      description="Whether PICR is allowed to make changes to your photo folders."
+}) => {
+  const { t } = useTranslation('admin');
+  return (
+    <InfoCard
+      title={t('server.storage.title')}
+      icon={<StorageIcon />}
+      description={t('server.storage.description')}
+      footer={<TreesizeLink />}
     >
-      <BoolValue value={canWrite} />
-    </InfoRow>
-    <Suspense fallback={<StorageUsageLoading />}>
-      <ServerFolderSize disk={disk} />
-    </Suspense>
-  </InfoCard>
-);
+      <InfoRow
+        label={t('server.storage.canWrite')}
+        description={t('server.storage.canWriteDescription')}
+      >
+        <BoolValue value={canWrite} />
+      </InfoRow>
+      <Suspense fallback={<StorageUsageLoading />}>
+        <ServerFolderSize disk={disk} />
+      </Suspense>
+    </InfoCard>
+  );
+};
 
 const TreesizeLink = () => {
+  const { t } = useTranslation('admin');
   const me = useMe();
   const folderId = me?.folderId;
   if (!folderId) return null;
   return (
     <PicrLink to={'/admin/settings/treesize/' + folderId} size="xs">
-      <StorageIcon /> Storage Analytics
+      <StorageIcon /> {t('server.storage.analytics')}
     </PicrLink>
   );
 };
@@ -340,6 +350,7 @@ const TreesizeLink = () => {
 // without used), so it's held back until the user calculates media/cache usage
 // and shown alongside them.
 const ServerFolderSize = ({ disk }: { disk: ServerInfoData['disk'] }) => {
+  const { t } = useTranslation('admin');
   const { formattingLocale } = useLanguage();
   const [requested, setRequested] = useState(false);
   const [result] = useQuery({
@@ -350,8 +361,8 @@ const ServerFolderSize = ({ disk }: { disk: ServerInfoData['disk'] }) => {
   if (!requested) {
     return (
       <InfoRow
-        label="Storage usage"
-        description="Adds up disk space for your media and cache. This scans your folders, so it can take a moment."
+        label={t('server.storage.usage')}
+        description={t('server.storage.usageDescription')}
       >
         <Button
           size="xs"
@@ -359,7 +370,7 @@ const ServerFolderSize = ({ disk }: { disk: ServerInfoData['disk'] }) => {
           leftSection={<StorageIcon />}
           onClick={() => setRequested(true)}
         >
-          Calculate
+          {t('server.storage.calculate')}
         </Button>
       </InfoRow>
     );
@@ -367,14 +378,17 @@ const ServerFolderSize = ({ disk }: { disk: ServerInfoData['disk'] }) => {
   if (!server) return null;
   return (
     <>
-      <InfoRow label="Media" description="Your original photos and videos.">
+      <InfoRow
+        label={t('server.storage.media')}
+        description={t('server.storage.mediaDescription')}
+      >
         <Text size="sm">
           {prettyBytes(server.mediaSize, { locale: formattingLocale })}
         </Text>
       </InfoRow>
       <InfoRow
-        label="Cache"
-        description="Thumbnails and previews PICR created. Safe to delete — they regenerate automatically."
+        label={t('server.storage.cache')}
+        description={t('server.storage.cacheDescription')}
       >
         <Text size="sm">
           {prettyBytes(server.cacheSize, { locale: formattingLocale })}
@@ -382,12 +396,14 @@ const ServerFolderSize = ({ disk }: { disk: ServerInfoData['disk'] }) => {
       </InfoRow>
       {disk ? (
         <InfoRow
-          label="Disk space"
-          description="Free space on the drive that holds your media."
+          label={t('server.storage.diskSpace')}
+          description={t('server.storage.diskSpaceDescription')}
         >
           <Text size="sm">
-            {prettyBytes(disk.free, { locale: formattingLocale })} free of{' '}
-            {prettyBytes(disk.total, { locale: formattingLocale })}
+            {t('server.storage.freeOf', {
+              free: prettyBytes(disk.free, { locale: formattingLocale }),
+              total: prettyBytes(disk.total, { locale: formattingLocale }),
+            })}
           </Text>
         </InfoRow>
       ) : null}
@@ -395,16 +411,19 @@ const ServerFolderSize = ({ disk }: { disk: ServerInfoData['disk'] }) => {
   );
 };
 
-const StorageUsageLoading = () => (
-  <InfoRow label="Storage usage">
-    <Group gap="xs" wrap="nowrap">
-      <LoadingIndicator size="small" />
-      <Text size="sm" c="dimmed">
-        Calculating…
-      </Text>
-    </Group>
-  </InfoRow>
-);
+const StorageUsageLoading = () => {
+  const { t } = useTranslation('admin');
+  return (
+    <InfoRow label={t('server.storage.usage')}>
+      <Group gap="xs" wrap="nowrap">
+        <LoadingIndicator size="small" />
+        <Text size="sm" c="dimmed">
+          {t('server.storage.calculating')}
+        </Text>
+      </Group>
+    </InfoRow>
+  );
+};
 
 // ---------------------------------------------------------------------------
 // Media & performance
@@ -419,19 +438,22 @@ const MediaSettingsCard = ({
 }: {
   server: ServerInfoData;
   reQuery: ServerInfoRequery;
-}) => (
-  <InfoCard
-    title="Media & Performance"
-    icon={<VideoMetadataIcon />}
-    description="How PICR generates previews and which extra media formats this server can process."
-  >
-    <MediaSettingsControls
-      key={serverSettingsKey(server.settings)}
-      settings={server.settings}
-      reQuery={reQuery}
-    />
-  </InfoCard>
-);
+}) => {
+  const { t } = useTranslation('admin');
+  return (
+    <InfoCard
+      title={t('server.media.title')}
+      icon={<VideoMetadataIcon />}
+      description={t('server.media.description')}
+    >
+      <MediaSettingsControls
+        key={serverSettingsKey(server.settings)}
+        settings={server.settings}
+        reQuery={reQuery}
+      />
+    </InfoCard>
+  );
+};
 
 type ServerSettingsData = ServerInfoData['settings'];
 type NumericSetting = number | '';
@@ -461,6 +483,7 @@ const MediaSettingsControls = ({
   settings: ServerSettingsData;
   reQuery: ServerInfoRequery;
 }) => {
+  const { t } = useTranslation('admin');
   const [form, setForm] = useState<MediaSettingsFormState>(() =>
     formStateFor(settings),
   );
@@ -477,15 +500,15 @@ const MediaSettingsControls = ({
     if (update.error) {
       notifications.show({
         color: 'red',
-        title: 'Could not save media settings',
+        title: t('server.media.saveError'),
         message: update.error.message,
       });
       return;
     }
     notifications.show({
       color: 'green',
-      title: 'Media settings saved',
-      message: 'New thumbnail settings apply the next time previews generate.',
+      title: t('server.media.saved'),
+      message: t('server.media.savedDescription'),
     });
     reQuery({ requestPolicy: 'network-only' });
   };
@@ -493,36 +516,35 @@ const MediaSettingsControls = ({
   return (
     <Stack gap="md">
       <Box>
-        <Title order={6}>Thumbnails</Title>
+        <Title order={6}>{t('server.media.thumbnails')}</Title>
         <Text size="xs" c="dimmed" mt={2}>
-          Changes apply when thumbnails are generated again; existing previews
-          stay as they are until regenerated or cleared.
+          {t('server.media.thumbnailDescription')}
         </Text>
       </Box>
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="sm">
         <PixelInput
-          label="Small width"
+          label={t('server.media.smallWidth')}
           icon={<ThumbnailsIcon />}
           value={form.thumbnailSmallPx}
           defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailSmallPx}
           onChange={(value) => setField('thumbnailSmallPx', value)}
         />
         <PixelInput
-          label="Medium width"
+          label={t('server.media.mediumWidth')}
           icon={<ThumbnailsIcon />}
           value={form.thumbnailMediumPx}
           defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailMediumPx}
           onChange={(value) => setField('thumbnailMediumPx', value)}
         />
         <PixelInput
-          label="Large width"
+          label={t('server.media.largeWidth')}
           icon={<ThumbnailsIcon />}
           value={form.thumbnailLargePx}
           defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailLargePx}
           onChange={(value) => setField('thumbnailLargePx', value)}
         />
         <QualityInput
-          label="JPEG quality"
+          label={t('server.media.jpegQuality')}
           icon={<BitrateIcon />}
           value={form.thumbnailJpegQuality}
           defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailJpegQuality}
@@ -531,8 +553,8 @@ const MediaSettingsControls = ({
       </SimpleGrid>
       <Switch
         checked={form.useOriginalsForLightbox}
-        label="Use originals for lightbox"
-        description="Only for downloadable, browser-displayable images (IE: JPEG not PSD). Proof links keep optimized previews."
+        label={t('server.media.useOriginals')}
+        description={t('server.media.useOriginalsDescription')}
         onChange={(event) =>
           setField('useOriginalsForLightbox', event.currentTarget.checked)
         }
@@ -544,7 +566,7 @@ const MediaSettingsControls = ({
           onClick={() => void save()}
           loading={result.fetching}
         >
-          Save media settings
+          {t('server.media.save')}
         </Button>
       </Group>
     </Stack>
@@ -641,19 +663,23 @@ const ServerCapabilitiesCard = ({
 }: {
   caps: MediaCapsInfo;
   videoAcceleration: VideoAccelerationInfo;
-}) => (
-  <InfoCard
-    title="Server Capabilities"
-    icon={<ServerIcon />}
-    description="Formats and acceleration detected from this server environment."
-    footer={<Benchmark />}
-  >
-    <AdditionalImageFormats caps={caps} />
-    <VideoAcceleration info={videoAcceleration} />
-  </InfoCard>
-);
+}) => {
+  const { t } = useTranslation('admin');
+  return (
+    <InfoCard
+      title={t('server.capabilities.title')}
+      icon={<ServerIcon />}
+      description={t('server.capabilities.description')}
+      footer={<Benchmark />}
+    >
+      <AdditionalImageFormats caps={caps} />
+      <VideoAcceleration info={videoAcceleration} />
+    </InfoCard>
+  );
+};
 
 const AdditionalImageFormats = ({ caps }: { caps: MediaCapsInfo }) => {
+  const { t } = useTranslation('admin');
   const formats = [
     { label: 'RAW', enabled: caps.raw },
     { label: 'PSD', enabled: caps.psd },
@@ -663,8 +689,8 @@ const AdditionalImageFormats = ({ caps }: { caps: MediaCapsInfo }) => {
 
   return (
     <InfoRow
-      label="Image formats"
-      description="Camera and design file types PICR can open in addition to JPEG and PNG."
+      label={t('server.capabilities.imageFormats')}
+      description={t('server.capabilities.imageFormatsDescription')}
     >
       {formats.map((format) => (
         <Badge
@@ -699,14 +725,15 @@ const codecRank = (codec: string) => {
 };
 
 const VideoAcceleration = ({ info }: { info: VideoAccelerationInfo }) => {
+  const { t } = useTranslation('admin');
   if (info.mode !== 'vaapi') {
     return (
       <InfoRow
-        label="Video acceleration"
-        description="Uses your graphics hardware to speed up video thumbnails and playback when available."
+        label={t('server.capabilities.videoAcceleration')}
+        description={t('server.capabilities.videoAccelerationWhenAvailable')}
       >
         <Badge color="gray" variant="outline">
-          CPU only
+          {t('server.capabilities.cpuOnly')}
         </Badge>
         {info.reason ? (
           <Text size="xs" c="dimmed" ta="right">
@@ -733,8 +760,8 @@ const VideoAcceleration = ({ info }: { info: VideoAccelerationInfo }) => {
 
   return (
     <InfoRow
-      label="Video acceleration"
-      description="Uses your graphics hardware to speed up video thumbnails and playback."
+      label={t('server.capabilities.videoAcceleration')}
+      description={t('server.capabilities.videoAccelerationDescription')}
     >
       <Tooltip label={fullString} multiline w={300} withArrow position="top">
         <Stack gap={6} align="flex-end" style={{ minWidth: 0 }}>
@@ -775,35 +802,36 @@ const VideoAcceleration = ({ info }: { info: VideoAccelerationInfo }) => {
 const normaliseUrl = (url: string) => url.replace(/\/+$/, '');
 
 const ServerCard = ({ server }: { server: ServerInfoData }) => {
+  const { t } = useTranslation('admin');
   const clientUrl = window.location.origin;
   // Usually identical to the server URL (bar a trailing slash); only surface it
   // when it genuinely differs, which hints at a BASE_URL misconfiguration.
   const clientDiffers = normaliseUrl(clientUrl) !== normaliseUrl(server.host);
   return (
     <InfoCard
-      title="Server"
+      title={t('server.server.title')}
       icon={<ServerIcon />}
-      description="Where PICR is running and how it's configured."
+      description={t('server.server.description')}
     >
       {clientDiffers ? (
         <InfoRow
-          label="Client URL"
-          description="The address you're using in your browser — it differs from the server URL below, which can break share-link previews."
+          label={t('server.server.clientUrl')}
+          description={t('server.server.clientUrlDescription')}
         >
           <Code style={{ wordBreak: 'break-all' }}>{clientUrl}</Code>
         </InfoRow>
       ) : null}
       <InfoRow
-        label="Server URL"
-        description="The public address used for share links and social previews."
+        label={t('server.server.serverUrl')}
+        description={t('server.server.serverUrlDescription')}
       >
         <Code style={{ wordBreak: 'break-all' }}>{server.host}</Code>
       </InfoRow>
       <InfoRow
-        label="Uptime"
-        description="How long this process has been running."
+        label={t('server.server.uptime')}
+        description={t('server.server.uptimeDescription')}
       >
-        <Code>{formatUptime(server.system.uptimeSeconds)}</Code>
+        <Code>{formatUptime(server.system.uptimeSeconds, t)}</Code>
       </InfoRow>
     </InfoCard>
   );
@@ -813,27 +841,30 @@ const ServerCard = ({ server }: { server: ServerInfoData }) => {
 // System / runtime
 // ---------------------------------------------------------------------------
 
-const formatUptime = (seconds: number) => {
+const formatUptime = (seconds: number, t: AdminT) => {
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const parts: string[] = [];
-  if (days) parts.push(`${days}d`);
-  if (hours) parts.push(`${hours}h`);
-  if (minutes || parts.length === 0) parts.push(`${minutes}m`);
+  if (days) parts.push(t('server.duration.dayShort', { count: days }));
+  if (hours) parts.push(t('server.duration.hourShort', { count: hours }));
+  if (minutes || parts.length === 0) {
+    parts.push(t('server.duration.minuteShort', { count: minutes }));
+  }
   return parts.join(' ');
 };
 
 const SystemCard = ({ system }: { system: ServerInfoData['system'] }) => {
+  const { t } = useTranslation('admin');
   const { formattingLocale } = useLanguage();
   const metrics = [
     {
-      label: 'Platform',
+      label: t('server.system.platform'),
       value: system.platform,
       icon: <SystemIcon />,
     },
     {
-      label: 'Memory',
+      label: t('server.system.memory'),
       value: prettyBytes(system.totalMemory, { locale: formattingLocale }),
       icon: <StorageIcon />,
     },
@@ -843,7 +874,7 @@ const SystemCard = ({ system }: { system: ServerInfoData['system'] }) => {
       icon: <ServerIcon />,
     },
     {
-      label: 'Database',
+      label: t('server.system.database'),
       value: system.databaseVersion,
       icon: <DatabaseIcon />,
     },
@@ -883,35 +914,38 @@ const SystemMetricCard = ({
   label: string;
   value?: string | null;
   icon: ReactNode;
-}) => (
-  <Card withBorder padding="md" radius="md">
-    <Group gap="xs" wrap="nowrap" mb={6}>
-      <ThemeIcon variant="light" color="gray" size="sm">
-        {icon}
-      </ThemeIcon>
-      <Text size="xs" c="dimmed" fw={600}>
-        {label}
-      </Text>
-    </Group>
-    {value ? (
-      <Code
-        display="block"
-        style={{
-          maxWidth: '100%',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {value}
-      </Code>
-    ) : (
-      <Text size="sm" c="dimmed">
-        Unavailable
-      </Text>
-    )}
-  </Card>
-);
+}) => {
+  const { t } = useTranslation('admin');
+  return (
+    <Card withBorder padding="md" radius="md">
+      <Group gap="xs" wrap="nowrap" mb={6}>
+        <ThemeIcon variant="light" color="gray" size="sm">
+          {icon}
+        </ThemeIcon>
+        <Text size="xs" c="dimmed" fw={600}>
+          {label}
+        </Text>
+      </Group>
+      {value ? (
+        <Code
+          display="block"
+          style={{
+            maxWidth: '100%',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {value}
+        </Code>
+      ) : (
+        <Text size="sm" c="dimmed">
+          {t('common.unavailable')}
+        </Text>
+      )}
+    </Card>
+  );
+};
 
 // ---------------------------------------------------------------------------
 // Media scanning + inode tracking
@@ -922,11 +956,24 @@ type InodeSupportInfo = ServerInfoData['inodeSupport'];
 type ScheduledScanStatusInfo = ScanningInfo['scheduledScan'];
 
 // "direct_and_new" -> "Direct And New"
-const scanModeLabel = (mode: string) =>
-  mode
-    .split('_')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
+const scanModeLabel = (mode: string, t: AdminT) => {
+  switch (mode) {
+    case 'off':
+      return t('server.scanning.modes.off');
+    case 'native':
+      return t('server.scanning.modes.native');
+    case 'polling':
+      return t('server.scanning.modes.polling');
+    case 'direct':
+      return t('server.scanning.modes.direct');
+    case 'direct_and_new':
+      return t('server.scanning.modes.directAndNew');
+    case 'one_level':
+      return t('server.scanning.modes.oneLevel');
+    default:
+      return mode;
+  }
+};
 
 const formatDuration = (durationMs: number) => {
   if (durationMs < 1000) return `${durationMs}ms`;
@@ -937,14 +984,15 @@ const formatDuration = (durationMs: number) => {
 };
 
 const InodeBadge = ({ status }: { status: string }) => {
+  const { t } = useTranslation('admin');
   const color =
     status === 'enabled' ? 'green' : status === 'disabled' ? 'red' : 'gray';
   const label =
     status === 'enabled'
-      ? 'Enabled'
+      ? t('common.enabled')
       : status === 'disabled'
-        ? 'Disabled'
-        : 'Unknown';
+        ? t('common.disabled')
+        : t('common.unknown');
   return (
     <Badge color={color} variant="light">
       {label}
@@ -956,12 +1004,13 @@ const InodeBadge = ({ status }: { status: string }) => {
 // top row (when it ran + how long) with the added/changed/moved breakdown on
 // its own full-width line beneath, matching the InfoRow description pattern.
 const LastScan = ({ status }: { status: ScheduledScanStatusInfo }) => {
+  const { t } = useTranslation('admin');
   const { prettyDate } = useDateFormatters();
   if (!status.lastStartedAt) {
     return (
-      <InfoRow label="Last scheduled scan">
+      <InfoRow label={t('server.scanning.lastScheduled')}>
         <Text size="sm" c="dimmed">
-          Never run
+          {t('server.scanning.neverRun')}
         </Text>
       </InfoRow>
     );
@@ -973,7 +1022,7 @@ const LastScan = ({ status }: { status: ScheduledScanStatusInfo }) => {
     <Box>
       <Group justify="space-between" align="center" wrap="nowrap" gap="md">
         <Text size="sm" fw={500} style={{ flexShrink: 0 }}>
-          Last scheduled scan
+          {t('server.scanning.lastScheduled')}
         </Text>
         <Group gap="xs" wrap="wrap" justify="flex-end" style={{ minWidth: 0 }}>
           <Text size="sm">{prettyDate(status.lastStartedAt)}</Text>
@@ -990,10 +1039,19 @@ const LastScan = ({ status }: { status: ScheduledScanStatusInfo }) => {
         </Text>
       ) : result ? (
         <Text size="xs" c={result.completed ? 'dimmed' : 'yellow'} mt={2}>
-          {result.completed ? 'Completed' : 'Unsettled'} after{' '}
-          {result.scanPasses} pass{result.scanPasses === 1 ? '' : 'es'} —{' '}
-          {result.addedFiles} added, {result.changedFiles} changed, {moved}{' '}
-          moved, {removed} removed, {result.skippedEntries} skipped
+          {t('server.scanning.lastResult', {
+            status: result.completed
+              ? t('server.scanning.completed')
+              : t('server.scanning.unsettled'),
+            passes: t('server.scanning.pass', {
+              count: result.scanPasses,
+            }),
+            added: result.addedFiles,
+            changed: result.changedFiles,
+            moved,
+            removed,
+            skipped: result.skippedEntries,
+          })}
         </Text>
       ) : null}
     </Box>
@@ -1007,50 +1065,58 @@ const ScanningCard = ({
   scanning: ScanningInfo;
   inode: InodeSupportInfo;
 }) => {
+  const { t } = useTranslation('admin');
   const { prettyDate } = useDateFormatters();
   const scheduled = scanning.scheduledScan;
   return (
     <InfoCard
-      title="Media Scanning"
+      title={t('server.scanning.title')}
       icon={<ScanIcon />}
-      description="How PICR detects new, changed and moved files in your media folder."
+      description={t('server.scanning.description')}
     >
       <InfoRow
-        label="File watcher"
-        description="Watches the media folder for live changes."
+        label={t('server.scanning.fileWatcher')}
+        description={t('server.scanning.fileWatcherDescription')}
       >
-        <Code>{scanModeLabel(scanning.fileWatcherMode)}</Code>
+        <Code>{scanModeLabel(scanning.fileWatcherMode, t)}</Code>
       </InfoRow>
       <InfoRow
-        label="On-view scan"
-        description="Re-checks a folder when someone opens it."
+        label={t('server.scanning.onView')}
+        description={t('server.scanning.onViewDescription')}
       >
-        <Code>{scanModeLabel(scanning.onViewScanMode)}</Code>
+        <Code>{scanModeLabel(scanning.onViewScanMode, t)}</Code>
       </InfoRow>
       <InfoRow
-        label="Scheduled scan"
-        description="Periodic full reconcile of the whole library."
+        label={t('server.scanning.scheduled')}
+        description={t('server.scanning.scheduledDescription')}
       >
         <Badge
           color={scanning.scheduledScanHours > 0 ? 'green' : 'gray'}
           variant="light"
         >
           {scanning.scheduledScanHours > 0
-            ? `Every ${scanning.scheduledScanHours}h`
-            : 'Off'}
+            ? t('server.scanning.everyHours', {
+                count: scanning.scheduledScanHours,
+              })
+            : t('server.scanning.off')}
         </Badge>
         {scheduled.running ? (
           <Badge color="blue" variant="light">
-            Running
+            {t('server.scanning.running')}
           </Badge>
         ) : null}
         {scheduled.nextScanAt ? (
           <Text size="sm" c="dimmed">
-            Next: {prettyDate(scheduled.nextScanAt)}
+            {t('server.scanning.next', {
+              date: prettyDate(scheduled.nextScanAt),
+            })}
           </Text>
         ) : null}
       </InfoRow>
-      <InfoRow label="Inode tracking" description={inode.reason}>
+      <InfoRow
+        label={t('server.scanning.inodeTracking')}
+        description={inode.reason}
+      >
         <InodeBadge status={inode.status} />
       </InfoRow>
       <LastScan status={scheduled} />
@@ -1063,6 +1129,7 @@ const ScanningCard = ({
 // ---------------------------------------------------------------------------
 
 const Benchmark = () => {
+  const { t } = useTranslation('admin');
   const [result, runBenchmark] = useMutation(runBenchmarkMutation);
   const benchmark = result.data?.runBenchmark;
   const [opened, setOpened] = useState(false);
@@ -1089,12 +1156,12 @@ const Benchmark = () => {
           setConfirmed(false);
         }}
       >
-        <BenchmarkIcon /> Run Benchmark
+        <BenchmarkIcon /> {t('server.benchmark.run')}
       </Anchor>
       <Modal
         opened={opened}
         onClose={close}
-        title="Run Benchmark"
+        title={t('server.benchmark.run')}
         centered
         closeOnClickOutside={!result.fetching}
         closeOnEscape={!result.fetching}
@@ -1102,27 +1169,23 @@ const Benchmark = () => {
         <Stack gap="md">
           {!confirmed ? (
             <>
-              <Text size="sm">
-                This benchmark can take up to a couple of minutes and may use
-                significant CPU while it runs. Are you sure you want to
-                continue?
-              </Text>
+              <Text size="sm">{t('server.benchmark.confirmation')}</Text>
               <Group justify="flex-end">
                 <Button variant="default" onClick={close}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   leftSection={<BenchmarkIcon />}
                   onClick={startBenchmark}
                 >
-                  Run Benchmark
+                  {t('server.benchmark.run')}
                 </Button>
               </Group>
             </>
           ) : result.fetching ? (
             <Group gap="sm">
               <LoadingIndicator size="small" />
-              <Text size="sm">Running benchmark...</Text>
+              <Text size="sm">{t('server.benchmark.running')}</Text>
             </Group>
           ) : result.error ? (
             <>
@@ -1131,7 +1194,7 @@ const Benchmark = () => {
               </Text>
               <Group justify="flex-end">
                 <Button variant="default" onClick={close}>
-                  Close
+                  {t('common.close')}
                 </Button>
               </Group>
             </>
@@ -1139,41 +1202,48 @@ const Benchmark = () => {
             <>
               <Stack gap="xs">
                 <BenchmarkResultLine
-                  title="PICR Version"
+                  title={t('server.benchmark.version')}
                   value={benchmark.appVersion}
                 />
                 <BenchmarkResultLine
-                  title="Assets"
-                  value={`${benchmark.imageCount} images, ${benchmark.videoCount} videos`}
+                  title={t('server.benchmark.assets')}
+                  value={t('server.benchmark.assetCounts', {
+                    images: t('server.benchmark.image', {
+                      count: benchmark.imageCount,
+                    }),
+                    videos: t('server.benchmark.video', {
+                      count: benchmark.videoCount,
+                    }),
+                  })}
                 />
                 <BenchmarkResultLine
-                  title="Asset Setup (not included in total)"
+                  title={t('server.benchmark.assetSetup')}
                   value={<BenchmarkStepValue step={benchmark.assetSetup} />}
                 />
                 <BenchmarkResultLine
-                  title="JPEG Resize"
+                  title={t('server.benchmark.jpegResize')}
                   value={<BenchmarkStepValue step={benchmark.jpegResize} />}
                 />
                 <BenchmarkResultLine
-                  title="AVIF Resize"
+                  title={t('server.benchmark.avifResize')}
                   value={<BenchmarkStepValue step={benchmark.avifResize} />}
                 />
                 <BenchmarkResultLine
-                  title="Video Acceleration"
+                  title={t('server.capabilities.videoAcceleration')}
                   value={
                     benchmark.videoAccelerationMode === 'vaapi'
                       ? 'VAAPI'
-                      : `CPU only (${benchmark.videoAccelerationReason})`
+                      : `${t('server.capabilities.cpuOnly')} (${benchmark.videoAccelerationReason})`
                   }
                 />
                 <BenchmarkResultLine
-                  title="Video Thumbnail (CPU)"
+                  title={t('server.benchmark.videoThumbnailCpu')}
                   value={
                     <BenchmarkStepValue step={benchmark.videoThumbnailCpu} />
                   }
                 />
                 <BenchmarkResultLine
-                  title="Video Thumbnail (VAAPI)"
+                  title={t('server.benchmark.videoThumbnailVaapi')}
                   value={
                     <BenchmarkStepValue
                       step={benchmark.videoThumbnailAccelerated}
@@ -1181,13 +1251,13 @@ const Benchmark = () => {
                   }
                 />
                 <BenchmarkResultLine
-                  title="Video Transcode (CPU)"
+                  title={t('server.benchmark.videoTranscodeCpu')}
                   value={
                     <BenchmarkStepValue step={benchmark.videoTranscodeCpu} />
                   }
                 />
                 <BenchmarkResultLine
-                  title="Video Transcode (VAAPI)"
+                  title={t('server.benchmark.videoTranscodeVaapi')}
                   value={
                     <BenchmarkStepValue
                       step={benchmark.videoTranscodeAccelerated}
@@ -1195,8 +1265,10 @@ const Benchmark = () => {
                   }
                 />
                 <BenchmarkResultLine
-                  title="Total"
-                  value={`${formatMs(benchmark.totalMs)} (asset setup excluded)`}
+                  title={t('server.benchmark.total')}
+                  value={t('server.benchmark.totalValue', {
+                    duration: formatMs(benchmark.totalMs),
+                  })}
                 />
               </Stack>
               <Group justify="flex-end">
@@ -1206,15 +1278,15 @@ const Benchmark = () => {
                   onClick={() => {
                     copyToClipboard(formatBenchmarkResults(benchmark));
                     notifications.show({
-                      title: 'Benchmark results copied',
+                      title: t('server.benchmark.copied'),
                       message: benchmark.appVersion,
                       icon: <ClipboardIcon />,
                     });
                   }}
                 >
-                  Copy Results
+                  {t('server.benchmark.copy')}
                 </Button>
-                <Button onClick={close}>Close</Button>
+                <Button onClick={close}>{t('common.close')}</Button>
               </Group>
             </>
           ) : null}

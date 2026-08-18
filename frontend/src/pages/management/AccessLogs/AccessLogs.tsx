@@ -19,6 +19,8 @@ import { accessLogQuery } from '@shared/urql/queries/accessLogQuery';
 import type { AccessLogRow } from '@shared/types/queryRows';
 import { AccessLogListItem } from '../../../components/AccessLogListItem';
 import { AccessLogClientMeta } from '../../../components/AccessLogClientMeta';
+import { useTranslation } from 'react-i18next';
+import type { AdminT } from '../../../i18n/adminLabels';
 
 const accessLogColumn = createPicrColumns<AccessLogRow>();
 
@@ -36,6 +38,7 @@ export const AccessLogs = ({
   selectedUserId?: string;
   onSelectUserId?: (userId?: string) => void;
 }) => {
+  const { t } = useTranslation('admin');
   const [localUserId, setLocalUserId] = useState<string | undefined>(undefined);
   const userId = onSelectUserId ? selectedUserId : localUserId;
   const setUserId = onSelectUserId ?? setLocalUserId;
@@ -54,6 +57,7 @@ export const AccessLogs = ({
           userId={userId}
           includeChildren={includeChildren}
           variant={variant}
+          t={t}
         />
       </Suspense>
     </Stack>
@@ -65,11 +69,13 @@ const Body = ({
   userId,
   includeChildren,
   variant,
+  t,
 }: {
   folderId: string;
   userId?: string;
   includeChildren?: boolean;
   variant: 'table' | 'list';
+  t: AdminT;
 }) => {
   const [result] = useQuery({
     query: accessLogQuery,
@@ -79,10 +85,7 @@ const Body = ({
 
   if (data.length === 0) {
     return (
-      <EmptyPlaceholder
-        text="Nobody has used a public link to view this folder (yet!)"
-        icon={<UnlinkIcon />}
-      />
+      <EmptyPlaceholder text={t('accessLogs.empty')} icon={<UnlinkIcon />} />
     );
   }
 
@@ -96,18 +99,18 @@ const Body = ({
     );
   }
 
-  return <PicrDataGrid columns={accessLogColumns} data={data} />;
+  return <PicrDataGrid columns={accessLogColumns(t)} data={data} />;
 };
 
-const accessLogColumns: PicrColumns<AccessLogRow>[] = [
+const accessLogColumns = (t: AdminT): PicrColumns<AccessLogRow>[] => [
   accessLogColumn.accessor('timestamp', {
-    header: 'Time',
+    header: t('accessLogs.columns.time'),
     cell: ({ value }) => {
       return <DateDisplay dateString={value} />;
     },
   }),
   accessLogColumn.accessor('folder.name', {
-    header: 'Folder',
+    header: t('users.columns.folder'),
     minWidth: 25,
     cell: ({ row }) =>
       row.original.folder ? (
@@ -123,7 +126,7 @@ const accessLogColumns: PicrColumns<AccessLogRow>[] = [
       ) : null,
   }),
   accessLogColumn.accessor('userId', {
-    header: 'User',
+    header: t('users.columns.user'),
     minWidth: 25,
     cell: ({ value }) => (
       <Suspense fallback={<LoadingIndicator size="small" />}>
@@ -139,12 +142,12 @@ const accessLogColumns: PicrColumns<AccessLogRow>[] = [
   }),
   // { accessorKey: 'folderId', header: 'Folder', minWidth: 25 },
   accessLogColumn.accessor('ipAddress', {
-    header: 'IP Address',
+    header: t('accessLogs.columns.ipAddress'),
     minWidth: 25,
     cell: ({ value }) => (value ? <Code>{String(value)}</Code> : null),
   }),
   accessLogColumn.accessor('userAgent', {
-    header: 'User Agent',
+    header: t('accessLogs.columns.userAgent'),
     minWidth: 75,
     enableSorting: false,
     cell: ({ value }) => (

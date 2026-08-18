@@ -9,6 +9,7 @@ import {
   PublicLinkIcon,
   UserSettingsIcon,
 } from '../PicrIcons';
+import { useTranslation } from 'react-i18next';
 
 export const Tips = ({
   type,
@@ -17,7 +18,8 @@ export const Tips = ({
   type: keyof typeof TipList;
   props?: AlertProps;
 }) => {
-  const { content, icon } = TipList[type];
+  const { t } = useTranslation('admin');
+  const { key, icon } = TipList[type];
   return (
     <Alert
       variant="light"
@@ -27,62 +29,43 @@ export const Tips = ({
       p="sm"
       {...props}
     >
-      {content}
+      {t(key)}
     </Alert>
   );
 };
 
 interface TipType {
-  content: ReactNode;
+  key:
+    | 'tips.publicLink'
+    | 'tips.users'
+    | 'tips.branding'
+    | 'tips.logs'
+    | 'tips.dashboard';
   icon?: ReactNode;
 }
 
 const PublicLink: TipType = {
   icon: <PublicLinkIcon />,
-  content: (
-    <>
-      Public Links allow your clients to access a folder with a{' '}
-      <em>'secret link'</em>. No login required!
-    </>
-  ),
+  key: 'tips.publicLink',
 };
 
 const Users: TipType = {
   icon: <UserSettingsIcon />,
-  content: (
-    <>
-      Users have a username/password. Users who manage folders can manage
-      users/links in their subfolders
-    </>
-  ),
+  key: 'tips.users',
 };
 
 const Branding: TipType = {
   icon: <BrandingIcon />,
-  content: (
-    <>
-      You can set up one or more 'brands' which contain a logo and color scheme.{' '}
-      Brands apply to a certain folder and all subfolders.
-      <br />
-      EG: a dark brand for fitness photos and a bright brand for wedding photos.
-    </>
-  ),
+  key: 'tips.branding',
 };
 const Logs: TipType = {
   icon: <AccessLogsIcon />,
-  content: (
-    <>
-      Picr logs each time a folder is opened by a user so you can check who is
-      using your links.
-    </>
-  ),
+  key: 'tips.logs',
 };
 
 const Dashboard: TipType = {
   icon: <DashboardIcon />,
-  content: (
-    <>PICR enables you to share your photos/videos with your clients. </>
-  ),
+  key: 'tips.dashboard',
 };
 
 const TipList = {

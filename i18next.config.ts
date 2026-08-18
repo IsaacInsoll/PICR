@@ -24,6 +24,7 @@ export const dynamicCatalogPatterns = {
     ['font', 'category', '*'],
     ['font', 'description', '*'],
     ['font', 'suitability', '*'],
+    ['tips', '*'],
   ],
 } as const satisfies Record<TranslationNamespace, readonly CatalogPath[]>;
 
