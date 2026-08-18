@@ -714,7 +714,6 @@ Auth handling should use structured GraphQL error metadata:
 - Do not rely on error message string matching for auth decisions
 - Global overlay logic should dedupe to a single visible error state, even when polling queries fail repeatedly
 - Use shared constants from `shared/auth/authErrorContract.ts` instead of redefining reason strings in frontend code
-- Policy matrix for overlay vs local handling: `docs/global-error-policy.md`
 
 ## Adding a New Page
 

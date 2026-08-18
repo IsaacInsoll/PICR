@@ -131,7 +131,10 @@ gh issue view <number> --comments --json number,title,state,body,comments,labels
 ## Documentation Boundaries
 
 - Root `readme.md` is customer-facing and should not be updated for developer workflow/troubleshooting notes.
-- Put developer-facing guidance under `docs/development/*` instead.
+- Everything under `docs/` feeds the generated documentation site. Keep general product and user documentation customer-facing.
+- Durable guides for human developers and contributors belong under `docs/development/*` (for example, a guide to adding translations).
+- Temporary implementation plans and working notes belong under `.scratch/`, not in the generated documentation.
+- Agent-specific repository instructions and recurring AI workflow guidance belong in the relevant `AGENTS.md`.
 
 ## IDE Project Files
 
@@ -255,17 +258,18 @@ npm run install-all              # Preferred install flow for all subsystems
 # If installing subsystems manually, install `shared` first, then `frontend` / `app`.
 # Do not run `npm install` for `shared`, `frontend`, and `app` in parallel.
 
-# Lockfile note after changing a dependency (CI gotcha)
-# An incremental `npm install <pkg>@<ver>` / `npm uninstall <pkg>` can leave the
-# root or subsystem package-lock.json out of sync (e.g. missing @emnapi/* wasm
-# transitive nodes such as `@emnapi/wasi-threads`, even when local macOS
-# `npm ci` passes). CI runs strict Linux `npm ci`, which then fails with EUSAGE
-# ("lock file ... not in sync").
-# A fully clean `npm install` in `frontend`/`app` will ERESOLVE because
-# mantine-react-table forces a @mantine peer override (handled via `overrides`
-# in frontend/package.json). To regenerate a CI-valid lockfile:
-#   rm -rf node_modules package-lock.json && npm install --legacy-peer-deps
-# then ALWAYS verify with `npm ci` (exactly what CI runs) before committing the lock.
+# Lockfiles after changing a dependency
+# Use the Node version from `.nvmrc` and normal npm peer-dependency resolution.
+# Update the owning package's existing lockfile in place with a targeted
+# `npm install` or `npm uninstall`; do not delete/recreate the lockfile or use
+# `--legacy-peer-deps` for a routine dependency change.
+# Inspect the package.json and package-lock.json diff before committing. It should
+# contain only the requested dependency and transitive packages that are no longer
+# required. In particular, do not accept unrelated or platform-specific lockfile
+# churn from a macOS install: CI installs on Ubuntu. Restore the lockfile and
+# investigate if the diff is broader than expected.
+# Run plain `npm ci` in every changed package before committing (exactly what CI
+# runs). Peer warnings may be reported, but the command must exit successfully.
 
 # Formatting
 npm run format               # Apply Prettier formatting across the repo
