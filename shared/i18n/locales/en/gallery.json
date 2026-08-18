@@ -1,0 +1,13 @@
+{
+  "passcode": {
+    "defaultTitle": "Gallery passcode",
+    "description": "Enter the passcode to open this gallery.",
+    "fieldLabel": "Passcode",
+    "incorrect": "Incorrect passcode",
+    "submit": "Open gallery"
+  },
+  "unavailable": {
+    "title": "Gallery unavailable",
+    "description": "This link does not exist or is no longer enabled."
+  }
+}

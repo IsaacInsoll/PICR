@@ -1,6 +1,7 @@
 import {
   Button,
   Center,
+  Group,
   Paper,
   PasswordInput,
   Stack,
@@ -14,11 +15,14 @@ import { setPublicLinkPasscode } from '../helpers/publicLinkPasscode';
 import { PasswordIcon } from '../PicrIcons';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
 import { useSetAtom } from 'jotai';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
 export const usePublicLinkPasscodeGate = (): {
   pauseMe: boolean;
   element: ReactNode | null;
 } => {
+  const { t } = useTranslation('gallery');
   const uuid = getUUID();
   const setThemeMode = useSetAtom(themeModeAtom);
   const [passcode, setPasscode] = useState('');
@@ -68,12 +72,13 @@ export const usePublicLinkPasscodeGate = (): {
         <Center mih="100dvh" p="md">
           <Paper withBorder p="xl" radius="sm" maw={420} w="100%">
             <Stack>
+              <Group justify="flex-end">
+                <LanguageSwitcher />
+              </Group>
               <Text component="h1" size="xl" fw={700}>
-                Gallery unavailable
+                {t('unavailable.title')}
               </Text>
-              <Text c="dimmed">
-                This link does not exist or is no longer enabled.
-              </Text>
+              <Text c="dimmed">{t('unavailable.description')}</Text>
             </Stack>
           </Paper>
         </Center>
@@ -95,17 +100,22 @@ export const usePublicLinkPasscodeGate = (): {
       <Center mih="100dvh" p="md">
         <Paper withBorder p="xl" radius="sm" maw={420} w="100%">
           <Stack>
+            <Group justify="flex-end">
+              <LanguageSwitcher />
+            </Group>
             <Text component="h1" size="xl" fw={700}>
-              {info.galleryName ?? 'Gallery passcode'}
+              {info.galleryName ?? t('passcode.defaultTitle')}
             </Text>
-            <Text c="dimmed">Enter the passcode to open this gallery.</Text>
+            <Text c="dimmed">{t('passcode.description')}</Text>
             <PasswordInput
               autoFocus
-              label="Passcode"
+              label={t('passcode.fieldLabel')}
               leftSection={<PasswordIcon />}
               value={passcode}
               error={
-                hasAttempted && !result.fetching ? 'Incorrect passcode' : null
+                hasAttempted && !result.fetching
+                  ? t('passcode.incorrect')
+                  : null
               }
               onChange={(event) => {
                 setPasscode(event.currentTarget.value);
@@ -116,7 +126,7 @@ export const usePublicLinkPasscodeGate = (): {
               }}
             />
             <Button onClick={submit} loading={result.fetching}>
-              Open gallery
+              {t('passcode.submit')}
             </Button>
           </Stack>
         </Paper>

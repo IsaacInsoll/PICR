@@ -1,0 +1,10 @@
+{
+  "login": {
+    "title": "Connexion à PICR",
+    "username": "Nom d’utilisateur",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Votre mot de passe",
+    "failed": "Échec de la connexion. Vérifiez votre nom d’utilisateur et votre mot de passe.",
+    "submit": "Se connecter"
+  }
+}

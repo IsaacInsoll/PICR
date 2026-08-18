@@ -1,0 +1,13 @@
+{
+  "passcode": {
+    "defaultTitle": "Code d’accès de la galerie",
+    "description": "Saisissez le code d’accès pour ouvrir cette galerie.",
+    "fieldLabel": "Code d’accès",
+    "incorrect": "Code d’accès incorrect",
+    "submit": "Ouvrir la galerie"
+  },
+  "unavailable": {
+    "title": "Galerie indisponible",
+    "description": "Ce lien n’existe pas ou n’est plus actif."
+  }
+}

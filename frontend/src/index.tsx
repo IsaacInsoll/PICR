@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 
 import App from './App';
 import './fonts.generated';
+import './i18n/i18n';
 import { reloadForNewVersion } from './helpers/chunkReload';
 
 // A preloaded chunk 404'd because a newer frontend build was deployed while this

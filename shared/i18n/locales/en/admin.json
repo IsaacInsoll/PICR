@@ -1,0 +1,10 @@
+{
+  "login": {
+    "title": "Login to PICR",
+    "username": "Username",
+    "password": "Password",
+    "passwordPlaceholder": "Your password",
+    "failed": "Login Failed. Please check your username and password",
+    "submit": "Login"
+  }
+}
