@@ -5,7 +5,21 @@ import {
   trackBrowserFailures,
 } from './browserFailures';
 import { adminAuthHeader, gqlRequest } from './graphqlClient';
-import { deleteUserMutationText, editUserMutationText } from './mutations';
+import {
+  deleteBrandingMutationText,
+  deleteUserMutationText,
+  editUserMutationText,
+} from './mutations';
+import { defaultCredentials } from '../../backend/auth/defaultCredentials';
+
+const viewBrandingsQueryText = /* GraphQL */ `
+  query ViewBrandingsForI18nSmoke {
+    brandings {
+      id
+      name
+    }
+  }
+`;
 
 test('French public gallery, passcode, login, and language persistence', async ({
   browser,
@@ -131,5 +145,80 @@ test('unsupported browser locale falls back to English catalogs', async ({
     expectNoBrowserFailures(failures);
   } finally {
     await context.close();
+  }
+});
+
+test('French admin navigation persists and the branding editor works', async ({
+  page,
+}) => {
+  const suffix = Math.random().toString(36).slice(2, 8);
+  const brandingName = `I18n admin smoke ${suffix}`;
+  const failures = trackBrowserFailures(page);
+  const authHeader = await adminAuthHeader();
+
+  try {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.getByLabel('Username').fill(defaultCredentials.username);
+    await page
+      .getByRole('textbox', { name: 'Password' })
+      .fill(defaultCredentials.password);
+    await page.getByRole('button', { name: 'Login' }).click();
+    await page.waitForURL('**/admin', { timeout: 15_000 });
+
+    await expect(page.getByText('Your Galleries')).toBeVisible();
+    await page
+      .locator('header')
+      .getByRole('button')
+      .filter({ hasText: 'PICR Admin' })
+      .hover();
+    await page.getByRole('combobox', { name: 'Language' }).click();
+    await page.getByRole('option', { name: 'Français' }).click();
+
+    await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+    await expect(page.getByText('Vos galeries')).toBeVisible();
+    await expect(page.getByText('Retours des clients')).toBeVisible();
+
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+    await expect(page.getByText('Vos galeries')).toBeVisible();
+
+    await page.goto('/admin/settings/branding', {
+      waitUntil: 'domcontentloaded',
+    });
+    await expect(
+      page.getByRole('heading', { name: 'Paramètres de PICR' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('tab', { name: 'Identité visuelle' }),
+    ).toBeVisible();
+
+    await page
+      .getByRole('button', { name: 'Ajouter une identité visuelle' })
+      .click();
+    const drawer = page.getByRole('dialog');
+    await expect(drawer.getByText('Créer une identité visuelle')).toBeVisible();
+    await drawer.getByLabel('Nom').fill(brandingName);
+    await drawer.getByRole('button', { name: 'Créer', exact: true }).click();
+
+    await expect(drawer).toHaveCount(0);
+    await expect(page.getByText(brandingName, { exact: true })).toBeVisible();
+
+    await page.getByText(brandingName, { exact: true }).click();
+    await expect(drawer.getByLabel('Nom')).toHaveValue(brandingName);
+    await drawer.getByRole('button', { name: 'Supprimer' }).click();
+    await expect(page.getByText(brandingName, { exact: true })).toHaveCount(0);
+    expectNoBrowserFailures(failures);
+  } finally {
+    const result = await gqlRequest<{
+      brandings?: Array<{ id: string; name?: string | null }>;
+    }>(viewBrandingsQueryText, {}, authHeader);
+    for (const branding of result.data?.brandings ?? []) {
+      if (branding.name !== brandingName) continue;
+      await gqlRequest<{ deleteBranding?: boolean }>(
+        deleteBrandingMutationText,
+        { id: branding.id },
+        authHeader,
+      );
+    }
   }
 });
