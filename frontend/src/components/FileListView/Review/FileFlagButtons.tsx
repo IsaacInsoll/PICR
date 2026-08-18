@@ -6,6 +6,7 @@ import type { ReviewButtonVariant } from './FileReview';
 import { approvedFlagStyle, rejectedFlagStyle } from './fileFlagStyles';
 import { greenBaloonsOptions } from './ConfettiOptions';
 import { useReward } from 'react-rewards';
+import { useTranslation } from 'react-i18next';
 
 // Buttons to `approve` and `reject` the selected file
 
@@ -18,6 +19,7 @@ export const FileFlagButtons = ({
   onChange: (flag: FileFlag) => void;
   variant?: ReviewButtonVariant;
 }) => {
+  const { t } = useTranslation('gallery');
   // We can't really use disabled prop on this as it removes color from box which is essential to the UI
 
   const [loading, setLoading] = useState(false);
@@ -50,11 +52,11 @@ export const FileFlagButtons = ({
   return (
     <>
       <span id={id} />
-      <Tooltip label="Approve (Thumbs Up)">
+      <Tooltip label={t('review.approveTooltip')}>
         <ActionIcon
           variant={isApproved ? 'filled' : variant}
           onClick={handleApproveClick}
-          title="Approve"
+          title={t('review.approve')}
           // Colour only when set. The `default` variant ignores `color`, but
           // `subtle` applies it to the icon — so passing it unconditionally
           // would make every file look permanently approved/rejected.
@@ -64,11 +66,11 @@ export const FileFlagButtons = ({
           {approvedFlagStyle.icon}
         </ActionIcon>
       </Tooltip>
-      <Tooltip label="Reject (Thumbs Down)">
+      <Tooltip label={t('review.rejectTooltip')}>
         <ActionIcon
           variant={isRejected ? 'filled' : variant}
           onClick={handleRejectClick}
-          title="Reject"
+          title={t('review.reject')}
           color={isRejected ? rejectedFlagStyle.color : undefined}
           loading={loading}
         >

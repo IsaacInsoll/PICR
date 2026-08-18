@@ -5,11 +5,18 @@ import type { MetadataPresentationResult } from '@shared/fileMetadata';
 import { metadataForPresentation } from '@shared/fileMetadata';
 import { toReadableFraction } from 'readable-fractions';
 import { useLanguage } from '../../../i18n/useLanguage';
+import { useTranslation } from 'react-i18next';
+import { metadataDescriptionTranslator } from '../../../i18n/galleryLabels';
 
 // get all keys, remove nulls, add/merge others as expected
 export const MetadataTableRows = (file: PicrFile) => {
+  const { t } = useTranslation('gallery');
   const { formattingLocale } = useLanguage();
-  const list = metadataForPresentation(file, formattingLocale);
+  const list = metadataForPresentation(
+    file,
+    formattingLocale,
+    metadataDescriptionTranslator(t),
+  );
   if (!list.length) return null;
 
   return (

@@ -51,6 +51,8 @@ import { useLightboxThumbnails } from './useLightboxThumbnails';
 import { useLightboxToolbar } from './useLightboxToolbar';
 import { useLightboxShortcuts } from './useLightboxShortcuts';
 import { useIsMobile } from '../../../hooks/useIsMobile';
+import { useTranslation } from 'react-i18next';
+import { lightboxLabels } from '../../../i18n/galleryThirdPartyTranslations';
 
 export const SelectedFileView = ({
   files,
@@ -63,6 +65,7 @@ export const SelectedFileView = ({
   setSelectedFileId: (id: string | undefined) => void;
   folderId: string;
 }) => {
+  const { t } = useTranslation('gallery');
   // findIndex misses when the file was deleted, is filtered out of the current
   // view, or the URL is a stale deep link. Passing -1 to YARL's `index` is
   // meaningless, so treat "not found" as nothing to open rather than landing on
@@ -124,6 +127,7 @@ export const SelectedFileView = ({
       filesForLightbox(files, canDownload, useOriginals, thumbnailDimensions),
     [files, canDownload, useOriginals, thumbnailDimensions],
   );
+  const labels = useMemo(() => lightboxLabels(t), [t]);
 
   // Video is excluded from tap-to-toggle: tapping a video means play/pause
   // everywhere, so overloading it would break the primary interaction. Video
@@ -189,6 +193,7 @@ export const SelectedFileView = ({
       controller={{ ref, closeOnPullDown: true }}
       plugins={plugins}
       slides={slides}
+      labels={labels}
       open={isOpen}
       index={selectedImageIndex}
       close={() => setSelectedFileId(undefined)}
@@ -216,7 +221,7 @@ export const SelectedFileView = ({
                   <span className="picr-video-focus-exit">
                     <LightboxIconButton
                       icon={<ExitFocusIcon size="16" />}
-                      label="Exit focus (show controls)"
+                      label={t('lightbox.exitFocus')}
                       onClick={toggleFocus}
                     />
                   </span>
@@ -257,7 +262,11 @@ export const SelectedFileView = ({
           disabled ? null : (
             <LightboxIconButton
               icon={<FullscreenIcon size="16" />}
-              label={fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+              label={
+                fullscreen
+                  ? t('lightbox.exitFullscreen')
+                  : t('lightbox.fullscreen')
+              }
               active={fullscreen}
               onClick={fullscreen ? exit : enter}
             />
@@ -269,13 +278,13 @@ export const SelectedFileView = ({
               <>
                 <LightboxIconButton
                   icon={<ZoomInIcon size="16" />}
-                  label="Zoom in"
+                  label={t('lightbox.zoomIn')}
                   disabled={disabled || zoom >= maxZoom}
                   onClick={zoomIn}
                 />
                 <LightboxIconButton
                   icon={<ZoomOutIcon size="16" />}
-                  label="Zoom out"
+                  label={t('lightbox.zoomOut')}
                   disabled={disabled || zoom <= minZoom}
                   onClick={zoomOut}
                 />
@@ -382,18 +391,19 @@ const LightboxNavButtons = ({
   total: number;
   controllerRef: RefObject<ControllerRef | null>;
 }) => {
+  const { t } = useTranslation('gallery');
   const { currentIndex } = useLightboxState();
   return (
     <>
       <LightboxIconButton
         icon={<PreviousIcon size="16" />}
-        label="Previous"
+        label={t('lightbox.previous')}
         disabled={currentIndex <= 0}
         onClick={() => controllerRef.current?.prev()}
       />
       <LightboxIconButton
         icon={<NextIcon size="16" />}
-        label="Next"
+        label={t('lightbox.next')}
         disabled={currentIndex >= total - 1}
         onClick={() => controllerRef.current?.next()}
       />
@@ -404,13 +414,17 @@ const LightboxNavButtons = ({
 // Single source of truth for the slide counter. Reads YARL's own currentIndex
 // rather than the URL-derived index so it cannot lag behind during a transition.
 const LightboxCounter = ({ total }: { total: number }) => {
+  const { t } = useTranslation('gallery');
   const { currentIndex } = useLightboxState();
   return (
     <span
       className="picr-rail-label picr-rail-counter"
       aria-live="polite"
       aria-atomic="true"
-      aria-label={`Photo ${currentIndex + 1} of ${total}`}
+      aria-label={t('lightbox.slideCount', {
+        index: currentIndex + 1,
+        total,
+      })}
     >
       {currentIndex + 1} / {total}
     </span>
@@ -421,11 +435,12 @@ const LightboxCounter = ({ total }: { total: number }) => {
 // come from controller context — which is available because the toolbar renders
 // inside the Controller.
 const LightboxCloseButton = () => {
+  const { t } = useTranslation('gallery');
   const { close } = useController();
   return (
     <LightboxIconButton
       icon={<CloseIcon size="16" />}
-      label="Close"
+      label={t('lightbox.close')}
       onClick={close}
     />
   );

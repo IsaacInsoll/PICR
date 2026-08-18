@@ -5,6 +5,7 @@ import { atom } from 'jotai';
 import { DownloadIcon } from '../PicrIcons';
 import { useGenerateZip } from '../hooks/useGenerateZip';
 import type { PicrFolder } from '@shared/types/picr';
+import { useTranslation } from 'react-i18next';
 
 // list of URLs we have requested to download that are currently generating.
 // delete from list once you have triggered it's download
@@ -23,6 +24,7 @@ export const DownloadZipButton = ({
   folder: PicrFolder;
   disabled?: boolean;
 } & ButtonProps) => {
+  const { t } = useTranslation('gallery');
   const [tempDisabled, setTempDisabled] = useState(false);
   const generateZip = useGenerateZip(folder, () => setTempDisabled(false));
   const handleClick = () => {
@@ -34,12 +36,12 @@ export const DownloadZipButton = ({
     <Button
       variant="filled"
       {...props}
-      title="Download All Files"
+      title={t('download.title')}
       onClick={handleClick}
       disabled={disabled || tempDisabled}
       leftSection={<DownloadIcon />}
     >
-      Download
+      {t('download.button')}
     </Button>
   );
 };

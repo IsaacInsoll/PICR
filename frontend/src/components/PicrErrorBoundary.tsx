@@ -18,6 +18,7 @@ import {
   isChunkLoadError,
   reloadForNewVersion,
 } from '../helpers/chunkReload';
+import { useTranslation } from 'react-i18next';
 
 export const PicrErrorBoundary = ({ children }: { children: ReactNode }) => {
   return (
@@ -30,6 +31,7 @@ export const PicrErrorBoundary = ({ children }: { children: ReactNode }) => {
 // showing the generic error. This also catches cases where the window-level
 // `vite:preloadError` event doesn't fire (e.g. errors thrown during render).
 function ChunkLoadFallback({ error }: { error: Error }) {
+  const { t } = useTranslation('gallery');
   // Decide up front (purely) whether a recovery reload is allowed, then perform
   // it as an effect. If we've already reloaded within the cooldown, the deploy
   // is likely genuinely broken rather than merely stale, so we surface the real
@@ -44,7 +46,7 @@ function ChunkLoadFallback({ error }: { error: Error }) {
       <Center h="100vh">
         <Stack align="center" gap="sm">
           <Loader />
-          <Text c="dimmed">Updating to the latest version…</Text>
+          <Text c="dimmed">{t('error.boundary.updating')}</Text>
         </Stack>
       </Center>
     );
@@ -54,20 +56,18 @@ function ChunkLoadFallback({ error }: { error: Error }) {
     <Alert
       variant="light"
       color="red"
-      title="Couldn’t load the latest version"
+      title={t('error.boundary.latestTitle')}
       icon={<ErrorIcon />}
     >
       <Stack gap="sm">
-        <Text size="sm">
-          Reloading didn’t resolve the problem. Please try again.
-        </Text>
+        <Text size="sm">{t('error.boundary.latestDescription')}</Text>
         <Box>
           <Button
             color="red"
             variant="light"
             onClick={() => window.location.reload()}
           >
-            Reload
+            {t('error.boundary.reload')}
           </Button>
         </Box>
         <Code block color="transparent" c="red" style={{ fontSize: 9 }}>
@@ -82,12 +82,17 @@ function fallbackRender({ error }: FallbackProps) {
   if (isChunkLoadError(error)) {
     return <ChunkLoadFallback error={error} />;
   }
+  return <UnexpectedErrorFallback error={error} />;
+}
+
+function UnexpectedErrorFallback({ error }: { error: Error }) {
+  const { t } = useTranslation('gallery');
   // Call resetErrorBoundary() to reset the error boundary and retry the render.
   return (
     <Alert
       variant="light"
       color="red"
-      title="Something went wrong"
+      title={t('error.boundary.unexpectedTitle')}
       icon={<ErrorIcon />}
     >
       <Stack gap="sm">

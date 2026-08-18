@@ -1,10 +1,14 @@
 import { atom, getDefaultStore } from 'jotai';
-import type { GlobalErrorType } from './urql/errorClassification';
+import type {
+  GlobalErrorReason,
+  GlobalErrorType,
+} from './urql/errorClassification';
 
 export interface GlobalErrorIncident {
   id: number;
   type: GlobalErrorType;
-  message: string;
+  reason?: GlobalErrorReason;
+  diagnosticMessage?: string;
   operationName?: string;
   operationKind?: string;
 }

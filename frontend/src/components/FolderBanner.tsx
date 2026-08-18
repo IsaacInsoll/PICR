@@ -37,6 +37,7 @@ import {
 } from '@shared/branding/galleryPresets';
 import styles from './FolderBanner.module.css';
 import { getBreadcrumbFolders } from '../helpers/getBreadcrumbFolders';
+import { useTranslation } from 'react-i18next';
 
 const bannerSizeClass: Record<BannerSize, string> = {
   classic: styles.sizeClassic,
@@ -95,8 +96,9 @@ export const FolderBannerView = ({
   imageRef?: RefObject<HTMLImageElement | null>;
   children?: ReactNode;
 }) => {
+  const { t } = useTranslation('gallery');
   const folderName =
-    normalizeDisplayName(folder.name)?.trim() || '(Unnamed Folder)';
+    normalizeDisplayName(folder.name)?.trim() || t('folder.unnamed');
   const bannerTitle = folder.title?.trim() || folderName;
   const bannerSubtitle = folder.subtitle?.trim();
   // Track WHICH image loaded, not merely that one did: an admin can replace the
@@ -284,6 +286,7 @@ export const FolderBannerView = ({
 
 // Interactive half: the banner as the live folder view uses it.
 export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
+  const { t } = useTranslation('gallery');
   const me = useMe();
   const [, editFolder] = useMutation(editFolderMutation);
   const openSetBannerImageModal = useOpenSetBannerImageModal();
@@ -429,13 +432,13 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
         </>
       ) : null}
       {folder.bannerSize === 'full' ? (
-        <Tooltip label="Scroll to gallery">
+        <Tooltip label={t('folder.scrollToGallery')}>
           <ActionIcon
             className={styles.scrollButton}
             variant="filled"
             color="dark"
             onClick={scrollPastBanner}
-            aria-label="Scroll to gallery"
+            aria-label={t('folder.scrollToGallery')}
           >
             <ChevronDownIcon />
           </ActionIcon>

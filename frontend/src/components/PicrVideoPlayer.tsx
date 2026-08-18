@@ -15,10 +15,12 @@ import {
   DefaultVideoLayout,
   defaultLayoutIcons,
 } from '@vidstack/react/player/layouts/default';
-import { useEffect, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useMemo, type CSSProperties, type ReactNode } from 'react';
 import styles from './PicrVideoPlayer.module.css';
 import { useNoDownloadMediaProps } from '../hooks/useNoDownloadMediaProps';
 import { PlayIcon } from '../PicrIcons';
+import { useTranslation } from 'react-i18next';
+import { videoPlayerTranslations } from '../i18n/galleryThirdPartyTranslations';
 
 type PicrVideoPlayerStyle = CSSProperties & {
   [name: `--${string}`]: string | number | null | undefined;
@@ -71,7 +73,9 @@ export const PicrVideoPlayer = ({
   onTimeUpdate,
   onDurationChange,
 }: PicrVideoPlayerProps) => {
+  const { t } = useTranslation('gallery');
   const noDownloadMediaProps = useNoDownloadMediaProps();
+  const translations = useMemo(() => videoPlayerTranslations(t), [t]);
   return (
     <MediaPlayer
       {...noDownloadMediaProps}
@@ -104,6 +108,7 @@ export const PicrVideoPlayer = ({
       <DefaultVideoLayout
         colorScheme="dark"
         icons={defaultLayoutIcons}
+        translations={translations}
         slots={{
           // `undefined` keeps Vidstack's default for a slot; `null` removes it.
           // Downloads are handled outside the player everywhere (the lightbox
@@ -152,13 +157,17 @@ const ActivePlaybackController = ({
 };
 
 const PausedPlayOverlay = () => {
+  const { t } = useTranslation('gallery');
   const paused = useMediaState('paused');
 
   if (!paused) return null;
 
   return (
     <div className={styles.playOverlay}>
-      <PlayButton className={styles.playOverlayButton} aria-label="Play video">
+      <PlayButton
+        className={styles.playOverlayButton}
+        aria-label={t('video.play')}
+      >
         <PlayIcon className={styles.playOverlayIcon} />
       </PlayButton>
     </div>

@@ -9,6 +9,7 @@ import { useAtomValue } from 'jotai';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { modalTypeAtom, useOpenCommentsModal } from '../../../atoms/modalAtom';
 import type { ReviewableFile } from '../Review/FileReview';
+import { useTranslation } from 'react-i18next';
 
 const CAPSLOCK_HINT_KEY = 'picr-lightbox-capslock-hint';
 const TOAST_ID = 'lightbox-shortcut';
@@ -38,6 +39,7 @@ export const useLightboxShortcuts = ({
   file?: ReviewableFile;
   controllerRef: RefObject<ControllerRef | null>;
 }) => {
+  const { t } = useTranslation('gallery');
   const { canEdit, canView } = useCommentPermissions();
   const [, mutate] = useMutation(addCommentMutation);
   const openComment = useOpenCommentsModal();
@@ -85,8 +87,8 @@ export const useLightboxShortcuts = ({
         localStorage.setItem(CAPSLOCK_HINT_KEY, '1');
         notifications.show({
           id: 'lightbox-capslock-hint',
-          title: 'Caps Lock: auto-advance',
-          message: 'Turn off Caps Lock to stay on the current photo.',
+          title: t('review.capsLock.title'),
+          message: t('review.capsLock.message'),
           autoClose: 5000,
         });
       }
@@ -131,14 +133,14 @@ export const useLightboxShortcuts = ({
         const rating = Number(key);
         e.preventDefault();
         void mutate({ id: file.id, rating });
-        toast(`Rated ${'★'.repeat(rating)}`);
+        toast(t('review.rated', { rating: '★'.repeat(rating) }));
         maybeAutoAdvance(capsLock);
         return;
       }
       if (key === '0') {
         e.preventDefault();
         void mutate({ id: file.id, rating: 0 });
-        toast('Rating cleared');
+        toast(t('review.ratingCleared'));
         maybeAutoAdvance(capsLock);
         return;
       }
@@ -149,7 +151,10 @@ export const useLightboxShortcuts = ({
           id: file.id,
           flag: approving ? FileFlag.Approved : FileFlag.None,
         });
-        toast(approving ? 'Approved' : 'Approval cleared', 'green');
+        toast(
+          approving ? t('review.approved') : t('review.approvalCleared'),
+          'green',
+        );
         maybeAutoAdvance(capsLock);
         return;
       }
@@ -160,7 +165,10 @@ export const useLightboxShortcuts = ({
           id: file.id,
           flag: rejecting ? FileFlag.Rejected : FileFlag.None,
         });
-        toast(rejecting ? 'Rejected' : 'Rejection cleared', 'red');
+        toast(
+          rejecting ? t('review.rejected') : t('review.rejectionCleared'),
+          'red',
+        );
         maybeAutoAdvance(capsLock);
         return;
       }
@@ -168,5 +176,5 @@ export const useLightboxShortcuts = ({
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [active]);
+  }, [active, t]);
 };

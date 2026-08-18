@@ -35,6 +35,7 @@ import {
   defaultSortDirection,
   resolveEffectiveSort,
 } from '@shared/files/sortFiles';
+import { useTranslation } from 'react-i18next';
 
 export const FileSortSelector = ({
   hasMetadata = false,
@@ -45,6 +46,7 @@ export const FileSortSelector = ({
   hasFiles?: boolean;
   hasFolders?: boolean;
 }) => {
+  const { t } = useTranslation('gallery');
   const { canView } = useCommentPermissions();
   const [sort, setSort] = useAtom(fileSortAtom);
   const [dropdownOpened, { toggle, close }] = useDisclosure();
@@ -57,7 +59,9 @@ export const FileSortSelector = ({
     sortOptions.find((s) => s.value === type) ?? sortOptions[0];
   const { icon } = selectedSortOption;
 
-  const options = availableSortOptions(canView, hasMetadata, hasFiles);
+  const options = availableSortOptions(canView, hasMetadata, hasFiles).map(
+    (option) => ({ ...option, label: t(option.labelKey) }),
+  );
 
   const renderSelectOption: SelectProps['renderOption'] = ({
     option,
@@ -101,7 +105,7 @@ export const FileSortSelector = ({
           <Group gap={2}>
             {icon}
             {sortIcon.chevron}
-            <Box pl={2}>Sort</Box>
+            <Box pl={2}>{t('sort.button')}</Box>
           </Group>
         </Button>
       ) : (
@@ -126,12 +130,12 @@ export const FileSortSelector = ({
       )}
       {showFoldersFirst ? (
         <Tooltip
-          label={foldersFirst ? 'Folders first' : 'Folders mixed with files'}
+          label={foldersFirst ? t('sort.foldersFirst') : t('sort.foldersMixed')}
         >
           <Button
             variant={foldersFirst ? 'light' : 'default'}
             px="xs"
-            aria-label="Folders first"
+            aria-label={t('sort.foldersFirst')}
             aria-pressed={foldersFirst}
             onClick={() => setSort({ ...sort, foldersFirst: !foldersFirst })}
           >
@@ -152,6 +156,7 @@ export const FileSortMenuItems = ({
   hasFiles?: boolean;
   hasFolders?: boolean;
 }) => {
+  const { t } = useTranslation('gallery');
   const { canView } = useCommentPermissions();
   const [sort, setSort] = useAtom(fileSortAtom);
   const { direction } = sort;
@@ -172,7 +177,7 @@ export const FileSortMenuItems = ({
   return (
     <>
       <Menu.Divider />
-      <Menu.Label>Sort by</Menu.Label>
+      <Menu.Label>{t('sort.by')}</Menu.Label>
       {options.map((option) => {
         const isActive = option.value === type;
         return (
@@ -183,7 +188,7 @@ export const FileSortMenuItems = ({
             fw={isActive ? 600 : undefined}
             onClick={() => handleSelect(option.value)}
           >
-            {option.label}
+            {t(option.labelKey)}
           </Menu.Item>
         );
       })}
@@ -194,7 +199,7 @@ export const FileSortMenuItems = ({
           closeMenuOnClick={false}
           onClick={() => setSort({ ...sort, foldersFirst: !foldersFirst })}
         >
-          Folders first
+          {t('sort.foldersFirst')}
         </Menu.Item>
       ) : null}
     </>
@@ -203,7 +208,12 @@ export const FileSortMenuItems = ({
 
 type SortOption = {
   value: FileSortType;
-  label: string;
+  labelKey:
+    | 'sort.filename'
+    | 'sort.modified'
+    | 'sort.dateTaken'
+    | 'sort.commented'
+    | 'sort.rating';
   icon: ReactNode;
   requiresComments: boolean;
   requiresMetadata?: boolean;
@@ -216,34 +226,34 @@ type SortOption = {
 const sortOptions: SortOption[] = [
   {
     value: 'Filename',
-    label: 'Filename',
+    labelKey: 'sort.filename',
     icon: <FilenameIcon />,
     requiresComments: false,
     folderSortable: true,
   },
   {
     value: 'LastModified',
-    label: 'Modified',
+    labelKey: 'sort.modified',
     icon: <CalendarIcon />,
     requiresComments: false,
     folderSortable: true,
   },
   {
     value: 'DateTaken',
-    label: 'Date taken',
+    labelKey: 'sort.dateTaken',
     icon: <CameraIcon />,
     requiresComments: false,
     requiresMetadata: true,
   },
   {
     value: 'RecentlyCommented',
-    label: 'Commented',
+    labelKey: 'sort.commented',
     icon: <CommentIcon />,
     requiresComments: true,
   },
   {
     value: 'Rating',
-    label: 'Rating',
+    labelKey: 'sort.rating',
     icon: <StarIcon />,
     requiresComments: true,
   },

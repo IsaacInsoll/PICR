@@ -13,6 +13,7 @@ import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { CommentHistory } from './CommentHistory';
 import { FilePreview } from '../FilePreview';
 import type { MutationAddCommentArgs } from '@shared/gql/graphql';
+import { useTranslation } from 'react-i18next';
 
 export const CommentModal = ({
   file,
@@ -21,6 +22,7 @@ export const CommentModal = ({
   file: PicrFile;
   highlight?: string;
 }) => {
+  const { t } = useTranslation('gallery');
   const onClose = useSetAtom(closeModalAtom);
   const isMobile = useIsSmallScreen();
   const fileName = normalizeDisplayName(file.name);
@@ -30,7 +32,7 @@ export const CommentModal = ({
       <Modal
         opened={true}
         onClose={onClose}
-        title={'Comments on ' + fileName}
+        title={t('comments.onFile', { name: fileName })}
         fullScreen={isMobile}
       >
         <Suspense fallback={<LoadingIndicator />}>
@@ -79,6 +81,7 @@ const AddCommentBox = ({
   folderId?: string;
   onComplete: () => void;
 }) => {
+  const { t } = useTranslation('gallery');
   const [, mutate] = useMutation(addCommentMutation);
   const [submitting, setSubmitting] = useState(false);
   const { canEdit } = useCommentPermissions();
@@ -108,7 +111,7 @@ const AddCommentBox = ({
     <>
       <Divider />
       <Textarea
-        label="Add Comment"
+        label={t('comments.add')}
         value={text}
         onChange={(event) => setText(event.currentTarget.value)}
         autosize
@@ -123,7 +126,7 @@ const AddCommentBox = ({
           onClick={handleSubmit}
           loading={submitting}
         >
-          Add Comment
+          {t('comments.add')}
         </Button>
       </Group>
     </>

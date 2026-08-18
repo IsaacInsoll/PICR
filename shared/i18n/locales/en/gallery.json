@@ -1,4 +1,18 @@
 {
+  "comments": {
+    "add": "Add Comment",
+    "all": "All",
+    "comments": "Comments",
+    "inFolder": "in",
+    "newest": "Newest",
+    "newestFirst": "Newest First",
+    "oldest": "Oldest",
+    "oldestFirst": "Oldest First",
+    "onFile": "Comments on {{name}}",
+    "ratings": "Ratings",
+    "system": "System",
+    "text": "Text"
+  },
   "count": {
     "comment_one": "{{count}} Comment",
     "comment_other": "{{count}} Comments",
@@ -9,8 +23,177 @@
     "star_one": "{{count}} Star",
     "star_other": "{{count}} Stars"
   },
+  "download": {
+    "alreadyRunning": {
+      "message": "Wait for the current download to finish before starting another.",
+      "title": "Download already running"
+    },
+    "button": "Download",
+    "downloading": "Downloading",
+    "downloadingFile": "Downloading file",
+    "hours": "{{value}}h",
+    "fallback": {
+      "canShareDiagnostic": "navigator.canShare returned false for the downloaded file.",
+      "canShareMessage": "This browser could not share this file.",
+      "message": "Falling back to file download.",
+      "title": "Download fallback"
+    },
+    "failed": "Download failed",
+    "file": "Download {{name}}",
+    "keepOpen": "Keep this page open while the file downloads, or close this window to cancel.",
+    "lessThanOneSecondLeft": "less than 1s left",
+    "minutes": "{{value}}m",
+    "preparing": "Preparing {{name}}",
+    "ready": "Ready to save",
+    "readyDescription": "The file is ready. Tap Save to Photos to open the iOS share sheet.",
+    "saveToFiles": "Save to Files",
+    "saveToPhotos": "Save to Photos",
+    "saving": "Saving…",
+    "seconds": "{{value}}s",
+    "timeLeft": "{{time}} left",
+    "title": "Download All Files"
+  },
+  "error": {
+    "boundary": {
+      "latestDescription": "Reloading didn’t resolve the problem. Please try again.",
+      "latestTitle": "Couldn’t load the latest version",
+      "reload": "Reload",
+      "unexpectedTitle": "Something went wrong",
+      "updating": "Updating to the latest version…"
+    },
+    "closeWarning": "Close warning",
+    "generic": "Error",
+    "global": {
+      "networkUnavailable": {
+        "description": "PICR could not reach the server. This is usually temporary.",
+        "title": "Network currently unavailable"
+      },
+      "noPermissions": {
+        "description": "This request is not allowed for your current user.",
+        "title": "You do not have permission"
+      },
+      "reason": {
+        "ACCESS_DENIED": "You do not have access to this gallery or action.",
+        "COMMENTS_HIDDEN": "Comments are hidden for this account.",
+        "COMMENTS_NOT_ALLOWED": "Commenting is not allowed for this account.",
+        "INVALID_LINK": "This public link is invalid or no longer available.",
+        "NOT_A_USER": "This account cannot perform that action."
+      }
+    },
+    "logOut": "Log Out",
+    "operation": "Operation: {{name}}",
+    "retry": "Retry"
+  },
+  "file": {
+    "comments": "Comments",
+    "created": "File created",
+    "details": "Details",
+    "detailsTitle": "{{type}} Details: {{name}}",
+    "info": "File info",
+    "infoFor": "File Info for {{name}}",
+    "lastComment": "Last Comment",
+    "latest": "Latest",
+    "metadata": "Metadata",
+    "modified": "File modified",
+    "name": "Name",
+    "notAvailable": "N/A",
+    "openSlideshow": "Open in Slideshow View",
+    "size": "File size",
+    "type": "File type",
+    "types": {
+      "file": "File",
+      "folder": "Folder",
+      "image": "Image",
+      "video": "Video"
+    },
+    "view": "View {{name}}"
+  },
+  "filter": {
+    "apply": "Apply Filters",
+    "aspect": {
+      "any": "Any Ratio",
+      "landscape": "Landscape",
+      "portrait": "Portrait",
+      "square": "Square"
+    },
+    "clearAll": "Clear All Filters",
+    "clearNone": "Clear Filters",
+    "clear_one": "Clear {{count}} Filter",
+    "clear_other": "Clear {{count}} Filters",
+    "close": "Close",
+    "comments": "Comments",
+    "commentsHas": "Has Comments",
+    "commentsNone": "No Comments",
+    "filename": "Filename",
+    "flag": "Flag",
+    "imageOptions": "Image Options",
+    "metadata": "Metadata",
+    "metadataFiltering": "Metadata Filtering",
+    "metadataUnavailable": "Not available as all images are {{value}}",
+    "rating": "Rating",
+    "ratingComparison": {
+      "equal": "Equal to",
+      "greaterThan": "At least",
+      "lessThan": "At most"
+    },
+    "search": "Search",
+    "showingAll": "Showing all files",
+    "showingCount": "Showing {{visible}} of {{total}} files"
+  },
   "folder": {
-    "empty": "Empty Folder"
+    "actions": "Folder actions",
+    "back": "Back to folder",
+    "commentsAndRatings": "Comments & Ratings",
+    "downloadZip": "Download ZIP",
+    "empty": "Empty Folder",
+    "filterFiles": "Filter Files",
+    "loading": "Loading",
+    "notFound": "Folder Not Found",
+    "open": "Open {{name}}",
+    "scrollToGallery": "Scroll to gallery",
+    "unnamed": "(Unnamed Folder)",
+    "view": "View Folder",
+    "viewActivity": "View Activity"
+  },
+  "lightbox": {
+    "carousel": "Carousel",
+    "close": "Close",
+    "enterFullscreen": "Enter fullscreen",
+    "exitFocus": "Exit focus (show controls)",
+    "exitFullscreen": "Exit fullscreen",
+    "focus": "Focus (hide controls)",
+    "fullscreen": "Fullscreen",
+    "hideThumbnails": "Hide thumbnails",
+    "label": "Lightbox",
+    "next": "Next",
+    "photoGallery": "Photo gallery",
+    "previous": "Previous",
+    "showThumbnails": "Show thumbnails",
+    "slide": "Slide",
+    "slideCount": "Photo {{index}} of {{total}}",
+    "slideCountTemplate": "{index} of {total}",
+    "thumbnails": "Thumbnails",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
+  },
+  "metadata": {
+    "Aperture": "Aperture",
+    "Artist": "Artist",
+    "AspectRatio": "Aspect Ratio",
+    "Audio": "Audio",
+    "Bitrate": "Bitrate",
+    "Camera": "Camera",
+    "DateTimeEdit": "Last Edited",
+    "DateTimeOriginal": "Photo taken",
+    "Dimensions": "Dimensions",
+    "Duration": "Duration",
+    "ExposureTime": "Shutter Speed",
+    "Format": "Format",
+    "Framerate": "Framerate",
+    "ISO": "ISO",
+    "Lens": "Lens",
+    "OriginalRating": "Original Rating",
+    "Video": "Video"
   },
   "passcode": {
     "defaultTitle": "Gallery passcode",
@@ -19,8 +202,105 @@
     "incorrect": "Incorrect passcode",
     "submit": "Open gallery"
   },
+  "review": {
+    "approvalCleared": "Approval cleared",
+    "approve": "Approve",
+    "approveTooltip": "Approve (Thumbs Up)",
+    "approved": "Approved",
+    "capsLock": {
+      "message": "Turn off Caps Lock to stay on the current photo.",
+      "title": "Caps Lock: auto-advance"
+    },
+    "flag": "Flag",
+    "none": "None",
+    "rateFile": "Rate this file",
+    "rated": "Rated {{rating}}",
+    "rating": "Rating",
+    "ratingCleared": "Rating cleared",
+    "reject": "Reject",
+    "rejectTooltip": "Reject (Thumbs Down)",
+    "rejected": "Rejected",
+    "rejectionCleared": "Rejection cleared"
+  },
+  "sort": {
+    "button": "Sort",
+    "by": "Sort by",
+    "commented": "Commented",
+    "dateTaken": "Date taken",
+    "filename": "Filename",
+    "foldersFirst": "Folders first",
+    "foldersMixed": "Folders mixed with files",
+    "modified": "Modified",
+    "rating": "Rating"
+  },
   "unavailable": {
-    "title": "Gallery unavailable",
-    "description": "This link does not exist or is no longer enabled."
+    "description": "This link does not exist or is no longer enabled.",
+    "title": "Gallery unavailable"
+  },
+  "video": {
+    "play": "Play video"
+  },
+  "videoPlayer": {
+    "accessibility": "Accessibility",
+    "airPlay": "AirPlay",
+    "announcements": "Announcements",
+    "audio": "Audio",
+    "auto": "Auto",
+    "boost": "Boost",
+    "captionStyles": "Caption Styles",
+    "captions": "Captions",
+    "captionsExample": "Captions look like this",
+    "chapters": "Chapters",
+    "closedCaptionsOff": "Closed-Captions Off",
+    "closedCaptionsOn": "Closed-Captions On",
+    "color": "Color",
+    "connected": "Connected",
+    "connecting": "Connecting",
+    "continue": "Continue",
+    "default": "Default",
+    "disabled": "Disabled",
+    "disconnected": "Disconnected",
+    "displayBackground": "Display Background",
+    "download": "Download",
+    "enterFullscreen": "Enter Fullscreen",
+    "enterPiP": "Enter PiP",
+    "exitFullscreen": "Exit Fullscreen",
+    "exitPiP": "Exit PiP",
+    "family": "Family",
+    "font": "Font",
+    "fullscreen": "Fullscreen",
+    "googleCast": "Google Cast",
+    "keyboardAnimations": "Keyboard Animations",
+    "live": "LIVE",
+    "loop": "Loop",
+    "mute": "Mute",
+    "normal": "Normal",
+    "off": "Off",
+    "opacity": "Opacity",
+    "pause": "Pause",
+    "piP": "PiP",
+    "play": "Play",
+    "playback": "Playback",
+    "quality": "Quality",
+    "replay": "Replay",
+    "reset": "Reset",
+    "seek": "Seek",
+    "seekBackward": "Seek Backward",
+    "seekForward": "Seek Forward",
+    "settings": "Settings",
+    "shadow": "Shadow",
+    "size": "Size",
+    "skipToLive": "Skip To Live",
+    "speed": "Speed",
+    "text": "Text",
+    "textBackground": "Text Background",
+    "track": "Track",
+    "unmute": "Unmute",
+    "volume": "Volume"
+  },
+  "view": {
+    "feed": "Feed",
+    "gallery": "Gallery",
+    "list": "List"
   }
 }

@@ -1,6 +1,7 @@
 import { ActionIcon, Indicator, Tooltip } from '@mantine/core';
 import { CommentIcon, CommentsIcon } from '../../../PicrIcons';
 import type { ReviewButtonVariant } from './FileReview';
+import { useTranslation } from 'react-i18next';
 
 // A button showing total comments, click to view/add comments
 export const CommentButton = ({
@@ -12,6 +13,7 @@ export const CommentButton = ({
   onClick: () => void;
   variant?: ReviewButtonVariant;
 }) => {
+  const { t } = useTranslation('gallery');
   return (
     <Indicator
       inline
@@ -19,9 +21,7 @@ export const CommentButton = ({
       size={16}
       disabled={!totalComments || totalComments === 0}
     >
-      <Tooltip
-        label={`${totalComments} Comment` + (totalComments !== 1 ? 's' : '')}
-      >
+      <Tooltip label={t('count.comment', { count: totalComments })}>
         <ActionIcon variant={variant} onClick={onClick}>
           {totalComments === 0 ? <CommentIcon /> : <CommentsIcon />}
         </ActionIcon>

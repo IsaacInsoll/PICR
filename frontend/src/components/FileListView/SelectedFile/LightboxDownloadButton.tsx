@@ -8,6 +8,7 @@ import {
   canUseShareSheet,
   shareOrDownload,
 } from '../../../helpers/shareOrDownload';
+import { useTranslation } from 'react-i18next';
 
 const slideDownload = (slide?: Slide) => {
   if (!slide) return undefined;
@@ -36,20 +37,21 @@ const slideDownload = (slide?: Slide) => {
 // ones — and the iOS share-sheet routing sits next to the URL resolution it
 // depends on.
 export const LightboxDownloadButton = () => {
+  const { t } = useTranslation('gallery');
   const { currentSlide } = useLightboxState();
   const target = slideDownload(currentSlide);
 
   return (
     <LightboxIconButton
       icon={<DownloadIcon size="16" />}
-      label="Download"
+      label={t('download.button')}
       disabled={!target}
       onClick={() => {
         if (!target) return;
         // On iOS, route media through the native share sheet ("Save to Photos")
         // instead of the anchor `download` attribute (which opens "Save to Files").
         if (target.isMedia && canUseShareSheet()) {
-          void shareOrDownload(target.url, target.filename ?? '');
+          void shareOrDownload(target.url, target.filename ?? '', t);
         } else {
           anchorDownload(target.url, target.filename);
         }

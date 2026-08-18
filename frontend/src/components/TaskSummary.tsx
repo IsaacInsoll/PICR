@@ -15,8 +15,10 @@ import { Page } from './Page';
 import { taskQuery } from '@shared/urql/queries/taskQuery';
 import { useRequery } from '@shared/hooks/useRequery';
 import { withBasePath } from '../helpers/baseHref';
+import { useTranslation } from 'react-i18next';
 
 export const TaskSummary = ({ folderId }: { folderId: string }) => {
+  const { t } = useTranslation('gallery');
   const [result, requery] = useQuery({
     query: taskQuery,
     variables: { folderId },
@@ -56,9 +58,15 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
         <Stack gap="sm">
           {remaining.map(({ id, name, step, totalSteps }) => {
             const hasSteps = step && totalSteps && totalSteps > 0;
+            const pendingZip = zips.find(
+              ({ folder, hash }) => id === folder.id + hash,
+            );
+            const displayName = pendingZip
+              ? t('download.preparing', { name: pendingZip.folder.name })
+              : name;
             return (
               <Group gap="small" key={id}>
-                <Text>{name}</Text>
+                <Text>{displayName}</Text>
                 <Box pt={4} style={{ flexGrow: 1 }}>
                   {hasSteps ? (
                     <Progress

@@ -24,6 +24,7 @@ import { PicrLink } from '../../PicrLink';
 import { useBaseViewFolderURL } from '../../../hooks/useBaseViewFolderURL';
 import { PrettyFolderPath } from '../../PrettyFolderPath';
 import { useLanguage } from '../../../i18n/useLanguage';
+import { useTranslation } from 'react-i18next';
 
 export const CommentBodyItem = ({
   comment,
@@ -31,10 +32,11 @@ export const CommentBodyItem = ({
 }: {
   comment: AppCommentHistoryCommentFragmentFragment;
 } & CommentHistoryProps) => {
+  const { t } = useTranslation('gallery');
   const { id, timestamp, user, systemGenerated, file } = comment;
   const openCommentModal = useOpenCommentsModal();
   const { formattingLocale } = useLanguage();
-  const displayUser = user ?? { id: 'system', name: 'System' };
+  const displayUser = user ?? { id: 'system', name: t('comments.system') };
   const baseFolderUrl = useBaseViewFolderURL();
 
   const showFile = file && !p.singleFile;
@@ -87,7 +89,7 @@ export const CommentBodyItem = ({
           ) : null}
           <Stack style={{ flexGrow: 1 }} gap="xs">
             <Text size="xs" c="dimmed" fw={500}>
-              {user?.name}
+              {displayUser.name}
             </Text>
             {systemGenerated ? (
               <CommentAction comment={comment} />
@@ -102,6 +104,7 @@ export const CommentBodyItem = ({
                   file={file as PicrFile}
                   linkTo={commentLink}
                   folderLink={folderLink}
+                  inFolderLabel={t('comments.inFolder')}
                 />
               ) : null}
               <Text c="dimmed" size="xs">
@@ -149,10 +152,12 @@ const FileContext = ({
   file,
   linkTo,
   folderLink,
+  inFolderLabel,
 }: {
   file: PicrFile;
   linkTo?: string;
   folderLink?: string;
+  inFolderLabel: string;
 }) => {
   const fileName = (
     <Code style={{ opacity: 0.33 }}>{normalizeDisplayName(file.name)}</Code>
@@ -168,7 +173,7 @@ const FileContext = ({
       {file.folder ? (
         <>
           <Text c="dimmed" size="xs">
-            in
+            {inFolderLabel}
           </Text>
           <Tooltip
             withArrow
@@ -198,6 +203,7 @@ const CommentAction = ({
 }: {
   comment: AppCommentHistoryCommentFragmentFragment;
 }) => {
+  const { t } = useTranslation('gallery');
   if (!comment.comment) return null;
   const json = JSON.parse(comment.comment) as {
     rating?: number;
@@ -207,7 +213,7 @@ const CommentAction = ({
     <Stack>
       {json.rating != null ? (
         <Group gap="xs">
-          <Text size="xs">Rating</Text>
+          <Text size="xs">{t('review.rating')}</Text>
           <Rating
             value={json.rating}
             readOnly
@@ -218,7 +224,7 @@ const CommentAction = ({
       ) : null}
       {json.flag && isFileFlag(json.flag) ? (
         <Group gap="xs">
-          <Text size="xs">Flag</Text>
+          <Text size="xs">{t('review.flag')}</Text>
           <FileFlagBadge flag={json.flag} />
         </Group>
       ) : null}

@@ -28,6 +28,7 @@ import {
 } from '@shared/filterAtom';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { InfoIcon } from '../../../PicrIcons';
+import { useTranslation } from 'react-i18next';
 
 export const FilteringOptions = ({
   files,
@@ -60,6 +61,7 @@ const FilterTable = ({
   files: PicrFile[];
   totalFiltered: number;
 }) => {
+  const { t } = useTranslation('gallery');
   const setFiltering = useSetAtom(filterAtom);
   const { canView } = useCommentPermissions();
   const meta = useMemo(
@@ -71,10 +73,10 @@ const FilterTable = ({
   return (
     <Table>
       <Table.Tbody>
-        <Row label="Filename">
+        <Row label={t('filter.filename')}>
           <SearchBox />
         </Row>
-        <Row label="Image Options">
+        <Row label={t('filter.imageOptions')}>
           <Group justify="space-between">
             <AspectSelector />
             <Box>
@@ -84,13 +86,13 @@ const FilterTable = ({
         </Row>
         {canView ? (
           <>
-            <Row label="Flag">
+            <Row label={t('filter.flag')}>
               <FlagFilterBox />
             </Row>
-            <Row label="Rating">
+            <Row label={t('filter.rating')}>
               <RatingFilterBox />
             </Row>
-            <Row label="Comments">
+            <Row label={t('filter.comments')}>
               <CommentsFilterBox />
             </Row>
           </>
@@ -102,8 +104,11 @@ const FilterTable = ({
                 {totalFilters > 0 ? (
                   <Alert variant="light" icon={<InfoIcon />} p={8}>
                     {totalFiltered === files.length
-                      ? 'Showing all files'
-                      : `Showing ${totalFiltered} of ${files.length} files`}
+                      ? t('filter.showingAll')
+                      : t('filter.showingCount', {
+                          visible: totalFiltered,
+                          total: files.length,
+                        })}
                   </Alert>
                 ) : null}
               </Box>
@@ -113,14 +118,16 @@ const FilterTable = ({
                 disabled={totalFilters === 0}
                 onClick={() => resetFilters()}
               >
-                Clear {totalFilters > 0 ? totalFilters : ''} Filters
+                {totalFilters > 0
+                  ? t('filter.clear', { count: totalFilters })
+                  : t('filter.clearNone')}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setFiltering(false)}
               >
-                Close
+                {t('filter.close')}
               </Button>
             </Group>
           </Table.Td>

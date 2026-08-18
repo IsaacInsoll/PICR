@@ -6,26 +6,26 @@ interface FlagStyle {
   color: string;
   icon: ReactNode;
   value: FileFlag;
-  label: string;
+  labelKey: 'review.approved' | 'review.rejected' | 'review.none';
 }
 
 export const approvedFlagStyle: FlagStyle = {
   color: 'green',
   icon: <ApproveIcon />,
   value: FileFlag.Approved,
-  label: 'Approved',
+  labelKey: 'review.approved',
 };
 export const rejectedFlagStyle: FlagStyle = {
   color: 'red',
   icon: <RejectIcon />,
   value: FileFlag.Rejected,
-  label: 'Rejected',
+  labelKey: 'review.rejected',
 };
 export const noneFlagStyle: FlagStyle = {
   color: 'gray',
   icon: <NoFlagIcon />,
   value: FileFlag.None,
-  label: 'None',
+  labelKey: 'review.none',
 };
 
 export const fileFlagStyles: { [key in FileFlag]: FlagStyle } = {

@@ -3,8 +3,10 @@ import { fileFlags } from '../Review/fileFlagStyles';
 import { useAtom } from 'jotai';
 import type { FilterOptionsInterface } from '@shared/filterAtom';
 import { filterOptions } from '@shared/filterAtom';
+import { useTranslation } from 'react-i18next';
 
 export const FlagFilterBox = () => {
+  const { t } = useTranslation('gallery');
   const [options, setOptions] = useAtom(filterOptions);
 
   const selected = options.flag;
@@ -14,7 +16,7 @@ export const FlagFilterBox = () => {
 
   return (
     <Button.Group>
-      {fileFlags.map(({ icon, value, color, label }) => {
+      {fileFlags.map(({ icon, value, color, labelKey }) => {
         const isSelected = selected === value;
         return (
           <Button
@@ -27,7 +29,7 @@ export const FlagFilterBox = () => {
             size="xs"
             leftSection={icon}
           >
-            {label}
+            {t(labelKey)}
           </Button>
         );
       })}

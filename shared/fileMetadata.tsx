@@ -5,11 +5,44 @@ import { formatNumber } from './i18n/formatting';
 
 export type AnyMetadataKey = string;
 
-export const metadataDescription: Partial<Record<AnyMetadataKey, string>> = {
-  ExposureTime: 'Shutter Speed',
+export const metadataDescriptions = {
+  Aperture: 'Aperture',
+  Artist: 'Artist',
+  AspectRatio: 'Aspect Ratio',
+  Audio: 'Audio',
+  Bitrate: 'Bitrate',
+  Camera: 'Camera',
   DateTimeEdit: 'Last Edited',
   DateTimeOriginal: 'Photo taken',
-};
+  Dimensions: 'Dimensions',
+  Duration: 'Duration',
+  ExposureTime: 'Shutter Speed',
+  Format: 'Format',
+  Framerate: 'Framerate',
+  ISO: 'ISO',
+  Lens: 'Lens',
+  OriginalRating: 'Original Rating',
+  Video: 'Video',
+} as const;
+
+export type MetadataDescriptionKey = keyof typeof metadataDescriptions;
+export type MetadataDescriptionTranslator = (
+  key: MetadataDescriptionKey,
+) => string;
+
+const metadataDescriptionKeySet = new Set<string>(
+  Object.keys(metadataDescriptions),
+);
+
+export const isMetadataDescriptionKey = (
+  key: string,
+): key is MetadataDescriptionKey => metadataDescriptionKeySet.has(key);
+
+export const metadataDescription = (
+  key: AnyMetadataKey,
+  translate: MetadataDescriptionTranslator = (knownKey) =>
+    metadataDescriptions[knownKey],
+): string => (isMetadataDescriptionKey(key) ? translate(key) : key);
 
 export interface MetadataPresentationResult {
   key: AnyMetadataKey;
@@ -28,6 +61,7 @@ type MetadataFile = {
 export const metadataForPresentation = (
   file: MetadataFile,
   locale = 'en',
+  translate?: MetadataDescriptionTranslator,
 ): MetadataPresentationResult[] => {
   const metadata = file.metadata;
   if (!metadata) return [];
@@ -37,7 +71,7 @@ export const metadataForPresentation = (
   const list: MetadataPresentationResult[] = keys.map((key) => ({
     key,
     icon: key,
-    description: metadataDescription[key] ?? key,
+    description: metadataDescription(key, translate),
     label: formatMetadataValue(key, metadata[key] as string | number, locale)
       .label,
   }));
@@ -48,7 +82,7 @@ export const metadataForPresentation = (
     remove.push('VideoCodec', 'VideoCodecDescription');
     list.push({
       key: 'Video',
-      description: 'Video',
+      description: metadataDescription('Video', translate),
       label: String(metadata['VideoCodec']),
       subLabel: String(metadata['VideoCodecDescription']),
     });
@@ -57,7 +91,7 @@ export const metadataForPresentation = (
     remove.push('AudioCodec', 'AudioCodecDescription');
     list.push({
       key: 'Audio',
-      description: 'Audio',
+      description: metadataDescription('Audio', translate),
       label: String(metadata['AudioCodec']),
       subLabel: String(metadata['AudioCodecDescription']),
     });
@@ -67,7 +101,7 @@ export const metadataForPresentation = (
     list.push({
       key: 'AspectRatio',
       icon: 'AspectRatio',
-      description: 'Aspect Ratio',
+      description: metadataDescription('AspectRatio', translate),
       label: formattedAspectRatio(file.imageRatio),
       data: file.imageRatio,
     });
@@ -78,7 +112,7 @@ export const metadataForPresentation = (
     list.push({
       key: 'Dimensions',
       icon: 'AspectRatio',
-      description: 'Dimensions',
+      description: metadataDescription('Dimensions', translate),
       // Pixel dimensions are a technical spec (6000 × 4000), so the numbers
       // are localized but never grouped.
       label: `${formatNumber(Number(metadata['Width']), locale, {
@@ -94,7 +128,7 @@ export const metadataForPresentation = (
     list.push({
       key: 'OriginalRating',
       icon: 'Rating',
-      description: 'Original Rating',
+      description: metadataDescription('OriginalRating', translate),
       label: String(metadata['Rating']),
     });
   }

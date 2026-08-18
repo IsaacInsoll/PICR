@@ -9,6 +9,7 @@ import {
   LightboxToolbarDivider,
 } from './LightboxIconButton';
 import { LightboxDownloadButton } from './LightboxDownloadButton';
+import { useTranslation } from 'react-i18next';
 
 // Assembles the YARL toolbar buttons and the active plugin list.
 //
@@ -33,6 +34,7 @@ export const useLightboxToolbar = ({
   focus: boolean;
   onToggleFocus: () => void;
 }) => {
+  const { t } = useTranslation('gallery');
   const { visible: thumbnailsVisible, toggle: toggleThumbnails } = thumbnails;
 
   const buttons = useMemo(() => {
@@ -45,7 +47,7 @@ export const useLightboxToolbar = ({
       <LightboxIconButton
         key="focus"
         icon={focus ? <ExitFocusIcon size="16" /> : <FocusIcon size="16" />}
-        label={focus ? 'Exit focus (show controls)' : 'Focus (hide controls)'}
+        label={focus ? t('lightbox.exitFocus') : t('lightbox.focus')}
         active={focus}
         onClick={onToggleFocus}
       />
@@ -67,7 +69,11 @@ export const useLightboxToolbar = ({
       <LightboxIconButton
         key="thumbnails-toggle"
         icon={<ThumbnailsIcon size="16" />}
-        label={thumbnailsVisible ? 'Hide thumbnails' : 'Show thumbnails'}
+        label={
+          thumbnailsVisible
+            ? t('lightbox.hideThumbnails')
+            : t('lightbox.showThumbnails')
+        }
         active={thumbnailsVisible}
         onClick={toggleThumbnails}
       />,
@@ -84,6 +90,7 @@ export const useLightboxToolbar = ({
     canDownload,
     focus,
     onToggleFocus,
+    t,
   ]);
 
   // Constant: the plugin list must never change identity, or YARL rebuilds its

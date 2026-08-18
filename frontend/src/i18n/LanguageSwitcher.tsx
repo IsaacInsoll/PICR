@@ -6,13 +6,18 @@ import {
 } from '@shared/i18n/languages';
 import { useLanguage } from './useLanguage';
 
-export const LanguageSwitcher = () => {
+export const LanguageSwitcher = ({
+  compact = false,
+}: {
+  compact?: boolean;
+}) => {
   const { t } = useTranslation('common');
   const { catalogLanguage, setLanguage } = useLanguage();
 
   return (
     <Select
-      label={t('language.label')}
+      label={compact ? undefined : t('language.label')}
+      aria-label={compact ? t('language.label') : undefined}
       value={catalogLanguage}
       data={supportedLanguages.map(({ code, name }) => ({
         value: code,
@@ -22,7 +27,7 @@ export const LanguageSwitcher = () => {
       onChange={(value) => {
         if (value && isSupportedLanguage(value)) void setLanguage(value);
       }}
-      w={150}
+      w={compact ? 120 : 150}
       size="xs"
     />
   );

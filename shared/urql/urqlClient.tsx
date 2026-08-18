@@ -2,6 +2,7 @@ import { urqlCacheExchange } from './urqlCacheExchange';
 import {
   classifyGlobalUrqlError,
   isAuthExpiredError,
+  type GlobalErrorMatch,
 } from './errorClassification';
 import { Kind, type OperationDefinitionNode } from 'graphql';
 import { Client, fetchExchange } from 'urql';
@@ -12,12 +13,12 @@ import { pipe, tap } from 'wonka';
 const retry = retryExchange({ initialDelayMs: 500 });
 
 interface PicrUrqlClientOptions {
-  onGlobalError?: (message: {
-    type: 'network_unavailable' | 'no_permissions';
-    message: string;
-    operationName?: string;
-    operationKind?: string;
-  }) => void;
+  onGlobalError?: (
+    message: GlobalErrorMatch & {
+      operationName?: string;
+      operationKind?: string;
+    },
+  ) => void;
   onAuthExpired?: () => void;
 }
 

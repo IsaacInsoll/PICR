@@ -3,6 +3,7 @@ import type { MantineSize, MantineStyleProp } from '@mantine/core';
 import { Badge, Box } from '@mantine/core';
 import { PlayIcon, VideoIcon } from '../../PicrIcons';
 import formatDuration from 'format-duration';
+import { useTranslation } from 'react-i18next';
 
 interface VideoBadgeProps {
   file: PicrFile;
@@ -17,6 +18,7 @@ export const VideoBadge = ({
   percent,
   density = 'rich',
 }: VideoBadgeProps) => {
+  const { t } = useTranslation('gallery');
   const duration =
     percent && file.duration
       ? (percent / 100.0) * file.duration
@@ -24,8 +26,8 @@ export const VideoBadge = ({
 
   if (density === 'compact') {
     const label = duration
-      ? `Video, ${formatDuration(duration * 1000)}`
-      : 'Video';
+      ? `${t('file.types.video')}, ${formatDuration(duration * 1000)}`
+      : t('file.types.video');
 
     return (
       <Box
@@ -71,7 +73,7 @@ export const VideoBadge = ({
       color="gray"
       size={size}
     >
-      {duration ? formatDuration(duration * 1000) : 'VIDEO'}
+      {duration ? formatDuration(duration * 1000) : t('file.types.video')}
     </Badge>
   );
 };

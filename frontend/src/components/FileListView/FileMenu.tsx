@@ -26,8 +26,10 @@ import {
 } from '../../helpers/shareOrDownload';
 import { useMutation } from 'urql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
+import { useTranslation } from 'react-i18next';
 
 export const FileMenu = ({ file }: { file: PicrFile }) => {
+  const { t } = useTranslation('gallery');
   const fileName = normalizeDisplayName(file.name);
   const setSelectedFileId = useSelectedFileId(file.folderId ?? '');
   const { canView } = useCommentPermissions();
@@ -51,14 +53,14 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
           setSelectedFileId(file.id);
         }}
       >
-        View {fileName}
+        {t('file.view', { name: fileName })}
       </Menu.Item>
       <Menu.Item
         leftSection={<InfoIcon size="20" />}
         key={2}
         onClick={() => openFileInfo(file.id)}
       >
-        Details
+        {t('file.details')}
       </Menu.Item>
       {canView ? (
         <Menu.Item
@@ -69,7 +71,7 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
           onClick={() => openComment(file.id)}
         >
           <Group gap={8}>
-            Comments
+            {t('file.comments')}
             <Text c="dimmed" size="xs">
               ({file.totalComments})
             </Text>
@@ -117,11 +119,11 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
             // of the anchor download (which opens "Save to Files").
             if (isShareableMediaFile(file) && canUseShareSheet()) {
               e.preventDefault();
-              void shareOrDownload(imageURL(file, 'raw'), file.name ?? '');
+              void shareOrDownload(imageURL(file, 'raw'), file.name ?? '', t);
             }
           }}
         >
-          Download
+          {t('download.button')}
         </Menu.Item>
       ) : null}
     </>

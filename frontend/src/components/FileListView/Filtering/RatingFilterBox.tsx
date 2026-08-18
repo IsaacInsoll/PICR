@@ -12,6 +12,7 @@ import {
   LessThanEqualIcon,
 } from '../../../PicrIcons';
 import { FileRating } from '../Review/FileRating';
+import { useTranslation } from 'react-i18next';
 
 export const RatingFilterBox = () => {
   const [options, setOptions] = useAtom(filterOptions);
@@ -49,13 +50,14 @@ const RatingComparisonSelector = ({
   value: RatingsComparisonOptions | null;
   onChange: (v: RatingsComparisonOptions | null) => void;
 }) => {
+  const { t } = useTranslation('gallery');
   return (
     <ActionIcon.Group>
-      {options.map(({ value: optionValue, label, icon }) => {
+      {options.map(({ value: optionValue, labelKey, icon }) => {
         const isSelected = optionValue === value;
         return (
           <ActionIcon
-            title={label}
+            title={t(labelKey)}
             variant={isSelected ? 'filled' : 'default'}
             onClick={() => onChange(isSelected ? null : optionValue)}
             key={optionValue}
@@ -71,14 +73,25 @@ const RatingComparisonSelector = ({
 
 const options: {
   value: RatingsComparisonOptions;
-  label: string;
+  labelKey:
+    | 'filter.ratingComparison.lessThan'
+    | 'filter.ratingComparison.equal'
+    | 'filter.ratingComparison.greaterThan';
   icon: ReactNode;
 }[] = [
-  { value: 'lessThan', label: 'lessThan', icon: <LessThanEqualIcon /> },
-  { value: 'equal', label: 'equal', icon: <EqualIcon /> },
+  {
+    value: 'lessThan',
+    labelKey: 'filter.ratingComparison.lessThan',
+    icon: <LessThanEqualIcon />,
+  },
+  {
+    value: 'equal',
+    labelKey: 'filter.ratingComparison.equal',
+    icon: <EqualIcon />,
+  },
   {
     value: 'greaterThan',
-    label: 'greaterThan',
+    labelKey: 'filter.ratingComparison.greaterThan',
     icon: <GreaterThanEqualIcon />,
   },
 ];

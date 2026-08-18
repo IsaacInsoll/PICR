@@ -1,4 +1,18 @@
 {
+  "comments": {
+    "add": "Ajouter un commentaire",
+    "all": "Tout",
+    "comments": "Commentaires",
+    "inFolder": "dans",
+    "newest": "Plus récents",
+    "newestFirst": "Plus récents d’abord",
+    "oldest": "Plus anciens",
+    "oldestFirst": "Plus anciens d’abord",
+    "onFile": "Commentaires sur {{name}}",
+    "ratings": "Notes",
+    "system": "Système",
+    "text": "Texte"
+  },
   "count": {
     "comment_one": "{{count}} commentaire",
     "comment_other": "{{count}} commentaires",
@@ -9,8 +23,177 @@
     "star_one": "{{count}} étoile",
     "star_other": "{{count}} étoiles"
   },
+  "download": {
+    "alreadyRunning": {
+      "message": "Attendez la fin du téléchargement en cours avant d’en commencer un autre.",
+      "title": "Téléchargement déjà en cours"
+    },
+    "button": "Télécharger",
+    "downloading": "Téléchargement en cours",
+    "downloadingFile": "Téléchargement du fichier",
+    "hours": "{{value}} h",
+    "fallback": {
+      "canShareDiagnostic": "navigator.canShare a renvoyé false pour le fichier téléchargé.",
+      "canShareMessage": "Ce navigateur n’a pas pu partager ce fichier.",
+      "message": "Téléchargement classique du fichier utilisé à la place.",
+      "title": "Solution de repli pour le téléchargement"
+    },
+    "failed": "Échec du téléchargement",
+    "file": "Télécharger {{name}}",
+    "keepOpen": "Gardez cette page ouverte pendant le téléchargement du fichier, ou fermez cette fenêtre pour annuler.",
+    "lessThanOneSecondLeft": "moins d’une seconde restante",
+    "minutes": "{{value}} min",
+    "preparing": "Préparation de {{name}}",
+    "ready": "Prêt à enregistrer",
+    "readyDescription": "Le fichier est prêt. Touchez Enregistrer dans Photos pour ouvrir la feuille de partage iOS.",
+    "saveToFiles": "Enregistrer dans Fichiers",
+    "saveToPhotos": "Enregistrer dans Photos",
+    "saving": "Enregistrement…",
+    "seconds": "{{value}} s",
+    "timeLeft": "Temps restant : {{time}}",
+    "title": "Télécharger tous les fichiers"
+  },
+  "error": {
+    "boundary": {
+      "latestDescription": "Le rechargement n’a pas résolu le problème. Veuillez réessayer.",
+      "latestTitle": "Impossible de charger la dernière version",
+      "reload": "Recharger",
+      "unexpectedTitle": "Une erreur s’est produite",
+      "updating": "Mise à jour vers la dernière version…"
+    },
+    "closeWarning": "Fermer l’avertissement",
+    "generic": "Erreur",
+    "global": {
+      "networkUnavailable": {
+        "description": "PICR n’a pas pu joindre le serveur. Le problème est généralement temporaire.",
+        "title": "Réseau actuellement indisponible"
+      },
+      "noPermissions": {
+        "description": "Cette requête n’est pas autorisée pour votre compte actuel.",
+        "title": "Vous n’avez pas l’autorisation"
+      },
+      "reason": {
+        "ACCESS_DENIED": "Vous n’avez pas accès à cette galerie ou à cette action.",
+        "COMMENTS_HIDDEN": "Les commentaires sont masqués pour ce compte.",
+        "COMMENTS_NOT_ALLOWED": "Les commentaires ne sont pas autorisés pour ce compte.",
+        "INVALID_LINK": "Ce lien public n’est pas valide ou n’est plus disponible.",
+        "NOT_A_USER": "Ce compte ne peut pas effectuer cette action."
+      }
+    },
+    "logOut": "Se déconnecter",
+    "operation": "Opération : {{name}}",
+    "retry": "Réessayer"
+  },
+  "file": {
+    "comments": "Commentaires",
+    "created": "Création du fichier",
+    "details": "Détails",
+    "detailsTitle": "Détails — {{type}} : {{name}}",
+    "info": "Informations sur le fichier",
+    "infoFor": "Informations sur {{name}}",
+    "lastComment": "Dernier commentaire",
+    "latest": "Dernière action",
+    "metadata": "Métadonnées",
+    "modified": "Modification du fichier",
+    "name": "Nom",
+    "notAvailable": "N/D",
+    "openSlideshow": "Ouvrir dans le diaporama",
+    "size": "Taille du fichier",
+    "type": "Type de fichier",
+    "types": {
+      "file": "Fichier",
+      "folder": "Dossier",
+      "image": "Image",
+      "video": "Vidéo"
+    },
+    "view": "Afficher {{name}}"
+  },
+  "filter": {
+    "apply": "Appliquer les filtres",
+    "aspect": {
+      "any": "Tous les formats",
+      "landscape": "Paysage",
+      "portrait": "Portrait",
+      "square": "Carré"
+    },
+    "clearAll": "Effacer tous les filtres",
+    "clearNone": "Effacer les filtres",
+    "clear_one": "Effacer {{count}} filtre",
+    "clear_other": "Effacer {{count}} filtres",
+    "close": "Fermer",
+    "comments": "Commentaires",
+    "commentsHas": "Avec commentaires",
+    "commentsNone": "Sans commentaire",
+    "filename": "Nom du fichier",
+    "flag": "Marqueur",
+    "imageOptions": "Options d’image",
+    "metadata": "Métadonnées",
+    "metadataFiltering": "Filtrage par métadonnées",
+    "metadataUnavailable": "Indisponible car toutes les images ont la valeur {{value}}",
+    "rating": "Note",
+    "ratingComparison": {
+      "equal": "Égale à",
+      "greaterThan": "Au moins",
+      "lessThan": "Au plus"
+    },
+    "search": "Rechercher",
+    "showingAll": "Tous les fichiers sont affichés",
+    "showingCount": "{{visible}} fichiers affichés sur {{total}}"
+  },
   "folder": {
-    "empty": "Dossier vide"
+    "actions": "Actions du dossier",
+    "back": "Retour au dossier",
+    "commentsAndRatings": "Commentaires et notes",
+    "downloadZip": "Télécharger le ZIP",
+    "empty": "Dossier vide",
+    "filterFiles": "Filtrer les fichiers",
+    "loading": "Chargement",
+    "notFound": "Dossier introuvable",
+    "open": "Ouvrir {{name}}",
+    "scrollToGallery": "Faire défiler jusqu’à la galerie",
+    "unnamed": "(Dossier sans nom)",
+    "view": "Afficher le dossier",
+    "viewActivity": "Afficher l’activité"
+  },
+  "lightbox": {
+    "carousel": "Carrousel",
+    "close": "Fermer",
+    "enterFullscreen": "Passer en plein écran",
+    "exitFocus": "Quitter le mode focus (afficher les commandes)",
+    "exitFullscreen": "Quitter le plein écran",
+    "focus": "Mode focus (masquer les commandes)",
+    "fullscreen": "Plein écran",
+    "hideThumbnails": "Masquer les miniatures",
+    "label": "Visionneuse",
+    "next": "Suivant",
+    "photoGallery": "Galerie de photos",
+    "previous": "Précédent",
+    "showThumbnails": "Afficher les miniatures",
+    "slide": "Diapositive",
+    "slideCount": "Photo {{index}} sur {{total}}",
+    "slideCountTemplate": "{index} sur {total}",
+    "thumbnails": "Miniatures",
+    "zoomIn": "Agrandir",
+    "zoomOut": "Réduire"
+  },
+  "metadata": {
+    "Aperture": "Ouverture",
+    "Artist": "Artiste",
+    "AspectRatio": "Rapport largeur/hauteur",
+    "Audio": "Audio",
+    "Bitrate": "Débit",
+    "Camera": "Appareil photo",
+    "DateTimeEdit": "Dernière modification",
+    "DateTimeOriginal": "Prise de vue",
+    "Dimensions": "Dimensions",
+    "Duration": "Durée",
+    "ExposureTime": "Vitesse d’obturation",
+    "Format": "Format",
+    "Framerate": "Fréquence d’images",
+    "ISO": "ISO",
+    "Lens": "Objectif",
+    "OriginalRating": "Note d’origine",
+    "Video": "Vidéo"
   },
   "passcode": {
     "defaultTitle": "Code d’accès de la galerie",
@@ -19,8 +202,105 @@
     "incorrect": "Code d’accès incorrect",
     "submit": "Ouvrir la galerie"
   },
+  "review": {
+    "approvalCleared": "Approbation retirée",
+    "approve": "Approuver",
+    "approveTooltip": "Approuver (pouce levé)",
+    "approved": "Approuvé",
+    "capsLock": {
+      "message": "Désactivez Verr. Maj. pour rester sur la photo actuelle.",
+      "title": "Verr. Maj. : avance automatique"
+    },
+    "flag": "Marqueur",
+    "none": "Aucun",
+    "rateFile": "Noter ce fichier",
+    "rated": "Note : {{rating}}",
+    "rating": "Note",
+    "ratingCleared": "Note effacée",
+    "reject": "Rejeter",
+    "rejectTooltip": "Rejeter (pouce baissé)",
+    "rejected": "Rejeté",
+    "rejectionCleared": "Rejet retiré"
+  },
+  "sort": {
+    "button": "Trier",
+    "by": "Trier par",
+    "commented": "Commentaires",
+    "dateTaken": "Date de prise de vue",
+    "filename": "Nom du fichier",
+    "foldersFirst": "Dossiers en premier",
+    "foldersMixed": "Dossiers mélangés aux fichiers",
+    "modified": "Modification",
+    "rating": "Note"
+  },
   "unavailable": {
-    "title": "Galerie indisponible",
-    "description": "Ce lien n’existe pas ou n’est plus actif."
+    "description": "Ce lien n’existe pas ou n’est plus actif.",
+    "title": "Galerie indisponible"
+  },
+  "video": {
+    "play": "Lire la vidéo"
+  },
+  "videoPlayer": {
+    "accessibility": "Accessibilité",
+    "airPlay": "AirPlay",
+    "announcements": "Annonces",
+    "audio": "Audio",
+    "auto": "Auto",
+    "boost": "Amplification",
+    "captionStyles": "Style des sous-titres",
+    "captions": "Sous-titres",
+    "captionsExample": "Voici à quoi ressemblent les sous-titres",
+    "chapters": "Chapitres",
+    "closedCaptionsOff": "Sous-titres désactivés",
+    "closedCaptionsOn": "Sous-titres activés",
+    "color": "Couleur",
+    "connected": "Connecté",
+    "connecting": "Connexion",
+    "continue": "Continuer",
+    "default": "Par défaut",
+    "disabled": "Désactivé",
+    "disconnected": "Déconnecté",
+    "displayBackground": "Arrière-plan de l’affichage",
+    "download": "Télécharger",
+    "enterFullscreen": "Passer en plein écran",
+    "enterPiP": "Activer l’image dans l’image",
+    "exitFullscreen": "Quitter le plein écran",
+    "exitPiP": "Quitter l’image dans l’image",
+    "family": "Famille",
+    "font": "Police",
+    "fullscreen": "Plein écran",
+    "googleCast": "Google Cast",
+    "keyboardAnimations": "Animations au clavier",
+    "live": "EN DIRECT",
+    "loop": "Boucle",
+    "mute": "Couper le son",
+    "normal": "Normale",
+    "off": "Désactivé",
+    "opacity": "Opacité",
+    "pause": "Pause",
+    "piP": "Image dans l’image",
+    "play": "Lire",
+    "playback": "Lecture",
+    "quality": "Qualité",
+    "replay": "Relire",
+    "reset": "Réinitialiser",
+    "seek": "Position de lecture",
+    "seekBackward": "Reculer",
+    "seekForward": "Avancer",
+    "settings": "Paramètres",
+    "shadow": "Ombre",
+    "size": "Taille",
+    "skipToLive": "Revenir au direct",
+    "speed": "Vitesse",
+    "text": "Texte",
+    "textBackground": "Arrière-plan du texte",
+    "track": "Piste",
+    "unmute": "Rétablir le son",
+    "volume": "Volume"
+  },
+  "view": {
+    "feed": "Fil",
+    "gallery": "Galerie",
+    "list": "Liste"
   }
 }

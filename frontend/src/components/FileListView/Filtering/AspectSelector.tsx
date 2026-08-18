@@ -13,8 +13,10 @@ import {
 import type { SelectProps } from '@mantine/core';
 import { Group, Select } from '@mantine/core';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const AspectSelector = () => {
+  const { t } = useTranslation('gallery');
   const [options, setOptions] = useAtom(filterOptions);
   const onChange = (a: AspectFilterOptions) =>
     setOptions((o: FilterOptionsInterface) => ({ ...o, ratio: a }));
@@ -25,7 +27,10 @@ export const AspectSelector = () => {
       value={options.ratio}
       onChange={(v) => v && onChange(v as AspectFilterOptions)}
       leftSection={aspectRatioIcon[options.ratio]}
-      data={aspectRatioOptions}
+      data={aspectRatioOptions.map(({ value, labelKey }) => ({
+        value,
+        label: t(labelKey),
+      }))}
       renderOption={renderOption}
     />
   );
@@ -43,12 +48,16 @@ const renderOption: SelectProps['renderOption'] = ({ option }) => {
 
 const aspectRatioOptions: Array<{
   value: AspectFilterOptions;
-  label: string;
+  labelKey:
+    | 'filter.aspect.any'
+    | 'filter.aspect.landscape'
+    | 'filter.aspect.square'
+    | 'filter.aspect.portrait';
 }> = [
-  { value: 'any', label: 'Any Ratio' },
-  { value: 'landscape', label: 'Landscape' },
-  { value: 'square', label: 'Square' },
-  { value: 'portrait', label: 'Portrait' },
+  { value: 'any', labelKey: 'filter.aspect.any' },
+  { value: 'landscape', labelKey: 'filter.aspect.landscape' },
+  { value: 'square', labelKey: 'filter.aspect.square' },
+  { value: 'portrait', labelKey: 'filter.aspect.portrait' },
 ];
 
 const aspectRatioIcon: Record<AspectFilterOptions, ReactNode> = {

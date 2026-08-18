@@ -3,30 +3,27 @@ import {
   AUTH_REASON,
   authErrorCatalog,
   isAuthErrorReason,
+  type AuthErrorReason,
 } from '../auth/authErrorContract';
 
 export type GlobalErrorType = 'network_unavailable' | 'no_permissions';
+export type GlobalErrorReason =
+  | typeof AUTH_REASON.ACCESS_DENIED
+  | typeof AUTH_REASON.INVALID_LINK
+  | typeof AUTH_REASON.NOT_A_USER
+  | typeof AUTH_REASON.COMMENTS_NOT_ALLOWED
+  | typeof AUTH_REASON.COMMENTS_HIDDEN;
+
+const isGlobalErrorReason = (
+  reason: AuthErrorReason,
+): reason is GlobalErrorReason =>
+  authErrorCatalog[reason].globalAction === 'global_no_permissions';
 
 export interface GlobalErrorMatch {
   type: GlobalErrorType;
-  message: string;
+  reason?: GlobalErrorReason;
+  diagnosticMessage?: string;
 }
-
-const networkMarkers = [
-  'failed to fetch',
-  'network request failed',
-  'networkerror',
-  'load failed',
-  'fetch failed',
-];
-
-const permissionFallbackMarkers = [
-  'access denied',
-  'forbidden',
-  'invalid link',
-];
-
-const normalize = (value?: string | null) => (value ?? '').toLowerCase();
 
 export const isAuthExpiredError = (error?: CombinedError): boolean => {
   if (!error) return false;
@@ -42,21 +39,14 @@ export const classifyGlobalUrqlError = (
 ): GlobalErrorMatch | null => {
   if (!error) return null;
 
-  const normalizedMessage = normalize(error.message);
-
-  if (
-    error.networkError ||
-    networkMarkers.some((marker) => normalizedMessage.includes(marker))
-  ) {
-    return { type: 'network_unavailable', message: error.message };
+  if (error.networkError) {
+    return {
+      type: 'network_unavailable',
+      diagnosticMessage: error.message,
+    };
   }
 
   const graphQLErrors = error.graphQLErrors;
-  const graphqlText = graphQLErrors
-    .map((entry) => normalize(entry.message))
-    .join(' ');
-  const allText = `${normalizedMessage} ${graphqlText}`.trim();
-
   const extensionCodes = new Set(
     graphQLErrors
       .map((entry) => entry.extensions['code'])
@@ -70,11 +60,7 @@ export const classifyGlobalUrqlError = (
       .filter(isAuthErrorReason),
   );
 
-  if (
-    hasUnauthenticatedCode ||
-    reasonCodes.has(AUTH_REASON.NOT_LOGGED_IN) ||
-    allText.includes('not logged in')
-  ) {
+  if (hasUnauthenticatedCode || reasonCodes.has(AUTH_REASON.NOT_LOGGED_IN)) {
     return null;
   }
 
@@ -82,21 +68,13 @@ export const classifyGlobalUrqlError = (
     return null;
   }
 
-  if (hasForbiddenCode) {
-    return { type: 'no_permissions', message: error.message };
-  }
-
-  if (
-    [...reasonCodes].some(
-      (reason) =>
-        authErrorCatalog[reason].globalAction === 'global_no_permissions',
-    )
-  ) {
-    return { type: 'no_permissions', message: error.message };
-  }
-
-  if (permissionFallbackMarkers.some((marker) => allText.includes(marker))) {
-    return { type: 'no_permissions', message: error.message };
+  const reason = [...reasonCodes].find(isGlobalErrorReason);
+  if (reason || hasForbiddenCode) {
+    return {
+      type: 'no_permissions',
+      reason,
+      diagnosticMessage: error.message,
+    };
   }
 
   return null;

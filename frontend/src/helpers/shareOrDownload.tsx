@@ -12,6 +12,8 @@ import type { PicrFile } from '@shared/types/picr';
 import { prettyBytes } from '@shared/prettyBytes';
 import { useSyncExternalStore } from 'react';
 import { useLanguage } from '../i18n/useLanguage';
+import { useTranslation } from 'react-i18next';
+import type { GalleryT } from '../i18n/galleryLabels';
 
 // iOS (including iPadOS, which reports itself as desktop Safari) does not honor the
 // HTML5 anchor `download` attribute for same-origin files — it opens the "Save to
@@ -133,13 +135,13 @@ const clearActiveShareDownload = (downloadId: string) => {
   }
 };
 
-const showDownloadInProgressNotification = () => {
+const showDownloadInProgressNotification = (t: GalleryT) => {
   notifications.show({
     // Fixed id so repeated taps replace this toast instead of stacking copies.
     id: 'share-download-busy',
     color: 'yellow',
-    title: 'Download already running',
-    message: 'Wait for the current download to finish before starting another.',
+    title: t('download.alreadyRunning.title', { ns: 'gallery' }),
+    message: t('download.alreadyRunning.message', { ns: 'gallery' }),
     autoClose: 4000,
   });
 };
@@ -154,36 +156,45 @@ const describeShareError = (error: unknown): string => {
   return String(error);
 };
 
-const fallbackNotificationContent = (error: unknown) => (
+const fallbackNotificationContent = (error: unknown, t: GalleryT) => (
   <Stack gap={4}>
-    <Text size="sm">Falling back to file download.</Text>
+    <Text size="sm">{t('download.fallback.message', { ns: 'gallery' })}</Text>
     <Text size="xs" c="dimmed">
       {describeShareError(error)}
     </Text>
   </Stack>
 );
 
-const showFallbackNotification = (notificationId: string, error: unknown) => {
+const showFallbackNotification = (
+  notificationId: string,
+  error: unknown,
+  t: GalleryT,
+) => {
   notifications.show({
     id: notificationId,
     color: 'red',
-    title: 'Download failed',
-    message: fallbackNotificationContent(error),
+    title: t('download.failed', { ns: 'gallery' }),
+    message: fallbackNotificationContent(error, t),
     autoClose: 6000,
     withCloseButton: true,
   });
 };
 
-const showCanShareFallbackNotification = (notificationId: string) => {
+const showCanShareFallbackNotification = (
+  notificationId: string,
+  t: GalleryT,
+) => {
   notifications.show({
     id: notificationId,
     color: 'yellow',
-    title: 'Download fallback',
+    title: t('download.fallback.title', { ns: 'gallery' }),
     message: (
       <Stack gap={4}>
-        <Text size="sm">This browser could not share this file.</Text>
+        <Text size="sm">
+          {t('download.fallback.canShareMessage', { ns: 'gallery' })}
+        </Text>
         <Text size="xs" c="dimmed">
-          navigator.canShare returned false for the downloaded file.
+          {t('download.fallback.canShareDiagnostic', { ns: 'gallery' })}
         </Text>
       </Stack>
     ),
@@ -192,28 +203,54 @@ const showCanShareFallbackNotification = (notificationId: string) => {
   });
 };
 
-const formatEta = (seconds: number): string => {
-  if (seconds < 1) return 'less than 1s left';
-  if (seconds < 60) return `${Math.ceil(seconds)}s left`;
+const formatEta = (seconds: number, t: GalleryT): string => {
+  if (seconds < 1)
+    return t('download.lessThanOneSecondLeft', { ns: 'gallery' });
+  if (seconds < 60)
+    return t('download.timeLeft', {
+      time: t('download.seconds', {
+        value: Math.ceil(seconds),
+        ns: 'gallery',
+      }),
+      ns: 'gallery',
+    });
 
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.ceil(seconds % 60);
   if (minutes < 60) {
-    return remainingSeconds
-      ? `${minutes}m ${remainingSeconds}s left`
-      : `${minutes}m left`;
+    const minutesLabel = t('download.minutes', {
+      value: minutes,
+      ns: 'gallery',
+    });
+    return t('download.timeLeft', {
+      time: remainingSeconds
+        ? `${minutesLabel} ${t('download.seconds', {
+            value: remainingSeconds,
+            ns: 'gallery',
+          })}`
+        : minutesLabel,
+      ns: 'gallery',
+    });
   }
 
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
-  return remainingMinutes
-    ? `${hours}h ${remainingMinutes}m left`
-    : `${hours}h left`;
+  const hoursLabel = t('download.hours', { value: hours, ns: 'gallery' });
+  return t('download.timeLeft', {
+    time: remainingMinutes
+      ? `${hoursLabel} ${t('download.minutes', {
+          value: remainingMinutes,
+          ns: 'gallery',
+        })}`
+      : hoursLabel,
+    ns: 'gallery',
+  });
 };
 
 const progressDetails = (
   progress: DownloadProgress | undefined,
   locale: string,
+  t: GalleryT,
 ): string | undefined => {
   if (!progress) return undefined;
 
@@ -234,7 +271,10 @@ const progressDetails = (
     progress.received < progress.total
   ) {
     parts.push(
-      formatEta((progress.total - progress.received) / progress.bytesPerSecond),
+      formatEta(
+        (progress.total - progress.received) / progress.bytesPerSecond,
+        t,
+      ),
     );
   }
 
@@ -252,6 +292,7 @@ const completedDetails = (
 };
 
 export const DownloadSharePromptHost = () => {
+  const { t } = useTranslation('gallery');
   const { formattingLocale } = useLanguage();
   const state = useSyncExternalStore(
     subscribeToSharePrompt,
@@ -264,7 +305,7 @@ export const DownloadSharePromptHost = () => {
   const isSaving = state?.status === 'saving';
   const isBusy = isDownloading || isSaving;
   const details = isDownloading
-    ? progressDetails(state.progress, formattingLocale)
+    ? progressDetails(state.progress, formattingLocale, t)
     : completedDetails(state?.progress, formattingLocale);
 
   // While downloading this cancels the fetch; once the file is ready it just
@@ -297,10 +338,10 @@ export const DownloadSharePromptHost = () => {
       notifications.show({
         id: notificationId,
         color: 'red',
-        title: 'Download failed',
+        title: t('download.failed'),
         message: (
           <Stack gap={4}>
-            <Text size="sm">Falling back to file download.</Text>
+            <Text size="sm">{t('download.fallback.message')}</Text>
             <Text size="xs" c="dimmed">
               {describeShareError(error)}
             </Text>
@@ -331,10 +372,10 @@ export const DownloadSharePromptHost = () => {
       withCloseButton={!isSaving}
       title={
         isDownloading
-          ? 'Downloading file'
+          ? t('download.downloadingFile')
           : isSaving
-            ? 'Saving…'
-            : 'Ready to save'
+            ? t('download.saving')
+            : t('download.ready')
       }
       centered
     >
@@ -355,27 +396,25 @@ export const DownloadSharePromptHost = () => {
             <Group gap="xs">
               <Loader size="sm" />
               <Text size="sm" c="dimmed">
-                Downloading
+                {t('download.downloading')}
               </Text>
             </Group>
           ) : null}
           {isDownloading ? (
             <Text size="sm" c="dimmed">
-              Keep this page open while the file downloads, or close this window
-              to cancel.
+              {t('download.keepOpen')}
             </Text>
           ) : (
             <>
               <Text size="sm" c="dimmed">
-                The file is ready. Tap Save to Photos to open the iOS share
-                sheet.
+                {t('download.readyDescription')}
               </Text>
               <Group justify="flex-end">
                 <Button variant="default" onClick={saveToFiles}>
-                  Save to Files
+                  {t('download.saveToFiles')}
                 </Button>
                 <Button onClick={() => void saveFile()} loading={isSaving}>
-                  Save to Photos
+                  {t('download.saveToPhotos')}
                 </Button>
               </Group>
             </>
@@ -442,14 +481,18 @@ let shareCounter = 0;
  * sheet (so users can "Save to Photos"); everywhere else it falls back to a normal
  * anchor download. Safe to call from any platform.
  */
-export const shareOrDownload = async (url: string, filename: string) => {
+export const shareOrDownload = async (
+  url: string,
+  filename: string,
+  t: GalleryT,
+) => {
   if (!canUseShareSheet()) {
     anchorDownload(url, filename);
     return;
   }
 
   if (activeShareDownloadId) {
-    showDownloadInProgressNotification();
+    showDownloadInProgressNotification(t);
     return;
   }
 
@@ -508,7 +551,7 @@ export const shareOrDownload = async (url: string, filename: string) => {
     // canShare rejected these files — nothing to share, fall back to a normal download.
     if (!navigator.canShare({ files: [file] })) {
       if (promptShown) setSharePromptState(null);
-      showCanShareFallbackNotification(notificationId);
+      showCanShareFallbackNotification(notificationId, t);
       anchorDownload(url, filename);
       clearActiveShareDownload(downloadId);
       return;
@@ -567,7 +610,7 @@ export const shareOrDownload = async (url: string, filename: string) => {
       return;
     }
     // Anything else: fall back to a normal download and let the user know.
-    showFallbackNotification(notificationId, error);
+    showFallbackNotification(notificationId, error, t);
     anchorDownload(url, filename);
     clearActiveShareDownload(downloadId);
   }

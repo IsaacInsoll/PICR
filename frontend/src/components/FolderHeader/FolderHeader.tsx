@@ -26,6 +26,7 @@ import { PicrTitle } from '../PicrTitle';
 import { LoggedInHeader } from '../Header/LoggedInHeader';
 import { getBreadcrumbFolders } from '../../helpers/getBreadcrumbFolders';
 import { normalizeHeadingAlignment } from '@shared/branding/galleryPresets';
+import { useTranslation } from 'react-i18next';
 
 export const FolderHeader = ({
   folder,
@@ -44,10 +45,11 @@ export const FolderHeader = ({
   hideBreadcrumbs?: boolean;
   hasBannerLayout?: boolean;
 }) => {
+  const { t } = useTranslation('gallery');
   return (
     <HeaderWrapper
       title={
-        folder.title ?? normalizeDisplayName(folder.name) ?? '(Unnamed Folder)'
+        folder.title ?? normalizeDisplayName(folder.name) ?? t('folder.unnamed')
       }
       customSubtitle={customSubtitle ?? undefined}
       subtitle={subtitle}
@@ -78,6 +80,7 @@ export const PlaceholderFolderHeader = ({
   folderId?: string;
   mode?: ViewFolderMode;
 }) => {
+  const { t } = useTranslation('gallery');
   const identityFolder = useFolderPlaceholderIdentity(folderId);
   const fullFolder = useFolderPlaceholder(folderId);
   const folder = fullFolder ?? identityFolder;
@@ -92,7 +95,11 @@ export const PlaceholderFolderHeader = ({
       <HeaderWrapper
         // `title ?? name` matches FolderHeader's precedence, so the heading
         // doesn't change once the real query lands.
-        title={folder?.title ?? normalizeDisplayName(folder?.name) ?? 'Loading'}
+        title={
+          folder?.title ??
+          normalizeDisplayName(folder?.name) ??
+          t('folder.loading')
+        }
         subtitle={<Loader type="dots" />}
         parent={fullFolder?.parents}
         hideTitleAndCustomSubtitle={hasBanner}

@@ -8,12 +8,14 @@ import {
   classifyGlobalUrqlError,
   isAuthExpiredError,
 } from '@shared/urql/errorClassification';
+import { useTranslation } from 'react-i18next';
 
 interface QueryFeedbackProps {
   result: UseQueryState;
   reQuery: () => void;
 }
 export default function QueryFeedback({ result, reQuery }: QueryFeedbackProps) {
+  const { t } = useTranslation('gallery');
   const { fetching, data, error } = result;
   const setAuthKey = useSetAtom(authKeyAtom);
   const logOut = () => {
@@ -27,10 +29,15 @@ export default function QueryFeedback({ result, reQuery }: QueryFeedbackProps) {
     <>
       {fetching && !data && <LoadingIndicator size="large" />}
       {error && !isGlobalError && !isAuthExpired && (
-        <Alert variant="light" color="red" title="Error" icon={<AlertIcon />}>
+        <Alert
+          variant="light"
+          color="red"
+          title={t('error.generic')}
+          icon={<AlertIcon />}
+        >
           {error.toString().replace('[GraphQL] ', '')}
-          <Button onClick={reQuery}>Retry</Button>
-          <Button onClick={logOut}>Log Out</Button>
+          <Button onClick={reQuery}>{t('error.retry')}</Button>
+          <Button onClick={logOut}>{t('error.logOut')}</Button>
         </Alert>
       )}
     </>

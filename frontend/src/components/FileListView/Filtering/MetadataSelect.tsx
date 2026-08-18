@@ -7,6 +7,9 @@ import { metadataIcons } from '../metadataIcons';
 
 import type { AnyMetadataKey } from '@shared/fileMetadata';
 import { useLanguage } from '../../../i18n/useLanguage';
+import { useTranslation } from 'react-i18next';
+import { metadataDescription } from '@shared/fileMetadata';
+import { metadataDescriptionTranslator } from '../../../i18n/galleryLabels';
 
 export const MetadataSelect = ({
   title,
@@ -15,13 +18,14 @@ export const MetadataSelect = ({
   title: AnyMetadataKey;
   options: (string | number)[];
 }) => {
+  const { t } = useTranslation('gallery');
   const { formattingLocale } = useLanguage();
   const [fo, setFo] = useAtom(filterOptions);
   const metadata = fo.metadata as Record<string, (string | number)[]>;
   const value = options.length === 1 ? options : (metadata[title] ?? []);
   const data = formatMetadataValues(title, options, formattingLocale);
 
-  const label = title === 'ExposureTime' ? 'Shutter Speed' : title;
+  const label = metadataDescription(title, metadataDescriptionTranslator(t));
   // <MultiSelect> only accepts string values so we need to do some conversion back-and-forth as some metadata is numeric such as aperture and shutter speed
 
   const solo = options.length <= 1;
@@ -33,7 +37,9 @@ export const MetadataSelect = ({
       data={data}
       disabled={solo}
       description={
-        solo ? 'Not available as all images are ' + options[0] : undefined
+        solo
+          ? t('filter.metadataUnavailable', { value: options[0] })
+          : undefined
       }
       leftSection={metadataIcons[title as keyof typeof metadataIcons]}
       label={label}

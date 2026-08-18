@@ -21,6 +21,9 @@ import { normalizeDisplayName } from '@shared/displayName';
 import { PicrLink } from '../PicrLink';
 import { FileLink } from '../FileLink';
 import { useLanguage } from '../../i18n/useLanguage';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { fileTypeLabel, type GalleryT } from '../../i18n/galleryLabels';
 
 const folderContentsColumn = createPicrColumns<FolderContentsItem>();
 
@@ -59,12 +62,14 @@ export const FileDataListView = ({
   folders,
   items,
 }: FileListViewStyleComponentProps) => {
+  const { t } = useTranslation('gallery');
   const { canView, isNone } = useCommentPermissions();
   const setFolder = useSetFolder();
 
   const isMobile = useIsMobile();
   const isSmall = useIsSmallScreen();
 
+  const columns = useMemo(() => buildColumns(t), [t]);
   const cols = columns
     .filter(({ isComment }) => canView || !isComment)
     .filter(
@@ -111,13 +116,15 @@ export const FileDataListView = ({
   );
 };
 
-const columns: (PicrColumns<FolderContentsItem> & {
+const buildColumns = (
+  t: GalleryT,
+): (PicrColumns<FolderContentsItem> & {
   isComment: boolean;
   visibleFor: MantineSize;
-})[] = [
+})[] => [
   {
     ...folderContentsColumn.accessor('name', {
-      header: 'Name',
+      header: t('file.name'),
       widthPercent: 10,
       cell: ({ row }) => <NameCell item={row.original} />,
     }),
@@ -129,8 +136,9 @@ const columns: (PicrColumns<FolderContentsItem> & {
       (row) => (isFolderContentsFile(row) ? row.type : 'Folder'),
       {
         id: 'type',
-        header: 'Type',
+        header: t('file.type'),
         widthPercent: 10,
+        cell: ({ value }) => fileTypeLabel(String(value), t),
       },
     ),
     visibleFor: 'md',
@@ -141,7 +149,7 @@ const columns: (PicrColumns<FolderContentsItem> & {
       (row) => (isFolderContentsFile(row) ? row.rating : null),
       {
         id: 'rating',
-        header: 'Rating',
+        header: t('review.rating'),
         widthPercent: 10,
         cell: ({ value }) => {
           const rating = Number(value ?? 0);
@@ -157,7 +165,7 @@ const columns: (PicrColumns<FolderContentsItem> & {
       (row) => (isFolderContentsFile(row) ? row.flag : null),
       {
         id: 'flag',
-        header: 'Flag',
+        header: t('review.flag'),
         widthPercent: 10,
         cell: ({ value }) => <FileFlagBadge flag={value} />,
       },
@@ -170,7 +178,7 @@ const columns: (PicrColumns<FolderContentsItem> & {
       (row) => (isFolderContentsFile(row) ? row.totalComments : null),
       {
         id: 'totalComments',
-        header: 'Comments',
+        header: t('comments.comments'),
         widthPercent: 7,
         cell: ({ value }) => {
           const totalComments = Number(value ?? 0);
@@ -186,7 +194,7 @@ const columns: (PicrColumns<FolderContentsItem> & {
       (row) => (isFolderContentsFile(row) ? row.latestComment : null),
       {
         id: 'latestComment',
-        header: 'Latest Action',
+        header: t('file.latest'),
         widthPercent: 10,
         cell: ({ value }) => {
           return <DateDisplay dateString={value ?? undefined} />;
@@ -201,7 +209,7 @@ const columns: (PicrColumns<FolderContentsItem> & {
       (row) => (isFolderContentsFile(row) ? row.fileSize : null),
       {
         id: 'fileSize',
-        header: 'File Size',
+        header: t('file.size'),
         cell: ({ value }) => {
           return <FileSizeCell value={value} />;
         },

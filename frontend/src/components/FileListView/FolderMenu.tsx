@@ -17,6 +17,7 @@ import { useGenerateZip } from '../../hooks/useGenerateZip';
 import { useMe } from '../../hooks/useMe';
 import { useOpenMoveRenameFolderModal } from '../../atoms/modalAtom';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
+import { useTranslation } from 'react-i18next';
 
 type FolderMenuItemsProps = {
   folder: PicrFolder;
@@ -33,6 +34,7 @@ export const FolderMenuItems = ({
   onCsvExport,
   onBranding,
 }: FolderMenuItemsProps) => {
+  const { t } = useTranslation('gallery');
   const folderName = normalizeDisplayName(folder.name);
   const openLink = useFolderLink(folder);
   const activityLink = useFolderLink(folder, 'activity');
@@ -53,12 +55,12 @@ export const FolderMenuItems = ({
           key="open"
           to={openLink.to}
         >
-          Open {folderName}
+          {t('folder.open', { name: folderName })}
         </PicrMenuItem>
       ) : null}
       {onFilterFiles ? (
         <Menu.Item leftSection={<FilterIcon />} onClick={onFilterFiles}>
-          Filter Files
+          {t('folder.filterFiles')}
         </Menu.Item>
       ) : null}
       {generateZip ? (
@@ -67,14 +69,14 @@ export const FolderMenuItems = ({
           key="download"
           onClick={handleGenerateZip}
         >
-          Download ZIP
+          {t('folder.downloadZip')}
         </Menu.Item>
       ) : null}
       {canView ? (
         <>
-          <Menu.Label>Comments & Ratings</Menu.Label>
+          <Menu.Label>{t('folder.commentsAndRatings')}</Menu.Label>
           <PicrMenuItem leftSection={<CommentIcon />} to={activityLink.to}>
-            View Activity
+            {t('folder.viewActivity')}
           </PicrMenuItem>
         </>
       ) : null}

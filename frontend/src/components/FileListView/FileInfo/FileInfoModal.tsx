@@ -10,8 +10,11 @@ import { prettyBytes } from '@shared/prettyBytes';
 import { isUnavailableFileCreatedDate, prettyDate } from '@shared/prettyDate';
 import type { PicrFile } from '@shared/types/picr';
 import { useLanguage } from '../../../i18n/useLanguage';
+import { useTranslation } from 'react-i18next';
+import { fileTypeLabel } from '../../../i18n/galleryLabels';
 
 export const FileInfoModal = ({ file }: { file: PicrFile }) => {
+  const { t } = useTranslation('gallery');
   const onClose = useSetAtom(closeModalAtom);
   const isMobile = useIsSmallScreen();
   const { formattingLocale } = useLanguage();
@@ -24,7 +27,10 @@ export const FileInfoModal = ({ file }: { file: PicrFile }) => {
       opened={true}
       centered={true}
       onClose={onClose}
-      title={file.type + ' Details: ' + fileName}
+      title={t('file.detailsTitle', {
+        type: fileTypeLabel(file.type, t),
+        name: fileName,
+      })}
       fullScreen={isMobile}
       overlayProps={{ blur: 3 }}
       // transitionProps={{ transition: 'fade', duration: 200 }}
@@ -37,17 +43,17 @@ export const FileInfoModal = ({ file }: { file: PicrFile }) => {
       ) : null}
       <Group style={{ width: '100%' }}>
         <StatCard
-          label="File size"
+          label={t('file.size')}
           value={prettyBytes(file.fileSize ?? 0, { locale: formattingLocale })}
         />
-        <StatCard label="File type" value={file.type} />
+        <StatCard label={t('file.type')} value={fileTypeLabel(file.type, t)} />
         <StatCard
-          label="File modified"
+          label={t('file.modified')}
           value={prettyDate(file.fileLastModified ?? '', formattingLocale)}
         />
         {showFileCreated ? (
           <StatCard
-            label="File created"
+            label={t('file.created')}
             value={prettyDate(file.fileCreated ?? '', formattingLocale)}
           />
         ) : null}
@@ -56,7 +62,7 @@ export const FileInfoModal = ({ file }: { file: PicrFile }) => {
         <Table>
           <Table.Thead>
             <Table.Tr>
-              <Table.Th colSpan={2}>Metadata</Table.Th>
+              <Table.Th colSpan={2}>{t('file.metadata')}</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{MetadataTableRows(file)}</Table.Tbody>

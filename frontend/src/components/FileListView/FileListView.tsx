@@ -37,6 +37,7 @@ import { prettyDate } from '@shared/prettyDate';
 import type { PicrUser } from '@shared/types/picr';
 import { useLanguage } from '../../i18n/useLanguage';
 import { useTranslation } from 'react-i18next';
+import { fileTypeLabel } from '../../i18n/galleryLabels';
 
 export const FileListView = ({
   files,
@@ -93,9 +94,16 @@ const Row = ({
   const rating = isFile ? (file.rating ?? 0) : 0;
   const flag = isFile ? file.flag : null;
   const fileSize = isFile ? file.fileSize : null;
+  const notAvailable = t('file.notAvailable');
+  const modified = modifiedDate
+    ? prettyDate(modifiedDate, formattingLocale)
+    : notAvailable;
+  const lastComment = latestComment
+    ? prettyDate(latestComment, formattingLocale)
+    : notAvailable;
   const title = canView
-    ? `Modified: ${modifiedDate ? prettyDate(modifiedDate, formattingLocale) : 'N/A'}\nLast Comment: ${latestComment ? prettyDate(latestComment, formattingLocale) : 'N/A'}`
-    : `Modified: ${modifiedDate ? prettyDate(modifiedDate, formattingLocale) : 'N/A'}`;
+    ? `${t('sort.modified')}: ${modified}\n${t('file.lastComment')}: ${lastComment}`
+    : `${t('sort.modified')}: ${modified}`;
 
   // if filtering by RecentlyCommented or LastModified then lets show that data
   const { type } = useAtomValue(fileSortAtom);
@@ -108,7 +116,7 @@ const Row = ({
               {totalComments}
             </Badge>
             <Text c="dimmed" fz="xs">
-              Latest: {prettyDate(latestComment, formattingLocale)}
+              {t('file.latest')}: {prettyDate(latestComment, formattingLocale)}
             </Text>
           </>
         ) : null}
@@ -117,7 +125,7 @@ const Row = ({
       <>
         {modifiedDate ? (
           <Text c="dimmed" fz="xs">
-            Modified: {prettyDate(modifiedDate, formattingLocale)}
+            {t('sort.modified')}: {prettyDate(modifiedDate, formattingLocale)}
           </Text>
         ) : null}
       </>
@@ -244,7 +252,7 @@ const Row = ({
               : null}
           </Text>
           <Text fz="xs" ta="right" c="dimmed">
-            {isFolder ? 'Folder' : file.type}
+            {fileTypeLabel(isFolder ? 'Folder' : file.type, t)}
           </Text>
         </Table.Td>
       ) : null}

@@ -59,6 +59,7 @@ import { DownloadZipButton } from '../components/DownloadZipButton';
 import { viewFolderModeFromFileId } from '../helpers/viewFolderMode';
 import { getUUID } from '../helpers/getUUID';
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
 const LoggedInHeader = lazy(() =>
   import('../components/Header/LoggedInHeader').then((module) => ({
@@ -276,6 +277,8 @@ const ViewFolderBody = () => {
   };
 
   const actions = [];
+  if (me?.isLink)
+    actions.push(<LanguageSwitcher compact key="LanguageSwitcher" />);
   const hasOverflowActions =
     !!folder && (!!me?.isUser || canView || canDownload || !!hasFiles);
   // The sort menu lives in overflow only below the md breakpoint. On desktop the
@@ -330,7 +333,7 @@ const ViewFolderBody = () => {
         leftSection={<FolderIcon />}
         key="BackToFolder"
       >
-        Back to folder
+        {t('folder.back')}
       </Button>,
     );
   }
@@ -359,7 +362,7 @@ const ViewFolderBody = () => {
       ) : null}
       <QueryFeedback result={data} reQuery={reQuery} />
       {!folder ? (
-        <Title order={1}>Folder Not Found</Title>
+        <Title order={1}>{t('folder.notFound')}</Title>
       ) : (
         <>
           {!activity ? <FolderBanner folder={folder} /> : null}
@@ -422,6 +425,7 @@ const ViewFolderBody = () => {
 };
 
 const ViewSelectorButton = ({ folder }: { folder: PicrFolder }) => {
+  const { t } = useTranslation('gallery');
   const [view, setView] = useAtom(selectedViewAtom);
   const me = useMe();
   const restricted = folder.branding?.availableViews;
@@ -435,7 +439,10 @@ const ViewSelectorButton = ({ folder }: { folder: PicrFolder }) => {
   const restrictedLabel =
     me?.isUser && restricted?.length
       ? `Link users restricted to: ${restricted
-          .map((name) => viewOptions.find((v) => v.key === name)?.label ?? name)
+          .map((name) => {
+            const option = viewOptions.find((v) => v.key === name);
+            return option ? t(option.labelKey) : name;
+          })
           .join(', ')}`
       : null;
 
@@ -447,7 +454,7 @@ const ViewSelectorButton = ({ folder }: { folder: PicrFolder }) => {
             key={v.key}
             variant={view === v.key ? 'filled' : 'default'}
             onClick={() => setView(v.key)}
-            title={v.label}
+            title={t(v.labelKey)}
             px="xs"
           >
             {v.icon}
@@ -475,6 +482,7 @@ const FolderOverflowMenu = ({
   sortMenuInOverflow: boolean;
   hasCaptureDates: boolean;
 }) => {
+  const { t } = useTranslation('gallery');
   const displayFolderName = normalizeDisplayName(folder.name);
   const setFiltering = useSetAtom(filterAtom);
   const setEditBranding = useSetAtom(editBrandingAtom);
@@ -534,7 +542,12 @@ const FolderOverflowMenu = ({
         position="bottom-end"
       >
         <Menu.Target>
-          <ActionIcon variant="default" color="gray" size="lg">
+          <ActionIcon
+            variant="default"
+            color="gray"
+            size="lg"
+            aria-label={t('folder.actions')}
+          >
             <DotsIcon />
           </ActionIcon>
         </Menu.Target>

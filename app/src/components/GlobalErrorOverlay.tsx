@@ -49,13 +49,15 @@ export const GlobalErrorOverlay = () => {
         <PText variant="dimmed" style={styles.description}>
           {description}
         </PText>
-        <View style={styles.messageBox}>
-          <PText>
-            {incident.message
-              .replace('[GraphQL] ', '')
-              .replace('[Network] ', '')}
-          </PText>
-        </View>
+        {incident.diagnosticMessage ? (
+          <View style={styles.messageBox}>
+            <PText>
+              {incident.diagnosticMessage
+                .replace('[GraphQL] ', '')
+                .replace('[Network] ', '')}
+            </PText>
+          </View>
+        ) : null}
         <View style={styles.buttonRow}>
           <Pressable
             style={[

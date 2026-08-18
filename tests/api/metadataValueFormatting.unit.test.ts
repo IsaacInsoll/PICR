@@ -28,3 +28,40 @@ describe('technical specs are localized but never grouped', () => {
     expect(formatMetadataValue('Aperture', 2.8, 'fr').label).toBe('ƒ2,8');
   });
 });
+
+describe('metadata descriptions', () => {
+  it('uses translated descriptions when the frontend provides a translator', () => {
+    const metadata = metadataForPresentation(
+      {
+        metadata: {
+          ExposureTime: 1 / 250,
+          Width: 6000,
+          Height: 4000,
+          CustomField: 'kept as-is',
+        },
+      },
+      'fr',
+      (key) => `translated:${key}`,
+    );
+
+    expect(
+      metadata.find(({ key }) => key === 'ExposureTime')?.description,
+    ).toBe('translated:ExposureTime');
+    expect(metadata.find(({ key }) => key === 'Dimensions')?.description).toBe(
+      'translated:Dimensions',
+    );
+    expect(metadata.find(({ key }) => key === 'CustomField')?.description).toBe(
+      'CustomField',
+    );
+  });
+
+  it('keeps English descriptions for untranslated consumers such as the app', () => {
+    const metadata = metadataForPresentation({
+      metadata: { ExposureTime: 1 / 250 },
+    });
+
+    expect(
+      metadata.find(({ key }) => key === 'ExposureTime')?.description,
+    ).toBe('Shutter Speed');
+  });
+});

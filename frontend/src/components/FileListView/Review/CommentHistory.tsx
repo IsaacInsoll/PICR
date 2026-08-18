@@ -2,6 +2,7 @@ import type { AppCommentHistoryCommentFragmentFragment } from '@shared/gql/graph
 import { CommentBodyItem } from './CommentBodyItem';
 import { Group, SegmentedControl, Timeline } from '@mantine/core';
 import { atom, useAtom, useAtomValue } from 'jotai';
+import { useTranslation } from 'react-i18next';
 
 export interface CommentHistoryProps {
   singleFile?: boolean;
@@ -49,6 +50,7 @@ export const CommentHistory = ({
 };
 
 const CommentFilter = ({ compact = false }: { compact?: boolean }) => {
+  const { t } = useTranslation('gallery');
   const [value, setValue] = useAtom(commentFilterAtom);
   return (
     <Group>
@@ -57,15 +59,19 @@ const CommentFilter = ({ compact = false }: { compact?: boolean }) => {
         onChange={(next) => setValue(next as CommentFilter)}
         size="xs"
         data={[
-          { label: 'All', value: 'all' },
-          { label: compact ? 'Text' : 'Comments', value: 'comments' },
-          { label: 'Ratings', value: 'ratings' },
+          { label: t('comments.all'), value: 'all' },
+          {
+            label: compact ? t('comments.text') : t('comments.comments'),
+            value: 'comments',
+          },
+          { label: t('comments.ratings'), value: 'ratings' },
         ]}
       />
     </Group>
   );
 };
 const CommentSort = ({ compact = false }: { compact?: boolean }) => {
+  const { t } = useTranslation('gallery');
   const [value, setValue] = useAtom(commentSortAtom);
   return (
     <Group>
@@ -74,8 +80,14 @@ const CommentSort = ({ compact = false }: { compact?: boolean }) => {
         onChange={(next) => setValue(next as CommentSort)}
         size="xs"
         data={[
-          { label: compact ? 'Newest' : 'Newest First', value: 'desc' },
-          { label: compact ? 'Oldest' : 'Oldest First', value: 'asc' },
+          {
+            label: compact ? t('comments.newest') : t('comments.newestFirst'),
+            value: 'desc',
+          },
+          {
+            label: compact ? t('comments.oldest') : t('comments.oldestFirst'),
+            value: 'asc',
+          },
         ]}
       />
     </Group>

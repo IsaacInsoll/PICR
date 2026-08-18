@@ -9,12 +9,14 @@ import { Button, Group, Indicator, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { MetadataSelect } from './MetadataSelect';
 import type { AnyMetadataKey } from '@shared/fileMetadata';
+import { useTranslation } from 'react-i18next';
 
 export const MetadataBox = ({
   metadata,
 }: {
   metadata: MetadataOptionsForFiltering;
 }) => {
+  const { t } = useTranslation('gallery');
   const [opened, { open, close }] = useDisclosure(false);
   const totalMetadataSelected = useAtomValue(
     totalMetadataFilterOptionsSelected,
@@ -26,7 +28,7 @@ export const MetadataBox = ({
       <Modal
         opened={opened}
         onClose={close}
-        title="Metadata Filtering"
+        title={t('filter.metadataFiltering')}
         centered
       >
         {Object.entries(metadata).map(([title, options]) => {
@@ -46,9 +48,9 @@ export const MetadataBox = ({
               close();
             }}
           >
-            Clear All Filters
+            {t('filter.clearAll')}
           </Button>
-          <Button onClick={close}>Apply Filters</Button>
+          <Button onClick={close}>{t('filter.apply')}</Button>
         </Group>
       </Modal>
       <Indicator
@@ -62,7 +64,7 @@ export const MetadataBox = ({
           variant={opened ? 'light' : 'default'}
           leftSection={<MetadataIcon />}
         >
-          Metadata
+          {t('filter.metadata')}
         </Button>
       </Indicator>
     </>

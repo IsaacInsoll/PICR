@@ -12,6 +12,14 @@ absolute dates. `Intl.RelativeTimeFormat` produces translated prose, so use
 `useLanguage().catalogLanguage` for relative time to keep its words in the same
 language as the surrounding catalog text.
 
+`i18next-cli` infers a namespace from `useTranslation('gallery')` inside a
+component, but it cannot infer the namespace of a `TFunction` passed into a
+helper. Include `{ ns: 'gallery' }` on every `t()` call in those helpers or the
+catalog check will incorrectly look for the keys in `common`. The extractor also
+treats a numeric `count` interpolation as pluralization; use `count` only when the
+key intentionally has plural forms, and choose another interpolation name for
+plain numeric display.
+
 LocatorJS is development-only. Its runtime entry (`src/locatorDev.ts`) is injected
 by the serve-only `locatorJsDevRuntime` Vite plugin, and its Babel transform in
 `vite.config.ts` is likewise restricted to serve mode. Do not import the runtime

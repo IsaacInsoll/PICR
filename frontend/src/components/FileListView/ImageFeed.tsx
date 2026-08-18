@@ -45,6 +45,7 @@ import type {
 } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 import { LazyPicrVideoPlayer } from '../LazyPicrVideoPlayer';
+import { useTranslation } from 'react-i18next';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 
@@ -218,8 +219,11 @@ const FeedFolderItem = ({
 };
 
 const FileDownloadButton = ({ file }: { file: ViewFolderFileWithHero }) => {
+  const { t } = useTranslation('gallery');
   return (
-    <Tooltip label={`Download ${normalizeDisplayName(file.name)}`}>
+    <Tooltip
+      label={t('download.file', { name: normalizeDisplayName(file.name) })}
+    >
       <ActionIcon
         variant="default"
         component="a"
@@ -230,7 +234,7 @@ const FileDownloadButton = ({ file }: { file: ViewFolderFileWithHero }) => {
           // of the anchor download (which opens "Save to Files").
           if (isShareableMediaFile(file) && canUseShareSheet()) {
             e.preventDefault();
-            void shareOrDownload(imageURL(file, 'raw'), file.name);
+            void shareOrDownload(imageURL(file, 'raw'), file.name, t);
           }
         }}
       >
@@ -241,10 +245,13 @@ const FileDownloadButton = ({ file }: { file: ViewFolderFileWithHero }) => {
 };
 
 const FileInfoButton = ({ file }: { file: ViewFolderFileWithHero }) => {
+  const { t } = useTranslation('gallery');
   const openFileInfo = useOpenFileInfoModal();
 
   return (
-    <Tooltip label={`File Info for ${normalizeDisplayName(file.name)}`}>
+    <Tooltip
+      label={t('file.infoFor', { name: normalizeDisplayName(file.name) })}
+    >
       <ActionIcon variant="default" onClick={() => openFileInfo(file.id)}>
         <InfoIcon />
       </ActionIcon>
@@ -252,10 +259,11 @@ const FileInfoButton = ({ file }: { file: ViewFolderFileWithHero }) => {
   );
 };
 const OpenFileButton = ({ file }: { file: ViewFolderFileWithHero }) => {
+  const { t } = useTranslation('gallery');
   const setSelectedFileId = useSelectedFileId(file.folderId);
 
   return (
-    <Tooltip label={`Open in Slideshow View`}>
+    <Tooltip label={t('file.openSlideshow')}>
       <ActionIcon
         variant="default"
         onClick={() => {
