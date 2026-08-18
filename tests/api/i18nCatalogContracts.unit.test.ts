@@ -11,6 +11,7 @@ import {
   fontRegistry,
   fontSuitabilityLabels,
 } from '../../shared/branding/fontRegistry';
+import { SOCIAL_LINK_TYPES } from '../../shared/branding/socialLinkTypes';
 import { supportedLanguageCodes } from '../../shared/i18n/languages';
 import {
   namespaces,
@@ -172,6 +173,26 @@ describe('dynamic translation contracts', () => {
     );
     for (const language of supportedLanguageCodes) {
       expectNonEmptyTranslation(language, 'admin', ['font', 'headingOnly']);
+    }
+  });
+
+  it('keeps social-link selector labels complete without changing persisted defaults', () => {
+    for (const definition of SOCIAL_LINK_TYPES) {
+      expect(
+        translationAtPath(resources.en.admin, [
+          'branding',
+          'socialType',
+          definition.key,
+        ]),
+      ).toBe(definition.defaultTitle);
+
+      for (const language of supportedLanguageCodes) {
+        expectNonEmptyTranslation(language, 'admin', [
+          'branding',
+          'socialType',
+          definition.key,
+        ]);
+      }
     }
   });
 });

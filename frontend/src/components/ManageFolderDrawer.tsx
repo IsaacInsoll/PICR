@@ -4,6 +4,7 @@ import type { PicrFolder } from '@shared/types/picr';
 import { normalizeDisplayName } from '@shared/displayName';
 import { Center } from '@mantine/core';
 import { LoadingIndicator } from './LoadingIndicator';
+import { useTranslation } from 'react-i18next';
 
 export const ManageFolderDrawer = ({
   folder,
@@ -11,14 +12,19 @@ export const ManageFolderDrawer = ({
 }: {
   folder: PicrFolder;
   onClose: () => void;
-}) => (
-  <PicrDrawer
-    title={`Manage: ${normalizeDisplayName(folder.name)}`}
-    onClose={onClose}
-  >
-    <ManageFolder folder={folder} />
-  </PicrDrawer>
-);
+}) => {
+  const { t } = useTranslation('admin');
+  return (
+    <PicrDrawer
+      title={t('folder.manageTitle', {
+        folder: normalizeDisplayName(folder.name),
+      })}
+      onClose={onClose}
+    >
+      <ManageFolder folder={folder} />
+    </PicrDrawer>
+  );
+};
 
 export const ManageFolderDrawerLoading = ({
   folderName,
@@ -26,13 +32,18 @@ export const ManageFolderDrawerLoading = ({
 }: {
   folderName: string;
   onClose: () => void;
-}) => (
-  <PicrDrawer
-    title={`Manage: ${normalizeDisplayName(folderName)}`}
-    onClose={onClose}
-  >
-    <Center py="xl">
-      <LoadingIndicator />
-    </Center>
-  </PicrDrawer>
-);
+}) => {
+  const { t } = useTranslation('admin');
+  return (
+    <PicrDrawer
+      title={t('folder.manageTitle', {
+        folder: normalizeDisplayName(folderName),
+      })}
+      onClose={onClose}
+    >
+      <Center py="xl">
+        <LoadingIndicator />
+      </Center>
+    </PicrDrawer>
+  );
+};

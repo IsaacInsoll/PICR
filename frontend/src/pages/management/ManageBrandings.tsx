@@ -31,10 +31,12 @@ import type { SocialLink } from '@shared/branding/socialLinkTypes';
 import { PrimaryColor, ThemeMode } from '@shared/gql/graphql';
 import { normalizeFontKey } from '@shared/branding/fontRegistry';
 import { fontFamilies } from '../../fonts.generated';
-import { decodeFileSort, type FileSortType } from '@shared/files/sortFiles';
+import { decodeFileSort } from '@shared/files/sortFiles';
 import { TbLayoutGrid, TbList, TbPhoto } from 'react-icons/tb';
 import { normalizeDisplayName } from '@shared/displayName';
 import styles from './ManageBrandings.module.css';
+import { useTranslation } from 'react-i18next';
+import type { AdminT } from '../../i18n/adminLabels';
 
 interface ManageBrandingsProps {
   selectedBrandingId?: string | null;
@@ -49,6 +51,7 @@ export const ManageBrandings = ({
   onCreateBranding,
   onCloseBranding,
 }: ManageBrandingsProps) => {
+  const { t } = useTranslation('admin');
   const [result, reQuery] = useQuery({ query: viewBrandingsQuery });
   const [localBrandingId, setLocalBrandingId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -131,16 +134,19 @@ export const ManageBrandings = ({
               <TextInput
                 value={search}
                 onChange={(event) => setSearch(event.currentTarget.value)}
-                placeholder="Search branding"
+                placeholder={t('branding.list.search')}
                 leftSection={<SearchIcon />}
                 style={{ flexGrow: 1, maxWidth: 420 }}
               />
               <Text size="sm" c="dimmed" pb={6}>
-                {filteredBrandings.length} of {brandings.length}
+                {t('branding.list.filteredCount', {
+                  visible: filteredBrandings.length,
+                  total: brandings.length,
+                })}
               </Text>
             </Group>
             <Button onClick={createBranding} leftSection={<BrandingIcon />}>
-              Add Branding
+              {t('branding.list.add')}
             </Button>
           </Group>
           {filteredBrandings.length > 0 ? (
@@ -156,7 +162,7 @@ export const ManageBrandings = ({
           ) : (
             <Paper withBorder p="lg" radius="md">
               <Text c="dimmed" ta="center">
-                No branding presets match this search.
+                {t('branding.list.empty')}
               </Text>
             </Paper>
           )}
@@ -170,24 +176,10 @@ const NEW_ITEM_SLUG = 'new';
 
 const ALL_VIEWS = ['list', 'gallery', 'feed'] as const;
 
-const viewLabels: Record<string, string> = {
-  feed: 'Feed',
-  gallery: 'Gallery',
-  list: 'List',
-};
-
 const viewIcons: Record<string, typeof TbLayoutGrid> = {
   feed: TbPhoto,
   gallery: TbLayoutGrid,
   list: TbList,
-};
-
-const sortTypeLabels: Record<FileSortType, string> = {
-  DateTaken: 'Date taken',
-  Filename: 'Filename',
-  LastModified: 'Modified',
-  Rating: 'Rating',
-  RecentlyCommented: 'Commented',
 };
 
 const BrandingCard = ({
@@ -197,6 +189,7 @@ const BrandingCard = ({
   branding: BrandingRow;
   onSelect: () => void;
 }) => {
+  const { t } = useTranslation('admin');
   const mode = branding.mode ?? ThemeMode.Auto;
   const primaryColor = branding.primaryColor ?? PrimaryColor.Blue;
   const headingFontKey = normalizeFontKey(branding.headingFontKey);
@@ -238,7 +231,7 @@ const BrandingCard = ({
         <Group justify="space-between" align="center" wrap="nowrap">
           <Box style={{ minWidth: 0 }}>
             <Text fw={700} size="lg" truncate style={{ fontFamily }}>
-              {branding.name || 'Unnamed branding'}
+              {branding.name || t('branding.list.unnamed')}
             </Text>
           </Box>
           <Group
@@ -257,11 +250,11 @@ const BrandingCard = ({
               color="gray"
               leftSection={<DefaultViewIcon size={12} />}
             >
-              {viewLabel(defaultView)}
+              {viewLabel(defaultView, t)}
             </Badge>
             {branding.defaultFileSort ? (
               <Badge variant="outline" color="gray">
-                {sortLabel(branding)}
+                {sortLabel(branding, t)}
               </Badge>
             ) : null}
           </Group>
@@ -282,8 +275,12 @@ const ThemeModeIndicator = ({
   primaryColor: PrimaryColor;
   swatchColor: string;
 }) => {
+  const { t } = useTranslation('admin');
   const ModeIcon = modeIcons[mode];
-  const tooltip = `${modeLabels[mode]} background, ${primaryColor} featured color`;
+  const tooltip = t('branding.list.themeSummary', {
+    mode: t(`branding.mode.${mode}`),
+    color: primaryColor,
+  });
 
   return (
     <Tooltip label={tooltip}>
@@ -306,17 +303,12 @@ const modeIcons = {
   [ThemeMode.Dark]: DarkModeOutlineIcon,
 };
 
-const modeLabels = {
-  [ThemeMode.Auto]: 'Auto',
-  [ThemeMode.Light]: 'Light',
-  [ThemeMode.Dark]: 'Dark',
-};
-
 const FolderSummaryChips = ({ branding }: { branding: BrandingRow }) => {
+  const { t } = useTranslation('admin');
   if (branding.folders.length === 0) {
     return (
       <Text size="xs" c="dimmed">
-        No folders
+        {t('branding.list.noFolders')}
       </Text>
     );
   }
@@ -333,7 +325,7 @@ const FolderSummaryChips = ({ branding }: { branding: BrandingRow }) => {
       ))}
       {extraCount > 0 ? (
         <Badge variant="light" color="gray" fw={500}>
-          + {extraCount} more
+          {t('branding.list.more', { count: extraCount })}
         </Badge>
       ) : null}
     </Group>
@@ -356,11 +348,16 @@ const brandingSearchText = (branding: BrandingRow) =>
     .join(' ')
     .toLowerCase();
 
-const viewLabel = (view: string) => viewLabels[view] ?? view;
+const viewLabel = (view: string, t: AdminT) =>
+  view === 'list' || view === 'gallery' || view === 'feed'
+    ? t(`branding.view.${view}`)
+    : view;
 
-const sortLabel = (branding: BrandingRow) => {
-  if (!branding.defaultFileSort) return 'App default';
+const sortLabel = (branding: BrandingRow, t: AdminT) => {
+  if (!branding.defaultFileSort) return t('branding.sort.appDefault');
   const sort = decodeFileSort(branding.defaultFileSort);
-  const direction = sort.direction === 'Asc' ? 'asc' : 'desc';
-  return `${sortTypeLabels[sort.type]} ${direction}`;
+  return t('branding.sort.summary', {
+    type: t(`branding.sort.type.${sort.type}`),
+    direction: t(`branding.sort.direction.${sort.direction}`),
+  });
 };

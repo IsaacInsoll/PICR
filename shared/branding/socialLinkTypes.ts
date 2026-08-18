@@ -15,45 +15,49 @@ export type SocialLinkTypeKey =
 
 export interface SocialLinkTypeDefinition {
   key: SocialLinkTypeKey;
-  label: string;
+  defaultTitle: string;
   domains?: string[];
   prefixes?: string[];
 }
 
 export const SOCIAL_LINK_TYPES: SocialLinkTypeDefinition[] = [
-  { key: 'instagram', label: 'Instagram', domains: ['instagram.com'] },
+  { key: 'instagram', defaultTitle: 'Instagram', domains: ['instagram.com'] },
   {
     key: 'facebook',
-    label: 'Facebook',
+    defaultTitle: 'Facebook',
     domains: ['facebook.com', 'fb.com', 'fb.me'],
   },
-  { key: 'tiktok', label: 'TikTok', domains: ['tiktok.com'] },
+  { key: 'tiktok', defaultTitle: 'TikTok', domains: ['tiktok.com'] },
   {
     key: 'youtube',
-    label: 'YouTube',
+    defaultTitle: 'YouTube',
     domains: ['youtube.com', 'youtu.be'],
   },
-  { key: 'twitter', label: 'Twitter / X', domains: ['twitter.com', 'x.com'] },
+  {
+    key: 'twitter',
+    defaultTitle: 'Twitter / X',
+    domains: ['twitter.com', 'x.com'],
+  },
   {
     key: 'pinterest',
-    label: 'Pinterest',
+    defaultTitle: 'Pinterest',
     domains: ['pinterest.com', 'pin.it'],
   },
-  { key: 'linkedin', label: 'LinkedIn', domains: ['linkedin.com'] },
+  { key: 'linkedin', defaultTitle: 'LinkedIn', domains: ['linkedin.com'] },
   {
     key: 'whatsapp',
-    label: 'WhatsApp',
+    defaultTitle: 'WhatsApp',
     domains: ['wa.me', 'whatsapp.com'],
   },
-  { key: 'vimeo', label: 'Vimeo', domains: ['vimeo.com'] },
+  { key: 'vimeo', defaultTitle: 'Vimeo', domains: ['vimeo.com'] },
   {
     key: 'google_review',
-    label: 'Google Review',
+    defaultTitle: 'Google Review',
     domains: ['g.page', 'maps.google.com', 'google.com/maps', 'goo.gl/maps'],
   },
-  { key: 'email', label: 'Email', prefixes: ['mailto:'] },
-  { key: 'phone', label: 'Phone / Call', prefixes: ['tel:'] },
-  { key: 'website', label: 'Website' }, // catch-all / fallback
+  { key: 'email', defaultTitle: 'Email', prefixes: ['mailto:'] },
+  { key: 'phone', defaultTitle: 'Phone / Call', prefixes: ['tel:'] },
+  { key: 'website', defaultTitle: 'Website' }, // catch-all / fallback
 ];
 
 export interface SocialLink {

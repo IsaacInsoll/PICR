@@ -37,8 +37,10 @@ import { defaultBranding } from '../helpers/defaultBranding';
 import type { PicrFolder } from '@shared/types/picr';
 import type { BrandingInput } from './management/BrandingForm';
 import type { SocialLink } from '@shared/branding/socialLinkTypes';
+import { useTranslation } from 'react-i18next';
 
 export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
+  const { t } = useTranslation('admin');
   const { folderId, tab } = useParams();
   const navigate = useNavigate();
   const [, mutate] = useMutation(editFolderMutation);
@@ -78,13 +80,13 @@ export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
     <Tabs value={tab ?? 'folder'} onChange={setActiveTab}>
       <Tabs.List>
         <Tabs.Tab value="folder" leftSection={<FolderIcon />}>
-          Folder
+          {t('folder.tabs.folder')}
         </Tabs.Tab>
         <Tabs.Tab value="links" leftSection={<PublicLinkIcon />}>
-          Links
+          {t('folder.tabs.links')}
         </Tabs.Tab>
         <Tabs.Tab value="logs" leftSection={<AccessLogsIcon />}>
-          Access Logs
+          {t('folder.tabs.accessLogs')}
         </Tabs.Tab>
       </Tabs.List>
       <Tabs.Panel value="folder">
@@ -92,22 +94,22 @@ export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
           <Paper p="lg" radius="md" withBorder>
             <Stack gap="sm">
               <Text fw={600} size="sm" c="dimmed">
-                Folder Details
+                {t('folder.details')}
               </Text>
               <TextInput
-                label="Title"
-                placeholder={folder.name ?? 'Optional folder title'}
+                label={t('folder.title')}
+                placeholder={folder.name ?? t('folder.titlePlaceholder')}
                 value={title}
                 onChange={(e) => setTitle(e.currentTarget.value)}
               />
               <TextInput
-                label="Subtitle"
-                placeholder="Optional folder subtitle"
+                label={t('folder.subtitle')}
+                placeholder={t('folder.subtitlePlaceholder')}
                 value={subtitle}
                 onChange={(e) => setSubtitle(e.currentTarget.value)}
               />
               <Button loading={saving} onClick={onSave} disabled={!isDirty}>
-                Save
+                {t('common.save')}
               </Button>
               <ErrorAlert message={error} />
             </Stack>
@@ -115,7 +117,7 @@ export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
           <Paper p="lg" radius="md" withBorder>
             <Stack gap="sm">
               <Text fw={600} size="sm" c="dimmed">
-                Branding
+                {t('settings.tabs.branding')}
               </Text>
               <BrandingSelector folder={folder} />
             </Stack>
@@ -139,6 +141,7 @@ export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
 };
 
 const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
+  const { t } = useTranslation('admin');
   const { folderId } = useParams();
   const navigate = useNavigate();
   const setEditBranding = useSetAtom(editBrandingAtom);
@@ -153,9 +156,12 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
   const isInherited = !folder.brandingId && inheritedBranding?.id !== '0';
 
   const options = [
-    { value: '', label: 'None (inherit from parent)' },
-    { value: '__create__', label: '+ Create new branding...' },
-    ...brandings.map((b) => ({ value: b.id, label: b.name ?? 'Unnamed' })),
+    { value: '', label: t('folder.branding.inherit') },
+    { value: '__create__', label: t('folder.branding.create') },
+    ...brandings.map((b) => ({
+      value: b.id,
+      label: b.name ?? t('common.unnamed'),
+    })),
   ];
 
   const selectedBranding = currentBrandingId
@@ -212,8 +218,8 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
     <>
       <Group align="flex-end" gap="xs">
         <Select
-          label="Branding"
-          placeholder="Select a branding"
+          label={t('settings.tabs.branding')}
+          placeholder={t('folder.branding.select')}
           data={options}
           value={currentBrandingId}
           onChange={onBrandingChange}
@@ -223,7 +229,7 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
           allowDeselect={false}
           style={{ flex: 1 }}
         />
-        <Tooltip label="Edit branding">
+        <Tooltip label={t('folder.branding.edit')}>
           <ActionIcon
             variant="default"
             size="lg"
@@ -236,7 +242,9 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
       </Group>
       {isInherited ? (
         <Text size="xs" c="dimmed">
-          Currently inheriting: {inheritedBranding?.name ?? 'Default'}
+          {t('folder.branding.currentlyInheriting', {
+            name: inheritedBranding?.name ?? t('folder.branding.default'),
+          })}
         </Text>
       ) : null}
     </>

@@ -11,9 +11,11 @@ import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import { useMe } from '../../hooks/useMe';
 import type { AllFoldersRow } from '@shared/types/queryRows';
 import {
-  validateFolderName,
+  validateFolderNameCode,
   validateRelativePath,
 } from '@shared/validation/folderPath';
+import { useTranslation } from 'react-i18next';
+import type { AdminT } from '../../i18n/adminLabels';
 
 export const MoveRenameFolderModal = ({
   folder,
@@ -24,12 +26,15 @@ export const MoveRenameFolderModal = ({
   opened: boolean;
   onClose: () => void;
 }) => {
+  const { t } = useTranslation('admin');
   const isMobile = useIsSmallScreen();
   return (
     <Modal
       opened={opened}
       onClose={onClose}
-      title={`Move/Rename Folder: ${normalizeDisplayName(folder.name)}`}
+      title={t('folder.moveRename.title', {
+        folder: normalizeDisplayName(folder.name),
+      })}
       centered
       fullScreen={isMobile}
       overlayProps={{ blur: 3 }}
@@ -125,6 +130,7 @@ const MoveRenameFolderModalForm = ({
   initialName: string;
   onClose: () => void;
 }) => {
+  const { t } = useTranslation('admin');
   const [, mutate] = useMutation(renameFolderMutation);
   const me = useMe();
   const [name, setName] = useState(initialName);
@@ -145,6 +151,7 @@ const MoveRenameFolderModalForm = ({
         newPath,
         trimmedName,
         me,
+        t,
       }),
     [
       foldersList,
@@ -154,6 +161,7 @@ const MoveRenameFolderModalForm = ({
       newPath,
       trimmedName,
       me,
+      t,
     ],
   );
 
@@ -188,18 +196,18 @@ const MoveRenameFolderModalForm = ({
     <Stack>
       {submitting ? <ModalLoadingIndicator /> : null}
       <TextInput
-        label="Folder name"
+        label={t('folder.moveRename.name')}
         value={name}
         onChange={(event) => setName(event.currentTarget.value)}
       />
       <FolderSelector
         folder={parentFolder}
         setFolder={handleParentChange}
-        label="Parent folder"
-        description="Move this folder under the selected parent"
+        label={t('folder.moveRename.parent')}
+        description={t('folder.moveRename.parentDescription')}
       />
       <Text size="sm" c="dimmed">
-        New path: {newPath || '--'}
+        {t('folder.moveRename.newPath', { path: newPath || '--' })}
       </Text>
       {validationError ? (
         <Text size="sm" c="red">
@@ -213,10 +221,10 @@ const MoveRenameFolderModalForm = ({
       ) : null}
       <Group justify="end">
         <Button variant="default" onClick={onClose}>
-          Cancel
+          {t('common.cancel')}
         </Button>
         <Button onClick={handleSubmit} disabled={!canSubmit}>
-          Move/Rename
+          {t('folder.moveRename.action')}
         </Button>
       </Group>
     </Stack>
@@ -260,6 +268,7 @@ const validateMoveRename = ({
   newPath,
   trimmedName,
   me,
+  t,
 }: {
   foldersList: PicrFolder[];
   currentFolder: PicrFolder;
@@ -268,6 +277,7 @@ const validateMoveRename = ({
   newPath: string;
   trimmedName: string;
   me?: ReturnType<typeof useMe>;
+  t: AdminT;
 }) => {
   const isSelfParent = parentFolder?.id === currentFolder.id;
   const isDescendant =
@@ -283,52 +293,52 @@ const validateMoveRename = ({
     );
 
   if (!me) {
-    return 'Login required.';
+    return t('folder.moveRename.validation.loginRequired');
   }
   if (!me.isAdmin) {
-    return 'Admin permissions required.';
+    return t('folder.moveRename.validation.adminRequired');
   }
   if (!me.clientInfo.canWrite) {
-    return 'Server is read-only.';
+    return t('folder.moveRename.validation.readOnly');
   }
   if (currentFolder.id === '1' || currentFolder.parentId == null) {
-    return 'Root folders cannot be moved or renamed.';
+    return t('folder.moveRename.validation.rootFolder');
   }
   if (me.folderId && currentFolder.id === me.folderId) {
-    return 'Your root folder cannot be moved or renamed.';
+    return t('folder.moveRename.validation.accountRoot');
   }
   if (oldPath.length === 0) {
-    return 'Folder path unavailable for this account.';
+    return t('folder.moveRename.validation.pathUnavailable');
   }
   if (validateRelativePath(oldPath)) {
-    return 'Folder path invalid.';
+    return t('folder.moveRename.validation.pathInvalid');
   }
   if (!parentFolder) {
-    return 'Select a parent folder.';
+    return t('folder.moveRename.validation.selectParent');
   }
   if (
     me.folderId &&
     parentFolder.id !== me.folderId &&
     !(parentFolder.parents ?? []).some((p) => p.id === me.folderId)
   ) {
-    return 'Select a parent within your root folder.';
+    return t('folder.moveRename.validation.parentOutsideRoot');
   }
-  const nameError = validateFolderName(trimmedName);
-  if (nameError) return nameError;
+  const nameError = validateFolderNameCode(trimmedName);
+  if (nameError) return t(`folder.moveRename.validation.name.${nameError}`);
   if (validateRelativePath(newPath, { requireNonEmpty: true })) {
-    return 'Folder path invalid.';
+    return t('folder.moveRename.validation.pathInvalid');
   }
   if (isSelfParent) {
-    return 'Choose a parent folder that is not this folder.';
+    return t('folder.moveRename.validation.selfParent');
   }
   if (isDescendant) {
-    return 'Cannot move a folder into its own subfolder.';
+    return t('folder.moveRename.validation.descendant');
   }
   if (hasNameConflict) {
-    return 'A folder with this name already exists in that location.';
+    return t('folder.moveRename.validation.conflict');
   }
   if (oldPath === newPath) {
-    return 'No changes to apply.';
+    return t('folder.moveRename.validation.noChanges');
   }
   return null;
 };

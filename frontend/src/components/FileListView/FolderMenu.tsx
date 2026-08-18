@@ -34,7 +34,7 @@ export const FolderMenuItems = ({
   onCsvExport,
   onBranding,
 }: FolderMenuItemsProps) => {
-  const { t } = useTranslation('gallery');
+  const { t } = useTranslation(['gallery', 'admin']);
   const folderName = normalizeDisplayName(folder.name);
   const openLink = useFolderLink(folder);
   const activityLink = useFolderLink(folder, 'activity');
@@ -83,13 +83,16 @@ export const FolderMenuItems = ({
       {me?.isUser ? (
         <>
           <Menu.Divider />
-          <Menu.Label>Admin</Menu.Label>
+          <Menu.Label>{t('folder.admin', { ns: 'admin' })}</Menu.Label>
           <PicrMenuItem
             leftSection={<ManageFolderIcon size="20" />}
             key="manage"
             to={manageLink.to}
           >
-            Manage {folderName}
+            {t('folder.manageNamed', {
+              ns: 'admin',
+              folder: folderName,
+            })}
           </PicrMenuItem>
           {me.isAdmin && me.clientInfo.canWrite ? (
             <Menu.Item
@@ -97,7 +100,7 @@ export const FolderMenuItems = ({
               key="move"
               onClick={() => openMoveModal(folder)}
             >
-              Move/Rename Folder
+              {t('folder.moveRename.action', { ns: 'admin' })}
             </Menu.Item>
           ) : null}
           {onCsvExport ? (
@@ -105,7 +108,7 @@ export const FolderMenuItems = ({
               leftSection={<CsvExportIcon size={20} />}
               onClick={onCsvExport}
             >
-              CSV Export
+              {t('folder.csv.action', { ns: 'admin' })}
             </Menu.Item>
           ) : null}
           {onBranding ? (
@@ -114,8 +117,8 @@ export const FolderMenuItems = ({
               onClick={onBranding}
             >
               {folder.branding && folder.branding.id !== '0'
-                ? 'Edit Branding'
-                : 'Add Branding'}
+                ? t('folder.branding.edit', { ns: 'admin' })
+                : t('folder.branding.add', { ns: 'admin' })}
             </Menu.Item>
           ) : null}
         </>

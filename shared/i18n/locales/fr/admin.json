@@ -148,7 +148,317 @@
     },
     "passcodeSet": "Défini",
     "passcodeProtected": "protégé par un code d’accès",
-    "noPasscode": "sans code d’accès"
+    "noPasscode": "sans code d’accès",
+    "includeParents": "Inclure les liens des dossiers parents",
+    "includeParentsShort": "Parents",
+    "includeChildren": "Inclure les liens des sous-dossiers",
+    "includeChildrenShort": "Sous-dossiers",
+    "create": "Créer un lien",
+    "empty": "Aucun lien public trouvé",
+    "search": "Rechercher des liens publics",
+    "copied": "Lien public copié",
+    "copy": "Copier le lien public",
+    "mode": {
+      "label": "Mode du lien",
+      "finalDelivery": "Livraison finale",
+      "proofsOnly": "Épreuves uniquement",
+      "downloadsAllowed": "Téléchargements autorisés",
+      "noDownloads": "Aucun téléchargement",
+      "finalDeliveryDescription": "Les clients peuvent télécharger les fichiers depuis ce lien.",
+      "proofsOnlyDescription": "Les clients peuvent examiner les fichiers, mais pas les télécharger."
+    },
+    "comments": {
+      "label": "Commentaires",
+      "none": "Aucun",
+      "read": "Lecture",
+      "edit": "Modification",
+      "noneDescription": "Les commentaires sont masqués.",
+      "readDescription": "Les commentaires existants sont visibles, mais aucun nouveau commentaire ne peut être ajouté.",
+      "editDescription": "Les commentaires sont visibles et de nouveaux commentaires peuvent être ajoutés."
+    },
+    "editor": {
+      "title": "Gérer le lien public pour",
+      "publicUrl": "URL publique",
+      "publicLink": "Identifiant du lien public",
+      "publicLinkDescription": "La partie secrète de l’URL transmise à votre client",
+      "idPlaceholder": "identifiant-du-lien",
+      "cannotUse": "Caractères interdits :",
+      "space": "espace",
+      "minimumLength": "Utilisez au moins 6 caractères",
+      "generatePretty": "Générer un identifiant lisible",
+      "generateRandom": "Générer un identifiant aléatoire",
+      "recipient": "Destinataire",
+      "email": "E-mail",
+      "optional": "Facultatif",
+      "passcode": "Code d’accès à la galerie",
+      "enabledDescription": "Ce lien peut-il être utilisé ?",
+      "nameRequired": "Saisissez un nom pour ce lien",
+      "deleteTitle": "Supprimer le lien public",
+      "deleteConfirmation": "Voulez-vous vraiment supprimer ce lien public ? Il cessera immédiatement de fonctionner."
+    }
+  },
+  "folder": {
+    "tabs": {
+      "folder": "Dossier",
+      "links": "Liens",
+      "accessLogs": "Journal des accès"
+    },
+    "details": "Détails du dossier",
+    "title": "Titre de la galerie",
+    "titlePlaceholder": "Nom du dossier",
+    "subtitle": "Sous-titre de la galerie",
+    "subtitlePlaceholder": "Sous-titre facultatif",
+    "manageTitle": "Gérer le dossier : {{folder}}",
+    "view": "Afficher le dossier",
+    "manage": "Gérer le dossier",
+    "admin": "Administration",
+    "manageNamed": "Gérer {{folder}}",
+    "selector": {
+      "label": "Dossier",
+      "description": "Cet utilisateur peut gérer les liens publics et les autres utilisateurs sous ce dossier",
+      "placeholder": "Nom du dossier"
+    },
+    "branding": {
+      "inherit": "Hériter du dossier parent",
+      "create": "Créer une nouvelle identité visuelle",
+      "add": "Ajouter une identité visuelle",
+      "select": "Sélectionner une identité visuelle",
+      "edit": "Modifier l’identité visuelle sélectionnée",
+      "currentlyInheriting": "Hérite actuellement de {{name}}",
+      "default": "l’identité visuelle par défaut",
+      "thisFolder": "ce dossier",
+      "modalTitle": "Identité visuelle du dossier",
+      "inheritedDescription": "<strong>{{folder}}</strong> ne possède pas sa propre identité visuelle. Il hérite actuellement de <strong>{{branding}}</strong>.",
+      "createFor": "Créer une identité visuelle pour {{folder}}",
+      "editNamed": "Modifier {{branding}}",
+      "editWarning": "Cette modification affectera tous les dossiers qui utilisent {{branding}}."
+    },
+    "scan": {
+      "action": "Analyser le dossier",
+      "settling": "Analyse du dossier en attente",
+      "settlingDescription": "PICR recherche les modifications dans ce dossier.",
+      "complete": "Analyse du dossier terminée",
+      "completeDescription": "PICR a terminé l’analyse de ce dossier."
+    },
+    "thumbnails": {
+      "generate_one": "Générer la miniature",
+      "generate_other": "Générer les miniatures"
+    },
+    "moveRename": {
+      "title": "Déplacer ou renommer le dossier : {{folder}}",
+      "name": "Nom du dossier",
+      "parent": "Dossier parent",
+      "parentDescription": "Déplacer ce dossier sous le parent sélectionné",
+      "newPath": "Nouveau chemin : {{path}}",
+      "action": "Déplacer/Renommer",
+      "validation": {
+        "loginRequired": "Connexion requise.",
+        "adminRequired": "Droits d’administration requis.",
+        "readOnly": "Le serveur est en lecture seule.",
+        "rootFolder": "Les dossiers racines ne peuvent pas être déplacés ou renommés.",
+        "accountRoot": "Votre dossier racine ne peut pas être déplacé ou renommé.",
+        "pathUnavailable": "Le chemin du dossier n’est pas disponible pour ce compte.",
+        "pathInvalid": "Le chemin du dossier est invalide.",
+        "selectParent": "Sélectionnez un dossier parent.",
+        "parentOutsideRoot": "Sélectionnez un parent situé dans votre dossier racine.",
+        "selfParent": "Choisissez un dossier parent différent de ce dossier.",
+        "descendant": "Impossible de déplacer un dossier dans l’un de ses sous-dossiers.",
+        "conflict": "Un dossier portant ce nom existe déjà à cet emplacement.",
+        "noChanges": "Aucune modification à appliquer.",
+        "name": {
+          "required": "Le nom du dossier est requis.",
+          "forwardSlash": "Le nom du dossier ne peut pas contenir de barre oblique.",
+          "backslash": "Le nom du dossier ne peut pas contenir de barre oblique inverse.",
+          "invalid": "Le nom du dossier est invalide."
+        }
+      }
+    },
+    "csv": {
+      "title": "Exporter les noms de fichiers",
+      "action": "Exporter les noms de fichiers",
+      "formatLabel": "Format d’exportation",
+      "format": {
+        "picr": "CSV pour le module PICR (nom, note, marqueur)",
+        "comma": "Lightroom (séparé par des virgules)",
+        "space": "Capture One et Photo Mechanic (séparé par des espaces)"
+      },
+      "pluginPrefix": "Importez ces données dans Lightroom Classic à l’aide du",
+      "pluginName": "module Lightroom PICR",
+      "excludeExtensions": "Exclure les extensions de fichiers",
+      "useFilters": "Utiliser les filtres actuels",
+      "includeSubfolders": "Inclure les sous-dossiers",
+      "includeSubfoldersDescription": "Exporter tous les fichiers de l’arborescence (10 000 maximum)",
+      "loading": "Chargement…",
+      "loadError": "Impossible de charger les fichiers des sous-dossiers.",
+      "loadingSubfolders": "Chargement des fichiers des sous-dossiers…",
+      "loaded": "{{returned}} fichiers chargés sur {{available}}{{truncated}}",
+      "truncated": " (liste tronquée)",
+      "noFiles": "Aucun fichier trouvé.",
+      "previewCount_one": "{{count}} fichier dans l’aperçu d’exportation",
+      "previewCount_other": "{{count}} fichiers dans l’aperçu d’exportation",
+      "empty": "Aucun fichier à exporter pour le moment.",
+      "copy": "Copier dans le presse-papiers",
+      "download": "Télécharger"
+    },
+    "banner": {
+      "title": "Définir l’image de bannière",
+      "edit": "Modifier la bannière",
+      "clear": "Effacer l’image de bannière",
+      "setHero": "Définir comme image principale",
+      "setHeroOrBanner": "Définir comme image principale ou bannière",
+      "setImage": "Définir comme image de bannière",
+      "changeSize": "Modifier la taille de la bannière",
+      "textPosition": "Position du texte",
+      "mobilePreview": "Aperçu sur mobile",
+      "position": {
+        "top": {
+          "left": "En haut à gauche",
+          "center": "En haut au centre",
+          "right": "En haut à droite"
+        },
+        "center": {
+          "left": "Au milieu à gauche",
+          "center": "Au centre",
+          "right": "Au milieu à droite"
+        },
+        "bottom": {
+          "left": "En bas à gauche",
+          "center": "En bas au centre",
+          "right": "En bas à droite"
+        }
+      },
+      "size": {
+        "classic": "Classique",
+        "widescreen": "Écran large",
+        "cinematic": "Cinématographique",
+        "full": "Plein écran"
+      },
+      "sizeDescription": {
+        "classic": "Haute et immersive",
+        "widescreen": "Format paysage équilibré",
+        "cinematic": "Large et compacte",
+        "full": "Remplit l’écran"
+      }
+    }
+  },
+  "branding": {
+    "appliedTo": "Appliquée à :",
+    "outsideScope": "Ce dossier se trouve hors de votre périmètre d’accès",
+    "view": { "list": "Liste", "gallery": "Galerie", "feed": "Fil" },
+    "mode": {
+      "label": "Thème",
+      "auto": "Auto",
+      "light": "Clair",
+      "dark": "Sombre",
+      "description": "<code>Auto</code> signifie <emphasis>utiliser le réglage de l’appareil de l’utilisateur</emphasis>."
+    },
+    "layout": { "justified": "Lignes fixes", "masonry": "Colonnes fixes" },
+    "headingAlignment": { "left": "À gauche", "center": "Centré" },
+    "sort": {
+      "label": "Tri par défaut",
+      "description": "Ordre de tri initial à l’ouverture de la galerie. Les visiteurs peuvent toujours le modifier.",
+      "appDefault": "Valeur par défaut de l’application",
+      "appDefaultFilename": "Valeur par défaut (nom de fichier)",
+      "summary": "{{type}} — {{direction}}",
+      "type": {
+        "Filename": "Nom de fichier",
+        "LastModified": "Modification",
+        "DateTaken": "Date de prise de vue",
+        "Rating": "Note",
+        "RecentlyCommented": "Commentaires récents"
+      },
+      "direction": { "Asc": "Croissant", "Desc": "Décroissant" }
+    },
+    "list": {
+      "search": "Rechercher une identité visuelle",
+      "filteredCount": "{{visible}} sur {{total}}",
+      "add": "Ajouter une identité visuelle",
+      "empty": "Aucune identité visuelle ne correspond à cette recherche.",
+      "unnamed": "Identité visuelle sans nom",
+      "themeSummary": "Fond {{mode}}, couleur principale {{color}}",
+      "noFolders": "Aucun dossier",
+      "more_one": "+ {{count}} de plus",
+      "more_other": "+ {{count}} de plus"
+    },
+    "drawer": {
+      "createTitle": "Créer une identité visuelle",
+      "editTitle": "Modifier l’identité visuelle : {{name}}",
+      "previewGallery": "Prévisualiser la galerie",
+      "showOverlay": "Afficher le fond",
+      "create": "Créer"
+    },
+    "form": {
+      "tabs": {
+        "branding": "Identité visuelle",
+        "gallery": "Apparence de la galerie",
+        "footer": "Pied de page"
+      },
+      "identity": "Identité",
+      "name": "Nom",
+      "namePlaceholder": "Nom de l’identité visuelle",
+      "logoUrl": "URL du logo",
+      "theme": "Thème",
+      "views": "Vues",
+      "availableViews": "Vues disponibles",
+      "availableViewsDescription": "Limitez les vues accessibles aux utilisateurs d’un lien. Les administrateurs voient toujours toutes les vues.",
+      "defaultView": "Vue par défaut",
+      "defaultViewDescription": "Vue affichée à l’ouverture de la galerie par les utilisateurs d’un lien",
+      "galleryStyling": "Style de la galerie",
+      "galleryLayout": "Disposition de la galerie",
+      "galleryLayoutDescription": "Les lignes fixes recadrent les vignettes en rangées alignées. Les colonnes fixes préservent les proportions de chaque image dans une disposition en mosaïque.",
+      "thumbnailSize": "Taille des miniatures",
+      "thumbnailSpacing": "Espacement des miniatures",
+      "thumbnailBorderRadius": "Arrondi des miniatures",
+      "typography": "Typographie",
+      "headingSize": "Taille des titres",
+      "headingAlignment": "Alignement des titres",
+      "business": "Entreprise",
+      "businessName": "Nom de l’entreprise",
+      "businessNamePlaceholder": "Nom de votre studio",
+      "websiteUrl": "URL du site web",
+      "socialLinks": "Liens sociaux",
+      "addLink": "Ajouter un lien",
+      "custom": "Personnalisé",
+      "color": "Couleur"
+    },
+    "social": {
+      "willSaveAs": "Sera enregistré sous : {{value}}",
+      "labelPlaceholder": "Libellé (p. ex. Suivez-nous)",
+      "newTab": "Nouvel onglet",
+      "moveUp": "Monter",
+      "moveDown": "Descendre",
+      "remove": "Supprimer"
+    },
+    "socialType": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "youtube": "YouTube",
+      "twitter": "Twitter / X",
+      "pinterest": "Pinterest",
+      "linkedin": "LinkedIn",
+      "whatsapp": "WhatsApp",
+      "vimeo": "Vimeo",
+      "google_review": "Avis Google",
+      "email": "E-mail",
+      "phone": "Téléphone / Appel",
+      "website": "Site web"
+    },
+    "socialPlaceholder": {
+      "instagram": "votrestudio ou https://instagram.com/votrestudio",
+      "facebook": "votrepage ou https://facebook.com/votrepage",
+      "tiktok": "votreidentifiant ou https://tiktok.com/@votreidentifiant",
+      "youtube": "https://youtube.com/@votrechaine",
+      "twitter": "votreidentifiant ou https://x.com/votreidentifiant",
+      "pinterest": "votrenom ou https://pinterest.com/votrenom",
+      "linkedin": "votrenom ou https://linkedin.com/in/votrenom",
+      "whatsapp": "33600111222 ou https://wa.me/33600111222",
+      "vimeo": "votrenom ou https://vimeo.com/votrenom",
+      "google_review": "Collez le lien vers vos avis",
+      "email": "vous@exemple.fr",
+      "phone": "+33600111222",
+      "website": "https://votrestudio.fr"
+    }
   },
   "accessLogs": {
     "empty": "Personne n’a encore utilisé de lien public pour consulter ce dossier",

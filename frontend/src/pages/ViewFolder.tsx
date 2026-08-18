@@ -58,7 +58,7 @@ import { GalleryFooter } from '../components/GalleryFooter';
 import { DownloadZipButton } from '../components/DownloadZipButton';
 import { viewFolderModeFromFileId } from '../helpers/viewFolderMode';
 import { getUUID } from '../helpers/getUUID';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
 const LoggedInHeader = lazy(() =>
@@ -482,7 +482,7 @@ const FolderOverflowMenu = ({
   sortMenuInOverflow: boolean;
   hasCaptureDates: boolean;
 }) => {
-  const { t } = useTranslation('gallery');
+  const { t } = useTranslation(['gallery', 'admin']);
   const displayFolderName = normalizeDisplayName(folder.name);
   const setFiltering = useSetAtom(filterAtom);
   const setEditBranding = useSetAtom(editBrandingAtom);
@@ -577,8 +577,12 @@ const FolderOverflowMenu = ({
       <InheritedBrandingModal
         opened={inheritedDialogOpen}
         onClose={closeInheritedDialog}
-        folderName={displayFolderName ?? 'this folder'}
-        brandingName={folder.branding?.name ?? 'Unnamed'}
+        folderName={
+          displayFolderName ?? t('folder.branding.thisFolder', { ns: 'admin' })
+        }
+        brandingName={
+          folder.branding?.name ?? t('common.unnamed', { ns: 'admin' })
+        }
         onEditInherited={handleEditInherited}
         onCreateForFolder={handleCreateForFolder}
       />
@@ -600,27 +604,40 @@ const InheritedBrandingModal = ({
   brandingName: string;
   onEditInherited: () => void;
   onCreateForFolder: () => void;
-}) => (
-  <Modal opened={opened} onClose={onClose} title="Folder Branding" size="sm">
-    <Stack>
-      <Text>
-        <strong>{folderName}</strong> doesn&apos;t have its own branding. It
-        currently inherits <strong>{brandingName}</strong>.
-      </Text>
-      <Button onClick={onCreateForFolder}>
-        Create branding for {folderName}
-      </Button>
-      <Stack gap={4}>
-        <Button variant="default" onClick={onEditInherited}>
-          Edit {brandingName}
-        </Button>
-        <Text size="xs" c="dimmed">
-          This will affect all folders using {brandingName}.
+}) => {
+  const { t } = useTranslation('admin');
+
+  return (
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={t('folder.branding.modalTitle')}
+      size="sm"
+    >
+      <Stack>
+        <Text>
+          <Trans
+            t={t}
+            i18nKey="folder.branding.inheritedDescription"
+            values={{ folder: folderName, branding: brandingName }}
+            components={{ strong: <strong /> }}
+          />
         </Text>
+        <Button onClick={onCreateForFolder}>
+          {t('folder.branding.createFor', { folder: folderName })}
+        </Button>
+        <Stack gap={4}>
+          <Button variant="default" onClick={onEditInherited}>
+            {t('folder.branding.editNamed', { branding: brandingName })}
+          </Button>
+          <Text size="xs" c="dimmed">
+            {t('folder.branding.editWarning', { branding: brandingName })}
+          </Text>
+        </Stack>
+        <Button variant="subtle" onClick={onClose}>
+          {t('common.cancel')}
+        </Button>
       </Stack>
-      <Button variant="subtle" onClick={onClose}>
-        Cancel
-      </Button>
-    </Stack>
-  </Modal>
-);
+    </Modal>
+  );
+};

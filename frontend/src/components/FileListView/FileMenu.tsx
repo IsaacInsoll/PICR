@@ -29,7 +29,7 @@ import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 import { useTranslation } from 'react-i18next';
 
 export const FileMenu = ({ file }: { file: PicrFile }) => {
-  const { t } = useTranslation('gallery');
+  const { t } = useTranslation(['gallery', 'admin']);
   const fileName = normalizeDisplayName(file.name);
   const setSelectedFileId = useSelectedFileId(file.folderId ?? '');
   const { canView } = useCommentPermissions();
@@ -92,7 +92,7 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
               });
             }}
           >
-            Set as Hero Image
+            {t('folder.banner.setHero', { ns: 'admin' })}
           </Menu.Item>
           {canSetBanner ? (
             <Menu.Item
@@ -101,8 +101,8 @@ export const FileMenu = ({ file }: { file: PicrFile }) => {
               onClick={() => openBannerModal(file)}
             >
               {file.isBannerImage
-                ? 'Change Banner Size'
-                : 'Set as Banner Image'}
+                ? t('folder.banner.changeSize', { ns: 'admin' })
+                : t('folder.banner.setImage', { ns: 'admin' })}
             </Menu.Item>
           ) : null}
         </>

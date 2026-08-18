@@ -148,7 +148,317 @@
     },
     "passcodeSet": "Set",
     "passcodeProtected": "passcode password protected",
-    "noPasscode": "no passcode"
+    "noPasscode": "no passcode",
+    "includeParents": "Include links from parent folders",
+    "includeParentsShort": "Parents",
+    "includeChildren": "Include links from child folders",
+    "includeChildrenShort": "Children",
+    "create": "Create Link",
+    "empty": "No public links found",
+    "search": "Search public links",
+    "copied": "Public link copied",
+    "copy": "Copy public link",
+    "mode": {
+      "label": "Link mode",
+      "finalDelivery": "Final delivery",
+      "proofsOnly": "Proofs only",
+      "downloadsAllowed": "Downloads allowed",
+      "noDownloads": "No downloads",
+      "finalDeliveryDescription": "Clients can download files from this link.",
+      "proofsOnlyDescription": "Clients can review files, but cannot download them."
+    },
+    "comments": {
+      "label": "Comments",
+      "none": "None",
+      "read": "Read",
+      "edit": "Edit",
+      "noneDescription": "Comments are hidden.",
+      "readDescription": "Existing comments are visible, but new comments cannot be added.",
+      "editDescription": "Comments are visible and new comments can be added."
+    },
+    "editor": {
+      "title": "Manage public link for",
+      "publicUrl": "Public URL",
+      "publicLink": "Public link ID",
+      "publicLinkDescription": "The secret part of the URL shared with your client",
+      "idPlaceholder": "public-link-id",
+      "cannotUse": "Cannot use:",
+      "space": "space",
+      "minimumLength": "Use at least 6 characters",
+      "generatePretty": "Generate a readable link ID",
+      "generateRandom": "Generate a random link ID",
+      "recipient": "Recipient",
+      "email": "Email",
+      "optional": "Optional",
+      "passcode": "Gallery passcode",
+      "enabledDescription": "Can this link be used?",
+      "nameRequired": "Enter a name for this link",
+      "deleteTitle": "Delete Public Link",
+      "deleteConfirmation": "Are you sure you want to delete this public link? It will stop working immediately."
+    }
+  },
+  "folder": {
+    "tabs": {
+      "folder": "Folder",
+      "links": "Links",
+      "accessLogs": "Access Logs"
+    },
+    "details": "Folder details",
+    "title": "Gallery title",
+    "titlePlaceholder": "Folder name",
+    "subtitle": "Gallery subtitle",
+    "subtitlePlaceholder": "Optional subtitle",
+    "manageTitle": "Manage Folder: {{folder}}",
+    "view": "View folder",
+    "manage": "Manage folder",
+    "admin": "Administration",
+    "manageNamed": "Manage {{folder}}",
+    "selector": {
+      "label": "Folder",
+      "description": "This user can control public links and other users under this folder",
+      "placeholder": "Folder name"
+    },
+    "branding": {
+      "inherit": "Inherit from parent folder",
+      "create": "Create new branding",
+      "add": "Add branding",
+      "select": "Select branding",
+      "edit": "Edit selected branding",
+      "currentlyInheriting": "Currently inheriting {{name}}",
+      "default": "default branding",
+      "thisFolder": "this folder",
+      "modalTitle": "Folder Branding",
+      "inheritedDescription": "<strong>{{folder}}</strong> doesn't have its own branding. It currently inherits <strong>{{branding}}</strong>.",
+      "createFor": "Create branding for {{folder}}",
+      "editNamed": "Edit {{branding}}",
+      "editWarning": "This will affect all folders using {{branding}}."
+    },
+    "scan": {
+      "action": "Scan folder",
+      "settling": "Folder scan queued",
+      "settlingDescription": "PICR is checking this folder for changes.",
+      "complete": "Folder scan complete",
+      "completeDescription": "PICR finished checking this folder."
+    },
+    "thumbnails": {
+      "generate_one": "Generate thumbnail",
+      "generate_other": "Generate thumbnails"
+    },
+    "moveRename": {
+      "title": "Move/Rename Folder: {{folder}}",
+      "name": "Folder name",
+      "parent": "Parent folder",
+      "parentDescription": "Move this folder under the selected parent",
+      "newPath": "New path: {{path}}",
+      "action": "Move/Rename",
+      "validation": {
+        "loginRequired": "Login required.",
+        "adminRequired": "Admin permissions required.",
+        "readOnly": "Server is read-only.",
+        "rootFolder": "Root folders cannot be moved or renamed.",
+        "accountRoot": "Your root folder cannot be moved or renamed.",
+        "pathUnavailable": "Folder path unavailable for this account.",
+        "pathInvalid": "Folder path invalid.",
+        "selectParent": "Select a parent folder.",
+        "parentOutsideRoot": "Select a parent within your root folder.",
+        "selfParent": "Choose a parent folder that is not this folder.",
+        "descendant": "Cannot move a folder into its own subfolder.",
+        "conflict": "A folder with this name already exists in that location.",
+        "noChanges": "No changes to apply.",
+        "name": {
+          "required": "Folder name is required.",
+          "forwardSlash": "Folder name cannot contain a forward slash.",
+          "backslash": "Folder name cannot contain a backslash.",
+          "invalid": "Folder name is invalid."
+        }
+      }
+    },
+    "csv": {
+      "title": "Export filenames",
+      "action": "Export filenames",
+      "formatLabel": "Export format",
+      "format": {
+        "picr": "PICR plugin CSV (filename, rating, flag)",
+        "comma": "Lightroom (comma-separated)",
+        "space": "Capture One & Photo Mechanic (space-separated)"
+      },
+      "pluginPrefix": "Import this data into Lightroom Classic using the",
+      "pluginName": "PICR Lightroom Plugin",
+      "excludeExtensions": "Exclude file extensions",
+      "useFilters": "Use current filters",
+      "includeSubfolders": "Include subfolders",
+      "includeSubfoldersDescription": "Export all files within the folder tree (max 10,000)",
+      "loading": "Loading…",
+      "loadError": "Unable to load files from subfolders.",
+      "loadingSubfolders": "Loading files from subfolders…",
+      "loaded": "{{returned}} of {{available}} files loaded{{truncated}}",
+      "truncated": " (truncated)",
+      "noFiles": "No files found.",
+      "previewCount_one": "{{count}} file in export preview",
+      "previewCount_other": "{{count}} files in export preview",
+      "empty": "No files to export yet.",
+      "copy": "Copy to clipboard",
+      "download": "Download"
+    },
+    "banner": {
+      "title": "Set Banner Image",
+      "edit": "Edit banner",
+      "clear": "Clear banner image",
+      "setHero": "Set as Hero Image",
+      "setHeroOrBanner": "Set as Hero / Banner Image",
+      "setImage": "Set as Banner Image",
+      "changeSize": "Change Banner Size",
+      "textPosition": "Text position",
+      "mobilePreview": "Mobile preview",
+      "position": {
+        "top": {
+          "left": "Top left",
+          "center": "Top center",
+          "right": "Top right"
+        },
+        "center": {
+          "left": "Middle left",
+          "center": "Middle center",
+          "right": "Middle right"
+        },
+        "bottom": {
+          "left": "Bottom left",
+          "center": "Bottom center",
+          "right": "Bottom right"
+        }
+      },
+      "size": {
+        "classic": "Classic",
+        "widescreen": "Widescreen",
+        "cinematic": "Cinematic",
+        "full": "Full screen"
+      },
+      "sizeDescription": {
+        "classic": "Tall and immersive",
+        "widescreen": "Balanced landscape",
+        "cinematic": "Wide and compact",
+        "full": "Fills the screen"
+      }
+    }
+  },
+  "branding": {
+    "appliedTo": "Applied to:",
+    "outsideScope": "This folder is outside your access scope",
+    "view": { "list": "List", "gallery": "Gallery", "feed": "Feed" },
+    "mode": {
+      "label": "Theme",
+      "auto": "Auto",
+      "light": "Light",
+      "dark": "Dark",
+      "description": "<code>Auto</code> means <emphasis>match the user's device setting</emphasis>."
+    },
+    "layout": { "justified": "Fixed rows", "masonry": "Fixed columns" },
+    "headingAlignment": { "left": "Left", "center": "Center" },
+    "sort": {
+      "label": "Default sort",
+      "description": "Initial sort order when opening the gallery. Viewers can still change it.",
+      "appDefault": "App default",
+      "appDefaultFilename": "App default (Filename)",
+      "summary": "{{type}} {{direction}}",
+      "type": {
+        "Filename": "Filename",
+        "LastModified": "Modified",
+        "DateTaken": "Date taken",
+        "Rating": "Rating",
+        "RecentlyCommented": "Commented"
+      },
+      "direction": { "Asc": "Ascending", "Desc": "Descending" }
+    },
+    "list": {
+      "search": "Search branding",
+      "filteredCount": "{{visible}} of {{total}}",
+      "add": "Add Branding",
+      "empty": "No branding presets match this search.",
+      "unnamed": "Unnamed branding",
+      "themeSummary": "{{mode}} background, {{color}} featured color",
+      "noFolders": "No folders",
+      "more_one": "+ {{count}} more",
+      "more_other": "+ {{count}} more"
+    },
+    "drawer": {
+      "createTitle": "Create Branding",
+      "editTitle": "Edit Branding: {{name}}",
+      "previewGallery": "Preview gallery",
+      "showOverlay": "Show overlay",
+      "create": "Create"
+    },
+    "form": {
+      "tabs": {
+        "branding": "Branding",
+        "gallery": "Gallery Appearance",
+        "footer": "Footer"
+      },
+      "identity": "Identity",
+      "name": "Name",
+      "namePlaceholder": "Branding name",
+      "logoUrl": "Logo URL",
+      "theme": "Theme",
+      "views": "Views",
+      "availableViews": "Available views",
+      "availableViewsDescription": "Restrict which views Link users can access. Admins always see all views.",
+      "defaultView": "Default view",
+      "defaultViewDescription": "Where Link users land when opening the gallery",
+      "galleryStyling": "Gallery Styling",
+      "galleryLayout": "Gallery layout",
+      "galleryLayoutDescription": "Fixed rows crop tiles to aligned rows. Fixed columns preserve each image's aspect ratio in a masonry layout.",
+      "thumbnailSize": "Thumbnail size",
+      "thumbnailSpacing": "Thumbnail spacing",
+      "thumbnailBorderRadius": "Thumbnail border radius",
+      "typography": "Typography",
+      "headingSize": "Heading size",
+      "headingAlignment": "Heading alignment",
+      "business": "Business",
+      "businessName": "Business name",
+      "businessNamePlaceholder": "Your Studio Name",
+      "websiteUrl": "Website URL",
+      "socialLinks": "Social Links",
+      "addLink": "Add link",
+      "custom": "Custom",
+      "color": "Color"
+    },
+    "social": {
+      "willSaveAs": "Will save as: {{value}}",
+      "labelPlaceholder": "Label (e.g. Follow us)",
+      "newTab": "New tab",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "remove": "Remove"
+    },
+    "socialType": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "youtube": "YouTube",
+      "twitter": "Twitter / X",
+      "pinterest": "Pinterest",
+      "linkedin": "LinkedIn",
+      "whatsapp": "WhatsApp",
+      "vimeo": "Vimeo",
+      "google_review": "Google Review",
+      "email": "Email",
+      "phone": "Phone / Call",
+      "website": "Website"
+    },
+    "socialPlaceholder": {
+      "instagram": "yourstudio or https://instagram.com/yourstudio",
+      "facebook": "yourpage or https://facebook.com/yourpage",
+      "tiktok": "yourhandle or https://tiktok.com/@yourhandle",
+      "youtube": "https://youtube.com/@yourchannel",
+      "twitter": "yourhandle or https://x.com/yourhandle",
+      "pinterest": "yourname or https://pinterest.com/yourname",
+      "linkedin": "yourname or https://linkedin.com/in/yourname",
+      "whatsapp": "61400111222 or https://wa.me/61400111222",
+      "vimeo": "yourname or https://vimeo.com/yourname",
+      "google_review": "Paste your review link",
+      "email": "you@example.com",
+      "phone": "+61400111222",
+      "website": "https://yourstudio.com"
+    }
   },
   "accessLogs": {
     "empty": "Nobody has used a public link to view this folder yet",

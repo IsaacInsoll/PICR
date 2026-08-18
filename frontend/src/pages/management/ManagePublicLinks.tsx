@@ -50,6 +50,7 @@ export const ManagePublicLinks = ({
   onCreateLink,
   onCloseLink,
 }: ManagePublicLinksProps) => {
+  const { t } = useTranslation('admin');
   const isMobile = useIsMobile();
   const [includeParents, setIncludeParents] = useState(relations === 'parents');
   const [includeChildren, setIncludeChildren] = useState(
@@ -113,12 +114,20 @@ export const ManagePublicLinks = ({
             <Switch
               checked={includeParents}
               onChange={(e) => setIncludeParents(e.currentTarget.checked)}
-              label={isMobile ? 'Include Parents' : 'Include Parent Folders'}
+              label={
+                isMobile
+                  ? t('links.includeParentsShort')
+                  : t('links.includeParents')
+              }
             />
             <Switch
               checked={includeChildren}
               onChange={(e) => setIncludeChildren(e.currentTarget.checked)}
-              label={isMobile ? 'Include Children' : 'Include Child Folders'}
+              label={
+                isMobile
+                  ? t('links.includeChildrenShort')
+                  : t('links.includeChildren')
+              }
             />
           </Group>
         </Stack>
@@ -138,7 +147,7 @@ export const ManagePublicLinks = ({
         {!disableAddingLinks ? (
           <Button variant="default" onClick={createLink}>
             <PublicLinkIcon />
-            Create Link
+            {t('links.create')}
           </Button>
         ) : null}
         {children}
@@ -212,10 +221,7 @@ const PublicLinksView = ({
 
   if (links.length === 0) {
     return (
-      <EmptyPlaceholder
-        text="You haven't created any links yet!"
-        icon={<DisconnectedIcon />}
-      />
+      <EmptyPlaceholder text={t('links.empty')} icon={<DisconnectedIcon />} />
     );
   }
   if (variant === 'list') {
@@ -239,12 +245,15 @@ const PublicLinksView = ({
         <TextInput
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
-          placeholder="Search links"
+          placeholder={t('links.search')}
           leftSection={<SearchIcon />}
           style={{ flexGrow: 1, maxWidth: 420 }}
         />
         <Text size="sm" c="dimmed">
-          {filteredLinks.length} of {links.length}
+          {t('users.filteredCount', {
+            visible: filteredLinks.length,
+            total: links.length,
+          })}
         </Text>
       </Group>
       <PicrDataGrid

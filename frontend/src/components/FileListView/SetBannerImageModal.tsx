@@ -39,6 +39,8 @@ import {
   type BannerImageCandidate,
 } from '../../atoms/modalAtom';
 import styles from './SetBannerImageModal.module.css';
+import { useTranslation } from 'react-i18next';
+import type { AdminT } from '../../i18n/adminLabels';
 
 // Skeleton rows simulate how much gallery is visible below the banner.
 // Shorter banners (cinematic) reveal more rows; taller ones (classic) reveal fewer.
@@ -71,8 +73,8 @@ const GRID_POSITIONS: Position[] = [
   { v: 'bottom', h: 'right' },
 ];
 
-const positionLabel = (p: Position) =>
-  `${p.v === 'center' ? 'Middle' : p.v.charAt(0).toUpperCase() + p.v.slice(1)} ${p.h.charAt(0).toUpperCase() + p.h.slice(1)}`;
+const positionLabel = (p: Position, t: AdminT) =>
+  t(`folder.banner.position.${p.v}.${p.h}`, { ns: 'admin' });
 
 const hAlignToJustify: Record<BannerHAlign, string> = {
   left: 'flex-start',
@@ -135,33 +137,36 @@ const PositionGrid = ({
 }: {
   value: Position;
   onChange: (p: Position) => void;
-}) => (
-  <Box>
-    <Text size="xs" c="dimmed" mb={6}>
-      Text position
-    </Text>
-    <SimpleGrid cols={3} spacing={4} style={{ width: 84 }}>
-      {GRID_POSITIONS.map((pos) => {
-        const isActive = pos.h === value.h && pos.v === value.v;
-        return (
-          <Tooltip
-            key={`${pos.v}-${pos.h}`}
-            label={positionLabel(pos)}
-            withArrow
-            fz="xs"
-          >
-            <UnstyledButton
-              className={`${styles.positionCell} ${isActive ? styles.positionCellActive : ''}`}
-              onClick={() => onChange(pos)}
-              aria-label={positionLabel(pos)}
-              aria-pressed={isActive}
-            />
-          </Tooltip>
-        );
-      })}
-    </SimpleGrid>
-  </Box>
-);
+}) => {
+  const { t } = useTranslation('admin');
+  return (
+    <Box>
+      <Text size="xs" c="dimmed" mb={6}>
+        {t('folder.banner.textPosition')}
+      </Text>
+      <SimpleGrid cols={3} spacing={4} style={{ width: 84 }}>
+        {GRID_POSITIONS.map((pos) => {
+          const isActive = pos.h === value.h && pos.v === value.v;
+          return (
+            <Tooltip
+              key={`${pos.v}-${pos.h}`}
+              label={positionLabel(pos, t)}
+              withArrow
+              fz="xs"
+            >
+              <UnstyledButton
+                className={`${styles.positionCell} ${isActive ? styles.positionCellActive : ''}`}
+                onClick={() => onChange(pos)}
+                aria-label={positionLabel(pos, t)}
+                aria-pressed={isActive}
+              />
+            </Tooltip>
+          );
+        })}
+      </SimpleGrid>
+    </Box>
+  );
+};
 
 const SizeCard = ({
   size,
@@ -182,6 +187,7 @@ const SizeCard = ({
   position: Position;
   previewTitle: string;
 }) => {
+  const { t } = useTranslation('admin');
   const skeletons = SKELETON_COUNTS[size];
   return (
     <Box>
@@ -216,10 +222,14 @@ const SizeCard = ({
       </Box>
       <Box className={styles.cardLabel}>
         <Text size="sm" fw={600}>
-          {bannerSizeLabels[size]}
+          {t(`folder.banner.size.${size}`, {
+            defaultValue: bannerSizeLabels[size],
+          })}
         </Text>
         <Text size="xs" c="dimmed">
-          {bannerSizeSubtitles[size]}
+          {t(`folder.banner.sizeDescription.${size}`, {
+            defaultValue: bannerSizeSubtitles[size],
+          })}
         </Text>
       </Box>
     </Box>
@@ -237,6 +247,7 @@ const MobilePreview = ({
   position: Position;
   previewTitle: string;
 }) => {
+  const { t } = useTranslation('admin');
   const skeletons = SKELETON_COUNTS[size];
   return (
     <Box className={styles.mobilePreview}>
@@ -265,7 +276,7 @@ const MobilePreview = ({
         ) : null}
       </Box>
       <Text size="xs" c="dimmed" ta="center" mt={6}>
-        Mobile preview
+        {t('folder.banner.mobilePreview')}
       </Text>
     </Box>
   );
@@ -282,6 +293,7 @@ export const SetBannerImageModal = ({
   onClose: () => void;
   previewTitle: string;
 }) => {
+  const { t } = useTranslation('admin');
   const [, editFolder] = useMutation(editFolderMutation);
   const currentBannerSize = useAtomValue(currentFolderBannerSizeAtom);
   const currentBannerHAlign = useAtomValue(currentFolderBannerHAlignAtom);
@@ -332,7 +344,7 @@ export const SetBannerImageModal = ({
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Set Banner Image"
+      title={t('folder.banner.title')}
       size="560px"
       centered
     >
@@ -366,10 +378,10 @@ export const SetBannerImageModal = ({
         </Box>
         <Group justify="flex-end">
           <Button variant="default" onClick={onClose}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleSave} disabled={!selectedSize}>
-            Save
+            {t('common.save')}
           </Button>
         </Group>
       </Stack>

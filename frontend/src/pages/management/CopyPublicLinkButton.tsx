@@ -4,6 +4,7 @@ import { copyToClipboard, publicURLFor } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
 import { ClipboardIcon } from '../../PicrIcons';
 import { useBaseUrl } from '../../hooks/useMe';
+import { useTranslation } from 'react-i18next';
 
 export const CopyPublicLinkButton = ({
   disabled,
@@ -17,11 +18,12 @@ export const CopyPublicLinkButton = ({
   folderId?: string;
   iconOnly?: boolean;
 } & ButtonProps) => {
+  const { t } = useTranslation('admin');
   const baseUrl = useBaseUrl();
   const url =
     hash && folderId ? publicURLFor(baseUrl ?? '', hash, folderId) : undefined;
   const notif = {
-    title: 'Link copied to clipboard',
+    title: t('links.copied'),
     message: url ?? '',
     icon: <ClipboardIcon />,
   };
@@ -29,7 +31,7 @@ export const CopyPublicLinkButton = ({
     <Button
       {...props}
       disabled={disabled || !url}
-      aria-label={iconOnly ? 'Copy link' : undefined}
+      aria-label={iconOnly ? t('links.copy') : undefined}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -39,12 +41,12 @@ export const CopyPublicLinkButton = ({
       }}
     >
       <ClipboardIcon />
-      {iconOnly ? null : 'Copy Link'}
+      {iconOnly ? null : t('links.copy')}
     </Button>
   );
 
   return iconOnly ? (
-    <Tooltip label="Copy link">
+    <Tooltip label={t('links.copy')}>
       <span>{button}</span>
     </Tooltip>
   ) : (

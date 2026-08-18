@@ -4,13 +4,34 @@ const hasControlChars = (value: string) =>
     return code <= 31 || code === 127;
   });
 
-export const validateFolderName = (name: string) => {
-  if (name.length === 0) return 'Folder name is required.';
-  if (name.includes('/')) return 'Folder names cannot contain "/".';
-  if (name.includes('\\')) return 'Folder names cannot contain "\\".';
-  if (name === '.' || name === '..') return 'Folder name is invalid.';
-  if (hasControlChars(name)) return 'Folder name is invalid.';
+export type FolderNameValidationError =
+  | 'required'
+  | 'forwardSlash'
+  | 'backslash'
+  | 'invalid';
+
+export const validateFolderNameCode = (
+  name: string,
+): FolderNameValidationError | null => {
+  if (name.length === 0) return 'required';
+  if (name.includes('/')) return 'forwardSlash';
+  if (name.includes('\\')) return 'backslash';
+  if (name === '.' || name === '..') return 'invalid';
+  if (hasControlChars(name)) return 'invalid';
   return null;
+};
+
+const folderNameValidationMessages: Record<FolderNameValidationError, string> =
+  {
+    required: 'Folder name is required.',
+    forwardSlash: 'Folder names cannot contain "/".',
+    backslash: 'Folder names cannot contain "\\".',
+    invalid: 'Folder name is invalid.',
+  };
+
+export const validateFolderName = (name: string) => {
+  const code = validateFolderNameCode(name);
+  return code ? folderNameValidationMessages[code] : null;
 };
 
 export const validateRelativePath = (

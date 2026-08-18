@@ -19,6 +19,7 @@ import { GalleryLayout, HeadingAlignment } from '@shared/gql/graphql';
 import { PicrDrawer } from '../../components/PicrDrawer';
 import { BrandingFolderChips } from '../../components/BrandingFolderChips';
 import { useDebouncedValue } from '@mantine/hooks';
+import { useTranslation } from 'react-i18next';
 
 const TEXT_PREVIEW_DELAY_MS = 150;
 
@@ -39,6 +40,7 @@ export const BrandingDrawer = ({
   onSaved?: (id: string) => void;
   folders?: FolderChip[] | null;
 }) => {
+  const { t } = useTranslation('admin');
   const [branding, setBranding] = useState<BrandingInput>({
     ...applyBrandingDefaults(brandingProp),
     socialLinks:
@@ -162,12 +164,18 @@ export const BrandingDrawer = ({
   };
 
   const titleText = isNew
-    ? 'Create Branding'
-    : `Edit Branding: ${branding.name}`;
+    ? t('branding.drawer.createTitle')
+    : t('branding.drawer.editTitle', { name: branding.name });
   const title = (
     <Group gap="xs" wrap="nowrap">
       <span>{titleText}</span>
-      <Tooltip label={showOverlay ? 'Preview gallery' : 'Show overlay'}>
+      <Tooltip
+        label={
+          showOverlay
+            ? t('branding.drawer.previewGallery')
+            : t('branding.drawer.showOverlay')
+        }
+      >
         <ActionIcon
           variant="subtle"
           size="sm"
@@ -186,7 +194,7 @@ export const BrandingDrawer = ({
       <BrandingForm branding={branding} onChange={setBranding} showName />
       <Group justify="flex-end" mt="lg">
         <Button variant="outline" onClick={onCancel}>
-          Cancel
+          {t('common.cancel')}
         </Button>
         {!isNew ? (
           <Button
@@ -195,7 +203,7 @@ export const BrandingDrawer = ({
             onClick={onDelete}
             leftSection={<DeleteIcon />}
           >
-            Delete
+            {t('common.delete')}
           </Button>
         ) : null}
         <Button
@@ -204,7 +212,7 @@ export const BrandingDrawer = ({
           loading={submitting}
           disabled={isNew && !branding.name?.trim()}
         >
-          {isNew ? 'Create' : 'Save'}
+          {isNew ? t('branding.drawer.create') : t('common.save')}
         </Button>
       </Group>
     </PicrDrawer>

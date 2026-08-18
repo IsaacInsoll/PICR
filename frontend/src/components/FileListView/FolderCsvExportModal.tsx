@@ -20,6 +20,7 @@ import { folderFilesQuery } from '@shared/urql/queries/folderFilesQuery';
 import { fileSortAtom } from '../../atoms/fileSortAtom';
 import { copyToClipboard } from '../../helpers/copyToClipboard';
 import { ClipboardIcon, DownloadIcon } from '../../PicrIcons';
+import { useTranslation } from 'react-i18next';
 
 type ExportFormat = 'picr' | 'comma' | 'space';
 type ExportFile = ViewFolder['files'][number] & {
@@ -43,16 +44,16 @@ const flagForCsv = (flag: string | null | undefined) => {
   return '';
 };
 
-const formatLabel = (format: ExportFormat) => {
+const formatLabelKey = (format: ExportFormat) => {
   switch (format) {
     case 'picr':
-      return 'PICR plugin CSV (filename, rating, flag)';
+      return 'folder.csv.format.picr' as const;
     case 'comma':
-      return 'Lightroom (comma-separated)';
+      return 'folder.csv.format.comma' as const;
     case 'space':
-      return 'Capture One & Photo Mechanic (space-separated)';
+      return 'folder.csv.format.space' as const;
     default:
-      return format;
+      return 'folder.csv.format.picr' as const;
   }
 };
 
@@ -65,6 +66,7 @@ export const FolderCsvExportModal = ({
   opened: boolean;
   onClose: () => void;
 }) => {
+  const { t } = useTranslation('admin');
   const filters = useAtomValue(filterOptions);
   const sort = useAtomValue(fileSortAtom);
   const [format, setFormat] = useState<ExportFormat>('picr');
@@ -136,7 +138,7 @@ export const FolderCsvExportModal = ({
   const fileNameBase = (folder?.name ?? 'folder').replace(/[^\w.-]+/g, '_');
   const downloadFileName = `${fileNameBase}-export.${downloadExtension}`;
   const outputLoading = includeSubfolders && folderFilesLoading;
-  const displayOutput = outputLoading ? 'Loading...' : output;
+  const displayOutput = outputLoading ? t('folder.csv.loading') : output;
   const outputDisabled = outputLoading || !output;
 
   const handleCopy = () => {
@@ -156,24 +158,29 @@ export const FolderCsvExportModal = ({
   };
 
   return (
-    <Modal opened={opened} onClose={onClose} title="Export filenames" size="lg">
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={t('folder.csv.title')}
+      size="lg"
+    >
       <Stack gap="md">
         <Select
-          label="Export format"
+          label={t('folder.csv.formatLabel')}
           value={format}
           onChange={(value) => setFormat((value ?? 'picr') as ExportFormat)}
           data={(['picr', 'comma', 'space'] as ExportFormat[]).map((value) => ({
             value,
-            label: formatLabel(value),
+            label: t(formatLabelKey(value)),
           }))}
           allowDeselect={false}
         />
 
         {format === 'picr' && (
           <Text size="sm" c="dimmed">
-            Import this data into Lightroom Classic using the{' '}
+            {t('folder.csv.pluginPrefix')}{' '}
             <Anchor href="/picr-lightroom-plugin.zip" download>
-              PICR Lightroom Plugin
+              {t('folder.csv.pluginName')}
             </Anchor>
             .
           </Text>
@@ -184,20 +191,20 @@ export const FolderCsvExportModal = ({
           onChange={(event) =>
             setExcludeExtensions(event.currentTarget.checked)
           }
-          label="Exclude file extensions"
+          label={t('folder.csv.excludeExtensions')}
         />
         <Checkbox
           checked={useFilters}
           onChange={(event) => setUseFilters(event.currentTarget.checked)}
-          label="Use current filters"
+          label={t('folder.csv.useFilters')}
         />
         <Checkbox
           checked={includeSubfolders}
           onChange={(event) =>
             setIncludeSubfolders(event.currentTarget.checked)
           }
-          label="Include subfolders"
-          description="Export all files within the folder tree (max 10,000)"
+          label={t('folder.csv.includeSubfolders')}
+          description={t('folder.csv.includeSubfoldersDescription')}
         />
 
         {includeSubfolders ? (
@@ -206,17 +213,22 @@ export const FolderCsvExportModal = ({
             c={folderFilesResult?.truncated ? 'orange' : 'dimmed'}
           >
             {error
-              ? 'Unable to load files from subfolders.'
+              ? t('folder.csv.loadError')
               : folderFilesLoading
-                ? 'Loading files from subfolders...'
+                ? t('folder.csv.loadingSubfolders')
                 : folderFilesResult
-                  ? `${folderFilesResult.totalReturned} of ${folderFilesResult.totalAvailable} files loaded` +
-                    (folderFilesResult.truncated ? ' (truncated)' : '')
-                  : 'No files found.'}
+                  ? t('folder.csv.loaded', {
+                      returned: folderFilesResult.totalReturned,
+                      available: folderFilesResult.totalAvailable,
+                      truncated: folderFilesResult.truncated
+                        ? t('folder.csv.truncated')
+                        : '',
+                    })
+                  : t('folder.csv.noFiles')}
           </Text>
         ) : (
           <Text size="sm" c="dimmed">
-            {fileCount} file{fileCount === 1 ? '' : 's'} in export preview
+            {t('folder.csv.previewCount', { count: fileCount })}
           </Text>
         )}
 
@@ -226,7 +238,7 @@ export const FolderCsvExportModal = ({
           disabled={outputLoading}
           minRows={6}
           autosize
-          placeholder="No files to export yet."
+          placeholder={t('folder.csv.empty')}
         />
 
         <Group justify="flex-end">
@@ -236,14 +248,14 @@ export const FolderCsvExportModal = ({
             disabled={outputDisabled}
             leftSection={<ClipboardIcon />}
           >
-            Copy to clipboard
+            {t('folder.csv.copy')}
           </Button>
           <Button
             onClick={handleDownload}
             disabled={outputDisabled}
             leftSection={<DownloadIcon />}
           >
-            Download
+            {t('folder.csv.download')}
           </Button>
         </Group>
       </Stack>

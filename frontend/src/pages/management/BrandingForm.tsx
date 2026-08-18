@@ -46,7 +46,7 @@ import {
   type FontDefinition,
   type FontKey,
 } from '@shared/branding/fontRegistry';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { fontFamilies } from '../../fonts.generated';
 import {
   fontCategoryTranslator,
@@ -115,11 +115,6 @@ export interface BrandingInput {
 
 const ALL_VIEWS = ['list', 'gallery', 'feed'] as const;
 type ViewKey = (typeof ALL_VIEWS)[number];
-const viewLabels: Record<ViewKey, string> = {
-  list: 'List',
-  gallery: 'Gallery',
-  feed: 'Feed',
-};
 const viewIcons: Record<ViewKey, ComponentType<{ size?: number }>> = {
   list: TbList,
   gallery: TbLayoutGrid,
@@ -135,6 +130,7 @@ export const BrandingForm = ({
   onChange: (branding: BrandingInput) => void;
   showName?: boolean;
 }) => {
+  const { t } = useTranslation('admin');
   const checkedViews: ViewKey[] =
     (branding.availableViews?.length ?? 0) > 0
       ? (branding.availableViews as ViewKey[])
@@ -156,7 +152,7 @@ export const BrandingForm = ({
   const socialLinks: SocialLink[] = branding.socialLinks ?? [];
   const defaultViewOptions = checkedViews.map((v) => ({
     value: v,
-    label: viewLabels[v],
+    label: t(`branding.view.${v}`),
   }));
   const defaultView =
     defaultViewOptions.some((v) => v.value === branding.defaultView) &&
@@ -203,11 +199,13 @@ export const BrandingForm = ({
     const type = shouldDetectType
       ? detectSocialLinkType(url)
       : currentLink.type;
-    const label = SOCIAL_LINK_TYPES.find((t) => t.key === type)?.label ?? '';
+    const defaultTitle =
+      SOCIAL_LINK_TYPES.find((definition) => definition.key === type)
+        ?.defaultTitle ?? '';
     updateSocialLink(index, {
       url,
       type,
-      title: currentLink.title || label,
+      title: currentLink.title || defaultTitle,
     });
   };
 
@@ -220,10 +218,10 @@ export const BrandingForm = ({
             leftSection={<TbPalette size={14} />}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            Branding
+            {t('branding.form.tabs.branding')}
           </Tabs.Tab>
           <Tabs.Tab value="gallery" leftSection={<TbSettings size={14} />}>
-            Gallery Appearance
+            {t('branding.form.tabs.gallery')}
           </Tabs.Tab>
           <Tabs.Tab
             value="footer"
@@ -235,17 +233,17 @@ export const BrandingForm = ({
               })
             }
           >
-            Footer
+            {t('branding.form.tabs.footer')}
           </Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="branding" pt="md">
           <Stack gap="lg">
-            <Divider label="Identity" labelPosition="left" />
+            <Divider label={t('branding.form.identity')} labelPosition="left" />
             {showName ? (
               <TextInput
-                label="Name"
-                placeholder="Branding name"
+                label={t('branding.form.name')}
+                placeholder={t('branding.form.namePlaceholder')}
                 value={branding.name ?? ''}
                 onChange={(e) =>
                   onChange({ ...branding, name: e.target.value })
@@ -254,14 +252,14 @@ export const BrandingForm = ({
               />
             ) : null}
             <TextInput
-              label="Logo URL"
+              label={t('branding.form.logoUrl')}
               placeholder="https://example.com/logo.png"
               value={branding.logoUrl ?? ''}
               onChange={(e) =>
                 onChange({ ...branding, logoUrl: e.target.value || null })
               }
             />
-            <Divider label="Theme" labelPosition="left" />
+            <Divider label={t('branding.form.theme')} labelPosition="left" />
             <HeadingFontSelector
               value={normalizeFontKey(branding.headingFontKey)}
               onChange={(headingFontKey) =>
@@ -286,12 +284,11 @@ export const BrandingForm = ({
 
         <Tabs.Panel value="gallery" pt="md">
           <Stack gap="lg">
-            <Divider label="Views" labelPosition="left" />
+            <Divider label={t('branding.form.views')} labelPosition="left" />
             <Box>
-              <InputLabel>Available views</InputLabel>
+              <InputLabel>{t('branding.form.availableViews')}</InputLabel>
               <InputDescription pb="xs">
-                Restrict which views Link users can access. Admins always see
-                all views.
+                {t('branding.form.availableViewsDescription')}
               </InputDescription>
               <Group gap="sm">
                 {ALL_VIEWS.map((view) => (
@@ -303,7 +300,7 @@ export const BrandingForm = ({
                           const ViewIcon = viewIcons[view];
                           return <ViewIcon size={14} />;
                         })()}
-                        <span>{viewLabels[view]}</span>
+                        <span>{t(`branding.view.${view}`)}</span>
                       </Group>
                     }
                     checked={checkedViews.includes(view)}
@@ -313,8 +310,8 @@ export const BrandingForm = ({
               </Group>
             </Box>
             <Select
-              label="Default view"
-              description="Where Link users land when opening the gallery"
+              label={t('branding.form.defaultView')}
+              description={t('branding.form.defaultViewDescription')}
               value={defaultView}
               data={defaultViewOptions}
               onChange={(v) => onChange({ ...branding, defaultView: v })}
@@ -343,12 +340,14 @@ export const BrandingForm = ({
                 onChange({ ...branding, defaultFileSort })
               }
             />
-            <Divider label="Gallery Styling" labelPosition="left" />
+            <Divider
+              label={t('branding.form.galleryStyling')}
+              labelPosition="left"
+            />
             <Box>
-              <InputLabel>Gallery layout</InputLabel>
+              <InputLabel>{t('branding.form.galleryLayout')}</InputLabel>
               <InputDescription pb="xs">
-                Fixed rows crop tiles to aligned rows. Fixed columns preserve
-                each image&apos;s aspect ratio in a masonry layout.
+                {t('branding.form.galleryLayoutDescription')}
               </InputDescription>
               <Button.Group>
                 {(
@@ -356,12 +355,12 @@ export const BrandingForm = ({
                     {
                       value: GalleryLayout.Justified,
                       icon: <TbLayoutRows />,
-                      label: 'Fixed rows',
+                      labelKey: 'branding.layout.justified',
                     },
                     {
                       value: GalleryLayout.Masonry,
                       icon: <TbLayoutColumns />,
-                      label: 'Fixed columns',
+                      labelKey: 'branding.layout.masonry',
                     },
                   ] as const
                 ).map((option) => {
@@ -380,14 +379,14 @@ export const BrandingForm = ({
                         })
                       }
                     >
-                      {option.label}
+                      {t(option.labelKey)}
                     </Button>
                   );
                 })}
               </Button.Group>
             </Box>
             <Box>
-              <InputLabel>Thumbnail size</InputLabel>
+              <InputLabel>{t('branding.form.thumbnailSize')}</InputLabel>
               <PresetButtons
                 presets={THUMBNAIL_SIZE_PRESETS}
                 value={branding.thumbnailSize ?? null}
@@ -396,7 +395,7 @@ export const BrandingForm = ({
               />
             </Box>
             <Box>
-              <InputLabel>Thumbnail spacing</InputLabel>
+              <InputLabel>{t('branding.form.thumbnailSpacing')}</InputLabel>
               <PresetButtons
                 presets={SPACING_PRESETS}
                 value={branding.thumbnailSpacing ?? null}
@@ -405,7 +404,9 @@ export const BrandingForm = ({
               />
             </Box>
             <Box>
-              <InputLabel>Thumbnail border radius</InputLabel>
+              <InputLabel>
+                {t('branding.form.thumbnailBorderRadius')}
+              </InputLabel>
               <PresetButtons
                 presets={BORDER_RADIUS_PRESETS}
                 value={branding.thumbnailBorderRadius ?? null}
@@ -415,9 +416,12 @@ export const BrandingForm = ({
                 }
               />
             </Box>
-            <Divider label="Typography" labelPosition="left" />
+            <Divider
+              label={t('branding.form.typography')}
+              labelPosition="left"
+            />
             <Box>
-              <InputLabel>Heading size</InputLabel>
+              <InputLabel>{t('branding.form.headingSize')}</InputLabel>
               <PresetButtons
                 presets={HEADING_FONT_SIZE_PRESETS}
                 value={branding.headingFontSize ?? null}
@@ -426,19 +430,19 @@ export const BrandingForm = ({
               />
             </Box>
             <Box>
-              <InputLabel>Heading alignment</InputLabel>
+              <InputLabel>{t('branding.form.headingAlignment')}</InputLabel>
               <Button.Group>
                 {(
                   [
                     {
                       value: HeadingAlignment.Left,
                       icon: <TbAlignLeft />,
-                      label: 'Left',
+                      labelKey: 'branding.headingAlignment.left',
                     },
                     {
                       value: HeadingAlignment.Center,
                       icon: <TbAlignCenter />,
-                      label: 'Center',
+                      labelKey: 'branding.headingAlignment.center',
                     },
                   ] as const
                 ).map((opt) => {
@@ -454,7 +458,7 @@ export const BrandingForm = ({
                         onChange({ ...branding, headingAlignment: opt.value })
                       }
                     >
-                      {opt.label}
+                      {t(opt.labelKey)}
                     </Button>
                   );
                 })}
@@ -465,24 +469,27 @@ export const BrandingForm = ({
 
         <Tabs.Panel value="footer" pt="md">
           <Stack gap="lg">
-            <Divider label="Business" labelPosition="left" />
+            <Divider label={t('branding.form.business')} labelPosition="left" />
             <TextInput
-              label="Business name"
-              placeholder="Your Studio Name"
+              label={t('branding.form.businessName')}
+              placeholder={t('branding.form.businessNamePlaceholder')}
               value={branding.footerTitle ?? ''}
               onChange={(e) =>
                 onChange({ ...branding, footerTitle: e.target.value || null })
               }
             />
             <TextInput
-              label="Website URL"
+              label={t('branding.form.websiteUrl')}
               placeholder="https://yourstudio.com"
               value={branding.footerUrl ?? ''}
               onChange={(e) =>
                 onChange({ ...branding, footerUrl: e.target.value || null })
               }
             />
-            <Divider label="Social Links" labelPosition="left" />
+            <Divider
+              label={t('branding.form.socialLinks')}
+              labelPosition="left"
+            />
             <Stack gap="xs">
               {socialLinks.map((link, index) => (
                 <SocialLinkRow
@@ -504,7 +511,7 @@ export const BrandingForm = ({
                 onClick={addSocialLink}
                 style={{ alignSelf: 'flex-start' }}
               >
-                Add link
+                {t('branding.form.addLink')}
               </Button>
             </Stack>
           </Stack>
@@ -514,15 +521,21 @@ export const BrandingForm = ({
   );
 };
 
-const sortTypeOptions: { value: FileSortType; label: string }[] = [
-  { value: 'Filename', label: 'Filename' },
-  { value: 'LastModified', label: 'Modified' },
-  { value: 'DateTaken', label: 'Date taken' },
+const sortTypeOptions = [
+  { value: 'Filename', labelKey: 'branding.sort.type.Filename' },
+  { value: 'LastModified', labelKey: 'branding.sort.type.LastModified' },
+  { value: 'DateTaken', labelKey: 'branding.sort.type.DateTaken' },
   // Rating and Commented are permission-gated in the live sort menu, so they
   // make poor branding defaults for viewers who cannot see review data.
   // { value: 'Rating', label: 'Rating' },
   // { value: 'RecentlyCommented', label: 'Commented' },
-];
+] as const satisfies ReadonlyArray<{
+  value: FileSortType;
+  labelKey:
+    | 'branding.sort.type.Filename'
+    | 'branding.sort.type.LastModified'
+    | 'branding.sort.type.DateTaken';
+}>;
 
 const DefaultSortSelector = ({
   value,
@@ -531,23 +544,26 @@ const DefaultSortSelector = ({
   value: string | null;
   onChange: (value: string | null) => void;
 }) => {
+  const { t } = useTranslation('admin');
   const decoded = value ? decodeFileSort(value) : null;
   const type = decoded?.type ?? '';
   const direction: FileSortDirection = decoded?.direction ?? 'Desc';
   return (
     <Box>
-      <InputLabel>Default sort</InputLabel>
+      <InputLabel>{t('branding.sort.label')}</InputLabel>
       <InputDescription pb="xs">
-        Initial sort order when opening the gallery. Viewers can still change
-        it.
+        {t('branding.sort.description')}
       </InputDescription>
       <Group gap="sm">
         <Select
           value={type}
           clearable={false}
           data={[
-            { value: '', label: 'App default (Filename)' },
-            ...sortTypeOptions,
+            { value: '', label: t('branding.sort.appDefaultFilename') },
+            ...sortTypeOptions.map((option) => ({
+              value: option.value,
+              label: t(option.labelKey),
+            })),
           ]}
           onChange={(v) =>
             onChange(
@@ -578,7 +594,7 @@ const DefaultSortSelector = ({
                   )
                 }
               >
-                {d === 'Asc' ? 'Ascending' : 'Descending'}
+                {t(`branding.sort.direction.${d}`)}
               </Button>
             ))}
           </Button.Group>
@@ -599,6 +615,7 @@ const PresetButtons = ({
   defaultValue: number;
   onChange: (value: number) => void;
 }) => {
+  const { t } = useTranslation('admin');
   const effective = value ?? defaultValue;
   const matched = matchPreset(presets, effective);
   return (
@@ -624,7 +641,7 @@ const PresetButtons = ({
           style={{ minWidth: 36, paddingInline: 8 }}
           disabled
         >
-          Custom
+          {t('branding.form.custom')}
         </Button>
       ) : null}
     </Button.Group>
@@ -648,25 +665,11 @@ const SocialLinkRow = ({
   onRemove: () => void;
   onMove: (dir: 'up' | 'down') => void;
 }) => {
-  const typeOptions = SOCIAL_LINK_TYPES.map((t) => ({
-    value: t.key,
-    label: t.label,
+  const { t } = useTranslation('admin');
+  const typeOptions = SOCIAL_LINK_TYPES.map((definition) => ({
+    value: definition.key,
+    label: t(`branding.socialType.${definition.key}`),
   }));
-  const urlPlaceholderByType: Partial<Record<SocialLinkTypeKey, string>> = {
-    instagram: 'yourstudio or https://instagram.com/yourstudio',
-    facebook: 'yourpage or https://facebook.com/yourpage',
-    tiktok: 'yourhandle or https://tiktok.com/@yourhandle',
-    youtube: 'https://youtube.com/@yourchannel',
-    twitter: 'yourhandle or https://x.com/yourhandle',
-    pinterest: 'yourname or https://pinterest.com/yourname',
-    linkedin: 'yourname or https://linkedin.com/in/yourname',
-    whatsapp: '61400111222 or https://wa.me/61400111222',
-    vimeo: 'yourname or https://vimeo.com/yourname',
-    google_review: 'Paste your review link',
-    email: 'you@example.com',
-    phone: '+61400111222',
-    website: 'https://yourstudio.com',
-  };
   const normalizedPreview = normalizeSocialLinkInput(link.type, link.url);
 
   return (
@@ -697,13 +700,17 @@ const SocialLinkRow = ({
             )}
           />
           <TextInput
-            placeholder={urlPlaceholderByType[link.type]}
+            placeholder={t(`branding.socialPlaceholder.${link.type}`)}
             value={link.url}
             onChange={(e) => onUrlChange(e.target.value)}
             style={{ flex: 1 }}
             leftSection={
               normalizedPreview && normalizedPreview !== link.url ? (
-                <Tooltip label={`Will save as: ${normalizedPreview}`}>
+                <Tooltip
+                  label={t('branding.social.willSaveAs', {
+                    value: normalizedPreview,
+                  })}
+                >
                   <Box
                     component="span"
                     style={{ display: 'flex', alignItems: 'center' }}
@@ -719,14 +726,14 @@ const SocialLinkRow = ({
         </Group>
         <Group gap="xs" justify="space-between">
           <TextInput
-            placeholder="Label (e.g. Follow us)"
+            placeholder={t('branding.social.labelPlaceholder')}
             value={link.title}
             onChange={(e) => onChange({ title: e.target.value })}
             size="sm"
             style={{ flex: 1 }}
           />
           <Checkbox
-            label="New tab"
+            label={t('branding.social.newTab')}
             checked={link.openInNewTab}
             onChange={(e) =>
               onChange({ openInNewTab: e.currentTarget.checked })
@@ -734,7 +741,7 @@ const SocialLinkRow = ({
             size="sm"
           />
           <Group gap={4}>
-            <Tooltip label="Move up">
+            <Tooltip label={t('branding.social.moveUp')}>
               <ActionIcon
                 variant="default"
                 size="sm"
@@ -744,7 +751,7 @@ const SocialLinkRow = ({
                 <TbArrowUp />
               </ActionIcon>
             </Tooltip>
-            <Tooltip label="Move down">
+            <Tooltip label={t('branding.social.moveDown')}>
               <ActionIcon
                 variant="default"
                 size="sm"
@@ -754,7 +761,7 @@ const SocialLinkRow = ({
                 <TbArrowDown />
               </ActionIcon>
             </Tooltip>
-            <Tooltip label="Remove">
+            <Tooltip label={t('branding.social.remove')}>
               <ActionIcon
                 variant="default"
                 size="sm"
@@ -836,7 +843,7 @@ const HeadingFontSelector = ({
               </InputDescription>
             ) : null}
             {(option as { suitableFor?: string[] }).suitableFor?.length ? (
-              <InputDescription>
+              <Box c="dimmed" fz="xs">
                 <Group gap={4} wrap="wrap">
                   {(option as { suitableFor?: string[] }).suitableFor?.map(
                     (tag: string) => (
@@ -846,7 +853,7 @@ const HeadingFontSelector = ({
                     ),
                   )}
                 </Group>
-              </InputDescription>
+              </Box>
             ) : null}
           </Stack>
         )}
@@ -862,11 +869,16 @@ const ModeSelector = ({
   value: ThemeMode;
   onChange: (value: ThemeMode) => void;
 }) => {
+  const { t } = useTranslation('admin');
   return (
     <Box>
-      <InputLabel>Theme</InputLabel>
+      <InputLabel>{t('branding.mode.label')}</InputLabel>
       <InputDescription pb="xs">
-        <Code>auto</Code> means <em>'match what the users device is set to'</em>
+        <Trans
+          t={t}
+          i18nKey="branding.mode.description"
+          components={{ code: <Code />, emphasis: <em /> }}
+        />
       </InputDescription>
       <Button.Group>
         {modeOptions.map((opt) => {
@@ -875,13 +887,13 @@ const ModeSelector = ({
           return (
             <Button
               leftSection={icon}
-              title={opt.label}
+              title={t(opt.labelKey)}
               variant={isSelected ? 'filled' : 'default'}
               onClick={() => onChange(opt.value)}
               key={opt.value}
               size="xs"
             >
-              {opt.label}
+              {t(opt.labelKey)}
             </Button>
           );
         })}
@@ -890,11 +902,11 @@ const ModeSelector = ({
   );
 };
 
-const modeOptions: Array<{ value: ThemeMode; label: string }> = [
-  { value: ThemeMode.Auto, label: 'auto' },
-  { value: ThemeMode.Light, label: 'light' },
-  { value: ThemeMode.Dark, label: 'dark' },
-];
+const modeOptions = [
+  { value: ThemeMode.Auto, labelKey: 'branding.mode.auto' },
+  { value: ThemeMode.Light, labelKey: 'branding.mode.light' },
+  { value: ThemeMode.Dark, labelKey: 'branding.mode.dark' },
+] as const;
 
 const themeModeStyle = {
   [ThemeMode.Auto]: { icon: <BrightnessAutoIcon /> },
@@ -909,13 +921,14 @@ const ColorSelector = ({
   color: PrimaryColor;
   onChange: (color: PrimaryColor) => void;
 }) => {
+  const { t } = useTranslation('admin');
   const options = Object.values(PrimaryColor);
   const theme = useMantineTheme();
 
   return (
     <>
       <Box>
-        <InputLabel>Color</InputLabel>
+        <InputLabel>{t('branding.form.color')}</InputLabel>
         <InputDescription>
           <Code c={color}>{color}</Code>
         </InputDescription>

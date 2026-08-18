@@ -39,6 +39,7 @@ import {
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { badChars } from '@shared/badChars';
+import { useTranslation } from 'react-i18next';
 
 export const ManagePublicLink = ({
   id,
@@ -49,6 +50,7 @@ export const ManagePublicLink = ({
   folder?: PicrFolder; //if creating a new public link
   onClose: () => void;
 }) => {
+  const { t } = useTranslation('admin');
   const [user, exists] = useViewUser(id);
   const [, mutate] = useMutation(editUserMutation);
   const [, deleteUser] = useMutation(deleteUserMutation);
@@ -116,7 +118,7 @@ export const ManagePublicLink = ({
       onClose={onClose}
       title={
         <>
-          Public Link for: <em>{folderName}</em>{' '}
+          {t('links.editor.title')} <em>{folderName}</em>{' '}
         </>
       }
       centered
@@ -125,32 +127,34 @@ export const ManagePublicLink = ({
     >
       <Stack gap="md">
         <Stack gap="xs">
-          <Divider label="Public URL" labelPosition="left" />
+          <Divider label={t('links.editor.publicUrl')} labelPosition="left" />
           <Group gap="xs" align="flex-end" wrap="nowrap">
             <TextInput
               flex={1}
               miw={0}
               leftSection={<PublicLinkIcon />}
-              placeholder="Link ID (required)"
+              placeholder={t('links.editor.idPlaceholder')}
               value={link}
-              label="Public Link"
-              description="this should be impossible to guess"
+              label={t('links.editor.publicLink')}
+              description={t('links.editor.publicLinkDescription')}
               onChange={(e) => setLink(e.currentTarget.value)}
               error={
                 badLink.length > 0 ? (
                   <Group gap="xs">
-                    <Text size="xs">Can't use:</Text>
+                    <Text size="xs">{t('links.editor.cannotUse')}</Text>
                     {badLink.map((l) => (
-                      <Code key={l}>{l === ' ' ? 'space' : l}</Code>
+                      <Code key={l}>
+                        {l === ' ' ? t('links.editor.space') : l}
+                      </Code>
                     ))}
                   </Group>
                 ) : link.length < 6 ? (
-                  'Must be at least 6 characters long'
+                  t('links.editor.minimumLength')
                 ) : undefined
               }
             />
             <ActionIcon.Group>
-              <Tooltip label="Generate a 'pretty' link">
+              <Tooltip label={t('links.editor.generatePretty')}>
                 <ActionIcon
                   size="lg"
                   variant="default"
@@ -165,7 +169,7 @@ export const ManagePublicLink = ({
                   <LabelIcon />
                 </ActionIcon>
               </Tooltip>
-              <Tooltip label="Generate very-hard-to-guess link">
+              <Tooltip label={t('links.editor.generateRandom')}>
                 <ActionIcon
                   size="lg"
                   variant="default"
@@ -180,39 +184,41 @@ export const ManagePublicLink = ({
 
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" verticalSpacing="md">
           <Stack gap="md">
-            <Divider label="Recipient" labelPosition="left" />
+            <Divider label={t('links.editor.recipient')} labelPosition="left" />
             <TextInput
               leftSection={<UsersGroupIcon />}
-              placeholder="EG: 'Company CEO' or 'Valentina' (optional)"
+              placeholder={t('users.editor.namePlaceholder')}
               value={name}
-              label="Name"
+              label={t('users.editor.name')}
               onChange={(e) => setName(e.currentTarget.value)}
-              error={name.length === 0 ? 'Name is required' : undefined}
+              error={
+                name.length === 0 ? t('links.editor.nameRequired') : undefined
+              }
             />
             <TextInput
               leftSection={<EmailIcon />}
-              label="Email Address"
+              label={t('links.editor.email')}
               value={username}
-              description="(optional)"
+              description={t('links.editor.optional')}
               onChange={(e) => setUsername(e.currentTarget.value)}
             />
             <PasswordInput
               leftSection={<PasswordIcon />}
-              label="Gallery passcode"
+              label={t('links.editor.passcode')}
               value={galleryPasscode}
-              description="Optional"
+              description={t('links.editor.optional')}
               onChange={(e) => setGalleryPasscode(e.currentTarget.value)}
             />
             <Switch
               checked={enabled}
-              label="Enabled"
-              description="link will only work if this is 'on'"
+              label={t('common.enabled')}
+              description={t('links.editor.enabledDescription')}
               onChange={(event) => setEnabled(event.currentTarget.checked)}
             />
           </Stack>
 
           <Stack gap="md">
-            <Divider label="Access" labelPosition="left" />
+            <Divider label={t('users.editor.access')} labelPosition="left" />
             <LinkModeSelector value={linkMode} onChange={setLinkMode} />
             <CommentPermissionsSelector
               value={commentPermissions}
@@ -238,7 +244,7 @@ export const ManagePublicLink = ({
                 onClick={() => setShowDeleteConfirm(true)}
                 leftSection={<DeleteIcon />}
               >
-                Delete
+                {t('common.delete')}
               </Button>
             ) : (
               <Box />
@@ -251,7 +257,7 @@ export const ManagePublicLink = ({
               />
               <Button disabled={invalidLink} onClick={onSave}>
                 <SaveIcon />
-                {exists ? 'Save' : 'Create Link'}
+                {exists ? t('common.save') : t('links.create')}
               </Button>
             </Group>
           </Group>
@@ -262,28 +268,25 @@ export const ManagePublicLink = ({
         <Modal
           opened={true}
           onClose={() => setShowDeleteConfirm(false)}
-          title="Delete Public Link"
+          title={t('links.editor.deleteTitle')}
           centered
           size="sm"
         >
           <Stack>
-            <Text>
-              Are you sure you want to delete this public link? This action
-              cannot be undone and the link will stop working immediately.
-            </Text>
+            <Text>{t('links.editor.deleteConfirmation')}</Text>
             <Group justify="flex-end">
               <Button
                 variant="default"
                 onClick={() => setShowDeleteConfirm(false)}
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button
                 color="red"
                 onClick={onDelete}
                 leftSection={<DeleteIcon />}
               >
-                Delete
+                {t('common.delete')}
               </Button>
             </Group>
           </Stack>

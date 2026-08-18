@@ -286,7 +286,7 @@ export const FolderBannerView = ({
 
 // Interactive half: the banner as the live folder view uses it.
 export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
-  const { t } = useTranslation('gallery');
+  const { t } = useTranslation(['gallery', 'admin']);
   const me = useMe();
   const [, editFolder] = useMutation(editFolderMutation);
   const openSetBannerImageModal = useOpenSetBannerImageModal();
@@ -401,7 +401,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
     <FolderBannerView folder={folder} bannerRef={bannerRef} imageRef={imageRef}>
       {me?.isUser ? (
         <>
-          <Tooltip label="Edit banner">
+          <Tooltip label={t('folder.banner.edit', { ns: 'admin' })}>
             <ActionIcon
               className={styles.editButton}
               variant="filled"
@@ -419,7 +419,7 @@ export const FolderBanner = ({ folder }: { folder: BannerFolder }) => {
               <EditIcon />
             </ActionIcon>
           </Tooltip>
-          <Tooltip label="Clear banner image">
+          <Tooltip label={t('folder.banner.clear', { ns: 'admin' })}>
             <ActionIcon
               className={styles.clearButton}
               variant="filled"

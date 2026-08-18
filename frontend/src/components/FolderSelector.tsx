@@ -23,6 +23,7 @@ import type { MouseEvent } from 'react';
 import type { PicrFolder } from '@shared/types/picr';
 import { LoadingIndicator } from './LoadingIndicator';
 import type { AllFoldersRow } from '@shared/types/queryRows';
+import { useTranslation } from 'react-i18next';
 
 const prettyFolderPath = (folder: PicrFolder) => {
   const chev = ' › ';
@@ -39,23 +40,27 @@ const prettyFolderPath = (folder: PicrFolder) => {
 export const FolderSelector = ({
   folder,
   setFolder,
-  label = 'Folder',
-  description = 'This user can control public links and other users under this folder',
+  label,
+  description,
 }: {
   folder: PicrFolder;
   setFolder: (folder: PicrFolder) => void;
   label?: string;
   description?: string;
 }) => {
+  const { t } = useTranslation('admin');
   const [open, setOpen] = useState(false);
 
   const fullFolderName = prettyFolderPath(folder);
 
   return (
     <>
-      <Input.Wrapper label={label} description={description}>
+      <Input.Wrapper
+        label={label ?? t('folder.selector.label')}
+        description={description ?? t('folder.selector.description')}
+      >
         <Input
-          placeholder="Folder Name"
+          placeholder={t('folder.selector.placeholder')}
           onClick={() => setOpen(true)}
           value={fullFolderName}
           readOnly={true}

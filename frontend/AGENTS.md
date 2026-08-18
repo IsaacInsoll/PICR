@@ -32,8 +32,22 @@ from its missing-translation count; `npm run i18n:check` therefore runs the
 catalog contract as a separate gate. Verify changes to this setup by temporarily
 removing a secondary-locale entry and confirming that command fails. Domain
 registries that also provide untranslated fallbacks need an additional focused
-assertion; metadata descriptions and global auth-error reasons are the current
-examples.
+assertion; metadata descriptions, font presentation, global auth-error reasons
+and social-link default titles are current examples.
+
+`SOCIAL_LINK_TYPES[].defaultTitle` is the stable English fallback copied into a
+persisted, user-editable social-link `title`; it is not selector presentation
+text. Render selector labels from typed catalog keys—even when an official brand
+name intentionally has the same spelling in every catalog. Changing UI language
+must never rewrite branding or user content, and the catalog contract must keep
+English selector labels aligned with these persisted defaults.
+
+Before adding a catalog whose script is not covered by the default heading
+font, establish a deterministic capable fallback and verify both translated UI
+headings and user content in that script. For Greek, the agreed initial stack is
+the selected branding font, then Roboto, then the system fallback; do not filter
+branding choices by the active UI language. Add picker warnings or script-aware
+controls only if real usage demonstrates a need.
 
 LocatorJS is development-only. Its runtime entry (`src/locatorDev.ts`) is injected
 by the serve-only `locatorJsDevRuntime` Vite plugin, and its Babel transform in

@@ -2,6 +2,7 @@ import { Badge, Group, Text, Tooltip } from '@mantine/core';
 import { normalizeDisplayName } from '@shared/displayName';
 import { useMe } from '../hooks/useMe';
 import { useFolderLink } from '../hooks/useSetFolder';
+import { useTranslation } from 'react-i18next';
 
 type FolderChip = {
   id: string;
@@ -35,6 +36,7 @@ export const BrandingFolderChips = ({
   folders: FolderChip[] | null | undefined;
   showLabel?: boolean;
 }) => {
+  const { t } = useTranslation('admin');
   const me = useMe();
 
   if (!folders || folders.length === 0) return null;
@@ -45,7 +47,7 @@ export const BrandingFolderChips = ({
     <Group gap="xs" wrap="wrap">
       {showLabel && (
         <Text size="sm" c="dimmed" fw={500}>
-          Applied to:
+          {t('branding.appliedTo')}
         </Text>
       )}
       {folders.map((folder) => {
@@ -54,10 +56,7 @@ export const BrandingFolderChips = ({
           return <AccessibleFolderChip key={folder.id} folder={folder} />;
         }
         return (
-          <Tooltip
-            key={folder.id}
-            label="This folder is outside your access scope"
-          >
+          <Tooltip key={folder.id} label={t('branding.outsideScope')}>
             <Badge variant="outline" color="gray" style={{ cursor: 'default' }}>
               {normalizeDisplayName(folder.name) ?? folder.id}
             </Badge>

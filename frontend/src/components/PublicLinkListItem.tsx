@@ -7,6 +7,7 @@ import { CopyPublicLinkButton } from '../pages/management/CopyPublicLinkButton';
 import { ViewFolderButton } from './ViewFolderButton';
 import { FolderIcon } from '../PicrIcons';
 import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
+import { useTranslation } from 'react-i18next';
 
 export const PublicLinkListItem = ({
   user,
@@ -15,6 +16,7 @@ export const PublicLinkListItem = ({
   user: ManageFolderUserRow;
   onClick: () => void;
 }) => {
+  const { t } = useTranslation('admin');
   return (
     <Paper
       withBorder
@@ -34,11 +36,11 @@ export const PublicLinkListItem = ({
           <Stack gap={3} style={{ minWidth: 0 }}>
             <Group gap="xs" wrap="nowrap">
               <Text fw={500} size="sm" truncate>
-                {user.name ?? 'Unnamed'}
+                {user.name ?? t('common.unnamed')}
               </Text>
               {!user.enabled && (
                 <Badge size="xs" color="red" variant="light">
-                  Disabled
+                  {t('common.disabled')}
                 </Badge>
               )}
             </Group>

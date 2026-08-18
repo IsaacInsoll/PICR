@@ -1,21 +1,27 @@
 import { Box, Button, InputDescription, InputLabel } from '@mantine/core';
 import { LinkMode } from '@shared/gql/graphql';
 import { linkModeStyle } from './LinkModeStyle';
+import { useTranslation } from 'react-i18next';
 
 const options: Array<{
   value: LinkMode;
-  label: string;
-  description: string;
+  labelKey: 'links.mode.finalDelivery' | 'links.mode.proofsOnly';
+  shortDescriptionKey: 'links.mode.downloadsAllowed' | 'links.mode.noDownloads';
+  descriptionKey:
+    | 'links.mode.finalDeliveryDescription'
+    | 'links.mode.proofsOnlyDescription';
 }> = [
   {
     value: LinkMode.FinalDelivery,
-    label: 'Final delivery',
-    description: 'Downloads allowed',
+    labelKey: 'links.mode.finalDelivery',
+    shortDescriptionKey: 'links.mode.downloadsAllowed',
+    descriptionKey: 'links.mode.finalDeliveryDescription',
   },
   {
     value: LinkMode.ProofNoDownloads,
-    label: 'Proofs only',
-    description: 'No downloads',
+    labelKey: 'links.mode.proofsOnly',
+    shortDescriptionKey: 'links.mode.noDownloads',
+    descriptionKey: 'links.mode.proofsOnlyDescription',
   },
 ];
 
@@ -26,9 +32,11 @@ export const LinkModeSelector = ({
   value: LinkMode;
   onChange: (value: LinkMode) => void;
 }) => {
+  const { t } = useTranslation('admin');
+  const selectedOption = options.find((option) => option.value === value);
   return (
     <Box>
-      <InputLabel>Link Mode</InputLabel>
+      <InputLabel>{t('links.mode.label')}</InputLabel>
 
       <Button.Group pb="xs">
         {options.map((opt) => {
@@ -37,24 +45,20 @@ export const LinkModeSelector = ({
           return (
             <Button
               leftSection={icon}
-              title={opt.description}
+              title={t(opt.shortDescriptionKey)}
               variant={isSelected ? 'filled' : 'default'}
               onClick={() => onChange(opt.value)}
               key={opt.value}
               size="xs"
             >
-              {opt.label}
+              {t(opt.labelKey)}
             </Button>
           );
         })}
       </Button.Group>
-      <InputDescription pb="xs">{descriptions[value]}</InputDescription>
+      <InputDescription pb="xs">
+        {selectedOption ? t(selectedOption.descriptionKey) : null}
+      </InputDescription>
     </Box>
   );
 };
-
-const descriptions = {
-  [LinkMode.FinalDelivery]:
-    'Users can see and download individual images or download all images as ZIP',
-  [LinkMode.ProofNoDownloads]: "Users can see images but can't download images",
-} as const;

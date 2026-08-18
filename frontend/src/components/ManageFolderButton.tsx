@@ -3,6 +3,7 @@ import { NavLink } from 'react-router';
 import { useBaseViewFolderURL } from '../hooks/useBaseViewFolderURL';
 import { FolderIcon, ManageFolderIcon } from '../PicrIcons';
 import { ActionIcon, Button } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 
 export const ManageFolderButton = ({
   folder,
@@ -11,6 +12,7 @@ export const ManageFolderButton = ({
   folder: PicrFolder;
   managing: boolean;
 }) => {
+  const { t } = useTranslation('admin');
   const baseUrl = useBaseViewFolderURL();
   const icon = managing ? <FolderIcon /> : <ManageFolderIcon />;
   return (
@@ -21,7 +23,7 @@ export const ManageFolderButton = ({
       leftSection={icon}
       size="xs"
     >
-      {managing ? 'View' : 'Manage'} folder
+      {managing ? t('folder.view') : t('folder.manage')}
     </Button>
   );
 };

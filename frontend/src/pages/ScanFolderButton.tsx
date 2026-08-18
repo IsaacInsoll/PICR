@@ -5,8 +5,10 @@ import { useMutation } from 'urql';
 import { rescanFolderMutation } from '@shared/urql/mutations/rescanFolderMutation';
 import { RefreshIcon } from '../PicrIcons';
 import { ErrorAlert } from '../components/ErrorAlert';
+import { useTranslation } from 'react-i18next';
 
 export const ScanFolderButton = ({ folderId }: { folderId: string }) => {
+  const { t } = useTranslation('admin');
   const [error, setError] = useState('');
   const [result, rescanFolder] = useMutation(rescanFolderMutation);
 
@@ -22,10 +24,10 @@ export const ScanFolderButton = ({ folderId }: { folderId: string }) => {
     const complete = scanResult.data?.rescanFolder ?? false;
     notifications.show({
       color: complete ? 'green' : 'yellow',
-      title: complete ? 'Scan complete' : 'Scan still settling',
+      title: complete ? t('folder.scan.complete') : t('folder.scan.settling'),
       message: complete
-        ? 'Folder contents are up to date.'
-        : 'Some files are still changing. Run the scan again shortly.',
+        ? t('folder.scan.completeDescription')
+        : t('folder.scan.settlingDescription'),
     });
   };
 
@@ -37,7 +39,7 @@ export const ScanFolderButton = ({ folderId }: { folderId: string }) => {
         onClick={() => void handleClick()}
         leftSection={<RefreshIcon />}
       >
-        Scan Now
+        {t('folder.scan.action')}
       </Button>
       <ErrorAlert message={error} />
     </Stack>

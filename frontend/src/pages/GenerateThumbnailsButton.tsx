@@ -3,12 +3,14 @@ import { generateThumbnailsMutation } from '@shared/urql/mutations/generateThumb
 import { Button } from '@mantine/core';
 import { PhotoCheckIcon } from '../PicrIcons';
 import { generateThumbnailsQuery } from '@shared/urql/queries/generateThumbnailsQuery';
+import { useTranslation } from 'react-i18next';
 
 export const GenerateThumbnailsButton = ({
   folderId,
 }: {
   folderId: string;
 }) => {
+  const { t } = useTranslation('admin');
   const [result] = useQuery({
     query: generateThumbnailsQuery,
     variables: { folderId },
@@ -25,7 +27,7 @@ export const GenerateThumbnailsButton = ({
       onClick={handleClick}
     >
       <PhotoCheckIcon />
-      {`Generate ${totalImages} Thumbnails`}
+      {t('folder.thumbnails.generate', { count: totalImages ?? 0 })}
     </Button>
   );
 };
