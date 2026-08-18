@@ -41,9 +41,12 @@ export const filterFiles = <T extends FilterableFile>(
   });
 };
 
-const textFilter = (file: FilterableFile, text: string): boolean => {
-  return !!file.name && file.name.toLowerCase().includes(text.toLowerCase());
-};
+const normalizeSearchText = (value: string): string =>
+  value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+
+const textFilter = (file: FilterableFile, text: string): boolean =>
+  !!file.name &&
+  normalizeSearchText(file.name).includes(normalizeSearchText(text));
 
 const ratioFilter = (
   file: FilterableFile,
