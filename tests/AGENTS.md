@@ -10,10 +10,11 @@ Testing is split into two suites under `tests/`:
 - API tests validate GraphQL/backend behavior against the Dockerized backend.
 - E2E tests validate that key frontend routes load in a browser and do not throw console errors.
 - Keep these suites integration-focused; do not add frontend component unit tests here.
-- Exception: pure backend-primitive unit tests that guard load-bearing invariants
-  (e.g. the file queue ordering/coalescing in `fileQueue.unit.test.ts`) are allowed
-  in `tests/api`. They mock their dependencies and need no Docker/DB. Name them
-  `*.unit.test.ts` and see "Fast Docker-free unit lane" below.
+- Exception: pure backend or shared-primitive unit tests that guard load-bearing
+  invariants (e.g. file queue ordering/coalescing or shared i18n catalog
+  contracts) are allowed in `tests/api`. They mock their dependencies and need
+  no Docker/DB. Name them `*.unit.test.ts` and see "Fast Docker-free unit lane"
+  below.
 
 ## Fast Docker-free Unit Lane
 

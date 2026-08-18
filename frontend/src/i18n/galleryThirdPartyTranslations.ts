@@ -24,7 +24,7 @@ export const lightboxLabels = (t: GalleryT): Labels => ({
 
 export const videoPlayerTranslations = (
   t: GalleryT,
-): Partial<DefaultLayoutTranslations> => ({
+): DefaultLayoutTranslations => ({
   Announcements: t('videoPlayer.announcements', { ns: 'gallery' }),
   Accessibility: t('videoPlayer.accessibility', { ns: 'gallery' }),
   AirPlay: t('videoPlayer.airPlay', { ns: 'gallery' }),

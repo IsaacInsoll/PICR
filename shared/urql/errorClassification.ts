@@ -7,12 +7,11 @@ import {
 } from '../auth/authErrorContract';
 
 export type GlobalErrorType = 'network_unavailable' | 'no_permissions';
-export type GlobalErrorReason =
-  | typeof AUTH_REASON.ACCESS_DENIED
-  | typeof AUTH_REASON.INVALID_LINK
-  | typeof AUTH_REASON.NOT_A_USER
-  | typeof AUTH_REASON.COMMENTS_NOT_ALLOWED
-  | typeof AUTH_REASON.COMMENTS_HIDDEN;
+export type GlobalErrorReason = {
+  [Reason in AuthErrorReason]: (typeof authErrorCatalog)[Reason]['globalAction'] extends 'global_no_permissions'
+    ? Reason
+    : never;
+}[AuthErrorReason];
 
 const isGlobalErrorReason = (
   reason: AuthErrorReason,

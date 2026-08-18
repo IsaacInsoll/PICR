@@ -20,6 +20,21 @@ treats a numeric `count` interpolation as pluralization; use `count` only when t
 key intentionally has plural forms, and choose another interpolation name for
 plain numeric display.
 
+Translation keys selected dynamically at runtime are not necessarily visible to
+`i18next-cli`, even when TypeScript constrains them to a finite union. Register
+each such path in `i18next.config.ts` and in the dynamic catalog contract. Use a
+namespace-qualified wildcard `preservePatterns` entry only when the entire
+subtree is dynamically selected, such as metadata and global error reasons. In a
+mixed subtree such as sort or review, enumerate only the dynamic leaves so
+unused-key analysis still checks their static siblings. Preservation makes
+unused-key analysis safe, but `i18next-cli status` still excludes wildcarded keys
+from its missing-translation count; `npm run i18n:check` therefore runs the
+catalog contract as a separate gate. Verify changes to this setup by temporarily
+removing a secondary-locale entry and confirming that command fails. Domain
+registries that also provide untranslated fallbacks need an additional focused
+assertion; metadata descriptions and global auth-error reasons are the current
+examples.
+
 LocatorJS is development-only. Its runtime entry (`src/locatorDev.ts`) is injected
 by the serve-only `locatorJsDevRuntime` Vite plugin, and its Babel transform in
 `vite.config.ts` is likewise restricted to serve mode. Do not import the runtime
