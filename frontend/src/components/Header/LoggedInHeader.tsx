@@ -37,7 +37,8 @@ import { PicrMenuItem } from '../PicrLink';
 import { UAParser as parseUserAgent } from 'ua-parser-js';
 import { appStoreLinks } from '@shared/consts';
 import { useTranslation } from 'react-i18next';
-import { LanguageSwitcher } from '../../i18n/LanguageSwitcher';
+// Language switcher soft-disabled (#84) — restore alongside the JSX below.
+// import { LanguageSwitcher } from '../../i18n/LanguageSwitcher';
 
 type MeUser = NonNullable<ReturnType<typeof useMe>>;
 
@@ -184,7 +185,8 @@ const RightSide = ({ me }: { me: MeUser }) => {
           <PicrMenuItem leftSection={<UserSettingsIcon />} to="/admin/settings">
             {t('shell.settings')}
           </PicrMenuItem>
-          <LanguageSwitcher />
+          {/* Language switcher soft-disabled (#84). */}
+          {/* <LanguageSwitcher /> */}
           <Menu.Item leftSection={<LogOutIcon />} onClick={logOut}>
             {t('shell.logOut')}
           </Menu.Item>

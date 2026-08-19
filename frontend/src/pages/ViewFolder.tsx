@@ -59,7 +59,8 @@ import { DownloadZipButton } from '../components/DownloadZipButton';
 import { viewFolderModeFromFileId } from '../helpers/viewFolderMode';
 import { getUUID } from '../helpers/getUUID';
 import { Trans, useTranslation } from 'react-i18next';
-import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
+// Language switcher soft-disabled (#84) — restore alongside the action below.
+// import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
 const LoggedInHeader = lazy(() =>
   import('../components/Header/LoggedInHeader').then((module) => ({
@@ -277,8 +278,9 @@ const ViewFolderBody = () => {
   };
 
   const actions = [];
-  if (me?.isLink)
-    actions.push(<LanguageSwitcher compact key="LanguageSwitcher" />);
+  // Language switcher soft-disabled (#84).
+  // if (me?.isLink)
+  //   actions.push(<LanguageSwitcher compact key="LanguageSwitcher" />);
   const hasOverflowActions =
     !!folder && (!!me?.isUser || canView || canDownload || !!hasFiles);
   // The sort menu lives in overflow only below the md breakpoint. On desktop the

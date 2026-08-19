@@ -17,7 +17,8 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
+// Language switcher soft-disabled (#84) — restore alongside the JSX below.
+// import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
 export const LoginForm = () => {
   const { t } = useTranslation('admin');
@@ -47,7 +48,8 @@ export const LoginForm = () => {
               </Text>
               <Stack align="flex-end" gap="xs">
                 <PicrLogo style={{ width: 32 }} />
-                <LanguageSwitcher />
+                {/* Language switcher soft-disabled (#84) — it cluttered the login screen. */}
+                {/* <LanguageSwitcher /> */}
               </Stack>
             </Group>
             <form onSubmit={doLogin}>

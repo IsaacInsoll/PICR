@@ -1,7 +1,7 @@
 import {
   Button,
   Center,
-  Group,
+  // Group, // Language switcher soft-disabled (#84) — restore with the JSX below.
   Paper,
   PasswordInput,
   Stack,
@@ -16,7 +16,8 @@ import { PasswordIcon } from '../PicrIcons';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
 import { useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
-import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
+// Language switcher soft-disabled (#84) — restore alongside the JSX below.
+// import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
 export const usePublicLinkPasscodeGate = (): {
   pauseMe: boolean;
@@ -72,9 +73,10 @@ export const usePublicLinkPasscodeGate = (): {
         <Center mih="100dvh" p="md">
           <Paper withBorder p="xl" radius="sm" maw={420} w="100%">
             <Stack>
-              <Group justify="flex-end">
+              {/* Language switcher soft-disabled (#84). */}
+              {/* <Group justify="flex-end">
                 <LanguageSwitcher />
-              </Group>
+              </Group> */}
               <Text component="h1" size="xl" fw={700}>
                 {t('unavailable.title')}
               </Text>
@@ -100,9 +102,10 @@ export const usePublicLinkPasscodeGate = (): {
       <Center mih="100dvh" p="md">
         <Paper withBorder p="xl" radius="sm" maw={420} w="100%">
           <Stack>
-            <Group justify="flex-end">
+            {/* Language switcher soft-disabled (#84). */}
+            {/* <Group justify="flex-end">
               <LanguageSwitcher />
-            </Group>
+            </Group> */}
             <Text component="h1" size="xl" fw={700}>
               {info.galleryName ?? t('passcode.defaultTitle')}
             </Text>

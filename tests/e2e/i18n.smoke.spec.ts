@@ -70,20 +70,35 @@ test('French public gallery, passcode, login, and language persistence', async (
       page.getByRole('button', { name: 'Ouvrir la galerie' }),
     ).toBeVisible();
 
-    await page.getByRole('combobox', { name: 'Langue' }).click();
-    await page.getByRole('option', { name: 'English' }).click();
+    // Language switcher soft-disabled (#84). Restore this block, which covered
+    // manual selection and persistence across reloads, when the UI returns.
+    // await page.getByRole('combobox', { name: 'Langue' }).click();
+    // await page.getByRole('option', { name: 'English' }).click();
+    // await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    // await expect(page.getByLabel('Passcode')).toBeVisible();
+    //
+    // await page.reload({ waitUntil: 'domcontentloaded' });
+    // await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    // await expect(page.getByLabel('Passcode')).toBeVisible();
+    //
+    // await page.getByRole('combobox', { name: 'Language' }).click();
+    // await page.getByRole('option', { name: 'Français' }).click();
+    // await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+    //
+    // await page.reload({ waitUntil: 'domcontentloaded' });
+    // await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+    // await expect(page.getByLabel('Code d’accès')).toBeVisible();
+
+    // The `?lng=` override still selects a catalog without the switcher.
+    await page.goto(`/s/${uuid}/${photoFolderId}?lng=en`, {
+      waitUntil: 'domcontentloaded',
+    });
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.getByLabel('Passcode')).toBeVisible();
 
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-    await expect(page.getByLabel('Passcode')).toBeVisible();
-
-    await page.getByRole('combobox', { name: 'Language' }).click();
-    await page.getByRole('option', { name: 'Français' }).click();
-    await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.goto(`/s/${uuid}/${photoFolderId}`, {
+      waitUntil: 'domcontentloaded',
+    });
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
     await expect(page.getByLabel('Code d’accès')).toBeVisible();
 
@@ -100,7 +115,8 @@ test('French public gallery, passcode, login, and language persistence', async (
     await expect(
       page.getByText('10 fichiers', { exact: true }).first(),
     ).toBeVisible();
-    await expect(page.getByRole('combobox', { name: 'Langue' })).toBeVisible();
+    // Language switcher soft-disabled (#84) — restore with the gallery action.
+    // await expect(page.getByRole('combobox', { name: 'Langue' })).toBeVisible();
 
     await page.goto('/route-that-should-hit-login', {
       waitUntil: 'domcontentloaded',
@@ -166,13 +182,17 @@ test('French admin navigation persists and the branding editor works', async ({
     await page.waitForURL('**/admin', { timeout: 15_000 });
 
     await expect(page.getByText('Your Galleries')).toBeVisible();
-    await page
-      .locator('header')
-      .getByRole('button')
-      .filter({ hasText: 'PICR Admin' })
-      .hover();
-    await page.getByRole('combobox', { name: 'Language' }).click();
-    await page.getByRole('option', { name: 'Français' }).click();
+
+    // Language switcher soft-disabled (#84). Restore the header menu selection
+    // below in place of the `?lng=` navigation when the UI returns.
+    // await page
+    //   .locator('header')
+    //   .getByRole('button')
+    //   .filter({ hasText: 'PICR Admin' })
+    //   .hover();
+    // await page.getByRole('combobox', { name: 'Language' }).click();
+    // await page.getByRole('option', { name: 'Français' }).click();
+    await page.goto('/admin?lng=fr', { waitUntil: 'domcontentloaded' });
 
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
     await expect(page.getByText('Vos galeries')).toBeVisible();
@@ -182,7 +202,7 @@ test('French admin navigation persists and the branding editor works', async ({
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
     await expect(page.getByText('Vos galeries')).toBeVisible();
 
-    await page.goto('/admin/settings/branding', {
+    await page.goto('/admin/settings/branding?lng=fr', {
       waitUntil: 'domcontentloaded',
     });
     await expect(

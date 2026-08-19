@@ -5,9 +5,9 @@ PICR's web interface supports:
 - English
 - French
 
-On your first visit, PICR uses a supported language from your browser when one is available and
-otherwise falls back to English. You can change the language from the login screen, public-gallery
-controls, passcode screen, or admin header. A manual choice is saved in that browser for later visits.
+PICR uses a supported language from your browser when one is available and otherwise falls back to
+English, so setting your browser's preferred language is how you choose the interface language. There
+is no in-app language selector at the moment. If you would like a language selector added please open a ticket. 
 
 Dates and numbers continue to use your browser's regional conventions where possible. For example,
 the interface can use English text while retaining Australian date formatting.
