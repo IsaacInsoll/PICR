@@ -163,10 +163,14 @@ Languages can legitimately have more plural forms than English. Check the target
 only a starting point and may not contain every suffix the target language needs. Do not compare raw
 key sets with a bespoke parity script; `npm run i18n:check` is the plural-aware project gate.
 
-The current catalog contract checks key completeness but does not contain a cross-locale assertion
-that translated values retain every English placeholder, third-party token, and component tag. Until
-that contract is added, explicitly compare those token sets while reviewing every new catalog; a
-100% status result alone does not prove token integrity.
+The catalog contract compares each translated value with its English source and normally requires the
+same interpolation names, third-party template tokens, and opening/closing component tags. It compares
+sorted token multisets rather than prose order, so translations remain free to reorder a sentence.
+Target-only plural categories use the English plural family's template as their contract. If natural
+grammar genuinely omits a redundant token, add one narrow, explained omission override in
+`tests/api/i18nCatalogContracts.unit.test.ts`; do not weaken the check for an entire language or token
+type. Overrides are applied to the English contract rather than replacing it, so future source tokens
+remain enforced.
 
 ## Dynamic keys and shared fallbacks
 

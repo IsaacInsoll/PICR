@@ -40,6 +40,150 @@ const translationLeafPaths = (
   );
 };
 
+interface TranslationValueContract {
+  interpolations: string[];
+  templates: string[];
+  tags: string[];
+}
+
+interface TranslationValueContractOverride {
+  omittedInterpolations?: readonly string[];
+  omittedTemplates?: readonly string[];
+  omittedTags?: readonly string[];
+}
+
+const translationValueContractOverrides: Readonly<
+  Record<string, TranslationValueContractOverride>
+> = {
+  // French singular naturally means "showing the largest [file]"; inserting
+  // the supplied limit of 1 would make the sentence less idiomatic.
+  'fr:admin:server.storage.fileLimit_one': {
+    omittedInterpolations: ['limit'],
+  },
+};
+
+const i18nextInterpolationPattern = /\{\{\s*(-?\s*[^{}]+?)\s*\}\}/gu;
+const thirdPartyTemplatePattern = /\{([^{}\s]+)\}/gu;
+const componentTagPattern =
+  /<(\/)?([A-Za-z][\w-]*|\d+)(?:\s[^>]*?)?\s*(\/?)>/gu;
+const pluralSuffixPattern = /_(?:zero|one|two|few|many|other)$/u;
+const englishPluralFallbackSuffixes = [
+  'other',
+  'one',
+  'zero',
+  'two',
+  'few',
+  'many',
+] as const;
+
+const sorted = (values: Iterable<string>): string[] => [...values].sort();
+
+const omitContractTokens = (
+  tokens: readonly string[],
+  omissions: readonly string[] | undefined,
+  context: string,
+): string[] => {
+  const remaining = [...tokens];
+  for (const omission of omissions ?? []) {
+    const index = remaining.indexOf(omission);
+    if (index < 0) {
+      throw new Error(
+        `${context}: contract override omits absent token ${omission}`,
+      );
+    }
+    remaining.splice(index, 1);
+  }
+  return remaining;
+};
+
+const applyTranslationValueContractOverride = (
+  source: TranslationValueContract,
+  override: TranslationValueContractOverride | undefined,
+  context: string,
+): TranslationValueContract => ({
+  interpolations: omitContractTokens(
+    source.interpolations,
+    override?.omittedInterpolations,
+    context,
+  ),
+  templates: omitContractTokens(
+    source.templates,
+    override?.omittedTemplates,
+    context,
+  ),
+  tags: omitContractTokens(source.tags, override?.omittedTags, context),
+});
+
+const translationValueContract = (
+  value: string,
+  context = 'translation value',
+): TranslationValueContract => {
+  const interpolations = [...value.matchAll(i18nextInterpolationPattern)].map(
+    ([, expression]) =>
+      expression.split(',', 1)[0].trim().replace(/^-\s*/u, ''),
+  );
+  const withoutInterpolations = value.replace(i18nextInterpolationPattern, '');
+  const templates = [
+    ...withoutInterpolations.matchAll(thirdPartyTemplatePattern),
+  ].map(([, token]) => token);
+  const tags: string[] = [];
+  const openTags: string[] = [];
+  for (const [, closing, name, selfClosing] of value.matchAll(
+    componentTagPattern,
+  )) {
+    if (selfClosing) {
+      tags.push(`${name}/`);
+      continue;
+    }
+    if (!closing) {
+      openTags.push(name);
+      tags.push(name);
+      continue;
+    }
+
+    const opened = openTags.pop();
+    if (opened !== name) {
+      throw new Error(
+        `${context}: unbalanced component tag; expected </${opened ?? 'none'}>, received </${name}>`,
+      );
+    }
+    tags.push(`/${name}`);
+  }
+  if (openTags.length > 0) {
+    throw new Error(
+      `${context}: unclosed component tag${openTags.length === 1 ? '' : 's'}: ${openTags.join(', ')}`,
+    );
+  }
+
+  return {
+    interpolations: sorted(interpolations),
+    templates: sorted(templates),
+    tags: sorted(tags),
+  };
+};
+
+const englishValueForTranslatedPath = (
+  namespace: TranslationNamespace,
+  path: readonly string[],
+): string | undefined => {
+  const exactValue = translationAtPath(resources.en[namespace], path);
+  if (typeof exactValue === 'string') return exactValue;
+
+  const key = path.at(-1);
+  if (!key || !pluralSuffixPattern.test(key)) return undefined;
+
+  const baseKey = key.replace(pluralSuffixPattern, '');
+  for (const suffix of englishPluralFallbackSuffixes) {
+    const fallbackValue = translationAtPath(resources.en[namespace], [
+      ...path.slice(0, -1),
+      `${baseKey}_${suffix}`,
+    ]);
+    if (typeof fallbackValue === 'string') return fallbackValue;
+  }
+
+  return undefined;
+};
+
 const expectNonEmptyTranslation = (
   language: (typeof supportedLanguageCodes)[number],
   namespace: TranslationNamespace,
@@ -194,5 +338,105 @@ describe('dynamic translation contracts', () => {
         ]);
       }
     }
+  });
+});
+
+describe('translation value contracts', () => {
+  it('extracts interpolation, third-party template, and component-tag contracts', () => {
+    expect(
+      translationValueContract(
+        '<strong>{{folder}}</strong>: {index}/{total} {{folder}} <code>{{- value}}</code>',
+      ),
+    ).toEqual({
+      interpolations: ['folder', 'folder', 'value'],
+      templates: ['index', 'total'],
+      tags: ['/code', '/strong', 'code', 'strong'],
+    });
+  });
+
+  it('allows translated prose to reorder an unchanged runtime contract', () => {
+    expect(
+      translationValueContract(
+        '<code>{{branding}}</code> για τον φάκελο <strong>{{folder}}</strong>',
+      ),
+    ).toEqual(
+      translationValueContract(
+        '<strong>{{folder}}</strong> uses <code>{{branding}}</code>',
+      ),
+    );
+  });
+
+  it('detects missing, renamed, and structurally changed runtime tokens', () => {
+    const source = translationValueContract(
+      '<strong>{{folder}}</strong>: {index} of {total}',
+    );
+
+    expect(
+      translationValueContract('<emphasis>{{φάκελος}}</emphasis>: {index}'),
+    ).not.toEqual(source);
+  });
+
+  it('rejects unbalanced component markup', () => {
+    expect(() =>
+      translationValueContract('<strong><code>Text</strong></code>'),
+    ).toThrow('unbalanced component tag');
+  });
+
+  it('uses the English plural family for a target-only plural category', () => {
+    expect(
+      englishValueForTranslatedPath('gallery', ['count', 'file_few']),
+    ).toBe(resources.en.gallery.count.file_other);
+  });
+
+  it('preserves runtime value contracts across every translated catalog', () => {
+    const usedOverrides = new Set<string>();
+
+    for (const language of supportedLanguageCodes) {
+      if (language === 'en') continue;
+
+      for (const namespace of namespaces) {
+        for (const path of translationLeafPaths(
+          resources[language][namespace],
+        )) {
+          const translatedValue = translationAtPath(
+            resources[language][namespace],
+            path,
+          );
+          const englishValue = englishValueForTranslatedPath(namespace, path);
+          const catalogPath = `${language}:${namespace}:${path.join('.')}`;
+
+          expect(translatedValue, catalogPath).toEqual(expect.any(String));
+          expect(
+            englishValue,
+            `${catalogPath} has no English source template`,
+          ).toEqual(expect.any(String));
+          if (
+            typeof translatedValue !== 'string' ||
+            typeof englishValue !== 'string'
+          ) {
+            continue;
+          }
+
+          const override = translationValueContractOverrides[catalogPath];
+          if (override) usedOverrides.add(catalogPath);
+          const expectedContract = applyTranslationValueContractOverride(
+            translationValueContract(
+              englishValue,
+              `en:${namespace}:${path.join('.')}`,
+            ),
+            override,
+            catalogPath,
+          );
+          expect(
+            translationValueContract(translatedValue, catalogPath),
+            catalogPath,
+          ).toEqual(expectedContract);
+        }
+      }
+    }
+
+    expect(sorted(usedOverrides)).toEqual(
+      sorted(Object.keys(translationValueContractOverrides)),
+    );
   });
 });
