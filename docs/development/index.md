@@ -7,6 +7,7 @@
 | 📱 [App Development](app.md)               | React Native (Expo) App Development         |
 | 👷 [Build Process](build.md)               | How backend build process works             |
 | 🎨 [Frontend Styling](frontend-styling.md) | Mantine-first UI + typed CSS modules        |
+| 🌐 [Translations](translations.md)         | Add and validate interface languages        |
 | 🖼️ [Media Scanning](media-scanning.md)     | File detection, scans, thumbnails, moves    |
 | 📃 [Basic Tutorial](basic-tutorial.md)     | Basic tutorial on front/backend feature dev |
 | 🧪 [Testing](testing.md)                   | Run API + E2E integration tests             |
@@ -90,17 +91,18 @@ For full CI parity, run:
 
 - `npm run workflow`
 
-## Current Warning Budget
+## Zero-Warning Lint Policy
 
-Warnings are not blockers today, but should not grow:
+All four subsystem lint scripts pass `--max-warnings=0`, so ESLint warnings fail the local and CI
+quality gates. Fix a warning at its source rather than weakening the script or changing a rule only to
+make the gate pass.
 
-- `backend`: avoid introducing new warnings; backend `no-console` cleanup is complete and should stay that way.
-- `frontend` and `app`: `react/no-array-index-key` warnings are currently tolerated in a few components.
+Rules such as `no-console` and frontend `react/no-array-index-key` are declared as warnings but still
+block these zero-warning gates. Temporary `console.*` debugging is allowed during investigation, but
+remove it before running the final `npm run check`.
 
-Rule of thumb:
-
-- New code should not introduce additional warnings.
-- If you touch a file with existing warnings, prefer cleaning up that warning in the same change.
+The app uses Expo's wrapper and must keep the forwarding separator in
+`expo lint -- --max-warnings=0`. Without `--`, Expo consumes the option before ESLint sees it.
 
 ## Logging Policy
 

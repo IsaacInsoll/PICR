@@ -1,0 +1,23 @@
+# Languages
+
+PICR's web interface supports:
+
+- English
+- French
+
+On your first visit, PICR uses a supported language from your browser when one is available and
+otherwise falls back to English. You can change the language from the login screen, public-gallery
+controls, passcode screen, or admin header. A manual choice is saved in that browser for later visits.
+
+Dates and numbers continue to use your browser's regional conventions where possible. For example,
+the interface can use English text while retaining Australian date formatting.
+
+PICR translates its interface, not content supplied by photographers or clients. Folder and file
+names, comments, branding text, access-log device names, and exported machine-readable values remain
+exactly as entered or recorded.
+
+The React Native app and server-sent notifications are currently English-only. They are separate
+follow-up projects because they need their own language preference and delivery design.
+
+Want to improve a translation or add a language? See the
+[translation contribution guide](development/translations.md).

@@ -15,6 +15,7 @@ Picr is a self-hosted online image sharing tool for photographers to share photo
 - Logging/Notifications of visits: know when your clients have viewed the data
 - (optional) Ability for clients to rate / approve / comment on images
 - Theming and branding
+- English and French web interface
 
 ## Manual
 
@@ -36,6 +37,8 @@ Picr is a self-hosted online image sharing tool for photographers to share photo
   Receive notifications on your iOS / Android device when users access the folders or leave comments/ratings.
 - [Lightroom Plugin](lightroom-plugin.md)
   Sync ratings and flags from PICR back to Lightroom Classic.
+- [Languages](languages.md)
+  Supported languages, language selection, and the current translation scope.
 
 ## 🧑‍💻 Development
 
@@ -45,7 +48,7 @@ We'd love any help you can offer, including:
 - Product Testing / QA (find and log bugs)
 - Documentation (writing these instructions)
 
-See [Development Docs](docs/development/index.md) to get started
+See [Development Docs](development/index.md) to get started
 
 ## Licensing (human-friendly)
 
