@@ -31,6 +31,7 @@ import type { SocialLink } from '@shared/branding/socialLinkTypes';
 import { PrimaryColor, ThemeMode } from '@shared/gql/graphql';
 import { normalizeFontKey } from '@shared/branding/fontRegistry';
 import { fontFamilies } from '../../fonts.generated';
+import { headingFontFamily } from '../../helpers/fontFamily';
 import { decodeFileSort } from '@shared/files/sortFiles';
 import { TbLayoutGrid, TbList, TbPhoto } from 'react-icons/tb';
 import { normalizeDisplayName } from '@shared/displayName';
@@ -193,7 +194,7 @@ const BrandingCard = ({
   const mode = branding.mode ?? ThemeMode.Auto;
   const primaryColor = branding.primaryColor ?? PrimaryColor.Blue;
   const headingFontKey = normalizeFontKey(branding.headingFontKey);
-  const fontFamily = fontFamilies[headingFontKey];
+  const fontFamily = headingFontFamily(fontFamilies[headingFontKey]);
   const availableViews =
     branding.availableViews && branding.availableViews.length > 0
       ? branding.availableViews

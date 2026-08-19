@@ -29,6 +29,7 @@ import { normalizeFontKey } from '@shared/branding/fontRegistry';
 import { DevBackendOverrideBanner } from './components/DevBackendOverrideBanner';
 import { DownloadSharePromptHost } from './helpers/shareOrDownload';
 import { VersionWatcher } from './components/VersionWatcher';
+import { headingFontFamily } from './helpers/fontFamily';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
@@ -65,10 +66,9 @@ const App = () => {
       key in fontFamilies
         ? fontFamilies[key as keyof typeof fontFamilies]
         : fontFamilies.default;
-    const cssFamily = family.includes(' ') ? `"${family}"` : family;
     document.documentElement.style.setProperty(
       '--picr-heading-font',
-      cssFamily,
+      headingFontFamily(family),
     );
   }, [customTheme.headingFontKey]);
 

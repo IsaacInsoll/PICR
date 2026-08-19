@@ -48,6 +48,7 @@ import {
 } from '@shared/branding/fontRegistry';
 import { Trans, useTranslation } from 'react-i18next';
 import { fontFamilies } from '../../fonts.generated';
+import { headingFontFamily } from '../../helpers/fontFamily';
 import {
   fontCategoryTranslator,
   fontDescriptionTranslator,
@@ -821,7 +822,9 @@ const HeadingFontSelector = ({
         clearable={false}
         styles={{
           input: {
-            fontFamily: fontFamilies[value as keyof typeof fontFamilies],
+            fontFamily: headingFontFamily(
+              fontFamilies[value as keyof typeof fontFamilies],
+            ),
           },
         }}
         onChange={(next) => {
@@ -832,8 +835,9 @@ const HeadingFontSelector = ({
             gap="xs"
             pb="sm"
             style={{
-              fontFamily:
+              fontFamily: headingFontFamily(
                 fontFamilies[option.value as keyof typeof fontFamilies],
+              ),
             }}
           >
             <div>{option.label}</div>

@@ -553,11 +553,19 @@ behavior changes from the 9.x defaults.
 ```typescript
 // theme.tsx
 const theme = createTheme({
-  fontFamily: 'Roboto, sans-serif',
-  headings: { fontFamily: 'Signika, sans-serif' },
+  fontFamily: bodyFontFamily,
+  headings: {
+    fontFamily: `var(--picr-heading-font, ${defaultHeadingFontFamily})`,
+  },
   primaryColor: 'blue', // Overridden per-folder via branding
 });
 ```
+
+`--picr-heading-font` contains the complete selected branding font → Roboto →
+system stack, not only the selected family. Use `headingFontFamily()` for
+branding previews and any other surface that cannot consume the variable
+directly. This keeps Greek and other unsupported glyphs deterministic without
+filtering branding choices by interface language.
 
 ### Common Patterns
 

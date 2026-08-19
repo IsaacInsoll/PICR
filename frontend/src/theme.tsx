@@ -1,15 +1,13 @@
 import { Anchor, createTheme, Switch } from '@mantine/core';
-
-export const fonts =
-  '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji';
+import { bodyFontFamily, defaultHeadingFontFamily } from './helpers/fontFamily';
 
 export const theme = createTheme({
   defaultRadius: 'sm',
-  fontFamily: 'Roboto, ' + fonts,
+  fontFamily: bodyFontFamily,
   fontFamilyMonospace:
     'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace',
   headings: {
-    fontFamily: 'var(--picr-heading-font, Signika), ' + fonts,
+    fontFamily: `var(--picr-heading-font, ${defaultHeadingFontFamily})`,
   },
   components: {
     Anchor: Anchor.extend({
