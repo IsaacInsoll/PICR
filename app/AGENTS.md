@@ -375,6 +375,10 @@ npx expo start --clear  # Clear cache first
 
 ## Validation Commands
 
+The app lint script must remain `expo lint -- --max-warnings=0`. The separator
+forwards the warning option through Expo to ESLint; without it Expo silently
+consumes the option and the zero-warning gate becomes ineffective.
+
 Run these after app changes:
 
 ```bash

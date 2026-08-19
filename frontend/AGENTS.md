@@ -49,6 +49,23 @@ the selected branding font, then Roboto, then the system fallback; do not filter
 branding choices by the active UI language. Add picker warnings or script-aware
 controls only if real usage demonstrates a need.
 
+The frontend literal-string gate is deliberately focused. `i18next/no-literal-string`
+checks literals lexically inside JSX plus its configured user-facing attributes,
+then applies enclosing component, call, object-property, typed and content
+exclusions. It does not police module-level data, helper bodies or handlers
+defined outside the returned JSX. A separate `no-restricted-syntax` selector
+catches direct literal `title`/`message` properties in inline
+`notifications.show({...})` calls, but variables, templates and conditional
+expressions still require review.
+
+Keep ESLint `parserOptions.projectService: true`: PICR's type-aware rules depend
+on it, and the i18n rule uses contextual literal unions to distinguish stable
+typed values from prose. Keep the explicit `labelKey` object-property exclusion
+as well; the plugin still reports PICR's current typed `labelKey` literals. Use
+only narrow, explained file-level exceptions. `DevBackendOverrideBanner.tsx` is
+the current exception because it renders only in the development backend-proxy
+workflow; do not replace it with a broad directory or protocol/URL exemption.
+
 LocatorJS is development-only. Its runtime entry (`src/locatorDev.ts`) is injected
 by the serve-only `locatorJsDevRuntime` Vite plugin, and its Babel transform in
 `vite.config.ts` is likewise restricted to serve mode. Do not import the runtime

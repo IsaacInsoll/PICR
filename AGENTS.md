@@ -366,7 +366,7 @@ ESLint enforces that `frontend`, `backend`, and `app` do not import from each ot
 - **Functional React** - No class components
 - **Prettier 3** - Two-space indentation, format before committing
 - **ESLint** - React hooks rules, React Compiler compatibility
-- **Temporary debugging is allowed** - In this local dev environment, add `console.log`, `console.debug`, backend `log('debug', ...)`, or similarly direct instrumentation when it helps troubleshooting. Remove temporary traces before saying the job is done. Do not add dev-mode switches, feature flags, or permanent logging just to justify short-lived debugging output.
+- **Temporary debugging is allowed** - In this local dev environment, add `console.log`, `console.debug`, backend `log('debug', ...)`, or similarly direct instrumentation when it helps troubleshooting. Remove temporary traces before saying the job is done. `no-console` is declared as a warning, but every lint script uses `--max-warnings=0`, so temporary `console.*` traces must also be removed before `npm run check` can pass. Do not add dev-mode switches, feature flags, or permanent logging just to justify short-lived debugging output.
 - **Frontend UI styling** - Prefer Mantine-idiomatic patterns (components, theme tokens, semantic colors) over hardcoded inline CSS values
 - **Typed CSS modules** - Prefer `styles.className` dot notation (camelCase class names) and keep generated `*.module.css.d.ts` files in sync/committed via `css:types`
 

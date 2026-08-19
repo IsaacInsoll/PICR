@@ -3,14 +3,22 @@ import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import i18next from 'eslint-plugin-i18next';
 import {
   picrCommonLinterOptions,
   picrCommonPlugins,
   picrCommonRules,
   picrRestrictedImports,
+  picrRestrictedSyntaxRules,
   picrTypeAwareAsyncRules,
   picrTypeScriptRules,
 } from '../eslint/picr-eslint.mjs';
+
+const notificationLiteralRule = {
+  selector:
+    "CallExpression[callee.object.name='notifications'][callee.property.name='show'] > ObjectExpression > Property[key.name=/^(title|message)$/] > Literal",
+  message: 'Notification title/message must come from t().',
+};
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -33,6 +41,7 @@ export default tseslint.config(
     },
     plugins: {
       ...picrCommonPlugins,
+      i18next,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
@@ -45,6 +54,33 @@ export default tseslint.config(
       'react/destructuring-assignment': ['error', 'always'],
       'react/no-unescaped-entities': 'off',
       'react/no-array-index-key': 'warn',
+      'i18next/no-literal-string': [
+        'error',
+        {
+          framework: 'react',
+          mode: 'jsx-only',
+          'jsx-attributes': {
+            include: [
+              'alt',
+              'aria-label',
+              'description',
+              'label',
+              'message',
+              'nothingFoundMessage',
+              'placeholder',
+              'title',
+            ],
+          },
+          'object-properties': {
+            exclude: ['[A-Z_-]+', 'labelKey'],
+          },
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        ...picrRestrictedSyntaxRules,
+        notificationLiteralRule,
+      ],
       'no-restricted-imports': picrRestrictedImports([
         {
           group: ['../**/backend/**'],
@@ -76,6 +112,12 @@ export default tseslint.config(
             'Do not import frontend root types. Use @shared/types/picr or other shared/types modules.',
         },
       ]),
+    },
+  },
+  {
+    files: ['src/components/DevBackendOverrideBanner.tsx'],
+    rules: {
+      'i18next/no-literal-string': 'off',
     },
   },
 );

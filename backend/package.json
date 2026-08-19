@@ -4,7 +4,7 @@
   "exports": "./app.ts",
   "type": "module",
   "scripts": {
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts --max-warnings=0",
     "build": "rm -rf ../dist/server && tsc && tsc-alias && cd .. && sh ./copy-backend-files.sh",
     "start": " node ../dist/server/backend/app.js",
     "dk": "DOTENV_CONFIG_PATH=../.env NODE_OPTIONS='--import tsx' drizzle-kit",
