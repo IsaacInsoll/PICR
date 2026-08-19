@@ -1,6 +1,7 @@
 import { useAtom } from 'jotai';
 import { Alert, Button, Paper, Stack, Text, Title } from '@mantine/core';
 import { globalErrorAtom, clearGlobalError } from '@shared/globalErrorAtom';
+import { stripUrqlErrorPrefixes } from '@shared/urql/stripUrqlErrorPrefixes';
 import { DisconnectedIcon, RefreshIcon, WarningIcon } from '../PicrIcons';
 import { useTranslation } from 'react-i18next';
 
@@ -49,8 +50,8 @@ export const GlobalErrorOverlay = () => {
           {incident.diagnosticMessage || incident.operationName ? (
             <Alert variant="light" color="red" icon={<WarningIcon />}>
               {incident.diagnosticMessage
-                ?.replace('[GraphQL] ', '')
-                .replace('[Network] ', '')}
+                ? stripUrqlErrorPrefixes(incident.diagnosticMessage)
+                : null}
               {incident.operationName ? (
                 <Text size="sm" mt="xs">
                   {t('error.operation', {

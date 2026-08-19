@@ -1,4 +1,6 @@
 import { Alert, Transition } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
+import { stripUrqlErrorPrefixes } from '@shared/urql/stripUrqlErrorPrefixes';
 import { WarningIcon } from '../PicrIcons';
 
 export interface ErrorAlertProps {
@@ -7,6 +9,7 @@ export interface ErrorAlertProps {
 }
 
 export const ErrorAlert = ({ message, title }: ErrorAlertProps) => {
+  const { t } = useTranslation('admin');
   const visible = !!message;
   return (
     <Transition
@@ -20,10 +23,10 @@ export const ErrorAlert = ({ message, title }: ErrorAlertProps) => {
           style={styles}
           variant="filled"
           color="red"
-          title={title ?? 'Error'}
+          title={title ?? t('common.error')}
           icon={<WarningIcon />}
         >
-          {message?.replace('[GraphQL] ', '')}
+          {message ? stripUrqlErrorPrefixes(message) : null}
         </Alert>
       )}
     </Transition>

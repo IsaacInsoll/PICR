@@ -197,14 +197,18 @@ test('French admin navigation persists and the branding editor works', async ({
       .click();
     const drawer = page.getByRole('dialog');
     await expect(drawer.getByText('Créer une identité visuelle')).toBeVisible();
-    await drawer.getByLabel('Nom').fill(brandingName);
+    await drawer
+      .getByRole('textbox', { name: 'Nom', exact: true })
+      .fill(brandingName);
     await drawer.getByRole('button', { name: 'Créer', exact: true }).click();
 
     await expect(drawer).toHaveCount(0);
     await expect(page.getByText(brandingName, { exact: true })).toBeVisible();
 
     await page.getByText(brandingName, { exact: true }).click();
-    await expect(drawer.getByLabel('Nom')).toHaveValue(brandingName);
+    await expect(
+      drawer.getByRole('textbox', { name: 'Nom', exact: true }),
+    ).toHaveValue(brandingName);
     await drawer.getByRole('button', { name: 'Supprimer' }).click();
     await expect(page.getByText(brandingName, { exact: true })).toHaveCount(0);
     expectNoBrowserFailures(failures);

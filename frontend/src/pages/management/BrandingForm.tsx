@@ -253,7 +253,7 @@ export const BrandingForm = ({
             ) : null}
             <TextInput
               label={t('branding.form.logoUrl')}
-              placeholder="https://example.com/logo.png"
+              placeholder={t('branding.form.logoUrlPlaceholder')}
               value={branding.logoUrl ?? ''}
               onChange={(e) =>
                 onChange({ ...branding, logoUrl: e.target.value || null })
@@ -480,7 +480,7 @@ export const BrandingForm = ({
             />
             <TextInput
               label={t('branding.form.websiteUrl')}
-              placeholder="https://yourstudio.com"
+              placeholder={t('branding.form.websiteUrlPlaceholder')}
               value={branding.footerUrl ?? ''}
               onChange={(e) =>
                 onChange({ ...branding, footerUrl: e.target.value || null })

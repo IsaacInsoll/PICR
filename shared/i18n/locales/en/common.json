@@ -5,6 +5,11 @@
   "language": {
     "label": "Language"
   },
+  "update": {
+    "available": "New version available",
+    "autoRefresh": "PICR will refresh automatically when you’re idle.",
+    "refreshNow": "Refresh now"
+  },
   "table": {
     "rowActions": "Row actions",
     "noRecords": "No records"

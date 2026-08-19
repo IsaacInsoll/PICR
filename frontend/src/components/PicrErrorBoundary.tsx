@@ -98,7 +98,7 @@ function UnexpectedErrorFallback({ error }: { error: Error }) {
       <Stack gap="sm">
         <Box>
           <Code color="red.9" c="white" style={{ fontSize: 14 }}>
-            {prettyMessage(error.message)}
+            {error.message}
           </Code>
         </Box>
 
@@ -109,9 +109,3 @@ function UnexpectedErrorFallback({ error }: { error: Error }) {
     </Alert>
   );
 }
-
-const prettyMessage = (errorMessage: string) => {
-  if (errorMessage === 'r.definitions is not iterable')
-    return 'GraphQL Query Error. Try a build';
-  return errorMessage;
-};

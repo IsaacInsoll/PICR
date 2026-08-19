@@ -1,6 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { notifications } from '@mantine/notifications';
 import { Anchor, Text } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   fetchDeployedEntryHash,
   getLoadedEntryHash,
@@ -24,11 +26,43 @@ const ACTIVITY_EVENTS = [
   'wheel',
 ] as const;
 
+const translatedNotification = (
+  t: TFunction<'common'>,
+  reload: () => void,
+) => ({
+  title: t('update.available'),
+  message: (
+    <Text size="sm">
+      {t('update.autoRefresh')}{' '}
+      <Anchor component="button" type="button" onClick={reload}>
+        {t('update.refreshNow')}
+      </Anchor>
+    </Text>
+  ),
+});
+
 // Proactively recovers from the stale-chunk problem: rather than waiting for a
 // navigation to fail on a missing chunk (handled by chunkReload as a last
 // resort), this notices a new deploy and reloads the page while the user isn't
 // actively doing anything, so they rarely see the mid-action reload.
 export const VersionWatcher = () => {
+  const { t } = useTranslation('common');
+  const tRef = useRef(t);
+  const reloadRef = useRef<(() => void) | null>(null);
+
+  // The watcher is intentionally mount-only. Update its translator ref and any
+  // visible notification without cancelling timers or invalidating reload's
+  // closure when the user changes language.
+  useEffect(() => {
+    tRef.current = t;
+    if (reloadRef.current) {
+      notifications.update({
+        id: NOTIFICATION_ID,
+        ...translatedNotification(t, reloadRef.current),
+      });
+    }
+  }, [t]);
+
   useEffect(() => {
     // Dev builds serve unhashed modules from Vite, so there is nothing to diff.
     if (import.meta.env.DEV) return;
@@ -75,17 +109,10 @@ export const VersionWatcher = () => {
     const onUpdateAvailable = () => {
       if (updateAvailable) return;
       updateAvailable = true;
+      reloadRef.current = reload;
       notifications.show({
         id: NOTIFICATION_ID,
-        title: 'New version available',
-        message: (
-          <Text size="sm">
-            PICR will refresh automatically when you’re idle.{' '}
-            <Anchor component="button" type="button" onClick={reload}>
-              Refresh now
-            </Anchor>
-          </Text>
-        ),
+        ...translatedNotification(tRef.current, reload),
         color: 'blue',
         autoClose: false,
         withCloseButton: true,
@@ -112,6 +139,8 @@ export const VersionWatcher = () => {
 
     return () => {
       cancelled.current = true;
+      reloadRef.current = null;
+      notifications.hide(NOTIFICATION_ID);
       clearInterval(interval);
       if (idleTimer) clearTimeout(idleTimer);
       document.removeEventListener('visibilitychange', onVisibilityChange);

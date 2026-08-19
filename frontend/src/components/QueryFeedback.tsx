@@ -8,6 +8,7 @@ import {
   classifyGlobalUrqlError,
   isAuthExpiredError,
 } from '@shared/urql/errorClassification';
+import { stripUrqlErrorPrefixes } from '@shared/urql/stripUrqlErrorPrefixes';
 import { useTranslation } from 'react-i18next';
 
 interface QueryFeedbackProps {
@@ -35,7 +36,7 @@ export default function QueryFeedback({ result, reQuery }: QueryFeedbackProps) {
           title={t('error.generic')}
           icon={<AlertIcon />}
         >
-          {error.toString().replace('[GraphQL] ', '')}
+          {stripUrqlErrorPrefixes(error.toString())}
           <Button onClick={reQuery}>{t('error.retry')}</Button>
           <Button onClick={logOut}>{t('error.logOut')}</Button>
         </Alert>

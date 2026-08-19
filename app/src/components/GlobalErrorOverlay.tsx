@@ -1,4 +1,5 @@
 import { clearGlobalError, globalErrorAtom } from '@shared/globalErrorAtom';
+import { stripUrqlErrorPrefixes } from '@shared/urql/stripUrqlErrorPrefixes';
 import { PText } from '@/src/components/PText';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { useAtomValue } from 'jotai';
@@ -51,11 +52,7 @@ export const GlobalErrorOverlay = () => {
         </PText>
         {incident.diagnosticMessage ? (
           <View style={styles.messageBox}>
-            <PText>
-              {incident.diagnosticMessage
-                .replace('[GraphQL] ', '')
-                .replace('[Network] ', '')}
-            </PText>
+            <PText>{stripUrqlErrorPrefixes(incident.diagnosticMessage)}</PText>
           </View>
         ) : null}
         <View style={styles.buttonRow}>

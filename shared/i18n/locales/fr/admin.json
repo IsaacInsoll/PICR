@@ -21,6 +21,11 @@
       "open": "Ouvrir l’application"
     }
   },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "Nous n’avons pas trouvé la page que vous recherchez.",
+    "contact": "Vérifiez l’adresse et réessayez."
+  },
   "dashboard": {
     "searchPlaceholder": "Rechercher des photos et des dossiers…",
     "stats": {
@@ -90,6 +95,7 @@
   },
   "common": {
     "root": "Racine",
+    "error": "Erreur",
     "actions": "Actions",
     "enabled": "Activé",
     "disabled": "Désactivé",
@@ -397,6 +403,7 @@
       "name": "Nom",
       "namePlaceholder": "Nom de l’identité visuelle",
       "logoUrl": "URL du logo",
+      "logoUrlPlaceholder": "https://example.com/logo.png",
       "theme": "Thème",
       "views": "Vues",
       "availableViews": "Vues disponibles",
@@ -416,6 +423,7 @@
       "businessName": "Nom de l’entreprise",
       "businessNamePlaceholder": "Nom de votre studio",
       "websiteUrl": "URL du site web",
+      "websiteUrlPlaceholder": "https://votrestudio.example",
       "socialLinks": "Liens sociaux",
       "addLink": "Ajouter un lien",
       "custom": "Personnalisé",

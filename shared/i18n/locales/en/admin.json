@@ -21,6 +21,11 @@
       "open": "Open App"
     }
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "We couldn't find the page you're looking for.",
+    "contact": "Check the address and try again."
+  },
   "dashboard": {
     "searchPlaceholder": "Search photos & folders…",
     "stats": {
@@ -90,6 +95,7 @@
   },
   "common": {
     "root": "Root",
+    "error": "Error",
     "actions": "Actions",
     "enabled": "Enabled",
     "disabled": "Disabled",
@@ -397,6 +403,7 @@
       "name": "Name",
       "namePlaceholder": "Branding name",
       "logoUrl": "Logo URL",
+      "logoUrlPlaceholder": "https://example.com/logo.png",
       "theme": "Theme",
       "views": "Views",
       "availableViews": "Available views",
@@ -416,6 +423,7 @@
       "businessName": "Business name",
       "businessNamePlaceholder": "Your Studio Name",
       "websiteUrl": "Website URL",
+      "websiteUrlPlaceholder": "https://yourstudio.example",
       "socialLinks": "Social Links",
       "addLink": "Add link",
       "custom": "Custom",

@@ -93,6 +93,9 @@ const Row = ({
   const rating = isFile ? (file.rating ?? 0) : 0;
   const flag = isFile ? file.flag : null;
   const fileSize = isFile ? file.fileSize : null;
+  // Stable discriminator: keep it out of JSX so the literal-string rule does
+  // not treat the non-translatable value as presentation copy.
+  const displayFileType = isFolder ? 'Folder' : file.type;
   const notAvailable = t('file.notAvailable');
   const modified = modifiedDate ? prettyDate(modifiedDate) : notAvailable;
   const lastComment = latestComment ? prettyDate(latestComment) : notAvailable;
@@ -247,7 +250,7 @@ const Row = ({
               : null}
           </Text>
           <Text fz="xs" ta="right" c="dimmed">
-            {fileTypeLabel(isFolder ? 'Folder' : file.type, t)}
+            {fileTypeLabel(displayFileType, t)}
           </Text>
         </Table.Td>
       ) : null}

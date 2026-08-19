@@ -143,7 +143,12 @@ export const Settings = () => {
             <Suspense fallback={<LoadingIndicator />}>
               <PicrTitle title={[t('settings.tabs.links'), title]} />
               <ManagePublicLinks
-                folder={me?.folder ?? { id: me?.folderId ?? '1', name: 'Root' }}
+                folder={
+                  me?.folder ?? {
+                    id: me?.folderId ?? '1',
+                    name: t('common.root'),
+                  }
+                }
                 disableAddingLinks={true}
                 relations="children"
                 selectedLinkId={
