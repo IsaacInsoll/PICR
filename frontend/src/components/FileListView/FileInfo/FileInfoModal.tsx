@@ -65,7 +65,9 @@ export const FileInfoModal = ({ file }: { file: PicrFile }) => {
               <Table.Th colSpan={2}>{t('file.metadata')}</Table.Th>
             </Table.Tr>
           </Table.Thead>
-          <Table.Tbody>{MetadataTableRows(file)}</Table.Tbody>
+          <Table.Tbody>
+            <MetadataTableRows file={file} />
+          </Table.Tbody>
         </Table>
       ) : null}
     </Modal>

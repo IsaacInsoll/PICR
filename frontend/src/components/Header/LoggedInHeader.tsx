@@ -34,7 +34,7 @@ import type { FolderNavigationTarget } from '@shared/types/ui';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
-import { UAParser } from 'ua-parser-js';
+import { UAParser as parseUserAgent } from 'ua-parser-js';
 import { appStoreLinks } from '@shared/consts';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../../i18n/LanguageSwitcher';
@@ -206,7 +206,7 @@ const openInAppAtom = atom<string | undefined>(undefined);
 
 const OpenInApp = () => {
   const { t } = useTranslation('admin');
-  const { device } = UAParser(navigator.userAgent);
+  const { device } = parseUserAgent(navigator.userAgent);
   const isMobile = device.is('mobile');
   const location = useLocation();
   const setOpen = useSetAtom(openInAppAtom);

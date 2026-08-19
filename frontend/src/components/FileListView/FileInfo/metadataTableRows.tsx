@@ -9,7 +9,7 @@ import { metadataDescriptionTranslator } from '../../../i18n/galleryLabels';
 import { useDateFormatters } from '../../../i18n/useDateFormatters';
 
 // get all keys, remove nulls, add/merge others as expected
-export const MetadataTableRows = (file: PicrFile) => {
+export const MetadataTableRows = ({ file }: { file: PicrFile }) => {
   const { t } = useTranslation('gallery');
   const { formattingLocale, invalidDateLabel } = useDateFormatters();
   const list = metadataForPresentation(

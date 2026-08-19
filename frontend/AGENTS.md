@@ -12,6 +12,16 @@ absolute dates. `Intl.RelativeTimeFormat` produces translated prose, so use
 `useLanguage().catalogLanguage` for relative time to keep its words in the same
 language as the surrounding catalog text.
 
+When adding translation or formatting hooks to an existing render helper,
+render it as a React component (`<Helper ... />`) instead of calling it as a
+plain function. A conditionally called helper makes its hooks conditional hooks
+of the parent component and causes React's "Rendered fewer hooks than expected"
+runtime error. `MetadataTableRows` is one example that must retain its component
+boundary. The frontend enables `react-hooks/capitalized-calls` to enforce this
+component boundary. Alias a genuinely non-component capitalized library
+function to a descriptive lowercase name at import time instead of disabling
+the rule; `UAParser as parseUserAgent` is the current example.
+
 `i18next-cli` infers a namespace from `useTranslation('gallery')` inside a
 component, but it cannot infer the namespace of a `TFunction` passed into a
 helper. Include `{ ns: 'gallery' }` on every `t()` call in those helpers or the

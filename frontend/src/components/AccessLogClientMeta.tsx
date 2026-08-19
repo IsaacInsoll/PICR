@@ -7,7 +7,7 @@ import {
   useComputedColorScheme,
   useMantineTheme,
 } from '@mantine/core';
-import { UAParser } from 'ua-parser-js';
+import { UAParser as parseUserAgent } from 'ua-parser-js';
 import type { IconType } from 'react-icons';
 import {
   TbBrowser,
@@ -54,7 +54,7 @@ export const AccessLogClientMeta = ({
     getInitialValueInEffect: true,
   });
   const isDark = colorScheme === 'dark';
-  const parsed = userAgent ? UAParser(userAgent) : null;
+  const parsed = userAgent ? parseUserAgent(userAgent) : null;
   const browserName = parsed?.browser.name?.trim();
   const osName = parsed?.os.name?.trim();
   const deviceType = parsed?.device.type?.trim();

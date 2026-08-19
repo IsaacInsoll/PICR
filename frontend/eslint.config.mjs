@@ -50,6 +50,7 @@ export default tseslint.config(
       ...picrCommonRules,
       ...picrTypeScriptRules,
       ...picrTypeAwareAsyncRules,
+      'react-hooks/capitalized-calls': 'error',
       'react/prop-types': 'off',
       'react/destructuring-assignment': ['error', 'always'],
       'react/no-unescaped-entities': 'off',
