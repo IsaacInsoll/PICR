@@ -129,7 +129,7 @@
       "name": "Name",
       "namePlaceholder": "EG: ‘Company CEO’ or ‘Valentina’ (optional)",
       "email": "Email",
-      "emailPlaceholder": "EG: kimk or kim@k.com",
+      "emailPlaceholder": "EG: kimk or kim@example.com",
       "password": "Password",
       "enabled": "Enabled",
       "enabledDescription": "Can this user log in?",
@@ -465,7 +465,7 @@
       "google_review": "Paste your review link",
       "email": "you@example.com",
       "phone": "+61400111222",
-      "website": "https://yourstudio.com"
+      "website": "https://yourstudio.example"
     }
   },
   "accessLogs": {

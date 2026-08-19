@@ -23,7 +23,7 @@ const viewBrandingsQueryText = /* GraphQL */ `
   }
 `;
 
-test('French public gallery, passcode, login, and language persistence', async ({
+test('French browser locale covers public gallery, passcode, and login', async ({
   browser,
 }) => {
   const suffix = Math.random().toString(36).slice(2, 8);
@@ -323,9 +323,7 @@ test('Greek browser locale renders gallery and admin surfaces with a safe headin
   }
 });
 
-test('French admin navigation persists and the branding editor works', async ({
-  page,
-}) => {
+test('French admin navigation and branding editor work', async ({ page }) => {
   const suffix = Math.random().toString(36).slice(2, 8);
   const brandingName = `I18n admin smoke ${suffix}`;
   const failures = trackBrowserFailures(page);

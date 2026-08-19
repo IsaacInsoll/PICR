@@ -129,7 +129,7 @@
       "name": "Όνομα",
       "namePlaceholder": "Π.χ. «Διευθύνων σύμβουλος» ή «Βαλεντίνα» (προαιρετικό)",
       "email": "Email",
-      "emailPlaceholder": "Π.χ. kimk ή kim@k.com",
+      "emailPlaceholder": "Π.χ. kimk ή kim@example.com",
       "password": "Κωδικός πρόσβασης",
       "enabled": "Ενεργοποιημένος",
       "enabledDescription": "Μπορεί αυτός ο χρήστης να συνδεθεί;",
@@ -187,7 +187,7 @@
       "publicUrl": "Δημόσιο URL",
       "publicLink": "Αναγνωριστικό δημόσιου συνδέσμου",
       "publicLinkDescription": "Το μυστικό τμήμα του URL που κοινοποιείται στον πελάτη σας",
-      "idPlaceholder": "αναγνωριστικό-δημόσιου-συνδέσμου",
+      "idPlaceholder": "public-link-id",
       "cannotUse": "Δεν επιτρέπεται:",
       "space": "κενό",
       "minimumLength": "Χρησιμοποιήστε τουλάχιστον 6 χαρακτήρες",
@@ -478,7 +478,7 @@
       "google_review": "Επικολλήστε τον σύνδεσμο αξιολόγησής σας",
       "email": "you@example.com",
       "phone": "+306900111222",
-      "website": "https://tostudio.com"
+      "website": "https://tostudio.example"
     }
   },
   "font": {

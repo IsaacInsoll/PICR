@@ -129,7 +129,7 @@
       "name": "Nom",
       "namePlaceholder": "P. ex. « Direction » ou « Valentina » (facultatif)",
       "email": "E-mail",
-      "emailPlaceholder": "P. ex. kimk ou kim@k.com",
+      "emailPlaceholder": "P. ex. kimk ou kim@example.com",
       "password": "Mot de passe",
       "enabled": "Activé",
       "enabledDescription": "Cet utilisateur peut-il se connecter ?",
@@ -187,7 +187,7 @@
       "publicUrl": "URL publique",
       "publicLink": "Identifiant du lien public",
       "publicLinkDescription": "La partie secrète de l’URL transmise à votre client",
-      "idPlaceholder": "identifiant-du-lien",
+      "idPlaceholder": "public-link-id",
       "cannotUse": "Caractères interdits :",
       "space": "espace",
       "minimumLength": "Utilisez au moins 6 caractères",
@@ -463,9 +463,9 @@
       "whatsapp": "33600111222 ou https://wa.me/33600111222",
       "vimeo": "votrenom ou https://vimeo.com/votrenom",
       "google_review": "Collez le lien vers vos avis",
-      "email": "vous@exemple.fr",
+      "email": "vous@example.com",
       "phone": "+33600111222",
-      "website": "https://votrestudio.fr"
+      "website": "https://votrestudio.example"
     }
   },
   "accessLogs": {

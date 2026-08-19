@@ -12,6 +12,7 @@ import {
   fontSuitabilityLabels,
 } from '../../shared/branding/fontRegistry';
 import { SOCIAL_LINK_TYPES } from '../../shared/branding/socialLinkTypes';
+import { badChars } from '../../shared/badChars';
 import { supportedLanguageCodes } from '../../shared/i18n/languages';
 import {
   namespaces,
@@ -219,6 +220,21 @@ const expectNonEmptyTranslation = (
   );
 };
 
+const stringTranslationAtPath = (
+  language: (typeof supportedLanguageCodes)[number],
+  namespace: TranslationNamespace,
+  path: readonly string[],
+): string => {
+  const value = translationAtPath(resources[language][namespace], path);
+  if (typeof value !== 'string') {
+    throw new Error(`${language}:${namespace}:${path.join('.')} is not text`);
+  }
+  return value;
+};
+
+const isReservedExampleHostname = (hostname: string): boolean =>
+  hostname === 'example.com' || hostname.endsWith('.example');
+
 interface DynamicCatalogPath {
   namespace: TranslationNamespace;
   path: string[];
@@ -358,6 +374,56 @@ describe('dynamic translation contracts', () => {
           definition.key,
         ]);
       }
+    }
+  });
+});
+
+describe('translated format examples', () => {
+  it('keeps public-link ID examples valid for the field', () => {
+    for (const language of supportedLanguageCodes) {
+      const example = stringTranslationAtPath(language, 'admin', [
+        'links',
+        'editor',
+        'idPlaceholder',
+      ]);
+      expect(badChars(example), `${language}: invalid link-ID example`).toEqual(
+        [],
+      );
+      expect(
+        example.length,
+        `${language}: link-ID example must satisfy the field minimum`,
+      ).toBeGreaterThanOrEqual(6);
+    }
+  });
+
+  it('uses reserved domains for inert URL and email examples', () => {
+    const urlPaths = [
+      ['branding', 'form', 'logoUrlPlaceholder'],
+      ['branding', 'form', 'websiteUrlPlaceholder'],
+      ['branding', 'socialPlaceholder', 'website'],
+    ] as const;
+
+    for (const language of supportedLanguageCodes) {
+      for (const path of urlPaths) {
+        const example = stringTranslationAtPath(language, 'admin', path);
+        expect(
+          isReservedExampleHostname(new URL(example).hostname),
+          `${language}:admin:${path.join('.')}`,
+        ).toBe(true);
+      }
+
+      const userEmailExample = stringTranslationAtPath(language, 'admin', [
+        'users',
+        'editor',
+        'emailPlaceholder',
+      ]);
+      const socialEmailExample = stringTranslationAtPath(language, 'admin', [
+        'branding',
+        'socialPlaceholder',
+        'email',
+      ]);
+      expect(userEmailExample).toMatch(/(?:^|\s)[^@\s]+@example\.com(?:\s|$)/u);
+      expect(socialEmailExample).toMatch(/^[^@\s]+@example\.com$/u);
     }
   });
 });

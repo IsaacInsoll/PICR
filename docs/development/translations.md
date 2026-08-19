@@ -79,6 +79,12 @@ placeholder prose merely to make validation pass. Official names may intentional
 when that is natural in the target language. Preserve interpolation/template tokens and embedded
 markup as described below.
 
+Keep format examples valid for the field rather than translating them as ordinary prose. An example
+URL segment must use only characters the field accepts, and inert URL or email examples must use an
+IANA-reserved domain such as `example.com` or the `.example` top-level domain. Translate the
+surrounding explanation, but keep a syntax example identical across locales when localization would
+make it invalid or misleading.
+
 Catalog registration and all three complete catalogs should land together so each committed state is
 valid. Do not publish a partially translated language as a supported option.
 

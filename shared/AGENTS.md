@@ -491,9 +491,10 @@ categories, the heading-only marker, and suitability tags are presentation text:
 
 - Add new suitability concepts to `fontSuitabilityLabels`; do not put raw prose
   in `suitableFor`.
-- Add matching English and French `admin.font.*` catalog entries. The catalog
-  contract test keeps the English entries synchronized with the shared fallbacks
-  and requires every supported locale to contain each dynamic key.
+- Add matching `admin.font.*` catalog entries to English and every supported
+  locale. The catalog contract test keeps the English entries synchronized with
+  the shared fallbacks and requires every supported locale to contain each
+  dynamic key.
 - The untranslated app can keep using the shared English fallbacks. Frontend UI
   should pass its catalog-backed translator callbacks to the shared helpers.
 - Presentation-only registry changes do not require regenerating font assets.
