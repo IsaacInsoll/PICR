@@ -1,8 +1,9 @@
 # Translating PICR
 
-PICR uses i18next and react-i18next for the web interface. English is the typed source catalog and
-French is the first additional language. The React Native app and server-sent notifications are not
-localized yet.
+PICR uses i18next and react-i18next for the web interface. English is the typed source catalog. The
+languages configured in the current checkout are listed in `shared/i18n/languages.ts`; the languages
+released to customers are listed on the [Languages](../languages.md) page. The React Native app and
+server-sent notifications are not localized yet.
 
 Coordinate new languages and fluent reviewers through the relevant GitHub issue. Plain JSON pull
 requests are the translation workflow until contributor volume justifies a hosted translation tool.
@@ -33,20 +34,105 @@ Helpers that receive a `TFunction` do not give the extractor enough context to i
 Pass the namespace explicitly at those call sites, for example
 `t('metadata.Camera', { ns: 'gallery' })`.
 
-## Add a language
+## Add a language: end-to-end workflow
 
-1. Add its language code and self-name to `shared/i18n/languages.ts`. Use a language code such as
-   `de`, not a country code such as `DE` or a single regional variant such as `de-CH`.
-2. Copy all three English catalogs into `shared/i18n/locales/<code>/` and translate their values.
-   Preserve key names and interpolation tokens exactly.
-3. Import and register the three catalogs in `shared/i18n/resources.ts`.
-4. Add the code to `locales` and `secondaryLanguages` in `i18next.config.ts`.
-5. Add representative browser coverage for detection, manual selection, persistence, `<html lang>`,
-   and one plural/interpolation case. Do not duplicate the entire catalog in browser assertions.
-6. Run the validation commands at the end of this guide and obtain fluent review.
+Treat this as the authoritative checklist for both human contributors and coding agents. A language
+is not supported merely because its JSON files exist: implementation, automated checks, rendered UI
+review, and fluent approval are all required.
 
-Catalogs are eagerly bundled today. Revisit lazy loading at roughly five supported languages rather
-than designing it into each new catalog.
+### 1. Preflight
+
+Before editing code:
+
+1. Coordinate through the relevant GitHub issue and identify a fluent reviewer. Record whether the
+   initial catalog will be human-written or machine-assisted.
+2. Confirm the language's base code and self-name. Register a language code such as `de`, not a
+   country code such as `DE` or one regional variant such as `de-CH`. Regional browser tags still
+   control date and number formatting.
+3. Confirm writing direction. PICR's translated web UI currently supports LTR languages only. Treat
+   an RTL language as a separately scoped layout and `dir` implementation; do not add its catalog and
+   advertise support while relying on an unverified LTR interface.
+4. If the language introduces a new script, audit the complete body and branding-heading font stacks
+   before translating. Verify both interface text and user-supplied folder/gallery names; CSS alone
+   does not prove that the required glyphs render.
+5. Count the resulting catalog languages. Catalogs are eagerly bundled today; revisit lazy loading at
+   roughly five supported languages rather than adding another eager catalog automatically at that
+   threshold.
+
+### 2. Register and translate it
+
+Complete all of these in one working branch:
+
+1. Add the code and self-name to `shared/i18n/languages.ts`.
+2. Create and fully translate all three catalogs:
+   - `shared/i18n/locales/<code>/common.json`
+   - `shared/i18n/locales/<code>/gallery.json`
+   - `shared/i18n/locales/<code>/admin.json`
+3. Import and register all three catalogs in `shared/i18n/resources.ts`.
+4. Add the code to both `locales` and `secondaryLanguages` in `i18next.config.ts`.
+5. Add a regional-tag case to `tests/api/resolveLanguage.unit.test.ts`, proving that a tag such as
+   `de-CH` selects the `de` catalog while preserving `de-CH` for regional formatting.
+
+Use the English catalogs as the source, translate values rather than keys, and do not leave English
+placeholder prose merely to make validation pass. Official names may intentionally remain identical
+when that is natural in the target language. Preserve interpolation/template tokens and embedded
+markup as described below.
+
+Catalog registration and all three complete catalogs should land together so each committed state is
+valid. Do not publish a partially translated language as a supported option.
+
+### 3. Add representative browser coverage
+
+Extend `tests/e2e/i18n.smoke.spec.ts`; do not reproduce every catalog value in Playwright assertions.
+At minimum prove:
+
+- a representative regional browser locale selects the new base catalog;
+- `<html lang>` uses the base language code;
+- the language appears under its self-name in the switcher;
+- explicit selection persists across reloads;
+- representative `common`, `gallery`, and `admin` text renders in the language;
+- one plural/interpolation example behaves correctly; and
+- a narrow mobile viewport still fits the switcher and representative longer text.
+
+For a new script, also render representative translated headings and user content through the default
+branding choice and at least one branding font that needs the fallback. The fluent reviewer should
+inspect the real rendering for missing glyphs, incorrect fallback, clipping, and awkward wrapping.
+
+### 4. Review, document, and release it
+
+The implementation may be committed as a draft, but it must remain unmerged and unreleased until a
+fluent human has reviewed both the catalogs and the running interface. Give the reviewer the checklist
+in the next section and commit their corrections before describing the language as supported.
+
+After approval, update every customer-facing language list:
+
+- `docs/languages.md`
+- the feature summary in `docs/index.md`
+- the language-support sentence in `readme.md`
+
+Also update the relevant issue/release notes and any language examples in this guide that became
+stale. Do not claim that the React Native app, server notifications, or customer-authored content were
+translated: those remain separate scopes.
+
+### Definition of done
+
+- All namespaces are complete and all validation commands below pass.
+- Detection, switching, persistence, formatting-locale preservation, and representative browser
+  rendering are covered.
+- No stable identifier, user content, diagnostic value, or machine-readable export value changes with
+  the interface language.
+- New-script font rendering has been visually verified where applicable.
+- Machine assistance is disclosed and a named fluent reviewer has approved wording, grammar,
+  plurals, terminology, and rendered layout.
+- Customer documentation is updated only for the language that will actually ship.
+
+For example, once a reviewer is arranged, a maintainer should be able to give a coding agent a task
+as short as:
+
+> Add web-interface support for `<language>` (`<code>`) by following
+> `docs/development/translations.md` end to end. Treat the catalogs as a machine-assisted draft;
+> `<reviewer>` will perform fluent QA. Complete the implementation, tests, script/font preflight, and
+> draft documentation. Commit but do not push.
 
 ## Plurals and interpolation
 
@@ -68,8 +154,19 @@ instead. Preserve all `{{doubleBrace}}` i18next interpolation tokens in translat
 components may define a different template syntax—for example, the lightbox's slide-count template
 uses single braces—so copy the library's token shape exactly.
 
-Languages can legitimately have more plural forms than English. Do not compare raw key sets with a
-bespoke parity script; `npm run i18n:check` is the plural-aware project gate.
+Preserve embedded component tags such as `<strong>` and `<code>` as well. A translation can reorder
+the surrounding prose, but it must retain the same interpolation names, third-party template tokens,
+and valid component tags required by the caller.
+
+Languages can legitimately have more plural forms than English. Check the target categories with
+`new Intl.PluralRules('<code>').resolvedOptions().pluralCategories`; the copied English catalog is
+only a starting point and may not contain every suffix the target language needs. Do not compare raw
+key sets with a bespoke parity script; `npm run i18n:check` is the plural-aware project gate.
+
+The current catalog contract checks key completeness but does not contain a cross-locale assertion
+that translated values retain every English placeholder, third-party token, and component tag. Until
+that contract is added, explicitly compare those token sets while reviewing every new catalog; a
+100% status result alone does not prove token integrity.
 
 ## Dynamic keys and shared fallbacks
 
@@ -114,6 +211,18 @@ particular requires the selected branding font → Roboto → system stack to be
 verified before an `el` catalog is added. Do not filter branding choices by interface language: the
 language of a photographer's content can differ from the viewer's interface language.
 
+Give the fluent reviewer a running build as well as the JSON diff. Ask them to check:
+
+- natural wording, grammar, plural forms, photography terminology, and admin terminology;
+- login, passcode, public gallery, lightbox/video controls, and representative admin/settings pages;
+- language switching, dates, numbers, relative-time prose, and interpolated counts;
+- mobile-width wrapping, truncation, controls, and dialog layouts;
+- unintended English text, excluding documented proper names and untranslated system/user data; and
+- translated UI plus user-supplied content in any newly introduced script.
+
+Record approval and any intentionally unchanged terms in the pull request. Functional testing by a
+speaker is valuable, but it is not a substitute for explicit wording/catalog review.
+
 ## Literal-string lint boundary
 
 The frontend's `i18next/no-literal-string` rule is a regression guard, not proof that every possible
@@ -137,5 +246,6 @@ npm run test:unit
 cd frontend && npm run build
 ```
 
-For visible frontend changes, also run `npm run test:e2e:fresh` from the repository root. The
-maintainer runs `npm run workflow` for full CI parity before merge.
+`npm run i18n:check` must report the new locale as complete and must pass unused-key and dynamic
+catalog contracts. For visible frontend changes, also run `npm run test:e2e:fresh` from the
+repository root. The maintainer runs `npm run workflow` for full CI parity before merge.

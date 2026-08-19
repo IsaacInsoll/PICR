@@ -260,6 +260,10 @@ npm run install-all              # Preferred install flow for all subsystems
 # Do not run `npm install` for `shared`, `frontend`, and `app` in parallel.
 # `npm run i18n:check` imports shared runtime modules for its catalog contract
 # test, so install both root and `shared` dependencies before running it.
+# Before adding a supported web-interface language, read and follow the complete
+# workflow in `docs/development/translations.md`. It covers locale registration,
+# catalog constraints, script/font and RTL preflight, browser coverage, fluent
+# human review, documentation, and the release definition of done.
 
 # Lockfiles after changing a dependency
 # Use the Node version from `.nvmrc` and normal npm peer-dependency resolution.
