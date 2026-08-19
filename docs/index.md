@@ -15,7 +15,7 @@ Picr is a self-hosted online image sharing tool for photographers to share photo
 - Logging/Notifications of visits: know when your clients have viewed the data
 - (optional) Ability for clients to rate / approve / comment on images
 - Theming and branding
-- English and French web interface
+- English, French, and Greek web interface
 
 ## Manual
 

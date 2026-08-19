@@ -1,4 +1,8 @@
 import { defineConfig } from 'i18next-cli';
+import {
+  defaultLanguage,
+  supportedLanguageCodes,
+} from './shared/i18n/languages';
 import type { TranslationNamespace } from './shared/i18n/resources';
 
 type CatalogPath = readonly string[];
@@ -43,14 +47,18 @@ export const dynamicCatalogPatterns = {
   ],
 } as const satisfies Record<TranslationNamespace, readonly CatalogPath[]>;
 
+const secondaryLanguages = supportedLanguageCodes.filter(
+  (language) => language !== defaultLanguage,
+);
+
 export default defineConfig({
-  locales: ['en', 'fr'],
+  locales: supportedLanguageCodes,
   extract: {
     input: ['frontend/src/**/*.{ts,tsx}', 'shared/**/*.{ts,tsx}'],
     ignore: ['**/node_modules/**'],
     output: 'shared/i18n/locales/{{language}}/{{namespace}}.json',
-    primaryLanguage: 'en',
-    secondaryLanguages: ['fr'],
+    primaryLanguage: defaultLanguage,
+    secondaryLanguages,
     defaultNS: 'common',
     fallbackNS: 'common',
     preservePatterns: Object.entries(dynamicCatalogPatterns).flatMap(

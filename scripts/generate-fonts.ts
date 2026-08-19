@@ -23,12 +23,19 @@ const toKebab = (value: string) =>
     .replace(/\s+/g, '-')
     .toLowerCase();
 
+// Keep this in sync with defaultHeadingFontFamily in
+// frontend/src/helpers/fontFamily.ts.
+const defaultBrandingFontFamilyName = 'Signika';
+const defaultBrandingFontsourcePackage = `@fontsource/${toKebab(
+  defaultBrandingFontFamilyName,
+)}`;
+
 const fontsourceOverrides: Record<string, string> = {
   'jetbrains-mono': '@fontsource/jetbrains-mono',
 };
 
 const fontsourcePackage = (font: { key: string; label: string }) => {
-  if (font.key === 'default') return '@fontsource/signika';
+  if (font.key === 'default') return defaultBrandingFontsourcePackage;
   const override = fontsourceOverrides[font.key];
   if (override) return override;
   return `@fontsource/${toKebab(font.label)}`;
@@ -36,7 +43,9 @@ const fontsourcePackage = (font: { key: string; label: string }) => {
 
 const buildWebFonts = (fontRegistry: Array<any>) => {
   const imports = new Set<string>();
-  const fontFamilies: Record<string, string> = { default: 'Signika' };
+  const fontFamilies: Record<string, string> = {
+    default: defaultBrandingFontFamilyName,
+  };
 
   fontRegistry.forEach((font) => {
     if (font.key === 'default') return;
@@ -48,7 +57,7 @@ const buildWebFonts = (fontRegistry: Array<any>) => {
   });
 
   [400, 600, 700].forEach((weight) => {
-    imports.add(`import '@fontsource/signika/${weight}.css';`);
+    imports.add(`import '${defaultBrandingFontsourcePackage}/${weight}.css';`);
   });
   [400, 500, 700].forEach((weight) => {
     imports.add(`import '@fontsource/roboto/${weight}.css';`);

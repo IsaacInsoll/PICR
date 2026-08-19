@@ -10,6 +10,10 @@ describe('resolveLanguage', () => {
       catalogLanguage: 'fr',
       formattingLocale: 'fr-CA',
     });
+    expect(resolveLanguage('el-GR')).toEqual({
+      catalogLanguage: 'el',
+      formattingLocale: 'el-GR',
+    });
   });
 
   it('canonicalizes locale tags', () => {
@@ -41,6 +45,7 @@ describe('formattingLocaleForLanguage', () => {
   it('preserves a regional locale when its base language is selected', () => {
     expect(formattingLocaleForLanguage('en', ['en-AU'])).toBe('en-AU');
     expect(formattingLocaleForLanguage('fr', ['fr-CA'])).toBe('fr-CA');
+    expect(formattingLocaleForLanguage('el', ['el-GR'])).toBe('el-GR');
   });
 
   it('finds a matching regional locale after switching languages', () => {

@@ -69,8 +69,9 @@ Complete all of these in one working branch:
    - `shared/i18n/locales/<code>/gallery.json`
    - `shared/i18n/locales/<code>/admin.json`
 3. Import and register all three catalogs in `shared/i18n/resources.ts`.
-4. Add the code to both `locales` and `secondaryLanguages` in `i18next.config.ts`.
-5. Add a regional-tag case to `tests/api/resolveLanguage.unit.test.ts`, proving that a tag such as
+   `i18next.config.ts` derives its locale lists from `supportedLanguageCodes`, so do not duplicate
+   the language there; verify that `npm run i18n:check` reports it.
+4. Add a regional-tag case to `tests/api/resolveLanguage.unit.test.ts`, proving that a tag such as
    `de-CH` selects the `de` catalog while preserving `de-CH` for regional formatting.
 
 Use the English catalogs as the source, translate values rather than keys, and do not leave English
@@ -88,11 +89,14 @@ At minimum prove:
 
 - a representative regional browser locale selects the new base catalog;
 - `<html lang>` uses the base language code;
-- the language appears under its self-name in the switcher;
-- explicit selection persists across reloads;
+- the non-persisting `?lng=` override selects the catalog;
 - representative `common`, `gallery`, and `admin` text renders in the language;
 - one plural/interpolation example behaves correctly; and
-- a narrow mobile viewport still fits the switcher and representative longer text.
+- a narrow mobile viewport still fits representative longer text.
+
+PICR does not currently expose the in-app language selector. If it is restored, also prove that the
+language appears under its self-name, manual selection persists across reloads, and the selector fits
+at a narrow mobile viewport.
 
 For a new script, also render representative translated headings and user content through the default
 branding choice and at least one branding font that needs the fallback. The fluent reviewer should
@@ -117,8 +121,8 @@ translated: those remain separate scopes.
 ### Definition of done
 
 - All namespaces are complete and all validation commands below pass.
-- Detection, switching, persistence, formatting-locale preservation, and representative browser
-  rendering are covered.
+- Detection, the query override, formatting-locale preservation, and representative browser rendering
+  are covered. When an in-app selector exists, switching and persistence are covered too.
 - No stable identifier, user content, diagnostic value, or machine-readable export value changes with
   the interface language.
 - New-script font rendering has been visually verified where applicable.
@@ -212,9 +216,9 @@ must review the catalog before PICR describes that language as supported. Coordi
 GitHub issues; do not infer a preferred language from someone's name or location.
 
 Before adding a language that uses a new script, verify every interface font and branding heading
-fallback with representative translated headings and user-supplied folder/gallery names. Greek in
-particular requires the selected branding font → Roboto → system stack to be implemented and visually
-verified before an `el` catalog is added. Do not filter branding choices by interface language: the
+fallback with representative translated headings and user-supplied folder/gallery names. Greek uses
+the selected branding font → Roboto → system stack; keep that stack intact and visually verify its
+fallback before shipping an `el` catalog. Do not filter branding choices by interface language: the
 language of a photographer's content can differ from the viewer's interface language.
 
 Give the fluent reviewer a running build as well as the JSON diff. Ask them to check:

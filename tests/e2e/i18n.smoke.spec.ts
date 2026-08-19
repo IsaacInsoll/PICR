@@ -8,7 +8,9 @@ import { adminAuthHeader, gqlRequest } from './graphqlClient';
 import {
   deleteBrandingMutationText,
   deleteUserMutationText,
+  editBrandingMutationText,
   editUserMutationText,
+  setFolderBrandingMutationText,
 } from './mutations';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 
@@ -140,7 +142,7 @@ test('French public gallery, passcode, login, and language persistence', async (
   }
 });
 
-test('unsupported browser locale falls back to English catalogs', async ({
+test('unsupported browser locale falls back to English and honors a Greek query override', async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -158,9 +160,166 @@ test('unsupported browser locale falls back to English catalogs', async ({
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.getByText('Login to PICR')).toBeVisible();
     await expect(page.getByLabel('Username')).toBeVisible();
+
+    await page.goto('/route-that-should-hit-login?lng=el', {
+      waitUntil: 'domcontentloaded',
+    });
+    await expect(page.locator('html')).toHaveAttribute('lang', 'el');
+    await expect(page.getByText('Σύνδεση στο PICR')).toBeVisible();
+
+    await page.goto('/route-that-should-hit-login', {
+      waitUntil: 'domcontentloaded',
+    });
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await expect(page.getByText('Login to PICR')).toBeVisible();
     expectNoBrowserFailures(failures);
   } finally {
     await context.close();
+  }
+});
+
+test('Greek browser locale renders gallery and admin surfaces with a safe heading font stack', async ({
+  browser,
+}) => {
+  const suffix = Math.random().toString(36).slice(2, 8);
+  const uuid = `i18n-greek-${suffix}`;
+  const authHeader = await adminAuthHeader();
+  let createdUserId: string | undefined;
+  let brandingId: string | undefined;
+
+  const context = await browser.newContext({
+    baseURL: testUrl,
+    locale: 'el-GR',
+    timezoneId: 'Europe/Athens',
+    viewport: { width: 390, height: 844 },
+  });
+  const page = await context.newPage();
+  const failures = trackBrowserFailures(page);
+
+  try {
+    const createBrandingResult = await gqlRequest<{
+      editBranding?: { id: string };
+    }>(
+      editBrandingMutationText,
+      {
+        name: `Greek i18n smoke ${suffix}`,
+        headingFontKey: 'bebasNeue',
+        footerTitle: 'Ελληνικός τίτλος',
+      },
+      authHeader,
+    );
+    expect(createBrandingResult.errors).toBeUndefined();
+    brandingId = createBrandingResult.data?.editBranding?.id;
+    expect(brandingId).toBeTruthy();
+
+    const assignBrandingResult = await gqlRequest(
+      setFolderBrandingMutationText,
+      { folderId: photoFolderId, brandingId },
+      authHeader,
+    );
+    expect(assignBrandingResult.errors).toBeUndefined();
+
+    const createUserResult = await gqlRequest<{
+      editUser?: { id: string };
+    }>(
+      editUserMutationText,
+      {
+        folderId: photoFolderId,
+        name: 'Ελληνικά i18n smoke',
+        username: `i18n-greek-${suffix}@example.com`,
+        uuid,
+        enabled: true,
+        commentPermissions: 'read',
+      },
+      authHeader,
+    );
+
+    expect(createUserResult.errors).toBeUndefined();
+    createdUserId = createUserResult.data?.editUser?.id;
+    expect(createdUserId).toBeTruthy();
+
+    await page.goto(`/s/${uuid}/${photoFolderId}`, {
+      waitUntil: 'domcontentloaded',
+    });
+
+    await expect(page.locator('html')).toHaveAttribute('lang', 'el');
+    await expect(
+      page.getByRole('heading', { name: 'Dog Photos' }),
+    ).toBeVisible();
+    await expect(
+      page.getByText('10 αρχεία', { exact: true }).first(),
+    ).toBeVisible();
+
+    const greekFooterTitle = page.getByText('Ελληνικός τίτλος', {
+      exact: true,
+    });
+    await expect(greekFooterTitle).toBeVisible();
+    const selectedHeadingFont = await page
+      .locator('html')
+      .evaluate((html) =>
+        getComputedStyle(html).getPropertyValue('--picr-heading-font').trim(),
+      );
+    expect(selectedHeadingFont).toMatch(/^"Bebas Neue", Roboto, /);
+    const footerFontFamily = await greekFooterTitle.evaluate(
+      (footerTitle) => getComputedStyle(footerTitle).fontFamily,
+    );
+    expect(footerFontFamily).toMatch(/^"Bebas Neue", Roboto, /);
+    expect(footerFontFamily).toContain('sans-serif');
+
+    expectNoBrowserFailures(failures);
+    await page.close();
+
+    // Keep the public link and admin login in separate app instances. Logging
+    // in updates shared storage, which would restart an open public-link tab.
+    const adminPage = await context.newPage();
+    const adminFailures = trackBrowserFailures(adminPage);
+    await adminPage.goto('/admin/settings', {
+      waitUntil: 'domcontentloaded',
+    });
+    await expect(adminPage.getByText('Σύνδεση στο PICR')).toBeVisible();
+    await adminPage
+      .getByLabel('Όνομα χρήστη')
+      .fill(defaultCredentials.username);
+    await adminPage
+      .getByRole('textbox', { name: 'Κωδικός πρόσβασης' })
+      .fill(defaultCredentials.password);
+    await adminPage.getByRole('button', { name: 'Σύνδεση' }).click();
+
+    const settingsHeading = adminPage.getByRole('heading', {
+      name: 'Ρυθμίσεις PICR',
+    });
+    await expect(settingsHeading).toBeVisible();
+    await expect(
+      adminPage.getByRole('tab', { name: 'Εταιρική ταυτότητα' }),
+    ).toBeVisible();
+
+    const headingFontFamily = await settingsHeading.evaluate(
+      (heading) => getComputedStyle(heading).fontFamily,
+    );
+    expect(headingFontFamily).toMatch(/^Signika, Roboto, /);
+    expect(headingFontFamily).toContain('sans-serif');
+    expectNoBrowserFailures(adminFailures);
+  } finally {
+    await context.close();
+    if (createdUserId) {
+      await gqlRequest<{ deleteUser?: boolean }>(
+        deleteUserMutationText,
+        { id: createdUserId },
+        authHeader,
+      );
+    }
+    if (brandingId) {
+      await gqlRequest(
+        setFolderBrandingMutationText,
+        { folderId: photoFolderId, brandingId: null },
+        authHeader,
+      );
+      await gqlRequest<{ deleteBranding?: boolean }>(
+        deleteBrandingMutationText,
+        { id: brandingId },
+        authHeader,
+      );
+    }
   }
 });
 

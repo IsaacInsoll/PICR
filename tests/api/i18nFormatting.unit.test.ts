@@ -56,6 +56,9 @@ describe('formatDate', () => {
     expect(formatDate('2024-01-15T10:30:00Z', 'fr', options)).toBe(
       '15 janvier 2024 à 10:30:00',
     );
+    expect(formatDate('2024-01-15T10:30:00Z', 'el-GR', options)).toBe(
+      '15 Ιανουαρίου 2024 στις 10:30:00 π.μ.',
+    );
   });
 
   it('reports invalid dates without throwing', () => {
@@ -89,6 +92,9 @@ describe('formatRelativeTime', () => {
   it('uses the catalog language for relative-time prose', () => {
     expect(formatRelativeTime('2024-01-15T10:30:00Z', 'fr', now)).toBe(
       'il y a 2 heures',
+    );
+    expect(formatRelativeTime('2024-01-15T10:30:00Z', 'el-GR', now)).toBe(
+      'πριν από 2 ώρες',
     );
   });
 

@@ -42,6 +42,8 @@ export const editBrandingMutationText = /* GraphQL */ `
   mutation EditBranding(
     $id: ID
     $name: String
+    $headingFontKey: HeadingFontKey
+    $footerTitle: String
     $galleryLayout: GalleryLayout
     $thumbnailSize: Int
     $thumbnailSpacing: Int
@@ -50,6 +52,8 @@ export const editBrandingMutationText = /* GraphQL */ `
     editBranding(
       id: $id
       name: $name
+      headingFontKey: $headingFontKey
+      footerTitle: $footerTitle
       galleryLayout: $galleryLayout
       thumbnailSize: $thumbnailSize
       thumbnailSpacing: $thumbnailSpacing
