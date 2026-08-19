@@ -48,8 +48,11 @@ interface TranslationValueContract {
 
 interface TranslationValueContractOverride {
   omittedInterpolations?: readonly string[];
+  addedInterpolations?: readonly string[];
   omittedTemplates?: readonly string[];
+  addedTemplates?: readonly string[];
   omittedTags?: readonly string[];
+  addedTags?: readonly string[];
 }
 
 const translationValueContractOverrides: Readonly<
@@ -96,22 +99,40 @@ const omitContractTokens = (
   return remaining;
 };
 
+const overrideContractTokens = (
+  tokens: readonly string[],
+  omissions: readonly string[] | undefined,
+  additions: readonly string[] | undefined,
+  context: string,
+): string[] =>
+  sorted([
+    ...omitContractTokens(tokens, omissions, context),
+    ...(additions ?? []),
+  ]);
+
 const applyTranslationValueContractOverride = (
   source: TranslationValueContract,
   override: TranslationValueContractOverride | undefined,
   context: string,
 ): TranslationValueContract => ({
-  interpolations: omitContractTokens(
+  interpolations: overrideContractTokens(
     source.interpolations,
     override?.omittedInterpolations,
+    override?.addedInterpolations,
     context,
   ),
-  templates: omitContractTokens(
+  templates: overrideContractTokens(
     source.templates,
     override?.omittedTemplates,
+    override?.addedTemplates,
     context,
   ),
-  tags: omitContractTokens(source.tags, override?.omittedTags, context),
+  tags: overrideContractTokens(
+    source.tags,
+    override?.omittedTags,
+    override?.addedTags,
+    context,
+  ),
 });
 
 const translationValueContract = (
@@ -366,14 +387,48 @@ describe('translation value contracts', () => {
     );
   });
 
-  it('detects missing, renamed, and structurally changed runtime tokens', () => {
+  it.each([
+    ['a missing interpolation', '<strong>folder</strong>: {index} of {total}'],
+    [
+      'a renamed interpolation',
+      '<strong>{{φάκελος}}</strong>: {index} of {total}',
+    ],
+    ['a missing third-party template', '<strong>{{folder}}</strong>: {index}'],
+    [
+      'a changed component tag',
+      '<emphasis>{{folder}}</emphasis>: {index} of {total}',
+    ],
+  ])('detects %s', (_, translatedValue) => {
+    expect(translationValueContract(translatedValue)).not.toEqual(
+      translationValueContract(
+        '<strong>{{folder}}</strong>: {index} of {total}',
+      ),
+    );
+  });
+
+  it('applies explicit additions and omissions as deltas to the source contract', () => {
     const source = translationValueContract(
       '<strong>{{folder}}</strong>: {index} of {total}',
     );
 
     expect(
-      translationValueContract('<emphasis>{{φάκελος}}</emphasis>: {index}'),
-    ).not.toEqual(source);
+      applyTranslationValueContractOverride(
+        source,
+        {
+          omittedInterpolations: ['folder'],
+          omittedTemplates: ['total'],
+          omittedTags: ['strong', '/strong'],
+          addedInterpolations: ['count'],
+          addedTemplates: ['page'],
+          addedTags: ['emphasis', '/emphasis'],
+        },
+        'test override',
+      ),
+    ).toEqual({
+      interpolations: ['count'],
+      templates: ['index', 'page'],
+      tags: ['/emphasis', 'emphasis'],
+    });
   });
 
   it('rejects unbalanced component markup', () => {

@@ -167,10 +167,12 @@ The catalog contract compares each translated value with its English source and 
 same interpolation names, third-party template tokens, and opening/closing component tags. It compares
 sorted token multisets rather than prose order, so translations remain free to reorder a sentence.
 Target-only plural categories use the English plural family's template as their contract. If natural
-grammar genuinely omits a redundant token, add one narrow, explained omission override in
-`tests/api/i18nCatalogContracts.unit.test.ts`; do not weaken the check for an entire language or token
-type. Overrides are applied to the English contract rather than replacing it, so future source tokens
-remain enforced.
+grammar genuinely omits, adds, or repeats a token, add one narrow, explained override in
+`tests/api/i18nCatalogContracts.unit.test.ts`. Before allowing an added interpolation, template, or
+tag, verify and cite in the comment that the call site or third-party library actually supplies it;
+never use an override to bless an unavailable runtime value. Do not weaken the check for an entire
+language or token type. Overrides are applied as additions and omissions to the English contract
+rather than replacing it, so future source tokens remain enforced.
 
 ## Dynamic keys and shared fallbacks
 
