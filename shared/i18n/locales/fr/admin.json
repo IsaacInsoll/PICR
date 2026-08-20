@@ -1,10 +1,10 @@
 {
   "login": {
     "title": "Connexion à PICR",
-    "username": "Nom d’utilisateur",
+    "username": "Nom d'utilisateur",
     "password": "Mot de passe",
     "passwordPlaceholder": "Votre mot de passe",
-    "failed": "Échec de la connexion. Vérifiez votre nom d’utilisateur et votre mot de passe.",
+    "failed": "Échec de la connexion. Vérifiez votre nom d'utilisateur et votre mot de passe.",
     "submit": "Se connecter"
   },
   "shell": {
@@ -14,17 +14,17 @@
     "search": "Rechercher",
     "settings": "Paramètres",
     "logOut": "Se déconnecter",
-    "openInApp": "Ouvrir dans l’application",
+    "openInApp": "Ouvrir dans l'application",
     "app": {
-      "downloadTitle": "Télécharger l’application PICR",
-      "openAutomatically": "PICR devrait s’ouvrir automatiquement si l’application est installée.",
-      "open": "Ouvrir l’application"
+      "downloadTitle": "Télécharger l'application PICR",
+      "openAutomatically": "PICR devrait s'ouvrir automatiquement si l'application est installée.",
+      "open": "Ouvrir l'application"
     }
   },
   "notFound": {
     "title": "Page introuvable",
-    "description": "Nous n’avons pas trouvé la page que vous recherchez.",
-    "contact": "Vérifiez l’adresse et réessayez."
+    "description": "Nous n'avons pas trouvé la page que vous recherchez.",
+    "contact": "Vérifiez l'adresse et réessayez."
   },
   "dashboard": {
     "searchPlaceholder": "Rechercher des photos et des dossiers…",
@@ -74,10 +74,10 @@
     }
   },
   "tips": {
-    "publicLink": "Les liens publics permettent à vos clients d’accéder à un dossier grâce à un « lien secret », sans avoir à se connecter.",
-    "users": "Les utilisateurs disposent d’un identifiant et d’un mot de passe. Ceux qui gèrent des dossiers peuvent également gérer les utilisateurs et les liens de leurs sous-dossiers.",
-    "branding": "Vous pouvez créer une ou plusieurs identités visuelles comprenant un logo et une palette de couleurs. Elles s’appliquent à un dossier et à tous ses sous-dossiers, par exemple une identité sombre pour des photos de sport et une identité lumineuse pour des photos de mariage.",
-    "logs": "PICR enregistre chaque ouverture d’un dossier par un utilisateur afin que vous puissiez vérifier qui utilise vos liens.",
+    "publicLink": "Les liens publics permettent à vos clients d'accéder à un dossier grâce à un « lien secret », sans avoir à se connecter.",
+    "users": "Les utilisateurs disposent d'un identifiant et d'un mot de passe. Ceux qui gèrent des dossiers peuvent également gérer les utilisateurs et les liens de leurs sous-dossiers.",
+    "branding": "Vous pouvez créer une ou plusieurs identités visuelles comprenant un logo et une palette de couleurs. Elles s'appliquent à un dossier et à tous ses sous-dossiers, par exemple une identité sombre pour des photos de sport et une identité lumineuse pour des photos de mariage.",
+    "logs": "PICR enregistre chaque ouverture d'un dossier par un utilisateur afin que vous puissiez vérifier qui utilise vos liens.",
     "dashboard": "PICR vous permet de partager vos photos et vidéos avec vos clients."
   },
   "settings": {
@@ -123,8 +123,8 @@
       "status": "État"
     },
     "editor": {
-      "title": "Gérer l’utilisateur",
-      "titleForFolder": "Gérer l’utilisateur pour : {{folder}}",
+      "title": "Gérer l'utilisateur",
+      "titleForFolder": "Gérer l'utilisateur pour : {{folder}}",
       "account": "Compte",
       "name": "Nom",
       "namePlaceholder": "P. ex. « Direction » ou « Valentina » (facultatif)",
@@ -139,9 +139,9 @@
       "ntfyUrl": "URL des notifications NTFY",
       "ntfyDescription": "Recevoir des notifications sur votre téléphone",
       "ntfyEmail": "Envoyer les notifications NTFY par e-mail",
-      "ntfyEmailDescription": "Envoyer également les alertes NTFY à l’adresse e-mail de ce compte",
-      "create": "Créer l’utilisateur",
-      "deleteTitle": "Supprimer l’utilisateur",
+      "ntfyEmailDescription": "Envoyer également les alertes NTFY à l'adresse e-mail de ce compte",
+      "create": "Créer l'utilisateur",
+      "deleteTitle": "Supprimer l'utilisateur",
       "deleteConfirmation": "Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible et il ne pourra plus se connecter."
     }
   },
@@ -150,11 +150,11 @@
       "link": "Lien",
       "comments": "Commentaires",
       "mode": "Mode",
-      "passcode": "Code d’accès"
+      "passcode": "Code d'accès"
     },
     "passcodeSet": "Défini",
-    "passcodeProtected": "protégé par un code d’accès",
-    "noPasscode": "sans code d’accès",
+    "passcodeProtected": "protégé par un code d'accès",
+    "noPasscode": "sans code d'accès",
     "includeParents": "Inclure les liens des dossiers parents",
     "includeParentsShort": "Parents",
     "includeChildren": "Inclure les liens des sous-dossiers",
@@ -186,7 +186,7 @@
       "title": "Gérer le lien public pour",
       "publicUrl": "URL publique",
       "publicLink": "Identifiant du lien public",
-      "publicLinkDescription": "La partie secrète de l’URL transmise à votre client",
+      "publicLinkDescription": "La partie secrète de l'URL transmise à votre client",
       "idPlaceholder": "public-link-id",
       "cannotUse": "Caractères interdits :",
       "space": "espace",
@@ -196,7 +196,7 @@
       "recipient": "Destinataire",
       "email": "E-mail",
       "optional": "Facultatif",
-      "passcode": "Code d’accès à la galerie",
+      "passcode": "Code d'accès à la galerie",
       "enabledDescription": "Ce lien peut-il être utilisé ?",
       "nameRequired": "Saisissez un nom pour ce lien",
       "deleteTitle": "Supprimer le lien public",
@@ -229,9 +229,9 @@
       "create": "Créer une nouvelle identité visuelle",
       "add": "Ajouter une identité visuelle",
       "select": "Sélectionner une identité visuelle",
-      "edit": "Modifier l’identité visuelle sélectionnée",
+      "edit": "Modifier l'identité visuelle sélectionnée",
       "currentlyInheriting": "Hérite actuellement de {{name}}",
-      "default": "l’identité visuelle par défaut",
+      "default": "l'identité visuelle par défaut",
       "thisFolder": "ce dossier",
       "modalTitle": "Identité visuelle du dossier",
       "inheritedDescription": "<strong>{{folder}}</strong> ne possède pas sa propre identité visuelle. Il hérite actuellement de <strong>{{branding}}</strong>.",
@@ -244,7 +244,7 @@
       "settling": "Analyse du dossier en attente",
       "settlingDescription": "PICR recherche les modifications dans ce dossier.",
       "complete": "Analyse du dossier terminée",
-      "completeDescription": "PICR a terminé l’analyse de ce dossier."
+      "completeDescription": "PICR a terminé l'analyse de ce dossier."
     },
     "thumbnails": {
       "generate_one": "Générer la miniature",
@@ -259,16 +259,16 @@
       "action": "Déplacer/Renommer",
       "validation": {
         "loginRequired": "Connexion requise.",
-        "adminRequired": "Droits d’administration requis.",
+        "adminRequired": "Droits d'administration requis.",
         "readOnly": "Le serveur est en lecture seule.",
         "rootFolder": "Les dossiers racines ne peuvent pas être déplacés ou renommés.",
         "accountRoot": "Votre dossier racine ne peut pas être déplacé ou renommé.",
-        "pathUnavailable": "Le chemin du dossier n’est pas disponible pour ce compte.",
+        "pathUnavailable": "Le chemin du dossier n'est pas disponible pour ce compte.",
         "pathInvalid": "Le chemin du dossier est invalide.",
         "selectParent": "Sélectionnez un dossier parent.",
         "parentOutsideRoot": "Sélectionnez un parent situé dans votre dossier racine.",
         "selfParent": "Choisissez un dossier parent différent de ce dossier.",
-        "descendant": "Impossible de déplacer un dossier dans l’un de ses sous-dossiers.",
+        "descendant": "Impossible de déplacer un dossier dans l'un de ses sous-dossiers.",
         "conflict": "Un dossier portant ce nom existe déjà à cet emplacement.",
         "noChanges": "Aucune modification à appliquer.",
         "name": {
@@ -282,34 +282,34 @@
     "csv": {
       "title": "Exporter les noms de fichiers",
       "action": "Exporter les noms de fichiers",
-      "formatLabel": "Format d’exportation",
+      "formatLabel": "Format d'exportation",
       "format": {
         "picr": "CSV pour le module PICR (nom, note, marqueur)",
         "comma": "Lightroom (séparé par des virgules)",
         "space": "Capture One et Photo Mechanic (séparé par des espaces)"
       },
-      "pluginPrefix": "Importez ces données dans Lightroom Classic à l’aide du",
+      "pluginPrefix": "Importez ces données dans Lightroom Classic à l'aide du",
       "pluginName": "module Lightroom PICR",
       "excludeExtensions": "Exclure les extensions de fichiers",
       "useFilters": "Utiliser les filtres actuels",
       "includeSubfolders": "Inclure les sous-dossiers",
-      "includeSubfoldersDescription": "Exporter tous les fichiers de l’arborescence (10 000 maximum)",
+      "includeSubfoldersDescription": "Exporter tous les fichiers de l'arborescence (10 000 maximum)",
       "loading": "Chargement…",
       "loadError": "Impossible de charger les fichiers des sous-dossiers.",
       "loadingSubfolders": "Chargement des fichiers des sous-dossiers…",
       "loaded": "{{returned}} fichiers chargés sur {{available}}{{truncated}}",
       "truncated": " (liste tronquée)",
       "noFiles": "Aucun fichier trouvé.",
-      "previewCount_one": "{{count}} fichier dans l’aperçu d’exportation",
-      "previewCount_other": "{{count}} fichiers dans l’aperçu d’exportation",
+      "previewCount_one": "{{count}} fichier dans l'aperçu d'exportation",
+      "previewCount_other": "{{count}} fichiers dans l'aperçu d'exportation",
       "empty": "Aucun fichier à exporter pour le moment.",
       "copy": "Copier dans le presse-papiers",
       "download": "Télécharger"
     },
     "banner": {
-      "title": "Définir l’image de bannière",
+      "title": "Définir l'image de bannière",
       "edit": "Modifier la bannière",
-      "clear": "Effacer l’image de bannière",
+      "clear": "Effacer l'image de bannière",
       "setHero": "Définir comme image principale",
       "setHeroOrBanner": "Définir comme image principale ou bannière",
       "setImage": "Définir comme image de bannière",
@@ -343,27 +343,27 @@
         "classic": "Haute et immersive",
         "widescreen": "Format paysage équilibré",
         "cinematic": "Large et compacte",
-        "full": "Remplit l’écran"
+        "full": "Remplit l'écran"
       }
     }
   },
   "branding": {
     "appliedTo": "Appliquée à :",
-    "outsideScope": "Ce dossier se trouve hors de votre périmètre d’accès",
+    "outsideScope": "Ce dossier se trouve hors de votre périmètre d'accès",
     "view": { "list": "Liste", "gallery": "Galerie", "feed": "Fil" },
     "mode": {
       "label": "Thème",
       "auto": "Auto",
       "light": "Clair",
       "dark": "Sombre",
-      "description": "<code>Auto</code> signifie <emphasis>utiliser le réglage de l’appareil de l’utilisateur</emphasis>."
+      "description": "<code>Auto</code> signifie <emphasis>utiliser le réglage de l'appareil de l'utilisateur</emphasis>."
     },
     "layout": { "justified": "Lignes fixes", "masonry": "Colonnes fixes" },
     "headingAlignment": { "left": "À gauche", "center": "Centré" },
     "sort": {
       "label": "Tri par défaut",
-      "description": "Ordre de tri initial à l’ouverture de la galerie. Les visiteurs peuvent toujours le modifier.",
-      "appDefault": "Valeur par défaut de l’application",
+      "description": "Ordre de tri initial à l'ouverture de la galerie. Les visiteurs peuvent toujours le modifier.",
+      "appDefault": "Valeur par défaut de l'application",
       "appDefaultFilename": "Valeur par défaut (nom de fichier)",
       "summary": "{{type}} — {{direction}}",
       "type": {
@@ -388,7 +388,7 @@
     },
     "drawer": {
       "createTitle": "Créer une identité visuelle",
-      "editTitle": "Modifier l’identité visuelle : {{name}}",
+      "editTitle": "Modifier l'identité visuelle : {{name}}",
       "previewGallery": "Prévisualiser la galerie",
       "showOverlay": "Afficher le fond",
       "create": "Créer"
@@ -401,15 +401,15 @@
       },
       "identity": "Identité",
       "name": "Nom",
-      "namePlaceholder": "Nom de l’identité visuelle",
+      "namePlaceholder": "Nom de l'identité visuelle",
       "logoUrl": "URL du logo",
       "logoUrlPlaceholder": "https://example.com/logo.png",
       "theme": "Thème",
       "views": "Vues",
       "availableViews": "Vues disponibles",
-      "availableViewsDescription": "Limitez les vues accessibles aux utilisateurs d’un lien. Les administrateurs voient toujours toutes les vues.",
+      "availableViewsDescription": "Limitez les vues accessibles aux utilisateurs d'un lien. Les administrateurs voient toujours toutes les vues.",
       "defaultView": "Vue par défaut",
-      "defaultViewDescription": "Vue affichée à l’ouverture de la galerie par les utilisateurs d’un lien",
+      "defaultViewDescription": "Vue affichée à l'ouverture de la galerie par les utilisateurs d'un lien",
       "galleryStyling": "Style de la galerie",
       "galleryLayout": "Disposition de la galerie",
       "galleryLayoutDescription": "Les lignes fixes recadrent les vignettes en rangées alignées. Les colonnes fixes préservent les proportions de chaque image dans une disposition en mosaïque.",
@@ -420,7 +420,7 @@
       "headingSize": "Taille des titres",
       "headingAlignment": "Alignement des titres",
       "business": "Entreprise",
-      "businessName": "Nom de l’entreprise",
+      "businessName": "Nom de l'entreprise",
       "businessNamePlaceholder": "Nom de votre studio",
       "websiteUrl": "URL du site web",
       "websiteUrlPlaceholder": "https://votrestudio.example",
@@ -469,9 +469,9 @@
     }
   },
   "accessLogs": {
-    "empty": "Personne n’a encore utilisé de lien public pour consulter ce dossier",
+    "empty": "Personne n'a encore utilisé de lien public pour consulter ce dossier",
     "filterLabel": "Filtrer par lien",
-    "filterPlaceholder": "N’importe quel utilisateur ou lien",
+    "filterPlaceholder": "N'importe quel utilisateur ou lien",
     "columns": {
       "time": "Date",
       "ipAddress": "Adresse IP",
@@ -489,7 +489,7 @@
       "latest": "Dernière version",
       "latestDescription": "La version la plus récente disponible au téléchargement.",
       "developmentBuild": "Version de développement",
-      "developmentBuildDescription": "Compilée depuis le code source plutôt qu’à partir d’une version officielle.",
+      "developmentBuildDescription": "Compilée depuis le code source plutôt qu'à partir d'une version officielle.",
       "developerMode": "Mode développeur",
       "developerModeDescription": "Activé uniquement pour les versions de développement de PICR."
     },
@@ -500,7 +500,7 @@
       "canWriteDescription": "Indique si PICR est autorisé à modifier vos dossiers de photos.",
       "analytics": "Analyse du stockage",
       "usage": "Utilisation du stockage",
-      "usageDescription": "Calcule l’espace disque occupé par vos médias et le cache. Cette opération analyse vos dossiers et peut prendre un moment.",
+      "usageDescription": "Calcule l'espace disque occupé par vos médias et le cache. Cette opération analyse vos dossiers et peut prendre un moment.",
       "calculate": "Calculer",
       "calculating": "Calcul en cours…",
       "media": "Médias",
@@ -517,36 +517,36 @@
     "media": {
       "title": "Médias et performances",
       "description": "Comment PICR génère les aperçus et quels formats multimédias supplémentaires ce serveur peut traiter.",
-      "saveError": "Impossible d’enregistrer les paramètres des médias",
+      "saveError": "Impossible d'enregistrer les paramètres des médias",
       "saved": "Paramètres des médias enregistrés",
-      "savedDescription": "Les nouveaux paramètres de miniatures s’appliqueront lors de la prochaine génération des aperçus.",
+      "savedDescription": "Les nouveaux paramètres de miniatures s'appliqueront lors de la prochaine génération des aperçus.",
       "thumbnails": "Miniatures",
-      "thumbnailDescription": "Les modifications s’appliqueront lors de la prochaine génération des miniatures ; les aperçus existants resteront inchangés jusqu’à leur régénération ou leur suppression.",
+      "thumbnailDescription": "Les modifications s'appliqueront lors de la prochaine génération des miniatures ; les aperçus existants resteront inchangés jusqu'à leur régénération ou leur suppression.",
       "smallWidth": "Petite largeur",
       "mediumWidth": "Largeur moyenne",
       "largeWidth": "Grande largeur",
       "jpegQuality": "Qualité JPEG",
       "useOriginals": "Utiliser les originaux dans la visionneuse",
-      "useOriginalsDescription": "Uniquement pour les images téléchargeables et affichables par le navigateur, par exemple JPEG plutôt que PSD. Les liens d’épreuvage conservent les aperçus optimisés.",
+      "useOriginalsDescription": "Uniquement pour les images téléchargeables et affichables par le navigateur, par exemple JPEG plutôt que PSD. Les liens d'épreuvage conservent les aperçus optimisés.",
       "save": "Enregistrer les paramètres des médias"
     },
     "capabilities": {
       "title": "Capacités du serveur",
-      "description": "Formats et accélération détectés dans l’environnement de ce serveur.",
-      "imageFormats": "Formats d’image",
+      "description": "Formats et accélération détectés dans l'environnement de ce serveur.",
+      "imageFormats": "Formats d'image",
       "imageFormatsDescription": "Types de fichiers photo et de création que PICR peut ouvrir en plus des formats JPEG et PNG.",
       "videoAcceleration": "Accélération vidéo",
-      "videoAccelerationWhenAvailable": "Utilise le matériel graphique pour accélérer les miniatures vidéo et la lecture lorsqu’il est disponible.",
+      "videoAccelerationWhenAvailable": "Utilise le matériel graphique pour accélérer les miniatures vidéo et la lecture lorsqu'il est disponible.",
       "videoAccelerationDescription": "Utilise le matériel graphique pour accélérer les miniatures vidéo et la lecture.",
       "cpuOnly": "Processeur uniquement"
     },
     "server": {
       "title": "Serveur",
-      "description": "Où PICR s’exécute et comment il est configuré.",
+      "description": "Où PICR s'exécute et comment il est configuré.",
       "clientUrl": "URL du client",
-      "clientUrlDescription": "L’adresse utilisée dans votre navigateur diffère de l’URL du serveur ci-dessous, ce qui peut empêcher l’affichage des aperçus des liens de partage.",
+      "clientUrlDescription": "L'adresse utilisée dans votre navigateur diffère de l'URL du serveur ci-dessous, ce qui peut empêcher l'affichage des aperçus des liens de partage.",
       "serverUrl": "URL du serveur",
-      "serverUrlDescription": "L’adresse publique utilisée pour les liens de partage et les aperçus sociaux.",
+      "serverUrlDescription": "L'adresse publique utilisée pour les liens de partage et les aperçus sociaux.",
       "uptime": "Durée de fonctionnement",
       "uptimeDescription": "Durée écoulée depuis le démarrage de ce processus."
     },
@@ -568,8 +568,8 @@
       "description": "Comment PICR détecte les fichiers nouveaux, modifiés et déplacés dans votre dossier de médias.",
       "fileWatcher": "Surveillance des fichiers",
       "fileWatcherDescription": "Surveille en direct les modifications du dossier de médias.",
-      "onView": "Analyse à l’ouverture",
-      "onViewDescription": "Vérifie à nouveau un dossier lorsqu’une personne l’ouvre.",
+      "onView": "Analyse à l'ouverture",
+      "onViewDescription": "Vérifie à nouveau un dossier lorsqu'une personne l'ouvre.",
       "scheduled": "Analyse planifiée",
       "scheduledDescription": "Rapprochement complet et périodique de toute la bibliothèque.",
       "everyHours_one": "Toutes les {{count}} h",
@@ -620,7 +620,7 @@
   },
   "font": {
     "label": "Police des titres",
-    "help": "S’applique uniquement aux titres et aux en-têtes de section",
+    "help": "S'applique uniquement aux titres et aux en-têtes de section",
     "headingOnly": "Titres uniquement",
     "category": {
       "sans": "Sans sérif",
@@ -637,7 +637,7 @@
       "source-sans-3": "Police sans sérif éditoriale et apaisée ; épurée et polyvalente.",
       "manrope": "Minimaliste, géométrique et contemporaine.",
       "merriweather-sans": "Équilibrée et légèrement classique.",
-      "montserrat": "Audacieuse, géométrique et axée sur l’identité visuelle.",
+      "montserrat": "Audacieuse, géométrique et axée sur l'identité visuelle.",
       "merriweather": "Police avec sérif classique, lisible et chaleureuse.",
       "lora": "Police avec sérif douce et romantique, au ton délicat.",
       "libre-baskerville": "Élégante, littéraire et raffinée.",
@@ -650,7 +650,7 @@
       "pinyon-script": "Script calligraphique formel.",
       "dancing-script": "Script lisible et chaleureux.",
       "jetbrains-mono": "Police monospace nette et technique pour les affichages riches en métadonnées.",
-      "atkinson-hyperlegible-next": "Police sans sérif très lisible, conçue pour l’accessibilité visuelle.",
+      "atkinson-hyperlegible-next": "Police sans sérif très lisible, conçue pour l'accessibilité visuelle.",
       "atkinson-hyperlegible-mono": "Version monospace complémentaire, optimisée pour la lisibilité."
     },
     "suitability": {
@@ -700,7 +700,7 @@
       "archival": "archivage",
       "technicalShoots": "prises de vue techniques",
       "filmLabs": "laboratoires photo",
-      "accessibilityFocusedGalleries": "galeries axées sur l’accessibilité",
+      "accessibilityFocusedGalleries": "galeries axées sur l'accessibilité",
       "olderAudiences": "publics âgés",
       "accessibilityMetadataHeavyViews": "vues accessibles riches en métadonnées"
     }

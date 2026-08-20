@@ -5,9 +5,9 @@
     "comments": "Commentaires",
     "inFolder": "dans",
     "newest": "Plus récents",
-    "newestFirst": "Plus récents d’abord",
+    "newestFirst": "Plus récents d'abord",
     "oldest": "Plus anciens",
-    "oldestFirst": "Plus anciens d’abord",
+    "oldestFirst": "Plus anciens d'abord",
     "onFile": "Commentaires sur {{name}}",
     "ratings": "Notes",
     "system": "Système",
@@ -25,7 +25,7 @@
   },
   "download": {
     "alreadyRunning": {
-      "message": "Attendez la fin du téléchargement en cours avant d’en commencer un autre.",
+      "message": "Attendez la fin du téléchargement en cours avant d'en commencer un autre.",
       "title": "Téléchargement déjà en cours"
     },
     "button": "Télécharger",
@@ -34,14 +34,14 @@
     "hours": "{{value}} h",
     "fallback": {
       "canShareDiagnostic": "navigator.canShare a renvoyé false pour le fichier téléchargé.",
-      "canShareMessage": "Ce navigateur n’a pas pu partager ce fichier.",
+      "canShareMessage": "Ce navigateur n'a pas pu partager ce fichier.",
       "message": "Téléchargement classique du fichier utilisé à la place.",
       "title": "Solution de repli pour le téléchargement"
     },
     "failed": "Échec du téléchargement",
     "file": "Télécharger {{name}}",
     "keepOpen": "Gardez cette page ouverte pendant le téléchargement du fichier, ou fermez cette fenêtre pour annuler.",
-    "lessThanOneSecondLeft": "moins d’une seconde restante",
+    "lessThanOneSecondLeft": "moins d'une seconde restante",
     "minutes": "{{value}} min",
     "preparing": "Préparation de {{name}}",
     "ready": "Prêt à enregistrer",
@@ -55,28 +55,28 @@
   },
   "error": {
     "boundary": {
-      "latestDescription": "Le rechargement n’a pas résolu le problème. Veuillez réessayer.",
+      "latestDescription": "Le rechargement n'a pas résolu le problème. Veuillez réessayer.",
       "latestTitle": "Impossible de charger la dernière version",
       "reload": "Recharger",
-      "unexpectedTitle": "Une erreur s’est produite",
+      "unexpectedTitle": "Une erreur s'est produite",
       "updating": "Mise à jour vers la dernière version…"
     },
-    "closeWarning": "Fermer l’avertissement",
+    "closeWarning": "Fermer l'avertissement",
     "generic": "Erreur",
     "global": {
       "networkUnavailable": {
-        "description": "PICR n’a pas pu joindre le serveur. Le problème est généralement temporaire.",
+        "description": "PICR n'a pas pu joindre le serveur. Le problème est généralement temporaire.",
         "title": "Réseau actuellement indisponible"
       },
       "noPermissions": {
-        "description": "Cette requête n’est pas autorisée pour votre compte actuel.",
-        "title": "Vous n’avez pas l’autorisation"
+        "description": "Cette requête n'est pas autorisée pour votre compte actuel.",
+        "title": "Vous n'avez pas l'autorisation"
       },
       "reason": {
-        "ACCESS_DENIED": "Vous n’avez pas accès à cette galerie ou à cette action.",
+        "ACCESS_DENIED": "Vous n'avez pas accès à cette galerie ou à cette action.",
         "COMMENTS_HIDDEN": "Les commentaires sont masqués pour ce compte.",
         "COMMENTS_NOT_ALLOWED": "Les commentaires ne sont pas autorisés pour ce compte.",
-        "INVALID_LINK": "Ce lien public n’est pas valide ou n’est plus disponible.",
+        "INVALID_LINK": "Ce lien public n'est pas valide ou n'est plus disponible.",
         "NOT_A_USER": "Ce compte ne peut pas effectuer cette action."
       }
     },
@@ -126,7 +126,7 @@
     "commentsNone": "Sans commentaire",
     "filename": "Nom du fichier",
     "flag": "Marqueur",
-    "imageOptions": "Options d’image",
+    "imageOptions": "Options d'image",
     "metadata": "Métadonnées",
     "metadataFiltering": "Filtrage par métadonnées",
     "metadataUnavailable": "Indisponible car toutes les images ont la valeur {{value}}",
@@ -150,10 +150,10 @@
     "loading": "Chargement",
     "notFound": "Dossier introuvable",
     "open": "Ouvrir {{name}}",
-    "scrollToGallery": "Faire défiler jusqu’à la galerie",
+    "scrollToGallery": "Faire défiler jusqu'à la galerie",
     "unnamed": "(Dossier sans nom)",
     "view": "Afficher le dossier",
-    "viewActivity": "Afficher l’activité"
+    "viewActivity": "Afficher l'activité"
   },
   "lightbox": {
     "carousel": "Carrousel",
@@ -187,19 +187,19 @@
     "DateTimeOriginal": "Prise de vue",
     "Dimensions": "Dimensions",
     "Duration": "Durée",
-    "ExposureTime": "Vitesse d’obturation",
+    "ExposureTime": "Vitesse d'obturation",
     "Format": "Format",
-    "Framerate": "Fréquence d’images",
+    "Framerate": "Fréquence d'images",
     "ISO": "ISO",
     "Lens": "Objectif",
-    "OriginalRating": "Note d’origine",
+    "OriginalRating": "Note d'origine",
     "Video": "Vidéo"
   },
   "passcode": {
-    "defaultTitle": "Code d’accès de la galerie",
-    "description": "Saisissez le code d’accès pour ouvrir cette galerie.",
-    "fieldLabel": "Code d’accès",
-    "incorrect": "Code d’accès incorrect",
+    "defaultTitle": "Code d'accès de la galerie",
+    "description": "Saisissez le code d'accès pour ouvrir cette galerie.",
+    "fieldLabel": "Code d'accès",
+    "incorrect": "Code d'accès incorrect",
     "submit": "Ouvrir la galerie"
   },
   "review": {
@@ -234,7 +234,7 @@
     "rating": "Note"
   },
   "unavailable": {
-    "description": "Ce lien n’existe pas ou n’est plus actif.",
+    "description": "Ce lien n'existe pas ou n'est plus actif.",
     "title": "Galerie indisponible"
   },
   "video": {
@@ -260,12 +260,12 @@
     "default": "Par défaut",
     "disabled": "Désactivé",
     "disconnected": "Déconnecté",
-    "displayBackground": "Arrière-plan de l’affichage",
+    "displayBackground": "Arrière-plan de l'affichage",
     "download": "Télécharger",
     "enterFullscreen": "Passer en plein écran",
-    "enterPiP": "Activer l’image dans l’image",
+    "enterPiP": "Activer l'image dans l'image",
     "exitFullscreen": "Quitter le plein écran",
-    "exitPiP": "Quitter l’image dans l’image",
+    "exitPiP": "Quitter l'image dans l'image",
     "family": "Famille",
     "font": "Police",
     "fullscreen": "Plein écran",
@@ -278,7 +278,7 @@
     "off": "Désactivé",
     "opacity": "Opacité",
     "pause": "Pause",
-    "piP": "Image dans l’image",
+    "piP": "Image dans l'image",
     "play": "Lire",
     "playback": "Lecture",
     "quality": "Qualité",

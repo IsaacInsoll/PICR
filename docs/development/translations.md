@@ -21,6 +21,12 @@ Catalogs live under `shared/i18n/locales/<language>/` and use three namespaces:
 Use US English for source strings. Keep keys semantic and grouped by feature; do not use the English
 sentence itself as a key.
 
+Use the straight U+0027 apostrophe (`'`) for apostrophes within words in every catalog, including
+languages that commonly use the typographic U+2019 character. Keep typographic quotation marks when
+they are serving as quotation marks rather than apostrophes. This project convention follows the
+French reviewer feedback in [issue #84](https://github.com/IsaacInsoll/PICR/issues/84#issuecomment-5358713436)
+and keeps catalog punctuation consistent with what users normally type.
+
 The English catalog supplies TypeScript's key union through `frontend/src/i18n/i18next.d.ts`.
 Components should select the narrow namespace they use:
 

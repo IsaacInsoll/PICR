@@ -55,8 +55,8 @@
   },
   "error": {
     "boundary": {
-      "latestDescription": "Reloading didn’t resolve the problem. Please try again.",
-      "latestTitle": "Couldn’t load the latest version",
+      "latestDescription": "Reloading didn't resolve the problem. Please try again.",
+      "latestTitle": "Couldn't load the latest version",
       "reload": "Reload",
       "unexpectedTitle": "Something went wrong",
       "updating": "Updating to the latest version…"
