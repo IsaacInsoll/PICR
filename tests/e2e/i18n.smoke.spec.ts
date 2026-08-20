@@ -67,7 +67,7 @@ test('French browser locale covers public gallery, passcode, and login', async (
     });
 
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-    await expect(page.getByLabel('Code d’accès')).toBeVisible();
+    await expect(page.getByLabel("Code d'accès")).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Ouvrir la galerie' }),
     ).toBeVisible();
@@ -89,7 +89,7 @@ test('French browser locale covers public gallery, passcode, and login', async (
     //
     // await page.reload({ waitUntil: 'domcontentloaded' });
     // await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-    // await expect(page.getByLabel('Code d’accès')).toBeVisible();
+    // await expect(page.getByLabel("Code d'accès")).toBeVisible();
 
     // The `?lng=` override still selects a catalog without the switcher.
     await page.goto(`/s/${uuid}/${photoFolderId}?lng=en`, {
@@ -102,15 +102,15 @@ test('French browser locale covers public gallery, passcode, and login', async (
       waitUntil: 'domcontentloaded',
     });
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-    await expect(page.getByLabel('Code d’accès')).toBeVisible();
+    await expect(page.getByLabel("Code d'accès")).toBeVisible();
 
-    await page.getByLabel('Code d’accès').fill('wrong-passcode');
+    await page.getByLabel("Code d'accès").fill('wrong-passcode');
     await page.getByRole('button', { name: 'Ouvrir la galerie' }).click();
-    await expect(page.getByText('Code d’accès incorrect')).toBeVisible();
+    await expect(page.getByText("Code d'accès incorrect")).toBeVisible();
 
-    await page.getByLabel('Code d’accès').fill(galleryPasscode);
+    await page.getByLabel("Code d'accès").fill(galleryPasscode);
     await page.getByRole('button', { name: 'Ouvrir la galerie' }).click();
-    await expect(page.getByLabel('Code d’accès')).toHaveCount(0);
+    await expect(page.getByLabel("Code d'accès")).toHaveCount(0);
     await expect(
       page.getByRole('heading', { name: 'Dog Photos' }),
     ).toBeVisible();
@@ -125,7 +125,7 @@ test('French browser locale covers public gallery, passcode, and login', async (
     });
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
     await expect(page.getByText('Connexion à PICR')).toBeVisible();
-    await expect(page.getByLabel('Nom d’utilisateur')).toBeVisible();
+    await expect(page.getByLabel("Nom d'utilisateur")).toBeVisible();
     await expect(
       page.getByRole('textbox', { name: 'Mot de passe' }),
     ).toBeVisible();

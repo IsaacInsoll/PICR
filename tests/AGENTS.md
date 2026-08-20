@@ -161,7 +161,7 @@ tiles are not covered either — no fixture produces one.
 - CI runs `test:api` and `test:e2e` separately.
 - `tests/api` and `tests/e2e` each bootstrap their own Docker test environment via `tests/api/testEnvironment.ts`.
 - For short localized form labels that prefix-match another label (for example
-  French `Nom` and `Nom de l’entreprise`), prefer
+  French `Nom` and `Nom de l'entreprise`), prefer
   `getByRole('textbox', { name: 'Nom', exact: true })`. Mantine required labels
   include a visual asterisk in their label text, so an exact `getByLabel`
   locator may not match even when the textbox's accessible role name is exact.
