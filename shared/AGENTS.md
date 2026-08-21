@@ -267,6 +267,12 @@ example, `t('date.invalid')`) explicitly. Do not import
 into untranslated app consumers and prevent catalog loading from becoming lazy
 at the frontend bootstrap later.
 
+`displayFolderName(folder, rootLabel)` follows that same boundary: it is pure,
+accepts the caller's localized root label, and substitutes it only when
+`parentId === null`. The stored root name remains `Home`; consumers must retain
+raw folder names for stable data such as paths, rename values, search, filenames,
+slugs, persisted defaults, and logs.
+
 #### Group quantities, not technical specs
 
 Localize every number, but only apply digit grouping when the value is a

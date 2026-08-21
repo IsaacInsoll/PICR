@@ -59,6 +59,7 @@ import { DownloadZipButton } from '../components/DownloadZipButton';
 import { viewFolderModeFromFileId } from '../helpers/viewFolderMode';
 import { getUUID } from '../helpers/getUUID';
 import { Trans, useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 // Language switcher soft-disabled (#84) — restore alongside the action below.
 // import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
@@ -485,7 +486,9 @@ const FolderOverflowMenu = ({
   hasCaptureDates: boolean;
 }) => {
   const { t } = useTranslation(['gallery', 'admin']);
-  const displayFolderName = normalizeDisplayName(folder.name);
+  const formatFolderName = useFolderNameFormatter();
+  const rawFolderName = normalizeDisplayName(folder.name);
+  const localizedFolderName = formatFolderName(folder);
   const setFiltering = useSetAtom(filterAtom);
   const setEditBranding = useSetAtom(editBrandingAtom);
   const setAssignBrandingToFolder = useSetAtom(assignBrandingToFolderAtom);
@@ -512,7 +515,7 @@ const FolderOverflowMenu = ({
       openInheritedDialog();
     } else {
       setAssignBrandingToFolder(folder.id);
-      setEditBranding({ ...defaultBranding, name: displayFolderName ?? '' });
+      setEditBranding({ ...defaultBranding, name: rawFolderName ?? '' });
     }
   };
 
@@ -530,7 +533,7 @@ const FolderOverflowMenu = ({
         (folder.branding?.socialLinks as SocialLink[] | null | undefined) ??
         null,
       id: '0',
-      name: displayFolderName ?? '',
+      name: rawFolderName ?? '',
     });
   };
 
@@ -555,7 +558,7 @@ const FolderOverflowMenu = ({
         </Menu.Target>
 
         <Menu.Dropdown>
-          <Menu.Label>{displayFolderName}</Menu.Label>
+          <Menu.Label>{localizedFolderName}</Menu.Label>
           <FolderMenuItems
             folder={folder}
             showOpenItem={false}
@@ -580,7 +583,8 @@ const FolderOverflowMenu = ({
         opened={inheritedDialogOpen}
         onClose={closeInheritedDialog}
         folderName={
-          displayFolderName ?? t('folder.branding.thisFolder', { ns: 'admin' })
+          localizedFolderName ??
+          t('folder.branding.thisFolder', { ns: 'admin' })
         }
         brandingName={
           folder.branding?.name ?? t('common.unnamed', { ns: 'admin' })

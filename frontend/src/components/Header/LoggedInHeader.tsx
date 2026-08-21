@@ -37,6 +37,7 @@ import { PicrMenuItem } from '../PicrLink';
 import { UAParser as parseUserAgent } from 'ua-parser-js';
 import { appStoreLinks } from '@shared/consts';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 // Language switcher soft-disabled (#84) — restore alongside the JSX below.
 // import { LanguageSwitcher } from '../../i18n/LanguageSwitcher';
 
@@ -94,11 +95,13 @@ const LeftSide = ({
   folder?: PicrFolder;
   managing?: boolean;
 }) => {
-  const { t } = useTranslation('admin');
+  const { t: tCommon } = useTranslation('common');
+  const formatFolderName = useFolderNameFormatter();
   const isMobile = useIsMobile();
+  const homeLabel = tCommon('folder.home');
   const homeFolder: FolderNavigationTarget = me.folder
     ? me.folder
-    : { id: me.folderId, name: t('shell.home'), parents: [] };
+    : { id: me.folderId, name: homeLabel, parents: [] };
   const homeFolderLink = useFolderLink(homeFolder);
   const [, setOpened] = useQuickFind();
   return (
@@ -115,7 +118,7 @@ const LeftSide = ({
             color="gray"
             size="xs"
           >
-            {me.folder?.name ?? t('shell.home')}
+            {formatFolderName(me.folder) ?? homeLabel}
           </Button>
         ) : null}
         {!isMobile ? (
@@ -138,9 +141,12 @@ const LeftSide = ({
 
 const RightSide = ({ me }: { me: MeUser }) => {
   const { t } = useTranslation('admin');
+  const { t: tCommon } = useTranslation('common');
+  const formatFolderName = useFolderNameFormatter();
+  const homeLabel = tCommon('folder.home');
   const homeFolder: FolderNavigationTarget = me.folder
     ? me.folder
-    : { id: me.folderId, name: t('shell.home'), parents: [] };
+    : { id: me.folderId, name: homeLabel, parents: [] };
   const homeFolderLink = useFolderLink(homeFolder);
   const [, setOpened] = useQuickFind();
   const logOut = useLogout();
@@ -172,7 +178,7 @@ const RightSide = ({ me }: { me: MeUser }) => {
             {t('shell.dashboard')}
           </PicrMenuItem>
           <PicrMenuItem leftSection={<HomeIcon />} to={homeFolderLink.to}>
-            {me.folder?.name ?? t('shell.home')}
+            {formatFolderName(me.folder) ?? homeLabel}
           </PicrMenuItem>
           <Menu.Item
             leftSection={<SearchIcon />}

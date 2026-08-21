@@ -221,6 +221,15 @@ machine-readable CSV values (including `approved` and `rejected`) must not chang
 language changes. When a value and a label currently have the same English spelling, split or
 preserve the stable value and translate only the label.
 
+The synthetic root folder is the deliberate presentation-only exception agreed in issue #84. Its
+stored name remains `Home`; web UI surfaces render `common:folder.home` only when the folder's
+`parentId` is exactly `null`. Do not infer the root from ID `1`, an empty visible parent list, or the
+current user's home-folder scope. Continue using the raw stored name for paths, rename values,
+search data, ZIP/CSV filenames, link slugs, persisted branding defaults, logs, and other stable data.
+An untitled root public link also omits the pre-auth `galleryName` so the client can use its localized
+generic passcode heading; a custom folder title still wins. Open Graph metadata currently retains the
+raw stored folder name because it is rendered before a browser language is known.
+
 ## Review policy and new scripts
 
 Machine-assisted translation is allowed only when it is disclosed in the pull request. A fluent human

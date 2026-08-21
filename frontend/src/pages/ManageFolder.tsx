@@ -38,9 +38,11 @@ import type { PicrFolder } from '@shared/types/picr';
 import type { BrandingInput } from './management/BrandingForm';
 import type { SocialLink } from '@shared/branding/socialLinkTypes';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 
 export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
   const { t } = useTranslation('admin');
+  const formatFolderName = useFolderNameFormatter();
   const { folderId, tab } = useParams();
   const navigate = useNavigate();
   const [, mutate] = useMutation(editFolderMutation);
@@ -98,7 +100,9 @@ export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
               </Text>
               <TextInput
                 label={t('folder.title')}
-                placeholder={folder.name ?? t('folder.titlePlaceholder')}
+                placeholder={
+                  formatFolderName(folder) ?? t('folder.titlePlaceholder')
+                }
                 value={title}
                 onChange={(e) => setTitle(e.currentTarget.value)}
               />

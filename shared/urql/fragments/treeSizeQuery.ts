@@ -6,6 +6,7 @@ export const treeSizeQuery = gql(/* GraphQL */ `
       parents {
         id
         name
+        parentId
       }
       ...TreeSizeFragment
       files {

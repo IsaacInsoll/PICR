@@ -10,6 +10,7 @@ import { imageURL } from '../helpers/imageURL';
 import { useHover } from '@mantine/hooks';
 import { useIsDarkMode } from '../hooks/useIsDarkMode';
 import type { CSSProperties } from 'react';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 // This import doesn't work with vite :/
 // import { getInitialsColor } from '@mantine/core/lib/components/Avatar/get-initials-color/get-initials-color';
 
@@ -29,7 +30,8 @@ export const PicrFolder = ({
   style?: CSSProperties;
   title?: string;
 }) => {
-  const folderName = normalizeDisplayName(folder.name);
+  const formatFolderName = useFolderNameFormatter();
+  const folderName = formatFolderName(folder);
   const src =
     folder.heroImage?.__typename === 'Image' ||
     folder.heroImage?.__typename === 'Video'

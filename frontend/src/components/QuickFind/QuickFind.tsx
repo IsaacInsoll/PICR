@@ -33,6 +33,7 @@ import {
   isFolderResult,
 } from '@shared/search/searchResults';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 
 type Scope = 'all' | 'current';
 const scopeAtom = atom<Scope>('current');
@@ -258,6 +259,7 @@ const PrettyFilePath = ({
   ) => void;
 }) => {
   const folder = file.folder;
+  const formatFolderName = useFolderNameFormatter();
   if (!folder) return null;
   return (
     <Group
@@ -266,7 +268,7 @@ const PrettyFilePath = ({
       gap={1}
     >
       <Code onClick={(e) => handleClick(e, folder)}>
-        {normalizeDisplayName(folder.name)}
+        {formatFolderName(folder)}
       </Code>
       <Joiner />
       <Code color="green.7" onClick={(e) => handleClick(e, folder, file)}>
@@ -361,6 +363,7 @@ const QuickFindFooter = ({
 
 const ScopeSelector = ({ folder }: { folder?: PicrFolder }) => {
   const { t } = useTranslation('admin');
+  const formatFolderName = useFolderNameFormatter();
   const me = useMe();
   const [selectedScope, setSelectedScope] = useAtom(scopeAtom);
 
@@ -373,7 +376,7 @@ const ScopeSelector = ({ folder }: { folder?: PicrFolder }) => {
       onChange={(next) => setSelectedScope(next as Scope)}
       data={[
         {
-          label: folder?.name ?? t('quickFind.scope.current'),
+          label: formatFolderName(folder) ?? t('quickFind.scope.current'),
           value: 'current',
         },
         { label: t('quickFind.scope.all'), value: 'all' },

@@ -1,5 +1,4 @@
 import type { PicrFolder } from '@shared/types/picr';
-import { normalizeDisplayName } from '@shared/displayName';
 import { useFolderLink } from '../../hooks/useSetFolder';
 import { PicrMenuItem } from '../PicrLink';
 import { Menu } from '@mantine/core';
@@ -18,6 +17,7 @@ import { useMe } from '../../hooks/useMe';
 import { useOpenMoveRenameFolderModal } from '../../atoms/modalAtom';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 
 type FolderMenuItemsProps = {
   folder: PicrFolder;
@@ -35,7 +35,8 @@ export const FolderMenuItems = ({
   onBranding,
 }: FolderMenuItemsProps) => {
   const { t } = useTranslation(['gallery', 'admin']);
-  const folderName = normalizeDisplayName(folder.name);
+  const formatFolderName = useFolderNameFormatter();
+  const folderName = formatFolderName(folder);
   const openLink = useFolderLink(folder);
   const activityLink = useFolderLink(folder, 'activity');
   const manageLink = useFolderLink(folder, 'manage/links');

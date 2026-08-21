@@ -34,10 +34,10 @@ import { fontFamilies } from '../../fonts.generated';
 import { headingFontFamily } from '../../helpers/fontFamily';
 import { decodeFileSort } from '@shared/files/sortFiles';
 import { TbLayoutGrid, TbList, TbPhoto } from 'react-icons/tb';
-import { normalizeDisplayName } from '@shared/displayName';
 import styles from './ManageBrandings.module.css';
 import { useTranslation } from 'react-i18next';
 import type { AdminT } from '../../i18n/adminLabels';
+import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 
 interface ManageBrandingsProps {
   selectedBrandingId?: string | null;
@@ -306,6 +306,7 @@ const modeIcons = {
 
 const FolderSummaryChips = ({ branding }: { branding: BrandingRow }) => {
   const { t } = useTranslation('admin');
+  const formatFolderName = useFolderNameFormatter();
   if (branding.folders.length === 0) {
     return (
       <Text size="xs" c="dimmed">
@@ -321,7 +322,7 @@ const FolderSummaryChips = ({ branding }: { branding: BrandingRow }) => {
     <Group gap={6} wrap="wrap">
       {visibleFolders.map((folder) => (
         <Badge key={folder.id} variant="light" color="gray" fw={500}>
-          {normalizeDisplayName(folder.name) ?? folder.id}
+          {formatFolderName(folder) ?? folder.id}
         </Badge>
       ))}
       {extraCount > 0 ? (

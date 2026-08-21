@@ -1,14 +1,15 @@
 import type { PicrFolder } from '@shared/types/picr';
-import { normalizeDisplayName } from '@shared/displayName';
 import { Code, Tooltip } from '@mantine/core';
 import { ChevronRightIcon, HomeIcon } from '../PicrIcons';
 import { PrettyFolderPath } from './PrettyFolderPath';
 import { useFolderLink } from '../hooks/useSetFolder';
 import { PicrLink } from './PicrLink';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 
 export const FolderName = ({ folder }: { folder: PicrFolder }) => {
   const { to } = useFolderLink(folder);
-  const folderName = normalizeDisplayName(folder.name);
+  const formatFolderName = useFolderNameFormatter();
+  const folderName = formatFolderName(folder);
 
   return (
     <Tooltip
@@ -19,7 +20,7 @@ export const FolderName = ({ folder }: { folder: PicrFolder }) => {
     >
       <PicrLink to={to} underline="never">
         <Code>
-          {folder.id === '1' ? (
+          {folder.parentId === null ? (
             <HomeIcon opacity={0.5} style={{ paddingTop: 3, marginRight: 2 }} />
           ) : null}
           {folderName}

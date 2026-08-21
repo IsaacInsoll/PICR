@@ -5,6 +5,7 @@ import { normalizeDisplayName } from '@shared/displayName';
 import { Center } from '@mantine/core';
 import { LoadingIndicator } from './LoadingIndicator';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 
 export const ManageFolderDrawer = ({
   folder,
@@ -14,10 +15,11 @@ export const ManageFolderDrawer = ({
   onClose: () => void;
 }) => {
   const { t } = useTranslation('admin');
+  const formatFolderName = useFolderNameFormatter();
   return (
     <PicrDrawer
       title={t('folder.manageTitle', {
-        folder: normalizeDisplayName(folder.name),
+        folder: formatFolderName(folder),
       })}
       onClose={onClose}
     >

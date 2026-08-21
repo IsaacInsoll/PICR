@@ -1,5 +1,4 @@
 import type { ManageFolderUserRow } from '@shared/types/queryRows';
-import { normalizeDisplayName } from '@shared/displayName';
 import { Avatar, Badge, Group, Paper, Stack, Text } from '@mantine/core';
 import { CommentChip } from './CommentChip';
 import { LinkModeChip } from './LinkModeChip';
@@ -8,6 +7,7 @@ import { ViewFolderButton } from './ViewFolderButton';
 import { FolderIcon } from '../PicrIcons';
 import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 
 export const PublicLinkListItem = ({
   user,
@@ -17,6 +17,7 @@ export const PublicLinkListItem = ({
   onClick: () => void;
 }) => {
   const { t } = useTranslation('admin');
+  const formatFolderName = useFolderNameFormatter();
   return (
     <Paper
       withBorder
@@ -48,7 +49,7 @@ export const PublicLinkListItem = ({
               <Group gap={4} wrap="nowrap">
                 <FolderIcon size={11} style={{ opacity: 0.4, flexShrink: 0 }} />
                 <Text size="xs" c="dimmed" truncate>
-                  {normalizeDisplayName(user.folder.name)}
+                  {formatFolderName(user.folder)}
                 </Text>
               </Group>
             ) : null}

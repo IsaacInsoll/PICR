@@ -1,26 +1,30 @@
 import { Badge, Group, Text, Tooltip } from '@mantine/core';
-import { normalizeDisplayName } from '@shared/displayName';
 import { useMe } from '../hooks/useMe';
 import { useFolderLink } from '../hooks/useSetFolder';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 
 type FolderChip = {
   id: string;
   name?: string | null;
+  parentId?: string | null;
   parents?: Array<{ id: string }> | null;
 };
 
 // Extracted so each chip can call useFolderLink - hooks can't run inside the
 // .map() over folders.
-const AccessibleFolderChip = ({ folder }: { folder: FolderChip }) => (
-  <Badge
-    variant="light"
-    style={{ cursor: 'pointer' }}
-    {...useFolderLink({ id: folder.id })}
-  >
-    {normalizeDisplayName(folder.name) ?? folder.id}
-  </Badge>
-);
+const AccessibleFolderChip = ({ folder }: { folder: FolderChip }) => {
+  const formatFolderName = useFolderNameFormatter();
+  return (
+    <Badge
+      variant="light"
+      style={{ cursor: 'pointer' }}
+      {...useFolderLink({ id: folder.id })}
+    >
+      {formatFolderName(folder) ?? folder.id}
+    </Badge>
+  );
+};
 
 const isAccessible = (folder: FolderChip, myFolderId: string | undefined) => {
   if (!myFolderId || myFolderId === '1') return true;
@@ -37,6 +41,7 @@ export const BrandingFolderChips = ({
   showLabel?: boolean;
 }) => {
   const { t } = useTranslation('admin');
+  const formatFolderName = useFolderNameFormatter();
   const me = useMe();
 
   if (!folders || folders.length === 0) return null;
@@ -58,7 +63,7 @@ export const BrandingFolderChips = ({
         return (
           <Tooltip key={folder.id} label={t('branding.outsideScope')}>
             <Badge variant="outline" color="gray" style={{ cursor: 'default' }}>
-              {normalizeDisplayName(folder.name) ?? folder.id}
+              {formatFolderName(folder) ?? folder.id}
             </Badge>
           </Tooltip>
         );

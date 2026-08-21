@@ -1,5 +1,4 @@
 import type { PicrFolder } from '@shared/types/picr';
-import { normalizeDisplayName } from '@shared/displayName';
 import { useState } from 'react';
 import { useMutation } from 'urql';
 import {
@@ -31,6 +30,7 @@ import { ErrorAlert } from '../../components/ErrorAlert';
 import { editAdminUserMutation } from '@shared/urql/mutations/editAdminUserMutation';
 import { deleteUserMutation } from '@shared/urql/mutations/deleteUserMutation';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 
 export const ManageUser = ({
   id,
@@ -40,6 +40,7 @@ export const ManageUser = ({
   onClose: () => void;
 }) => {
   const { t } = useTranslation('admin');
+  const formatFolderName = useFolderNameFormatter();
   const [user, exists] = useViewUser(id);
   const [, mutate] = useMutation(editAdminUserMutation);
   const [, deleteUser] = useMutation(deleteUserMutation);
@@ -56,13 +57,18 @@ export const ManageUser = ({
       user?.commentPermissions ?? CommentPermissions.Edit,
     );
   const [folder, setFolder] = useState<PicrFolder>(
-    user?.folder ?? { id: '1', name: t('common.root'), parents: [] },
+    user?.folder ?? {
+      id: '1',
+      name: 'Home',
+      parentId: null,
+      parents: [],
+    },
   );
   const [error, setError] = useState('');
 
   const invalidUsername = username === '' || name === '';
   const isRootAdmin = id === '1';
-  const folderName = normalizeDisplayName(folder.name);
+  const folderName = formatFolderName(folder);
 
   const onDelete = () => {
     if (!id || isRootAdmin) return;

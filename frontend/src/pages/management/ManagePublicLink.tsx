@@ -40,6 +40,7 @@ import { CopyPublicLinkButton } from './CopyPublicLinkButton';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { badChars } from '@shared/badChars';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 
 export const ManagePublicLink = ({
   id,
@@ -51,6 +52,7 @@ export const ManagePublicLink = ({
   onClose: () => void;
 }) => {
   const { t } = useTranslation('admin');
+  const formatFolderName = useFolderNameFormatter();
   const [user, exists] = useViewUser(id);
   const [, mutate] = useMutation(editUserMutation);
   const [, deleteUser] = useMutation(deleteUserMutation);
@@ -74,7 +76,7 @@ export const ManagePublicLink = ({
 
   //get folder from user if they exist as it may be a parent or child
   const f = user?.folder ?? folder;
-  const folderName = normalizeDisplayName(f?.name);
+  const folderName = formatFolderName(f);
 
   const onSave = () => {
     if (!f?.id) return;

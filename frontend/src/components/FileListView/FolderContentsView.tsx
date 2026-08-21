@@ -1,5 +1,4 @@
 import useMeasure from 'react-use-measure';
-import { normalizeDisplayName } from '@shared/displayName';
 import { selectedViewAtom } from '../selectedViewAtom';
 import { lazy, Suspense, useCallback, useEffect, type MouseEvent } from 'react';
 import { GridGallery } from './GridGallery';
@@ -38,6 +37,7 @@ import {
 } from '../../atoms/modalAtom';
 import { useCanDownload, useMe } from '../../hooks/useMe';
 import { loadPicrVideoPlayer } from '../LazyPicrVideoPlayer';
+import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 
 const loadMoveRenameFolderModal = () =>
   import('./MoveRenameFolderModal').then((module) => ({
@@ -83,6 +83,7 @@ export const FolderContentsView = ({
   const [view, setView] = useAtom(selectedViewAtom);
   const me = useMe();
   const branding = folder.branding;
+  const formatFolderName = useFolderNameFormatter();
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -215,7 +216,7 @@ export const FolderContentsView = ({
             onClose={closeBannerImageModal}
             previewTitle={
               folder.title?.trim() ||
-              normalizeDisplayName(folder.name) ||
+              formatFolderName(folder) ||
               '(Unnamed Folder)'
             }
           />

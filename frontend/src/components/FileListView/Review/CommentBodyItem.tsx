@@ -24,6 +24,7 @@ import { useBaseViewFolderURL } from '../../../hooks/useBaseViewFolderURL';
 import { PrettyFolderPath } from '../../PrettyFolderPath';
 import { useTranslation } from 'react-i18next';
 import { useDateFormatters } from '../../../i18n/useDateFormatters';
+import { useFolderNameFormatter } from '../../../i18n/useFolderNameFormatter';
 
 export const CommentBodyItem = ({
   comment,
@@ -158,6 +159,7 @@ const FileContext = ({
   folderLink?: string;
   inFolderLabel: string;
 }) => {
+  const formatFolderName = useFolderNameFormatter();
   const fileName = (
     <Code style={{ opacity: 0.33 }}>{normalizeDisplayName(file.name)}</Code>
   );
@@ -182,7 +184,7 @@ const FileContext = ({
           >
             <PicrLink to={folderLink ?? linkTo} underline="never">
               <Code style={{ opacity: 0.33 }}>
-                {normalizeDisplayName(file.folder.name)}
+                {formatFolderName(file.folder)}
               </Code>
             </PicrLink>
           </Tooltip>

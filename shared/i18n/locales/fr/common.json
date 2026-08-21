@@ -5,6 +5,9 @@
   "language": {
     "label": "Langue"
   },
+  "folder": {
+    "home": "Accueil"
+  },
   "update": {
     "available": "Nouvelle version disponible",
     "autoRefresh": "PICR s'actualisera automatiquement pendant une période d'inactivité.",

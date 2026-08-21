@@ -64,6 +64,7 @@ import { useRequery } from '@shared/hooks/useRequery';
 import { isNewerPicrVersion } from '../helpers/versionUpdates';
 import { useLanguage } from '../i18n/useLanguage';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 
 const dashboardLimits = {
   desktop: {
@@ -404,7 +405,8 @@ const FolderCard = ({
   compact?: boolean;
 }) => {
   const { to } = useFolderLink(folder);
-  const title = folder.title ?? folder.name ?? '';
+  const formatFolderName = useFolderNameFormatter();
+  const title = folder.title ?? formatFolderName(folder) ?? '';
   const coverSize = compact ? 48 : 60;
   return (
     <Tooltip
@@ -622,6 +624,7 @@ const ClientActivityRow = ({
   compact: boolean;
 }) => {
   const { to } = useFolderLink({ id: user.folderId });
+  const formatFolderName = useFolderNameFormatter();
   return (
     <PicrLink
       to={to}
@@ -642,7 +645,7 @@ const ClientActivityRow = ({
         </Group>
         {compact ? null : (
           <Text size="xs" c="dimmed" truncate>
-            {user.folder?.name}
+            {formatFolderName(user.folder)}
           </Text>
         )}
       </Box>

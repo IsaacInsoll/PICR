@@ -1,5 +1,4 @@
 import type { FolderFragmentFragment } from '@shared/gql/graphql';
-import { normalizeDisplayName } from '@shared/displayName';
 import { ThemeMode } from '@shared/gql/graphql';
 import { imageURL } from '../helpers/imageURL';
 import { useMe } from '../hooks/useMe';
@@ -7,6 +6,7 @@ import { useMutation } from 'urql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 import { useOpenSetBannerImageModal } from '../atoms/modalAtom';
 import { useNoDownloadMediaProps } from '../hooks/useNoDownloadMediaProps';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 import {
   ActionIcon,
   alpha,
@@ -97,8 +97,8 @@ export const FolderBannerView = ({
   children?: ReactNode;
 }) => {
   const { t } = useTranslation('gallery');
-  const folderName =
-    normalizeDisplayName(folder.name)?.trim() || t('folder.unnamed');
+  const formatFolderName = useFolderNameFormatter();
+  const folderName = formatFolderName(folder)?.trim() || t('folder.unnamed');
   const bannerTitle = folder.title?.trim() || folderName;
   const bannerSubtitle = folder.subtitle?.trim();
   // Track WHICH image loaded, not merely that one did: an admin can replace the

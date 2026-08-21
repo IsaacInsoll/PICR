@@ -160,6 +160,12 @@ tiles are not covered either — no fixture produces one.
 
 - CI runs `test:api` and `test:e2e` separately.
 - `tests/api` and `tests/e2e` each bootstrap their own Docker test environment via `tests/api/testEnvironment.ts`.
+- The current seed-media readiness probe returns after it sees any image and any
+  video; it does not wait for the entire initial scan. A full API run can
+  therefore occasionally observe fewer than the 10 committed Dog Photos even
+  though all fixtures are mounted. Treat that exact mismatch as startup-race
+  evidence rather than changing the fixture assertion; make the readiness probe
+  wait for the complete fixture set when addressing the test harness.
 - For short localized form labels that prefix-match another label (for example
   French `Nom` and `Nom de l'entreprise`), prefer
   `getByRole('textbox', { name: 'Nom', exact: true })`. Mantine required labels

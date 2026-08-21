@@ -1,7 +1,7 @@
 import type { PicrFolder } from '@shared/types/picr';
-import { normalizeDisplayName } from '@shared/displayName';
 import { useFolderLink } from '../hooks/useSetFolder';
 import { PicrLink } from './PicrLink';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 
 export const FolderLink = ({
   folder,
@@ -11,10 +11,11 @@ export const FolderLink = ({
   color?: string;
 }) => {
   const { to } = useFolderLink(folder);
+  const formatFolderName = useFolderNameFormatter();
 
   return (
     <PicrLink c={color} to={to}>
-      {normalizeDisplayName(folder.name)}
+      {formatFolderName(folder)}
     </PicrLink>
   );
 };

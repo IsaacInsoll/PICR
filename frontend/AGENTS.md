@@ -52,6 +52,13 @@ name intentionally has the same spelling in every catalog. Changing UI language
 must never rewrite branding or user content, and the catalog contract must keep
 English selector labels aligned with these persisted defaults.
 
+The database name of PICR's synthetic root folder stays `Home`. For visible web
+labels, use `useFolderNameFormatter()` and treat a folder as that root only when
+`parentId === null`. Never infer it from ID `1`, `parents.length === 0`, or the
+signed-in user's home-folder scope. Keep raw folder names for editing, paths,
+search, filenames, slugs, persisted defaults, and logs. A user-created child
+folder named `Home` must remain `Home` in every catalog.
+
 Before adding a catalog whose script is not covered by the default heading
 font, establish a deterministic capable fallback and verify both translated UI
 headings and user content in that script. For Greek, the agreed initial stack is

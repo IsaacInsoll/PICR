@@ -359,6 +359,11 @@ test('French admin navigation and branding editor work', async ({ page }) => {
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
     await expect(page.getByText('Vos galeries')).toBeVisible();
 
+    await page.goto('/admin/f/1?lng=fr', { waitUntil: 'domcontentloaded' });
+    await expect(
+      page.getByRole('heading', { name: 'Accueil', exact: true }),
+    ).toBeVisible();
+
     await page.goto('/admin/settings/branding?lng=fr', {
       waitUntil: 'domcontentloaded',
     });

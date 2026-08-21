@@ -1,5 +1,4 @@
 import { Button, Group, Modal, Stack, Text, TextInput } from '@mantine/core';
-import { normalizeDisplayName } from '@shared/displayName';
 import { Suspense, useMemo, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
 import type { PicrFolder } from '@shared/types/picr';
@@ -16,6 +15,7 @@ import {
 } from '@shared/validation/folderPath';
 import { useTranslation } from 'react-i18next';
 import type { AdminT } from '../../i18n/adminLabels';
+import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 
 export const MoveRenameFolderModal = ({
   folder,
@@ -27,13 +27,14 @@ export const MoveRenameFolderModal = ({
   onClose: () => void;
 }) => {
   const { t } = useTranslation('admin');
+  const formatFolderName = useFolderNameFormatter();
   const isMobile = useIsSmallScreen();
   return (
     <Modal
       opened={opened}
       onClose={onClose}
       title={t('folder.moveRename.title', {
-        folder: normalizeDisplayName(folder.name),
+        folder: formatFolderName(folder),
       })}
       centered
       fullScreen={isMobile}

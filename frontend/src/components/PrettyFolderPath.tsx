@@ -1,9 +1,9 @@
 import type { PicrFolder } from '@shared/types/picr';
-import { normalizeDisplayName } from '@shared/displayName';
 import type { MantineColor } from '@mantine/core';
 import { Code, Group } from '@mantine/core';
 import { Joiner } from './FolderName';
 import type { MouseEvent } from 'react';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 
 export const PrettyFolderPath = ({
   folder,
@@ -14,6 +14,7 @@ export const PrettyFolderPath = ({
   subColor?: MantineColor;
   onClick?: (e: MouseEvent, f: PicrFolder) => void;
 }) => {
+  const formatFolderName = useFolderNameFormatter();
   const handleClick = (e: MouseEvent, f: PicrFolder) => {
     if (onClick) {
       onClick(e, f);
@@ -31,7 +32,7 @@ export const PrettyFolderPath = ({
             color={subColor}
             onClick={(e) => handleClick(e, f)}
           >
-            {normalizeDisplayName(f.name)}
+            {formatFolderName(f)}
           </Code>
           <Joiner />
         </>
@@ -41,7 +42,7 @@ export const PrettyFolderPath = ({
         style={style}
         onClick={(e) => handleClick(e, folder)}
       >
-        {normalizeDisplayName(folder.name)}
+        {formatFolderName(folder)}
       </Code>
     </Group>
   );

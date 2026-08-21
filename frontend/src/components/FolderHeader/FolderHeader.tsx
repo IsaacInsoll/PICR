@@ -1,5 +1,4 @@
 import type { PicrFolder } from '@shared/types/picr';
-import { normalizeDisplayName } from '@shared/displayName';
 import { FolderLink } from '../FolderLink';
 import type React from 'react';
 import type { ReactElement, ReactNode } from 'react';
@@ -27,6 +26,7 @@ import { LoggedInHeader } from '../Header/LoggedInHeader';
 import { getBreadcrumbFolders } from '../../helpers/getBreadcrumbFolders';
 import { normalizeHeadingAlignment } from '@shared/branding/galleryPresets';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 
 export const FolderHeader = ({
   folder,
@@ -46,11 +46,10 @@ export const FolderHeader = ({
   hasBannerLayout?: boolean;
 }) => {
   const { t } = useTranslation('gallery');
+  const formatFolderName = useFolderNameFormatter();
   return (
     <HeaderWrapper
-      title={
-        folder.title ?? normalizeDisplayName(folder.name) ?? t('folder.unnamed')
-      }
+      title={folder.title ?? formatFolderName(folder) ?? t('folder.unnamed')}
       customSubtitle={customSubtitle ?? undefined}
       subtitle={subtitle}
       actions={actions}
@@ -81,6 +80,7 @@ export const PlaceholderFolderHeader = ({
   mode?: ViewFolderMode;
 }) => {
   const { t } = useTranslation('gallery');
+  const formatFolderName = useFolderNameFormatter();
   const identityFolder = useFolderPlaceholderIdentity(folderId);
   const fullFolder = useFolderPlaceholder(folderId);
   const folder = fullFolder ?? identityFolder;
@@ -95,11 +95,7 @@ export const PlaceholderFolderHeader = ({
       <HeaderWrapper
         // `title ?? name` matches FolderHeader's precedence, so the heading
         // doesn't change once the real query lands.
-        title={
-          folder?.title ??
-          normalizeDisplayName(folder?.name) ??
-          t('folder.loading')
-        }
+        title={folder?.title ?? formatFolderName(folder) ?? t('folder.loading')}
         subtitle={<Loader type="dots" />}
         parent={fullFolder?.parents}
         hideTitleAndCustomSubtitle={hasBanner}

@@ -270,6 +270,50 @@ test('Public Link gallery passcode gates GraphQL access only', async () => {
     galleryName: 'Dog Photos',
   });
 });
+
+test('Root Public Link leaves its passcode title to the localized client', async () => {
+  const adminClient = await createTestGraphqlClient(
+    await getUserHeader(defaultCredentials),
+  );
+  const uuid = `root-public-test-${testSuffix}`;
+  const result = await adminClient
+    .mutation(editUserMutation, {
+      folderId: '1',
+      name: 'Root Public Test User',
+      username: `root-public-test-${testSuffix}@example.com`,
+      commentPermissions: CommentPermissions.Read,
+      enabled: true,
+      uuid,
+      galleryPasscode: `root-${testSuffix}`,
+    })
+    .toPromise();
+  const rootUserId = result.data?.editUser?.id;
+
+  try {
+    expect(result.error).toBeUndefined();
+    expect(rootUserId).toBeDefined();
+
+    const linkClient = await createTestGraphqlClient(await getLinkHeader(uuid));
+    const info = await linkClient
+      .query(publicLinkInfoQuery, { uuid })
+      .toPromise();
+
+    expect(info.error).toBeUndefined();
+    expect(info.data?.publicLinkInfo).toMatchObject({
+      available: true,
+      requiresPasscode: true,
+      unlocked: false,
+      galleryName: null,
+    });
+  } finally {
+    if (rootUserId) {
+      await adminClient
+        .mutation(deleteUserMutation, { id: rootUserId })
+        .toPromise();
+    }
+  }
+});
+
 test("Public Link can't access other folders", async () => {
   const headers = await getLinkHeader(testPublicLink.uuid);
   const client = await createTestGraphqlClient(headers);

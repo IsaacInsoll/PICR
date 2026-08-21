@@ -1,5 +1,4 @@
 import { Button, Group, Input, Paper, Tree, useTree } from '@mantine/core';
-import { normalizeDisplayName } from '@shared/displayName';
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -24,17 +23,25 @@ import type { PicrFolder } from '@shared/types/picr';
 import { LoadingIndicator } from './LoadingIndicator';
 import type { AllFoldersRow } from '@shared/types/queryRows';
 import { useTranslation } from 'react-i18next';
+import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 
-const prettyFolderPath = (folder: PicrFolder) => {
+type FolderNameFormatter = (
+  folder: PicrFolder | null | undefined,
+) => string | null | undefined;
+
+const prettyFolderPath = (
+  folder: PicrFolder,
+  formatFolderName: FolderNameFormatter,
+) => {
   const chev = ' › ';
 
   const parents = folder.parents
     ?.slice()
     .reverse()
-    .map((f) => normalizeDisplayName(f.name))
+    .map(formatFolderName)
     .join(chev);
 
-  return (parents ? parents + chev : '') + normalizeDisplayName(folder.name);
+  return (parents ? parents + chev : '') + formatFolderName(folder);
 };
 
 export const FolderSelector = ({
@@ -49,9 +56,10 @@ export const FolderSelector = ({
   description?: string;
 }) => {
   const { t } = useTranslation('admin');
+  const formatFolderName = useFolderNameFormatter();
   const [open, setOpen] = useState(false);
 
-  const fullFolderName = prettyFolderPath(folder);
+  const fullFolderName = prettyFolderPath(folder, formatFolderName);
 
   return (
     <>
@@ -97,6 +105,7 @@ const FolderTreeView = ({
   setFolder: (f: PicrFolder) => void;
   open: boolean;
 }) => {
+  const formatFolderName = useFolderNameFormatter();
   const [result] = useQuery({
     query: readAllFoldersQuery,
     variables: { id: rootId },
@@ -119,13 +128,13 @@ const FolderTreeView = ({
     const treeRaw: TreeNode[] = folders.map((f) => ({
       id: f.id, // buildTree
       value: f.id, // <Tree> view
-      label: normalizeDisplayName(f.name) ?? '',
+      label: formatFolderName(f) ?? '',
       parentId: f.parentId ?? undefined,
     }));
     return buildTreeArray(treeRaw, rootId).filter(
       (node): node is TreeNode => node != null,
     );
-  }, [folders, rootId]);
+  }, [folders, formatFolderName, rootId]);
 
   const foldersById = useMemo(() => {
     const map = new Map<string, PicrFolder>();

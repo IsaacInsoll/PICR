@@ -38,7 +38,10 @@ const resolver: PicrResolver<object, PublicLinkInfoArgs> = async (
 
   const branding = await brandingForFolder(folder);
   const galleryName =
-    folder.title?.trim() || normalizeDisplayName(folder.name) || 'Gallery';
+    folder.title?.trim() ||
+    (folder.parentId === null
+      ? null
+      : normalizeDisplayName(folder.name) || 'Gallery');
 
   const requiredPasscode = normalizeGalleryPasscode(user.galleryPasscode);
   if (!requiredPasscode) {

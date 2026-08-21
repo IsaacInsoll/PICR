@@ -17,6 +17,7 @@ import { FolderSummary, treeSizeTabAtom } from './FolderSummary';
 import { prettyBytes } from '@shared/prettyBytes';
 import { useSetAtom } from 'jotai';
 import { useLanguage } from '../../../i18n/useLanguage';
+import { useFolderNameFormatter } from '../../../i18n/useFolderNameFormatter';
 
 export const TreeSize = ({ rootId }: { rootId?: string }) => {
   const { slug } = useParams();
@@ -51,6 +52,7 @@ const TreeSizeNode = ({
   setFolderId: (id: string) => void;
 }) => {
   const { formattingLocale } = useLanguage();
+  const formatFolderName = useFolderNameFormatter();
   const { slices, folder } = useTreeSize(folderId);
   const [hover, setHover] = useState<string | null>(null);
 
@@ -62,10 +64,10 @@ const TreeSizeNode = ({
   const crumbs = [
     ...(folder?.parents.toReversed().map((f) => (
       <Anchor key={f.id} onClick={() => setFolderId(f.id)}>
-        {f.name}
+        {formatFolderName(f)}
       </Anchor>
     )) ?? []),
-    <Text key="current">{folder?.name}</Text>,
+    <Text key="current">{formatFolderName(folder)}</Text>,
   ];
   return (
     <Stack pt="md">

@@ -5,6 +5,9 @@
   "language": {
     "label": "Language"
   },
+  "folder": {
+    "home": "Home"
+  },
   "update": {
     "available": "New version available",
     "autoRefresh": "PICR will refresh automatically when you're idle.",

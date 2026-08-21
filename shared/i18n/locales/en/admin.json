@@ -8,7 +8,6 @@
     "submit": "Login"
   },
   "shell": {
-    "home": "Home",
     "filesAndFolders": "Files & Folders",
     "dashboard": "Dashboard",
     "search": "Search",
