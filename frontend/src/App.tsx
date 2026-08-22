@@ -6,6 +6,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { themeModeAtom } from './atoms/themeModeAtom';
 
 import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 import '@mantine/notifications/styles.css';
 // Imported after Mantine styles so app-global overrides win on source order.
 import './global.css';

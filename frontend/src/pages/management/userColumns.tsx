@@ -162,9 +162,16 @@ const UserIdentity = ({
   <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
     <PicrAvatar user={user} size="sm" radius="xl" />
     <Stack gap={0} style={{ minWidth: 0 }}>
-      <Text fw={500} size="sm" truncate>
-        {user.name ?? t('common.unnamed', { ns: 'admin' })}
-      </Text>
+      <Group gap="xs" wrap="nowrap">
+        <Text fw={500} size="sm" truncate>
+          {user.name ?? t('common.unnamed', { ns: 'admin' })}
+        </Text>
+        {user.expiresAt && new Date(user.expiresAt) <= new Date() && (
+          <Text size="xs" c="red" fw={500}>
+            {t('links.expired', { ns: 'admin' })}
+          </Text>
+        )}
+      </Group>
       {subtitle ? (
         <Text size="xs" c="dimmed" truncate>
           {subtitle}

@@ -45,6 +45,7 @@ export const dbUser = pgTable('Users', {
   uuid: varchar('uuid', { length: 255 }),
   linkMode: linkModeEnum(),
   galleryPasscode: varchar('galleryPasscode', { length: 255 }),
+  expiresAt: timestamp('expiresAt', { withTimezone: true }),
 });
 
 export const dbUserRelations = relations(dbUser, ({ one }) => ({

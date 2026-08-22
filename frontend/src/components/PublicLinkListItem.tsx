@@ -39,6 +39,11 @@ export const PublicLinkListItem = ({
               <Text fw={500} size="sm" truncate>
                 {user.name ?? t('common.unnamed')}
               </Text>
+              {user.expiresAt && new Date(user.expiresAt) <= new Date() && (
+                <Text size="xs" c="red" fw={500}>
+                  {t('links.expired')}
+                </Text>
+              )}
               {!user.enabled && (
                 <Badge size="xs" color="red" variant="light">
                   {t('common.disabled')}

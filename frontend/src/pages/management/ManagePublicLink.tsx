@@ -25,6 +25,7 @@ import {
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { LinkModeSelector } from '../../components/LinkModeSelector';
+import { DateTimePicker } from '@mantine/dates';
 import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
 import {
   DeleteIcon,
@@ -72,6 +73,9 @@ export const ManagePublicLink = ({
   const [galleryPasscode, setGalleryPasscode] = useState(
     user?.galleryPasscode ?? '',
   );
+  const [expiresAt, setExpiresAt] = useState<Date | null>(
+    user?.expiresAt ? new Date(user.expiresAt) : null,
+  );
   const [error, setError] = useState('');
 
   //get folder from user if they exist as it may be a parent or child
@@ -91,6 +95,7 @@ export const ManagePublicLink = ({
       linkMode,
       username,
       galleryPasscode,
+      expiresAt: expiresAt?.toISOString() ?? null,
     };
     void mutate(data).then(({ error }) => {
       if (error) {
@@ -216,6 +221,25 @@ export const ManagePublicLink = ({
               label={t('common.enabled')}
               description={t('links.editor.enabledDescription')}
               onChange={(event) => setEnabled(event.currentTarget.checked)}
+            />
+            <DateTimePicker
+              value={expiresAt}
+              onChange={(date) => {
+                if (!date) {
+                  setExpiresAt(null);
+                  return;
+                }
+                const nextExpiration = new Date(date);
+                if (!expiresAt) {
+                  const now = new Date();
+                  nextExpiration.setHours(now.getHours(), now.getMinutes());
+                }
+                setExpiresAt(nextExpiration);
+              }}
+              label={t('links.editor.expiration')}
+              description={t('links.editor.expirationDescription')}
+              minDate={new Date(new Date().setHours(0, 0, 0, 0))}
+              clearable
             />
           </Stack>
 

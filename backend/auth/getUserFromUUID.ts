@@ -4,6 +4,7 @@ import { db } from '../db/picrDb.js';
 import { eq } from 'drizzle-orm';
 import { dbUser } from '../db/models/dbUser.js';
 import { normalizeGalleryPasscode } from '@shared/auth/galleryPasscode.js';
+import { isPublicLinkExpired } from '../helpers/expirationHelpers.js';
 
 export const getUserFromUUID = async (
   context: CustomJwtPayload,
@@ -12,8 +13,12 @@ export const getUserFromUUID = async (
     const user = await db.query.dbUser.findFirst({
       where: eq(dbUser.uuid, context.uuid),
     });
-    //todo: check expiry dates etc
-    if (user && user.enabled && !user.deleted) {
+    if (
+      user &&
+      user.enabled &&
+      !user.deleted &&
+      !isPublicLinkExpired(user.expiresAt, new Date())
+    ) {
       const requiredPasscode = normalizeGalleryPasscode(user.galleryPasscode);
       if (
         requiredPasscode &&

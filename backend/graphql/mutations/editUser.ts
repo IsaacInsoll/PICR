@@ -6,6 +6,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
+import { GraphQLDateTime } from 'graphql-scalars';
 import { userType } from '../types/userType.js';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId.js';
 import { badChars } from '@shared/badChars.js';
@@ -95,6 +96,9 @@ const resolver: PicrResolver<object, MutationEditUserArgs> = async (
     if (params.galleryPasscode !== undefined) {
       user.galleryPasscode = normalizeGalleryPasscode(params.galleryPasscode);
     }
+    if (params.expiresAt !== undefined) {
+      user.expiresAt = params.expiresAt ? new Date(params.expiresAt) : null;
+    }
     user.updatedAt = new Date();
     await db.update(dbUser).set(user).where(eq(dbUser.id, user.id));
     return { ...userToJSON(user), folder: dbFolderForId(user.folderId) };
@@ -111,6 +115,7 @@ const resolver: PicrResolver<object, MutationEditUserArgs> = async (
       commentPermissions: params.commentPermissions,
       linkMode: params.linkMode ?? LinkMode.FinalDelivery,
       galleryPasscode: normalizeGalleryPasscode(params.galleryPasscode),
+      expiresAt: params.expiresAt ? new Date(params.expiresAt) : null,
       createdAt: new Date(),
       updatedAt: new Date(),
       userType: UserType.Link,
@@ -134,5 +139,6 @@ export const editUser = {
     commentPermissions: { type: commentPermissionsEnum },
     linkMode: { type: linkModeEnum },
     galleryPasscode: { type: GraphQLString },
+    expiresAt: { type: GraphQLDateTime },
   },
 };

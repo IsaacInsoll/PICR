@@ -1,0 +1,1 @@
+ALTER TABLE "Users" ADD COLUMN "expiresAt" timestamp with time zone;

@@ -13,6 +13,7 @@ export const userFragment = gql(/* GraphQL */ `
     linkMode
     hasGalleryPasscode
     galleryPasscode
+    expiresAt
     gravatar
     ntfy
     ntfyEmail

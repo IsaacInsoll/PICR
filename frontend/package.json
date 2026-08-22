@@ -25,6 +25,7 @@
     "@fontsource/signika": "^5.0.0",
     "@fontsource/source-sans-3": "^5.0.0",
     "@mantine/core": "^9.4.1",
+    "@mantine/dates": "^9.5.1",
     "@mantine/hooks": "^9.4.1",
     "@mantine/notifications": "^9.4.1",
     "@picr/react-grid-gallery": "1.1.0",

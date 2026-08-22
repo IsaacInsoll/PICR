@@ -88,6 +88,7 @@ export type PicrUser = {
   linkMode?: UserFragmentFragment['linkMode'];
   hasGalleryPasscode?: UserFragmentFragment['hasGalleryPasscode'];
   galleryPasscode?: UserFragmentFragment['galleryPasscode'];
+  expiresAt?: UserFragmentFragment['expiresAt'];
   gravatar?: string | null;
   ntfy?: string | null;
   ntfyEmail?: boolean | null;

@@ -42,6 +42,7 @@ export const userType = new GraphQLObjectType<
       resolve: (user: { galleryPasscode?: string | null }) =>
         !!user.galleryPasscode,
     },
+    expiresAt: { type: GraphQLDateTime },
     galleryPasscode: {
       type: GraphQLString,
       resolve: async (user: UserTypeSource, _, context: PicrRequestContext) => {
