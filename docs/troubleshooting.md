@@ -170,6 +170,19 @@ here point at host drivers rather than PICR.
 
 ---
 
+## "Copy Link" doesn't copy anything
+
+Almost always this means PICR is being served over plain HTTP on a LAN address, such as
+`http://192.168.1.50:6900/`. Browsers only expose the clipboard API on a _secure context_ — HTTPS, or `localhost`. On a
+plain-HTTP LAN address the API simply isn't there.
+
+PICR falls back to an older copy method in that situation, so the button should still work. If it doesn't:
+
+1. Copy the URL shown under the link ID in the link editor manually — it is the complete link.
+2. Put PICR behind HTTPS. See [Reverse Proxy / Port Forwarding](install.md#reverse-proxy--port-forwarding).
+
+Serving PICR over HTTPS is the real fix, and avoids the same class of problem in other browser features.
+
 ## Something else?
 
 Check the [GitHub Issues](https://github.com/IsaacInsoll/PICR/issues) — search before opening a new one in case it has
