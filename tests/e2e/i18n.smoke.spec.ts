@@ -4,6 +4,7 @@ import {
   expectNoBrowserFailures,
   trackBrowserFailures,
 } from './browserFailures';
+import { expectDashboardReady } from './dashboardReady';
 import { adminAuthHeader, gqlRequest } from './graphqlClient';
 import {
   deleteBrandingMutationText,
@@ -338,7 +339,7 @@ test('French admin navigation and branding editor work', async ({ page }) => {
     await page.getByRole('button', { name: 'Login' }).click();
     await page.waitForURL('**/admin', { timeout: 15_000 });
 
-    await expect(page.getByText('Your Galleries')).toBeVisible();
+    await expectDashboardReady(page);
 
     // Language switcher soft-disabled (#84). Restore the header menu selection
     // below in place of the `?lng=` navigation when the UI returns.
@@ -352,12 +353,17 @@ test('French admin navigation and branding editor work', async ({ page }) => {
     await page.goto('/admin?lng=fr', { waitUntil: 'domcontentloaded' });
 
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-    await expect(page.getByText('Vos galeries')).toBeVisible();
-    await expect(page.getByText('Retours des clients')).toBeVisible();
+    await expectDashboardReady(page, {
+      galleriesHeading: 'Vos galeries',
+      feedbackHeading: 'Retours des clients',
+    });
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
-    await expect(page.getByText('Vos galeries')).toBeVisible();
+    await expectDashboardReady(page, {
+      galleriesHeading: 'Vos galeries',
+      feedbackHeading: 'Retours des clients',
+    });
 
     await page.goto('/admin/f/1?lng=fr', { waitUntil: 'domcontentloaded' });
     await expect(
