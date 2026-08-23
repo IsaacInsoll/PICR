@@ -36,8 +36,15 @@ export const CopyPublicLinkButton = ({
         e.preventDefault();
         e.stopPropagation();
         if (!url) return;
-        copyToClipboard(url);
-        notifications.show(notif);
+        const copied = copyToClipboard(url);
+        notifications.show({
+          title: copied
+            ? 'Link copied to clipboard'
+            : "Couldn't copy link, copy it manually",
+          message: url,
+          color: copied ? undefined : 'red',
+          icon: <ClipboardIcon />,
+        });
       }}
     >
       <ClipboardIcon />
