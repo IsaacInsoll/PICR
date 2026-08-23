@@ -194,7 +194,7 @@ export const ManagePublicLink = ({
           </Group>
           {publicUrl ? (
             <Text size="xs" c="dimmed" style={{ wordBreak: 'break-all' }}>
-              Full link: <Code>{publicUrl}</Code>
+              {t('links.editor.fullLink')} <Code>{publicUrl}</Code>
             </Text>
           ) : null}
         </Stack>

@@ -163,6 +163,7 @@
     "search": "Rechercher des liens publics",
     "copied": "Lien public copié",
     "copy": "Copier le lien public",
+    "copyFailed": "Impossible de copier le lien, copiez-le manuellement",
     "mode": {
       "label": "Mode du lien",
       "finalDelivery": "Livraison finale",
@@ -186,6 +187,7 @@
       "publicUrl": "URL publique",
       "publicLink": "Identifiant du lien public",
       "publicLinkDescription": "La partie secrète de l'URL transmise à votre client",
+      "fullLink": "Lien complet :",
       "idPlaceholder": "public-link-id",
       "cannotUse": "Caractères interdits :",
       "space": "espace",

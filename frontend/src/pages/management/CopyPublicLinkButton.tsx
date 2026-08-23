@@ -22,11 +22,6 @@ export const CopyPublicLinkButton = ({
   const baseUrl = useBaseUrl();
   const url =
     hash && folderId ? publicURLFor(baseUrl ?? '', hash, folderId) : undefined;
-  const notif = {
-    title: t('links.copied'),
-    message: url ?? '',
-    icon: <ClipboardIcon />,
-  };
   const button = (
     <Button
       {...props}
@@ -38,9 +33,7 @@ export const CopyPublicLinkButton = ({
         if (!url) return;
         const copied = copyToClipboard(url);
         notifications.show({
-          title: copied
-            ? 'Link copied to clipboard'
-            : "Couldn't copy link, copy it manually",
+          title: copied ? t('links.copied') : t('links.copyFailed'),
           message: url,
           color: copied ? undefined : 'red',
           icon: <ClipboardIcon />,
