@@ -9,19 +9,16 @@ import { useTranslation } from 'react-i18next';
 export const CopyPublicLinkButton = ({
   disabled,
   hash,
-  folderId,
   iconOnly = false,
   ...props
 }: {
   disabled: boolean;
   hash?: string;
-  folderId?: string;
   iconOnly?: boolean;
 } & ButtonProps) => {
   const { t } = useTranslation('admin');
   const baseUrl = useBaseUrl();
-  const url =
-    hash && folderId ? publicURLFor(baseUrl ?? '', hash, folderId) : undefined;
+  const url = hash ? publicURLFor(baseUrl ?? '', hash) : undefined;
   const button = (
     <Button
       {...props}

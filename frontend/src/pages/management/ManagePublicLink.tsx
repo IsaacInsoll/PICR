@@ -110,8 +110,8 @@ export const ManagePublicLink = ({
   // The field above is only the link ID. Show the URL that will actually be
   // handed to the recipient so it isn't mistaken for something pasteable.
   const publicUrl =
-    f?.id && badLink.length === 0 && link.length >= 6
-      ? publicURLFor(baseUrl ?? '', link, f.id)
+    badLink.length === 0 && link.length >= 6
+      ? publicURLFor(baseUrl ?? '', link)
       : undefined;
 
   const onDelete = () => {
@@ -267,11 +267,7 @@ export const ManagePublicLink = ({
               <Box />
             )}
             <Group justify="flex-end">
-              <CopyPublicLinkButton
-                disabled={invalidLink}
-                folderId={f?.id}
-                hash={link}
-              />
+              <CopyPublicLinkButton disabled={invalidLink} hash={link} />
               <Button disabled={invalidLink} onClick={onSave}>
                 <SaveIcon />
                 {exists ? t('common.save') : t('links.create')}

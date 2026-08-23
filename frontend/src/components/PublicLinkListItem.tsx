@@ -72,9 +72,8 @@ export const PublicLinkListItem = ({
           align="stretch"
         >
           <CopyPublicLinkButton
-            disabled={!user.enabled || !user.uuid || !user.folderId}
+            disabled={!user.enabled || !user.uuid}
             hash={user.uuid ?? undefined}
-            folderId={user.folderId}
             variant="subtle"
             size="compact-sm"
           />

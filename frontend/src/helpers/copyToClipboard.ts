@@ -45,6 +45,8 @@ const legacyCopyToClipboard = (text: string): boolean => {
   return copied;
 };
 
-export const publicURLFor = (base: string, hash: string, folderId: string) => {
-  return base + 's/' + hash + '/' + folderId;
+// Deliberately folder-less: `/s/<hash>` resolves to the link's home folder
+// (see PublicLinkHomeRedirect), so the URL handed to a client stays short.
+export const publicURLFor = (base: string, hash: string) => {
+  return base + 's/' + hash;
 };

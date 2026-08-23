@@ -51,12 +51,16 @@ export const picrTemplate = async (req: Request, res: Response) => {
   // Replace metadata on public links
   const sub = requestPath.split('/');
   if (sub[1] === 's' && sub.length >= 3) {
-    const folderId = parseInt(sub[3], 10);
-    if (!isNaN(folderId)) {
-      // the following two lines are copy-pasta'd from gqlServer.ts, consider refactoring or less dodgy hacks here
-      const user = await getUserFromUUID({ uuid: sub[2], auth: '' });
-      const userHomeFolder = await dbFolderForId(user?.folderId);
+    // the following two lines are copy-pasta'd from gqlServer.ts, consider refactoring or less dodgy hacks here
+    const user = await getUserFromUUID({ uuid: sub[2], auth: '' });
+    const userHomeFolder = await dbFolderForId(user?.folderId);
 
+    // Shared links are bare `/s/<uuid>`; the folder segment only appears after
+    // the client navigates. Fall back to the link's home folder so the link a
+    // photographer actually pastes into a message still gets a rich preview.
+    const pathFolderId = parseInt(sub[3], 10);
+    const folderId = isNaN(pathFolderId) ? user?.folderId : pathFolderId;
+    if (folderId) {
       const { permissions, folder } = await contextPermissions(
         { user, userHomeFolder, headers: {} },
         folderId,

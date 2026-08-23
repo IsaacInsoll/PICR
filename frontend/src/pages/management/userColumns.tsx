@@ -103,13 +103,8 @@ export const publicLinkColumns = (t: AdminT): PicrColumns<PicrUser>[] => [
     cell: ({ row }) => (
       <Group gap="xs" wrap="nowrap">
         <CopyPublicLinkButton
-          disabled={
-            !row.original.enabled ||
-            !row.original.uuid ||
-            !row.original.folderId
-          }
+          disabled={!row.original.enabled || !row.original.uuid}
           hash={row.original.uuid ?? undefined}
-          folderId={row.original.folderId ?? undefined}
           variant="subtle"
           size="compact-sm"
           iconOnly
