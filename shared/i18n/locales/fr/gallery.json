@@ -85,6 +85,11 @@
     "operation": "Opération : {{name}}",
     "retry": "Réessayer"
   },
+  "expired": {
+    "description": "Ce lien de galerie a expiré le {{date}}. Contactez le photographe pour obtenir un nouveau lien.",
+    "descriptionWithoutDate": "Ce lien de galerie a expiré. Contactez le photographe pour obtenir un nouveau lien.",
+    "title": "Lien de galerie expiré"
+  },
   "file": {
     "comments": "Commentaires",
     "created": "Création du fichier",

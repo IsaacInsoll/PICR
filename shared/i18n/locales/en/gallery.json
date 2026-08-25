@@ -85,6 +85,11 @@
     "operation": "Operation: {{name}}",
     "retry": "Retry"
   },
+  "expired": {
+    "description": "This gallery link expired on {{date}}. Please contact the photographer for a new link.",
+    "descriptionWithoutDate": "This gallery link has expired. Please contact the photographer for a new link.",
+    "title": "Gallery link expired"
+  },
   "file": {
     "comments": "Comments",
     "created": "File created",

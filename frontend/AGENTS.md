@@ -908,6 +908,12 @@ the gate effect active over the gallery or make its preview mirror every visual
 branding field: the parent gate effect runs after the child folder effect and
 would overwrite complete folder branding with preview defaults.
 
+Public-link expiry discovered by a downstream GraphQL request must return to
+`PublicLinkPasscodeGate`, not open the generic global permissions overlay. The
+global error exchange publishes a typed public-link access incident; the gate
+pauses downstream queries, refreshes `publicLinkInfo`, and owns the initial-load
+and mid-session expired presentation consistently.
+
 When adding a visual branding field, also add it to the hand-built `brandingKey`
 in `ViewFolder.tsx`. That key controls when `applyBrandingDefaults` is recomputed;
 omitting a field can leave stale branding when a poll or navigation changes only

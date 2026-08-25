@@ -33,7 +33,8 @@ An administrator can set an optional expiration date and time while creating or
 editing a public link. The time is entered in the administrator's local timezone.
 After that instant, PICR no longer accepts the link ID for gallery access. Clearing
 the expiration makes the link available indefinitely again, provided it is enabled
-and has not been deleted.
+and has not been deleted. Visitors opening an expired link see the expiration time
+and are prompted to contact the photographer for a replacement link.
 
 Expiration controls access to the gallery API. It does not retract files that a
 visitor has already downloaded, and it does not revoke an image or video URL that
