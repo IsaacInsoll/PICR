@@ -5,6 +5,7 @@ import {
   expectNoBrowserFailures,
   trackBrowserFailures,
 } from './browserFailures';
+import { expectDashboardReady } from './dashboardReady';
 
 // Smoke test for the authenticated admin UI — the most Mantine/react-router
 // dense surface. Drives the real login form, then loads the dashboard and a
@@ -30,9 +31,7 @@ test('admin login renders the dashboard and a folder view with no browser/runtim
 
   // Logged-in routes take over → redirected to the dashboard (react-router).
   await page.waitForURL('**/admin', { timeout: 15_000 });
-  // Dashboard section headings render immediately (not gated on data loading).
-  await expect(page.getByText('Your Galleries')).toBeVisible();
-  await expect(page.getByText('Client Feedback')).toBeVisible();
+  await expectDashboardReady(page);
   await expect(page.getByText('Login to PICR')).toHaveCount(0);
   await expect(page.locator('#root')).toBeVisible();
   await expect(page.getByText('Something went wrong')).toHaveCount(0);

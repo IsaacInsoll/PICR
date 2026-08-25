@@ -5,6 +5,7 @@ import {
   expectNoBrowserFailures,
   trackBrowserFailures,
 } from './browserFailures';
+import { expectDashboardReady } from './dashboardReady';
 import { adminAuthHeader, gqlRequest } from './graphqlClient';
 import {
   deleteBrandingMutationText,
@@ -391,7 +392,7 @@ async function login(page: Page) {
     .fill(defaultCredentials.password);
   await page.getByRole('button', { name: 'Login' }).click();
   await page.waitForURL('**/admin', { timeout: 15_000 });
-  await expect(page.getByText('Your Galleries')).toBeVisible();
+  await expectDashboardReady(page);
   await page.waitForLoadState('networkidle');
 }
 

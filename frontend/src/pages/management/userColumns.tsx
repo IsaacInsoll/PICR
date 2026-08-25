@@ -228,9 +228,8 @@ const PublicLinkActions = ({ user, now }: { user: PicrUser; now: number }) => {
   return (
     <Group gap="xs" wrap="nowrap">
       <CopyPublicLinkButton
-        disabled={status !== 'active' || !user.uuid || !user.folderId}
+        disabled={status !== 'active' || !user.uuid}
         hash={user.uuid ?? undefined}
-        folderId={user.folderId ?? undefined}
         variant="subtle"
         size="compact-sm"
         iconOnly

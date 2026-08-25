@@ -54,21 +54,26 @@ export const picrTemplate = async (req: Request, res: Response) => {
   // Replace metadata on public links
   const sub = requestPath.split('/');
   if (sub[1] === 's' && sub.length >= 3) {
-    const folderId = parseInt(sub[3], 10);
-    if (!isNaN(folderId)) {
-      const uuid = sub[2] ?? '';
-      const publicLinkAttempt = await resolvePublicLinkAttempt(
-        uuid,
-        undefined,
-        new Date(),
-      );
-      const authentication = requestAuthentication(
-        undefined,
-        publicLinkAttempt,
-      );
-      const user = principalUser(authentication);
-      const userHomeFolder = publicLinkAttempt.homeFolder;
+    const publicLinkAttempt = await resolvePublicLinkAttempt(
+      sub[2] ?? '',
+      undefined,
+      new Date(),
+    );
+    const authentication = requestAuthentication(undefined, publicLinkAttempt);
+    const user = principalUser(authentication);
+    const userHomeFolder = publicLinkAttempt.homeFolder;
 
+    // Shared links are bare `/s/<uuid>`; the folder segment only appears after
+    // the client navigates. Fall back to the link's home folder so the link a
+    // photographer actually pastes into a message still gets a rich preview.
+    // Read that fallback off the principal, not `publicLinkAttempt.homeFolder`:
+    // the attempt keeps a home folder for expired links so the gate can show
+    // branding, whereas `principalUser` is only set once the link actually
+    // authenticated. Expired, disabled, and passcode-gated links therefore fall
+    // through to generic metadata here.
+    const pathFolderId = parseInt(sub[3], 10);
+    const folderId = isNaN(pathFolderId) ? user?.folderId : pathFolderId;
+    if (folderId) {
       const { permissions, folder } = await contextPermissions(
         { authentication, user, userHomeFolder, headers: {} },
         folderId,

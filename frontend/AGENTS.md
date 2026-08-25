@@ -191,6 +191,7 @@ these main routes:
 ```typescript
 // Public gallery (Link users)
 /s/:uuid/:folderId/:fileId?/:tab?
+/s/:uuid                        // Redirects to the link's home folder
 
 // Admin routes (authenticated)
 /admin                          // Dashboard

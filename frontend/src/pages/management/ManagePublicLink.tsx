@@ -38,6 +38,8 @@ import {
   UsersGroupIcon,
 } from '../../PicrIcons';
 import { CopyPublicLinkButton } from './CopyPublicLinkButton';
+import { publicURLFor } from '../../helpers/copyToClipboard';
+import { useBaseUrl } from '../../hooks/useMe';
 import { ErrorAlert } from '../../components/ErrorAlert';
 import { badChars } from '@shared/badChars';
 import { useTranslation } from 'react-i18next';
@@ -62,6 +64,7 @@ export const ManagePublicLink = ({
   const [, mutate] = useMutation(editUserMutation);
   const [, deleteUser] = useMutation(deleteUserMutation);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const baseUrl = useBaseUrl();
 
   const [name, setName] = useState(user?.name ?? '');
   const [username, setUsername] = useState(user?.username ?? '');
@@ -116,6 +119,13 @@ export const ManagePublicLink = ({
 
   const badLink = badChars(link);
   const invalidLink = badLink.length > 0 || name === '' || link.length < 6;
+
+  // The field above is only the link ID. Show the URL that will actually be
+  // handed to the recipient so it isn't mistaken for something pasteable.
+  const publicUrl =
+    badLink.length === 0 && link.length >= 6
+      ? publicURLFor(baseUrl ?? '', link)
+      : undefined;
 
   const onDelete = () => {
     if (!id) return;
@@ -195,6 +205,11 @@ export const ManagePublicLink = ({
               </Tooltip>
             </ActionIcon.Group>
           </Group>
+          {publicUrl ? (
+            <Text size="xs" c="dimmed" style={{ wordBreak: 'break-all' }}>
+              {t('links.editor.fullLink')} <Code>{publicUrl}</Code>
+            </Text>
+          ) : null}
         </Stack>
 
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" verticalSpacing="md">
@@ -284,11 +299,7 @@ export const ManagePublicLink = ({
               <Box />
             )}
             <Group justify="flex-end">
-              <CopyPublicLinkButton
-                disabled={invalidLink}
-                folderId={f?.id}
-                hash={link}
-              />
+              <CopyPublicLinkButton disabled={invalidLink} hash={link} />
               <Button disabled={invalidLink} onClick={onSave}>
                 <SaveIcon />
                 {exists ? t('common.save') : t('links.create')}

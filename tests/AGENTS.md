@@ -136,6 +136,11 @@ tiles are not covered either — no fixture produces one.
   `buildLayout` fills `containerWidth - row.length * 2 * margin`, then each
   tile adds a CSS `margin` that a bounding box excludes. Assertions that ignore
   this only pass because the default spacing of 4 is inside their tolerance.
+- In browser smoke tests, `page.waitForURL('**/admin')` only proves the route
+  navigation happened. The lazy dashboard and its `useMe()` read can still be
+  catching up before section headings render, especially on CI. Use
+  `expectDashboardReady()` instead of a bare default-timeout text assertion for
+  dashboard readiness.
 - `PicrVideoPreview` advances its scrub frame on a 1s `setInterval`, so any
   video screenshot needs `page.clock.install()` before navigating.
 - Branding scenarios must create a branding, assign it with

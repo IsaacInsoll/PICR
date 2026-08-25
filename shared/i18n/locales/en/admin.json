@@ -164,6 +164,7 @@
     "search": "Search public links",
     "copied": "Public link copied",
     "copy": "Copy public link",
+    "copyFailed": "Couldn't copy link, copy it manually",
     "mode": {
       "label": "Link mode",
       "finalDelivery": "Final delivery",
@@ -187,6 +188,7 @@
       "publicUrl": "Public URL",
       "publicLink": "Public link ID",
       "publicLinkDescription": "The secret part of the URL shared with your client",
+      "fullLink": "Full link:",
       "idPlaceholder": "public-link-id",
       "cannotUse": "Cannot use:",
       "space": "space",

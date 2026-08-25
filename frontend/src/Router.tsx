@@ -1,5 +1,6 @@
 import { lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router';
+import { PublicLinkHomeRedirect } from './pages/PublicLinkHomeRedirect';
 
 const Dashboard = lazy(() =>
   import('./pages/Dashboard').then((module) => ({
@@ -44,6 +45,7 @@ export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
   return (
     <Routes>
       <Route path={`/s/:uuid${folderRoute}`} element={<ViewFolder />} />
+      <Route path="/s/:uuid" element={<PublicLinkHomeRedirect />} />
       {loggedIn ? (
         <>
           <Route path={`/admin/f${folderRoute}`} element={<ViewFolder />} />

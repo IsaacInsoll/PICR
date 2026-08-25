@@ -9,24 +9,16 @@ import { useTranslation } from 'react-i18next';
 export const CopyPublicLinkButton = ({
   disabled,
   hash,
-  folderId,
   iconOnly = false,
   ...props
 }: {
   disabled: boolean;
   hash?: string;
-  folderId?: string;
   iconOnly?: boolean;
 } & ButtonProps) => {
   const { t } = useTranslation('admin');
   const baseUrl = useBaseUrl();
-  const url =
-    hash && folderId ? publicURLFor(baseUrl ?? '', hash, folderId) : undefined;
-  const notif = {
-    title: t('links.copied'),
-    message: url ?? '',
-    icon: <ClipboardIcon />,
-  };
+  const url = hash ? publicURLFor(baseUrl ?? '', hash) : undefined;
   const button = (
     <Button
       {...props}
@@ -36,8 +28,13 @@ export const CopyPublicLinkButton = ({
         e.preventDefault();
         e.stopPropagation();
         if (!url) return;
-        copyToClipboard(url);
-        notifications.show(notif);
+        const copied = copyToClipboard(url);
+        notifications.show({
+          title: copied ? t('links.copied') : t('links.copyFailed'),
+          message: url,
+          color: copied ? undefined : 'red',
+          icon: <ClipboardIcon />,
+        });
       }}
     >
       <ClipboardIcon />

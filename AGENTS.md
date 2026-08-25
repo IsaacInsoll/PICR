@@ -73,6 +73,24 @@ Before finalizing a task:
 - Call out generated files, schema changes, migrations, new environment variables, user-facing behavior changes, and documentation updates.
 - Do not claim the work is complete if verification is missing and the missing check is material to the change.
 
+### Run the checks before every commit, not just at the end of a task
+
+"Narrowest relevant" above means the narrowest _subsystem_ command, not the narrowest file. Before **each** commit, for
+every subsystem the commit touches, run:
+
+- `npm run format` then `npm run format:check`
+- `npm run lint` in the subsystem (`eslint <file>` is not a substitute — subsystem lint also runs checks such as
+  `css:types:check` in `frontend`)
+- `npx tsc --noEmit` in the subsystem
+- `npm run i18n:check` from the root if any user-facing string or locale catalog changed
+
+The full test suite is deliberately **not** on that list; it belongs to `npm run workflow`, which the user runs. The root
+`npm run check` script bundles format, lint, tsc, and i18n if you want them in one go.
+
+Re-run these after **rebasing or merging** as well. A rebase can combine two individually-clean commits into a broken
+one, for example by keeping both sides of an edit to the same lines, and no check performed before the rebase covers
+that.
+
 PICR is an open-source photo/video gallery for photographers to share media with clients. Deployed via Docker for self-hosting, with a React Native companion app.
 
 ## Project Links

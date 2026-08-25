@@ -116,6 +116,17 @@ I'm personally using Nginx Proxy manager but any of them will work fine.
 If you are planning on making this accessible over the internet (rather than just playing around with it within your
 home network) you should definitely set up a reverse proxy. Set `BASE_URL` to the reverse proxy address.
 
+### HTTPS is worth it even on your LAN
+
+It is tempting to skip the reverse proxy when PICR is only reachable from your own network, and run it on something like
+`http://192.168.1.50:6900/`. That works, but browsers treat plain HTTP as an insecure origin and switch off a set of
+features on it, regardless of whether the address is local. The most visible one in PICR is clipboard access, which is
+what the **Copy Link** button uses.
+
+PICR falls back to an older copy method so those buttons still work over plain HTTP, but other browser features are
+outside its control. `localhost` is exempt from this rule, so local development over HTTP is fine — it is LAN IPs and
+hostnames that are affected. If you can put PICR behind HTTPS, do it.
+
 ## Environment variables
 
 There are lots of environment variables you can use, but only a few are needed:
