@@ -4,12 +4,12 @@ import {
   Button,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { PicrLogo } from '@/src/components/PicrLogo';
 import { useRouter } from 'expo-router';
 import type { FieldError } from 'react-hook-form';

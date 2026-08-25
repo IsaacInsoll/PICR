@@ -85,9 +85,9 @@ export default function AppFileView() {
     (value: number) => {
       'worklet';
 
-      const zIndex = Math.round(interpolate(value, [-1, 0, 1], [10, 20, 30]));
+      const zIndex = Math.round(interpolate(value, [-1, 0, 1], [10, 20, 10]));
       const translateX = Math.round(
-        interpolate(value, [-2, 0, 1], [-width, 0, width]),
+        interpolate(value, [-1, 0, 1], [-width, 0, width]),
       );
 
       return {

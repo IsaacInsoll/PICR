@@ -82,7 +82,13 @@ jobs:
       - name: '📱 [app] Type check'
         if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: cd app && npm run typecheck
-      - name: '📱 [app] Build (expo export)'
+      - name: '📱 [app] Check Hermes polyfills'
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
+        run: cd app && npm run check:polyfills
+      - name: '📱 [app] Expo Doctor'
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
+        run: cd app && npx expo-doctor
+      - name: '📱 [app] Build iOS bundle (expo export)'
         if: ${{ matrix.os == 'ubuntu-24.04' }}
         shell: bash
         run: |
@@ -94,6 +100,9 @@ jobs:
             skip { next }
             { print }
           '
+      - name: '📱 [app] Build Android bundle (expo export)'
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
+        run: cd app && npx expo export --platform android
 
       # TESTS
       - name: '🧪 [tests/api] run backend tests (vitest)'

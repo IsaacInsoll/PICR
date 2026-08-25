@@ -2,6 +2,27 @@
 
 Expo/React Native mobile app for PICR, providing gallery viewing and push notifications.
 
+Long-term app cleanup, upgrades, and monorepo work are tracked in
+[`modernization-roadmap.md`](./modernization-roadmap.md).
+
+`@rnrepo/expo-config-plugin` is intentionally pinned to `0.1.0-beta.0`. A caret
+range also admits `0.1.0-beta.1`, whose published peer dependency supports Expo
+54 rather than the app's Expo 55 baseline; normal npm resolution and
+`npm audit fix` then fail with `ERESOLVE`. Reassess or remove the plugin during
+the SDK 56 upgrade rather than widening this prerelease range.
+
+After applying the current SDK 55 patches and safe `npm audit fix` updates, the
+app audit retains 11 moderate advisories in Expo's build/configuration toolchain
+through `@expo/config-plugins` → `xcode` → `uuid`. npm's force-fix suggestion is
+an invalid downgrade to Expo 46. Do not use `npm audit fix --force` for these;
+reassess them as part of the SDK 56 and 57 upgrades.
+
+Keep `@gorhom/bottom-sheet` at 5.2.7 or newer on React Native's New
+Architecture. Version 5.2.6 calls an undefined
+`unstable_getBoundingClientRect`; upstream added the required function guard in
+5.2.7 and strengthened it in 5.2.10. The app currently pins the range from
+5.2.14, which contains both fixes. Do not patch this hook in `node_modules`.
+
 ## Tech Stack
 
 | Technology         | Version | Purpose                |
@@ -9,9 +30,9 @@ Expo/React Native mobile app for PICR, providing gallery viewing and push notifi
 | Expo               | SDK 55  | React Native framework |
 | Expo Router        | 55.0    | File-based navigation  |
 | React Native       | 0.83    | Mobile UI              |
-| React              | 19.1    | UI framework           |
-| URQL               | 4.2     | GraphQL client         |
-| Jotai              | 2.12    | State management       |
+| React              | 19.2    | UI framework           |
+| URQL               | 5.0     | GraphQL client         |
+| Jotai              | 2.17    | State management       |
 | Expo Notifications | -       | Push notifications     |
 
 ## Directory Structure
@@ -104,9 +125,9 @@ import { sortFolderContents } from '@shared/files/sortFiles';
 
 ### What CAN Be Imported
 
-| Source    | What's Safe                                 | What's NOT Safe |
-| --------- | ------------------------------------------- | --------------- |
-| `@shared` | Types, queries, pure functions, Jotai atoms | URQL hooks      |
+| Source    | What's Safe                       | What's NOT Safe         |
+| --------- | --------------------------------- | ----------------------- |
+| `@shared` | Types, queries and pure functions | Jotai atoms, URQL hooks |
 
 The app must not import from `frontend`, `backend`, or any other non-shared
 subsystem. Move code needed by multiple consumers into `shared/` and import it
@@ -130,7 +151,52 @@ with `@shared/*`.
 
 **Note**: This is a known issue to fix when time permits.
 
+The root cause is not only Metro configuration. With the current separate
+package installs, `app/node_modules` and `shared/node_modules` contain distinct
+React/URQL/Jotai instances; a React hook imported from `shared` therefore uses a
+different React instance from the app renderer. In addition,
+`shared/hooks/useRequery.tsx` is browser-specific because it reads
+`document.visibilityState`, while the app copy polls without that browser API.
+Do not replace the app copy with the shared hook merely because a workspace or
+task runner has been introduced. First deduplicate compatible runtime packages
+and move platform-specific polling/visibility behavior behind consumer-owned
+adapters.
+
+Until that deduplication is complete, keep app-owned Jotai atoms under
+`app/src/atoms`. Importing an atom from `shared` also evaluates shared's Jotai
+package and causes Metro to load two default stores, producing the "Detected
+multiple Jotai instances" warning and potentially splitting state.
+
+Use `expo-image` for rendered images and set an explicit cache policy when the
+screen depends on caching. Do not reintroduce `CachedImage` from
+`@georstat/react-native-image-cache`: its component reads the library's static
+configuration during render, and layout/bootstrap failures can leave that
+configuration undefined. The old package remains temporarily for cache-manager
+APIs used by full-screen images and settings until that path is migrated too.
+
+### Public-link routes are incomplete
+
+The app currently has a public folder route at
+`/[loggedin]/s/[uuid]/[folderId]`, but no matching public file route and no bare
+`/[loggedin]/s/[uuid]` entry route. `useAppFileLink()` nevertheless generates a
+public file URL, so tapping a public file reaches the not-found screen.
+
+Public media loading is also not self-contained: `AppImage`, `PFileImage` and
+`PBigImage` ultimately derive their base URL from authenticated login details in
+SecureStore. A public-link-only session has no such login details, so public
+gallery media cannot rely on those helpers. The public provider additionally
+reconstructs the server as HTTPS from the route hostname, which does not support
+plain-HTTP self-hosted servers. Treat public-link support as incomplete until
+the route contract, server-origin context, passcode flow and media helpers are
+implemented and tested together.
+
 ## Authentication
+
+The backend accepts arbitrary non-empty admin usernames and its default
+username is `admin`. Do not validate the app login username as an email address.
+The current app form still uses `z.string().email()`, so it rejects a valid
+default PICR installation before sending the login mutation; align it with the
+frontend/backend username contract when touching login.
 
 ### Secure Storage
 
@@ -334,6 +400,24 @@ const styles = StyleSheet.create({
 
 ## Development Workflow
 
+### Regenerate native projects after dependency changes
+
+`android/` and `ios/` are ignored Continuous Native Generation output. Expo's
+`run:android`/`run:ios` commands generate a native directory only when it is
+absent; they do not fully refresh an existing project after an Expo or native
+dependency update. Run the relevant clean prebuild first:
+
+```bash
+npx expo prebuild --clean --platform android
+npx expo prebuild --clean --platform ios
+```
+
+Do not patch generated entry points such as `MainApplication.kt` to work around
+SDK drift. For example, the pre-SDK-55 Android output referenced the removed
+`ReactNativeHostWrapper`; clean SDK 55 output uses `ExpoReactHostFactory`.
+Express intentional native customization in `app.config.ts` or a config plugin
+so it survives regeneration.
+
 ### Running the App
 
 ```bash
@@ -372,6 +456,13 @@ npx expo start --dev-client
 # View logs
 npx expo start --clear  # Clear cache first
 ```
+
+The full-screen file viewer uses a custom `react-native-reanimated-carousel`
+animation behind a transparent navigation header. Keep its translation mapping
+symmetric: carousel values `-1`, `0`, and `1` must map to `-width`, `0`, and
+`width`, and the active item must have the highest `zIndex`. A half-width
+mapping leaves the neighbouring item's dimming mask visible through transparent
+header and image-letterbox areas as an exact half-screen grey overlay.
 
 ## Validation Commands
 
@@ -415,6 +506,19 @@ npm install
 ### "useEffect on null" errors
 
 Usually means a hook is being imported from shared incorrectly. Check if the hook needs to be in `app-shared/` instead.
+
+### `Intl.RelativeTimeFormat` crashes on Hermes
+
+Hermes does not currently provide the complete Intl chain needed by
+`RelativeTimeFormat`. It can expose missing APIs with `undefined` values, which
+crashes FormatJS's capability-detecting entrypoints. The app must force-install
+`getCanonicalLocales`, `Locale`, `PluralRules`, and `RelativeTimeFormat` in that
+order, with `PluralRules` locale data loaded before relative-time locale data.
+The static `el`, `en`, and `fr` imports live in `src/polyfills.ts`, imported first
+by the root layout. When adding an app language, add both locale-data imports and
+the assertion in `scripts/check-polyfills.mjs`. Keep the fallback in
+`shared/i18n/formatting.ts`: shared helpers must degrade to an absolute date when
+the API is absent or a partial polyfill has not loaded locale data.
 
 ### Push notifications not working
 

@@ -1,9 +1,8 @@
 import type { PropsWithChildren } from 'react';
 import type { Padding } from '../constants';
 import { PaddingSize } from '../constants';
-import type { ViewStyle } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { View } from 'react-native';
-import type { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 export const PView = ({
   gap,

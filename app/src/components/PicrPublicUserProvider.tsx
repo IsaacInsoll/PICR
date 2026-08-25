@@ -5,8 +5,8 @@ import { atom, useSetAtom } from 'jotai';
 import { picrUrqlClient } from '@shared/urql/urqlClient';
 import * as Application from 'expo-application';
 import { Platform } from 'react-native';
-import { usePathname } from 'expo-router/build/hooks';
-import { pushGlobalError } from '@shared/globalErrorAtom';
+import { usePathname } from 'expo-router';
+import { pushGlobalError } from '@/src/atoms/globalErrorAtom';
 import { PText } from '@/src/components/PText';
 
 let publicUserPath: false | { uuid: string; server: string } = false;

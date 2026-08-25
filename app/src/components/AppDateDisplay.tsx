@@ -2,7 +2,7 @@ import { useAtom } from 'jotai';
 import type { ReactNode } from 'react';
 import { finePrint } from '@/src/constants';
 import { PText } from '@/src/components/PText';
-import { dateDisplayRelativeAtom } from '@shared/uiAtoms';
+import { dateDisplayRelativeAtom } from '@/src/atoms/atoms';
 import {
   formatDate,
   formatRelativeTime,

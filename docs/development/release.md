@@ -77,10 +77,11 @@ This runs:
 1. EAS auth check (`eas whoami`) and exits early if not logged in
 2. Deterministic local install in `shared` and `app` using `npm ci`
 3. Lint + TypeScript checks in `shared` and `app`
-4. `expo-doctor` (advisory/non-blocking)
-5. Local `expo export` for iOS only (with condensed log output)
-6. App version bump in `app/package.json` using app-local `release-it` config
-7. EAS build + auto-submit for iOS and Android (`production` profile)
+4. Hermes-shaped app polyfill bootstrap check
+5. `expo-doctor` (blocking)
+6. Local `expo export` for both iOS and Android
+7. App version bump in `app/package.json` using app-local `release-it` config
+8. EAS build + auto-submit for iOS and Android (`production` profile)
 
 Notes:
 
@@ -94,6 +95,11 @@ Notes:
 `npm run release:app:dry`
 
 Use this to validate everything up to preflight checks and local exports.
+
+The app uses Expo's free plan. Batch completed work into no more than one
+coordinated production release per calendar week, and run the dry preflight
+before spending an EAS cloud build. Prefer local development/release builds for
+iteration and retain enough monthly EAS capacity for a necessary rebuild.
 
 ### Platform-specific release
 

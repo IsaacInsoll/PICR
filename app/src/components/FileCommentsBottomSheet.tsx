@@ -10,7 +10,7 @@ import { PText } from '@/src/components/PText';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { useMutation, useQuery } from 'urql';
-import type { TextStyle } from 'react-native';
+import type { StyleProp, TextStyle } from 'react-native';
 import {
   Keyboard,
   StyleSheet,
@@ -21,7 +21,6 @@ import {
 import { AppAvatar } from '@/src/components/AppAvatar';
 import { prettyDate } from '@shared/prettyDate';
 import { Rating } from '@kolking/react-native-rating';
-import type { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { AppIconButton } from '@/src/components/AppIcons';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';

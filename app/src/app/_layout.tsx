@@ -1,3 +1,4 @@
+import '@/src/polyfills';
 import type { Href } from 'expo-router';
 import { Slot, useRouter } from 'expo-router';
 import { ThemeProvider } from '@/src/components/themeProvider';

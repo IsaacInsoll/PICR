@@ -117,4 +117,48 @@ describe('formatRelativeTime', () => {
       'Date invalide',
     );
   });
+
+  it('falls back to an absolute date when RelativeTimeFormat is unavailable', () => {
+    const relativeTimeFormat = Intl.RelativeTimeFormat;
+    Object.defineProperty(Intl, 'RelativeTimeFormat', {
+      configurable: true,
+      value: undefined,
+    });
+
+    try {
+      const value = '2024-01-15T10:30:00Z';
+      expect(formatRelativeTime(value, 'en', now)).toBe(
+        formatDate(value, 'en'),
+      );
+    } finally {
+      Object.defineProperty(Intl, 'RelativeTimeFormat', {
+        configurable: true,
+        value: relativeTimeFormat,
+      });
+    }
+  });
+
+  it('falls back when a partial polyfill has no locale data', () => {
+    const relativeTimeFormat = Intl.RelativeTimeFormat;
+    Object.defineProperty(Intl, 'RelativeTimeFormat', {
+      configurable: true,
+      value: class {
+        constructor() {
+          throw new Error('Missing locale data');
+        }
+      },
+    });
+
+    try {
+      const value = '2024-01-15T10:30:00Z';
+      expect(formatRelativeTime(value, 'en', now)).toBe(
+        formatDate(value, 'en'),
+      );
+    } finally {
+      Object.defineProperty(Intl, 'RelativeTimeFormat', {
+        configurable: true,
+        value: relativeTimeFormat,
+      });
+    }
+  });
 });

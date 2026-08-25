@@ -11,3 +11,7 @@ export const fileSortAtom = atom<FileSort>({
   direction: 'Asc',
   type: 'Filename',
 });
+
+// App UI state must use the app's Jotai instance. Importing atoms from the
+// separately installed shared package creates a second default store in Metro.
+export const dateDisplayRelativeAtom = atom(true);

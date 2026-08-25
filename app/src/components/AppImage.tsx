@@ -1,14 +1,14 @@
-import { CachedImage } from '@georstat/react-native-image-cache';
 import type { AllSize, ThumbnailSize } from '@shared/thumbnailSize';
 import type { PicrFile } from '@shared/types/picr';
 import type { ImageUrlFileInput } from '@shared/types/ui';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { View } from 'react-native';
 import { useState } from 'react';
+import { Image as ExpoImage } from 'expo-image';
 
 type AppImageFile = Pick<
   PicrFile,
-  'id' | 'fileHash' | 'name' | 'type' | 'imageRatio'
+  'id' | 'fileHash' | 'name' | 'type' | 'imageRatio' | 'blurHash'
 >;
 
 // Show an image but cache it to device
@@ -44,11 +44,14 @@ export const AppImage = ({
       }}
       style={{ height }}
     >
-      {/*TODO: this is only instance of CachedImage in entire codebase, refactor to be Expo Image powered by the cache like we are doing elsewhere? */}
-      <CachedImage
-        source={source ?? ''}
+      <ExpoImage
+        cachePolicy="memory-disk"
+        contentFit="contain"
+        placeholder={file.blurHash ?? undefined}
+        placeholderContentFit="contain"
+        source={source ? { uri: source } : undefined}
         style={{ width: w, height }}
-        thumbnailSource={baseUrl ? baseUrl + imageURL(file, 'sm') : ''}
+        transition={200}
         onError={() => {
           // console.log('Error getting image: ' + source);
         }}

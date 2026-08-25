@@ -14,7 +14,7 @@ import { appLogin } from '@/src/helpers/appLogin';
 import { picrUrqlClient } from '@shared/urql/urqlClient';
 import * as Application from 'expo-application';
 import { Platform } from 'react-native';
-import { pushGlobalError } from '@shared/globalErrorAtom';
+import { pushGlobalError } from '@/src/atoms/globalErrorAtom';
 import { clearAppAuth } from '@/src/helpers/clearAppAuth';
 
 const initCompleteAtom = atom(false); // we only want this once system-wide, not per instance of this provider
