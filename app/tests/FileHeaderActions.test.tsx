@@ -96,6 +96,7 @@ describe('FileHeaderActions', () => {
 
     await waitFor(() => {
       expect(MediaLibrary.createAssetAsync).toHaveBeenCalledWith(localUri);
+      expect(screen.getByTestId('file-download-succeeded')).toBeOnTheScreen();
     });
     expect(onDownload).toHaveBeenCalledTimes(1);
     expect(onComments).toHaveBeenCalledTimes(1);

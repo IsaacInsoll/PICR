@@ -500,6 +500,32 @@ installable development variant by default and receives credentials only via
 `MAESTRO_*` environment variables. Do not add real credentials to flow files or
 spend an EAS build merely to run the local smoke test.
 
+Root-level Maestro YAML files are independently runnable tests; reusable login
+and home-folder setup belongs under `app/.maestro/subflows/`, which Maestro does
+not discover when running the workspace with its default root-only pattern.
+Each root flow must start through the login subflow so suite order never matters.
+The download flow changes the device media library, while comment and physical-
+device notification flows mutate the configured server; keep those effects
+explicit in `app/.maestro/README.md` and use a dedicated test account.
+
+Maestro flows default to the separate `com.isaacinsoll.picr.dev` package and
+clear its app state before login. A plain local Expo Android build may instead
+install `com.isaacinsoll.picr`; verify with `adb shell pm list packages` and set
+`MAESTRO_APP_ID=com.isaacinsoll.picr` only when clearing that package's local
+state is acceptable.
+
+Clearing a development client's state also removes its remembered Metro project
+and exposes the Expo launcher. Run Maestro through the app's npm scripts: the
+`scripts/run-maestro.mjs` wrapper retrieves Expo SDK 55's development-client
+redirect from the active local Metro server and supplies it to the login
+subflow. Set `MAESTRO_EXPO_PORT` when Metro does not use 8081, or
+`MAESTRO_DEV_CLIENT_URL` to override discovery with a complete launch URI.
+
+Expo push tokens require a physical device. The notification flow must accept
+the app's explicit `notification-toggle-unavailable` state on emulators while
+still exercising the mutation when `notification-toggle` becomes available on
+a physical device.
+
 The app lint script must remain `expo lint -- --max-warnings=0`. The separator
 forwards the warning option through Expo to ESLint; without it Expo silently
 consumes the option and the zero-warning gate becomes ineffective.

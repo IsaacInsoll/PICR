@@ -50,14 +50,16 @@ export const AppLink = ({
   item,
   children,
   asChild,
+  testID,
 }: {
   item: LinkableItem;
   children: ReactNode;
   asChild?: boolean;
+  testID?: string;
 }) => {
   if (item.__typename === 'Folder') {
     return (
-      <AppFolderLink folder={item} asChild={asChild}>
+      <AppFolderLink folder={item} asChild={asChild} testID={testID}>
         {children}
       </AppFolderLink>
     );
@@ -65,7 +67,7 @@ export const AppLink = ({
 
   if ('folderId' in item) {
     return (
-      <AppFileLink file={item} asChild={asChild}>
+      <AppFileLink file={item} asChild={asChild} testID={testID}>
         {children}
       </AppFileLink>
     );

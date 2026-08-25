@@ -6,6 +6,7 @@ import type { ViewFolderFile } from '@shared/files/sortFiles';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { useLocalImageUrl } from '@/src/components/PBigImage';
 import { navBarIconProps } from '@/src/constants';
+import { useEffect, useState } from 'react';
 
 type FileHeaderActionsFile = Pick<
   ViewFolderFile,
@@ -25,14 +26,21 @@ export const FileHeaderActions = ({
 }) => {
   const theme = useAppTheme();
   const uri = useLocalImageUrl(file, 'raw');
+  const [downloadState, setDownloadState] = useState<
+    'idle' | 'saving' | 'saved'
+  >('idle');
+
+  useEffect(() => setDownloadState('idle'), [file.id]);
 
   const download = async () => {
     onDownload();
     if (!uri) return;
 
+    setDownloadState('saving');
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== 'granted') {
+        setDownloadState('idle');
         Alert.alert(
           'Permission required',
           'Media library access is needed to perform this action.',
@@ -41,7 +49,9 @@ export const FileHeaderActions = ({
       }
 
       await MediaLibrary.createAssetAsync(uri);
+      setDownloadState('saved');
     } catch {
+      setDownloadState('idle');
       // Phase 3 will replace the existing silent failure with user feedback.
     }
   };
@@ -49,8 +59,17 @@ export const FileHeaderActions = ({
   return (
     <View style={{ flexDirection: 'row' }}>
       <HeaderButton
-        accessibilityLabel="Download file"
-        testID="file-download-button"
+        accessibilityLabel={
+          downloadState === 'saved' ? 'Download complete' : 'Download file'
+        }
+        testID={
+          downloadState === 'saved'
+            ? 'file-download-succeeded'
+            : downloadState === 'saving'
+              ? 'file-download-saving'
+              : 'file-download-button'
+        }
+        disabled={downloadState === 'saving'}
         onPress={() => void download()}
       >
         <Ionicons

@@ -40,6 +40,8 @@ export const PBigVideo = ({
 
   return (
     <View
+      accessibilityLabel="Video player"
+      testID={isPlaying ? 'video-player-playing' : 'video-player-paused'}
       style={[styles.contentContainer, { backgroundColor: theme.tabColor }]}
     >
       <VideoView

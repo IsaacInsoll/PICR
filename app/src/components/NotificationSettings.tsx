@@ -11,23 +11,24 @@ import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { useIsDev } from '@/src/helpers/useIsDev';
 
 export const NotificationSettings = () => {
-  const [token, setToken] = useState<string>('');
+  const [token, setToken] = useState<string | null>();
   const me = useMe();
   const isDev = useIsDev();
 
   //TODO: refactor to check notif permissions locally, rather than requesting notif access right away
   useEffect(() => {
     void registerForPushNotificationsAsync().then((t) => {
-      setToken(isDev ? `${t ?? ''} DEV` : (t ?? ''));
+      setToken(t ? (isDev ? `${t} DEV` : t) : null);
     });
     // now get existing value from server
   }, [isDev]);
 
   const userId = me?.id;
-  const canEditNotifications = token !== '' && !!userId;
+  const canEditNotifications = typeof token === 'string' && !!userId;
 
   return (
     <View
+      testID="notification-settings"
       style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -36,20 +37,28 @@ export const NotificationSettings = () => {
       }}
     >
       <PText>Allow Notifications</PText>
-      {!canEditNotifications ? (
-        <Switch
-          accessibilityLabel="Allow notifications"
-          testID="notification-toggle"
-          disabled={true}
-        />
+      {token === undefined ? (
+        <View testID="notification-toggle-loading">
+          <AppLoadingIndicator size="small" />
+        </View>
       ) : (
-        <NotificationToggle token={token} userId={userId} />
+        <View testID="notification-toggle-settled">
+          {!canEditNotifications ? (
+            <Switch
+              accessibilityLabel="Allow notifications"
+              testID="notification-toggle-unavailable"
+              disabled={true}
+            />
+          ) : (
+            <NotificationToggle token={token} userId={userId} />
+          )}
+        </View>
       )}
     </View>
   );
 };
 
-const NotificationToggle = ({
+export const NotificationToggle = ({
   token,
   userId,
 }: {
@@ -62,14 +71,19 @@ const NotificationToggle = ({
   });
   const [, mutate] = useMutation(editUserDeviceMutation);
   const allow = result.data?.userDevices[0]?.enabled;
+  const [saveState, setSaveState] = useState<'ready' | 'saving' | 'saved'>(
+    'ready',
+  );
 
   const onChange = async (enabled: boolean) => {
-    await mutate({
+    setSaveState('saving');
+    const mutationResult = await mutate({
       enabled,
       token,
       userId,
       name: Device.modelName ?? 'Mobile Device',
     });
+    setSaveState(mutationResult.error ? 'ready' : 'saved');
     void requery({ requestPolicy: 'cache-and-network' });
   };
   const handleChange = (enabled: boolean) => {
@@ -83,7 +97,10 @@ const NotificationToggle = ({
   return (
     <Switch
       accessibilityLabel="Allow notifications"
-      testID="notification-toggle"
+      testID={`notification-toggle${
+        saveState === 'ready' ? '' : `-${saveState}`
+      }`}
+      disabled={saveState === 'saving'}
       value={allow}
       onChange={(event) => handleChange(event.nativeEvent.value)}
     />

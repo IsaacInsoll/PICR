@@ -44,8 +44,10 @@ export const FileCommentsBottomSheet = ({
 
   const [addComment, setAddComment] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [commentSubmitted, setCommentSubmitted] = useState(false);
   // console.log({ commentText }, commentText.length);
   const onShowAddComment = () => {
+    setCommentSubmitted(false);
     setAddComment(true);
     setTimeout(() => textInputRef.current?.focus(), 100);
     bottomSheetRef.current?.expand();
@@ -61,6 +63,7 @@ export const FileCommentsBottomSheet = ({
     if (result.data && !result.error) {
       setAddComment(false);
       setCommentText('');
+      setCommentSubmitted(true);
     }
   };
   const handleSubmitComment = () => {
@@ -81,6 +84,7 @@ export const FileCommentsBottomSheet = ({
 
   const handleClose = () => {
     Keyboard.dismiss();
+    setCommentSubmitted(false);
     onClose();
   };
 
@@ -186,6 +190,11 @@ export const FileCommentsBottomSheet = ({
               Add Comment
             </AppIconButton>
           </View>
+        ) : null}
+        {commentSubmitted ? (
+          <PText testID="file-comment-submit-succeeded" variant="dimmed">
+            Comment added
+          </PText>
         ) : null}
         <Suspense fallback={<AppLoadingIndicator />}>
           <FileCommentsBody id={file.id} />

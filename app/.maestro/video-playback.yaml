@@ -1,0 +1,22 @@
+appId: ${MAESTRO_APP_ID || "com.isaacinsoll.picr.dev"}
+name: Photographer video playback
+tags:
+  - local
+  - media
+---
+- runFlow: subflows/open-home-folder.yaml
+- scrollUntilVisible:
+    element:
+      id: video-row-.*
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 50
+- tapOn:
+    id: video-row-.*
+    index: 0
+- assertVisible:
+    id: file-screen
+- extendedWaitUntil:
+    visible:
+      id: video-player-playing
+    timeout: 20000

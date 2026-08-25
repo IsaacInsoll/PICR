@@ -12,7 +12,8 @@
     "lint": "expo lint -- --max-warnings=0",
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
-    "test:maestro:smoke": "maestro test .maestro/photographer-smoke.yaml",
+    "test:maestro": "node ./scripts/run-maestro.mjs .maestro",
+    "test:maestro:smoke": "node ./scripts/run-maestro.mjs .maestro/photographer-smoke.yaml",
     "typecheck": "tsc --noEmit",
     "release:version": "node ../node_modules/release-it/bin/release-it.js --config package.json"
   },

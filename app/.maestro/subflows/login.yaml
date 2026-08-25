@@ -1,0 +1,27 @@
+appId: ${MAESTRO_APP_ID || "com.isaacinsoll.picr.dev"}
+---
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+- openLink: ${MAESTRO_DEV_CLIENT_URL}
+- extendedWaitUntil:
+    visible:
+      id: login-screen
+    timeout: 60000
+- tapOn:
+    id: login-server-input
+- inputText: ${MAESTRO_SERVER}
+- tapOn:
+    id: login-username-input
+- inputText: ${MAESTRO_USERNAME}
+- tapOn:
+    id: login-password-input
+- inputText: ${MAESTRO_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: login-submit
+- extendedWaitUntil:
+    visible:
+      id: dashboard-screen
+    timeout: 20000

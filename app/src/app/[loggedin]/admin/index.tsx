@@ -42,7 +42,11 @@ const HomeFolderButton = () => {
   if (!me) return null; //hit this issue when making public user access
   return (
     <HeaderButton>
-      <AppFolderLink folder={{ id: me.folderId, name: 'Home' }} asChild={true}>
+      <AppFolderLink
+        folder={{ id: me.folderId, name: 'Home' }}
+        asChild={true}
+        testID="home-folder-link"
+      >
         <Ionicons
           name="folder-outline"
           size={25}

@@ -114,7 +114,13 @@ Library. It is also part of the root `npm run check`, app release preflight and
 CI build.
 
 The critical native photographer flow is scaffolded in
-`app/.maestro/photographer-smoke.yaml`. It uses the local development variant,
-so it does not consume an EAS build. Follow `app/.maestro/README.md` to build the
-variant and pass server credentials via `MAESTRO_*` environment variables.
-The test account's home folder must contain at least one supported media item.
+`app/.maestro/`. It uses the local development variant, so it does not consume
+an EAS build. Follow `app/.maestro/README.md` to build the variant and pass
+server credentials via `MAESTRO_*` environment variables. The fast smoke flow
+covers login and image navigation; the complete suite additionally covers image
+download, video playback, comment creation and notification settings. Use a
+dedicated test account with at least one image and video because the complete
+suite has documented device/server side effects. Run Maestro through the npm
+scripts while Metro remains active; their wrapper retrieves and opens Expo's
+development-client URL after each clean-state launch. Set `MAESTRO_EXPO_PORT`
+when Metro selected a port other than 8081.

@@ -15,13 +15,15 @@ emulator; login, dashboard, folder browsing, full-screen image display and
 carousel navigation were manually exercised. Runtime problems found during that
 smoke pass were fixed and rechecked. No EAS build or store release was used.
 
-Phase 2 is in progress. The Jest/React Native Testing Library suite currently
-passes 30 tests across login, URL normalization, auth expiry, SecureStore
-migration, route construction, date formatting, branding, presentation defaults
-and photographer file actions. It runs from root checks, CI and app release
-preflight. A local Maestro photographer flow and its stable interaction IDs are
-scaffolded but have not yet been executed on a development build on this machine
-because the Maestro CLI is not installed.
+Phase 2's unit/component safety net is complete. The Jest/React Native Testing
+Library suite currently passes 36 tests across login, URL normalization, auth
+expiry, SecureStore migration, route construction, date formatting, branding,
+presentation defaults, photographer file actions, native row identifiers and
+notification settings. It runs from root checks, CI and app release preflight,
+and the root workflow passed after these changes on 2026-08-25. Independent
+local Maestro flows are scaffolded for navigation, image download, video
+playback, comment creation and notification settings. Full native execution is
+deliberately deferred and is not blocking the next phase.
 
 The remaining Phase 1 exit gates are platform/feature coverage rather than
 known implementation failures: an iOS development build, physical-device
@@ -30,9 +32,9 @@ downloads and notification settings. These can be folded into the Phase 2
 automated safety-net work rather than spending a cloud build only to close the
 checklist.
 
-Phase 2's remaining work is native execution and the media/comment/notification
-flows. Phase 3 contract cleanup and Expo SDK upgrades remain deliberately
-separate.
+Phase 3 contract cleanup is the next active phase. Native Maestro execution can
+resume when its additional coverage is useful; Expo SDK upgrades remain
+deliberately separate.
 
 ## Product direction
 
@@ -105,8 +107,8 @@ resource. The default workflow is local-first:
       advisories in Expo's build/configuration toolchain; the full audit adds
       one path through `jest-expo`. npm's proposed force-fix crosses an Expo SDK
       boundary, so the remainder is deferred to the planned SDK 56/57 upgrades.
-- [x] App unit/component tests exist and pass locally (30 tests on 2026-08-25).
-      The native Maestro flow is scaffolded but has not yet been executed.
+- [x] App unit/component tests exist and pass locally (36 tests on 2026-08-25).
+      Native Maestro execution is scaffolded and deliberately deferred.
 - [ ] Package/store versions are reconciled. `app/package.json` is 1.0.6, while
       the public store listings observed during the audit show older releases.
 
@@ -189,15 +191,17 @@ Goal: protect current behavior before routing, auth and monorepo work.
 - [x] Configure the existing Maestro/EAS development-build profile to select
       the separately installable `.dev` app variant.
 - [x] Add a Maestro flow for login → dashboard → folder → image → actions →
-      back. Execution remains pending on a machine with Maestro installed.
-- [ ] Add image download and video playback smoke flows.
-- [ ] Add comment creation and notification-settings smoke flows.
+      back. Full native execution is deliberately deferred.
+- [x] Add image download and video playback smoke flows.
+- [x] Add comment creation and notification-settings smoke flows, with an
+      explicit emulator fallback when push tokens are unavailable.
 - [x] Document native E2E as local by default. Consider EAS Workflows only if its
       additional coverage justifies the free-plan usage.
 
 Exit gate:
 
-- [ ] The critical photographer workflow has automated coverage.
+- [ ] The critical photographer workflow has verified native automated coverage.
+      The harness exists, but execution is deferred by maintainer choice.
 - [ ] Tests fail when a known route, login or server-origin contract is
       deliberately broken.
 
