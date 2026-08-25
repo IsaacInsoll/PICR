@@ -2,6 +2,11 @@
 
 React 19 SPA for the PICR admin interface and public gallery views.
 
+Frontend unit tests live beside their source as `*.unit.test.ts` or
+`*.unit.test.tsx` and run through `npm run test:unit` with
+`frontend/vitest.config.ts`. Keep them frontend-owned; do not put component or
+frontend utility tests in the backend integration suite under `tests/api`.
+
 Prefer logical CSS properties in new UI (`margin-inline`, `padding-block`,
 `inset-inline-start`, and so on) so future RTL support does not require new
 physical left/right assumptions.

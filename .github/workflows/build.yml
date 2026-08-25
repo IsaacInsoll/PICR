@@ -65,6 +65,8 @@ jobs:
         run: cd frontend && npm run lint
       - name: '💄 [frontend] Type check'
         run: cd frontend && npx tsc --noEmit
+      - name: '💄 [frontend] Unit tests'
+        run: cd frontend && npm run test:unit
       - name: '💄 [frontend] Build (vite)'
         run: cd frontend && npm run build -- --logLevel error
 

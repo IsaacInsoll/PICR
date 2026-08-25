@@ -235,6 +235,7 @@ npm run workflow             # Full CI workflow (user runs this manually)
 npm run test:api             # Backend Vitest integration suite (AI may run locally)
 npm run test:e2e             # Playwright smoke tests (AI may run locally)
 npm run test:e2e:fresh       # Rebuild dist artifacts, then run Playwright smoke tests
+cd frontend && npm run test:unit # Frontend-owned Docker-free unit tests
 
 # Code Generation
 npm run gql                  # Regenerate GraphQL types (safe to run anytime)
