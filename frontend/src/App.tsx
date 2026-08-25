@@ -18,6 +18,7 @@ import {
   v8CssVariablesResolver,
 } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
+import { DatesProvider } from '@mantine/dates';
 import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
 import { Suspense, useEffect, useMemo, useRef } from 'react';
@@ -31,6 +32,8 @@ import { DevBackendOverrideBanner } from './components/DevBackendOverrideBanner'
 import { DownloadSharePromptHost } from './helpers/shareOrDownload';
 import { VersionWatcher } from './components/VersionWatcher';
 import { headingFontFamily } from './helpers/fontFamily';
+import { useLanguage } from './i18n/useLanguage';
+import { datesProviderSettingsFor } from './i18n/mantineDates';
 
 const App = () => {
   const authKey = useAtomValue(authKeyAtom);
@@ -40,6 +43,7 @@ const App = () => {
     [authKey, sessionKey],
   );
   const customTheme = useAtomValue(themeModeAtom);
+  const { catalogLanguage, formattingLocale } = useLanguage();
   const basePathname = getBaseHrefPathname();
   const mantineTheme = useMemo(
     () => ({
@@ -52,6 +56,10 @@ const App = () => {
     customTheme.mode == null || customTheme.mode === 'auto'
       ? undefined
       : customTheme.mode;
+  const datesSettings = useMemo(
+    () => datesProviderSettingsFor(catalogLanguage, formattingLocale),
+    [catalogLanguage, formattingLocale],
+  );
 
   //we put a portal at the start, otherwise Mantine Modals will be hidden behind it
   const portal = useRef<HTMLDivElement>(null);
@@ -82,19 +90,21 @@ const App = () => {
           forceColorScheme={forceColorScheme}
           defaultColorScheme={'auto'}
         >
-          <DevBackendOverrideBanner />
-          <Portal className="lightbox-portal">
-            <div ref={portal} />
-          </Portal>
-          <PicrErrorBoundary>
-            <Suspense fallback={<PicrLoadingOverlay />}>
-              <UserProvider />
-              <DownloadSharePromptHost />
-              <Notifications pauseResetOnHover="notification" />
-            </Suspense>
-          </PicrErrorBoundary>
-          <GlobalErrorOverlay />
-          <VersionWatcher />
+          <DatesProvider settings={datesSettings}>
+            <DevBackendOverrideBanner />
+            <Portal className="lightbox-portal">
+              <div ref={portal} />
+            </Portal>
+            <PicrErrorBoundary>
+              <Suspense fallback={<PicrLoadingOverlay />}>
+                <UserProvider />
+                <DownloadSharePromptHost />
+                <Notifications pauseResetOnHover="notification" />
+              </Suspense>
+            </PicrErrorBoundary>
+            <GlobalErrorOverlay />
+            <VersionWatcher />
+          </DatesProvider>
         </MantineProvider>
       </BrowserRouter>
     </URQLProvider>

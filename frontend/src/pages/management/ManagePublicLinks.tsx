@@ -26,6 +26,10 @@ import { useIsMobile } from '../../hooks/useIsMobile';
 import type { ManageFolderUserRow } from '@shared/types/queryRows';
 import { PublicLinkListItem } from '../../components/PublicLinkListItem';
 import { useTranslation } from 'react-i18next';
+import { useNow } from '../../hooks/useNow';
+import { publicLinkStatus } from '@shared/publicLinkExpiration';
+
+const publicLinkStatusRefreshMs = 60_000;
 
 interface ManagePublicLinksProps {
   folder: PicrFolder;
@@ -208,16 +212,23 @@ const PublicLinksView = ({
   setSearch: (search: string) => void;
 }) => {
   const { t } = useTranslation('admin');
+  const now = useNow(publicLinkStatusRefreshMs);
   const normalizedSearch = search.trim().toLowerCase();
   const filteredLinks = useMemo(
     () =>
       normalizedSearch
         ? links.filter((link) =>
-            userSearchText(link, t).includes(normalizedSearch),
+            userSearchText(link, t, publicLinkStatus(link, now)).includes(
+              normalizedSearch,
+            ),
           )
         : links,
-    [links, normalizedSearch, t],
+    [links, normalizedSearch, now, t],
   );
+  // Rebuilding the column defs hands TanStack a new `columns` array, and
+  // PicrDataGrid is excluded from React Compiler, so memoize here rather than
+  // re-deriving them on every keystroke and every clock tick.
+  const columns = useMemo(() => publicLinkColumns(t, now), [now, t]);
 
   if (links.length === 0) {
     return (
@@ -231,6 +242,7 @@ const PublicLinksView = ({
           <PublicLinkListItem
             key={link.id}
             user={link}
+            now={now}
             onClick={() => {
               if (link.id) onSelect(link.id);
             }}
@@ -257,7 +269,7 @@ const PublicLinksView = ({
         </Text>
       </Group>
       <PicrDataGrid
-        columns={publicLinkColumns(t)}
+        columns={columns}
         data={filteredLinks}
         onClick={(row) => {
           if (row.id) onSelect(row.id);

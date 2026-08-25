@@ -38,9 +38,16 @@ export const ManageUsers = ({
   const normalizedSearch = search.trim().toLowerCase();
   const filteredUsers = useMemo(() => {
     const allUsers = users ?? [];
+    // This grid lists admin users, who have no `expiresAt`, so their status is
+    // decided entirely by `enabled` and needs no clock. If expiry ever applies
+    // to admins, switch this to `publicLinkStatus(user, now)`.
     return normalizedSearch
       ? allUsers.filter((user) =>
-          userSearchText(user, t).includes(normalizedSearch),
+          userSearchText(
+            user,
+            t,
+            user.enabled ? 'active' : 'disabled',
+          ).includes(normalizedSearch),
         )
       : allUsers;
   }, [normalizedSearch, t, users]);

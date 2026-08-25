@@ -7,7 +7,7 @@ import type { PicrResolver } from '../helpers/picrResolver.js';
 import { normalizeGalleryPasscode } from '@shared/auth/galleryPasscode.js';
 import { normalizeDisplayName } from '@shared/displayName.js';
 import { brandingForFolder } from '../helpers/brandingForFolder.js';
-import { isPublicLinkExpired } from '../../helpers/expirationHelpers.js';
+import { isPublicLinkAvailable } from '../../helpers/publicLinkAvailability.js';
 
 type PublicLinkInfoArgs = {
   uuid: string;
@@ -30,13 +30,7 @@ const resolver: PicrResolver<object, PublicLinkInfoArgs> = async (
     where: eq(dbUser.uuid, params.uuid),
   });
 
-  if (
-    !user ||
-    !user.enabled ||
-    user.deleted ||
-    user.userType !== 'Link' ||
-    isPublicLinkExpired(user.expiresAt, new Date())
-  ) {
+  if (!isPublicLinkAvailable(user, new Date())) {
     return lockedInfo;
   }
 

@@ -555,6 +555,21 @@ variant colors with `v8CssVariablesResolver`, keeps `defaultRadius: 'sm'`, and
 sets notifications to `pauseResetOnHover="notification"` to avoid subtle UI
 behavior changes from the 9.x defaults.
 
+`@mantine/dates` controlled inputs accept `Date` values, but their `onChange`
+callbacks emit Mantine `DateStringValue` strings such as
+`YYYY-MM-DD HH:mm:ss`. That string is not ISO 8601; parse it explicitly with
+Day.js instead of passing it to the platform `Date` string parser. Register the
+matching Day.js locales and supply the active PICR language through
+`DatesProvider`; also derive the input's `valueFormat` from the formatting
+locale rather than assuming Mantine's default `DD/MM/YYYY` order.
+
+React Compiler memoizes render expressions from their reactive inputs. Do not
+read `Date.now()`, randomness, mutable globals, or other changing external state
+inside a render-time helper and expect an unrelated state update to invalidate
+the result. Thread the changing value through state or props and pass it to the
+helper explicitly; a dummy render counter is insufficient when it is not one of
+the helper's inputs.
+
 ### Theme Configuration
 
 ```typescript

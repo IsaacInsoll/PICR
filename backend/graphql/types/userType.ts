@@ -42,6 +42,7 @@ export const userType = new GraphQLObjectType<
       resolve: (user: { galleryPasscode?: string | null }) =>
         !!user.galleryPasscode,
     },
+    // Link holders may deliberately query their own deadline for expiry notices.
     expiresAt: { type: GraphQLDateTime },
     galleryPasscode: {
       type: GraphQLString,

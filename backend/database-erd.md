@@ -20,6 +20,7 @@ erDiagram
         boolean ntfyEmail
         varchar uuid "nullable - Link users"
         enum linkMode "nullable - final_delivery | proof_no_downloads"
+        timestamp expiresAt "nullable - Link users"
     }
 
     Folders {

@@ -17,6 +17,7 @@ These are often treated similarly because they have a lot of shared properties /
 - They have a level of comment permissions (see below) which allows them to comment/rate/flag files
 - Visits are logged
 - The user can be disabled which prevents access
+- Public links can optionally have an expiration date and time
 
 ## Differences
 
@@ -25,6 +26,18 @@ Some differences include:
 - Users have to log in (IE: can't use use a special link without logging in)
 - Users can create public links to folders they have access to
 - Only "full admin" (User with access to root folder) users can create other users
+
+## Public link expiration
+
+An administrator can set an optional expiration date and time while creating or
+editing a public link. The time is entered in the administrator's local timezone.
+After that instant, PICR no longer accepts the link ID for gallery access. Clearing
+the expiration makes the link available indefinitely again, provided it is enabled
+and has not been deleted.
+
+Expiration controls access to the gallery API. It does not retract files that a
+visitor has already downloaded, and it does not revoke an image or video URL that
+has already been obtained independently of the gallery page.
 
 ## Avatars
 

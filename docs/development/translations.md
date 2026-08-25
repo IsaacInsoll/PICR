@@ -77,7 +77,11 @@ Complete all of these in one working branch:
 3. Import and register all three catalogs in `shared/i18n/resources.ts`.
    `i18next.config.ts` derives its locale lists from `supportedLanguageCodes`, so do not duplicate
    the language there; verify that `npm run i18n:check` reports it.
-4. Add a regional-tag case to `tests/api/resolveLanguage.unit.test.ts`, proving that a tag such as
+4. Import the matching Day.js locale for its side effect in
+   `frontend/src/i18n/mantineDates.ts`, then add the catalog language to the typed `dayjsLocales`
+   map. The map entry alone is insufficient: without `import 'dayjs/locale/<code>'`, Mantine cannot
+   render localized month and weekday names.
+5. Add a regional-tag case to `tests/api/resolveLanguage.unit.test.ts`, proving that a tag such as
    `de-CH` selects the `de` catalog while preserving `de-CH` for regional formatting.
 
 Use the English catalogs as the source, translate values rather than keys, and do not leave English

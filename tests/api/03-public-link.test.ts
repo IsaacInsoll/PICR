@@ -54,6 +54,7 @@ test('Create Public Link', async () => {
   expect(user.commentPermissions).toBe(testPublicLink.commentPermissions);
   expect(user.enabled).toBe(testPublicLink.enabled);
   expect(user.linkMode).toBe(LinkMode.FinalDelivery);
+  expect(user.expiresAt).toBeNull();
   const gravatarHash = createHash('sha256')
     .update(testPublicLink.username.trim().toLowerCase())
     .digest('hex');
@@ -442,6 +443,120 @@ test("Public Link with Read permissions can't add comments", async () => {
 
   expect(result.error).toBeDefined();
   expect(result.data?.addComment).toBeUndefined();
+});
+
+test('Future public link expiration is persisted and preserves access', async () => {
+  const adminClient = await createTestGraphqlClient(
+    await getUserHeader(defaultCredentials),
+  );
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+  const setExpirationResult = await adminClient
+    .mutation(editUserMutation, {
+      ...testPublicLink,
+      id: createdUserId,
+      expiresAt,
+    })
+    .toPromise();
+
+  expect(setExpirationResult.error).toBeUndefined();
+  expect(setExpirationResult.data?.editUser.expiresAt).toBe(expiresAt);
+
+  const preserveExpirationResult = await adminClient
+    .mutation(editUserMutation, {
+      ...testPublicLink,
+      id: createdUserId,
+    })
+    .toPromise();
+
+  expect(preserveExpirationResult.error).toBeUndefined();
+  expect(preserveExpirationResult.data?.editUser.expiresAt).toBe(expiresAt);
+
+  const linkClient = await createTestGraphqlClient(
+    await getLinkHeader(testPublicLink.uuid),
+  );
+  const infoResult = await linkClient
+    .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
+    .toPromise();
+  const folderResult = await linkClient
+    .query(viewFolderQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+
+  expect(infoResult.error).toBeUndefined();
+  expect(infoResult.data?.publicLinkInfo.available).toBe(true);
+  expect(folderResult.error).toBeUndefined();
+  expect(folderResult.data?.folder).toBeDefined();
+});
+
+test('Expired public link is unavailable through both access paths', async () => {
+  const adminClient = await createTestGraphqlClient(
+    await getUserHeader(defaultCredentials),
+  );
+  const expiresAt = new Date(Date.now() - 60 * 1000).toISOString();
+
+  const setExpirationResult = await adminClient
+    .mutation(editUserMutation, {
+      ...testPublicLink,
+      id: createdUserId,
+      expiresAt,
+    })
+    .toPromise();
+
+  expect(setExpirationResult.error).toBeUndefined();
+  expect(setExpirationResult.data?.editUser.expiresAt).toBe(expiresAt);
+
+  const linkClient = await createTestGraphqlClient(
+    await getLinkHeader(testPublicLink.uuid),
+  );
+  const infoResult = await linkClient
+    .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
+    .toPromise();
+  const folderResult = await linkClient
+    .query(viewFolderQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+
+  expect(infoResult.error).toBeUndefined();
+  expect(infoResult.data?.publicLinkInfo).toMatchObject({
+    available: false,
+    requiresPasscode: false,
+    unlocked: false,
+  });
+  expect(folderResult.data?.folder).toBeUndefined();
+  expect(folderResult.error?.graphQLErrors[0]?.extensions).toMatchObject({
+    code: 'FORBIDDEN',
+    reason: 'INVALID_LINK',
+  });
+});
+
+test('Clearing public link expiration restores indefinite access', async () => {
+  const adminClient = await createTestGraphqlClient(
+    await getUserHeader(defaultCredentials),
+  );
+  const clearExpirationResult = await adminClient
+    .mutation(editUserMutation, {
+      ...testPublicLink,
+      id: createdUserId,
+      expiresAt: null,
+    })
+    .toPromise();
+
+  expect(clearExpirationResult.error).toBeUndefined();
+  expect(clearExpirationResult.data?.editUser.expiresAt).toBeNull();
+
+  const linkClient = await createTestGraphqlClient(
+    await getLinkHeader(testPublicLink.uuid),
+  );
+  const infoResult = await linkClient
+    .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
+    .toPromise();
+  const folderResult = await linkClient
+    .query(viewFolderQuery, { folderId: testPublicLink.folderId })
+    .toPromise();
+
+  expect(infoResult.error).toBeUndefined();
+  expect(infoResult.data?.publicLinkInfo.available).toBe(true);
+  expect(folderResult.error).toBeUndefined();
+  expect(folderResult.data?.folder).toBeDefined();
 });
 
 test('Disabled public link cannot access folder', async () => {

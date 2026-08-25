@@ -22,7 +22,7 @@ export async function contextPermissions(
   folderId: FolderIdInput,
 ): Promise<Partial<ContextualPermissions>>;
 export async function contextPermissions(
-  context: Pick<PicrRequestContext, 'user' | 'userHomeFolder'>,
+  context: Pick<PicrRequestContext, 'headers' | 'user' | 'userHomeFolder'>,
   folderId: FolderIdInput,
   requires?: FolderPermissions,
 ): Promise<Partial<ContextualPermissions>> {
@@ -56,7 +56,7 @@ export async function contextPermissions(
   }
 
   if (requires) {
-    if (user?.userType === 'Link') {
+    if (user?.userType === 'Link' || context.headers.uuid) {
       doAuthError('INVALID_LINK');
     } else {
       if (!user) doAuthError('NOT_LOGGED_IN');

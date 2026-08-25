@@ -42,6 +42,9 @@ import { ErrorAlert } from '../../components/ErrorAlert';
 import { badChars } from '@shared/badChars';
 import { useTranslation } from 'react-i18next';
 import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
+import { useLanguage } from '../../i18n/useLanguage';
+import { dateTimePickerFormatFor } from '../../i18n/mantineDates';
+import dayjs from 'dayjs';
 
 export const ManagePublicLink = ({
   id,
@@ -53,6 +56,7 @@ export const ManagePublicLink = ({
   onClose: () => void;
 }) => {
   const { t } = useTranslation('admin');
+  const { formattingLocale } = useLanguage();
   const formatFolderName = useFolderNameFormatter();
   const [user, exists] = useViewUser(id);
   const [, mutate] = useMutation(editUserMutation);
@@ -73,6 +77,10 @@ export const ManagePublicLink = ({
   const [galleryPasscode, setGalleryPasscode] = useState(
     user?.galleryPasscode ?? '',
   );
+  // Captured once when the editor opens. The lower bound does not need to
+  // follow the clock, and reading it during render would be an unmemoizable
+  // side effect that React Compiler caches with no way to invalidate it.
+  const [earliestExpiration] = useState(() => dayjs().startOf('day').toDate());
   const [expiresAt, setExpiresAt] = useState<Date | null>(
     user?.expiresAt ? new Date(user.expiresAt) : null,
   );
@@ -229,16 +237,16 @@ export const ManagePublicLink = ({
                   setExpiresAt(null);
                   return;
                 }
-                const nextExpiration = new Date(date);
-                if (!expiresAt) {
-                  const now = new Date();
-                  nextExpiration.setHours(now.getHours(), now.getMinutes());
+                const nextExpiration = dayjs(date);
+                if (nextExpiration.isValid()) {
+                  setExpiresAt(nextExpiration.toDate());
                 }
-                setExpiresAt(nextExpiration);
               }}
               label={t('links.editor.expiration')}
               description={t('links.editor.expirationDescription')}
-              minDate={new Date(new Date().setHours(0, 0, 0, 0))}
+              defaultTimeValue="23:59"
+              minDate={earliestExpiration}
+              valueFormat={dateTimePickerFormatFor(formattingLocale)}
               clearable
             />
           </Stack>
