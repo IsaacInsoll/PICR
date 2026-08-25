@@ -103,6 +103,7 @@ export const FileCommentsBottomSheet = ({
       }}
     >
       <BottomSheetView
+        testID="file-comments-sheet"
         style={{
           zIndex: 10000000,
           flex: 1,
@@ -138,6 +139,8 @@ export const FileCommentsBottomSheet = ({
               </TouchableOpacity>
             ) : (
               <Ionicons.Button
+                accessibilityLabel="Add comment"
+                testID="file-comment-add-button"
                 backgroundColor={theme.brandColor}
                 name="chatbubble-ellipses-outline"
                 size={16}
@@ -149,6 +152,8 @@ export const FileCommentsBottomSheet = ({
           </View>
         </View>
         <TextInput
+          accessibilityLabel="Comment"
+          testID="file-comment-input"
           placeholder="Your comment..."
           multiline={true}
           value={commentText}
@@ -172,6 +177,8 @@ export const FileCommentsBottomSheet = ({
             }}
           >
             <AppIconButton
+              accessibilityLabel="Submit comment"
+              testID="file-comment-submit-button"
               name="chatbubble-ellipses-outline"
               disabled={commentText.length === 0}
               onPress={handleSubmitComment}

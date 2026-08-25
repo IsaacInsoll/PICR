@@ -1,0 +1,43 @@
+appId: ${MAESTRO_APP_ID}
+name: Photographer login and image smoke test
+tags:
+  - local
+  - smoke
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: login-screen
+- tapOn:
+    id: login-server-input
+- inputText: ${MAESTRO_SERVER}
+- tapOn:
+    id: login-username-input
+- inputText: ${MAESTRO_USERNAME}
+- tapOn:
+    id: login-password-input
+- inputText: ${MAESTRO_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: login-submit
+- assertVisible:
+    id: dashboard-screen
+- tapOn:
+    id: folder-link-.*
+    index: 0
+- assertVisible:
+    id: folder-screen
+- tapOn:
+    id: file-link-.*
+    index: 0
+- assertVisible:
+    id: file-screen
+- assertVisible:
+    id: file-download-button
+- assertVisible:
+    id: file-comments-button
+- assertVisible:
+    id: file-info-button
+- back
+- assertVisible:
+    id: folder-screen

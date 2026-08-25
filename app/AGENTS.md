@@ -11,11 +11,13 @@ range also admits `0.1.0-beta.1`, whose published peer dependency supports Expo
 `npm audit fix` then fail with `ERESOLVE`. Reassess or remove the plugin during
 the SDK 56 upgrade rather than widening this prerelease range.
 
-After applying the current SDK 55 patches and safe `npm audit fix` updates, the
-app audit retains 11 moderate advisories in Expo's build/configuration toolchain
-through `@expo/config-plugins` → `xcode` → `uuid`. npm's force-fix suggestion is
-an invalid downgrade to Expo 46. Do not use `npm audit fix --force` for these;
-reassess them as part of the SDK 56 and 57 upgrades.
+After applying the current SDK 55 patches and safe `npm audit fix` updates,
+`npm audit --omit=dev` retains 11 moderate advisories in Expo's
+build/configuration toolchain through `@expo/config-plugins` → `xcode` →
+`uuid`. The full audit reports one additional path through the SDK-matched
+`jest-expo` development dependency. npm's force-fix suggestion is an invalid
+downgrade to Expo 46. Do not use `npm audit fix --force` for these; reassess them
+as part of the SDK 56 and 57 upgrades.
 
 Keep `@gorhom/bottom-sheet` at 5.2.7 or newer on React Native's New
 Architecture. Version 5.2.6 calls an undefined
@@ -466,6 +468,38 @@ header and image-letterbox areas as an exact half-screen grey overlay.
 
 ## Validation Commands
 
+Jest is configured with `watchman: false`. Keep this setting: containerized and
+sandboxed development environments can expose a Watchman binary whose state
+directory is read-only, causing tests to crash before discovery. Jest's Node
+filesystem crawler is sufficient for the app test suite and behaves the same in
+local checks and CI.
+
+App unit and component tests live in `app/tests/`, never under `app/src/app/`:
+Expo Router treats every file below its route root as a route. The app uses
+React Native Testing Library 14 with `test-renderer` 1.2 for React 19.2. Its
+render and interaction APIs are asynchronous, so await `render`, `userEvent`,
+`fireEvent`, rerenders and unmounts. Run the suite with `npm test` from `app/`.
+
+Use `userEvent` for realistic text entry, but prefer `fireEvent.press` when a
+test only needs to exercise a button's semantic callback. `userEvent.press`
+also emits `pressIn`/`pressOut`; React Native buttons and React Navigation
+header buttons then start native-driver opacity animations which can fail in a
+containerized test renderer with “Unable to locate attached view in the native
+tree.” Native animation behavior belongs in the Maestro/device layer.
+
+Jest maps `@expo/vector-icons` to the small app-owned mock under
+`app/tests/mocks/`. Expo SDK 55 installs `expo-asset` beneath `expo` rather than
+at the app package root; Node/Jest cannot resolve that transitive sibling when
+the real vector-icon module loads `expo-font`, even though Metro exports resolve
+the SDK module graph correctly. Keep the mock focused on interaction semantics
+instead of adding a redundant direct runtime dependency solely for Jest.
+
+The local Maestro flow lives in `app/.maestro/` and targets stable `testID`
+values rather than visible English labels. It runs against the separately
+installable development variant by default and receives credentials only via
+`MAESTRO_*` environment variables. Do not add real credentials to flow files or
+spend an EAS build merely to run the local smoke test.
+
 The app lint script must remain `expo lint -- --max-warnings=0`. The separator
 forwards the warning option through Expo to ESLint; without it Expo silently
 consumes the option and the zero-warning gate becomes ineffective.
@@ -475,6 +509,7 @@ Run these after app changes:
 ```bash
 cd app && npm run lint
 cd app && npx tsc --noEmit
+cd app && npm test
 cd app && npx expo export --platform android
 ```
 

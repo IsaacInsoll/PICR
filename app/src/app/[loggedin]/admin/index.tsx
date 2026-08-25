@@ -62,7 +62,12 @@ const SettingsButton = () => {
   };
   return (
     <HeaderButton>
-      <Link href={href} asChild={true}>
+      <Link
+        accessibilityLabel="Settings"
+        testID="settings-link"
+        href={href}
+        asChild={true}
+      >
         <Ionicons
           name="settings"
           size={25}
@@ -130,6 +135,7 @@ const DashboardBody = () => {
 
   return (
     <ScrollView
+      testID="dashboard-screen"
       style={{
         backgroundColor: theme.backgroundColor,
       }}

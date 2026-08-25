@@ -5,6 +5,7 @@ import type { FileIDandName, FolderIDandName } from '@/src/helpers/folderCache';
 import { addToFileCache, addToFolderCache } from '@/src/helpers/folderCache';
 import type { ReactNode } from 'react';
 import type { LinkableItem } from '@shared/types/ui';
+import { adminFileHref, adminFolderHref } from '@/src/helpers/appRoutes';
 
 export const AppFolderLink = ({
   folder,
@@ -13,7 +14,12 @@ export const AppFolderLink = ({
 }: { folder: FolderIDandName } & Omit<LinkProps, 'href'>) => {
   const href = useAppFolderLink(folder);
   return (
-    <Link href={href} {...props} onPress={() => addToFolderCache(folder)}>
+    <Link
+      testID={`folder-link-${folder.id}`}
+      href={href}
+      {...props}
+      onPress={() => addToFolderCache(folder)}
+    >
       {children}
     </Link>
   );
@@ -28,7 +34,12 @@ export const AppFileLink = ({
   const href = useAppFileLink(file);
   if (isDisabled) return children;
   return (
-    <Link href={href} {...props} onPress={() => addToFileCache(file)}>
+    <Link
+      testID={`file-link-${file.id}`}
+      href={href}
+      {...props}
+      onPress={() => addToFileCache(file)}
+    >
       {children}
     </Link>
   );
@@ -75,10 +86,7 @@ export const useAppFolderLink = (folder: { id: string }): Href => {
     };
   }
 
-  return {
-    pathname: '/[loggedin]/admin/f/[folderId]',
-    params: { loggedin, folderId: folder.id },
-  };
+  return adminFolderHref(loggedin, folder.id);
 };
 
 export const useAppFileLink = (file: FileIDandName): Href => {
@@ -90,8 +98,5 @@ export const useAppFileLink = (file: FileIDandName): Href => {
     return `/${loggedin}/s/${uuid}/${file.folderId}/${file.id}`;
   }
 
-  return {
-    pathname: '/[loggedin]/admin/f/[folderId]/[fileId]',
-    params: { loggedin, folderId: file.folderId, fileId: file.id },
-  };
+  return adminFileHref(loggedin, file.folderId, file.id);
 };

@@ -30,7 +30,7 @@ export default function Settings() {
     void logout();
   };
   return (
-    <AppView style={{ flex: 1 }}>
+    <AppView testID="settings-screen" style={{ flex: 1 }}>
       <SafeAreaView style={{}}>
         <ServerDetails />
         <AppDetails />
@@ -38,8 +38,16 @@ export default function Settings() {
           <Suspense fallback={<AppLoadingIndicator size="small" />}>
             <NotificationSettings />
           </Suspense>
-          <Button onPress={handleClearCache} title="Clear image cache" />
-          <Button onPress={handleLogout} title="Log out" />
+          <Button
+            testID="clear-image-cache-button"
+            onPress={handleClearCache}
+            title="Clear image cache"
+          />
+          <Button
+            testID="logout-button"
+            onPress={handleLogout}
+            title="Log out"
+          />
         </View>
       </SafeAreaView>
     </AppView>

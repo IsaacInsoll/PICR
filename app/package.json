@@ -10,6 +10,9 @@
     "web": "expo start --web",
     "check:polyfills": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON ./scripts/check-polyfills.mjs",
     "lint": "expo lint -- --max-warnings=0",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:maestro:smoke": "maestro test .maestro/photographer-smoke.yaml",
     "typecheck": "tsc --noEmit",
     "release:version": "node ../node_modules/release-it/bin/release-it.js --config package.json"
   },
@@ -80,13 +83,18 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^29.5.14",
     "@types/node": "^24.12.0",
     "@types/react": "~19.2.10",
     "eslint": "^9.39.1",
     "eslint-config-expo": "~55.0.1",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-unused-imports": "^4.4.1",
+    "jest": "^29.7.0",
+    "jest-expo": "~55.0.21",
     "prettier": "3.5.3",
+    "test-renderer": "^1.2.0",
     "typescript": "^6.0.2"
   },
   "overrides": {

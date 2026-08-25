@@ -15,6 +15,14 @@ emulator; login, dashboard, folder browsing, full-screen image display and
 carousel navigation were manually exercised. Runtime problems found during that
 smoke pass were fixed and rechecked. No EAS build or store release was used.
 
+Phase 2 is in progress. The Jest/React Native Testing Library suite currently
+passes 30 tests across login, URL normalization, auth expiry, SecureStore
+migration, route construction, date formatting, branding, presentation defaults
+and photographer file actions. It runs from root checks, CI and app release
+preflight. A local Maestro photographer flow and its stable interaction IDs are
+scaffolded but have not yet been executed on a development build on this machine
+because the Maestro CLI is not installed.
+
 The remaining Phase 1 exit gates are platform/feature coverage rather than
 known implementation failures: an iOS development build, physical-device
 coverage, and explicit manual checks for video playback, comment interaction,
@@ -22,9 +30,9 @@ downloads and notification settings. These can be folded into the Phase 2
 automated safety-net work rather than spending a cloud build only to close the
 checklist.
 
-The next implementation phase is Phase 2: add app unit/component tests and a
-local native smoke flow before changing auth/routing contracts or beginning the
-Expo SDK upgrades.
+Phase 2's remaining work is native execution and the media/comment/notification
+flows. Phase 3 contract cleanup and Expo SDK upgrades remain deliberately
+separate.
 
 ## Product direction
 
@@ -93,12 +101,12 @@ resource. The default workflow is local-first:
 - [x] `cd app && npx expo export --platform ios` passes.
 - [x] Repo-wide `npm run format:check` passes.
 - [x] Expo Doctor passes 20/20 checks after applying the current SDK 55 patches.
-- [ ] `npm audit` is clean. Phase 1 reduced the app lockfile to 11 moderate
-      advisories in Expo's build/configuration toolchain. npm's proposed
-      force-fix crosses an Expo SDK boundary, so the remainder is deferred to
-      the planned SDK 56/57 upgrades.
-- [ ] App tests exist. There is currently no app unit, component or native E2E
-      suite.
+- [ ] `npm audit` is clean. Production dependencies retain 11 moderate
+      advisories in Expo's build/configuration toolchain; the full audit adds
+      one path through `jest-expo`. npm's proposed force-fix crosses an Expo SDK
+      boundary, so the remainder is deferred to the planned SDK 56/57 upgrades.
+- [x] App unit/component tests exist and pass locally (30 tests on 2026-08-25).
+      The native Maestro flow is scaffolded but has not yet been executed.
 - [ ] Package/store versions are reconciled. `app/package.json` is 1.0.6, while
       the public store listings observed during the audit show older releases.
 
@@ -156,28 +164,35 @@ Goal: protect current behavior before routing, auth and monorepo work.
 
 ### Unit and component tests
 
-- [ ] Add `jest-expo`, Jest and React Native Testing Library using Expo-compatible
+- [x] Add `jest-expo`, Jest and React Native Testing Library using Expo-compatible
       versions.
-- [ ] Add an app test script and run it from root checks/CI.
-- [ ] Test server URL normalization, including HTTPS, plain HTTP, ports and base
+- [x] Add an app test script and run it from root checks/CI and release
+      preflight.
+- [x] Test server URL normalization, including HTTPS, plain HTTP, ports and base
       paths where supported.
-- [ ] Test that a plain username such as the default `admin` is valid.
-- [ ] Test login success, invalid credentials, unreachable server and expired
-      authentication behavior using structured GraphQL errors.
-- [ ] Test SecureStore payload validation and migration from the existing
+- [x] Test that a plain username such as the default `admin` is valid.
+- [x] Characterize login success, invalid credentials and unreachable-server
+      behavior. The current login mutation still returns display strings; its
+      structured-error replacement remains Phase 3 work.
+- [x] Test that the structured expired-auth callback clears both in-memory and
+      persisted authentication.
+- [x] Test SecureStore payload validation and migration from the existing
       unversioned JSON shape.
-- [ ] Test authenticated route construction and notification deep-link parsing.
-- [ ] Test download and comment action visibility for the intended admin user.
-- [ ] Test branding defaults plus sort/view preference resolution.
+- [x] Test authenticated route construction and notification deep-link parsing.
+- [x] Test download and comment action visibility for the intended admin user,
+      including the permitted media-library save path.
+- [x] Test branding defaults plus sort/view preference resolution.
 
 ### Native smoke tests
 
-- [ ] Add stable accessibility labels/test IDs to the critical flow.
-- [ ] Add a Maestro development-build profile.
-- [ ] Add a Maestro flow for login → dashboard → folder → image → back.
+- [x] Add stable accessibility labels/test IDs to the critical flow.
+- [x] Configure the existing Maestro/EAS development-build profile to select
+      the separately installable `.dev` app variant.
+- [x] Add a Maestro flow for login → dashboard → folder → image → actions →
+      back. Execution remains pending on a machine with Maestro installed.
 - [ ] Add image download and video playback smoke flows.
 - [ ] Add comment creation and notification-settings smoke flows.
-- [ ] Run native E2E locally by default. Consider EAS Workflows only if its
+- [x] Document native E2E as local by default. Consider EAS Workflows only if its
       additional coverage justifies the free-plan usage.
 
 Exit gate:
@@ -198,11 +213,13 @@ backend/shared contracts.
       not an incomplete native route.
 - [ ] Limit notification deep links to authenticated app routes; define browser
       fallback behavior for public-link notifications if any exist.
-- [ ] Replace `z.string().email()` username validation with the backend's
-      non-empty username contract.
+- [x] Replace `z.string().email()` username validation with the backend's
+      non-empty username contract. Completed early in Phase 2 so the default
+      `admin` account could be covered by the login tests.
 - [ ] Replace login error-message string matching with shared structured error
       metadata.
-- [ ] Introduce a typed, versioned SecureStore schema and validate parsed data.
+- [x] Introduce a typed, versioned SecureStore schema and validate parsed data.
+      Completed early in Phase 2 to make the persistence characterization safe.
 - [ ] Decide whether storing the password remains necessary after initial login;
       prefer token refresh/re-auth flows that minimize retained credentials.
 - [ ] Use one authenticated server-origin context for GraphQL, images, videos,

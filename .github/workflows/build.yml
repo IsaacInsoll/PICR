@@ -82,6 +82,9 @@ jobs:
       - name: '📱 [app] Type check'
         if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: cd app && npm run typecheck
+      - name: '📱 [app] Unit and component tests'
+        if: ${{ matrix.os == 'ubuntu-24.04' }}
+        run: cd app && npm test
       - name: '📱 [app] Check Hermes polyfills'
         if: ${{ matrix.os == 'ubuntu-24.04' }}
         run: cd app && npm run check:polyfills

@@ -1,5 +1,4 @@
 import '@/src/polyfills';
-import type { Href } from 'expo-router';
 import { Slot, useRouter } from 'expo-router';
 import { ThemeProvider } from '@/src/components/themeProvider';
 
@@ -15,6 +14,7 @@ import { NotificationsResponseListener } from '@/src/components/NotificationsRes
 import { useLastNotificationResponse } from 'expo-notifications';
 import { useEffect } from 'react';
 import { GlobalErrorOverlay } from '@/src/components/GlobalErrorOverlay';
+import { notificationHrefFromData } from '@/src/helpers/appRoutes';
 
 CacheManager.config = {
   baseDir: `${Dirs.CacheDir}/images_cache/`,
@@ -42,14 +42,16 @@ export default function AppLayout() {
   const router = useRouter();
   useEffect(() => {
     // if (lastNotification);
-    const url = lastNotification?.notification.request.content.data?.['url'];
+    const href = notificationHrefFromData(
+      lastNotification?.notification.request.content.data,
+    );
 
-    if (typeof url === 'string') {
+    if (href) {
       // console.log([
       //   'AppLayout',
       //   'redirecting because of cold boot URL: ' + url,
       // ]);
-      setTimeout(() => router.push(url as Href), 300);
+      setTimeout(() => router.push(href), 300);
     }
   }, [lastNotification, router]);
 

@@ -99,3 +99,22 @@ in `app/src/polyfills.ts` and the locale assertion in
 `app/scripts/check-polyfills.mjs` whenever another app language is introduced.
 Run `cd app && npm run check:polyfills`, then restart Metro with
 `npx expo start --clear` before runtime smoke testing.
+
+## App tests
+
+Run the Jest unit/component suite locally with:
+
+```shell
+cd app
+npm test
+```
+
+The suite uses the Expo SDK 55 `jest-expo` preset and React Native Testing
+Library. It is also part of the root `npm run check`, app release preflight and
+CI build.
+
+The critical native photographer flow is scaffolded in
+`app/.maestro/photographer-smoke.yaml`. It uses the local development variant,
+so it does not consume an EAS build. Follow `app/.maestro/README.md` to build the
+variant and pass server credentials via `MAESTRO_*` environment variables.
+The test account's home folder must contain at least one supported media item.

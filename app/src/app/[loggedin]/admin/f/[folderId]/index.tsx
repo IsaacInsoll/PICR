@@ -56,6 +56,7 @@ export default function FolderMasterView() {
         }}
       />
       <View
+        testID="folder-screen"
         style={{
           ...folderViewStyles.main,
           backgroundColor: theme.backgroundColor,

@@ -37,7 +37,11 @@ export const NotificationSettings = () => {
     >
       <PText>Allow Notifications</PText>
       {!canEditNotifications ? (
-        <Switch disabled={true} />
+        <Switch
+          accessibilityLabel="Allow notifications"
+          testID="notification-toggle"
+          disabled={true}
+        />
       ) : (
         <NotificationToggle token={token} userId={userId} />
       )}
@@ -78,6 +82,8 @@ const NotificationToggle = ({
 
   return (
     <Switch
+      accessibilityLabel="Allow notifications"
+      testID="notification-toggle"
       value={allow}
       onChange={(event) => handleChange(event.nativeEvent.value)}
     />
