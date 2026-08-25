@@ -77,12 +77,18 @@
         "COMMENTS_HIDDEN": "Comments are hidden for this account.",
         "COMMENTS_NOT_ALLOWED": "Commenting is not allowed for this account.",
         "INVALID_LINK": "This public link is invalid or no longer available.",
-        "NOT_A_USER": "This account cannot perform that action."
+        "NOT_A_USER": "This account cannot perform that action.",
+        "PUBLIC_LINK_EXPIRED": "This gallery link has expired. Please contact the photographer for a new link."
       }
     },
     "logOut": "Log Out",
     "operation": "Operation: {{name}}",
     "retry": "Retry"
+  },
+  "expired": {
+    "description": "This gallery link expired on {{date}}. Please contact the photographer for a new link.",
+    "descriptionWithoutDate": "This gallery link has expired. Please contact the photographer for a new link.",
+    "title": "Gallery link expired"
   },
   "file": {
     "comments": "Comments",

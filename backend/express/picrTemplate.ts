@@ -5,11 +5,14 @@ import type { Request, Response } from 'express';
 import { joinTitles } from '@shared/joinTitle.js';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder.js';
 import type { FileFields } from '../db/picrDb.js';
-import { dbFolderForId } from '../db/picrDb.js';
-import { getUserFromUUID } from '../auth/getUserFromUUID.js';
 import { picrConfig } from '../config/picrConfig.js';
 import { resolvePublicDir } from './resolvePublicDir.js';
 import { getBasePrefix, stripBasePrefix } from './basePath.js';
+import { resolvePublicLinkAttempt } from '../auth/publicLinkAttempt.js';
+import {
+  principalUser,
+  requestAuthentication,
+} from '../types/RequestAuthentication.js';
 
 let cachedIndexHtml: string | undefined;
 
@@ -51,18 +54,28 @@ export const picrTemplate = async (req: Request, res: Response) => {
   // Replace metadata on public links
   const sub = requestPath.split('/');
   if (sub[1] === 's' && sub.length >= 3) {
-    // the following two lines are copy-pasta'd from gqlServer.ts, consider refactoring or less dodgy hacks here
-    const user = await getUserFromUUID({ uuid: sub[2], auth: '' });
-    const userHomeFolder = await dbFolderForId(user?.folderId);
+    const publicLinkAttempt = await resolvePublicLinkAttempt(
+      sub[2] ?? '',
+      undefined,
+      new Date(),
+    );
+    const authentication = requestAuthentication(undefined, publicLinkAttempt);
+    const user = principalUser(authentication);
+    const userHomeFolder = publicLinkAttempt.homeFolder;
 
     // Shared links are bare `/s/<uuid>`; the folder segment only appears after
     // the client navigates. Fall back to the link's home folder so the link a
     // photographer actually pastes into a message still gets a rich preview.
+    // Read that fallback off the principal, not `publicLinkAttempt.homeFolder`:
+    // the attempt keeps a home folder for expired links so the gate can show
+    // branding, whereas `principalUser` is only set once the link actually
+    // authenticated. Expired, disabled, and passcode-gated links therefore fall
+    // through to generic metadata here.
     const pathFolderId = parseInt(sub[3], 10);
     const folderId = isNaN(pathFolderId) ? user?.folderId : pathFolderId;
     if (folderId) {
       const { permissions, folder } = await contextPermissions(
-        { user, userHomeFolder, headers: {} },
+        { authentication, user, userHomeFolder, headers: {} },
         folderId,
       );
       if (permissions !== 'None' && folder) {

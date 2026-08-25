@@ -25,6 +25,7 @@ import {
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { LinkModeSelector } from '../../components/LinkModeSelector';
+import { DateTimePicker } from '@mantine/dates';
 import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
 import {
   DeleteIcon,
@@ -43,6 +44,9 @@ import { ErrorAlert } from '../../components/ErrorAlert';
 import { badChars } from '@shared/badChars';
 import { useTranslation } from 'react-i18next';
 import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
+import { useLanguage } from '../../i18n/useLanguage';
+import { dateTimePickerFormatFor } from '../../i18n/mantineDates';
+import dayjs from 'dayjs';
 
 export const ManagePublicLink = ({
   id,
@@ -54,6 +58,7 @@ export const ManagePublicLink = ({
   onClose: () => void;
 }) => {
   const { t } = useTranslation('admin');
+  const { formattingLocale } = useLanguage();
   const formatFolderName = useFolderNameFormatter();
   const [user, exists] = useViewUser(id);
   const [, mutate] = useMutation(editUserMutation);
@@ -75,6 +80,13 @@ export const ManagePublicLink = ({
   const [galleryPasscode, setGalleryPasscode] = useState(
     user?.galleryPasscode ?? '',
   );
+  // Captured once when the editor opens. The lower bound does not need to
+  // follow the clock, and reading it during render would be an unmemoizable
+  // side effect that React Compiler caches with no way to invalidate it.
+  const [earliestExpiration] = useState(() => dayjs().startOf('day').toDate());
+  const [expiresAt, setExpiresAt] = useState<Date | null>(
+    user?.expiresAt ? new Date(user.expiresAt) : null,
+  );
   const [error, setError] = useState('');
 
   //get folder from user if they exist as it may be a parent or child
@@ -94,6 +106,7 @@ export const ManagePublicLink = ({
       linkMode,
       username,
       galleryPasscode,
+      expiresAt: expiresAt?.toISOString() ?? null,
     };
     void mutate(data).then(({ error }) => {
       if (error) {
@@ -231,6 +244,25 @@ export const ManagePublicLink = ({
               label={t('common.enabled')}
               description={t('links.editor.enabledDescription')}
               onChange={(event) => setEnabled(event.currentTarget.checked)}
+            />
+            <DateTimePicker
+              value={expiresAt}
+              onChange={(date) => {
+                if (!date) {
+                  setExpiresAt(null);
+                  return;
+                }
+                const nextExpiration = dayjs(date);
+                if (nextExpiration.isValid()) {
+                  setExpiresAt(nextExpiration.toDate());
+                }
+              }}
+              label={t('links.editor.expiration')}
+              description={t('links.editor.expirationDescription')}
+              defaultTimeValue="23:59"
+              minDate={earliestExpiration}
+              valueFormat={dateTimePickerFormatFor(formattingLocale)}
+              clearable
             />
           </Stack>
 

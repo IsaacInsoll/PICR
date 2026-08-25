@@ -457,7 +457,26 @@ const payload = validateToken(token); // returns { userId, hashedPassword } or u
 1. **JWT** (Admin users): `Authorization: Bearer <token>` header
 2. **UUID** (Link users): `uuid: <uuid>` header
 
-GraphQL context creation tries JWT first, falls back to UUID.
+GraphQL context records both the effective principal and any structured
+public-link attempt. A valid JWT always wins. An invalid or expired JWT falls
+through to a valid UUID, matching the historical authentication order. Rejected
+UUID attempts retain their internal reason so permissions do not infer auth
+provenance from raw header presence. `publicLinkInfo` must consume this
+request-level result rather than querying the link user independently.
+
+Keep the required `publicLinkInfo(uuid:)` argument while URQL/Graphcache keys
+the root query by its arguments. The web client sends the same UUID in the
+header and argument: the header drives authentication, while the argument gives
+the cached root field per-link identity and makes route changes reexecute. The
+resolver may use the consolidated lookup service for argument-only 1.x callers,
+but must not duplicate the normal header lookup.
+
+Only public-safe link states cross the GraphQL boundary. Missing, disabled,
+deleted, and wrong-user-type rows all map to `UNAVAILABLE`; `EXPIRED` is
+deliberately distinct so a link holder gets an actionable message.
+Keep the status classifier in `auth/publicLinkAuth.ts` pure; database and folder
+lookup belong in `auth/publicLinkAttempt.ts`. This makes rejection precedence
+directly testable without mocking Drizzle or database modules.
 
 ---
 

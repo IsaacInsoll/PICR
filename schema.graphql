@@ -347,7 +347,7 @@ type Mutation {
   editBranding(availableViews: [String!], defaultFileSort: String, defaultView: String, footerTitle: String, footerUrl: String, galleryLayout: GalleryLayout, headingAlignment: HeadingAlignment, headingFontKey: HeadingFontKey, headingFontSize: Int, id: ID, logoUrl: String, mode: ThemeMode, name: String, primaryColor: PrimaryColor, socialLinks: JSON, thumbnailBorderRadius: Int, thumbnailSize: Int, thumbnailSpacing: Int): Branding!
   editFolder(bannerImageId: ID, bannerSize: BannerSize, bannerTextHAlign: BannerTextHAlign, bannerTextVAlign: BannerTextVAlign, folderId: ID!, heroImageId: ID, subtitle: String, title: String): Folder!
   editServerSettings(input: EditServerSettingsInput!): ServerSettings!
-  editUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, galleryPasscode: String, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
+  editUser(commentPermissions: CommentPermissions, enabled: Boolean, expiresAt: DateTime, folderId: ID, galleryPasscode: String, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
   editUserDevice(enabled: Boolean!, name: String, notificationToken: String!, userId: ID!): UserDevice!
   generateThumbnails(folderId: ID): Boolean!
   generateZip(folderId: ID): String!
@@ -375,6 +375,13 @@ enum PrimaryColor {
   yellow
 }
 
+enum PublicLinkAccessStatus {
+  AVAILABLE
+  EXPIRED
+  PASSCODE_REQUIRED
+  UNAVAILABLE
+}
+
 type PublicLinkBrandingPreview {
   headingAlignment: HeadingAlignment
   headingFontKey: HeadingFontKey
@@ -384,11 +391,17 @@ type PublicLinkBrandingPreview {
 }
 
 type PublicLinkInfo {
-  available: Boolean!
+  available: Boolean! @deprecated(reason: "Use status.")
   branding: PublicLinkBrandingPreview
+
+  """
+  Expiration timestamp for available and expired links. Available links carry it so a client holding a cached AVAILABLE result can still name the deadline the moment a request is rejected as expired; do not restrict this to EXPIRED. Hidden while a passcode is required and for unavailable links.
+  """
+  expiresAt: DateTime
   galleryName: String
-  requiresPasscode: Boolean!
-  unlocked: Boolean!
+  requiresPasscode: Boolean! @deprecated(reason: "Use status.")
+  status: PublicLinkAccessStatus!
+  unlocked: Boolean! @deprecated(reason: "Use status.")
 }
 
 type Query {
@@ -507,6 +520,7 @@ type User {
   commentPermissions: CommentPermissions
   deleted: Boolean
   enabled: Boolean
+  expiresAt: DateTime
   folder: Folder
   folderId: ID!
   galleryPasscode: String

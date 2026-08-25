@@ -24,9 +24,10 @@
     "@fontsource/roboto": "^5.0.0",
     "@fontsource/signika": "^5.0.0",
     "@fontsource/source-sans-3": "^5.0.0",
-    "@mantine/core": "^9.4.1",
-    "@mantine/hooks": "^9.4.1",
-    "@mantine/notifications": "^9.4.1",
+    "@mantine/core": "9.5.1",
+    "@mantine/dates": "9.5.1",
+    "@mantine/hooks": "9.5.1",
+    "@mantine/notifications": "9.5.1",
     "@picr/react-grid-gallery": "1.1.0",
     "@rolldown/plugin-babel": "^0.2.3",
     "@tabler/icons-react": "^3.37.1",
@@ -35,6 +36,7 @@
     "@urql/exchange-retry": "^2.0.0",
     "@vidstack/react": "1.15.6",
     "blurhash": "^2.0.5",
+    "dayjs": "^1.11.23",
     "format-duration": "^3.0.2",
     "graphql": "^16.8.1",
     "i18next": "^26.3.6",
@@ -61,6 +63,7 @@
     "css:types": "tcm src --pattern '**/*.module.css' --camelCase",
     "css:types:watch": "tcm src --pattern '**/*.module.css' --camelCase -w --silent",
     "css:types:check": "tcm src --pattern '**/*.module.css' --camelCase --listDifferent",
+    "test:unit": "vitest run --config vitest.config.ts",
     "lint": "npm run css:types:check && eslint src --ext .ts,.tsx --max-warnings=0",
     "build": "vite build",
     "serve": "vite preview"
@@ -98,7 +101,8 @@
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.58.0",
     "vite": "^8",
-    "vite-plugin-tsconfig-paths": "^1.4.1"
+    "vite-plugin-tsconfig-paths": "^1.4.1",
+    "vitest": "4.1.4"
   },
   "proxy": "http://localhost:6900/",
   "overrides": {

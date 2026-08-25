@@ -2,6 +2,11 @@
 
 React 19 SPA for the PICR admin interface and public gallery views.
 
+Frontend unit tests live beside their source as `*.unit.test.ts` or
+`*.unit.test.tsx` and run through `npm run test:unit` with
+`frontend/vitest.config.ts`. Keep them frontend-owned; do not put component or
+frontend utility tests in the backend integration suite under `tests/api`.
+
 Prefer logical CSS properties in new UI (`margin-inline`, `padding-block`,
 `inset-inline-start`, and so on) so future RTL support does not require new
 physical left/right assumptions.
@@ -556,6 +561,21 @@ variant colors with `v8CssVariablesResolver`, keeps `defaultRadius: 'sm'`, and
 sets notifications to `pauseResetOnHover="notification"` to avoid subtle UI
 behavior changes from the 9.x defaults.
 
+`@mantine/dates` controlled inputs accept `Date` values, but their `onChange`
+callbacks emit Mantine `DateStringValue` strings such as
+`YYYY-MM-DD HH:mm:ss`. That string is not ISO 8601; parse it explicitly with
+Day.js instead of passing it to the platform `Date` string parser. Register the
+matching Day.js locales and supply the active PICR language through
+`DatesProvider`; also derive the input's `valueFormat` from the formatting
+locale rather than assuming Mantine's default `DD/MM/YYYY` order.
+
+React Compiler memoizes render expressions from their reactive inputs. Do not
+read `Date.now()`, randomness, mutable globals, or other changing external state
+inside a render-time helper and expect an unrelated state update to invalidate
+the result. Thread the changing value through state or props and pass it to the
+helper explicitly; a dummy render counter is insufficient when it is not one of
+the helper's inputs.
+
 ### Theme Configuration
 
 ```typescript
@@ -888,6 +908,12 @@ opens, `ViewFolder` is the sole owner of the complete gallery theme. Do not keep
 the gate effect active over the gallery or make its preview mirror every visual
 branding field: the parent gate effect runs after the child folder effect and
 would overwrite complete folder branding with preview defaults.
+
+Public-link expiry discovered by a downstream GraphQL request must return to
+`PublicLinkPasscodeGate`, not open the generic global permissions overlay. The
+global error exchange publishes a typed public-link access incident; the gate
+pauses downstream queries, refreshes `publicLinkInfo`, and owns the initial-load
+and mid-session expired presentation consistently.
 
 When adding a visual branding field, also add it to the hand-built `brandingKey`
 in `ViewFolder.tsx`. That key controls when `applyBrandingDefaults` is recomputed;

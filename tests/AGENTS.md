@@ -32,6 +32,11 @@ For pure unit tests that mock their dependencies, use the Docker-free lane inste
 - These files are ALSO matched by `vite.config.mts`, so they still run under
   `npm run test:api` in CI — the unit lane is a faster local lens, not a way to
   skip CI coverage.
+- Backend NodeNext imports such as `@shared/foo.js` are mapped to the shared
+  TypeScript source by `vitest.aliases.mts`, which both Vitest configs import
+  (the API config also discovers unit files). Add new mappings there rather than
+  in either config, so the two lanes cannot resolve `@shared` differently. Do not
+  add dependency mocks solely to make a pure classifier importable.
 - Do NOT put anything needing the DB, real GraphQL, or media fixtures behind this
   lane; those belong in the numbered integration tests.
 

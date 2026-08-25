@@ -8,16 +8,27 @@ import { FolderIcon } from '../PicrIcons';
 import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
 import { useTranslation } from 'react-i18next';
 import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
+import { PublicLinkExpiration } from './PublicLinkExpiration';
+import { publicLinkStatus } from '@shared/publicLinkExpiration';
 
 export const PublicLinkListItem = ({
   user,
   onClick,
+  now,
 }: {
   user: ManageFolderUserRow;
   onClick: () => void;
+  now: number;
 }) => {
   const { t } = useTranslation('admin');
   const formatFolderName = useFolderNameFormatter();
+  const status = publicLinkStatus(user, now);
+  const statusLabel =
+    status === 'active'
+      ? t('common.enabled')
+      : status === 'expired'
+        ? t('links.expired')
+        : t('common.disabled');
   return (
     <Paper
       withBorder
@@ -39,11 +50,13 @@ export const PublicLinkListItem = ({
               <Text fw={500} size="sm" truncate>
                 {user.name ?? t('common.unnamed')}
               </Text>
-              {!user.enabled && (
-                <Badge size="xs" color="red" variant="light">
-                  {t('common.disabled')}
-                </Badge>
-              )}
+              <Badge
+                size="xs"
+                color={status === 'active' ? 'green' : 'red'}
+                variant="light"
+              >
+                {statusLabel}
+              </Badge>
             </Group>
             {user.folder ? (
               <Group gap={4} wrap="nowrap">
@@ -53,6 +66,7 @@ export const PublicLinkListItem = ({
                 </Text>
               </Group>
             ) : null}
+            <PublicLinkExpiration expiresAt={user.expiresAt} />
             <Group gap="xs" wrap="nowrap">
               <CommentChip
                 commentPermissions={
@@ -72,7 +86,7 @@ export const PublicLinkListItem = ({
           align="stretch"
         >
           <CopyPublicLinkButton
-            disabled={!user.enabled || !user.uuid}
+            disabled={status !== 'active' || !user.uuid}
             hash={user.uuid ?? undefined}
             variant="subtle"
             size="compact-sm"

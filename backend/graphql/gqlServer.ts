@@ -3,7 +3,6 @@ import { schema } from './schema.js';
 import type { IncomingCustomHeaders } from '../types/incomingCustomHeaders.js';
 import { getUserFromToken } from '../auth/jwt-auth.js';
 import type { PicrRequestContext } from '../types/PicrRequestContext.js';
-import { getUserFromUUID } from '../auth/getUserFromUUID.js';
 import { dbFolderForId } from '../db/picrDb.js';
 import { extraUserProps } from '@shared/extraUserProps.js';
 import { UserType } from '@shared/gql/graphql.js';
@@ -11,6 +10,12 @@ import { galleryPasscodeHeader } from '@shared/auth/galleryPasscode.js';
 import { visibilityHeader } from '@shared/realVisit.js';
 import type { IncomingMessage } from 'node:http';
 import { createOnViewScanSet } from '../filesystem/onViewScan.js';
+import { resolvePublicLinkAttempt } from '../auth/publicLinkAttempt.js';
+import {
+  principalUser,
+  requestAuthentication,
+  type PublicLinkAttempt,
+} from '../types/RequestAuthentication.js';
 
 type GraphqlHttpContextRequest = {
   headers: IncomingCustomHeaders;
@@ -41,7 +46,7 @@ export const gqlServer = createHandler({
 
     const h: PicrRequestContext['headers'] = {
       auth: normalizedHeader(firstHeader(headers.authorization)),
-      uuid: headers.uuid,
+      uuid: normalizedHeader(firstHeader(headers.uuid)),
       galleryPasscode: normalizedHeader(
         firstHeader(headers[galleryPasscodeHeader]),
       ),
@@ -52,8 +57,24 @@ export const gqlServer = createHandler({
       visibility: normalizedHeader(firstHeader(headers[visibilityHeader])),
     };
 
-    const user = (await getUserFromToken(h)) ?? (await getUserFromUUID(h));
-    const userHomeFolder = await dbFolderForId(user?.folderId);
+    const jwtUser = await getUserFromToken(h);
+    let publicLinkAttempt: PublicLinkAttempt | undefined;
+    // Resolve a supplied UUID even when the JWT is valid: the JWT remains the
+    // principal, while publicLinkInfo reuses this attempt without a second
+    // lookup. Browser requests normally send authorization or UUID, not both.
+    if (h.uuid) {
+      publicLinkAttempt = await resolvePublicLinkAttempt(
+        h.uuid,
+        h.galleryPasscode,
+        new Date(),
+      );
+    }
+    const authentication = requestAuthentication(jwtUser, publicLinkAttempt);
+    const user = principalUser(authentication);
+    const userHomeFolder =
+      authentication.principal.kind === 'public_link'
+        ? publicLinkAttempt?.homeFolder
+        : await dbFolderForId(user?.folderId);
     const extra = extraUserProps(
       user?.userType ? { userType: UserType[user.userType] } : undefined,
     );
@@ -64,6 +85,7 @@ export const gqlServer = createHandler({
 
     return {
       headers: h,
+      authentication,
       user,
       userHomeFolder,
       scanFolderIds,

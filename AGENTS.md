@@ -253,6 +253,7 @@ npm run workflow             # Full CI workflow (user runs this manually)
 npm run test:api             # Backend Vitest integration suite (AI may run locally)
 npm run test:e2e             # Playwright smoke tests (AI may run locally)
 npm run test:e2e:fresh       # Rebuild dist artifacts, then run Playwright smoke tests
+cd frontend && npm run test:unit # Frontend-owned Docker-free unit tests
 
 # Code Generation
 npm run gql                  # Regenerate GraphQL types (safe to run anytime)
@@ -291,6 +292,13 @@ npm run install-all              # Preferred install flow for all subsystems
 # investigate if the diff is broader than expected.
 # Run plain `npm ci` in every changed package before committing (exactly what CI
 # runs). Peer warnings may be reported, but the command must exit successfully.
+# A package-lock `peer: true` flag describes peer-dependency reachability, not
+# the developer's operating system. npm may recalculate these flags across the
+# whole ideal tree after an otherwise targeted install. Different npm versions,
+# install flags, existing node_modules trees, and platform-optional packages can
+# all expose noisy flips; `.nvmrc` pins Node but not an independently upgraded
+# npm. Record both `node --version` and `npm --version` when investigating churn,
+# discard unrelated flag-only changes, and confirm the cleaned lock with `npm ci`.
 # `i18next-cli` intentionally lives in the root devDependencies. Its published
 # package directly depends on React, react-i18next, i18next and cross-platform
 # SWC binaries, so its legitimate lockfile footprint is large. Do not move it to

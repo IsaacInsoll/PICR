@@ -33,6 +33,15 @@ export const isAuthExpiredError = (error?: CombinedError): boolean => {
   );
 };
 
+export const isPublicLinkExpiredError = (error?: CombinedError): boolean => {
+  if (!error) return false;
+  return error.graphQLErrors.some(
+    (entry) =>
+      entry.extensions['code'] === 'FORBIDDEN' &&
+      entry.extensions['reason'] === AUTH_REASON.PUBLIC_LINK_EXPIRED,
+  );
+};
+
 export const classifyGlobalUrqlError = (
   error?: CombinedError,
 ): GlobalErrorMatch | null => {

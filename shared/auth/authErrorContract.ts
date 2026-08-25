@@ -18,6 +18,7 @@ export const AUTH_REASON = {
   NOT_LOGGED_IN: 'NOT_LOGGED_IN',
   ACCESS_DENIED: 'ACCESS_DENIED',
   INVALID_LINK: 'INVALID_LINK',
+  PUBLIC_LINK_EXPIRED: 'PUBLIC_LINK_EXPIRED',
   NOT_A_USER: 'NOT_A_USER',
   COMMENTS_NOT_ALLOWED: 'COMMENTS_NOT_ALLOWED',
   COMMENTS_HIDDEN: 'COMMENTS_HIDDEN',
@@ -43,6 +44,11 @@ export const authErrorCatalog = {
   [AUTH_REASON.INVALID_LINK]: {
     code: 'FORBIDDEN',
     message: 'Invalid public link',
+    globalAction: 'global_no_permissions',
+  },
+  [AUTH_REASON.PUBLIC_LINK_EXPIRED]: {
+    code: 'FORBIDDEN',
+    message: 'Public link expired',
     globalAction: 'global_no_permissions',
   },
   [AUTH_REASON.NOT_A_USER]: {

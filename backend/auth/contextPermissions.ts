@@ -22,7 +22,10 @@ export async function contextPermissions(
   folderId: FolderIdInput,
 ): Promise<Partial<ContextualPermissions>>;
 export async function contextPermissions(
-  context: Pick<PicrRequestContext, 'user' | 'userHomeFolder'>,
+  context: Pick<
+    PicrRequestContext,
+    'authentication' | 'user' | 'userHomeFolder'
+  >,
   folderId: FolderIdInput,
   requires?: FolderPermissions,
 ): Promise<Partial<ContextualPermissions>> {
@@ -56,12 +59,24 @@ export async function contextPermissions(
   }
 
   if (requires) {
-    if (user?.userType === 'Link') {
+    if (context.authentication.principal.kind === 'public_link') {
       doAuthError('INVALID_LINK');
-    } else {
-      if (!user) doAuthError('NOT_LOGGED_IN');
+    }
+    if (context.authentication.principal.kind === 'jwt') {
       doAuthError('ACCESS_DENIED');
     }
+    const linkOutcome = context.authentication.publicLinkAttempt?.outcome;
+    if (
+      linkOutcome?.status === 'rejected' &&
+      linkOutcome.reason === 'expired'
+    ) {
+      doAuthError(
+        'PUBLIC_LINK_EXPIRED',
+        linkOutcome.user?.expiresAt?.toISOString(),
+      );
+    }
+    if (linkOutcome) doAuthError('INVALID_LINK');
+    doAuthError('NOT_LOGGED_IN');
   }
   return { permissions: 'None', user: undefined };
 }

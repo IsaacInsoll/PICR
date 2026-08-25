@@ -174,6 +174,128 @@ test('public link and login routes load with no browser/runtime errors', async (
     ).toHaveCSS('border-radius', '16px');
     expectNoBrowserFailures(failures);
 
+    let signalExpiryRefresh!: () => void;
+    const expiryRefreshStarted = new Promise<void>((resolve) => {
+      signalExpiryRefresh = resolve;
+    });
+    let releaseExpiryRefresh!: () => void;
+    const expiryRefreshReleased = new Promise<void>((resolve) => {
+      releaseExpiryRefresh = resolve;
+    });
+    let holdNextPublicLinkInfo = true;
+    await page.route('**/graphql*', async (route) => {
+      const request = route.request();
+      const body = request.postDataJSON() as {
+        operationName?: string;
+      } | null;
+      const operationName =
+        request.method() === 'GET'
+          ? new URL(request.url()).searchParams.get('operationName')
+          : body?.operationName;
+      if (holdNextPublicLinkInfo && operationName === 'PublicLinkInfoQuery') {
+        holdNextPublicLinkInfo = false;
+        signalExpiryRefresh();
+        await expiryRefreshReleased;
+      }
+      await route.continue();
+    });
+
+    const expireDuringRaceResult = await gqlRequest(
+      editUserMutationText,
+      {
+        id: createdUserId,
+        folderId,
+        name: 'Frontend Smoke User',
+        username,
+        uuid,
+        enabled: true,
+        commentPermissions: 'read',
+        galleryPasscode,
+        expiresAt: new Date(Date.now() - 60_000).toISOString(),
+      },
+      authHeader,
+    );
+    expect(expireDuringRaceResult.errors).toBeUndefined();
+
+    await expiryRefreshStarted;
+    await expect(
+      page.getByRole('heading', { name: 'Gallery link expired' }),
+    ).toBeVisible();
+
+    const extendDuringRefreshResult = await gqlRequest(
+      editUserMutationText,
+      {
+        id: createdUserId,
+        folderId,
+        name: 'Frontend Smoke User',
+        username,
+        uuid,
+        enabled: true,
+        commentPermissions: 'read',
+        galleryPasscode,
+        expiresAt: new Date(Date.now() + 60_000).toISOString(),
+      },
+      authHeader,
+    );
+    expect(extendDuringRefreshResult.errors).toBeUndefined();
+    releaseExpiryRefresh();
+
+    await expect(gallery).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Gallery link expired' }),
+    ).toHaveCount(0);
+    await page.unroute('**/graphql*');
+
+    const expireLinkResult = await gqlRequest(
+      editUserMutationText,
+      {
+        id: createdUserId,
+        folderId,
+        name: 'Frontend Smoke User',
+        username,
+        uuid,
+        enabled: true,
+        commentPermissions: 'read',
+        galleryPasscode,
+        expiresAt: new Date(Date.now() - 60_000).toISOString(),
+      },
+      authHeader,
+    );
+    expect(expireLinkResult.errors).toBeUndefined();
+
+    // The open gallery has several polling queries (including its one-second
+    // task poll). The first rejected query should route through the public-link
+    // gate instead of opening the global error overlay.
+    await expect(
+      page.getByRole('heading', { name: 'Gallery link expired' }),
+    ).toBeVisible({ timeout: 30_000 });
+    await expect(
+      page.getByText(/contact the photographer for a new link/i),
+    ).toBeVisible();
+    await expect(page.getByText('You do not have permission')).toHaveCount(0);
+    expectNoBrowserFailures(failures);
+
+    const expiredPageResponse = await page.goto(`/s/${uuid}/${folderId}`, {
+      waitUntil: 'domcontentloaded',
+    });
+    expect(expiredPageResponse?.status()).toBe(200);
+    await expect(
+      page.getByRole('heading', { name: 'Gallery link expired' }),
+    ).toBeVisible();
+    await expect(page).toHaveTitle('PICR');
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      'content',
+      'PICR',
+    );
+    await expect(
+      page.locator('meta[property="og:description"]'),
+    ).toHaveAttribute('content', 'PICR File Sharing');
+    await expect(page.locator('meta[property="og:image"]')).not.toHaveAttribute(
+      'content',
+      /\/image\//,
+    );
+    expectNoBrowserFailures(failures);
+
     await page.goto('/route-that-should-hit-login', {
       waitUntil: 'domcontentloaded',
     });
