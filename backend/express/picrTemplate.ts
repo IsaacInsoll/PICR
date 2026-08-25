@@ -5,11 +5,14 @@ import type { Request, Response } from 'express';
 import { joinTitles } from '@shared/joinTitle.js';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder.js';
 import type { FileFields } from '../db/picrDb.js';
-import { dbFolderForId } from '../db/picrDb.js';
-import { getUserFromUUID } from '../auth/getUserFromUUID.js';
 import { picrConfig } from '../config/picrConfig.js';
 import { resolvePublicDir } from './resolvePublicDir.js';
 import { getBasePrefix, stripBasePrefix } from './basePath.js';
+import { resolvePublicLinkAttempt } from '../auth/publicLinkAttempt.js';
+import {
+  principalUser,
+  requestAuthentication,
+} from '../types/RequestAuthentication.js';
 
 let cachedIndexHtml: string | undefined;
 
@@ -53,12 +56,21 @@ export const picrTemplate = async (req: Request, res: Response) => {
   if (sub[1] === 's' && sub.length >= 3) {
     const folderId = parseInt(sub[3], 10);
     if (!isNaN(folderId)) {
-      // the following two lines are copy-pasta'd from gqlServer.ts, consider refactoring or less dodgy hacks here
-      const user = await getUserFromUUID({ uuid: sub[2], auth: '' });
-      const userHomeFolder = await dbFolderForId(user?.folderId);
+      const uuid = sub[2] ?? '';
+      const publicLinkAttempt = await resolvePublicLinkAttempt(
+        uuid,
+        undefined,
+        new Date(),
+      );
+      const authentication = requestAuthentication(
+        undefined,
+        publicLinkAttempt,
+      );
+      const user = principalUser(authentication);
+      const userHomeFolder = publicLinkAttempt.homeFolder;
 
       const { permissions, folder } = await contextPermissions(
-        { user, userHomeFolder, headers: {} },
+        { authentication, user, userHomeFolder, headers: {} },
         folderId,
       );
       if (permissions !== 'None' && folder) {

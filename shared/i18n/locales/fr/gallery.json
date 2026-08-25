@@ -77,7 +77,8 @@
         "COMMENTS_HIDDEN": "Les commentaires sont masqués pour ce compte.",
         "COMMENTS_NOT_ALLOWED": "Les commentaires ne sont pas autorisés pour ce compte.",
         "INVALID_LINK": "Ce lien public n'est pas valide ou n'est plus disponible.",
-        "NOT_A_USER": "Ce compte ne peut pas effectuer cette action."
+        "NOT_A_USER": "Ce compte ne peut pas effectuer cette action.",
+        "PUBLIC_LINK_EXPIRED": "Ce lien de galerie a expiré. Contactez le photographe pour obtenir un nouveau lien."
       }
     },
     "logOut": "Se déconnecter",

@@ -77,7 +77,8 @@
         "COMMENTS_HIDDEN": "Comments are hidden for this account.",
         "COMMENTS_NOT_ALLOWED": "Commenting is not allowed for this account.",
         "INVALID_LINK": "This public link is invalid or no longer available.",
-        "NOT_A_USER": "This account cannot perform that action."
+        "NOT_A_USER": "This account cannot perform that action.",
+        "PUBLIC_LINK_EXPIRED": "This gallery link has expired. Please contact the photographer for a new link."
       }
     },
     "logOut": "Log Out",

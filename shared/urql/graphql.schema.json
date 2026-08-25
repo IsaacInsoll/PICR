@@ -4618,6 +4618,42 @@
         "possibleTypes": null
       },
       {
+        "kind": "ENUM",
+        "name": "PublicLinkAccessStatus",
+        "description": null,
+        "isOneOf": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "AVAILABLE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "EXPIRED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "PASSCODE_REQUIRED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "UNAVAILABLE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "PublicLinkBrandingPreview",
         "description": null,
@@ -4708,8 +4744,8 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use status."
           },
           {
             "name": "branding",
@@ -4718,6 +4754,18 @@
             "type": {
               "kind": "OBJECT",
               "name": "PublicLinkBrandingPreview",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "expiresAt",
+            "description": "Expiration timestamp for available and expired links. Available links carry it so a client holding a cached AVAILABLE result can still name the deadline the moment a request is rejected as expired; do not restrict this to EXPIRED. Hidden while a passcode is required and for unavailable links.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "DateTime",
               "ofType": null
             },
             "isDeprecated": false,
@@ -4748,6 +4796,22 @@
                 "ofType": null
               }
             },
+            "isDeprecated": true,
+            "deprecationReason": "Use status."
+          },
+          {
+            "name": "status",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "PublicLinkAccessStatus",
+                "ofType": null
+              }
+            },
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -4764,8 +4828,8 @@
                 "ofType": null
               }
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use status."
           }
         ],
         "inputFields": null,

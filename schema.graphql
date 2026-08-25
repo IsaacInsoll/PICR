@@ -375,6 +375,13 @@ enum PrimaryColor {
   yellow
 }
 
+enum PublicLinkAccessStatus {
+  AVAILABLE
+  EXPIRED
+  PASSCODE_REQUIRED
+  UNAVAILABLE
+}
+
 type PublicLinkBrandingPreview {
   headingAlignment: HeadingAlignment
   headingFontKey: HeadingFontKey
@@ -384,11 +391,17 @@ type PublicLinkBrandingPreview {
 }
 
 type PublicLinkInfo {
-  available: Boolean!
+  available: Boolean! @deprecated(reason: "Use status.")
   branding: PublicLinkBrandingPreview
+
+  """
+  Expiration timestamp for available and expired links. Available links carry it so a client holding a cached AVAILABLE result can still name the deadline the moment a request is rejected as expired; do not restrict this to EXPIRED. Hidden while a passcode is required and for unavailable links.
+  """
+  expiresAt: DateTime
   galleryName: String
-  requiresPasscode: Boolean!
-  unlocked: Boolean!
+  requiresPasscode: Boolean! @deprecated(reason: "Use status.")
+  status: PublicLinkAccessStatus!
+  unlocked: Boolean! @deprecated(reason: "Use status.")
 }
 
 type Query {

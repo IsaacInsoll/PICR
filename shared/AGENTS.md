@@ -107,6 +107,10 @@ Auth error metadata is shared across backend, frontend, and app:
 - Contains canonical auth reason values, default messages, GraphQL `extensions.code` mapping, and global action hints
 - Backend should throw auth errors using this registry (via `doAuthError`)
 - Frontend/app classifiers should consume these shared constants instead of hardcoded strings
+- Public-link authentication may use precise internal rejection reasons, but
+  shared client-facing contracts must collapse missing, disabled, deleted, and
+  wrong-type links to a generic unavailable state. Expiry is the deliberate
+  exception because it supports actionable client messaging.
 
 ## GraphQL Operations
 

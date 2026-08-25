@@ -35,7 +35,10 @@ import {
 import { dashboardStats } from './queries/dashboardStats.js';
 import { dashboardUpdateInfo } from './queries/dashboardUpdateInfo.js';
 import { publicLinkInfo } from './queries/publicLinkInfo.js';
-import { publicLinkInfoType } from './types/publicLinkInfoType.js';
+import {
+  publicLinkAccessStatusType,
+  publicLinkInfoType,
+} from './types/publicLinkInfoType.js';
 import { publicLinkBrandingPreviewType } from './types/publicLinkBrandingPreviewType.js';
 import { searchFolders } from './queries/searchFolders.js';
 import { searchFiles } from './queries/searchFiles.js';
@@ -140,6 +143,7 @@ const types = [
   imageFileType,
   imageMetadataSummaryType,
   publicLinkBrandingPreviewType,
+  publicLinkAccessStatusType,
   publicLinkInfoType,
   serverInfoType,
   serverSettingsType,

@@ -1,19 +1,17 @@
 import { GraphQLNonNull, GraphQLString } from 'graphql';
-import { db, dbFolderForId } from '../../db/picrDb.js';
-import { dbUser } from '../../db/models/index.js';
-import { eq } from 'drizzle-orm';
 import { publicLinkInfoType } from '../types/publicLinkInfoType.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import { normalizeGalleryPasscode } from '@shared/auth/galleryPasscode.js';
 import { normalizeDisplayName } from '@shared/displayName.js';
 import { brandingForFolder } from '../helpers/brandingForFolder.js';
-import { isPublicLinkAvailable } from '../../helpers/publicLinkAvailability.js';
+import { resolvePublicLinkAttempt } from '../../auth/publicLinkAttempt.js';
 
 type PublicLinkInfoArgs = {
   uuid: string;
 };
 
-const lockedInfo = {
+const unavailableInfo = {
+  status: 'UNAVAILABLE',
+  expiresAt: null,
   available: false,
   requiresPasscode: false,
   unlocked: false,
@@ -26,16 +24,32 @@ const resolver: PicrResolver<object, PublicLinkInfoArgs> = async (
   params,
   context,
 ) => {
-  const user = await db.query.dbUser.findFirst({
-    where: eq(dbUser.uuid, params.uuid),
-  });
-
-  if (!isPublicLinkAvailable(user, new Date())) {
-    return lockedInfo;
+  let attempt = context.authentication.publicLinkAttempt;
+  if (attempt && params.uuid !== attempt.uuid) {
+    return unavailableInfo;
+  }
+  if (!attempt) {
+    attempt = await resolvePublicLinkAttempt(
+      params.uuid,
+      context.headers.galleryPasscode,
+      new Date(),
+    );
   }
 
-  const folder = await dbFolderForId(user.folderId);
-  if (!folder) return lockedInfo;
+  const { outcome, homeFolder: folder } = attempt;
+  if (outcome.status === 'rejected') {
+    if (outcome.reason !== 'expired' || !folder || !outcome.user?.expiresAt) {
+      return unavailableInfo;
+    }
+    return {
+      ...unavailableInfo,
+      status: 'EXPIRED',
+      expiresAt: outcome.user.expiresAt,
+      branding: await brandingForFolder(folder),
+    };
+  }
+
+  if (!folder) return unavailableInfo;
 
   const branding = await brandingForFolder(folder);
   const galleryName =
@@ -44,11 +58,12 @@ const resolver: PicrResolver<object, PublicLinkInfoArgs> = async (
       ? null
       : normalizeDisplayName(folder.name) || 'Gallery');
 
-  const requiredPasscode = normalizeGalleryPasscode(user.galleryPasscode);
-  if (!requiredPasscode) {
+  if (outcome.status === 'authenticated') {
     return {
+      status: 'AVAILABLE',
+      expiresAt: outcome.user.expiresAt,
       available: true,
-      requiresPasscode: false,
+      requiresPasscode: outcome.requiresPasscode,
       unlocked: true,
       galleryName,
       branding,
@@ -56,11 +71,11 @@ const resolver: PicrResolver<object, PublicLinkInfoArgs> = async (
   }
 
   return {
+    status: 'PASSCODE_REQUIRED',
+    expiresAt: null,
     available: true,
     requiresPasscode: true,
-    unlocked:
-      normalizeGalleryPasscode(context.headers.galleryPasscode) ===
-      requiredPasscode,
+    unlocked: false,
     galleryName,
     branding,
   };

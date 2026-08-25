@@ -1,7 +1,10 @@
 import { expect, test } from 'vitest';
 import type { CombinedError } from 'urql';
 import { AUTH_REASON } from '../../shared/auth/authErrorContract';
-import { classifyGlobalUrqlError } from '../../shared/urql/errorClassification';
+import {
+  classifyGlobalUrqlError,
+  isPublicLinkExpiredError,
+} from '../../shared/urql/errorClassification';
 
 const makeError = (value: Partial<CombinedError>) => value as CombinedError;
 
@@ -122,4 +125,25 @@ test('does not create overlay for bad user input auth reasons', () => {
   );
 
   expect(match).toBeNull();
+});
+
+test('identifies the structured public-link expiry signal', () => {
+  const error = makeError({
+    message: '[GraphQL] Public link expired',
+    graphQLErrors: [
+      {
+        message: 'Public link expired',
+        extensions: {
+          code: 'FORBIDDEN',
+          reason: AUTH_REASON.PUBLIC_LINK_EXPIRED,
+        },
+      } as never,
+    ],
+  });
+
+  expect(isPublicLinkExpiredError(error)).toBe(true);
+  expect(classifyGlobalUrqlError(error)).toMatchObject({
+    type: 'no_permissions',
+    reason: AUTH_REASON.PUBLIC_LINK_EXPIRED,
+  });
 });
