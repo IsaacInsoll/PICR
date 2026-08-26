@@ -7,7 +7,7 @@ import { useSetFolder } from './useSetFolder';
 // the history (folder -> file -> folder), so the browser back button reopens the
 // image the user deliberately dismissed, and every open/close cycle adds another
 // pair of entries to escape from. See issue #68.
-const lightboxHistoryState = () => ({
+export const lightboxHistoryState = () => ({
   openedFromFolder: true,
   openedAt: Date.now(),
 });

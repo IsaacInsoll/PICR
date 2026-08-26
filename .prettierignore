@@ -5,7 +5,6 @@ shared/gql/*
 shared/urql/graphql.schema.json
 frontend/src/fonts.generated.ts
 app/src/fonts.generated.ts
-app/src/graphql.schema.json
 app/.expo/*
 app/expo-env.d.ts
 frontend/src/**/*.module.css.d.ts

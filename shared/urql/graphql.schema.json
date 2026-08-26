@@ -891,8 +891,8 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "OBJECT",
-              "name": "File",
+              "kind": "INTERFACE",
+              "name": "FileInterface",
               "ofType": null
             },
             "isDeprecated": false,

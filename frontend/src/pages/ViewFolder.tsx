@@ -30,12 +30,11 @@ import { useSetFolder } from '../hooks/useSetFolder';
 import { useCanDownload, useMe } from '../hooks/useMe';
 import { useCommentPermissions } from '../hooks/useCommentPermissions';
 import { useAtom, useSetAtom } from 'jotai';
-import { selectedViewAtom, viewOptions } from '../components/selectedViewAtom';
+import { useSelectedView, viewOptions } from '../hooks/useSelectedView';
 import {
   assignBrandingToFolderAtom,
   editBrandingAtom,
 } from '../atoms/editBrandingAtom';
-import { FolderModalManager } from '../components/FolderModalManager';
 import { Page } from '../components/Page';
 import { QuickFind } from '../components/QuickFind/QuickFind';
 import { useRequery } from '@shared/hooks/useRequery';
@@ -353,7 +352,6 @@ const ViewFolderBody = () => {
         </Suspense>
       ) : null}
       <QuickFind folder={folder} />
-      {folder ? <FolderModalManager folder={folder} /> : null}
       {folder && csvExportOpen ? (
         <Suspense fallback={null}>
           <FolderCsvExportModal
@@ -429,7 +427,7 @@ const ViewFolderBody = () => {
 
 const ViewSelectorButton = ({ folder }: { folder: PicrFolder }) => {
   const { t } = useTranslation('gallery');
-  const [view, setView] = useAtom(selectedViewAtom);
+  const [view, setView] = useSelectedView();
   const me = useMe();
   const restricted = folder.branding?.availableViews;
   const shownOptions =

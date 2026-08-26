@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router';
 import { PublicLinkHomeRedirect } from './pages/PublicLinkHomeRedirect';
+import { adminFolderRoute, publicFolderRoute } from './helpers/folderRoutes';
 
 const Dashboard = lazy(() =>
   import('./pages/Dashboard').then((module) => ({
@@ -33,8 +34,6 @@ const ViewFolder = lazy(() =>
   })),
 );
 
-const folderRoute = '/:folderId/:fileId?/:tab?';
-
 export interface FolderRouteParams {
   folderId: string;
   fileId?: 'manage' | 'activity' | string;
@@ -44,11 +43,11 @@ export interface FolderRouteParams {
 export const Router = ({ loggedIn }: { loggedIn: boolean }) => {
   return (
     <Routes>
-      <Route path={`/s/:uuid${folderRoute}`} element={<ViewFolder />} />
+      <Route path={publicFolderRoute} element={<ViewFolder />} />
       <Route path="/s/:uuid" element={<PublicLinkHomeRedirect />} />
       {loggedIn ? (
         <>
-          <Route path={`/admin/f${folderRoute}`} element={<ViewFolder />} />
+          <Route path={adminFolderRoute} element={<ViewFolder />} />
           <Route path="/admin/settings/:tab?/:slug?" element={<Settings />} />
           <Route path="/" element={<Navigate to="/admin" replace />} />
           <Route path="/admin" element={<Dashboard />} />

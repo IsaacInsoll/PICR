@@ -1,9 +1,11 @@
 import { cacheExchange } from '@urql/exchange-graphcache';
 import schema from './graphql.schema.json'; // with { type: 'json' }
+import { fileGlobalIDs } from './fileCacheIdentity';
 import { invalidateQueries } from './invalidateQueries';
 
 export const urqlCacheExchange = cacheExchange({
   schema,
+  globalIDs: [...fileGlobalIDs],
   keys: {
     ClientInfo: () => null,
     ServerSettings: () => null,

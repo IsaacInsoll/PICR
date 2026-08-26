@@ -1,6 +1,7 @@
 import { Router } from '../Router';
 import { useMe } from '../hooks/useMe';
 import { usePublicLinkPasscodeGate } from './PublicLinkPasscodeGate';
+import { FileModalHost } from './FileModalHost';
 
 // Doesn't do much yet, but will eventually catch "logged in but don't have access to this item" issues
 export const UserProvider = () => {
@@ -12,6 +13,7 @@ export const UserProvider = () => {
   return (
     <>
       <Router loggedIn={!!me?.id} />
+      {me?.id ? <FileModalHost /> : null}
     </>
   );
 };

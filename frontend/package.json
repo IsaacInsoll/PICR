@@ -41,7 +41,6 @@
     "graphql": "^16.8.1",
     "i18next": "^26.3.6",
     "jotai": "2.20.2",
-    "jotai-location": "^0.6.2",
     "react": "19.2.8",
     "react-blurhash": "^0.3.0",
     "react-dom": "19.2.8",

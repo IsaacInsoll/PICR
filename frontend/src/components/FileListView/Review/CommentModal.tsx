@@ -1,29 +1,30 @@
 import { Button, Divider, Group, Modal, Stack, Textarea } from '@mantine/core';
 import { normalizeDisplayName } from '@shared/displayName';
-import { closeModalAtom } from '../../../atoms/modalAtom';
-import { useSetAtom } from 'jotai';
 import { LoadingIndicator } from '../../LoadingIndicator';
 import { Suspense, useState } from 'react';
 import { useMutation, useQuery } from 'urql';
-import type { PicrFile } from '@shared/types/picr';
+import type { PicrFile, PicrFolder } from '@shared/types/picr';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { CommentHistory } from './CommentHistory';
-import { FilePreview } from '../FilePreview';
 import type { MutationAddCommentArgs } from '@shared/gql/graphql';
 import { useTranslation } from 'react-i18next';
+import { FileModalFileContext } from '../FileModalFileContext';
+import { useCloseFileModal } from '../../../hooks/useFileModalNavigation';
 
 export const CommentModal = ({
   file,
+  folder,
   highlight,
 }: {
   file: PicrFile;
+  folder?: PicrFolder;
   highlight?: string;
 }) => {
   const { t } = useTranslation('gallery');
-  const onClose = useSetAtom(closeModalAtom);
+  const onClose = useCloseFileModal();
   const isMobile = useIsSmallScreen();
   const fileName = normalizeDisplayName(file.name);
 
@@ -35,9 +36,12 @@ export const CommentModal = ({
         title={t('comments.onFile', { name: fileName })}
         fullScreen={isMobile}
       >
-        <Suspense fallback={<LoadingIndicator />}>
-          <CommentBody file={file} highlight={highlight} />
-        </Suspense>
+        <Stack>
+          <FileModalFileContext file={file} folder={folder} />
+          <Suspense fallback={<LoadingIndicator />}>
+            <CommentBody file={file} highlight={highlight} />
+          </Suspense>
+        </Stack>
       </Modal>
     </>
   );
@@ -60,8 +64,6 @@ const CommentBody = ({
 
   return (
     <Stack>
-      {/* previously this was `highlight ? <FilePreview file={file} /> : null` so you don't see preview if you came from gallery*/}
-      <FilePreview file={file} />
       <CommentHistory
         comments={comments}
         singleFile={true}

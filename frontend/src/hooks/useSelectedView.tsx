@@ -1,11 +1,10 @@
-import { atom } from 'jotai';
+import { useAtom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import { atomWithHash } from 'jotai-location';
+import { useCallback, type ReactNode } from 'react';
+import type { SelectedView } from '@shared/types/ui';
 import { actionIconSize } from '../theme';
 import { GridViewIcon, ListViewIcon, PhotoViewIcon } from '../PicrIcons';
-import type { ReactNode } from 'react';
-import { atomWithHashOptions as opts } from '../helpers/atomWithHashOptions';
-import type { SelectedView } from '@shared/types/ui';
+import { useHashParam } from './useHashParam';
 
 const selectedViewStorageAtom = atomWithStorage<SelectedView>(
   'SelectedView',
@@ -14,30 +13,29 @@ const selectedViewStorageAtom = atomWithStorage<SelectedView>(
   { getOnInit: true },
 );
 
-const selectedViewHashAtom = atomWithHash('v', '', opts);
-
 const viewEncoding: { [key in SelectedView]: string } = {
   list: 'l',
   gallery: 'g',
   feed: 'f',
 };
 
-export const selectedViewAtom = atom<SelectedView, [SelectedView], void>(
-  (get) => {
-    const hash = get(selectedViewHashAtom);
-    if (hash) {
-      const view = (Object.entries(viewEncoding).find(
-        ([, value]) => value === hash,
-      )?.[0] ?? 'gallery') as SelectedView;
-      return view;
-    }
-    return get(selectedViewStorageAtom);
-  },
-  (get, set, next: SelectedView) => {
-    set(selectedViewStorageAtom, next);
-    set(selectedViewHashAtom, viewEncoding[next]);
-  },
-);
+export const useSelectedView = () => {
+  const [hash, setHash] = useHashParam('v');
+  const [stored, setStored] = useAtom(selectedViewStorageAtom);
+  const view = hash
+    ? ((Object.entries(viewEncoding).find(([, value]) => value === hash)?.[0] ??
+        'gallery') as SelectedView)
+    : stored;
+  const setView = useCallback(
+    (next: SelectedView) => {
+      setHash(viewEncoding[next]);
+      setStored(next);
+    },
+    [setHash, setStored],
+  );
+
+  return [view, setView] as const;
+};
 
 export const viewOptions: {
   key: SelectedView;

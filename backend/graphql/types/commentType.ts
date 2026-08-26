@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import { userType } from './userType.js';
 import { GraphQLDateTime } from 'graphql-scalars';
-import { fileType } from './fileType.js';
+import { fileInterface } from '../interfaces/fileInterface.js';
 
 export const commentType = new GraphQLObjectType({
   name: 'Comment',
@@ -18,6 +18,6 @@ export const commentType = new GraphQLObjectType({
     comment: { type: GraphQLString },
     user: { type: userType },
     systemGenerated: { type: new GraphQLNonNull(GraphQLBoolean) },
-    file: { type: fileType },
+    file: { type: fileInterface },
   }),
 });

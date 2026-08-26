@@ -1,6 +1,7 @@
 import { createClient } from './urqlClient';
 import { Provider as URQLProvider } from 'urql';
 import { BrowserRouter } from 'react-router';
+import { HashNavigationProvider } from './hooks/useHashNavigation';
 import { authKeyAtom, useSessionKey } from './atoms/authAtom';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { themeModeAtom } from './atoms/themeModeAtom';
@@ -84,28 +85,30 @@ const App = () => {
   return (
     <URQLProvider value={client}>
       <BrowserRouter basename={basePathname || undefined}>
-        <MantineProvider
-          theme={mantineTheme}
-          cssVariablesResolver={v8CssVariablesResolver}
-          forceColorScheme={forceColorScheme}
-          defaultColorScheme={'auto'}
-        >
-          <DatesProvider settings={datesSettings}>
-            <DevBackendOverrideBanner />
-            <Portal className="lightbox-portal">
-              <div ref={portal} />
-            </Portal>
-            <PicrErrorBoundary>
-              <Suspense fallback={<PicrLoadingOverlay />}>
-                <UserProvider />
-                <DownloadSharePromptHost />
-                <Notifications pauseResetOnHover="notification" />
-              </Suspense>
-            </PicrErrorBoundary>
-            <GlobalErrorOverlay />
-            <VersionWatcher />
-          </DatesProvider>
-        </MantineProvider>
+        <HashNavigationProvider>
+          <MantineProvider
+            theme={mantineTheme}
+            cssVariablesResolver={v8CssVariablesResolver}
+            forceColorScheme={forceColorScheme}
+            defaultColorScheme={'auto'}
+          >
+            <DatesProvider settings={datesSettings}>
+              <DevBackendOverrideBanner />
+              <Portal className="lightbox-portal">
+                <div ref={portal} />
+              </Portal>
+              <PicrErrorBoundary>
+                <Suspense fallback={<PicrLoadingOverlay />}>
+                  <UserProvider />
+                  <DownloadSharePromptHost />
+                  <Notifications pauseResetOnHover="notification" />
+                </Suspense>
+              </PicrErrorBoundary>
+              <GlobalErrorOverlay />
+              <VersionWatcher />
+            </DatesProvider>
+          </MantineProvider>
+        </HashNavigationProvider>
       </BrowserRouter>
     </URQLProvider>
   );

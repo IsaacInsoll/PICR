@@ -87,7 +87,7 @@ type ClientInfo {
 
 type Comment {
   comment: String
-  file: File
+  file: FileInterface
   id: ID
   systemGenerated: Boolean!
   timestamp: DateTime!

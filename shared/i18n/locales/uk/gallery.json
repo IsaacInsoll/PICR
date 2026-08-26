@@ -3,15 +3,19 @@
     "add": "Додати коментар",
     "all": "все",
     "comments": "Коментарі",
+    "gallery": "Галерея",
     "inFolder": "в",
     "newest": "Найновіший",
     "newestFirst": "Спочатку найновіші",
     "oldest": "Найстаріший",
     "oldestFirst": "Спочатку найстаріший",
     "onFile": "Коментарі до {{name}}",
+    "openGallery": "Відкрити галерею",
     "ratings": "Рейтинги",
     "system": "система",
-    "text": "текст"
+    "text": "текст",
+    "viewFeedback": "Переглянути коментар",
+    "viewFile": "Переглянути файл"
   },
   "count": {
     "comment_one": "{{count}} коментар",

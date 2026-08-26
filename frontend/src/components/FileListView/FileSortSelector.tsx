@@ -1,5 +1,4 @@
-import { useAtom } from 'jotai';
-import { fileSortAtom } from '../../atoms/fileSortAtom';
+import { useFileSort } from '../../hooks/useFileSort';
 import type { SelectProps } from '@mantine/core';
 import {
   Avatar,
@@ -48,7 +47,7 @@ export const FileSortSelector = ({
 }) => {
   const { t } = useTranslation('gallery');
   const { canView } = useCommentPermissions();
-  const [sort, setSort] = useAtom(fileSortAtom);
+  const [sort, setSort] = useFileSort();
   const [dropdownOpened, { toggle, close }] = useDisclosure();
   const { direction } = sort;
   // Same effective sort the gallery uses (FolderContentsView), so the displayed
@@ -158,7 +157,7 @@ export const FileSortMenuItems = ({
 }) => {
   const { t } = useTranslation('gallery');
   const { canView } = useCommentPermissions();
-  const [sort, setSort] = useAtom(fileSortAtom);
+  const [sort, setSort] = useFileSort();
   const { direction } = sort;
   const { type } = resolveEffectiveSort(sort, hasMetadata, hasFiles);
   const options = availableSortOptions(canView, hasMetadata, hasFiles);

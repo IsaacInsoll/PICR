@@ -3,15 +3,19 @@
     "add": "Προσθήκη σχολίου",
     "all": "Όλα",
     "comments": "Σχόλια",
+    "gallery": "Συλλογή",
     "inFolder": "στο",
     "newest": "Νεότερα",
     "newestFirst": "Πρώτα τα νεότερα",
     "oldest": "Παλαιότερα",
     "oldestFirst": "Πρώτα τα παλαιότερα",
     "onFile": "Σχόλια για το {{name}}",
+    "openGallery": "Άνοιγμα συλλογής",
     "ratings": "Αξιολογήσεις",
     "system": "Σύστημα",
-    "text": "Κείμενο"
+    "text": "Κείμενο",
+    "viewFeedback": "Προβολή σχολίου",
+    "viewFile": "Προβολή αρχείου"
   },
   "count": {
     "comment_one": "{{count}} σχόλιο",

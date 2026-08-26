@@ -226,6 +226,9 @@ these main routes:
 React Router 8 requires Node 22.22+ and React/React DOM 19.2.7+. Keep DOM
 router imports in declarative mode from `react-router`; this project does not
 use `react-router-dom`.
+The shared admin/public folder patterns live in `helpers/folderRoutes.ts`; route
+matching helpers and `<Route>` declarations must use those constants so they do
+not drift apart.
 
 ### Route Parameters
 
@@ -245,6 +248,47 @@ Anything a user clicks to navigate to a folder must render an actual `<a>`, so
 `PicrMenuItem` — never a bare `onClick` + `navigate()`, and never `role="link"`
 with a keydown handler, which imitates a link without any of the browser
 behaviour.
+
+File info and comment modals are URL-backed through the `m` hash key and are
+rendered by the single `FileModalHost` mounted in `UserProvider`. Screens should
+use `useFileModalNavigation`'s openers or a real link from `useFileModalLink`;
+they must not mount their own modal manager or pass screen-owned file arrays into
+the modal layer. The host resolves the canonical file by ID, while
+`FileModalFileContext` derives whether location actions are useful by comparing
+the current route folder with the file's owning folder.
+
+React Router is the sole owner of URL hash and history state, including modal
+(`m`), sort (`s`) and view (`v`) parameters. Use `useHashParam` for preference
+parameters; do not write the hash with `window.history`, `window.location`, or a
+second URL-state library. Raw History API writes do not notify React Router, so
+its `useLocation().hash` becomes stale and the next Router navigation can
+silently drop another owner's parameters.
+Imperative hash writes must also go through the `HashNavigationProvider`
+coordinator via `useHashNavigation`. It advances a shared pending location
+before calling Router, so consecutive modal/sort/view writes compose even when
+React has not rerendered between them. Building each write from a hook's own
+rendered `useLocation()` reintroduces a same-tick lost-update race.
+Links and history traversal (`navigate(-1)`) bypass the optimistic update because
+their destination is browser/Router-owned; the provider resynchronizes from
+`useLocation()` after commit. The coordinator assumes declarative
+`BrowserRouter` navigation is not blocked. If navigation blockers or a data
+router are introduced, reconcile rejected/interrupted navigations before
+retaining the optimistic sequencing model.
+
+Initial modal opens push an entry so Back closes the modal; switching an
+already-open modal replaces it. Closing pops only an entry marked as opened in
+the current document. A pasted/refreshed deep link has no safe page behind it,
+so closing removes `m` with replace instead.
+
+`useFileModalLink` returns ordinary React Router link props, preserving modified
+clicks/new tabs without any `onClick` synchronization. All modal hash helpers
+preserve unrelated keys such as the file sort's `s` parameter. Location actions
+that leave a modal for its gallery/file must remove only `m`; preserve `s`, `v`
+and future independent hash keys in the destination.
+Comment-fragment file navigation should use `file.folderId`; the nested
+`file.folder` relationship is optional and should only enhance presentation
+(for example, by supplying a breadcrumb), not gate whether file/folder actions
+are available.
 
 - Do not call `e.preventDefault()` unconditionally in a link's `onClick` — it
   blocks modifier-click and middle-click. That bug is why `FolderName` looked
@@ -359,6 +403,22 @@ generic "Loading" or no placeholder at all, never an error:
   `folder(id: X)` still misses. The resolver bridges the two. Without it the
   placeholder silently falls back to "Loading" — which looks exactly like the
   bug it fixes.
+- `Query.file(id:)` has the same root-link issue, but its return type is the
+  `FileInterface` interface. `File`, `Image` and `Video` are runtime views of the
+  same mutable Files-table row, so Graphcache gives those three types global IDs
+  and the root resolver links directly to that shared ID. Do not restore a
+  fixed-order typename probe: a rescan can change the row's concrete type and
+  leave an older typename cached. Comment file fields must also expose
+  `FileInterface`, not concrete `File`, so their runtime typename and
+  type-specific fragment data normalize correctly. Together these rules let the
+  global file-modal host reuse files from folder/comment queries without a
+  loading flash, partial entity, or stale concrete type.
+- File identity is shared by frontend and app through
+  `shared/urql/fileCacheIdentity.ts`. Both cache exchanges must use its
+  `fileGlobalIDs`: type-transition correctness applies whenever multiple queries
+  can reference a mutable file row, not only when a client has `Query.file(id:)`.
+  The frontend-only root resolver is the additional piece that lets the modal
+  query link to an already-normalized shared ID.
 - `requestPolicy: 'cache-only'` + `context: { suspense: false }`. The hook runs
   inside a `<Suspense>` fallback; a fallback that suspends throws, and the
   client sets `suspense: true` globally.
@@ -409,8 +469,8 @@ some _other_ folder, and the two callers below rely on that distinction.
   strands the entry and makes back appear to do nothing.
 - Subfolder navigation stays a plain `useSetFolder` push — only file open/close
   is special.
-- Hash-backed atoms (`atomWithHash` with `setHash: 'replaceState'`) preserve
-  `history.state`, so modal/sort/view hash changes do not clear the marker.
+- Router-backed sort/view changes replace the current entry and forward
+  `location.state`, so those preference changes do not clear the marker.
 
 ## State Management (Jotai)
 
@@ -424,17 +484,11 @@ export const authKeyAtom = atomWithStorage('auth', '');
 
 // atoms/themeModeAtom.ts - Current theme/branding
 export const themeModeAtom = atom<BrandingType>(defaultBranding);
-
-// atoms/modalTypeAtom.ts - URL-synced modal state
-export const modalTypeAtom = atomWithHash<ModalType>('m', null);
-
-// atoms/fileSortAtom.ts - sort preference (URL hash + localStorage)
-export const fileSortAtom = atom<FileSort, [FileSort], void>(/* ... */);
 ```
 
-#### Sort preference resolution (`atoms/fileSortAtom.ts`)
+#### Sort preference resolution (`hooks/useFileSort.ts`)
 
-`fileSortAtom` resolves the active sort with this precedence:
+`useFileSort` resolves the active sort with this precedence:
 
 1. URL hash `#s=` (bookmarkable/shareable, wins so links stay stable)
 2. `fileSort` in **localStorage** (this browser's remembered choice)
@@ -453,18 +507,19 @@ the non-default `foldersFirst: false` case, so every pre-existing hash/branding
 string stays byte-identical and decodes as `foldersFirst: true`. `decodeFileSort`
 reverts unknown/garbage strings to the default rather than guessing.
 
-### URL-Based State with `atomWithHash`
+### URL-Based State
 
-Modal and filter state stored in URL hash for bookmarkable/shareable URLs:
+All hash parameters are read from `useLocation` and written through
+`useNavigate`. Preference parameters use `useHashParam`; modal state adds its
+push-on-open/pop-on-close history semantics on top of the same Router location:
 
 ```typescript
 // URL: /admin/f/123#m=comments-456
 // Opens comments modal for file 456
 
-import { atomWithHash } from 'jotai-location';
+import { useHashParam } from '../hooks/useHashParam';
 
-// State syncs bidirectionally with URL hash
-const modalTypeAtom = atomWithHash<ModalType>('m', null, atomWithHashOptions);
+const [encodedView, setEncodedView] = useHashParam('v');
 ```
 
 ### Using Atoms

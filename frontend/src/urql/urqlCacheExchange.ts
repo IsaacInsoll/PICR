@@ -1,9 +1,18 @@
-import { cacheExchange } from '@urql/exchange-graphcache';
+import {
+  cacheExchange,
+  type CacheExchangeOpts,
+} from '@urql/exchange-graphcache';
 import schema from '@shared/urql/graphql.schema.json';
+import { fileGlobalIDs } from '@shared/urql/fileCacheIdentity';
 import { invalidateQueries } from '../helpers/invalidateQueries';
 
-export const urqlCacheExchange = cacheExchange({
+export const urqlCacheConfig = {
   schema,
+  // File, Image and Video are runtime views of the same Files-table row, and
+  // that row can change media type after a rename/rescan. Key all three by the
+  // shared database ID so a stale concrete typename cannot shadow the current
+  // entity.
+  globalIDs: [...fileGlobalIDs],
   resolvers: {
     Query: {
       // Links the root `folder(id:)` field to the already-normalized Folder
@@ -16,6 +25,13 @@ export const urqlCacheExchange = cacheExchange({
         __typename: 'Folder',
         id: String(args['id']),
       }),
+      // The file implementations use global IDs above, so the database ID is
+      // also the normalized entity key. Return it only when that entity is
+      // already cached; otherwise Graphcache must forward the query.
+      file: (_parent, args, cache) => {
+        const id = String(args['id']);
+        return cache.resolve(id, 'id') !== undefined ? id : undefined;
+      },
     },
   },
   keys: {
@@ -53,4 +69,6 @@ export const urqlCacheExchange = cacheExchange({
         ]),
     },
   },
-});
+} satisfies CacheExchangeOpts;
+
+export const urqlCacheExchange = cacheExchange(urqlCacheConfig);

@@ -9,6 +9,7 @@ import { FileLink } from '../FileLink';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
 import type { FolderContentsItem } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
+import type { FileSort } from '@shared/files/sortFiles';
 import {
   ActionIcon,
   Avatar,
@@ -27,8 +28,7 @@ import { useEffect } from 'react';
 import { SmallPreview } from './SmallPreview';
 import { FileMenu } from './FileMenu';
 import { fileFlagStyles } from './Review/fileFlagStyles';
-import { fileSortAtom } from '../../atoms/fileSortAtom';
-import { useAtomValue } from 'jotai';
+import { useFileSort } from '../../hooks/useFileSort';
 import { DotsIcon } from '../../PicrIcons';
 import { FolderMenuItems } from './FolderMenu';
 import { PicrAvatar } from '../PicrAvatar';
@@ -45,6 +45,7 @@ export const FileListView = ({
   items,
 }: FileListViewStyleComponentProps) => {
   const orderedItems = items ?? [...folders, ...files];
+  const [{ type: sortType }] = useFileSort();
 
   const [lazyLoaded, onBecomeVisible] = useLazyLoad(100, orderedItems.length);
   const loadedFiles = orderedItems.slice(0, lazyLoaded);
@@ -57,6 +58,7 @@ export const FileListView = ({
             <Row
               file={f}
               key={f.id}
+              sortType={sortType}
               setSelectedFileId={setSelectedFileId}
               onBecomeVisible={() => onBecomeVisible(i)}
             />
@@ -70,10 +72,12 @@ export const FileListView = ({
 const Row = ({
   setSelectedFileId,
   file,
+  sortType,
   onBecomeVisible,
 }: {
   setSelectedFileId: (id: string | undefined) => void;
   file: FolderContentsItem;
+  sortType: FileSort['type'];
   onBecomeVisible: () => void;
 }) => {
   const { canView } = useCommentPermissions();
@@ -104,9 +108,8 @@ const Row = ({
     : `${t('sort.modified')}: ${modified}`;
 
   // if filtering by RecentlyCommented or LastModified then lets show that data
-  const { type } = useAtomValue(fileSortAtom);
   const descriptionOverride =
-    type === 'RecentlyCommented' ? (
+    sortType === 'RecentlyCommented' ? (
       <>
         {latestComment ? (
           <>
@@ -119,7 +122,7 @@ const Row = ({
           </>
         ) : null}
       </>
-    ) : type === 'LastModified' ? (
+    ) : sortType === 'LastModified' ? (
       <>
         {modifiedDate ? (
           <Text c="dimmed" fz="xs">
