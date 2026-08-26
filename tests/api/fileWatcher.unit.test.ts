@@ -70,7 +70,7 @@ const loadFileWatcher = async (scanFolderTreeError?: Error) => {
   vi.doMock('../../backend/filesystem/fileManager.js', () => ({
     relativePath: (path: string) => path.replace(mediaPath, ''),
   }));
-  vi.doMock('../../backend/filesystem/ignoredPaths.js', () => ({
+  vi.doMock('@shared/filesystem/ignoredPaths.js', () => ({
     ignoredPathPattern: /ignored/,
   }));
   vi.doMock('../../backend/config/picrConfig.js', () => ({

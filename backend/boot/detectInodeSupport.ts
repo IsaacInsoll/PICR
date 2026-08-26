@@ -1,7 +1,7 @@
 import { readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { picrConfig } from '../config/picrConfig.js';
-import { isIgnoredPath } from '../filesystem/ignoredPaths.js';
+import { isIgnoredPath } from '@shared/filesystem/ignoredPaths.js';
 import { log } from '../logger.js';
 
 export type InodeSupportStatus = 'enabled' | 'disabled' | 'unknown';

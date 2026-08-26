@@ -15,7 +15,7 @@ import { removeFolder } from './events/removeFolder.js';
 import { renameFolder } from './events/renameFolder.js';
 import { fullPath, fullPathForFile } from './fileManager.js';
 import { contentHashForStats } from './fileHash.js';
-import { isIgnoredPath } from './ignoredPaths.js';
+import { isIgnoredPath } from '@shared/filesystem/ignoredPaths.js';
 
 export const SCAN_SETTLE_SECONDS = 10;
 export const SCAN_FASTPATH_MAX_BYTES = 5 * 1024 * 1024;

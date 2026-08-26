@@ -8,7 +8,7 @@ import { dbFile, dbFolder } from '../db/models/index.js';
 import { isNotNull } from 'drizzle-orm';
 import type { IPicrConfiguration } from '../config/IPicrConfiguration.js';
 import { createRenameTracker } from './renameTracker.js';
-import { ignoredPathPattern } from './ignoredPaths.js';
+import { ignoredPathPattern } from '@shared/filesystem/ignoredPaths.js';
 import { scanFolderTree } from './scanFolder.js';
 
 export const fileWatcher = async (
