@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "sourceMap": true,
+    "types": ["node"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "../shared/banner.ts",
+    "../shared/filesystem/ignoredPaths.ts"
+  ],
+  "exclude": ["tests"]
+}
