@@ -1,9 +1,11 @@
 import { stat } from 'node:fs/promises';
+import { join } from 'node:path';
 import chokidar, { type FSWatcher } from 'chokidar';
 import { ignoredPathPattern } from '../../shared/filesystem/ignoredPaths.js';
 import type { PingConfig } from './config.js';
 import {
   directoriesForEvent,
+  mediaPathFor,
   type MappedWatchEvent,
   type WatchEventName,
 } from './pathMapping.js';
@@ -11,13 +13,15 @@ import {
 export type WatchCounts = {
   directories: number;
   entries: number;
+  sampleFile?: string;
 };
 
 type StartWatcherOptions = {
   config: PingConfig;
   onError: (error: unknown) => void;
   onEvent: (event: WatchEventName, mapped: MappedWatchEvent) => void;
-  onReady: (counts: WatchCounts) => void;
+  onPathError: (error: unknown) => void;
+  onReady: (counts: WatchCounts) => Promise<void> | void;
 };
 
 const watchCounts = (watcher: FSWatcher): WatchCounts => {
@@ -30,10 +34,30 @@ const watchCounts = (watcher: FSWatcher): WatchCounts => {
   return { directories, entries };
 };
 
+const sampleVisibleFile = async (
+  watcher: FSWatcher,
+  config: PingConfig,
+): Promise<string | undefined> => {
+  for (const [directory, entries] of Object.entries(watcher.getWatched())) {
+    for (const entry of entries) {
+      const path = join(directory, entry);
+      try {
+        if ((await stat(path)).isFile()) {
+          return mediaPathFor(path, config.watchRoot, config.pathPrefix);
+        }
+      } catch {
+        // The tree can change while the startup sample is selected. Try another entry.
+      }
+    }
+  }
+  return undefined;
+};
+
 export const startWatcher = async ({
   config,
   onError,
   onEvent,
+  onPathError,
   onReady,
 }: StartWatcherOptions): Promise<FSWatcher> => {
   const rootStats = await stat(config.watchRoot);
@@ -63,7 +87,7 @@ export const startWatcher = async ({
         directoriesForEvent(event, path, config.watchRoot, config.pathPrefix),
       );
     } catch (error) {
-      onError(error);
+      onPathError(error);
     }
   };
 
@@ -74,7 +98,11 @@ export const startWatcher = async ({
     .on('addDir', (path) => handleEvent('addDir', path))
     .on('unlinkDir', (path) => handleEvent('unlinkDir', path))
     .on('error', onError)
-    .on('ready', () => onReady(watchCounts(watcher)));
+    .on('ready', () => {
+      void sampleVisibleFile(watcher, config)
+        .then((sampleFile) => onReady({ ...watchCounts(watcher), sampleFile }))
+        .catch(onError);
+    });
 
   return watcher;
 };

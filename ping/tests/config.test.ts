@@ -11,6 +11,7 @@ test('dry run works without a PICR URL or token', () => {
   expect(config.dryRun).toBe(true);
   expect(config.picrUrl).toBeUndefined();
   expect(config.pingToken).toBeUndefined();
+  expect(config.reconcileOnStart).toBe('auto');
 });
 
 test('normal mode requires a target and 64-character token', () => {

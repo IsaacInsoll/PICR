@@ -71,3 +71,24 @@ test('a direct event promotes a held directory without duplicating it', async ()
   expect(onFlush).toHaveBeenCalledWith(['Same']);
   await batcher.close();
 });
+
+test('flushes before an encoded-byte boundary is exceeded', async () => {
+  const onFlush = vi.fn();
+  const batcher = createDirectoryBatcher({
+    batchMs: 1000,
+    maxBytes: 15,
+    maxDirectories: 1000,
+    measureBytes: (directories) =>
+      Buffer.byteLength(JSON.stringify(directories), 'utf8'),
+    onFlush,
+  });
+
+  batcher.add(['漢字']);
+  batcher.add(['撮影']);
+  await vi.advanceTimersByTimeAsync(0);
+
+  expect(onFlush).toHaveBeenNthCalledWith(1, ['漢字']);
+  await vi.advanceTimersByTimeAsync(1000);
+  expect(onFlush).toHaveBeenNthCalledWith(2, ['撮影']);
+  await batcher.close();
+});

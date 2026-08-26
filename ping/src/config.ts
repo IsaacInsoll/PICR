@@ -23,12 +23,10 @@ const positiveNumberFromEnv = (defaultValue: number) =>
     z.number().finite().positive(),
   );
 
-const positiveIntegerFromEnv = (defaultValue: number) =>
-  z.preprocess(
-    (value) =>
-      value === undefined || value === '' ? defaultValue : Number(value),
-    z.number().int().positive(),
-  );
+const portFromEnv = z.preprocess(
+  (value) => (value === undefined || value === '' ? 6901 : Number(value)),
+  z.number().int().min(1).max(65_535),
+);
 
 const envSchema = z
   .object({
@@ -39,11 +37,12 @@ const envSchema = z
     PICR_PING_TOKEN: optionalNonEmptyString,
     PICR_URL: optionalNonEmptyString,
     POLL_INTERVAL_SECONDS: positiveNumberFromEnv(20),
+    RECONCILE_ON_START: z.enum(['auto', 'true', 'false']).default('auto'),
     STABILITY_SECONDS: positiveNumberFromEnv(2),
     VERBOSE: booleanFromEnv(false),
     WATCH_MODE: z.enum(['native', 'polling']).default('native'),
     WATCH_ROOT: z.string().min(1).default('/media'),
-    PING_HEALTH_PORT: positiveIntegerFromEnv(6901),
+    PING_HEALTH_PORT: portFromEnv,
   })
   .superRefine((env, context) => {
     if (env.DRY_RUN) return;
@@ -61,6 +60,12 @@ const envSchema = z
           'PICR_PING_TOKEN must contain at least 64 characters unless DRY_RUN=true',
         path: ['PICR_PING_TOKEN'],
       });
+    } else if (/\p{Cc}/u.test(env.PICR_PING_TOKEN)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'PICR_PING_TOKEN must not contain control characters',
+        path: ['PICR_PING_TOKEN'],
+      });
     }
   });
 
@@ -73,6 +78,7 @@ export type PingConfig = {
   pingToken?: string;
   picrUrl?: URL;
   pollIntervalMs: number;
+  reconcileOnStart: 'auto' | 'false' | 'true';
   stabilityMs: number;
   verbose: boolean;
   version: string;
@@ -108,6 +114,7 @@ export const configFromEnv = (env: NodeJS.ProcessEnv): PingConfig => {
     pingToken: parsed.PICR_PING_TOKEN,
     picrUrl,
     pollIntervalMs: parsed.POLL_INTERVAL_SECONDS * 1000,
+    reconcileOnStart: parsed.RECONCILE_ON_START,
     stabilityMs: parsed.STABILITY_SECONDS * 1000,
     verbose: parsed.VERBOSE,
     version:

@@ -19,14 +19,18 @@ export type DirectoryBatcher = {
 
 type DirectoryBatcherOptions = {
   batchMs: number;
+  maxBytes?: number;
   maxDirectories: number;
+  measureBytes?: (directories: string[]) => number;
   onFlush: (directories: string[]) => Promise<void> | void;
   scheduler?: BatchScheduler;
 };
 
 export const createDirectoryBatcher = ({
   batchMs,
+  maxBytes,
   maxDirectories,
+  measureBytes,
   onFlush,
   scheduler = defaultScheduler,
 }: DirectoryBatcherOptions): DirectoryBatcher => {
@@ -62,6 +66,16 @@ export const createDirectoryBatcher = ({
   const makeReady = (directory: string) => {
     held.delete(directory);
     ready.add(directory);
+    if (
+      maxBytes !== undefined &&
+      measureBytes &&
+      ready.size > 1 &&
+      measureBytes([...ready]) > maxBytes
+    ) {
+      ready.delete(directory);
+      void flush();
+      ready.add(directory);
+    }
     if (ready.size >= maxDirectories) {
       void flush();
     } else {

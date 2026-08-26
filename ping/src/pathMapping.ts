@@ -2,7 +2,11 @@ import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
 
 const unsafeSegment = (segment: string) => segment === '..' || segment === '.';
 
-export const normaliseWirePath = (path: string, label = 'path'): string => {
+export const normaliseWirePath = (
+  path: string,
+  label = 'path',
+  maxLength = 255,
+): string => {
   if (path === '') return '';
   if (isAbsolute(path) || path.includes('\\') || /\p{Cc}/u.test(path)) {
     throw new Error(`${label} must be a safe relative path`);
@@ -15,8 +19,8 @@ export const normaliseWirePath = (path: string, label = 'path'): string => {
     throw new Error(`${label} must be a normalised relative path`);
   }
   const normalised = segments.join('/');
-  if (normalised.length > 255) {
-    throw new Error(`${label} must be at most 255 characters`);
+  if ([...normalised].length > maxLength) {
+    throw new Error(`${label} must be at most ${maxLength} characters`);
   }
   return normalised;
 };
@@ -28,6 +32,7 @@ export const mediaPathFor = (
   fullPath: string,
   watchRoot: string,
   pathPrefix: string,
+  maxLength = 511,
 ): string => {
   const resolvedRoot = resolve(watchRoot);
   const resolvedPath = resolve(fullPath);
@@ -40,7 +45,11 @@ export const mediaPathFor = (
     throw new Error(`Watcher path escaped WATCH_ROOT: ${fullPath}`);
   }
   const wireLocalPath = localPath.split(sep).join('/');
-  return normaliseWirePath(joinWirePath(pathPrefix, wireLocalPath));
+  return normaliseWirePath(
+    joinWirePath(pathPrefix, wireLocalPath),
+    'watcher path',
+    maxLength,
+  );
 };
 
 const parentOf = (path: string) => {
@@ -66,7 +75,13 @@ export const directoriesForEvent = (
   watchRoot: string,
   pathPrefix: string,
 ): MappedWatchEvent => {
-  const mediaPath = mediaPathFor(fullPath, watchRoot, pathPrefix);
+  const fileEvent = event === 'add' || event === 'change' || event === 'unlink';
+  const mediaPath = mediaPathFor(
+    fullPath,
+    watchRoot,
+    pathPrefix,
+    fileEvent ? 511 : 255,
+  );
   const prefixSegments = pathPrefix ? pathPrefix.split('/') : [];
   const mediaSegments = mediaPath ? mediaPath.split('/') : [];
   const localSegments = mediaSegments.slice(prefixSegments.length);

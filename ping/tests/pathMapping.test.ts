@@ -48,6 +48,16 @@ describe('event mapping', () => {
     });
   });
 
+  test('allows a full file path to exceed the directory-column limit', () => {
+    const directory = 'd'.repeat(240);
+    const filename = 'f'.repeat(255);
+
+    expect(mapped('add', `/media/${directory}/${filename}`)).toEqual({
+      directories: [`Archive/Studio/${directory}`],
+      unlinkDerived: false,
+    });
+  });
+
   test('maps directory additions to parent and child', () => {
     expect(mapped('addDir', '/media/Weddings/Smith')).toEqual({
       directories: ['Archive/Studio/Weddings', 'Archive/Studio/Weddings/Smith'],
