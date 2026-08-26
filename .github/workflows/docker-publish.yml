@@ -54,3 +54,17 @@ jobs:
           tags: ${{ inputs.image_tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Show testing instructions
+        if: inputs.build_channel == 'development'
+        env:
+          IMAGE_TAG: ${{ inputs.image_tags }}
+        run: |
+          {
+            echo "## 🧪 Test this PICR build"
+            echo
+            echo "Pull \`$IMAGE_TAG\` to test this commit:"
+            echo
+            echo '```console'
+            echo "docker pull $IMAGE_TAG"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
