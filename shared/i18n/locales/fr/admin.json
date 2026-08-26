@@ -195,6 +195,7 @@
       "minimumLength": "Utilisez au moins 6 caractères",
       "generatePretty": "Générer un identifiant lisible",
       "generateRandom": "Générer un identifiant aléatoire",
+      "publicLinkEnabled": "Lien public activé",
       "recipient": "Destinataire",
       "email": "E-mail",
       "optional": "Facultatif",

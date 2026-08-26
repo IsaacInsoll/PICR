@@ -22,7 +22,6 @@ import { EmptyPlaceholder } from '../EmptyPlaceholder';
 import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { Tips } from '../../components/Tips';
 import { publicLinkColumns, userSearchText } from './userColumns';
-import { useIsMobile } from '../../hooks/useIsMobile';
 import type { ManageFolderUserRow } from '@shared/types/queryRows';
 import { PublicLinkListItem } from '../../components/PublicLinkListItem';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +54,6 @@ export const ManagePublicLinks = ({
   onCloseLink,
 }: ManagePublicLinksProps) => {
   const { t } = useTranslation('admin');
-  const isMobile = useIsMobile();
   const [includeParents, setIncludeParents] = useState(relations === 'parents');
   const [includeChildren, setIncludeChildren] = useState(
     relations === 'children',
@@ -118,20 +116,14 @@ export const ManagePublicLinks = ({
             <Switch
               checked={includeParents}
               onChange={(e) => setIncludeParents(e.currentTarget.checked)}
-              label={
-                isMobile
-                  ? t('links.includeParentsShort')
-                  : t('links.includeParents')
-              }
+              label={t('links.includeParentsShort')}
+              aria-label={t('links.includeParents')}
             />
             <Switch
               checked={includeChildren}
               onChange={(e) => setIncludeChildren(e.currentTarget.checked)}
-              label={
-                isMobile
-                  ? t('links.includeChildrenShort')
-                  : t('links.includeChildren')
-              }
+              label={t('links.includeChildrenShort')}
+              aria-label={t('links.includeChildren')}
             />
           </Group>
         </Stack>

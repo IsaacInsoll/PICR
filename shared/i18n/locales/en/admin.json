@@ -195,6 +195,7 @@
       "minimumLength": "Use at least 6 characters",
       "generatePretty": "Generate a readable link ID",
       "generateRandom": "Generate a random link ID",
+      "publicLinkEnabled": "Public link enabled",
       "recipient": "Recipient",
       "email": "Email",
       "optional": "Optional",

@@ -7,6 +7,15 @@ Frontend unit tests live beside their source as `*.unit.test.ts` or
 `frontend/vitest.config.ts`. Keep them frontend-owned; do not put component or
 frontend utility tests in the backend integration suite under `tests/api`.
 
+The public-link recipient email and gallery passcode are metadata for the
+client, not administrator login credentials. Keep their autocomplete hints set
+to `off` and `new-password`, respectively, so password managers do not fill the
+administrator's saved PICR credentials into the link editor.
+
+The public-links relationship switches use the concise translated labels at
+all viewport widths and keep the full translations as accessible labels. This
+prevents longer translations from wrapping in the compact switch row.
+
 Prefer logical CSS properties in new UI (`margin-inline`, `padding-block`,
 `inset-inline-start`, and so on) so future RTL support does not require new
 physical left/right assumptions.
