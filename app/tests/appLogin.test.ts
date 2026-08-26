@@ -4,7 +4,14 @@ import { appLogin } from '@/src/helpers/appLogin';
 
 type LoginResult = {
   data?: { auth?: string };
-  error?: { message: string };
+  error?: {
+    message: string;
+    networkError?: Error;
+    graphQLErrors: Array<{
+      message: string;
+      extensions: Record<string, unknown>;
+    }>;
+  };
 };
 
 const mockToPromise = jest.fn<() => Promise<LoginResult>>();
@@ -39,21 +46,53 @@ describe('appLogin', () => {
     });
   });
 
-  it('classifies an empty auth response as invalid credentials', async () => {
+  it('classifies the server empty-token response as rejected authentication', async () => {
     mockToPromise.mockResolvedValue({ data: { auth: '' } });
 
     await expect(appLogin(loginDetails)).resolves.toEqual({
-      error: 'Incorrect username or password',
+      error: {
+        type: 'authentication_rejected',
+        message: 'Incorrect username or password',
+      },
     });
   });
 
-  it('includes the GraphQL error when the server request fails', async () => {
+  it('classifies transport failures from network metadata', async () => {
     mockToPromise.mockResolvedValue({
-      error: { message: 'Network request failed' },
+      error: {
+        message: 'Network request failed',
+        networkError: new Error('Network request failed'),
+        graphQLErrors: [],
+      },
     });
 
     await expect(appLogin(loginDetails)).resolves.toEqual({
-      error: 'Unable to connect to server: Network request failed',
+      error: {
+        type: 'network_unavailable',
+        message:
+          'Unable to connect to server. Check the server URL and network connection.',
+      },
+    });
+  });
+
+  it('does not mistake unstructured GraphQL message text for invalid credentials', async () => {
+    mockToPromise.mockResolvedValue({
+      error: {
+        message: 'Incorrect username or password',
+        graphQLErrors: [
+          {
+            message: 'Incorrect username or password',
+            extensions: {},
+          },
+        ],
+      },
+    });
+
+    await expect(appLogin(loginDetails)).resolves.toEqual({
+      error: {
+        type: 'server_error',
+        message: 'The server could not complete the login. Please try again.',
+      },
     });
   });
 });

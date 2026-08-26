@@ -6,6 +6,7 @@ import {
   userEvent,
   waitFor,
 } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { LoginForm } from '@/src/components/LoginForm';
 import { appLogin } from '@/src/helpers/appLogin';
 
@@ -61,5 +62,38 @@ describe('LoginForm', () => {
       token: 'token',
     });
     expect(mockReplace).toHaveBeenCalledWith('/');
+  });
+
+  it('shows the message from a typed login failure', async () => {
+    jest.mocked(appLogin).mockResolvedValue({
+      error: {
+        type: 'authentication_rejected',
+        message: 'Incorrect username or password',
+      },
+    });
+    const alert = jest.spyOn(Alert, 'alert');
+    const user = userEvent.setup();
+    await render(<LoginForm />);
+
+    await user.type(
+      screen.getByTestId('login-server-input'),
+      'https://picr.example.com/',
+    );
+    await user.type(screen.getByTestId('login-username-input'), 'admin');
+    await user.type(
+      screen.getByTestId('login-password-input'),
+      'incorrectPassword',
+    );
+    await fireEvent.press(screen.getByTestId('login-submit'));
+
+    await waitFor(() => {
+      expect(alert).toHaveBeenCalledWith(
+        'Login Failed',
+        'Incorrect username or password',
+        expect.any(Array),
+      );
+    });
+    expect(mockSetLogin).not.toHaveBeenCalled();
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 });

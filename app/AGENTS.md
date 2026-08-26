@@ -49,7 +49,6 @@ app/
 │   │       ├── admin/          # Admin views
 │   │       │   ├── f/[folderId]/ # Folder view
 │   │       │   └── settings.tsx
-│   │       └── s/[uuid]/       # Public share routes
 │   ├── components/             # React Native components
 │   │   ├── FolderContents/     # Gallery views
 │   │   ├── Menus/              # Sort/filter bottom sheets
@@ -76,13 +75,11 @@ File-based routing - file structure = URL structure.
 /[loggedin]/admin/f/[folderId]/  # Folder view
 /[loggedin]/admin/f/[folderId]/[fileId]/  # File viewer
 /[loggedin]/admin/settings       # Settings
-/[loggedin]/s/[uuid]/[folderId]/ # Public share view
 ```
 
 ### Dynamic Segments
 
 - `[loggedin]` - Server hostname extracted from URL
-- `[uuid]` - Public share link UUID
 - `[folderId]` - Folder ID
 - `[fileId]` - File ID
 
@@ -176,29 +173,25 @@ configuration during render, and layout/bootstrap failures can leave that
 configuration undefined. The old package remains temporarily for cache-manager
 APIs used by full-screen images and settings until that path is migrated too.
 
-### Public-link routes are incomplete
+### Photographer-only route boundary
 
-The app currently has a public folder route at
-`/[loggedin]/s/[uuid]/[folderId]`, but no matching public file route and no bare
-`/[loggedin]/s/[uuid]` entry route. `useAppFileLink()` nevertheless generates a
-public file URL, so tapping a public file reaches the not-found screen.
-
-Public media loading is also not self-contained: `AppImage`, `PFileImage` and
-`PBigImage` ultimately derive their base URL from authenticated login details in
-SecureStore. A public-link-only session has no such login details, so public
-gallery media cannot rely on those helpers. The public provider additionally
-reconstructs the server as HTTPS from the route hostname, which does not support
-plain-HTTP self-hosted servers. Treat public-link support as incomplete until
-the route contract, server-origin context, passcode flow and media helpers are
-implemented and tested together.
+The native route tree contains authenticated photographer/admin screens only.
+Public `/s/:uuid/...` gallery URLs belong to the frontend and must open in the
+system browser. Keep this distinction in `src/helpers/appRoutes.ts`; do not
+reintroduce public providers, UUID-aware component branches or partial public
+routes without treating native client galleries as a complete product surface.
 
 ## Authentication
 
 The backend accepts arbitrary non-empty admin usernames and its default
 username is `admin`. Do not validate the app login username as an email address.
-The current app form still uses `z.string().email()`, so it rejects a valid
-default PICR installation before sending the login mutation; align it with the
-frontend/backend username contract when touching login.
+
+The current backend returns an empty auth token for invalid credentials and
+rate-limited attempts. `appLogin` converts that response into a typed local
+`authentication_rejected` result and classifies transport failures through
+URQL's `networkError`; `LoginForm` must not recover error state by comparing
+display strings. A future machine-readable login error contract is core PICR
+API work and requires explicit approval outside routine app modernization.
 
 ### Secure Storage
 

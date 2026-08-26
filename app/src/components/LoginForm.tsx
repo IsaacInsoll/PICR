@@ -25,9 +25,9 @@ import {
 export const LoginForm = () => {
   const setLogin = useSetLoginDetails();
   const router = useRouter();
-  const [step, setStep] = useState<
-    'ready' | 'loading' | 'success' | 'networkError' | 'authError'
-  >('ready');
+  const [step, setStep] = useState<'ready' | 'loading' | 'success' | 'error'>(
+    'ready',
+  );
 
   const {
     control,
@@ -41,18 +41,14 @@ export const LoginForm = () => {
 
   const onSubmit = async (data: LoginFormValues) => {
     setStep('loading');
-    const { token, error } = await appLogin(data);
-    if (token) {
+    const result = await appLogin(data);
+    if (!result.error) {
       setStep('success');
       void router.replace('/');
-      void setLogin({ ...data, token });
+      void setLogin({ ...data, token: result.token });
     } else {
-      setStep(
-        error === 'Incorrect username or password'
-          ? 'authError'
-          : 'networkError',
-      );
-      Alert.alert('Login Failed', error, [
+      setStep('error');
+      Alert.alert('Login Failed', result.error.message, [
         {
           text: 'Cancel',
           onPress: () => setStep('ready'),

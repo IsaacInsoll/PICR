@@ -5,7 +5,7 @@ side project relative to core PICR, so the work is intentionally split into
 small phases that can be picked up and put down without leaving the repository
 in an ambiguous state.
 
-Last reviewed: 2026-08-25
+Last reviewed: 2026-08-26
 
 ## Current status
 
@@ -16,7 +16,7 @@ carousel navigation were manually exercised. Runtime problems found during that
 smoke pass were fixed and rechecked. No EAS build or store release was used.
 
 Phase 2's unit/component safety net is complete. The Jest/React Native Testing
-Library suite currently passes 61 tests across login, URL normalization, auth
+Library suite currently passes 63 tests across login, URL normalization, auth
 expiry, SecureStore migration, route construction, date formatting, branding,
 presentation defaults, photographer file actions, native row identifiers and
 notification settings. It runs from root checks, CI and app release preflight,
@@ -34,9 +34,10 @@ checklist.
 
 Phase 3 contract cleanup is in progress. The native public-link route/provider
 has been removed, authenticated notification routes are allowlisted, and client
-gallery deep links now fall back to the browser. Native Maestro execution can
-resume when its additional coverage is useful; Expo SDK upgrades remain
-deliberately separate.
+gallery deep links now fall back to the browser. Login failures now use the
+app's typed local outcomes rather than English message matching without changing
+the backend API. Native Maestro execution can resume when its additional
+coverage is useful; Expo SDK upgrades remain deliberately separate.
 
 ## Product direction
 
@@ -109,7 +110,7 @@ resource. The default workflow is local-first:
       advisories in Expo's build/configuration toolchain; the full audit adds
       one path through `jest-expo`. npm's proposed force-fix crosses an Expo SDK
       boundary, so the remainder is deferred to the planned SDK 56/57 upgrades.
-- [x] App unit/component tests exist and pass locally (61 tests on 2026-08-26).
+- [x] App unit/component tests exist and pass locally (63 tests on 2026-08-26).
       Native Maestro execution is scaffolded and deliberately deferred.
 - [ ] Package/store versions are reconciled. `app/package.json` is 1.0.6, while
       the public store listings observed during the audit show older releases.
@@ -176,8 +177,8 @@ Goal: protect current behavior before routing, auth and monorepo work.
       paths where supported.
 - [x] Test that a plain username such as the default `admin` is valid.
 - [x] Characterize login success, invalid credentials and unreachable-server
-      behavior. The current login mutation still returns display strings; its
-      structured-error replacement remains Phase 3 work.
+      behavior, including the compatibility fallback for older servers that
+      return an empty auth token.
 - [x] Test that the structured expired-auth callback clears both in-memory and
       persisted authentication.
 - [x] Test SecureStore payload validation and migration from the existing
@@ -222,8 +223,11 @@ backend/shared contracts.
 - [x] Replace `z.string().email()` username validation with the backend's
       non-empty username contract. Completed early in Phase 2 so the default
       `admin` account could be covered by the login tests.
-- [ ] Replace login error-message string matching with shared structured error
-      metadata.
+- [x] Replace app login error-message string matching with typed local outcomes.
+      Empty-token authentication rejection, transport failure and unexpected
+      server failure are distinct without changing the backend API contract.
+- [ ] Introduce shared structured login error metadata only as separately
+      approved core PICR API work. It is not part of routine app modernization.
 - [x] Introduce a typed, versioned SecureStore schema and validate parsed data.
       Completed early in Phase 2 to make the persistence characterization safe.
 - [ ] Decide whether storing the password remains necessary after initial login;

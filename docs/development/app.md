@@ -28,6 +28,15 @@ in the browser when received through an old app link or notification. Incoming
 notification URLs are allowlisted: `/admin/...` targets may navigate inside the
 app, `/s/...` targets open in the browser, and unrelated URLs are ignored.
 
+### Login failure handling
+
+The existing backend returns an empty auth token for both rejected credentials
+and temporary rate-limit blocks. The app preserves that API contract, converts
+the response to a typed local `authentication_rejected` result and uses URQL's
+transport metadata for unreachable servers. `LoginForm` does not inspect error
+message text to recover control-flow state. Introducing machine-readable server
+login errors is separate core PICR API work.
+
 ## Local-first development
 
 PICR uses Expo's free plan, so routine development must not consume EAS cloud
