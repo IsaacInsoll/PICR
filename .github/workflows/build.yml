@@ -34,6 +34,8 @@ jobs:
         run: npm ci
       - name: '🗃️ [shared] Install Dependencies'
         run: cd shared && npm ci
+      - name: '📡 [ping] Install Dependencies'
+        run: cd ping && npm ci
       - name: '🎨 [format] Prettier check'
         run: npm run format:check
       - name: '🌐 [i18n] Validate locale catalogs'
@@ -46,6 +48,31 @@ jobs:
         run: cd shared && npm run lint
       - name: '🗃️ [shared] Type check'
         run: cd shared && npx tsc --noEmit
+
+      # PICR PING
+      - name: '📡 [ping] Lint'
+        run: cd ping && npm run lint
+      - name: '📡 [ping] Type check'
+        run: cd ping && npm run typecheck
+      - name: '📡 [ping] Unit tests'
+        run: cd ping && npm test
+      - name: '📡 [ping] Build'
+        run: cd ping && npm run build
+      - name: '📡 [ping] Set up Docker Buildx'
+        uses: docker/setup-buildx-action@v3
+      - name: '📡 [ping] Build container (no push)'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ping/Dockerfile
+          push: false
+          build-args: |
+            PICR_GIT_SHA=${{ github.sha }}
+            PICR_PING_VERSION=ci
+          tags: picr-ping:ci
+          cache-from: type=gha,scope=picr-ping
+          cache-to: type=gha,mode=max,scope=picr-ping
+
       - name: '🗃️ [backend] Lint'
         run: cd backend && npm run lint
       - name: '🗃️ [backend] Build (TSC + artifact files)'

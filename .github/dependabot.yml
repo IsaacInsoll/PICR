@@ -109,3 +109,21 @@ updates:
       npm-shared:
         patterns:
           - '*'
+
+  - package-ecosystem: npm
+    directory: /ping
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:30'
+      timezone: America/New_York
+    open-pull-requests-limit: 5
+    cooldown:
+      semver-major-days: 30
+    labels:
+      - dependencies
+      - npm
+    groups:
+      npm-ping:
+        patterns:
+          - '*'

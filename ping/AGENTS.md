@@ -32,5 +32,8 @@ cd ping && npm test
 Run `npm run build` after runtime or packaging changes. Docker changes additionally require a local
 build-only `docker buildx build`.
 
+The Docker build context must include `shared/package.json`. With `module: NodeNext`, TypeScript uses
+the nearest package's `type` field to choose ESM or CommonJS emission for imported shared sources.
+
 Releases are human-only. `npm run release:ping` performs the preflight and creates the release commit;
 CI owns image publishing.

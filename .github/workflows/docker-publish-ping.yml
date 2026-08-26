@@ -1,0 +1,142 @@
+name: PICR Ping Docker Publish
+
+on:
+  push:
+    branches: [master, ping]
+    tags-ignore: ['ping-v*']
+    paths:
+      - 'ping/**'
+      - 'shared/**'
+  workflow_dispatch:
+
+concurrency:
+  group: picr-ping-publish
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  version:
+    name: Check Ping version
+    runs-on: ubuntu-24.04
+    outputs:
+      publish: ${{ steps.version.outputs.publish }}
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      move_latest: ${{ steps.version.outputs.move_latest }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - id: version
+        name: Check marker tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./ping/package.json').version")"
+          tag="ping-v${version}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          if [[ "$version" == 0.* ]]; then
+            echo "move_latest=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "move_latest=true" >> "$GITHUB_OUTPUT"
+          fi
+          if git rev-parse --verify --quiet "refs/tags/$tag" >/dev/null; then
+            if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+              echo "::error::Refusing to overwrite existing tag $tag"
+              exit 1
+            fi
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Explain skipped publish
+        if: steps.version.outputs.publish != 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          {
+            echo "## PICR Ping $VERSION not published"
+            echo
+            echo "Marker tag \`$TAG\` already exists; bump \`ping/package.json\` to publish again."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    name: Publish Ping image
+    needs: version
+    if: needs.version.outputs.publish == 'true'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: isaacinsoll/picr-ping
+          tags: |
+            type=raw,value=${{ needs.version.outputs.version }}
+            type=raw,value=latest,enable=${{ needs.version.outputs.move_latest == 'true' }}
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ping/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            PICR_GIT_SHA=${{ github.sha }}
+            PICR_PING_VERSION=${{ needs.version.outputs.version }}
+          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Create marker tag
+        env:
+          TAG: ${{ needs.version.outputs.tag }}
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git tag "$TAG"
+          git push origin "$TAG"
+      - name: Publish summary
+        env:
+          LATEST_MOVED: ${{ needs.version.outputs.move_latest }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          {
+            echo "## 📡 PICR Ping $VERSION published"
+            echo
+            echo "\`isaacinsoll/picr-ping:$VERSION\` — linux/amd64, linux/arm64"
+            echo
+            if [[ "$LATEST_MOVED" != "true" ]]; then
+              echo "> \`latest\` was **not** moved — 0.x releases stay opt-in."
+              echo
+            fi
+            echo "### Try it (dry run — watches and logs, sends nothing)"
+            echo
+            echo '```yaml'
+            echo 'services:'
+            echo '  picr-ping:'
+            echo "    image: isaacinsoll/picr-ping:$VERSION"
+            echo '    environment:'
+            echo "      DRY_RUN: 'true'"
+            echo "      VERBOSE: 'true'"
+            echo '      WATCH_ROOT: /media'
+            echo '      PICR_PING_NAME: studio-nas'
+            echo '    volumes:'
+            echo '      - /volume1/photos:/media:ro'
+            echo '    restart: unless-stopped'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

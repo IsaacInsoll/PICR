@@ -142,6 +142,7 @@ gh issue view <number> --comments --json number,title,state,body,comments,labels
 | `app/`       | Expo/React Native mobile client                                    | Yes           |
 | `tests/`     | API integration tests (Vitest) + frontend smoke tests (Playwright) | Yes           |
 | `lightroom/` | Lightroom Classic plugin prototype (Lua)                           | Yes           |
+| `ping/`      | NAS-side media watcher and PICR change-hint delivery container     | Yes           |
 | `docs/`      | GitHub Pages documentation site                                    | No            |
 
 **Read the subsystem AGENTS.md files when working in those directories** - they contain detailed patterns, code examples, and troubleshooting guides. This applies equally when **planning** changes, not just implementing them — read the relevant subsystem AGENTS.md files before writing any plan that touches that subsystem.
@@ -269,6 +270,7 @@ cd backend && npx tsc --noEmit   # Backend only
 cd frontend && npx tsc --noEmit  # Frontend only
 cd shared && npx tsc --noEmit    # Shared only
 cd app && npm run typecheck      # App only
+cd ping && npm run typecheck     # Ping only
 
 # Install sequencing
 npm run install-all              # Preferred install flow for all subsystems
@@ -324,6 +326,7 @@ npm run format:check         # Verify formatting only (same check used in CI)
 npm run release              # GitHub/Docker release version bump/tag flow
 npm run release:app          # App preflight + version bump + EAS iOS/Android auto-submit
 npm run release:app:dry      # App preflight only (no bump/build), AI LLM can run this anytime as a check before
+npm run release:ping -- patch # Ping preflight + version bump + commit; image publishing runs after push
 ```
 
 Frontend dev runtime note:
@@ -337,6 +340,7 @@ Always suggest running the relevant build as a basic validation:
 - Backend changes → `cd backend && npm run build`
 - Frontend changes → `cd frontend && npm run build`
 - App changes → `cd app && npx expo export --platform android`
+- Ping changes → `cd ping && npm run build`
 
 Run lint for each touched subsystem before finalizing changes:
 
@@ -344,6 +348,7 @@ Run lint for each touched subsystem before finalizing changes:
 - Backend changes → `cd backend && npm run lint`
 - Frontend changes → `cd frontend && npm run lint`
 - App changes → `cd app && npm run lint`
+- Ping changes → `cd ping && npm run lint`
 
 Run TypeScript checks for each touched subsystem before finalizing changes:
 
@@ -351,6 +356,7 @@ Run TypeScript checks for each touched subsystem before finalizing changes:
 - Backend changes → `cd backend && npx tsc --noEmit`
 - Frontend changes → `cd frontend && npx tsc --noEmit`
 - App changes → `cd app && npm run typecheck`
+- Ping changes → `cd ping && npm run typecheck`
 - All subsystems → `npm run tsc`
 
 Run formatting before finalizing changes, then verify:
@@ -461,7 +467,7 @@ Common gitmoji:
 
 ### Important Rules
 
-- **Releases**: Must be done by human running `npm run release` or `npm run release:app` - AI may only suggest these commands
+- **Releases**: Must be done by human running `npm run release`, `npm run release:app`, or `npm run release:ping` - AI may only suggest these commands
 - **Migrations**: Call out DB migrations, GraphQL schema changes, or new env vars in PR descriptions
 - **Codegen**: Run `npm run gql` after schema changes and commit the generated files
 

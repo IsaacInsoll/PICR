@@ -19,7 +19,9 @@ export default tseslint.config(
     linterOptions: picrCommonLinterOptions,
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ['scripts/*.mjs'],
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -42,6 +44,14 @@ export default tseslint.config(
           message: 'Do not import from app. Move shared code to shared/.',
         },
       ]),
+    },
+  },
+  {
+    files: ['scripts/*.mjs'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+      },
     },
   },
 );
