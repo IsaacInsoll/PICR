@@ -667,6 +667,12 @@ flowchart TB
 | `GET /zip/:folderId/:hash/:filename`   | `zipRequest`   | Serve ZIP downloads     |
 | `GET /*`                               | `picrTemplate` | SPA with OpenGraph meta |
 
+Authenticated inbound integrations use the `/api` namespace and return JSON
+errors. When an integration is disabled, do not register its route. Keep a
+`router.use('/api', ...)` JSON `404` guard before the unconditional
+`picrTemplate` SPA fallback; without it, an unknown `POST /api/*` can return the
+frontend HTML with status `200` and look like a successful integration call.
+
 ### Image Request Flow
 
 1. Validate file exists and hash matches

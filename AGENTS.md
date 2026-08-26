@@ -484,6 +484,7 @@ See `.env.example` for all available variables with documentation. Key ones:
 | `POLLING_SECONDS`      | No       | Polling interval in real seconds                |
 | `ON_VIEW_SCAN`         | No       | Demand-driven scan mode for viewed folders      |
 | `SCHEDULED_SCAN_HOURS` | No       | Whole-library reconcile interval, `0` disables  |
+| `PICR_PING_TOKEN`      | No       | Enables authenticated PICR Ping directory hints |
 
 Legacy aliases `USE_POLLING` and `POLLING_INTERVAL` are still accepted in 1.x
 but should not be used in new examples.

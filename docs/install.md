@@ -165,6 +165,11 @@ There are lots of environment variables you can use, but only a few are needed:
   It defaults to `0` (off). Set `24` for a daily scan that catches changes nobody
   viewed yet; newly-discovered thumbnails are pre-warmed only for small batches.
 
+- `PICR_PING_TOKEN` [optional] enables authenticated directory hints from
+  [PICR Ping](picr-ping.md). It must contain at least 64 characters and should be
+  generated with `openssl rand -hex 32`. Keep it unset when Ping is not used;
+  the integration endpoint is then not registered.
+
 - `CAN_WRITE` [optional] You can turn this on later if needed, see [can_write.md](can_write.md)
   Note: write support needs both `CAN_WRITE=true` and real filesystem write permission on `/home/node/app/media`
   inside the container.

@@ -23,6 +23,46 @@ is converted from old 100ms units (`POLLING_INTERVAL=300` becomes
 `POLLING_SECONDS=30`). PICR intentionally no longer applies chokidar's hidden
 3x binary-file delay.
 
+## PICR Ping
+
+[PICR Ping](../picr-ping.md) is an external realtime trigger for deployments
+where the media lives on a NAS and PICR reads it through a network mount. It is
+orthogonal to `FILE_WATCHER`: both can run during migration, while the intended
+steady-state pairing is:
+
+```text
+FILE_WATCHER=off
+ON_VIEW_SCAN=off
+SCHEDULED_SCAN_HOURS=12
+PICR_PING_TOKEN=<shared infrastructure token>
+```
+
+Ping sends media-root-relative directory hints, never raw Chokidar events or
+remote `Stats`. The server validates those paths, resolves them to database
+folders, and funnels them through `scanFolder`. A coordinator adds the behavior
+that a one-shot caller would otherwise miss:
+
+- ancestor/descendant job coalescing and scoped recursive overflow reconciles;
+- repeated discovery passes for fresh or large unsettled files;
+- discovery with `removeMissing: false` before scoped cleanup, improving
+  cross-folder move detection;
+- metadata-first imports followed by queued thumbnail generation;
+- degraded backoff and requeueing so an accepted hint is not silently lost.
+
+Two-phase cleanup is best-effort rather than a global scanner transaction.
+Manual, scheduled, or on-view scans can still interleave and archive a move
+candidate. `ON_VIEW_SCAN=off` is therefore the cleanest Ping pairing. Move
+identity also depends on the underlying scanner: cross-folder file moves and
+folder renames require stable inode hints, while same-folder file renames can
+fall back to a unique size/mtime signature.
+
+Ping uses `ignoreInitial: true`, so its initial tree walk establishes watches
+without sending one hint per existing file. That suppresses events rather than
+work—the NAS still pays for a directory/stat walk at every Ping start. A scoped
+startup reconcile covers changes made while Ping was down or during the initial
+walk. The scheduled scan remains the durable backstop because Ping's ordinary
+delivery queue is in memory.
+
 ## Boot Behavior
 
 Boot reconciliation depends on watcher mode:
@@ -163,12 +203,13 @@ usable inodes degrade to path and hash behavior.
 
 Thumbnail generation depends on scan type:
 
-| Scan type | `generateThumbs` behavior                                              |
-| --------- | ---------------------------------------------------------------------- |
-| Boot      | `false`; metadata-only startup.                                        |
-| On-view   | `true`; active gallery gets thumbnails as files appear.                |
-| Manual    | `true`; admin explicitly asked to scan/pre-warm.                       |
-| Scheduled | metadata first, then queue thumbnails only for small new-file batches. |
+| Scan type | `generateThumbs` behavior                                                   |
+| --------- | --------------------------------------------------------------------------- |
+| Boot      | `false`; metadata-only startup.                                             |
+| On-view   | `true`; active gallery gets thumbnails as files appear.                     |
+| Manual    | `true`; admin explicitly asked to scan/pre-warm.                            |
+| Scheduled | metadata first, then queue thumbnails only for small new-file batches.      |
+| Ping      | metadata first, then queue thumbnails for rows touched below the scan root. |
 
 Thumbnail generation itself is idempotent: existing thumbnail files are skipped
 by the thumbnail helpers.
