@@ -12,8 +12,3 @@ export const useHostname = () => {
   const global = useGlobalSearchParams();
   return getSingleParam(global['loggedin']);
 };
-
-export const useUuid = (): string | null => {
-  const global = useGlobalSearchParams();
-  return getSingleParam(global['uuid']);
-};

@@ -601,6 +601,14 @@ Move or delete the stale declaration and rerun the type check; `npx expo start`
 will regenerate it when needed. Do not weaken the route type or cast the valid
 path to work around stale generated state.
 
+The native app is photographer/admin-only. Do not add Expo Router routes for
+frontend client galleries under `/s/:uuid/...` or restore UUID-aware branches
+to `AppFolderLink`. `src/helpers/appRoutes.ts` is the boundary for incoming
+links: authenticated `/admin/...` targets may become native routes, `/s/...`
+targets must open their HTTP(S) frontend URL, and unrelated notification URLs
+must be ignored. Preserve explicit `http://` gallery URLs for deliberately
+configured plain-HTTP self-hosted servers.
+
 ### Images not loading
 
 1. Check server URL is correct

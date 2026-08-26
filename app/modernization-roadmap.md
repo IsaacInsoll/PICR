@@ -16,7 +16,7 @@ carousel navigation were manually exercised. Runtime problems found during that
 smoke pass were fixed and rechecked. No EAS build or store release was used.
 
 Phase 2's unit/component safety net is complete. The Jest/React Native Testing
-Library suite currently passes 36 tests across login, URL normalization, auth
+Library suite currently passes 61 tests across login, URL normalization, auth
 expiry, SecureStore migration, route construction, date formatting, branding,
 presentation defaults, photographer file actions, native row identifiers and
 notification settings. It runs from root checks, CI and app release preflight,
@@ -32,7 +32,9 @@ downloads and notification settings. These can be folded into the Phase 2
 automated safety-net work rather than spending a cloud build only to close the
 checklist.
 
-Phase 3 contract cleanup is the next active phase. Native Maestro execution can
+Phase 3 contract cleanup is in progress. The native public-link route/provider
+has been removed, authenticated notification routes are allowlisted, and client
+gallery deep links now fall back to the browser. Native Maestro execution can
 resume when its additional coverage is useful; Expo SDK upgrades remain
 deliberately separate.
 
@@ -107,7 +109,7 @@ resource. The default workflow is local-first:
       advisories in Expo's build/configuration toolchain; the full audit adds
       one path through `jest-expo`. npm's proposed force-fix crosses an Expo SDK
       boundary, so the remainder is deferred to the planned SDK 56/57 upgrades.
-- [x] App unit/component tests exist and pass locally (36 tests on 2026-08-25).
+- [x] App unit/component tests exist and pass locally (61 tests on 2026-08-26).
       Native Maestro execution is scaffolded and deliberately deferred.
 - [ ] Package/store versions are reconciled. `app/package.json` is 1.0.6, while
       the public store listings observed during the audit show older releases.
@@ -210,12 +212,12 @@ Exit gate:
 Goal: remove incomplete public-link behavior and align the app with current
 backend/shared contracts.
 
-- [ ] Remove native public-link routes, `PicrPublicUserProvider`, public UUID
+- [x] Remove native public-link routes, `PicrPublicUserProvider`, public UUID
       routing branches and public-link-only atoms/helpers.
-- [ ] Remove generation of public file URLs that have no matching route.
-- [ ] Ensure external client gallery links open in the system browser/frontend,
+- [x] Remove generation of public file URLs that have no matching route.
+- [x] Ensure external client gallery links open in the system browser/frontend,
       not an incomplete native route.
-- [ ] Limit notification deep links to authenticated app routes; define browser
+- [x] Limit notification deep links to authenticated app routes; define browser
       fallback behavior for public-link notifications if any exist.
 - [x] Replace `z.string().email()` username validation with the backend's
       non-empty username contract. Completed early in Phase 2 so the default

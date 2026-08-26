@@ -1,6 +1,6 @@
 import type { Href, LinkProps } from 'expo-router';
 import { Link } from 'expo-router';
-import { useHostname, useUuid } from '@/src/hooks/useHostname';
+import { useHostname } from '@/src/hooks/useHostname';
 import type { FileIDandName, FolderIDandName } from '@/src/helpers/folderCache';
 import { addToFileCache, addToFolderCache } from '@/src/helpers/folderCache';
 import type { ReactNode } from 'react';
@@ -78,27 +78,12 @@ export const AppLink = ({
 
 export const useAppFolderLink = (folder: { id: string }): Href => {
   const hostname = useHostname();
-  const uuid = useUuid();
   const loggedin = hostname ?? '';
-
-  if (uuid) {
-    return {
-      pathname: '/[loggedin]/s/[uuid]/[folderId]',
-      params: { loggedin, uuid, folderId: folder.id },
-    };
-  }
-
   return adminFolderHref(loggedin, folder.id);
 };
 
 export const useAppFileLink = (file: FileIDandName): Href => {
   const hostname = useHostname();
-  const uuid = useUuid();
   const loggedin = hostname ?? '';
-
-  if (uuid) {
-    return `/${loggedin}/s/${uuid}/${file.folderId}/${file.id}`;
-  }
-
   return adminFileHref(loggedin, file.folderId, file.id);
 };

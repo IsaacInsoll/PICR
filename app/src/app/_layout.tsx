@@ -14,7 +14,7 @@ import { NotificationsResponseListener } from '@/src/components/NotificationsRes
 import { useLastNotificationResponse } from 'expo-notifications';
 import { useEffect } from 'react';
 import { GlobalErrorOverlay } from '@/src/components/GlobalErrorOverlay';
-import { notificationHrefFromData } from '@/src/helpers/appRoutes';
+import { followNotificationTarget } from '@/src/helpers/followNotificationTarget';
 
 CacheManager.config = {
   baseDir: `${Dirs.CacheDir}/images_cache/`,
@@ -41,17 +41,13 @@ export default function AppLayout() {
   const lastNotification = useLastNotificationResponse();
   const router = useRouter();
   useEffect(() => {
-    // if (lastNotification);
-    const href = notificationHrefFromData(
-      lastNotification?.notification.request.content.data,
-    );
-
-    if (href) {
+    const data = lastNotification?.notification.request.content.data;
+    if (data) {
       // console.log([
       //   'AppLayout',
       //   'redirecting because of cold boot URL: ' + url,
       // ]);
-      setTimeout(() => router.push(href), 300);
+      setTimeout(() => void followNotificationTarget(data, router), 300);
     }
   }, [lastNotification, router]);
 

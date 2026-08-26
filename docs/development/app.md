@@ -20,6 +20,14 @@ The general workflow is:
 App-only fixes and app support for existing backend/frontend behavior do not
 require all three steps.
 
+### Photographer-only routing
+
+The native app supports authenticated photographer/admin routes. Client gallery
+routes such as `/s/:uuid/:folderId/:fileId?` belong to the web frontend and open
+in the browser when received through an old app link or notification. Incoming
+notification URLs are allowlisted: `/admin/...` targets may navigate inside the
+app, `/s/...` targets open in the browser, and unrelated URLs are ignored.
+
 ## Local-first development
 
 PICR uses Expo's free plan, so routine development must not consume EAS cloud
