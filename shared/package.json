@@ -13,17 +13,17 @@
   },
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
-    "format-duration": "^3.0.2",
+    "format-duration": "^4.0.0",
     "readable-fractions": "^0.1.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@types/react": "^19.1.10",
-    "eslint": "^9.39.1",
+    "@eslint/js": "^10.0.1",
+    "@types/react": "^19.2.18",
+    "eslint": "^10.8.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.0"
+    "typescript": "^7.0.2",
+    "typescript-eslint": "^8.68.0"
   },
   "peerDependencies": {
     "@urql/exchange-graphcache": "^9.0.1",
