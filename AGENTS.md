@@ -334,7 +334,13 @@ npm run release:ping -- patch # Ping preflight + version bump + commit; image pu
 Dependabot's `cooldown` option is ecosystem-specific. GitHub currently rejects
 `cooldown.semver-major-days` for `package-ecosystem: github-actions`; keep
 cooldowns on the npm update entries rather than copying them into the Actions
-entry.
+entry. PICR intentionally checks grouped npm minor/patch updates monthly with a
+21-day minor and 7-day patch cooldown, ignores routine npm major-version PRs,
+and checks grouped GitHub Actions updates quarterly. Security updates remain a
+separate repository setting and must not be disabled to reduce version-update
+noise. Keep workflow `push` validation limited to `master`; pull requests have
+their own validation event, and allowing all branch pushes doubles CI for every
+Dependabot PR.
 
 Frontend dev runtime note:
 

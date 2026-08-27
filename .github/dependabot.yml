@@ -3,11 +3,10 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: quarterly
       time: '05:00'
       timezone: America/New_York
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     labels:
       - dependencies
       - github-actions
@@ -19,13 +18,17 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: '05:15'
       timezone: America/New_York
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     cooldown:
-      semver-major-days: 30
+      semver-minor-days: 21
+      semver-patch-days: 7
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
     labels:
       - dependencies
       - npm
@@ -37,13 +40,17 @@ updates:
   - package-ecosystem: npm
     directory: /backend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: '05:30'
       timezone: America/New_York
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     cooldown:
-      semver-major-days: 30
+      semver-minor-days: 21
+      semver-patch-days: 7
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
     labels:
       - dependencies
       - npm
@@ -55,15 +62,19 @@ updates:
   - package-ecosystem: npm
     directory: /frontend
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: '05:45'
       timezone: America/New_York
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     cooldown:
-      semver-major-days: 30
+      semver-minor-days: 21
+      semver-patch-days: 7
       exclude:
         - '@picr/react-grid-gallery'
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
     labels:
       - dependencies
       - npm
@@ -75,13 +86,17 @@ updates:
   - package-ecosystem: npm
     directory: /app
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: '06:00'
       timezone: America/New_York
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     cooldown:
-      semver-major-days: 30
+      semver-minor-days: 21
+      semver-patch-days: 7
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
     labels:
       - dependencies
       - npm
@@ -93,13 +108,17 @@ updates:
   - package-ecosystem: npm
     directory: /shared
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: '06:15'
       timezone: America/New_York
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     cooldown:
-      semver-major-days: 30
+      semver-minor-days: 21
+      semver-patch-days: 7
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
     labels:
       - dependencies
       - npm
@@ -111,13 +130,17 @@ updates:
   - package-ecosystem: npm
     directory: /ping
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: '06:30'
       timezone: America/New_York
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     cooldown:
-      semver-major-days: 30
+      semver-minor-days: 21
+      semver-patch-days: 7
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
     labels:
       - dependencies
       - npm
