@@ -1,6 +1,6 @@
 {
   "name": "picr-ping",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Realtime media change hints for PICR",
   "type": "module",
   "private": true,
