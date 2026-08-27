@@ -6,13 +6,14 @@ import { GraphQLID, GraphQLList, GraphQLNonNull } from 'graphql';
 import { taskType } from '../types/taskType.js';
 import { allSubfolderIds } from '../../helpers/allSubfolders.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
+import { mediaScanTaskStatus } from '../../filesystem/mediaScanActivity.js';
 
-const resolver: PicrResolver<object, QueryTasksArgs> = async (
+export const taskResolver: PicrResolver<object, QueryTasksArgs> = async (
   _,
   params,
   context,
 ) => {
-  const { folder } = await contextPermissions(
+  const { folder, permissions } = await contextPermissions(
     context,
     params.folderId ?? 1,
     'View',
@@ -22,15 +23,20 @@ const resolver: PicrResolver<object, QueryTasksArgs> = async (
   const folderIds = await allSubfolderIds(folder);
   taskList.push(...queueZipTaskStatus(folderIds));
 
-  const thumbs = queueTaskStatus();
-  if (thumbs) taskList.push(thumbs);
+  if (permissions === 'Admin') {
+    const scan = mediaScanTaskStatus();
+    if (scan) taskList.push(scan);
+
+    const thumbs = queueTaskStatus();
+    if (thumbs) taskList.push(thumbs);
+  }
 
   return taskList;
 };
 
 export const tasks = {
   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(taskType))),
-  resolve: resolver,
+  resolve: taskResolver,
   args: {
     folderId: { type: GraphQLID },
   },

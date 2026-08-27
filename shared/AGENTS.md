@@ -120,6 +120,13 @@ changes explicit: a newer Ping protocol must not ship before the matching PICR
 backend accepts it. Ping's Docker build context must copy any shared source it
 imports and include that source in both Ping TypeScript configs.
 
+## Media Task Contract
+
+`shared/tasks/mediaTaskIds.ts` owns the stable media-maintenance task IDs used
+by backend producers and UI consumers. Do not duplicate these IDs as string
+literals across subsystems: an unnoticed mismatch makes the frontend silently
+fall back to the backend's untranslated task name.
+
 ## GraphQL Operations
 
 ### Query Pattern

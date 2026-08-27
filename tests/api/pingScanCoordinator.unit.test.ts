@@ -8,6 +8,10 @@ import type {
   ScanFolderOptions,
   ScanFolderResult,
 } from '../../backend/filesystem/scanFolder.js';
+import {
+  mediaScanTaskStatus,
+  resetMediaScanActivityForTests,
+} from '../../backend/filesystem/mediaScanActivity.js';
 
 const scanResult = (
   overrides: Partial<ScanFolderResult> = {},
@@ -35,11 +39,13 @@ const resolution = (
 ) => ({ folderId, relativePath, depth, exact });
 
 const coordinatorFixture = ({
+  delay = vi.fn(async () => undefined),
   resolveFolder = vi.fn(async (path: string) =>
     path === '' ? resolution(1, '') : resolution(10, path),
   ),
   scanFolder = vi.fn(async () => scanResult()),
 }: {
+  delay?: ReturnType<typeof vi.fn>;
   resolveFolder?: ReturnType<typeof vi.fn>;
   scanFolder?: ReturnType<typeof vi.fn>;
 } = {}) => {
@@ -52,7 +58,7 @@ const coordinatorFixture = ({
   });
   const coordinator = new PingScanCoordinator({
     clearTimeout: vi.fn(),
-    delay: vi.fn(async () => undefined),
+    delay,
     enqueueThumbnails,
     log: vi.fn(),
     now: () => now,
@@ -75,6 +81,7 @@ const coordinatorFixture = ({
 };
 
 afterEach(() => {
+  resetMediaScanActivityForTests();
   vi.restoreAllMocks();
 });
 
@@ -98,6 +105,37 @@ test('retries unsettled discovery before running one cleanup pass', async () => 
     foldersScanned: 3,
     pendingFolders: 0,
   });
+});
+
+test('Ping activity remains visible across resolution, settling, and cleanup', async () => {
+  let activityNow = 0;
+  resetMediaScanActivityForTests(() => activityNow);
+  let finishDelay!: () => void;
+  const delayed = new Promise<void>((resolve) => {
+    finishDelay = resolve;
+  });
+  const delay = vi.fn(async () => delayed);
+  const scanFolder = vi
+    .fn<(id: number, options: ScanFolderOptions) => Promise<ScanFolderResult>>()
+    .mockResolvedValueOnce(scanResult({ unsettledFiles: 1 }))
+    .mockResolvedValueOnce(scanResult())
+    .mockResolvedValueOnce(scanResult());
+  const { coordinator, resolveFolder } = coordinatorFixture({
+    delay,
+    scanFolder,
+  });
+
+  await coordinator.enqueueDirectories(['Archive']);
+  await vi.waitFor(() => expect(delay).toHaveBeenCalledOnce());
+  expect(resolveFolder).toHaveBeenCalledWith('Archive');
+
+  activityNow = 1_500;
+  expect(mediaScanTaskStatus()?.id).toBe('media-scan');
+  finishDelay();
+  await coordinator.waitForCurrentCycle();
+
+  expect(scanFolder).toHaveBeenCalledTimes(3);
+  expect(mediaScanTaskStatus()).toBeNull();
 });
 
 test('accepts raw paths before database resolution completes', async () => {

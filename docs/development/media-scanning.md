@@ -101,13 +101,40 @@ starts. Do not move on-view scanning into the resolver itself.
 
 On-view scans:
 
-- use `generateThumbs: true`;
+- import metadata first with `generateThumbs: false`, then enqueue priority
+  thumbnail work for live files touched within the actual scanned path;
+- perform one additional pass after the normal 10-second settle interval when
+  the first pass finds unsettled files or folders;
 - have a per-folder in-memory cooldown (`ON_VIEW_SCAN_COOLDOWN_MS`, currently
   60 seconds), intentionally longer than the frontend folder-view refresh
   interval;
 - coalesce concurrent scans for the same folder;
 - log and swallow background errors so unhandled rejections do not terminate the
   process.
+
+## Media Activity Reporting
+
+PICR reports logical filesystem reconciliation through the existing task area
+as indeterminate **Checking for new media…** activity. Complete boot,
+scheduled, manual, Ping, and on-view operations participate; individual
+low-level folder scans do not create separate rows.
+
+Each operation must remain active for at least 1.5 seconds before it is reported.
+The threshold is measured per operation, so overlapping fast/no-op on-view
+probes remain hidden even if the server is continuously scanning different
+folders. A slower on-view operation remains active through its settle delay and
+second pass, covering the otherwise silent fresh-file window without flashing
+the page during ordinary navigation.
+
+Filesystem walking remains indeterminate because the final scope is not known at
+the start. Queued imports and thumbnail generation retain their numeric progress
+and use the frontend progress component's supported width transition. The two
+rows remain separate when both kinds of work are active.
+
+Global scan and import activity is visible only when the requesting user has
+folder-scoped Admin permission. A non-root admin may see that unrelated global
+work is happening but receives no paths or filenames. Public-link users retain
+their own ZIP preparation tasks without seeing server maintenance.
 
 ## Scheduled Scanning
 
@@ -210,13 +237,25 @@ Thumbnail generation depends on scan type:
 | Scan type | `generateThumbs` behavior                                                   |
 | --------- | --------------------------------------------------------------------------- |
 | Boot      | `false`; metadata-only startup.                                             |
-| On-view   | `true`; active gallery gets thumbnails as files appear.                     |
+| On-view   | metadata first, then priority-queue thumbnails touched by up to two passes. |
 | Manual    | `true`; admin explicitly asked to scan/pre-warm.                            |
 | Scheduled | metadata first, then queue thumbnails only for small new-file batches.      |
 | Ping      | metadata first, then queue thumbnails for rows touched below the scan root. |
 
 Thumbnail generation itself is idempotent: existing thumbnail files are skipped
 by the thumbnail helpers.
+
+On-view priority batches intentionally run ahead of ordinary watcher and
+scheduled queue work. Priority insertion is currently linear in the queued
+priority tier, so enqueueing a very large newly viewed folder can be quadratic;
+retain this trade-off unless profiling shows meaningful enqueue latency or
+mixed-mode starvation.
+
+Metadata-first rows can cause the gallery and background queue to request the
+same image thumbnail concurrently. Image cache writes must remain atomic:
+encode to a unique temporary path beside the target and rename only the complete
+artifact. Duplicate encoding work is acceptable; exposing a partial cache file
+is not.
 
 ## Known Caveats
 

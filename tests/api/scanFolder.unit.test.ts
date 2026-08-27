@@ -236,12 +236,15 @@ const loadScanFolder = async ({
 
   const { scanFolder, scanFolderTree } =
     await import('../../backend/filesystem/scanFolder.js');
+  const mediaScanActivity =
+    await import('../../backend/filesystem/mediaScanActivity.js');
 
   return {
     addFile,
     addFolder,
     files,
     log,
+    mediaScanActivity,
     removeFile,
     removeFolder,
     renameFolder,
@@ -706,6 +709,55 @@ test('scanFolderTree descends into existing folders and retries unsettled large 
     scanPasses: 2,
     unsettledFiles: 0,
   });
+});
+
+test('direct low-level scanFolder work does not create media scan activity', async () => {
+  const mediaRoot = await createMediaRoot();
+  const filePath = join(mediaRoot, 'new.jpg');
+  await writeFile(filePath, 'image');
+  await makeOld(filePath);
+  const addFileCommit = deferred();
+  const { addFile, mediaScanActivity, scanFolder } = await loadScanFolder({
+    mediaRoot,
+    beforeAddFileCommit: async () => addFileCommit.promise,
+  });
+  let now = 0;
+  mediaScanActivity.resetMediaScanActivityForTests(() => now);
+
+  const running = scanFolder(10);
+  await waitFor(() => addFile.mock.calls.length === 1);
+  now = 1_500;
+  expect(mediaScanActivity.mediaScanTaskStatus()).toBeNull();
+
+  addFileCommit.resolve();
+  await running;
+});
+
+test('scanFolderTree activity spans its settle delay and cleanup pass', async () => {
+  const mediaRoot = await createMediaRoot();
+  const largeFilePath = join(mediaRoot, 'large.mov');
+  await writeFile(largeFilePath, Buffer.alloc(5 * 1024 * 1024 + 1));
+  await makeOld(largeFilePath);
+  const settle = deferred();
+  const settleDelay = vi.fn(async () => settle.promise);
+  const { mediaScanActivity, scanFolderTree } = await loadScanFolder({
+    mediaRoot,
+  });
+  let now = 0;
+  mediaScanActivity.resetMediaScanActivityForTests(() => now);
+
+  const running = scanFolderTree(10, { settleDelay });
+  await waitFor(() => settleDelay.mock.calls.length === 1);
+  now = 1_500;
+  expect(mediaScanActivity.mediaScanTaskStatus()?.id).toBe('media-scan');
+
+  settle.resolve();
+  await expect(running).resolves.toMatchObject({
+    cleanupRun: true,
+    completed: true,
+    scanPasses: 2,
+  });
+  expect(mediaScanActivity.mediaScanTaskStatus()).toBeNull();
 });
 
 test('scanFolderTree moves files before cleanup removes missing rows', async () => {

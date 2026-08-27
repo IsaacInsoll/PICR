@@ -13,9 +13,71 @@ import {
 } from '@mantine/core';
 import { Page } from './Page';
 import { taskQuery } from '@shared/urql/queries/taskQuery';
+import {
+  MEDIA_IMPORT_TASK_ID,
+  MEDIA_SCAN_TASK_ID,
+} from '@shared/tasks/mediaTaskIds.js';
 import { useRequery } from '@shared/hooks/useRequery';
 import { withBasePath } from '../helpers/baseHref';
 import { useTranslation } from 'react-i18next';
+
+interface TaskProgressProps {
+  name: string;
+  step?: number | null;
+  totalSteps?: number | null;
+}
+
+export const mediaTaskTranslationKey = (
+  id: string | null | undefined,
+): 'task.mediaImport' | 'task.mediaScan' | null => {
+  if (id === MEDIA_IMPORT_TASK_ID) return 'task.mediaImport';
+  if (id === MEDIA_SCAN_TASK_ID) return 'task.mediaScan';
+  return null;
+};
+
+export const determinateTaskProgress = (
+  step: number | null | undefined,
+  totalSteps: number | null | undefined,
+): { step: number; totalSteps: number } | null => {
+  if (
+    step === null ||
+    step === undefined ||
+    totalSteps === null ||
+    totalSteps === undefined ||
+    totalSteps <= 0
+  ) {
+    return null;
+  }
+  return { step, totalSteps };
+};
+
+export const TaskProgress = ({ name, step, totalSteps }: TaskProgressProps) => {
+  const progress = determinateTaskProgress(step, totalSteps);
+  return (
+    <>
+      <Box pt={4} style={{ flexGrow: 1 }}>
+        {progress ? (
+          <Progress
+            aria-label={name}
+            style={{ flex: 1 }}
+            value={(progress.step / progress.totalSteps) * 100.0}
+            animated
+            transitionDuration={200}
+          />
+        ) : null}
+      </Box>
+      {progress ? (
+        <Box>
+          {progress.step}/{progress.totalSteps}
+        </Box>
+      ) : (
+        <Box>
+          <Loader size="xs" />
+        </Box>
+      )}
+    </>
+  );
+};
 
 export const TaskSummary = ({ folderId }: { folderId: string }) => {
   const { t } = useTranslation('gallery');
@@ -57,34 +119,27 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
       <Paper shadow="xs" withBorder p="xs" mb="md" mt="lg">
         <Stack gap="sm">
           {remaining.map(({ id, name, step, totalSteps }) => {
-            const hasSteps = step && totalSteps && totalSteps > 0;
             const pendingZip = zips.find(
               ({ folder, hash }) => id === folder.id + hash,
             );
+            const mediaTaskKey = mediaTaskTranslationKey(id);
+            // Keep these calls literal: i18next-cli cannot extract a dynamic
+            // t(mediaTaskKey), even though TypeScript narrows the key union.
             const displayName = pendingZip
               ? t('download.preparing', { name: pendingZip.folder.name })
-              : name;
+              : mediaTaskKey === 'task.mediaScan'
+                ? t('task.mediaScan')
+                : mediaTaskKey === 'task.mediaImport'
+                  ? t('task.mediaImport')
+                  : name;
             return (
               <Group gap="small" key={id}>
                 <Text>{displayName}</Text>
-                <Box pt={4} style={{ flexGrow: 1 }}>
-                  {hasSteps ? (
-                    <Progress
-                      style={{ flex: 1 }}
-                      value={(step / totalSteps) * 100.0}
-                      animated
-                    />
-                  ) : null}
-                </Box>
-                {hasSteps ? (
-                  <Box>
-                    {step}/{totalSteps}
-                  </Box>
-                ) : (
-                  <Box>
-                    <Loader size="xs" />
-                  </Box>
-                )}
+                <TaskProgress
+                  name={displayName}
+                  step={step}
+                  totalSteps={totalSteps}
+                />
               </Group>
             );
           })}

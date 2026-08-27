@@ -77,6 +77,10 @@ test('priority queue items wait for the running task before starting', async () 
 
   fileQueue.addToQueue('add', { path: mediaPath('first.jpg') });
   await waitFor(() => fileQueue.queueTaskStatus()?.step === 0);
+  expect(fileQueue.queueTaskStatus()).toMatchObject({
+    id: 'media-import',
+    step: 0,
+  });
 
   fileQueue.addToQueue('unlink', { path: mediaPath('priority.jpg') }, true);
 

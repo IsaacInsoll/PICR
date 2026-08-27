@@ -3,6 +3,7 @@ import { addFolder } from './events/addFolder.js';
 import { removeFolder } from './events/removeFolder.js';
 import { renameFolder } from './events/renameFolder.js';
 import type { Task } from '@shared/gql/graphql.js';
+import { MEDIA_IMPORT_TASK_ID } from '@shared/tasks/mediaTaskIds.js';
 import { generateAllThumbs } from '../media/generateImageThumbnail.js';
 import { log } from '../logger.js';
 import { db, dbFileForId } from '../db/picrDb.js';
@@ -207,6 +208,7 @@ export const markInitComplete = () => {
 export const queueTaskStatus = (): null | Task => {
   if (queueTotal === 0 || queueDone === queueTotal) return null;
   return {
+    id: MEDIA_IMPORT_TASK_ID,
     name: 'Import Files and Generate Thumbnails',
     step: queueDone,
     totalSteps: queueTotal,

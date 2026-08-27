@@ -17,6 +17,7 @@ import { fullPath, fullPathForFile } from './fileManager.js';
 import { contentHashForStats } from './fileHash.js';
 import { isIgnoredPath } from '@shared/filesystem/ignoredPaths.js';
 import { recordSuccessfulFullLibraryScan } from './scanCoverage.js';
+import { withMediaScanActivity } from './mediaScanActivity.js';
 
 export const SCAN_SETTLE_SECONDS = 10;
 export const SCAN_FASTPATH_MAX_BYTES = 5 * 1024 * 1024;
@@ -55,6 +56,7 @@ export interface ScanFolderTreeOptions {
   generateThumbs?: boolean;
   maxPasses?: number;
   settleDelayMs?: number;
+  settleDelay?: (milliseconds: number) => Promise<void>;
 }
 
 export interface ScanFolderTreeResult extends ScanFolderResult {
@@ -85,6 +87,14 @@ const pendingFolders = new Map<number, PendingFolder>();
 export const scanFolderTree = async (
   rootFolderId = 1,
   options: ScanFolderTreeOptions = {},
+): Promise<ScanFolderTreeResult> =>
+  withMediaScanActivity(() =>
+    scanFolderTreeWithActivity(rootFolderId, options),
+  );
+
+const scanFolderTreeWithActivity = async (
+  rootFolderId: number,
+  options: ScanFolderTreeOptions,
 ): Promise<ScanFolderTreeResult> => {
   const startedAtDate = new Date();
   const startedAt = startedAtDate.getTime();
@@ -99,7 +109,11 @@ export const scanFolderTree = async (
   let finalUnsettledFolders = 0;
 
   for (let pass = 0; pass < maxPasses; pass++) {
-    if (pass > 0) await delay(options.settleDelayMs ?? SCAN_SETTLE_MS);
+    if (pass > 0) {
+      await (options.settleDelay ?? delay)(
+        options.settleDelayMs ?? SCAN_SETTLE_MS,
+      );
+    }
 
     const passResult = await scanFolder(rootFolderId, {
       generateThumbs: options.generateThumbs ?? false,

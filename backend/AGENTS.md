@@ -556,6 +556,22 @@ protects its row from cleanup, so keep `skippedEntries` diagnostic and let the
 rest of the tree complete. Ping retry backoff is request-local; fresh hints must
 run immediately rather than joining or waiting behind a degraded retry cycle.
 
+On-view scans are metadata-first and enqueue touched thumbnails as priority
+work after each pass. They perform at most one delayed settle retry. Keep the
+per-folder in-flight lock around both passes and the delay so concurrent views
+cannot start a duplicate operation. Large on-view priority batches make the
+queue's accepted linear priority insertion and normal-work delay easier to
+reach; change the queue structure only with profiling evidence.
+
+Logical scan orchestrators must wrap their complete lifecycle in
+`withMediaScanActivity()`, including resolution, settle delays, and cleanup. The
+current boundaries are `scanFolderTree()`, the full Ping coordinator cycle, and
+the complete on-view operation. New orchestrators must opt in at the same level;
+do not expose individual low-level `scanFolder()` calls as UI tasks. Keep the
+wrapper API `try`/`finally`-owned rather than adding manually paired
+start/finish calls. Activity age is tracked per operation so overlapping fast
+probes cannot collectively trip the UI threshold.
+
 ### Thumbnail Sizes
 
 | Size  | Dimension                                | Purpose          |
@@ -598,6 +614,10 @@ are deleted, regenerated, or the source media hash changes.
   thumbnails are versioned files, but cleanup/rename code still sees old
   directories during transition and must handle nested directories rather than
   assuming flat image files.
+- Image thumbnail writes must retain unique same-directory temporary files and
+  atomic rename promotion. Metadata-first scans let the HTTP request path and
+  background queue encode the same cache artifact concurrently; duplicate CPU
+  work is acceptable, but a partially written JPEG/AVIF must never be visible.
 
 ### Video Processing
 

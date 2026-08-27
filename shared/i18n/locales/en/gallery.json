@@ -304,6 +304,10 @@
     "unmute": "Unmute",
     "volume": "Volume"
   },
+  "task": {
+    "mediaImport": "Import Files and Generate Thumbnails",
+    "mediaScan": "Checking for new media…"
+  },
   "view": {
     "feed": "Feed",
     "gallery": "Gallery",

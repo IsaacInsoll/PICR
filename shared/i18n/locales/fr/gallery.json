@@ -304,6 +304,10 @@
     "unmute": "Rétablir le son",
     "volume": "Volume"
   },
+  "task": {
+    "mediaImport": "Importation des fichiers et génération des miniatures",
+    "mediaScan": "Recherche de nouveaux médias…"
+  },
   "view": {
     "feed": "Fil",
     "gallery": "Galerie",
