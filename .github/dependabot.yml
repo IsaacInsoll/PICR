@@ -8,8 +8,6 @@ updates:
       time: '05:00'
       timezone: America/New_York
     open-pull-requests-limit: 5
-    cooldown:
-      semver-major-days: 30
     labels:
       - dependencies
       - github-actions

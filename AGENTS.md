@@ -329,6 +329,13 @@ npm run release:app:dry      # App preflight only (no bump/build), AI LLM can ru
 npm run release:ping -- patch # Ping preflight + version bump + commit; image publishing runs after push
 ```
 
+### Dependabot Configuration
+
+Dependabot's `cooldown` option is ecosystem-specific. GitHub currently rejects
+`cooldown.semver-major-days` for `package-ecosystem: github-actions`; keep
+cooldowns on the npm update entries rather than copying them into the Actions
+entry.
+
 Frontend dev runtime note:
 
 - `npm start` now runs `frontend` CSS module type generation in watch mode automatically (`start:css:types`).
