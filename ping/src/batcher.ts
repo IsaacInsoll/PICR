@@ -12,7 +12,7 @@ const defaultScheduler: BatchScheduler = {
 
 export type DirectoryBatcher = {
   add: (directories: readonly string[], delayMs?: number) => void;
-  close: () => Promise<void>;
+  close: () => Promise<{ heldDirectories: string[] }>;
   flush: () => Promise<void>;
   pendingCount: () => number;
 };
@@ -73,6 +73,9 @@ export const createDirectoryBatcher = ({
       measureBytes([...ready]) > maxBytes
     ) {
       ready.delete(directory);
+      // flush snapshots and clears `ready` before its first await. Keep that
+      // synchronous boundary if flush is refactored: this item belongs to the
+      // next request, not the oversized request being sent now.
       void flush();
       ready.add(directory);
     }
@@ -104,9 +107,11 @@ export const createDirectoryBatcher = ({
   const close = async () => {
     closed = true;
     cancelFlushTimer();
+    const heldDirectories = [...held.keys()];
     held.forEach((handle) => scheduler.clearTimeout(handle));
     held.clear();
     await flush();
+    return { heldDirectories };
   };
 
   return {

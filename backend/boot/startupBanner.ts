@@ -41,6 +41,9 @@ const startupBanner = (config: IPicrConfiguration) => {
   return banner(logo, [
     bannerRow('■', 'Version', versionLabel(config)),
     bannerRow('■', 'URL', config.baseUrl),
+    ...(config.pingToken
+      ? [bannerRow('■', 'PICR Ping', 'enabled, awaiting contact')]
+      : []),
     ...(supported.length
       ? [bannerRow('■', 'Supported', supported.join(' · '))]
       : []),

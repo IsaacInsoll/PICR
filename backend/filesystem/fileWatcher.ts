@@ -101,7 +101,7 @@ const runBootScanWithoutWatcher = async (rootFolderId: number) => {
     });
     log(
       result.completed ? 'info' : 'warn',
-      `✅ Initial scan ${result.completed ? 'complete' : 'finished with unsettled files'} after ${result.scanPasses} pass(es) in ${((Date.now() - startedAt) / 1000).toFixed(2)} seconds`,
+      `✅ Initial scan ${result.completed ? 'complete' : 'finished with incomplete filesystem work'} after ${result.scanPasses} pass(es) in ${((Date.now() - startedAt) / 1000).toFixed(2)} seconds`,
       true,
     );
   } catch (error) {

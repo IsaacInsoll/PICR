@@ -2,8 +2,7 @@ name: PICR Ping Docker Publish
 
 on:
   push:
-    branches: [master, ping]
-    tags-ignore: ['ping-v*']
+    branches: [master]
     paths:
       - 'ping/**'
       - 'shared/**'
@@ -24,7 +23,6 @@ jobs:
       publish: ${{ steps.version.outputs.publish }}
       version: ${{ steps.version.outputs.version }}
       tag: ${{ steps.version.outputs.tag }}
-      move_latest: ${{ steps.version.outputs.move_latest }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -38,11 +36,6 @@ jobs:
           tag="ping-v${version}"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          if [[ "$version" == 0.* ]]; then
-            echo "move_latest=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "move_latest=true" >> "$GITHUB_OUTPUT"
-          fi
           if git rev-parse --verify --quiet "refs/tags/$tag" >/dev/null; then
             if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
               echo "::error::Refusing to overwrite existing tag $tag"
@@ -64,9 +57,15 @@ jobs:
             echo "Marker tag \`$TAG\` already exists; bump \`ping/package.json\` to publish again."
           } >> "$GITHUB_STEP_SUMMARY"
 
+  build:
+    name: Validate Ping release
+    needs: version
+    if: needs.version.outputs.publish == 'true'
+    uses: ./.github/workflows/build.yml
+
   publish:
     name: Publish Ping image
-    needs: version
+    needs: [version, build]
     if: needs.version.outputs.publish == 'true'
     runs-on: ubuntu-24.04
     steps:
@@ -87,7 +86,7 @@ jobs:
           images: isaacinsoll/picr-ping
           tags: |
             type=raw,value=${{ needs.version.outputs.version }}
-            type=raw,value=latest,enable=${{ needs.version.outputs.move_latest == 'true' }}
+            type=raw,value=latest
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -112,7 +111,6 @@ jobs:
           git push origin "$TAG"
       - name: Publish summary
         env:
-          LATEST_MOVED: ${{ needs.version.outputs.move_latest }}
           VERSION: ${{ needs.version.outputs.version }}
         run: |
           {
@@ -120,10 +118,8 @@ jobs:
             echo
             echo "\`isaacinsoll/picr-ping:$VERSION\` — linux/amd64, linux/arm64"
             echo
-            if [[ "$LATEST_MOVED" != "true" ]]; then
-              echo "> \`latest\` was **not** moved — 0.x releases stay opt-in."
-              echo
-            fi
+            echo "\`isaacinsoll/picr-ping:latest\` now points to this release."
+            echo
             echo "### Try it (dry run — watches and logs, sends nothing)"
             echo
             echo '```yaml'

@@ -19,22 +19,30 @@ const loggingLabel = (config: PingConfig) => {
 };
 
 export const startupBanner = (config: PingConfig) =>
-  banner(logo, [
-    bannerRow('■', 'Version', config.version),
-    bannerRow('■', 'Source', config.pingName),
-    bannerRow(
-      '■',
-      'Target',
-      config.dryRun ? 'DRY RUN (not sending)' : config.picrUrl?.toString(),
-    ),
-    bannerRow('■', 'Watching', `${config.watchRoot} (${config.watchMode})`),
-    bannerRow('■', 'Logging', loggingLabel(config)),
-  ]);
+  banner(
+    logo,
+    [
+      bannerRow('■', 'Version', config.version),
+      bannerRow('■', 'Source', config.pingName),
+      bannerRow(
+        '■',
+        'Target',
+        config.dryRun ? 'DRY RUN (not sending)' : config.picrUrl?.toString(),
+      ),
+      bannerRow('■', 'Watching', `${config.watchRoot} (${config.watchMode})`),
+      bannerRow('■', 'Logging', loggingLabel(config)),
+    ],
+    0,
+  );
 
 export const fatalBanner = (config: PingConfig, reason: string) =>
-  banner(logo, [
-    bannerRow('✖', 'PICR Ping Failed'),
-    bannerRow('■', 'Version', config.version),
-    bannerRow('■', 'Watching', config.watchRoot),
-    ...wrappedBannerRows('■', 'Reason', reason),
-  ]);
+  banner(
+    logo,
+    [
+      bannerRow('✖', 'PICR Ping Failed'),
+      bannerRow('■', 'Version', config.version),
+      bannerRow('■', 'Watching', config.watchRoot),
+      ...wrappedBannerRows('■', 'Reason', reason),
+    ],
+    0,
+  );

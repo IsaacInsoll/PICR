@@ -46,6 +46,13 @@ const envSchema = z
   })
   .superRefine((env, context) => {
     if (env.DRY_RUN) return;
+    if (!env.PICR_PING_NAME) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'PICR_PING_NAME is required unless DRY_RUN=true',
+        path: ['PICR_PING_NAME'],
+      });
+    }
     if (!env.PICR_URL) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
@@ -118,7 +125,7 @@ export const configFromEnv = (env: NodeJS.ProcessEnv): PingConfig => {
     stabilityMs: parsed.STABILITY_SECONDS * 1000,
     verbose: parsed.VERBOSE,
     version:
-      env['PICR_PING_VERSION'] ?? env['npm_package_version'] ?? 'development',
+      env['PICR_PING_VERSION'] || env['npm_package_version'] || 'development',
     watchMode: parsed.WATCH_MODE,
     watchRoot: resolve(parsed.WATCH_ROOT),
   };

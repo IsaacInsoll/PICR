@@ -942,6 +942,24 @@ test('returns an empty result when the folder no longer exists on disk', async (
     removedFiles: 0,
     addedFolders: 0,
     removedFolders: 0,
+    unavailableFolders: 1,
+  });
+});
+
+test('does not complete a recursive scan while its root is unavailable', async () => {
+  const mediaRoot = await createMediaRoot();
+  const { scanFolderTree } = await loadScanFolder({
+    mediaRoot,
+    folderRelativePath: 'Missing Scan Root',
+  });
+
+  const result = await scanFolderTree(10, { settleDelayMs: 0 });
+
+  expect(result).toMatchObject({
+    cleanupRun: false,
+    completed: false,
+    scanPasses: 2,
+    unavailableFolders: 2,
   });
 });
 
@@ -985,6 +1003,31 @@ test('skips an unreadable entry without archiving its row and keeps scanning sib
     removedFiles: 0,
     skippedEntries: 1,
   });
+});
+
+test('an unreadable entry does not block recursive cleanup of unrelated missing files', async () => {
+  const mediaRoot = await createMediaRoot();
+  await symlink('stuck.raw', join(mediaRoot, 'stuck.raw'));
+
+  const { removeFile, scanFolderTree } = await loadScanFolder({
+    mediaRoot,
+    files: [
+      { name: 'stuck.raw', relativePath: '', folderId: 10, fileHash: 'x' },
+      { name: 'gone.jpg', relativePath: '', folderId: 10, fileHash: 'y' },
+    ],
+  });
+
+  const result = await scanFolderTree(10, { settleDelayMs: 0 });
+
+  expect(result).toMatchObject({
+    cleanupRun: true,
+    completed: true,
+    removedFiles: 1,
+    scanPasses: 1,
+    skippedEntries: 2,
+  });
+  expect(removeFile).toHaveBeenCalledOnce();
+  expect(removeFile).toHaveBeenCalledWith(join(mediaRoot, 'gone.jpg'));
 });
 
 test('does not treat an unreadable entry as a move source for a new same-hash file', async () => {

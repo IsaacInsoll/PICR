@@ -68,6 +68,26 @@ export const serverInfoQuery = gql(/* GraphQL */ `
             unsettledFolders
           }
         }
+        ping {
+          enabled
+          sources {
+            name
+            watchPrefix
+            instanceId
+            lastSeenAt
+            lastBatchAt
+            lastReconcileAt
+            hintsReceived
+            pingVersion
+            lastError
+          }
+          coordinator {
+            state
+            pendingFolders
+            foldersScanned
+            lastError
+          }
+        }
       }
       system {
         nodeVersion

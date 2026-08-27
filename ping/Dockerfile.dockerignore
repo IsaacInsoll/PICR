@@ -11,4 +11,6 @@
 !shared/banner.ts
 !shared/filesystem/
 !shared/filesystem/ignoredPaths.ts
+!shared/ping/
+!shared/ping/protocol.ts
 !tsconfig.base.json

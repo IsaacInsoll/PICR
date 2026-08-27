@@ -112,7 +112,7 @@ export const runScheduledScan = async (rootFolderId = 1): Promise<void> => {
     scheduledScanStatus.lastResult = resultSummary(result);
     log(
       result.completed ? 'info' : 'warn',
-      `🕒 Scheduled scan ${result.completed ? 'complete' : 'finished with unsettled files'} after ${result.scanPasses} pass(es) in ${((Date.now() - startedMs) / 1000).toFixed(2)} seconds`,
+      `🕒 Scheduled scan ${result.completed ? 'complete' : 'finished with incomplete filesystem work'} after ${result.scanPasses} pass(es) in ${((Date.now() - startedMs) / 1000).toFixed(2)} seconds`,
       true,
     );
   } catch (error) {

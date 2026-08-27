@@ -113,6 +113,11 @@ test('Server Info Query (kinda slow)', async () => {
   });
   expect(info?.scanning.scheduledScanHours).toBeGreaterThanOrEqual(0);
   expect(info?.scanning.scheduledScan.running).toBe(false);
+  expect(info?.scanning.ping.enabled).toBe(true);
+  expect(info?.scanning.ping.coordinator.state).toMatch(
+    /^(idle|settling|cleanup|degraded)$/,
+  );
+  expect(info?.scanning.ping.sources).toEqual(expect.any(Array));
   // `latest` comes from an unauthenticated GitHub API call which can be rate-limited in CI;
   // the resolver swallows failures and returns ''. Don't fail the suite on that — just warn.
   if (info!.latest === '') {

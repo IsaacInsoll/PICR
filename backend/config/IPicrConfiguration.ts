@@ -30,6 +30,7 @@ export interface IPicrConfiguration {
   inodeSupport: 'enabled' | 'disabled' | 'unknown';
   inodeSupportReason: string;
   tokenSecret?: string;
+  pingToken?: string;
   // Initial admin account for first boot (no users yet). Password falls back to
   // a generated random value when unset; see boot/envPassword.ts.
   adminUsername?: string;

@@ -6,7 +6,7 @@ import {
   sendPayload,
 } from '../src/delivery.js';
 import type { PingLogger } from '../src/logger.js';
-import { createProtocolContext } from '../src/protocol.js';
+import { createProtocolContext, MAX_DIRECTORIES } from '../src/protocol.js';
 
 const config = configFromEnv({
   PATH_PREFIX: 'Archive/Studio',
@@ -135,6 +135,129 @@ test('exhausted directory retries collapse into one forced reconcile', async () 
     reconcilePath: 'Archive/Studio/Weddings',
   });
   await delivery.shutdown();
+});
+
+test('directory-count overflow immediately collapses to a scoped reconcile', async () => {
+  const fetchImpl = vi
+    .fn<typeof fetch>()
+    .mockResolvedValue(new Response('', { status: 202 }));
+  const delivery = createDeliveryService({
+    config,
+    fetchImpl,
+    logger,
+    onPermanentError: vi.fn(),
+    protocol: createProtocolContext({ config, instanceId: 'instance-1' }),
+  });
+  const directories = Array.from(
+    { length: MAX_DIRECTORIES + 1 },
+    (_, index) => `Archive/Studio/Overflow/Folder-${index}`,
+  );
+
+  delivery.enqueueDirectories(directories);
+  await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
+
+  expect(payloadForCall(fetchImpl, 0)).toMatchObject({
+    reconcile: true,
+    reconcileMode: 'force',
+    reconcilePath: 'Archive/Studio/Overflow',
+  });
+  await delivery.shutdown();
+});
+
+test('a pending auto reconcile absorbs hints, widens, and becomes forced', async () => {
+  const fetchImpl = vi
+    .fn<typeof fetch>()
+    .mockResolvedValueOnce(new Response('', { status: 503 }))
+    .mockResolvedValue(new Response('', { status: 202 }));
+  const delivery = createDeliveryService({
+    config,
+    fetchImpl,
+    logger,
+    onPermanentError: vi.fn(),
+    protocol: createProtocolContext({ config, instanceId: 'instance-1' }),
+    random: () => 0.5,
+  });
+
+  delivery.requestReconcile('Archive/Studio/A', 'auto');
+  await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
+  await vi.waitFor(() => expect(vi.getTimerCount()).toBe(1));
+  delivery.enqueueDirectories(['Archive/Studio/B']);
+  await vi.runOnlyPendingTimersAsync();
+  await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledTimes(2));
+
+  expect(payloadForCall(fetchImpl, 1)).toMatchObject({
+    reconcile: true,
+    reconcileMode: 'force',
+    reconcilePath: 'Archive/Studio',
+  });
+  await delivery.shutdown();
+});
+
+test('an in-flight auto reconcile becomes forced when its retry absorbs hints', async () => {
+  let resolveFirst: ((response: Response) => void) | undefined;
+  const firstResponse = new Promise<Response>((resolve) => {
+    resolveFirst = resolve;
+  });
+  const fetchImpl = vi
+    .fn<typeof fetch>()
+    .mockReturnValueOnce(firstResponse)
+    .mockResolvedValue(new Response('', { status: 202 }));
+  const delivery = createDeliveryService({
+    config,
+    fetchImpl,
+    logger,
+    onPermanentError: vi.fn(),
+    protocol: createProtocolContext({ config, instanceId: 'instance-1' }),
+    random: () => 0.5,
+  });
+
+  delivery.requestReconcile('Archive/Studio/A', 'auto');
+  await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
+  delivery.enqueueDirectories(['Archive/Studio/B']);
+  resolveFirst?.(new Response('', { status: 503 }));
+  await vi.waitFor(() => expect(vi.getTimerCount()).toBe(1));
+  await vi.runOnlyPendingTimersAsync();
+  await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledTimes(2));
+
+  expect(payloadForCall(fetchImpl, 1)).toMatchObject({
+    reconcile: true,
+    reconcileMode: 'force',
+    reconcilePath: 'Archive/Studio',
+  });
+  await delivery.shutdown();
+});
+
+test('shutdown sends queued work after an active request finishes', async () => {
+  let resolveFirst: ((response: Response) => void) | undefined;
+  const firstResponse = new Promise<Response>((resolve) => {
+    resolveFirst = resolve;
+  });
+  const fetchImpl = vi
+    .fn<typeof fetch>()
+    .mockReturnValueOnce(firstResponse)
+    .mockResolvedValue(new Response('', { status: 202 }));
+  const delivery = createDeliveryService({
+    config,
+    fetchImpl,
+    logger,
+    onPermanentError: vi.fn(),
+    protocol: createProtocolContext({ config, instanceId: 'instance-1' }),
+  });
+
+  delivery.enqueueDirectories(['Archive/Studio/A']);
+  await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
+  delivery.requestReconcile('Archive/Studio', 'force');
+
+  const shutdown = delivery.shutdown();
+  resolveFirst?.(new Response('', { status: 202 }));
+  await shutdown;
+
+  expect(fetchImpl).toHaveBeenCalledTimes(2);
+  expect(payloadForCall(fetchImpl, 1)).toMatchObject({
+    reconcile: true,
+    reconcileMode: 'force',
+    reconcilePath: 'Archive/Studio',
+  });
 });
 
 test('permanent rejection updates health and stops delivery', async () => {

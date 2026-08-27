@@ -4,8 +4,9 @@ PICR Ping provides realtime media detection when your library lives on a NAS
 and PICR runs elsewhere. It is a small, read-only watcher that runs beside the
 media and tells PICR which directories may have changed.
 
-PICR Ping is currently alpha software. Pin an explicit `0.x` image tag; the
-Docker image does not publish `latest` until Ping reaches `1.0.0`.
+Run the current `latest` PICR and PICR Ping images together. Ping releases are
+published only after the matching PICR backend support is available; any future
+exception will be called out in the release documentation.
 
 ## When to use it
 
@@ -49,18 +50,6 @@ SCHEDULED_SCAN_HOURS: '12'
 
 Ping can run alongside `FILE_WATCHER=native` or `polling` while you test it, but
 `off` avoids duplicate continuous monitoring once Ping is trusted.
-
-## Compatibility
-
-Ping and PICR have independent version numbers. Compatibility follows the wire
-protocol rather than matching image versions.
-
-| Ping image | Protocol | Compatible PICR  |
-| ---------- | -------- | ---------------- |
-| `0.1.x`    | 1        | `1.5.0` or newer |
-
-An unsupported protocol is a permanent configuration error: Ping stops sending
-and becomes unready instead of retrying forever.
 
 ## Setup overview
 
@@ -146,7 +135,7 @@ outbound requests, and logs every directory hint after path mapping.
 ```yaml
 services:
   picr-ping:
-    image: isaacinsoll/picr-ping:0.1.0
+    image: isaacinsoll/picr-ping:latest
     container_name: picr-ping
     restart: unless-stopped
     user: '1000:1000' # use a numeric UID:GID with read access to the media
@@ -164,22 +153,14 @@ services:
       WATCH_MODE: native
       PATH_PREFIX: ''
       PICR_PING_NAME: studio-nas
-    healthcheck:
-      test:
-        - CMD
-        - node
-        - -e
-        - "fetch('http://127.0.0.1:6901/readyz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5m
 ```
 
 The image already runs as the non-root `node` user. The explicit `user` line
 makes the numeric identity visible and adjustable for NAS permissions. Ping
 needs only read access: both the media mount and the container root filesystem
 remain read-only, and no Linux capabilities are required.
+The image also supplies its own healthcheck, including the five-minute startup
+period needed for large media libraries.
 
 Start the project and follow its logs. The ready line reports exactly how many
 directories and entries Chokidar is watching:
@@ -245,21 +226,21 @@ reconcile status for each source.
 
 ## Configuration reference
 
-| Variable                | Default      | Meaning                                                                     |
-| ----------------------- | ------------ | --------------------------------------------------------------------------- |
-| `PICR_URL`              | —            | PICR base URL; required unless `DRY_RUN=true`                               |
-| `PICR_PING_TOKEN`       | —            | Shared secret, at least 64 characters; required unless dry-run              |
-| `PICR_PING_NAME`        | NAS hostname | Stable source name shown by PICR, at most 64 characters                     |
-| `WATCH_ROOT`            | `/media`     | Directory watched inside the Ping container                                 |
-| `PATH_PREFIX`           | empty        | Watched tree's media-root-relative location in PICR                         |
-| `WATCH_MODE`            | `native`     | `native` for local/bind-mounted media; `polling` when events are unreliable |
-| `POLL_INTERVAL_SECONDS` | `20`         | Polling interval when `WATCH_MODE=polling`                                  |
-| `DRY_RUN`               | `false`      | Log mapped hints without contacting PICR                                    |
-| `VERBOSE`               | `false`      | Log every detected event; dry run is always verbose                         |
-| `BATCH_SECONDS`         | `1`          | Maximum normal batching interval                                            |
-| `STABILITY_SECONDS`     | `2`          | Chokidar write-stability window                                             |
-| `RECONCILE_ON_START`    | `auto`       | `auto`, `true`, or `false` startup reconciliation                           |
-| `PING_HEALTH_PORT`      | `6901`       | Loopback-only health server port inside the container                       |
+| Variable                | Default  | Meaning                                                                     |
+| ----------------------- | -------- | --------------------------------------------------------------------------- |
+| `PICR_URL`              | —        | PICR base URL; required unless `DRY_RUN=true`                               |
+| `PICR_PING_TOKEN`       | —        | Shared secret, at least 64 characters; required unless dry-run              |
+| `PICR_PING_NAME`        | —        | Stable source name; required unless dry-run, at most 64 characters          |
+| `WATCH_ROOT`            | `/media` | Directory watched inside the Ping container                                 |
+| `PATH_PREFIX`           | empty    | Watched tree's media-root-relative location in PICR                         |
+| `WATCH_MODE`            | `native` | `native` for local/bind-mounted media; `polling` when events are unreliable |
+| `POLL_INTERVAL_SECONDS` | `20`     | Polling interval when `WATCH_MODE=polling`                                  |
+| `DRY_RUN`               | `false`  | Log mapped hints without contacting PICR                                    |
+| `VERBOSE`               | `false`  | Log every detected event; dry run is always verbose                         |
+| `BATCH_SECONDS`         | `1`      | Maximum normal batching interval                                            |
+| `STABILITY_SECONDS`     | `2`      | Chokidar write-stability window                                             |
+| `RECONCILE_ON_START`    | `auto`   | `auto`, `true`, or `false` startup reconciliation                           |
+| `PING_HEALTH_PORT`      | `6901`   | Loopback-only health server port inside the container                       |
 
 The defaults are intentional. Avoid tuning batching or stability until real
 logs demonstrate a problem.
@@ -289,6 +270,9 @@ ratings, or other row-linked state may not follow the move.
 
 - Ping batches and deduplicates hints by directory. A 500-file export to one
   folder normally sends one directory per batch, not 500 file events.
+- Deletion-derived hints wait behind the write-stability window. A move's
+  destination and source may share one batch; if the destination has already
+  flushed, it reaches PICR first so move identity can still be claimed safely.
 - Temporary network errors, timeouts, `408`, `429`, and server errors retry with
   capped exponential backoff.
 - Invalid payloads, a wrong token, a disabled endpoint, and an incompatible
@@ -296,8 +280,13 @@ ratings, or other row-linked state may not follow the move.
   `503`.
 - The normal directory retry buffer is in memory. If delivery is exhausted or
   the buffer overflows, Ping retains and retries one scoped reconcile marker.
+  New hints received while that marker is backing off widen it as needed and
+  make it a forced reconcile so no discarded precise hint can be skipped.
 - Ping sends a heartbeat every minute. PICR marks a source stale after roughly
   three missed heartbeats.
+- On a normal container shutdown, any deletion hints still inside the move-safety
+  hold become one forced reconcile of the configured watch prefix. This avoids
+  losing them without scanning a move's source before its destination.
 - `RECONCILE_ON_START=auto` repairs the `ignoreInitial` startup gap while avoiding
   a redundant covering scan when PICR can prove one already covered it.
 - The 12-hour scheduled scan remains the durable backstop.
@@ -324,7 +313,7 @@ Container Manager can run the NAS Compose project above without a shell:
 1. Create a project and paste or upload the Ping Compose file.
 2. Add the media directory as `/media` and select **Read-only**.
 3. Add the `.env` values through the project or environment-variable UI.
-4. Pin the explicit `0.1.0` image tag and deploy.
+4. Deploy `isaacinsoll/picr-ping:latest`.
 5. Inspect the container log until the watcher reports ready.
 
 Build the image in CI and pull it on the NAS. Building Node dependencies on the

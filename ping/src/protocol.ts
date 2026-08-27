@@ -1,9 +1,14 @@
 import { randomBytes } from 'node:crypto';
+import {
+  PICR_PING_V1_MAX_DIRECTORIES,
+  PICR_PING_V1_MAX_REQUEST_BYTES,
+  PICR_PING_V1_PROTOCOL_VERSION,
+} from '../../shared/ping/protocol.js';
 import type { PingConfig } from './config.js';
 
-export const PROTOCOL_VERSION = 1;
-export const MAX_REQUEST_BYTES = 1024 * 1024;
-export const MAX_DIRECTORIES = 1000;
+export const PROTOCOL_VERSION = PICR_PING_V1_PROTOCOL_VERSION;
+export const MAX_REQUEST_BYTES = PICR_PING_V1_MAX_REQUEST_BYTES;
+export const MAX_DIRECTORIES = PICR_PING_V1_MAX_DIRECTORIES;
 
 type ProtocolBase = {
   instanceId: string;

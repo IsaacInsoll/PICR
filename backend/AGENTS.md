@@ -536,6 +536,26 @@ contracts between watcher, on-view, scheduled, and manual scans.
 - Ignores: `.` files, `@eaDir`, `desktop.ini`, `Thumbs.db`
 - Detects renames via `renameTracker`
 
+PICR Ping registers authenticated inbound integration routes under `/api` only
+when their env-backed credential is configured. Keep the JSON `/api` 404 guard
+before the frontend catch-all: otherwise an unsupported integration request is
+answered with the SPA HTML and looks successful to the caller. Authentication
+for Ping must run before its route-local JSON parser, so an unauthenticated
+client cannot make PICR parse a large request body.
+
+Ping hints go through `pingScanCoordinator.ts`, not through watcher events. The
+coordinator discovery-scans with removals disabled until the whole active batch
+settles, then runs one cleanup pass. Thumbnail selection is scoped by the actual
+scan-root path rather than the hinted path because an ancestor scan can discover
+multiple new siblings. Recursive reconcile jobs retain their requested scope so
+resolution through a missing ancestor cannot expand into unrelated siblings.
+Unavailable scan roots are incomplete coverage: retry and degrade them rather
+than recording a successful reconcile that could suppress a later startup
+repair. A skipped individual entry is different: `unreadableNames` already
+protects its row from cleanup, so keep `skippedEntries` diagnostic and let the
+rest of the tree complete. Ping retry backoff is request-local; fresh hints must
+run immediately rather than joining or waiting behind a degraded retry cycle.
+
 ### Thumbnail Sizes
 
 | Size  | Dimension                                | Purpose          |

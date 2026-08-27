@@ -172,12 +172,15 @@ export const createDeliveryService = ({
   };
 
   const mergeReconcile = (path: string, mode: 'auto' | 'force') => {
+    const absorbedDirectoryHints = pendingDirectories.size > 0;
     const paths = [path, ...pendingDirectories];
     if (reconcileMarker) paths.push(reconcileMarker.path);
     pendingDirectories.clear();
     reconcileMarker = {
       mode:
-        mode === 'force' || reconcileMarker?.mode === 'force'
+        mode === 'force' ||
+        reconcileMarker?.mode === 'force' ||
+        absorbedDirectoryHints
           ? 'force'
           : 'auto',
       path: commonAncestor(paths, config.pathPrefix),
@@ -298,6 +301,10 @@ export const createDeliveryService = ({
   const enqueueDirectories = (directories: readonly string[]) => {
     if (stopped || shutdownRequested || permanentFailure) return;
     if (reconcileMarker) {
+      // The precise hints are discarded into the pending marker, so it must
+      // become forced: an auto reconcile could be skipped server-side after
+      // those hints were already removed. Widening keeps one bounded retry
+      // marker while ensuring it covers every absorbed directory.
       mergeReconcile(commonAncestor(directories, config.pathPrefix), 'force');
     } else {
       directories.forEach((directory) => pendingDirectories.add(directory));
@@ -350,8 +357,7 @@ export const createDeliveryService = ({
         retryTimer = undefined;
       }
       if (activeRequest) await activeRequest;
-      else if (pendingDirectories.size > 0 || reconcileMarker)
-        await processNext();
+      if (pendingDirectories.size > 0 || reconcileMarker) await processNext();
       stopped = true;
     },
   };

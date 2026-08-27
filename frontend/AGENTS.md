@@ -6,6 +6,9 @@ Frontend unit tests live beside their source as `*.unit.test.ts` or
 `*.unit.test.tsx` and run through `npm run test:unit` with
 `frontend/vitest.config.ts`. Keep them frontend-owned; do not put component or
 frontend utility tests in the backend integration suite under `tests/api`.
+That Vitest config must reuse the root `sharedAliases` table: frontend runtime
+modules may use NodeNext-style `@shared/*.js` imports even though the tests load
+the corresponding shared TypeScript source directly.
 
 The public-link recipient email and gallery passcode are metadata for the
 client, not administrator login credentials. Keep their autocomplete hints set

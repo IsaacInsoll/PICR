@@ -117,6 +117,13 @@ export const envSchema = z.object({
     })
     .min(64)
     .optional(),
+  PICR_PING_TOKEN: z.preprocess(
+    (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+    z
+      .string()
+      .min(64, 'PICR_PING_TOKEN must be at least 64 characters')
+      .optional(),
+  ),
   PICR_BUILD_CHANNEL: optionalNonEmptyString,
   PICR_DEVELOPMENT_BUILD_SHA: optionalNonEmptyString,
   PICR_GIT_SHA: optionalNonEmptyString,

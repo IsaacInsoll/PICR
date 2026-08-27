@@ -11,6 +11,8 @@ import { db, getServerOptions } from '../../db/picrDb.js';
 import { folderSize } from '../../helpers/folderSize.js';
 import { resolveServerMediaSettings } from '../../media/serverMediaSettings.js';
 import { serverThumbnailDimensions } from '@shared/serverMediaSettings.js';
+import { pingScanCoordinator } from '../../filesystem/pingScanCoordinator.js';
+import { getPingStatus } from '../../filesystem/pingStatus.js';
 
 const resolver: PicrResolver = async (_, _params, context) => {
   await requireFullAdmin(context);
@@ -45,6 +47,10 @@ const resolver: PicrResolver = async (_, _params, context) => {
       onViewScanMode: picrConfig.onViewScanMode,
       scheduledScanHours: picrConfig.scheduledScanHours,
       scheduledScan: getScheduledScanStatus(),
+      ping: getPingStatus(
+        Boolean(picrConfig.pingToken),
+        pingScanCoordinator.getStatus(),
+      ),
     },
     //these are functions because they can be potentially SUPER EXPENSIVE
     cacheSize: () => folderSize(picrConfig.cachePath),

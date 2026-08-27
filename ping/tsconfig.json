@@ -12,6 +12,7 @@
     "tests/**/*.ts",
     "vitest.config.ts",
     "../shared/banner.ts",
-    "../shared/filesystem/ignoredPaths.ts"
+    "../shared/filesystem/ignoredPaths.ts",
+    "../shared/ping/protocol.ts"
   ]
 }

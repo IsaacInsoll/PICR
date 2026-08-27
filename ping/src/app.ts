@@ -78,7 +78,21 @@ export const run = async (
     if (resources.heartbeatTimer) clearInterval(resources.heartbeatTimer);
     if (resources.rollupTimer) clearInterval(resources.rollupTimer);
     await resources.watcher?.close();
-    await batcher.close();
+    const { heldDirectories } = await batcher.close();
+    if (heldDirectories.length > 0) {
+      if (config.dryRun) {
+        pingLogger.log(
+          'info',
+          `DRY RUN shutdown would force a reconcile for ${config.pathPrefix || '<media root>'} to preserve ${heldDirectories.length} held deletion hint(s)`,
+        );
+      } else if (exitCode === 0) {
+        pingLogger.log(
+          'info',
+          `Shutdown is preserving ${heldDirectories.length} held deletion hint(s) with a forced reconcile`,
+        );
+        delivery?.requestReconcile(config.pathPrefix, 'force');
+      }
+    }
     await delivery?.shutdown();
     await closeHealthServer(healthServer);
     process.exitCode = exitCode;

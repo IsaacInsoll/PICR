@@ -36,7 +36,7 @@ test('flushes immediately at maximum batch size', async () => {
   await batcher.close();
 });
 
-test('unlink grace coalesces a source with a delayed destination add', async () => {
+test('unlink grace coalesces when the destination arrives during the hold', async () => {
   const onFlush = vi.fn();
   const batcher = createDirectoryBatcher({
     batchMs: 1000,
@@ -56,6 +56,26 @@ test('unlink grace coalesces a source with a delayed destination add', async () 
   await batcher.close();
 });
 
+test('an already-flushed destination stays ahead of its held source', async () => {
+  const onFlush = vi.fn();
+  const batcher = createDirectoryBatcher({
+    batchMs: 1000,
+    maxDirectories: 1000,
+    onFlush,
+  });
+
+  batcher.add(['Destination']);
+  await vi.advanceTimersByTimeAsync(1000);
+  batcher.add(['Source'], 3000);
+  await vi.advanceTimersByTimeAsync(4000);
+
+  expect(onFlush.mock.calls.map(([directories]) => directories)).toEqual([
+    ['Destination'],
+    ['Source'],
+  ]);
+  await batcher.close();
+});
+
 test('a direct event promotes a held directory without duplicating it', async () => {
   const onFlush = vi.fn();
   const batcher = createDirectoryBatcher({
@@ -70,6 +90,25 @@ test('a direct event promotes a held directory without duplicating it', async ()
 
   expect(onFlush).toHaveBeenCalledWith(['Same']);
   await batcher.close();
+});
+
+test('close returns held deletion directories without flushing them as unsafe direct hints', async () => {
+  const onFlush = vi.fn();
+  const batcher = createDirectoryBatcher({
+    batchMs: 1000,
+    maxDirectories: 1000,
+    onFlush,
+  });
+
+  batcher.add(['Ready']);
+  batcher.add(['Deleted'], 3000);
+
+  await expect(batcher.close()).resolves.toEqual({
+    heldDirectories: ['Deleted'],
+  });
+  expect(onFlush).toHaveBeenCalledOnce();
+  expect(onFlush).toHaveBeenCalledWith(['Ready']);
+  expect(batcher.pendingCount()).toBe(0);
 });
 
 test('flushes before an encoded-byte boundary is exceeded', async () => {

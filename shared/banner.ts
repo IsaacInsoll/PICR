@@ -1,5 +1,10 @@
-export const banner = (logo: string[], rows: string[]) => {
-  const contentWidth = Math.max(72, ...rows.map((value) => value.length)) + 6;
+export const banner = (
+  logo: string[],
+  rows: string[],
+  minimumRowWidth = 72,
+) => {
+  const contentWidth =
+    Math.max(minimumRowWidth, ...rows.map((value) => value.length)) + 6;
   const boxTop = `┌${'─'.repeat(contentWidth)}┐`;
   const boxBottom = `└${'─'.repeat(contentWidth)}┘`;
   const boxRows = rows.map((value) => `│  ${value.padEnd(contentWidth - 2)}│`);

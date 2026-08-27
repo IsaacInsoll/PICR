@@ -1,29 +1,7 @@
 import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
+import { normalisePicrPingV1Path } from '../../shared/ping/protocol.js';
 
-const unsafeSegment = (segment: string) => segment === '..' || segment === '.';
-
-export const normaliseWirePath = (
-  path: string,
-  label = 'path',
-  maxLength = 255,
-): string => {
-  if (path === '') return '';
-  if (isAbsolute(path) || path.includes('\\') || /\p{Cc}/u.test(path)) {
-    throw new Error(`${label} must be a safe relative path`);
-  }
-  const segments = path.split('/');
-  if (segments.some(unsafeSegment)) {
-    throw new Error(`${label} must be a safe relative path`);
-  }
-  if (segments.some((segment) => !segment)) {
-    throw new Error(`${label} must be a normalised relative path`);
-  }
-  const normalised = segments.join('/');
-  if ([...normalised].length > maxLength) {
-    throw new Error(`${label} must be at most ${maxLength} characters`);
-  }
-  return normalised;
-};
+export const normaliseWirePath = normalisePicrPingV1Path;
 
 const joinWirePath = (prefix: string, path: string) =>
   [prefix, path].filter(Boolean).join('/');

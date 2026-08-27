@@ -114,3 +114,16 @@ test('SCHEDULED_SCAN_HOURS accepts zero, positive integers, and empty unset', ()
       .success,
   ).toBe(false);
 });
+
+test('PICR_PING_TOKEN requires 64 characters and treats empty as unset', () => {
+  expect(
+    envSchema.parse({ ...requiredEnv, PICR_PING_TOKEN: '' }).PICR_PING_TOKEN,
+  ).toBeUndefined();
+  expect(
+    envSchema.safeParse({ ...requiredEnv, PICR_PING_TOKEN: 'short' }).success,
+  ).toBe(false);
+  expect(
+    envSchema.parse({ ...requiredEnv, PICR_PING_TOKEN: 'a'.repeat(64) })
+      .PICR_PING_TOKEN,
+  ).toBe('a'.repeat(64));
+});

@@ -11,6 +11,7 @@ import { schemaMigration } from './db/schemaMigration.js';
 import { logStartupBanner, logFatalBanner } from './boot/startupBanner.js';
 import { detectInodeSupport } from './boot/detectInodeSupport.js';
 import { startScheduledScan } from './filesystem/scheduledScan.js';
+import { pingScanCoordinator } from './filesystem/pingScanCoordinator.js';
 
 export const server = async () => {
   try {
@@ -36,6 +37,7 @@ export const server = async () => {
   const gracefulShutdown = (signal: string) => {
     log('info', `${signal} received, shutting down ${appName}...`, true);
     scheduledScan.stop?.();
+    pingScanCoordinator.stop();
     httpServer.close(() => {
       log('info', `💀 ${appName} closed`, true);
       process.exit(0);

@@ -27,6 +27,28 @@ test('normal mode requires a target and 64-character token', () => {
   ).toThrow('at least 64 characters');
 });
 
+test('normal mode requires an explicit stable source name', () => {
+  expect(() =>
+    configFromEnv({
+      PICR_PING_TOKEN: 'a'.repeat(64),
+      PICR_URL: 'http://picr:6900/',
+    }),
+  ).toThrow('PICR_PING_NAME is required');
+});
+
+test('empty build versions fall back to package metadata or development', () => {
+  expect(
+    configFromEnv({
+      DRY_RUN: 'true',
+      PICR_PING_VERSION: '',
+      npm_package_version: '0.1.0',
+    }).version,
+  ).toBe('0.1.0');
+  expect(
+    configFromEnv({ DRY_RUN: 'true', PICR_PING_VERSION: '' }).version,
+  ).toBe('development');
+});
+
 test('normalises target URLs and path prefixes', () => {
   const config = configFromEnv({
     PATH_PREFIX: 'Archive/Studio',

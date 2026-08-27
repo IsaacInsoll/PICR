@@ -20,6 +20,7 @@ export const picrConfig: IPicrConfiguration = {
   videoAccelerationReason: 'Video acceleration not yet detected',
   inodeSupport: 'unknown',
   inodeSupportReason: 'Inode support not yet detected',
+  pingToken: undefined,
   cachePath: '',
   mediaPath: '',
   updateMetadata: false,

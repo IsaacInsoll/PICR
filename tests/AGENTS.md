@@ -10,6 +10,15 @@ Testing is split into two suites under `tests/`:
 - API tests validate GraphQL/backend behavior against the Dockerized backend.
 - E2E tests validate that key frontend routes load in a browser and do not throw console errors.
 - Keep these suites integration-focused; do not add frontend component unit tests here.
+- `fileParallelism: false` prevents overlap but does not guarantee lexical file
+  order. Numbered API tests share state, so assertions must tolerate state
+  created by another file unless the test establishes or resets it explicitly.
+- The API Compose environment runs with `FILE_WATCHER=off`. Tests for inbound
+  Ping hints must prove that the Ping coordinator caused the filesystem change;
+  an active watcher could otherwise import the same fixture and false-pass.
+- Integration-test cleanup that performs API assertions must not mask an earlier
+  test-body failure. Surface cleanup failures when the body passed; otherwise
+  preserve the original failure after best-effort cleanup.
 - Exception: pure backend or shared-primitive unit tests that guard load-bearing
   invariants (e.g. file queue ordering/coalescing or shared i18n catalog
   contracts) are allowed in `tests/api`. They mock their dependencies and need

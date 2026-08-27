@@ -334,6 +334,7 @@ type MediaCapsInfo {
 type MediaScanningInfo {
   fileWatcherMode: String!
   onViewScanMode: String!
+  ping: PingStatusInfo!
   scheduledScan: ScheduledScanStatusInfo!
   scheduledScanHours: Int!
 }
@@ -356,6 +357,31 @@ type Mutation {
   rescanFolder(folderId: ID!): Boolean!
   runBenchmark: BenchmarkResult!
   setFolderBranding(brandingId: ID, folderId: ID!): Folder!
+}
+
+type PingCoordinatorStatusInfo {
+  foldersScanned: Int!
+  lastError: String
+  pendingFolders: Int!
+  state: String!
+}
+
+type PingSourceStatusInfo {
+  hintsReceived: Int!
+  instanceId: String!
+  lastBatchAt: String
+  lastError: String
+  lastReconcileAt: String
+  lastSeenAt: String!
+  name: String!
+  pingVersion: String!
+  watchPrefix: String!
+}
+
+type PingStatusInfo {
+  coordinator: PingCoordinatorStatusInfo!
+  enabled: Boolean!
+  sources: [PingSourceStatusInfo!]!
 }
 
 enum PrimaryColor {

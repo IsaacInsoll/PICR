@@ -77,6 +77,7 @@ export const configFromEnv = () => {
     pollingSeconds,
     scheduledScanHours: d.SCHEDULED_SCAN_HOURS ?? 0,
     tokenSecret: d.TOKEN_SECRET,
+    pingToken: d.PICR_PING_TOKEN,
     adminUsername: d.ADMIN_USERNAME,
     adminPassword: d.ADMIN_PASSWORD,
     loginRateLimitEnabled: d.LOGIN_RATE_LIMIT_ENABLED,

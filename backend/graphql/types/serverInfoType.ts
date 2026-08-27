@@ -105,6 +105,46 @@ export const scheduledScanStatusInfoType = new GraphQLObjectType({
   }),
 });
 
+export const pingSourceStatusInfoType = new GraphQLObjectType({
+  name: 'PingSourceStatusInfo',
+  fields: () => ({
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    watchPrefix: { type: new GraphQLNonNull(GraphQLString) },
+    instanceId: { type: new GraphQLNonNull(GraphQLString) },
+    lastSeenAt: { type: new GraphQLNonNull(GraphQLString) },
+    lastBatchAt: { type: GraphQLString },
+    lastReconcileAt: { type: GraphQLString },
+    hintsReceived: { type: new GraphQLNonNull(GraphQLInt) },
+    pingVersion: { type: new GraphQLNonNull(GraphQLString) },
+    lastError: { type: GraphQLString },
+  }),
+});
+
+export const pingCoordinatorStatusInfoType = new GraphQLObjectType({
+  name: 'PingCoordinatorStatusInfo',
+  fields: () => ({
+    state: { type: new GraphQLNonNull(GraphQLString) },
+    pendingFolders: { type: new GraphQLNonNull(GraphQLInt) },
+    foldersScanned: { type: new GraphQLNonNull(GraphQLInt) },
+    lastError: { type: GraphQLString },
+  }),
+});
+
+export const pingStatusInfoType = new GraphQLObjectType({
+  name: 'PingStatusInfo',
+  fields: () => ({
+    enabled: { type: new GraphQLNonNull(GraphQLBoolean) },
+    sources: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(pingSourceStatusInfoType)),
+      ),
+    },
+    coordinator: {
+      type: new GraphQLNonNull(pingCoordinatorStatusInfoType),
+    },
+  }),
+});
+
 export const mediaScanningInfoType = new GraphQLObjectType({
   name: 'MediaScanningInfo',
   fields: () => ({
@@ -112,6 +152,7 @@ export const mediaScanningInfoType = new GraphQLObjectType({
     onViewScanMode: { type: new GraphQLNonNull(GraphQLString) },
     scheduledScanHours: { type: new GraphQLNonNull(GraphQLInt) },
     scheduledScan: { type: new GraphQLNonNull(scheduledScanStatusInfoType) },
+    ping: { type: new GraphQLNonNull(pingStatusInfoType) },
   }),
 });
 

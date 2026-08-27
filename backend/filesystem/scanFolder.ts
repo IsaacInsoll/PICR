@@ -16,6 +16,7 @@ import { renameFolder } from './events/renameFolder.js';
 import { fullPath, fullPathForFile } from './fileManager.js';
 import { contentHashForStats } from './fileHash.js';
 import { isIgnoredPath } from '@shared/filesystem/ignoredPaths.js';
+import { recordSuccessfulFullLibraryScan } from './scanCoverage.js';
 
 export const SCAN_SETTLE_SECONDS = 10;
 export const SCAN_FASTPATH_MAX_BYTES = 5 * 1024 * 1024;
@@ -45,6 +46,7 @@ export interface ScanFolderResult {
   removedFolders: number;
   ignored: number;
   skippedEntries: number;
+  unavailableFolders: number;
   unsettledFiles: number;
   unsettledFolders: number;
 }
@@ -84,7 +86,8 @@ export const scanFolderTree = async (
   rootFolderId = 1,
   options: ScanFolderTreeOptions = {},
 ): Promise<ScanFolderTreeResult> => {
-  const startedAt = Date.now();
+  const startedAtDate = new Date();
+  const startedAt = startedAtDate.getTime();
   const maxPasses = Math.max(1, options.maxPasses ?? 2);
   const result: ScanFolderTreeResult = {
     ...emptyScanFolderResult(),
@@ -109,7 +112,7 @@ export const scanFolderTree = async (
     finalUnsettledFiles = passResult.unsettledFiles;
     finalUnsettledFolders = passResult.unsettledFolders;
 
-    if (!hasUnsettledWork(passResult)) {
+    if (!hasIncompleteWork(passResult)) {
       result.completed = true;
       break;
     }
@@ -126,16 +129,19 @@ export const scanFolderTree = async (
     result.cleanupRun = true;
     finalUnsettledFiles = cleanupResult.unsettledFiles;
     finalUnsettledFolders = cleanupResult.unsettledFolders;
-    result.completed = !hasUnsettledWork(cleanupResult);
+    result.completed = !hasIncompleteWork(cleanupResult);
   } else {
     log(
       'warn',
-      `scanFolderTree(${rootFolderId}) stopped with unsettled files/folders after ${result.scanPasses} passes`,
+      `scanFolderTree(${rootFolderId}) stopped with incomplete filesystem work after ${result.scanPasses} passes`,
     );
   }
 
   result.unsettledFiles = finalUnsettledFiles;
   result.unsettledFolders = finalUnsettledFolders;
+  if (rootFolderId === 1 && result.completed) {
+    recordSuccessfulFullLibraryScan(startedAtDate);
+  }
   log(
     'debug',
     `scanFolderTree(${rootFolderId}): ${JSON.stringify(result)} in ${Date.now() - startedAt}ms`,
@@ -382,7 +388,7 @@ const scanChildFolder = async (
   });
   mergeScanResult(parentResult, childResult);
 
-  if (hasUnsettledWork(childResult)) return false;
+  if (hasIncompleteWork(childResult)) return false;
   pendingFolders.delete(folderId);
   return true;
 };
@@ -419,6 +425,7 @@ const emptyScanFolderResult = (): ScanFolderResult => ({
   removedFolders: 0,
   ignored: 0,
   skippedEntries: 0,
+  unavailableFolders: 0,
   unsettledFiles: 0,
   unsettledFolders: 0,
 });
@@ -517,8 +524,10 @@ const fileSignature = (stats: PicrFileStats): FileSignature => ({
   mtimeEpochMs: stats.mtime.getTime(),
 });
 
-const hasUnsettledWork = (result: ScanFolderResult): boolean =>
-  result.unsettledFiles > 0 || result.unsettledFolders > 0;
+const hasIncompleteWork = (result: ScanFolderResult): boolean =>
+  result.unsettledFiles > 0 ||
+  result.unsettledFolders > 0 ||
+  result.unavailableFolders > 0;
 
 const mergeScanResult = (
   target: ScanFolderResult,
@@ -533,6 +542,7 @@ const mergeScanResult = (
   target.removedFolders += source.removedFolders;
   target.ignored += source.ignored;
   target.skippedEntries += source.skippedEntries;
+  target.unavailableFolders += source.unavailableFolders;
   target.unsettledFiles += source.unsettledFiles;
   target.unsettledFolders += source.unsettledFolders;
 };
@@ -569,12 +579,16 @@ const directDiskEntries = async (
     // being viewed). Signal "folder gone" (null) so the caller short-circuits
     // instead of archiving every child — and don't throw (an unhandled rejection
     // here would terminate the process, see app.ts).
-    if (isNotFoundError(error)) return null;
+    if (isNotFoundError(error)) {
+      result.unavailableFolders++;
+      return null;
+    }
     // Unreadable folder (permissions, flaky NAS mount, transient I/O error): we
     // couldn't list it, so we can't conclude its children are gone. Log and
     // short-circuit WITHOUT archiving, rather than aborting the whole walk.
     if (isFilesystemError(error)) {
       result.skippedEntries++;
+      result.unavailableFolders++;
       log(
         'warn',
         `Skipping unreadable folder ${folderPath}: ${errorMessage(error)}`,

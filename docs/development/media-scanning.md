@@ -47,7 +47,8 @@ that a one-shot caller would otherwise miss:
 - discovery with `removeMissing: false` before scoped cleanup, improving
   cross-folder move detection;
 - metadata-first imports followed by queued thumbnail generation;
-- degraded backoff and requeueing so an accepted hint is not silently lost.
+- request-local degraded backoff and requeueing so an accepted hint is not
+  silently lost while fresh unrelated hints continue immediately.
 
 Two-phase cleanup is best-effort rather than a global scanner transaction.
 Manual, scheduled, or on-view scans can still interleave and archive a move
@@ -179,8 +180,11 @@ Important invariants:
   entry is counted in `ScanFolderResult.skippedEntries`, its DB row is **not**
   archived (it is present on disk, we just could not stat it this pass), and the
   scan keeps processing siblings. An unreadable folder (`readdir` failure)
-  short-circuits that folder without archiving its children. Errors with no
-  filesystem `code` still throw, since they indicate a real bug.
+  increments `unavailableFolders` and short-circuits that folder without
+  archiving its children. `unavailableFolders` blocks recursive completion;
+  `skippedEntries` remains diagnostic because the unreadable-name guard safely
+  isolates individual entries. Errors with no filesystem `code` still throw,
+  since they indicate a real bug.
 
 ## Move Detection
 

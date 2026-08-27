@@ -57,6 +57,12 @@ import { useLanguage } from '../../i18n/useLanguage';
 import { useDateFormatters } from '../../i18n/useDateFormatters';
 import { useTranslation } from 'react-i18next';
 import type { AdminT } from '../../i18n/adminLabels';
+import { useNow } from '../../hooks/useNow';
+import {
+  pingDisplayState,
+  pingSourceDisplayState,
+  type PingDisplayState,
+} from './pingStatusPresentation';
 
 type ServerInfoData = NonNullable<ServerInfoQueryQuery['serverInfo']>;
 
@@ -954,6 +960,8 @@ const SystemMetricCard = ({
 type ScanningInfo = ServerInfoData['scanning'];
 type InodeSupportInfo = ServerInfoData['inodeSupport'];
 type ScheduledScanStatusInfo = ScanningInfo['scheduledScan'];
+type PingStatusInfo = ScanningInfo['ping'];
+type PingSourceStatusInfo = PingStatusInfo['sources'][number];
 
 // "direct_and_new" -> "Direct And New"
 const scanModeLabel = (mode: string, t: AdminT) => {
@@ -997,6 +1005,121 @@ const InodeBadge = ({ status }: { status: string }) => {
     <Badge color={color} variant="light">
       {label}
     </Badge>
+  );
+};
+
+const pingStateColor = (state: PingDisplayState) => {
+  switch (state) {
+    case 'connected':
+      return 'green';
+    case 'stale':
+    case 'awaiting':
+      return 'yellow';
+    case 'error':
+    case 'degraded':
+      return 'red';
+    case 'disabled':
+      return 'gray';
+  }
+};
+
+const PingStateBadge = ({ state }: { state: PingDisplayState }) => {
+  const { t } = useTranslation('admin');
+  return (
+    <Badge color={pingStateColor(state)} variant="light">
+      {t(`server.scanning.pingStates.${state}`)}
+    </Badge>
+  );
+};
+
+const PingSourceStatus = ({
+  source,
+  now,
+}: {
+  source: PingSourceStatusInfo;
+  now: number;
+}) => {
+  const { t } = useTranslation('admin');
+  const { prettyDate } = useDateFormatters();
+  const state = pingSourceDisplayState(source, now);
+  return (
+    <Card withBorder padding="sm" radius="sm">
+      <Group justify="space-between" gap="xs">
+        <Text size="sm" fw={600}>
+          {source.name}
+        </Text>
+        <PingStateBadge state={state} />
+      </Group>
+      <Text size="xs" c="dimmed" mt={4}>
+        {t('server.scanning.pingSource', {
+          path: source.watchPrefix || t('server.scanning.mediaRoot'),
+          version: source.pingVersion,
+        })}
+      </Text>
+      <Text size="xs" c="dimmed">
+        {t('server.scanning.pingSourceActivity', {
+          lastSeen: prettyDate(source.lastSeenAt),
+          hints: source.hintsReceived,
+        })}
+      </Text>
+      <Text size="xs" c="dimmed">
+        {t('server.scanning.pingSourceScans', {
+          instance: source.instanceId.slice(0, 12),
+          lastBatch: source.lastBatchAt
+            ? prettyDate(source.lastBatchAt)
+            : t('server.scanning.neverRun'),
+          lastReconcile: source.lastReconcileAt
+            ? prettyDate(source.lastReconcileAt)
+            : t('server.scanning.neverRun'),
+        })}
+      </Text>
+      {source.lastError ? (
+        <Text size="xs" c="red" mt={4}>
+          {source.lastError}
+        </Text>
+      ) : null}
+    </Card>
+  );
+};
+
+const PingStatus = ({ ping }: { ping: PingStatusInfo }) => {
+  const { t } = useTranslation('admin');
+  const now = useNow(20_000);
+  const state = pingDisplayState(ping, now);
+  return (
+    <Stack gap="xs">
+      <InfoRow
+        label={t('server.scanning.ping')}
+        description={t('server.scanning.pingDescription')}
+      >
+        <PingStateBadge state={state} />
+      </InfoRow>
+      {ping.enabled
+        ? ping.sources.map((source) => (
+            <PingSourceStatus
+              key={`${source.name}:${source.instanceId}`}
+              source={source}
+              now={now}
+            />
+          ))
+        : null}
+      {ping.enabled ? (
+        <InfoRow label={t('server.scanning.pingCoordinator')}>
+          <Code>{ping.coordinator.state}</Code>
+          <Text size="xs" c="dimmed">
+            {t('server.scanning.pingCoordinatorActivity', {
+              scanned: ping.coordinator.foldersScanned,
+              pending: ping.coordinator.pendingFolders,
+            })}
+          </Text>
+        </InfoRow>
+      ) : null}
+      {ping.coordinator.lastError ? (
+        <Text size="xs" c="red">
+          {ping.coordinator.lastError}
+        </Text>
+      ) : null}
+    </Stack>
   );
 };
 
@@ -1119,6 +1242,7 @@ const ScanningCard = ({
       >
         <InodeBadge status={inode.status} />
       </InfoRow>
+      <PingStatus ping={scanning.ping} />
       <LastScan status={scheduled} />
     </InfoCard>
   );

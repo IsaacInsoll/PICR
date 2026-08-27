@@ -112,6 +112,14 @@ Auth error metadata is shared across backend, frontend, and app:
   wrong-type links to a generic unavailable state. Expiry is the deliberate
   exception because it supports actionable client messaging.
 
+## PICR Ping Protocol Contract
+
+`shared/ping/protocol.ts` owns the stable wire limits and path primitives used
+by both the backend endpoint and the Ping container. Keep protocol-version
+changes explicit: a newer Ping protocol must not ship before the matching PICR
+backend accepts it. Ping's Docker build context must copy any shared source it
+imports and include that source in both Ping TypeScript configs.
+
 ## GraphQL Operations
 
 ### Query Pattern

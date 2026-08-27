@@ -36,12 +36,18 @@ if (
   fail('Local master must exactly match origin/master before releasing.');
 }
 
-run('npm', ['version', bump, '--no-git-tag-version'], pingRoot);
 run('npm', ['run', 'format']);
 run('npm', ['run', 'format:check']);
 run('npm', ['run', 'lint'], pingRoot);
 run('npm', ['run', 'typecheck'], pingRoot);
 run('npm', ['test'], pingRoot);
+if (output('git', ['status', '--porcelain'])) {
+  fail(
+    'Release checks modified the working tree; review and commit those changes first.',
+  );
+}
+
+run('npm', ['version', bump, '--no-git-tag-version'], pingRoot);
 
 const packageJson = JSON.parse(
   readFileSync(resolve(pingRoot, 'package.json'), 'utf8'),
