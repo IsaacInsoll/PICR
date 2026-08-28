@@ -2,7 +2,7 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: 'http://localhost:6900/graphql',
+  schema: './.scratch/codegen-schema.json',
   // `src/gql/*` for useQuery/useMutation to return typed object
   generates: {
     // used by codegen to add proper typescript typing to results from a gql query/mutation
@@ -27,7 +27,6 @@ const config: CodegenConfig = {
     },
     // `schema.graphql` for phpStorm GQL plugin to auto complete queries
     './schema.graphql': {
-      schema: 'http://localhost:6900/graphql',
       plugins: ['schema-ast'],
     },
   },

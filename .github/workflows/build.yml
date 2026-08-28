@@ -44,6 +44,20 @@ jobs:
       # BACKEND
       - name: '🗃️ [backend] Install Dependencies'
         run: cd backend && npm ci
+
+      # Codegen no longer needs a running server or database, so CI can prove
+      # the committed generated files still match the executable schema.
+      # Runs early: it is fast and catches drift before the expensive steps.
+      - name: '🔄 [codegen] Verify generated GraphQL files are up to date'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run gql
+          if ! git diff --exit-code -- schema.graphql shared/gql shared/urql/graphql.schema.json; then
+            echo '::error::Generated GraphQL files are out of date. Run "npm run gql" and commit the result.'
+            exit 1
+          fi
+
       - name: '🗃️ [shared] Lint'
         run: cd shared && npm run lint
       - name: '🗃️ [shared] Type check'

@@ -431,7 +431,23 @@ AI agents CAN run `npm run gql` freely - it regenerates:
 - `./schema.graphql` - SDL schema
 - `shared/urql/graphql.schema.json` - Schema for caching
 
-Run after any schema changes.
+Run after any schema changes. Codegen imports and validates the executable
+schema in-process and writes a temporary introspection snapshot under
+`.scratch/`; it does not require the backend server or database to be running.
+
+Codegen is offline but not yet bootstrappable from scratch. Around 36 backend
+files import `@shared/gql/graphql`, and several import runtime _values_ rather
+than types (`FileType`, `FoldersSortType`, `UserType`, `AccessType`,
+`LinkMode`). Because that module is generated client output, schema
+construction depends on the previous codegen result, so `npm run gql` cannot
+recover from an empty `shared/gql/`. Those files are tracked, so this is not a
+problem in practice.
+
+Prefer not to add new backend imports from `@shared/gql/graphql`; define
+canonical domain types and values in backend or non-generated shared modules
+instead. This is currently a convention rather than a lint rule - enforcing it
+means encoding the existing 36-file exception list, which is deferred until the
+values are migrated.
 
 ---
 
