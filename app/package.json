@@ -27,7 +27,7 @@
     "@rnrepo/expo-config-plugin": "^0.1.0-beta.0",
     "@shopify/flash-list": "2.0.2",
     "@urql/exchange-graphcache": "^9.0.1",
-    "expo": "^55.0.9",
+    "expo": "^55.0.30",
     "expo-application": "~55.0.10",
     "expo-blur": "~55.0.10",
     "expo-build-properties": "~55.0.10",
