@@ -8,7 +8,7 @@ return {
   LrPluginInfoUrl = "https://github.com/IsaacInsoll/PICR/tree/master/lightroom",
   VERSION = {
     major = 1,
-    minor = 4,
+    minor = 5,
     revision = 0,
   },
   LrLibraryMenuItems = {
