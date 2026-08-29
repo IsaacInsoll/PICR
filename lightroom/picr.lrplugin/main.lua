@@ -209,7 +209,12 @@ function validateAndProcess(photoMap, payload)
         if action.rating ~= nil then
           local currentRating = action.photo:getRawMetadata('rating') or 0
           if currentRating ~= action.rating then
-            action.photo:setRawMetadata('rating', action.rating)
+            -- Lightroom represents an unrated photo as nil, while PICR uses 0.
+            local lightroomRating = action.rating
+            if lightroomRating == 0 then
+              lightroomRating = nil
+            end
+            action.photo:setRawMetadata('rating', lightroomRating)
             changed = true
           end
         end
