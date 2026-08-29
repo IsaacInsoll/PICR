@@ -622,6 +622,15 @@ are deleted, regenerated, or the source media hash changes.
 - Existing decoded cache hits are trusted by existence, like generated
   thumbnails. New decoded intermediates must be validated before the atomic
   rename into the cache.
+- RAW embedded previews may omit the source file's Orientation tag. Copy only
+  that tag from the RAW file into the temporary JPEG, validate the preview, then
+  promote it without modifying the original RAW. Preview extraction tries
+  `JpgFromRaw`, `PreviewImage`, and `ThumbnailImage` in that order. The decoded
+  cache may retain EXIF orientation; thumbnail and blurhash generation must call
+  Sharp's `autoOrient()` before resizing or sampling.
+- Image ratios must use Sharp's orientation-aware metadata dimensions. This
+  keeps gallery layout and placeholders upright when decoded cache entries carry
+  orientation metadata instead of upright pixels.
 - `addFile()` uses a `typeChanged` gate so existing files reclassify during the
   normal boot scan when optional decoder capabilities appear. Do not bulk-clear
   `fileHash` to force this.

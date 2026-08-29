@@ -33,7 +33,10 @@ export const encodeThumbnail = async (
   const px = serverThumbnailDimensions(settings)[size];
   const jpgPath = outputPath('.jpg');
 
-  const img = openSharp(input).withMetadata().resize(px, px, sharpOpts);
+  const img = openSharp(input)
+    .autoOrient()
+    .withMetadata()
+    .resize(px, px, sharpOpts);
 
   const promises: Promise<OutputInfo>[] = [
     atomicWrite(jpgPath, (tempPath) =>

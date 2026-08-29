@@ -84,6 +84,14 @@ const decodeRawPreview = async (
         ['-b', `-${tag}`, source],
         candidate,
       );
+      await runProcess(picrConfig.exiftoolPath ?? 'exiftool', [
+        '-m',
+        '-overwrite_original',
+        '-TagsFromFile',
+        source,
+        '-Orientation',
+        candidate,
+      ]);
       await validateCandidate(candidate);
       await rename(candidate, target);
       return;

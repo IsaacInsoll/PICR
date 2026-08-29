@@ -5,6 +5,7 @@ import { openSharp } from './openSharp.js';
 export async function encodeImageToBlurhash(path: string): Promise<string> {
   try {
     const { data, info } = await openSharp(path)
+      .autoOrient()
       .raw()
       .ensureAlpha()
       .resize(32, 32, { fit: 'inside' })
