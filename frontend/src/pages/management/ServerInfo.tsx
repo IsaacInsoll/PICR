@@ -14,6 +14,7 @@ import {
   Stack,
   Switch,
   Text,
+  TextInput,
   ThemeIcon,
   Title,
   Tooltip,
@@ -47,7 +48,10 @@ import {
 } from '@shared/urql/queries/serverInfoQuery';
 import { runBenchmarkMutation } from '@shared/urql/mutations/runBenchmarkMutation';
 import { editServerSettingsMutation } from '@shared/urql/mutations/editServerSettingsMutation';
-import type { BenchmarkStep, ServerInfoQueryQuery } from '@shared/gql/graphql';
+import type {
+  NamedBenchmarkStep,
+  ServerInfoQueryQuery,
+} from '@shared/gql/graphql';
 import { copyToClipboard } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
 import { useRequery } from '@shared/hooks/useRequery';
@@ -1258,10 +1262,12 @@ const Benchmark = () => {
   const benchmark = result.data?.runBenchmark;
   const [opened, setOpened] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [assetPath, setAssetPath] = useState('');
 
   const startBenchmark = () => {
     setConfirmed(true);
-    void runBenchmark({});
+    const trimmedAssetPath = assetPath.trim();
+    void runBenchmark({ assetPath: trimmedAssetPath || undefined });
   };
 
   const close = () => {
@@ -1294,6 +1300,13 @@ const Benchmark = () => {
           {!confirmed ? (
             <>
               <Text size="sm">{t('server.benchmark.confirmation')}</Text>
+              <TextInput
+                label={t('server.benchmark.assetPathOverride')}
+                description={t('server.benchmark.assetPathOverrideDescription')}
+                value={assetPath}
+                onChange={(event) => setAssetPath(event.currentTarget.value)}
+                placeholder={t('server.benchmark.assetPathOverridePlaceholder')}
+              />
               <Group justify="flex-end">
                 <Button variant="default" onClick={close}>
                   {t('common.cancel')}
@@ -1341,16 +1354,22 @@ const Benchmark = () => {
                   })}
                 />
                 <BenchmarkResultLine
-                  title={t('server.benchmark.assetSetup')}
-                  value={<BenchmarkStepValue step={benchmark.assetSetup} />}
+                  title={t('server.benchmark.assetPath')}
+                  value={benchmark.assetPath}
                 />
                 <BenchmarkResultLine
-                  title={t('server.benchmark.jpegResize')}
-                  value={<BenchmarkStepValue step={benchmark.jpegResize} />}
+                  title={t('server.benchmark.assetSource')}
+                  value={benchmark.assetSourceUrl}
                 />
                 <BenchmarkResultLine
-                  title={t('server.benchmark.avifResize')}
-                  value={<BenchmarkStepValue step={benchmark.avifResize} />}
+                  title={t('server.benchmark.cpuCount')}
+                  value={String(benchmark.cpuCount)}
+                />
+                <BenchmarkResultLine
+                  title={t('server.benchmark.uvThreadpool')}
+                  value={
+                    benchmark.uvThreadpoolSize || t('server.benchmark.default')
+                  }
                 />
                 <BenchmarkResultLine
                   title={t('server.capabilities.videoAcceleration')}
@@ -1360,34 +1379,19 @@ const Benchmark = () => {
                       : `${t('server.capabilities.cpuOnly')} (${benchmark.videoAccelerationReason})`
                   }
                 />
-                <BenchmarkResultLine
-                  title={t('server.benchmark.videoThumbnailCpu')}
-                  value={
-                    <BenchmarkStepValue step={benchmark.videoThumbnailCpu} />
-                  }
-                />
-                <BenchmarkResultLine
-                  title={t('server.benchmark.videoThumbnailVaapi')}
-                  value={
-                    <BenchmarkStepValue
-                      step={benchmark.videoThumbnailAccelerated}
-                    />
-                  }
-                />
-                <BenchmarkResultLine
-                  title={t('server.benchmark.videoTranscodeCpu')}
-                  value={
-                    <BenchmarkStepValue step={benchmark.videoTranscodeCpu} />
-                  }
-                />
-                <BenchmarkResultLine
-                  title={t('server.benchmark.videoTranscodeVaapi')}
-                  value={
-                    <BenchmarkStepValue
-                      step={benchmark.videoTranscodeAccelerated}
-                    />
-                  }
-                />
+                {benchmark.steps.map((step) => (
+                  <BenchmarkResultLine
+                    key={step.key}
+                    title={
+                      step.includedInTotal
+                        ? step.name
+                        : t('server.benchmark.notIncludedStep', {
+                            name: step.name,
+                          })
+                    }
+                    value={<BenchmarkStepValue step={step} />}
+                  />
+                ))}
                 <BenchmarkResultLine
                   title={t('server.benchmark.total')}
                   value={t('server.benchmark.totalValue', {
@@ -1441,55 +1445,102 @@ type BenchmarkResultForCopy = {
   appVersion: string;
   imageCount: number;
   videoCount: number;
-  assetSetup: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  jpegResize: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  avifResize: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
+  assetPath: string;
+  assetSourceUrl: string;
+  cpuCount: number;
+  uvThreadpoolSize: string;
   videoAccelerationMode: string;
   videoAccelerationReason: string;
-  videoThumbnailCpu: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  videoThumbnailAccelerated: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  videoTranscodeCpu: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  videoTranscodeAccelerated: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
+  steps: BenchmarkStepForDisplay[];
   totalMs: number;
 };
 
 const formatBenchmarkResults = (benchmark: BenchmarkResultForCopy) => {
-  return [
+  const lines = [
     `PICR Version: ${benchmark.appVersion}`,
     `Assets: ${benchmark.imageCount} images, ${benchmark.videoCount} videos`,
-    `Asset Setup (not included in total): ${formatStep(benchmark.assetSetup)}`,
-    `JPEG Resize: ${formatStep(benchmark.jpegResize)}`,
-    `AVIF Resize: ${formatStep(benchmark.avifResize)}`,
+    `Asset Path: ${benchmark.assetPath}`,
+    `Asset Source: ${benchmark.assetSourceUrl}`,
+    `CPU Count: ${benchmark.cpuCount}`,
+    `UV Threadpool: ${benchmark.uvThreadpoolSize || 'default'}`,
     `Video Acceleration: ${
       benchmark.videoAccelerationMode === 'vaapi'
         ? 'VAAPI'
         : `CPU only (${benchmark.videoAccelerationReason})`
     }`,
-    `Video Thumbnail (CPU): ${formatStep(benchmark.videoThumbnailCpu)}`,
-    `Video Thumbnail (VAAPI): ${formatStep(benchmark.videoThumbnailAccelerated)}`,
-    `Video Transcode (CPU): ${formatStep(benchmark.videoTranscodeCpu)}`,
-    `Video Transcode (VAAPI): ${formatStep(benchmark.videoTranscodeAccelerated)}`,
-    `Total: ${formatMs(benchmark.totalMs)} (asset setup excluded)`,
-  ].join('\n');
+  ];
+  benchmark.steps.forEach((step) => {
+    lines.push(
+      `${step.name}${step.includedInTotal ? '' : ' (not included in total)'}: ${formatStep(step)}`,
+    );
+  });
+  lines.push(
+    `Total: ${formatMs(benchmark.totalMs)} (completed included steps only)`,
+  );
+  return lines.join('\n');
 };
 
-const formatStep = (step: Pick<BenchmarkStep, 'ms' | 'skippedReason'>) => {
-  return step.skippedReason ?? formatMs(step.ms);
+type BenchmarkStepForDisplay = Pick<
+  NamedBenchmarkStep,
+  | 'name'
+  | 'status'
+  | 'ms'
+  | 'skippedReason'
+  | 'outputBytes'
+  | 'details'
+  | 'includedInTotal'
+>;
+
+const formatStep = (step: BenchmarkStepForDisplay) => {
+  const result =
+    step.status === 'failed'
+      ? `failed after ${formatMs(step.ms)}: ${step.skippedReason ?? 'Unknown error'}`
+      : (step.skippedReason ?? formatMs(step.ms));
+  const parts = [result];
+  if (step.outputBytes != null)
+    parts.push(prettyBytes(String(step.outputBytes)));
+  if (step.details) parts.push(step.details);
+  return parts.join(' | ');
 };
 
-const BenchmarkStepValue = ({
-  step,
-}: {
-  step: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-}) => {
-  if (step.skippedReason) {
+const BenchmarkStepValue = ({ step }: { step: BenchmarkStepForDisplay }) => {
+  const { t } = useTranslation('admin');
+  if (step.status === 'skipped') {
     return (
       <Text c="dimmed" size="sm" ta="right">
         {step.skippedReason}
       </Text>
     );
   }
-  return <Code>{formatMs(step.ms)}</Code>;
+  if (step.status === 'failed') {
+    return (
+      <Stack gap={2} align="flex-end">
+        <Text c="red" size="sm" ta="right">
+          {t('server.benchmark.failed')}: {step.skippedReason}
+        </Text>
+        {step.ms != null ? (
+          <Text size="xs" c="dimmed" ta="right">
+            {formatMs(step.ms)}
+          </Text>
+        ) : null}
+      </Stack>
+    );
+  }
+  return (
+    <Stack gap={2} align="flex-end">
+      <Code>{formatMs(step.ms)}</Code>
+      {step.outputBytes != null ? (
+        <Text size="xs" c="dimmed" ta="right">
+          {prettyBytes(String(step.outputBytes))}
+        </Text>
+      ) : null}
+      {step.details ? (
+        <Text size="xs" c="dimmed" ta="right">
+          {step.details}
+        </Text>
+      ) : null}
+    </Stack>
+  );
 };
 
 const formatMs = (ms?: number | null) => {

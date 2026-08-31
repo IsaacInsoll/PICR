@@ -65,7 +65,7 @@ import { runBenchmark } from './mutations/runBenchmark.js';
 import { rescanFolder } from './mutations/rescanFolder.js';
 import {
   benchmarkResultType,
-  benchmarkStepType,
+  namedBenchmarkStepType,
 } from './types/benchmarkType.js';
 import { editServerSettings } from './mutations/editServerSettings.js';
 import {
@@ -128,7 +128,7 @@ const types = [
   accessTypeEnum,
   accessLogType,
   benchmarkResultType,
-  benchmarkStepType,
+  namedBenchmarkStepType,
   brandingType,
   clientInfoType,
   commentType,

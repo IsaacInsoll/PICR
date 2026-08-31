@@ -84,4 +84,13 @@ Common faults include:
 - Tests are not run before each local commit by default.
 - You can manually run `npm run test` before commit to verify locally\*
 
+`npm run workflow` runs the GitHub workflow locally through `act`. Docker Buildx
+steps use GitHub Actions cache settings (`cache-from/cache-to: type=gha`), and
+under `act` the build can succeed but the job still fail while exporting cache
+or build records to the local artifact-cache server. A failure like
+`exporting to GitHub Actions Cache ... dial tcp ... connect: connection refused`
+after `RUN ... npm run build` completed is an `act`/artifact-cache failure, not
+evidence that the image build itself failed. Re-run the workflow; if it repeats,
+validate the same Docker build without the GHA cache before debugging app code.
+
 \* I didn't want to force this on you as it's a bit of time "wasted" doing builds/tests if just commiting a small change.

@@ -1,13 +1,24 @@
 import * as ji from 'join-images';
-import { mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises';
+import { encode } from 'blurhash';
+import { default as exifReader } from 'exif-reader';
+import {
+  mkdir,
+  readdir,
+  realpath,
+  rm,
+  stat,
+  writeFile,
+} from 'node:fs/promises';
+import { cpus } from 'node:os';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
-import { thumbnailDimensions } from '@shared/thumbnailDimensions.js';
+import { serverThumbnailDimensions } from '@shared/serverMediaSettings.js';
 import { openSharp } from '../media/openSharp.js';
 import { extractVaapiThumbnailFrames } from '../media/vaapiVideo.js';
 import { picrConfig } from '../config/picrConfig.js';
 import { probe, runFfmpeg } from '../media/ffmpeg.js';
 import { extractZip } from '../helpers/extractZip.js';
+import { getServerMediaSettings } from '../media/serverMediaSettings.js';
 
 const benchmarkAssetUrl = 'https://photosummaryapp.com/picr-demo-data.zip';
 const benchmarkAssetDownloadTimeoutMs = 60_000;
@@ -16,6 +27,11 @@ const benchmarkRoot = () => path.join(picrConfig.cachePath, 'benchmark');
 const zipPath = () => path.join(benchmarkRoot(), 'assets.zip');
 const assetPath = () => path.join(benchmarkRoot(), 'assets');
 const outputPath = () => path.join(benchmarkRoot(), 'output');
+const stepOutputPath = (key: string) => path.join(outputPath(), key);
+
+const futureThumbnailLadder = [
+  250, 500, 750, 1000, 1500, 2048, 2560, 4000,
+] as const;
 
 const imageExtensions = new Set([
   '.jpg',
@@ -27,59 +43,107 @@ const imageExtensions = new Set([
 ]);
 const videoExtensions = new Set(['.mp4', '.mov', '.m4v', '.webm']);
 
-export interface BenchmarkStepResult {
+type BenchmarkStepStatus = 'completed' | 'skipped' | 'failed';
+type ImageResizeMode = 'decode-per-size' | 'decode-once';
+type ImageResizePipeline = 'production' | 'future-srgb' | 'future-keep-icc';
+
+export interface NamedBenchmarkStepResult {
+  key: string;
+  name: string;
+  status: BenchmarkStepStatus;
   ms: number | null;
   skippedReason: string | null;
+  outputBytes: bigint | null;
+  details: string | null;
+  includedInTotal: boolean;
 }
 
 export interface BenchmarkResult {
   totalMs: number;
   appVersion: string;
-  assetSetup: BenchmarkStepResult;
-  jpegResize: BenchmarkStepResult;
-  avifResize: BenchmarkStepResult;
-  // Video steps are split into CPU vs hardware-accelerated. The accelerated
-  // rows are skipped (with a reason) when VAAPI is not the active mode.
-  videoThumbnailCpu: BenchmarkStepResult;
-  videoThumbnailAccelerated: BenchmarkStepResult;
-  videoTranscodeCpu: BenchmarkStepResult;
-  videoTranscodeAccelerated: BenchmarkStepResult;
+  steps: NamedBenchmarkStepResult[];
   // Snapshot of the resolved acceleration status (for display context).
   videoAccelerationMode: string;
   videoAccelerationReason: string;
+  cpuCount: number;
+  uvThreadpoolSize: string;
   imageCount: number;
   videoCount: number;
   assetSourceUrl: string;
   assetPath: string;
 }
 
-export const runBenchmark = async (): Promise<BenchmarkResult> => {
+interface RunBenchmarkOptions {
+  assetPath?: string | null;
+}
+
+interface StepRunResult {
+  outputBytes?: bigint | null;
+  outputDirectory?: string;
+  details?: string | null;
+}
+
+interface StepDefinition {
+  key: string;
+  name: string;
+  includedInTotal?: boolean;
+  run: () => Promise<StepRunResult | void>;
+}
+
+interface BenchmarkAssets {
+  path: string;
+  sourceUrl: string;
+  setup: () => Promise<void>;
+}
+
+export const runBenchmark = async (
+  options?: RunBenchmarkOptions,
+): Promise<BenchmarkResult> => {
   await mkdir(benchmarkRoot(), { recursive: true });
   await rm(outputPath(), { recursive: true, force: true });
   await mkdir(outputPath(), { recursive: true });
 
-  const assetSetup = await timedStep(() => ensureAssets());
-  if (assetSetup.skippedReason) {
+  const settings = await getServerMediaSettings();
+  const currentThumbnailLadder = Object.values(
+    serverThumbnailDimensions(settings),
+  );
+  const currentThumbnailMediumPx = settings.thumbnailMediumPx;
+  const assets = benchmarkAssets(options?.assetPath);
+  const steps: NamedBenchmarkStepResult[] = [];
+  const assetSetup = await runStep({
+    key: 'asset-setup',
+    name: 'Asset Setup',
+    includedInTotal: false,
+    run: assets.setup,
+  });
+  steps.push(assetSetup);
+
+  const baseResult = {
+    appVersion: picrConfig.version ?? '',
+    videoAccelerationMode: picrConfig.videoAccelerationMode,
+    videoAccelerationReason: picrConfig.videoAccelerationReason,
+    cpuCount: cpus().length,
+    uvThreadpoolSize: runtimeUvThreadpoolSize(),
+    assetSourceUrl: assets.sourceUrl,
+    assetPath: assets.path,
+  };
+
+  if (assetSetup.status !== 'completed') {
     return {
+      ...baseResult,
       totalMs: 0,
-      appVersion: picrConfig.version ?? '',
-      assetSetup,
-      jpegResize: skipped('Benchmark assets are unavailable'),
-      avifResize: skipped('Benchmark assets are unavailable'),
-      videoThumbnailCpu: skipped('Benchmark assets are unavailable'),
-      videoThumbnailAccelerated: skipped('Benchmark assets are unavailable'),
-      videoTranscodeCpu: skipped('Benchmark assets are unavailable'),
-      videoTranscodeAccelerated: skipped('Benchmark assets are unavailable'),
-      videoAccelerationMode: picrConfig.videoAccelerationMode,
-      videoAccelerationReason: picrConfig.videoAccelerationReason,
+      steps: [
+        assetSetup,
+        skippedStep('assets-unavailable', 'Benchmark Steps', {
+          reason: 'Benchmark assets are unavailable',
+        }),
+      ],
       imageCount: 0,
       videoCount: 0,
-      assetSourceUrl: benchmarkAssetUrl,
-      assetPath: assetPath(),
     };
   }
 
-  const files = await listFiles(assetPath());
+  const files = await listFiles(assets.path);
   const imageFiles = files.filter((file) =>
     imageExtensions.has(path.extname(file).toLowerCase()),
   );
@@ -93,51 +157,98 @@ export const runBenchmark = async (): Promise<BenchmarkResult> => {
   const vaapiActive = picrConfig.videoAccelerationMode === 'vaapi';
   const noVideo = 'No benchmark video found';
 
-  const totalStart = performance.now();
-  const jpegResize =
-    imageFiles.length > 0
-      ? await timedStep(() => resizeImages(imageFiles, 'jpeg'))
-      : skipped('No benchmark images found');
-  const avifResize =
-    imageFiles.length > 0
-      ? await timedStep(() => resizeImages(imageFiles, 'avif'))
-      : skipped('No benchmark images found');
-
-  const videoThumbnailCpu = firstVideo
-    ? await timedStep(() => generateVideoMontage(firstVideo, false))
-    : skipped(noVideo);
-  const videoThumbnailAccelerated = !firstVideo
-    ? skipped(noVideo)
-    : vaapiActive
-      ? await timedStep(() => generateVideoMontage(firstVideo, true))
-      : skipped(picrConfig.videoAccelerationReason);
-
-  const videoTranscodeCpu = firstVideo
-    ? await timedStep(() => transcodeVideo(firstVideo, false))
-    : skipped(noVideo);
-  const videoTranscodeAccelerated = !firstVideo
-    ? skipped(noVideo)
-    : vaapiActive
-      ? await timedStep(() => transcodeVideo(firstVideo, true))
-      : skipped(picrConfig.videoAccelerationReason);
+  steps.push(
+    ...(await imageSteps({
+      imageFiles,
+      currentThumbnailLadder,
+      currentJpegQuality: settings.thumbnailJpegQuality,
+      currentAvifQuality: settings.thumbnailAvifQuality,
+    })),
+    await videoStep(
+      'video-thumbnail-cpu',
+      'Video Thumbnail (CPU)',
+      firstVideo,
+      noVideo,
+      (stepDir) =>
+        generateVideoMontage(
+          firstVideo as string,
+          false,
+          stepDir,
+          currentThumbnailMediumPx,
+        ),
+    ),
+    await videoStep(
+      'video-thumbnail-vaapi',
+      'Video Thumbnail (VAAPI)',
+      firstVideo,
+      noVideo,
+      (stepDir) =>
+        generateVideoMontage(
+          firstVideo as string,
+          true,
+          stepDir,
+          currentThumbnailMediumPx,
+        ),
+      vaapiActive ? null : picrConfig.videoAccelerationReason,
+    ),
+    await videoStep(
+      'video-transcode-cpu',
+      'Video Transcode (CPU)',
+      firstVideo,
+      noVideo,
+      (stepDir) => transcodeVideo(firstVideo as string, false, stepDir),
+    ),
+    await videoStep(
+      'video-transcode-vaapi',
+      'Video Transcode (VAAPI)',
+      firstVideo,
+      noVideo,
+      (stepDir) => transcodeVideo(firstVideo as string, true, stepDir),
+      vaapiActive ? null : picrConfig.videoAccelerationReason,
+    ),
+  );
 
   return {
-    totalMs: elapsed(totalStart),
-    appVersion: picrConfig.version ?? '',
-    assetSetup,
-    jpegResize,
-    avifResize,
-    videoThumbnailCpu,
-    videoThumbnailAccelerated,
-    videoTranscodeCpu,
-    videoTranscodeAccelerated,
-    videoAccelerationMode: picrConfig.videoAccelerationMode,
-    videoAccelerationReason: picrConfig.videoAccelerationReason,
+    ...baseResult,
+    totalMs: totalForIncludedSteps(steps),
+    steps,
     imageCount: imageFiles.length,
     videoCount: videoFiles.length,
-    assetSourceUrl: benchmarkAssetUrl,
-    assetPath: assetPath(),
   };
+};
+
+const benchmarkAssets = (overridePath?: string | null): BenchmarkAssets => {
+  if (overridePath?.trim()) {
+    const resolved = resolveAssetOverridePath(overridePath.trim());
+    return {
+      path: resolved,
+      sourceUrl: 'local media folder override',
+      setup: () => validateAssetOverride(resolved),
+    };
+  }
+
+  return {
+    path: assetPath(),
+    sourceUrl: benchmarkAssetUrl,
+    setup: ensureAssets,
+  };
+};
+
+const validateAssetOverride = async (directory: string) => {
+  const mediaRoot = await realpath(picrConfig.mediaPath);
+  const realDirectory = await realpath(directory);
+  if (!isInsidePath(mediaRoot, realDirectory)) {
+    throw new Error(
+      `Benchmark asset path must be inside the media folder: ${mediaRoot}`,
+    );
+  }
+  const info = await stat(realDirectory);
+  if (!info.isDirectory()) {
+    throw new Error(`Benchmark asset path is not a directory: ${directory}`);
+  }
+  if (!(await hasFiles(realDirectory))) {
+    throw new Error(`Benchmark asset directory is empty: ${directory}`);
+  }
 };
 
 const ensureAssets = async () => {
@@ -165,25 +276,348 @@ const ensureAssets = async () => {
   await extractZip(zipPath(), assetPath(), { stripComponents: 1 });
 };
 
-const resizeImages = async (files: string[], format: 'jpeg' | 'avif') => {
-  const formatDir = path.join(outputPath(), format);
-  await mkdir(formatDir, { recursive: true });
+const imageSteps = async ({
+  imageFiles,
+  currentThumbnailLadder,
+  currentJpegQuality,
+  currentAvifQuality,
+}: {
+  imageFiles: string[];
+  currentThumbnailLadder: number[];
+  currentJpegQuality: number;
+  currentAvifQuality: number;
+}): Promise<NamedBenchmarkStepResult[]> => {
+  if (imageFiles.length === 0) {
+    return [skippedStep('image-benchmarks', 'Image Benchmarks')];
+  }
 
-  for (const [index, file] of files.entries()) {
-    for (const [size, px] of Object.entries(thumbnailDimensions)) {
-      const out = path.join(formatDir, `${index}-${size}.${format}`);
-      const image = openSharp(file).withMetadata().resize(px, px, {
-        fit: 'inside',
-        withoutEnlargement: true,
-      });
-      if (format === 'jpeg') {
-        await image.jpeg({ quality: 60 }).toFile(out);
-      } else {
-        await image.avif({ quality: 45 }).toFile(out);
-      }
+  const steps: StepDefinition[] = [
+    imageResizeStep({
+      key: 'jpeg-current-config-production',
+      name: `JPEG q${currentJpegQuality} current ladder, production pipeline`,
+      files: imageFiles,
+      sizes: currentThumbnailLadder,
+      quality: currentJpegQuality,
+      mode: 'decode-per-size',
+      pipeline: 'production',
+    }),
+    imageResizeStep({
+      key: 'jpeg-current-config-future-srgb-decode-once',
+      name: `JPEG q${currentJpegQuality} current ladder, future sRGB, decode once`,
+      files: imageFiles,
+      sizes: currentThumbnailLadder,
+      quality: currentJpegQuality,
+      mode: 'decode-once',
+      pipeline: 'future-srgb',
+    }),
+    imageResizeStep({
+      key: 'jpeg-ladder-q75-future-srgb-decode-once',
+      name: 'JPEG q75 full ladder, future sRGB, decode once',
+      files: imageFiles,
+      sizes: futureThumbnailLadder,
+      quality: 75,
+      mode: 'decode-once',
+      pipeline: 'future-srgb',
+    }),
+    imageResizeStep({
+      key: 'jpeg-ladder-q80-future-srgb-decode-per-size',
+      name: 'JPEG q80 full ladder, future sRGB, decode per size',
+      files: imageFiles,
+      sizes: futureThumbnailLadder,
+      quality: 80,
+      mode: 'decode-per-size',
+      pipeline: 'future-srgb',
+    }),
+    ...[1, 2, 4, 8].map((concurrency) =>
+      imageResizeStep({
+        key: `jpeg-ladder-q80-future-srgb-decode-once-c${concurrency}`,
+        name: `JPEG q80 full ladder, future sRGB, decode once, ${concurrency} worker${concurrency === 1 ? '' : 's'}`,
+        files: imageFiles,
+        sizes: futureThumbnailLadder,
+        quality: 80,
+        mode: 'decode-once',
+        pipeline: 'future-srgb',
+        concurrency,
+      }),
+    ),
+    imageResizeStep({
+      key: 'jpeg-ladder-q80-future-keep-icc-decode-per-size',
+      name: 'JPEG q80 full ladder, future keep ICC, decode per size',
+      files: imageFiles,
+      sizes: futureThumbnailLadder,
+      quality: 80,
+      mode: 'decode-per-size',
+      pipeline: 'future-keep-icc',
+      includedInTotal: false,
+    }),
+    imageResizeStep({
+      key: 'jpeg-ladder-q85-future-srgb-decode-once',
+      name: 'JPEG q85 full ladder, future sRGB, decode once',
+      files: imageFiles,
+      sizes: futureThumbnailLadder,
+      quality: 85,
+      mode: 'decode-once',
+      pipeline: 'future-srgb',
+    }),
+    imageResizeStep({
+      key: 'avif-current-config-production',
+      name: `AVIF q${currentAvifQuality} current ladder, production pipeline`,
+      files: imageFiles,
+      sizes: currentThumbnailLadder,
+      quality: currentAvifQuality,
+      mode: 'decode-per-size',
+      pipeline: 'production',
+      format: 'avif',
+    }),
+    blurhashStep({
+      key: 'blurhash-full-decode',
+      name: 'Blurhash from full decode',
+      files: imageFiles,
+      mode: 'full',
+    }),
+    blurhashStep({
+      key: 'blurhash-exif-preview',
+      name: 'Blurhash from EXIF preview',
+      files: imageFiles,
+      mode: 'exif-preview',
+    }),
+  ];
+
+  const results: NamedBenchmarkStepResult[] = [];
+  for (const step of steps) {
+    results.push(await runStep(step));
+  }
+  return results;
+};
+
+const imageResizeStep = ({
+  key,
+  name,
+  files,
+  sizes,
+  quality,
+  mode,
+  pipeline,
+  concurrency = 1,
+  format = 'jpeg',
+  includedInTotal,
+}: {
+  key: string;
+  name: string;
+  files: string[];
+  sizes: readonly number[];
+  quality: number;
+  mode: ImageResizeMode;
+  pipeline: ImageResizePipeline;
+  concurrency?: number;
+  format?: 'jpeg' | 'avif';
+  includedInTotal?: boolean;
+}): StepDefinition => ({
+  key,
+  name,
+  includedInTotal,
+  run: async () => {
+    const dir = stepOutputPath(key);
+    await mkdir(dir, { recursive: true });
+    const runner =
+      mode === 'decode-once' ? resizeImageDecodeOnce : resizeImagePerSize;
+    const { failed, firstError, processed } = await mapConcurrent(
+      files,
+      concurrency,
+      (file, index) =>
+        runner(file, index, dir, sizes, quality, format, pipeline),
+    );
+    if (processed === 0 && failed > 0) {
+      throw new Error(
+        `No images processed; ${failed} failed${firstErrorDetails(firstError)}`,
+      );
+    }
+    return {
+      outputDirectory: dir,
+      details: stepDetails([
+        `${processed}/${files.length} images`,
+        `${sizes.length} sizes`,
+        `q${quality}`,
+        format.toUpperCase(),
+        mode === 'decode-once' ? 'decode once' : 'decode per size',
+        imagePipelineDetail(pipeline),
+        failed > 0 ? `${failed} failed` : null,
+        failed > 0 && firstError ? `first error: ${firstError}` : null,
+      ]),
+    };
+  },
+});
+
+const resizeImagePerSize = async (
+  file: string,
+  index: number,
+  dir: string,
+  sizes: readonly number[],
+  quality: number,
+  format: 'jpeg' | 'avif',
+  pipeline: ImageResizePipeline,
+) => {
+  for (const px of sizes) {
+    const out = path.join(dir, `${index}-${px}.${format}`);
+    const resizeOptions = {
+      fit: 'inside' as const,
+      withoutEnlargement: true,
+    };
+    const image =
+      pipeline === 'production'
+        ? openSharp(file).withMetadata().resize(px, px, resizeOptions)
+        : futureOutputPolicy(
+            openSharp(file).rotate().resize(px, px, resizeOptions),
+            pipeline,
+          );
+    if (format === 'jpeg') {
+      await image.jpeg({ quality }).toFile(out);
+    } else {
+      await image.avif({ quality }).toFile(out);
     }
   }
 };
+
+const futureOutputPolicy = (
+  image: ReturnType<typeof openSharp>,
+  pipeline: ImageResizePipeline,
+) => {
+  if (pipeline === 'production') return image;
+  if (pipeline === 'future-keep-icc') {
+    return image.keepIccProfile();
+  }
+  return image.withIccProfile('srgb');
+};
+
+const imagePipelineDetail = (pipeline: ImageResizePipeline) => {
+  if (pipeline === 'production') {
+    return 'production: withMetadata, no explicit rotate';
+  }
+  if (pipeline === 'future-keep-icc') {
+    return 'future: auto-oriented, EXIF/XMP stripped, source ICC kept';
+  }
+  return 'future: auto-oriented, EXIF/XMP stripped, sRGB ICC';
+};
+
+const resizeImageDecodeOnce = async (
+  file: string,
+  index: number,
+  dir: string,
+  sizes: readonly number[],
+  quality: number,
+  format: 'jpeg' | 'avif',
+  pipeline: ImageResizePipeline,
+) => {
+  if (pipeline !== 'future-srgb') {
+    throw new Error(`Decode-once is not supported for ${pipeline}`);
+  }
+
+  const { data, info } = await openSharp(file)
+    .rotate()
+    .toColorspace('srgb')
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  for (const px of sizes) {
+    const out = path.join(dir, `${index}-${px}.${format}`);
+    const image = openSharp(data, {
+      raw: {
+        width: info.width,
+        height: info.height,
+        channels: info.channels,
+      },
+    })
+      .resize(px, px, {
+        fit: 'inside',
+        withoutEnlargement: true,
+      })
+      .withIccProfile('srgb');
+    if (format === 'jpeg') {
+      await image.jpeg({ quality }).toFile(out);
+    } else {
+      await image.avif({ quality }).toFile(out);
+    }
+  }
+};
+
+const blurhashStep = ({
+  key,
+  name,
+  files,
+  mode,
+}: {
+  key: string;
+  name: string;
+  files: string[];
+  mode: 'full' | 'exif-preview';
+}): StepDefinition => ({
+  key,
+  name,
+  run: async () => {
+    let previewHits = 0;
+    let fallbackHits = 0;
+    let previewFailures = 0;
+    let failed = 0;
+    let firstError: string | null = null;
+    for (const file of files) {
+      if (mode === 'full') {
+        try {
+          await encodeBlurhashFromInput(file);
+          fallbackHits++;
+        } catch (error) {
+          failed++;
+          firstError ??= errorMessage(error);
+        }
+        continue;
+      }
+
+      const preview = await safeExifPreview(file);
+      if (preview) {
+        try {
+          await encodeBlurhashFromInput(preview);
+          previewHits++;
+          continue;
+        } catch {
+          previewFailures++;
+        }
+      }
+
+      try {
+        await encodeBlurhashFromInput(file);
+        fallbackHits++;
+      } catch (error) {
+        failed++;
+        firstError ??= errorMessage(error);
+      }
+    }
+    const processed = previewHits + fallbackHits;
+    if (processed === 0 && failed > 0) {
+      throw new Error(
+        `No blurhashes processed; ${failed} failed${firstErrorDetails(firstError)}`,
+      );
+    }
+
+    return {
+      details:
+        mode === 'full'
+          ? stepDetails([
+              `${fallbackHits}/${files.length} images`,
+              failed > 0 ? `${failed} failed` : null,
+              failed > 0 && firstError ? `first error: ${firstError}` : null,
+            ])
+          : stepDetails([
+              `${processed}/${files.length} images`,
+              `${previewHits} EXIF previews`,
+              `${fallbackHits} full-decode fallbacks`,
+              previewFailures > 0
+                ? `${previewFailures} invalid EXIF previews`
+                : null,
+              failed > 0 ? `${failed} failed` : null,
+              failed > 0 && firstError ? `first error: ${firstError}` : null,
+            ]),
+    };
+  },
+});
 
 // VAAPI input decode options for the transcode path (decode on GPU).
 const vaapiDecodeOptions = () => [
@@ -193,9 +627,14 @@ const vaapiDecodeOptions = () => [
   picrConfig.videoAccelerationDevice,
 ];
 
-const generateVideoMontage = async (file: string, accelerated: boolean) => {
+const generateVideoMontage = async (
+  file: string,
+  accelerated: boolean,
+  stepDir: string,
+  thumbnailPx: number,
+) => {
   const framesDir = path.join(
-    outputPath(),
+    stepDir,
     accelerated ? 'video-thumbnail-frames-vaapi' : 'video-thumbnail-frames-cpu',
   );
   await mkdir(framesDir, { recursive: true });
@@ -204,7 +643,6 @@ const generateVideoMontage = async (file: string, accelerated: boolean) => {
     throw new Error('Benchmark video has no readable duration');
   }
 
-  const px = thumbnailDimensions.md;
   const timemarks = Array.from(
     { length: 10 },
     (_, index) => (index / 10) * duration,
@@ -212,7 +650,9 @@ const generateVideoMontage = async (file: string, accelerated: boolean) => {
   // Explicit, identical even dimensions for both paths so the montages match
   // and scale_vaapi (which lacks `-2` auto-sizing) gets a concrete height.
   const targetHeight =
-    width && height ? evenHeightForWidth(px, width, height) : undefined;
+    width && height
+      ? evenHeightForWidth(thumbnailPx, width, height)
+      : undefined;
 
   if (accelerated) {
     if (!targetHeight) {
@@ -224,7 +664,7 @@ const generateVideoMontage = async (file: string, accelerated: boolean) => {
     await extractVaapiThumbnailFrames(
       file,
       timemarks,
-      px,
+      thumbnailPx,
       targetHeight,
       framesDir,
       'md',
@@ -233,7 +673,7 @@ const generateVideoMontage = async (file: string, accelerated: boolean) => {
     await extractCpuThumbnailFrames(
       file,
       timemarks,
-      px,
+      thumbnailPx,
       targetHeight,
       framesDir,
       'md',
@@ -246,7 +686,7 @@ const generateVideoMontage = async (file: string, accelerated: boolean) => {
   const image = await ji.joinImages(files, { direction: 'vertical' });
   await image.toFile(
     path.join(
-      outputPath(),
+      stepDir,
       accelerated
         ? 'video-thumbnail-joined-vaapi.jpg'
         : 'video-thumbnail-joined-cpu.jpg',
@@ -260,9 +700,13 @@ const generateVideoMontage = async (file: string, accelerated: boolean) => {
 // requires hardware DECODE too. A GPU that can't hw-decode a given codec but
 // could still hw-encode (CPU decode + VAAPI encode) is reported as failed. That
 // hybrid shape can be measured once real transcoding exists.
-const transcodeVideo = async (file: string, accelerated: boolean) => {
+const transcodeVideo = async (
+  file: string,
+  accelerated: boolean,
+  stepDir: string,
+) => {
   const out = path.join(
-    outputPath(),
+    stepDir,
     accelerated
       ? 'benchmark-transcode-vaapi.mp4'
       : 'benchmark-transcode-cpu.mp4',
@@ -396,6 +840,7 @@ const listFiles = async (directory: string): Promise<string[]> => {
       const full = path.join(directory, entry.name);
       if (entry.isDirectory()) return listFiles(full);
       if (entry.isFile()) return [full];
+      // Keep media-root containment intact by never following nested symlinks.
       return [];
     }),
   );
@@ -418,24 +863,255 @@ const fileExists = async (file: string) => {
   }
 };
 
-const timedStep = async (
-  fn: () => Promise<void>,
-): Promise<BenchmarkStepResult> => {
-  const start = performance.now();
+const runStep = async ({
+  key,
+  name,
+  run,
+  includedInTotal = true,
+}: StepDefinition): Promise<NamedBenchmarkStepResult> => {
+  let start: number | null = null;
   try {
-    await fn();
-    return { ms: elapsed(start), skippedReason: null };
-  } catch (error) {
+    await rm(stepOutputPath(key), { recursive: true, force: true });
+    start = performance.now();
+    const result = await run();
+    const ms = elapsed(start);
+    const { details, outputBytes } = await collectStepOutput(result);
     return {
-      ms: null,
+      key,
+      name,
+      status: 'completed',
+      ms,
+      skippedReason: null,
+      outputBytes,
+      details,
+      includedInTotal,
+    };
+  } catch (error) {
+    await rm(stepOutputPath(key), { recursive: true, force: true }).catch(
+      () => undefined,
+    );
+    return {
+      key,
+      name,
+      status: 'failed',
+      ms: start == null ? null : elapsed(start),
       skippedReason: error instanceof Error ? error.message : String(error),
+      outputBytes: null,
+      details: null,
+      includedInTotal,
     };
   }
 };
 
-const skipped = (reason: string): BenchmarkStepResult => ({
+const skippedStep = (
+  key: string,
+  name: string,
+  options?: { reason?: string; includedInTotal?: boolean },
+): NamedBenchmarkStepResult => ({
+  key,
+  name,
+  status: 'skipped',
   ms: null,
-  skippedReason: reason,
+  skippedReason: options?.reason ?? 'No benchmark images found',
+  outputBytes: null,
+  details: null,
+  includedInTotal: options?.includedInTotal ?? true,
 });
+
+const videoStep = async (
+  key: string,
+  name: string,
+  file: string | undefined,
+  missingReason: string,
+  run: (stepDir: string) => Promise<void>,
+  skippedReason?: string | null,
+): Promise<NamedBenchmarkStepResult> => {
+  if (!file) return skippedStep(key, name, { reason: missingReason });
+  if (skippedReason) return skippedStep(key, name, { reason: skippedReason });
+  return runStep({
+    key,
+    name,
+    run: async () => {
+      const dir = stepOutputPath(key);
+      await mkdir(dir, { recursive: true });
+      await run(dir);
+      return { outputDirectory: dir };
+    },
+  });
+};
+
+interface FileProcessingResult {
+  processed: number;
+  failed: number;
+  firstError: string | null;
+}
+
+const mapConcurrent = async <T>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T, index: number) => Promise<void>,
+): Promise<FileProcessingResult> => {
+  let nextIndex = 0;
+  let processed = 0;
+  let failed = 0;
+  let firstError: string | null = null;
+  const workerCount = Math.max(1, Math.min(concurrency, items.length));
+  await Promise.all(
+    Array.from({ length: workerCount }, async () => {
+      for (;;) {
+        const index = nextIndex++;
+        const item = items[index];
+        if (item === undefined) return;
+        try {
+          await fn(item, index);
+          processed++;
+        } catch (error) {
+          failed++;
+          firstError ??= errorMessage(error);
+        }
+      }
+    }),
+  );
+  return { processed, failed, firstError };
+};
+
+const directorySize = async (directory: string): Promise<bigint> => {
+  const files = await listFiles(directory);
+  const sizes = await Promise.all(files.map((file) => stat(file)));
+  return sizes.reduce((total, file) => total + BigInt(file.size), 0n);
+};
+
+interface ExifWithThumbnail {
+  Thumbnail?: {
+    Compression?: number;
+    JPEGInterchangeFormat?: number;
+    JPEGInterchangeFormatLength?: number;
+  };
+}
+
+const exifPreview = async (file: string): Promise<Buffer | null> => {
+  const { exif } = await openSharp(file).metadata();
+  if (!exif) return null;
+  const parsed = exifReader(exif) as ExifWithThumbnail;
+  const offset = parsed.Thumbnail?.JPEGInterchangeFormat;
+  const length = parsed.Thumbnail?.JPEGInterchangeFormatLength;
+  if (
+    typeof offset !== 'number' ||
+    typeof length !== 'number' ||
+    length <= 0 ||
+    offset < 0
+  ) {
+    return null;
+  }
+
+  return (
+    previewSlice(exif, offset + exifTiffHeaderOffset, length) ??
+    previewSlice(exif, offset, length)
+  );
+};
+
+const safeExifPreview = async (file: string): Promise<Buffer | null> => {
+  try {
+    return await exifPreview(file);
+  } catch {
+    return null;
+  }
+};
+
+const exifTiffHeaderOffset = 6;
+
+const previewSlice = (
+  exif: Buffer,
+  offset: number,
+  length: number,
+): Buffer | null => {
+  if (offset < 0 || offset + length > exif.length) return null;
+  const preview = exif.subarray(offset, offset + length);
+  return isJpeg(preview) ? preview : null;
+};
+
+const isJpeg = (buffer: Buffer) =>
+  buffer.length >= 4 &&
+  buffer[0] === 0xff &&
+  buffer[1] === 0xd8 &&
+  buffer[buffer.length - 2] === 0xff &&
+  buffer[buffer.length - 1] === 0xd9;
+
+const encodeBlurhashFromInput = async (input: Buffer | string) => {
+  const { data, info } = await openSharp(input)
+    .raw()
+    .ensureAlpha()
+    .resize(32, 32, { fit: 'inside' })
+    .toBuffer({ resolveWithObject: true });
+
+  return encode(new Uint8ClampedArray(data), info.width, info.height, 4, 4);
+};
+
+const resolveAssetOverridePath = (requestedPath: string) => {
+  const mediaRoot = path.resolve(picrConfig.mediaPath);
+  return path.isAbsolute(requestedPath)
+    ? path.resolve(requestedPath)
+    : path.resolve(mediaRoot, requestedPath);
+};
+
+const isInsidePath = (parent: string, child: string) => {
+  const relative = path.relative(parent, child);
+  return (
+    relative === '' ||
+    (!relative.startsWith('..') && !path.isAbsolute(relative))
+  );
+};
+
+const runtimeUvThreadpoolSize = () =>
+  process.env['UV_THREADPOOL_SIZE'] ?? '4 (default)';
+
+const firstErrorDetails = (firstError: string | null) =>
+  firstError ? `; first error: ${firstError}` : '';
+
+const errorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : String(error);
+
+const totalForIncludedSteps = (steps: NamedBenchmarkStepResult[]) =>
+  steps.reduce(
+    (total, step) =>
+      step.status === 'completed' && step.includedInTotal && step.ms != null
+        ? total + step.ms
+        : total,
+    0,
+  );
+
+const collectStepOutput = async (
+  result: StepRunResult | void,
+): Promise<Pick<NamedBenchmarkStepResult, 'details' | 'outputBytes'>> => {
+  const outputDirectory = result?.outputDirectory;
+  const details: string[] = [];
+  if (result?.details) details.push(result.details);
+
+  let outputBytes = result?.outputBytes ?? null;
+  if (outputDirectory) {
+    try {
+      outputBytes = await directorySize(outputDirectory);
+    } catch (error) {
+      details.push(
+        `output size unavailable: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+    try {
+      await rm(outputDirectory, { recursive: true, force: true });
+    } catch (error) {
+      details.push(
+        `output cleanup failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
+  return {
+    details: stepDetails(details),
+    outputBytes,
+  };
+};
+
+const stepDetails = (parts: Array<string | null | undefined>) =>
+  parts.filter((part): part is string => Boolean(part)).join(', ') || null;
 
 const elapsed = (start: number) => Math.round(performance.now() - start);

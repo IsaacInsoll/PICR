@@ -254,6 +254,20 @@ policy-controlled: validate paths after any strip-components handling, stream
 file entries, and reject symlinks/special entries. Do not reuse it for user
 uploads without adding explicit upload limits and a fresh threat model.
 
+### Benchmark Timing
+
+`backend/benchmark/runBenchmark.ts` reports step timings intended for production
+performance decisions. Keep setup, output directory cleanup, recursive output
+size scans, and other bookkeeping outside each step's measured `ms`; otherwise
+steps that write more files are penalized by measurement overhead rather than
+media-processing work. Local asset overrides must stay under
+`picrConfig.mediaPath`, and real-media benchmark steps should count per-file
+failures instead of aborting the whole run on the first corrupt file. When a
+benchmark row is labelled as a current production baseline, keep its Sharp
+pipeline aligned with `backend/media/encodeThumbnail.ts`; use separate future
+rows for planned changes such as physical rotation, EXIF/XMP stripping, or ICC
+profile policy.
+
 ### FFmpeg/FFprobe Configuration
 
 - Use `backend/media/ffmpeg.ts` for ffmpeg/ffprobe calls. It runs the configured
