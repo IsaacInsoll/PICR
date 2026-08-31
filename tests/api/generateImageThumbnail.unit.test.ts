@@ -42,6 +42,10 @@ const loadGenerateImageThumbnail = async ({
       (async (_input: string, sizes: readonly string[]) =>
         new Map(sizes.map((size) => [size, [{ width: 250 }]]))),
   );
+  const encodeImageThumbnailVariants = vi.fn(
+    async (_input: string, variants: readonly { token: string }[]) =>
+      new Map(variants.map((variant) => [variant.token, [{ width: 250 }]])),
+  );
   const ensureDecodedImage = vi.fn(async () => '/cache/decoded.jpg');
 
   vi.doMock('../../backend/filesystem/fileManager.js', () => ({
@@ -50,11 +54,12 @@ const loadGenerateImageThumbnail = async ({
   vi.doMock('node:fs', async (importOriginal) => ({
     ...(await importOriginal<typeof import('node:fs')>()),
     existsSync: vi.fn((path: string) =>
-      existingThumbnails.some((size) => path.includes(`-${size}-`)),
+      existingThumbnails.some((cacheKey) => path.includes(`-${cacheKey}-`)),
     ),
   }));
   vi.doMock('../../backend/logger.js', () => ({ log: vi.fn() }));
   vi.doMock('../../backend/media/encodeImageThumbnails.js', () => ({
+    encodeImageThumbnailVariants,
     encodeImageThumbnails,
   }));
   vi.doMock('../../backend/media/ensureDecodedImage.js', () => ({
@@ -65,10 +70,7 @@ const loadGenerateImageThumbnail = async ({
   }));
   vi.doMock('../../backend/media/serverMediaSettings.js', () => ({
     getServerMediaSettings: vi.fn(async () => ({
-      thumbnailJpegQuality: 60,
-      thumbnailLargePx: 2500,
-      thumbnailMediumPx: 500,
-      thumbnailSmallPx: 250,
+      thumbnailJpegQuality: 80,
     })),
   }));
   vi.doMock('../../backend/media/thumbnailPath.js', () => ({
@@ -80,10 +82,22 @@ const loadGenerateImageThumbnail = async ({
       ) =>
         `/cache/thumbs/${thumbnailFile.relativePath}/${thumbnailFile.name}-${size}-${thumbnailFile.fileHash}${extension}`,
     ),
+    thumbnailVariantPath: vi.fn(
+      (
+        thumbnailFile: Pick<MockFileRow, 'fileHash' | 'name' | 'relativePath'>,
+        variant: { extension: string; token: string },
+      ) =>
+        `/cache/thumbs/${thumbnailFile.relativePath}/${thumbnailFile.name}-${variant.token}-${thumbnailFile.fileHash}${variant.extension}`,
+    ),
   }));
 
   const module = await import('../../backend/media/generateImageThumbnail.js');
-  return { encodeImageThumbnails, ensureDecodedImage, module };
+  return {
+    encodeImageThumbnailVariants,
+    encodeImageThumbnails,
+    ensureDecodedImage,
+    module,
+  };
 };
 
 afterEach(() => {
@@ -139,6 +153,29 @@ test('does not dedupe different file hashes together', async () => {
   expect(encodeImageThumbnails).toHaveBeenCalledTimes(2);
 });
 
+test('dedupes image thumbnail variants by concrete token', async () => {
+  const { encodeImageThumbnailVariants, module } =
+    await loadGenerateImageThumbnail();
+  const variant = {
+    cacheVersion: 'v1',
+    extension: '.jpg',
+    format: 'jpeg',
+    generationPolicy: 'eager',
+    letter: 'j',
+    mimeType: 'image/jpeg',
+    quality: 80,
+    token: 'v1-1000j80',
+    width: 1000,
+  };
+
+  await Promise.all([
+    module.generateThumbnailVariant(file(), variant),
+    module.generateThumbnailVariant(file(), variant),
+  ]);
+
+  expect(encodeImageThumbnailVariants).toHaveBeenCalledOnce();
+});
+
 test('clears failed image thumbnail generation so a later retry can run', async () => {
   const encodeImageThumbnails = vi
     .fn()
@@ -156,40 +193,36 @@ test('clears failed image thumbnail generation so a later retry can run', async 
   expect(encodeImageThumbnails).toHaveBeenCalledTimes(2);
 });
 
-test('decodes once for all missing image thumbnail sizes', async () => {
-  const { encodeImageThumbnails, ensureDecodedImage, module } =
+test('decodes once for all missing image thumbnail variants', async () => {
+  const { encodeImageThumbnailVariants, ensureDecodedImage, module } =
     await loadGenerateImageThumbnail();
 
   await module.generateAllThumbs(file());
 
   expect(ensureDecodedImage).toHaveBeenCalledOnce();
-  expect(encodeImageThumbnails).toHaveBeenCalledOnce();
-  expect(encodeImageThumbnails).toHaveBeenCalledWith(
+  expect(encodeImageThumbnailVariants).toHaveBeenCalledOnce();
+  expect(encodeImageThumbnailVariants).toHaveBeenCalledWith(
     '/cache/decoded.jpg',
-    ['sm', 'md', 'lg'],
+    expect.arrayContaining([
+      expect.objectContaining({ token: 'v1-250j80', width: 250 }),
+      expect.objectContaining({ token: 'v1-4000j80', width: 4000 }),
+    ]),
     expect.any(Function),
-    {
-      settings: {
-        thumbnailJpegQuality: 60,
-        thumbnailLargePx: 2500,
-        thumbnailMediumPx: 500,
-        thumbnailSmallPx: 250,
-      },
-    },
   );
 });
 
-test('computes missing image thumbnail sizes before decoding', async () => {
-  const { encodeImageThumbnails, ensureDecodedImage, module } =
-    await loadGenerateImageThumbnail({ existingThumbnails: ['sm'] });
+test('computes missing image thumbnail variants before decoding', async () => {
+  const { encodeImageThumbnailVariants, ensureDecodedImage, module } =
+    await loadGenerateImageThumbnail({ existingThumbnails: ['v1-250j80'] });
 
   await module.generateAllThumbs(file());
 
   expect(ensureDecodedImage).toHaveBeenCalledOnce();
-  expect(encodeImageThumbnails).toHaveBeenCalledWith(
+  expect(encodeImageThumbnailVariants).toHaveBeenCalledWith(
     '/cache/decoded.jpg',
-    ['md', 'lg'],
+    expect.not.arrayContaining([
+      expect.objectContaining({ token: 'v1-250j80' }),
+    ]),
     expect.any(Function),
-    expect.any(Object),
   );
 });

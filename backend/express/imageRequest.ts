@@ -4,26 +4,43 @@ import { allSizes } from '@shared/thumbnailSize.js';
 import { extname } from 'path';
 import {
   fullPathFor,
-  generateThumbnail,
+  generateThumbnailVariant,
 } from '../media/generateImageThumbnail.js';
 import { existsSync } from 'node:fs';
 import {
   awaitVideoThumbnailGeneration,
   generateVideoThumbnail,
+  generateVideoThumbnailVariant,
 } from '../media/generateVideoThumbnail.js';
 import { db, type FileFields } from '../db/picrDb.js';
 import { dbFile } from '../db/models/index.js';
 import { and, eq } from 'drizzle-orm';
-import { thumbnailPath } from '../media/thumbnailPath.js';
-import { videoScrubPath } from '../media/videoThumbnailPaths.js';
+import { thumbnailPath, thumbnailVariantPath } from '../media/thumbnailPath.js';
+import {
+  videoPosterVariantPath,
+  videoScrubPath,
+} from '../media/videoThumbnailPaths.js';
 import { log } from '../logger.js';
+import {
+  thumbnailVariantFormats,
+  thumbnailVariantQualityForSettings,
+  thumbnailVariantForToken,
+  thumbnailVariantForWidth,
+  type ThumbnailVariant,
+  type ThumbnailVariantWidth,
+} from '@shared/thumbnailVariants.js';
+import { getServerMediaSettings } from '../media/serverMediaSettings.js';
 
-type ImageRouteSize = AllSize | 'scrub';
+type ResolvedImageRouteSize =
+  | { kind: 'raw'; size: 'raw' }
+  | { kind: 'scrub'; size: 'scrub' }
+  | { kind: 'legacy'; size: ThumbnailSize }
+  | { kind: 'variant'; variant: ThumbnailVariant };
 
 export const imageRequest = async (
   req: Request<{
     id: number;
-    size: ImageRouteSize;
+    size: string;
     hash: string;
     filename: string;
   }>,
@@ -45,28 +62,17 @@ export const imageRequest = async (
     res.sendStatus(404);
     return;
   }
-  if (!isImageRouteSize(size)) {
+  const routeSize = resolveImageRouteSize(size);
+  if (!routeSize) {
     res.sendStatus(400);
     return;
   }
-  // Generated thumbnails/posters can change at the same URL when media settings
-  // change and the disk cache is later regenerated. A one-hour TTL avoids repeat
-  // gallery views hammering the server, while later conditional requests should
-  // usually be cheap 304 responses from sendFile's ETag/Last-Modified handling.
-  // Raw originals are content-addressed by fileHash, so they can keep immutable
-  // caching without masking regenerated thumbnail bytes.
-  res.set(
-    'Cache-Control',
-    size === 'raw'
-      ? 'public, max-age=31536000, immutable'
-      : 'public, max-age=3600, must-revalidate',
-  );
   const extension = extname(filename).toLowerCase(); //extension ignored for original file, only used for thumbs
-  if (size !== 'raw' && extension === '.avif') {
+  if (routeSize.kind === 'legacy' && extension === '.avif') {
     res.sendStatus(404);
     return;
   }
-  if (size === 'scrub') {
+  if (routeSize.kind === 'scrub') {
     if (file.type !== 'Video') {
       res.sendStatus(404);
       return;
@@ -81,41 +87,95 @@ export const imageRequest = async (
       res.sendStatus(404);
       return;
     }
-    res.sendFile(fp);
+    sendCachedFile(res, fp, routeSize.kind);
     return;
   }
 
-  if (file.type === 'Video' && size !== 'raw') {
-    const posterPath = fullPathFor(file, size, '.jpg');
-    const videoStatus = await ensureVideoArtifact(
-      file,
-      size,
-      posterPath,
-      'poster',
-    );
-    if (videoStatus === 'failed') {
-      res.sendStatus(500);
-      return;
+  if (routeSize.kind === 'variant') {
+    const fp =
+      file.type === 'Video'
+        ? videoPosterVariantPath(file, routeSize.variant)
+        : thumbnailVariantPath(file, routeSize.variant);
+    if (!existsSync(fp)) {
+      const settings = await getServerMediaSettings();
+      const currentQuality =
+        thumbnailVariantQualityForSettings(
+          thumbnailVariantFormats[routeSize.variant.format],
+          settings,
+        ) === routeSize.variant.quality;
+      if (!currentQuality) {
+        res.sendStatus(404);
+        return;
+      }
+
+      if (file.type === 'Video') {
+        const videoStatus = await ensureVideoVariantArtifact(
+          file,
+          routeSize.variant,
+          fp,
+        );
+        if (videoStatus === 'failed') {
+          res.sendStatus(500);
+          return;
+        }
+        if (videoStatus === 'missing') {
+          res.sendStatus(404);
+          return;
+        }
+      } else {
+        await generateThumbnailVariant(file, routeSize.variant);
+        if (!existsSync(fp)) {
+          res.sendStatus(500);
+          return;
+        }
+      }
     }
-    if (videoStatus === 'missing') {
-      res.sendStatus(404);
-      return;
-    }
-    res.sendFile(posterPath);
+
+    sendCachedFile(res, fp, routeSize.kind);
     return;
   }
 
-  const fp = fullPathFor(file, size, extension);
-  if (size !== 'raw' && !existsSync(fp)) {
-    if (file.type === 'Image') {
-      await generateThumbnail(file, size);
-      const tp = thumbnailPath(file, size, '.jpg');
-      res.sendFile(tp);
+  if (routeSize.kind === 'legacy') {
+    const legacyPath =
+      file.type === 'Video'
+        ? fullPathFor(file, routeSize.size, '.jpg')
+        : thumbnailPath(file, routeSize.size, '.jpg');
+    if (existsSync(legacyPath)) {
+      sendCachedFile(res, legacyPath, routeSize.kind);
       return;
     }
-  } else {
-    res.sendFile(fullPathFor(file, size, extension));
+
+    const variant = await currentVariantForLegacySize(routeSize.size);
+    const variantPath =
+      file.type === 'Video'
+        ? videoPosterVariantPath(file, variant)
+        : thumbnailVariantPath(file, variant);
+    if (file.type === 'Video') {
+      const videoStatus = await ensureVideoVariantArtifact(
+        file,
+        variant,
+        variantPath,
+      );
+      if (videoStatus === 'failed') {
+        res.sendStatus(500);
+        return;
+      }
+      if (videoStatus === 'missing') {
+        res.sendStatus(404);
+        return;
+      }
+    } else if (!existsSync(variantPath)) {
+      await generateThumbnailVariant(file, variant);
+      if (!existsSync(variantPath)) {
+        res.sendStatus(500);
+        return;
+      }
+    }
+    sendCachedFile(res, variantPath, routeSize.kind);
+    return;
   }
+
+  sendCachedFile(res, fullPathFor(file, routeSize.size, extension), 'raw');
 };
 
 type VideoArtifactStatus = 'ok' | 'failed' | 'missing';
@@ -145,6 +205,71 @@ const ensureVideoArtifact = async (
   return 'missing';
 };
 
-const isImageRouteSize = (size: string): size is ImageRouteSize => {
-  return size === 'scrub' || allSizes.includes(size as AllSize);
+const ensureVideoVariantArtifact = async (
+  file: FileFields,
+  variant: ThumbnailVariant,
+  path: string,
+): Promise<VideoArtifactStatus> => {
+  try {
+    if (!existsSync(path)) await generateVideoThumbnailVariant(file, variant);
+  } catch (error) {
+    log(
+      'error',
+      `Failed generating video poster variant ${variant.token} for ${file.name}: ${String(error)}`,
+    );
+    return 'failed';
+  }
+
+  if (existsSync(path)) return 'ok';
+  log(
+    'error',
+    `Video poster variant generation completed but cache file is missing for ${file.name}: ${path}`,
+  );
+  return 'missing';
+};
+
+const resolveImageRouteSize = (size: string): ResolvedImageRouteSize | null => {
+  if (size === 'scrub') return { kind: 'scrub', size };
+  if (allSizes.includes(size as AllSize)) {
+    if (size === 'raw') return { kind: 'raw', size };
+    return { kind: 'legacy', size: size as ThumbnailSize };
+  }
+
+  const variant = thumbnailVariantForToken(size);
+  if (variant) return { kind: 'variant', variant };
+  return null;
+};
+
+const legacyVariantWidths = {
+  sm: 250,
+  md: 500,
+  lg: 2560,
+} as const satisfies Record<ThumbnailSize, ThumbnailVariantWidth>;
+
+const currentVariantForLegacySize = async (
+  size: ThumbnailSize,
+): Promise<ThumbnailVariant> => {
+  const settings = await getServerMediaSettings();
+  return thumbnailVariantForWidth(
+    legacyVariantWidths[size],
+    settings.thumbnailJpegQuality,
+  );
+};
+
+const sendCachedFile = (
+  res: Response,
+  path: string,
+  kind: ResolvedImageRouteSize['kind'],
+): void => {
+  // Set cache headers only on successful file responses. Error branches must not
+  // become sticky in browser/proxy caches, especially for token thumbnails where
+  // the success path intentionally has a longer TTL.
+  res.set('Cache-Control', cacheControlFor(kind));
+  res.sendFile(path);
+};
+
+const cacheControlFor = (kind: ResolvedImageRouteSize['kind']): string => {
+  if (kind === 'raw') return 'public, max-age=31536000, immutable';
+  if (kind === 'variant') return 'public, max-age=86400';
+  return 'public, max-age=3600, must-revalidate';
 };

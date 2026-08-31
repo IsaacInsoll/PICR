@@ -1,11 +1,9 @@
 import {
   GraphQLBoolean,
-  GraphQLInputObjectType,
   GraphQLInt,
+  GraphQLInputObjectType,
   GraphQLNonNull,
 } from 'graphql';
-import type { ServerMediaSettings } from '@shared/serverMediaSettings.js';
-import { serverThumbnailDimensions } from '@shared/serverMediaSettings.js';
 import { setServerOptions } from '../../db/picrDb.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import { requireFullAdmin } from '../queries/admins.js';
@@ -16,7 +14,7 @@ import {
 } from '../../media/serverMediaSettings.js';
 
 interface EditServerSettingsArgs {
-  input: Partial<ServerMediaSettings>;
+  input: { useOriginalsForLightbox?: boolean; thumbnailJpegQuality?: number };
 }
 
 const resolver: PicrResolver<object, EditServerSettingsArgs> = async (
@@ -33,19 +31,13 @@ const resolver: PicrResolver<object, EditServerSettingsArgs> = async (
   });
 
   await setServerOptions(settings);
-  return {
-    ...settings,
-    thumbnailDimensions: serverThumbnailDimensions(settings),
-  };
+  return settings;
 };
 
 export const editServerSettingsInputType = new GraphQLInputObjectType({
   name: 'EditServerSettingsInput',
   fields: () => ({
     useOriginalsForLightbox: { type: GraphQLBoolean },
-    thumbnailSmallPx: { type: GraphQLInt },
-    thumbnailMediumPx: { type: GraphQLInt },
-    thumbnailLargePx: { type: GraphQLInt },
     thumbnailJpegQuality: { type: GraphQLInt },
   }),
 });

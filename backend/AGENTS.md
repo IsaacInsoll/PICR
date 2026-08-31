@@ -307,8 +307,10 @@ media-processing work. Local asset overrides must stay under
 failures instead of aborting the whole run on the first corrupt file. When a
 benchmark row is labelled as current image production, keep its Sharp pipeline
 aligned with `backend/media/encodeImageThumbnails.ts`; label old comparison rows
-as historical/pre-R0. Video poster rows still align with
-`backend/media/encodeThumbnail.ts`.
+as historical/pre-R0. Current video poster variant rows use the same variant
+encoder as image thumbnails, while `backend/media/encodeThumbnail.ts` is a
+legacy per-size helper and should not be treated as the current production
+poster path.
 
 ### FFmpeg/FFprobe Configuration
 
@@ -663,18 +665,44 @@ probes cannot collectively trip the UI threshold.
 
 ### Thumbnail Sizes
 
-| Size  | Dimension                                | Purpose          |
-| ----- | ---------------------------------------- | ---------------- |
-| `sm`  | Default 250px, configurable server-wide  | Grid thumbnails  |
-| `md`  | Default 500px, configurable server-wide  | Medium previews  |
-| `lg`  | Default 2500px, configurable server-wide | Full-screen view |
-| `raw` | Original                                 | Direct download  |
+New image/video poster thumbnails use immutable variant tokens from
+`shared/thumbnailVariants.ts`, for example `v1-1000j80`. The token encodes cache
+version, long-edge width, JPEG format, and JPEG quality, so it is safe for
+long-lived HTTP caching and settings/history confusion does not leak into the
+filename. Keep generation allowlisted to the current published ladder; do not
+turn route tokens into arbitrary width/quality generation.
+`THUMBNAIL_VARIANT_CACHE_VERSION` is part of that contract. Bump it whenever an
+image thumbnail encoder change can make the same source hash, width, format, and
+quality produce different thumbnail bytes: resize options, orientation handling,
+colour/ICC policy, JPEG/WebP encoder options, sharpening, or any other pixel or
+encoding transform. Do not bump it for queue/concurrency changes, frontend
+`srcset` selection, or adding a new width; those do not change the bytes for an
+existing token.
+The final `:filename` segment of `/image/:id/:size/:hash/:filename` is
+decorative for token routes just like legacy routes; use the token's format
+letter/registry entry, not the decorative filename extension, to choose the
+cache file, MIME type, and encoder path. Explicit `.avif` legacy thumbnail
+requests still return 404 while AVIF is not generated. New thumbnail formats
+must be added through the shared format registry and benchmarked before they are
+enabled.
 
-Thumbnail dimensions and JPEG quality are stored on the singleton
-`ServerOptions` row. The disk cache filename is still tier-based (`sm`/`md`/`lg`)
-rather than config-keyed, so changing media settings affects only newly generated
-or regenerated thumbnails. Existing cache files continue to be served until they
-are deleted, regenerated, or the source media hash changes.
+The legacy `sm`/`md`/`lg` routes remain as compatibility aliases. They may serve
+old cache files when present, but missing legacy entries should resolve to the
+current token ladder rather than creating new tier-named files. `raw` remains the
+original file and `scrub` remains the video scrub sprite; neither belongs in the
+shared thumbnail variant ladder.
+
+Changing `thumbnailJpegQuality` creates a new reachable token set. Old
+same-width variants at the previous quality are intentionally not generated on
+demand for request-surface safety, so thumbnail cleanup must sweep stale-quality
+token variants as well as legacy `sm`/`md`/`lg` files.
+
+Legacy thumbnail dimension columns remain on `ServerOptions` for upgrade
+compatibility, but they are no longer published through GraphQL and application
+thumbnail sizing is controlled by the shared variant registry. JPEG quality
+remains configurable and is encoded into the token. Do not reintroduce
+per-install ladder tuning without also revisiting URL/cache invalidation and
+frontend `srcset` selection.
 
 ### Image Processing
 
@@ -834,10 +862,12 @@ uncompressed frontend payloads.
 3. Generate on-demand if missing
 4. Return JPEG thumbnail/poster
 
-Generated thumbnail/poster responses use a one-hour `Cache-Control` TTL with
-revalidation, not year-long immutable caching, because regenerated cache files can
-change bytes without changing the URL. Raw originals remain content-addressed by
-`fileHash` and can keep long immutable caching.
+Legacy thumbnail/poster responses use a one-hour `Cache-Control` TTL with
+revalidation because old cache files can change bytes without changing the URL.
+Token thumbnail/poster responses use a 24-hour TTL; their URL encodes width and
+quality, but keeping the TTL finite avoids sticky client failures if server-side
+generation policy changes. Raw originals remain content-addressed by `fileHash`
+and can keep long immutable caching.
 
 ### ZIP Generation
 

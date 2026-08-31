@@ -40,6 +40,7 @@ const loadGenerateVideoThumbnail = async ({
   picrConfig.mediaPath = '/media';
 
   const encodeThumbnail = vi.fn(async () => []);
+  const encodeImageThumbnailVariants = vi.fn(async () => new Map());
   const runFfmpeg = vi.fn();
 
   vi.doMock('node:fs', async (importOriginal) => ({
@@ -49,15 +50,15 @@ const loadGenerateVideoThumbnail = async ({
   vi.doMock('../../backend/media/encodeThumbnail.js', () => ({
     encodeThumbnail,
   }));
+  vi.doMock('../../backend/media/encodeImageThumbnails.js', () => ({
+    encodeImageThumbnailVariants,
+  }));
   vi.doMock('../../backend/media/ffmpeg.js', () => ({
     runFfmpeg,
   }));
   vi.doMock('../../backend/media/serverMediaSettings.js', () => ({
     getServerMediaSettings: vi.fn(async () => ({
-      thumbnailJpegQuality: 60,
-      thumbnailLargePx: 2500,
-      thumbnailMediumPx: 500,
-      thumbnailSmallPx: 250,
+      thumbnailJpegQuality: 80,
     })),
   }));
   vi.doMock('../../backend/logger.js', () => ({ log: vi.fn() }));
@@ -65,7 +66,12 @@ const loadGenerateVideoThumbnail = async ({
   const { generateVideoThumbnail } =
     await import('../../backend/media/generateVideoThumbnail.js');
 
-  return { encodeThumbnail, generateVideoThumbnail, runFfmpeg };
+  return {
+    encodeImageThumbnailVariants,
+    encodeThumbnail,
+    generateVideoThumbnail,
+    runFfmpeg,
+  };
 };
 
 afterEach(() => {
@@ -73,30 +79,58 @@ afterEach(() => {
   vi.resetModules();
 });
 
-test('regenerates missing video poster derivatives from cached baseline artifacts', async () => {
-  const { encodeThumbnail, generateVideoThumbnail, runFfmpeg } =
-    await loadGenerateVideoThumbnail({
-      existingPaths: [
-        '/cache/thumbs/videos/clip.mp4-v2-scrub-hash.jpg',
-        '/cache/thumbs/videos/clip.mp4-v2-posterframe-hash.jpg',
-        '/cache/thumbs/videos/clip.mp4-v2-sm-hash.jpg',
-      ],
-    });
+test('regenerates missing video poster variants from cached baseline artifacts', async () => {
+  const {
+    encodeImageThumbnailVariants,
+    encodeThumbnail,
+    generateVideoThumbnail,
+    runFfmpeg,
+  } = await loadGenerateVideoThumbnail({
+    existingPaths: [
+      '/cache/thumbs/videos/clip.mp4-v2-scrub-hash.jpg',
+      '/cache/thumbs/videos/clip.mp4-v2-posterframe-hash.jpg',
+    ],
+  });
 
   await generateVideoThumbnail(file(), 'md');
 
   expect(runFfmpeg).not.toHaveBeenCalled();
-  expect(encodeThumbnail).toHaveBeenCalledTimes(2);
-  expect(encodeThumbnail).toHaveBeenCalledWith(
+  expect(encodeThumbnail).not.toHaveBeenCalled();
+  expect(encodeImageThumbnailVariants).toHaveBeenCalledOnce();
+  expect(encodeImageThumbnailVariants).toHaveBeenCalledWith(
     '/cache/thumbs/videos/clip.mp4-v2-posterframe-hash.jpg',
-    'md',
+    expect.arrayContaining([
+      expect.objectContaining({ token: 'v1-250j80' }),
+      expect.objectContaining({ token: 'v1-4000j80' }),
+    ]),
     expect.any(Function),
-    expect.any(Object),
   );
-  expect(encodeThumbnail).toHaveBeenCalledWith(
-    '/cache/thumbs/videos/clip.mp4-v2-posterframe-hash.jpg',
-    'lg',
-    expect.any(Function),
-    expect.any(Object),
-  );
+});
+
+test('skips video poster variant regeneration when token cache exists', async () => {
+  const {
+    encodeImageThumbnailVariants,
+    encodeThumbnail,
+    generateVideoThumbnail,
+    runFfmpeg,
+  } = await loadGenerateVideoThumbnail({
+    existingPaths: [
+      '/cache/thumbs/videos/clip.mp4-v2-scrub-hash.jpg',
+      '/cache/thumbs/videos/clip.mp4-v2-posterframe-hash.jpg',
+      '/cache/thumbs/videos/clip.mp4-v1-250j80-hash.jpg',
+      '/cache/thumbs/videos/clip.mp4-v1-500j80-hash.jpg',
+      '/cache/thumbs/videos/clip.mp4-v1-750j80-hash.jpg',
+      '/cache/thumbs/videos/clip.mp4-v1-1000j80-hash.jpg',
+      '/cache/thumbs/videos/clip.mp4-v1-1500j80-hash.jpg',
+      '/cache/thumbs/videos/clip.mp4-v1-2048j80-hash.jpg',
+      '/cache/thumbs/videos/clip.mp4-v1-2560j80-hash.jpg',
+      '/cache/thumbs/videos/clip.mp4-v1-4000j80-hash.jpg',
+    ],
+  });
+
+  await generateVideoThumbnail(file(), 'md');
+
+  expect(runFfmpeg).not.toHaveBeenCalled();
+  expect(encodeThumbnail).not.toHaveBeenCalled();
+  expect(encodeImageThumbnailVariants).not.toHaveBeenCalled();
 });

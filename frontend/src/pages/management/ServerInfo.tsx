@@ -26,7 +26,6 @@ import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { useMe } from '../../hooks/useMe';
 import {
   BenchmarkIcon,
-  BitrateIcon,
   CircleCheckFilledIcon,
   CircleXIcon,
   ClipboardIcon,
@@ -38,7 +37,6 @@ import {
   ServerIcon,
   StorageIcon,
   SystemIcon,
-  ThumbnailsIcon,
   VideoMetadataIcon,
 } from '../../PicrIcons';
 import { PicrLink } from '../../components/PicrLink';
@@ -56,7 +54,6 @@ import { copyToClipboard } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
 import { useRequery } from '@shared/hooks/useRequery';
 import { isNewerPicrVersion } from '../../helpers/versionUpdates';
-import { DEFAULT_SERVER_MEDIA_SETTINGS } from '@shared/serverMediaSettings';
 import { useLanguage } from '../../i18n/useLanguage';
 import { useDateFormatters } from '../../i18n/useDateFormatters';
 import { useTranslation } from 'react-i18next';
@@ -466,23 +463,16 @@ const MediaSettingsCard = ({
 };
 
 type ServerSettingsData = ServerInfoData['settings'];
-type NumericSetting = number | '';
 
 interface MediaSettingsFormState {
   useOriginalsForLightbox: boolean;
-  thumbnailSmallPx: NumericSetting;
-  thumbnailMediumPx: NumericSetting;
-  thumbnailLargePx: NumericSetting;
-  thumbnailJpegQuality: NumericSetting;
+  thumbnailJpegQuality: number;
 }
 
 const formStateFor = (
   settings: ServerSettingsData,
 ): MediaSettingsFormState => ({
   useOriginalsForLightbox: settings.useOriginalsForLightbox,
-  thumbnailSmallPx: settings.thumbnailSmallPx,
-  thumbnailMediumPx: settings.thumbnailMediumPx,
-  thumbnailLargePx: settings.thumbnailLargePx,
   thumbnailJpegQuality: settings.thumbnailJpegQuality,
 });
 
@@ -525,48 +515,29 @@ const MediaSettingsControls = ({
 
   return (
     <Stack gap="md">
-      <Box>
-        <Title order={6}>{t('server.media.thumbnails')}</Title>
-        <Text size="xs" c="dimmed" mt={2}>
-          {t('server.media.thumbnailDescription')}
-        </Text>
-      </Box>
-      <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="sm">
-        <PixelInput
-          label={t('server.media.smallWidth')}
-          icon={<ThumbnailsIcon />}
-          value={form.thumbnailSmallPx}
-          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailSmallPx}
-          onChange={(value) => setField('thumbnailSmallPx', value)}
-        />
-        <PixelInput
-          label={t('server.media.mediumWidth')}
-          icon={<ThumbnailsIcon />}
-          value={form.thumbnailMediumPx}
-          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailMediumPx}
-          onChange={(value) => setField('thumbnailMediumPx', value)}
-        />
-        <PixelInput
-          label={t('server.media.largeWidth')}
-          icon={<ThumbnailsIcon />}
-          value={form.thumbnailLargePx}
-          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailLargePx}
-          onChange={(value) => setField('thumbnailLargePx', value)}
-        />
-        <QualityInput
-          label={t('server.media.jpegQuality')}
-          icon={<BitrateIcon />}
-          value={form.thumbnailJpegQuality}
-          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailJpegQuality}
-          onChange={(value) => setField('thumbnailJpegQuality', value)}
-        />
-      </SimpleGrid>
       <Switch
         checked={form.useOriginalsForLightbox}
         label={t('server.media.useOriginals')}
         description={t('server.media.useOriginalsDescription')}
         onChange={(event) =>
           setField('useOriginalsForLightbox', event.currentTarget.checked)
+        }
+      />
+      <NumberInput
+        label={t('server.media.thumbnailQuality')}
+        description={t('server.media.thumbnailQualityDescription')}
+        value={form.thumbnailJpegQuality}
+        min={1}
+        max={100}
+        step={5}
+        allowDecimal={false}
+        clampBehavior="strict"
+        suffix="%"
+        onChange={(value) =>
+          setField(
+            'thumbnailJpegQuality',
+            typeof value === 'number' ? value : form.thumbnailJpegQuality,
+          )
         }
       />
       <Group justify="flex-end">
@@ -583,89 +554,13 @@ const MediaSettingsControls = ({
   );
 };
 
-const PixelInput = ({
-  label,
-  icon,
-  value,
-  defaultValue,
-  onChange,
-}: {
-  label: string;
-  icon: ReactNode;
-  value: NumericSetting;
-  defaultValue: number;
-  onChange: (value: NumericSetting) => void;
-}) => (
-  <NumberInput
-    label={label}
-    value={value}
-    placeholder={String(defaultValue)}
-    min={16}
-    max={20000}
-    allowDecimal={false}
-    suffix=" px"
-    leftSection={icon}
-    onChange={(next) => onChange(numberInputValue(next))}
-  />
-);
-
-const QualityInput = ({
-  label,
-  icon,
-  value,
-  defaultValue,
-  onChange,
-}: {
-  label: string;
-  icon: ReactNode;
-  value: NumericSetting;
-  defaultValue: number;
-  onChange: (value: NumericSetting) => void;
-}) => (
-  <NumberInput
-    label={label}
-    value={value}
-    placeholder={String(defaultValue)}
-    min={1}
-    max={100}
-    allowDecimal={false}
-    suffix="%"
-    leftSection={icon}
-    onChange={(next) => onChange(numberInputValue(next))}
-  />
-);
-
-const numberInputValue = (value: string | number): NumericSetting =>
-  typeof value === 'number' && Number.isFinite(value) ? value : '';
-
 const payloadFor = (form: MediaSettingsFormState) => ({
   useOriginalsForLightbox: form.useOriginalsForLightbox,
-  thumbnailSmallPx:
-    form.thumbnailSmallPx === ''
-      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailSmallPx
-      : form.thumbnailSmallPx,
-  thumbnailMediumPx:
-    form.thumbnailMediumPx === ''
-      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailMediumPx
-      : form.thumbnailMediumPx,
-  thumbnailLargePx:
-    form.thumbnailLargePx === ''
-      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailLargePx
-      : form.thumbnailLargePx,
-  thumbnailJpegQuality:
-    form.thumbnailJpegQuality === ''
-      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailJpegQuality
-      : form.thumbnailJpegQuality,
+  thumbnailJpegQuality: form.thumbnailJpegQuality,
 });
 
 const serverSettingsKey = (settings: ServerSettingsData) =>
-  [
-    settings.useOriginalsForLightbox,
-    settings.thumbnailSmallPx,
-    settings.thumbnailMediumPx,
-    settings.thumbnailLargePx,
-    settings.thumbnailJpegQuality,
-  ].join(':');
+  [settings.useOriginalsForLightbox, settings.thumbnailJpegQuality].join(':');
 
 const ServerCapabilitiesCard = ({
   caps,

@@ -7,11 +7,7 @@ import { getUUID } from '../helpers/getUUID';
 import { meQuery } from '@shared/urql/queries/meQuery';
 import type { ExtraUserProps } from '@shared/extraUserProps';
 import { extraUserProps } from '@shared/extraUserProps';
-import {
-  DEFAULT_SERVER_MEDIA_SETTINGS,
-  serverThumbnailDimensions,
-  type ServerThumbnailDimensions,
-} from '@shared/serverMediaSettings';
+import { serverThumbnailDimensions } from '@shared/serverMediaSettings';
 
 export const useMe = (
   options: { pause?: boolean } = {},
@@ -20,11 +16,7 @@ export const useMe = (
       ExtraUserProps & {
         clientInfo: {
           useOriginalsForLightbox: boolean;
-          thumbnailSmallPx: number;
-          thumbnailMediumPx: number;
-          thumbnailLargePx: number;
           thumbnailJpegQuality: number;
-          thumbnailDimensions: ServerThumbnailDimensions;
           baseUrl: string;
           canWrite: boolean;
         };
@@ -55,11 +47,7 @@ export const useOriginalsForLightbox = () => {
 };
 
 export const useServerThumbnailDimensions = () => {
-  const me = useMe();
-  return (
-    me?.clientInfo.thumbnailDimensions ??
-    serverThumbnailDimensions(DEFAULT_SERVER_MEDIA_SETTINGS)
-  );
+  return serverThumbnailDimensions();
 };
 
 export const useBaseUrl = () => {

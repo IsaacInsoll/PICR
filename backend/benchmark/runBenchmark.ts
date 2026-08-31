@@ -107,10 +107,9 @@ export const runBenchmark = async (
   await mkdir(outputPath(), { recursive: true });
 
   const settings = await getServerMediaSettings();
-  const currentThumbnailLadder = Object.values(
-    serverThumbnailDimensions(settings),
-  );
-  const currentThumbnailMediumPx = settings.thumbnailMediumPx;
+  const legacyThumbnailDimensions = serverThumbnailDimensions();
+  const currentThumbnailLadder = Object.values(legacyThumbnailDimensions);
+  const currentThumbnailMediumPx = legacyThumbnailDimensions.md;
   const assets = benchmarkAssets(options?.assetPath);
   const steps: NamedBenchmarkStepResult[] = [];
   const assetSetup = await runStep({

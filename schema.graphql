@@ -80,11 +80,8 @@ type Branding {
 type ClientInfo {
   baseUrl: String!
   canWrite: Boolean!
-  thumbnailDimensions: ThumbnailDimensions!
   thumbnailJpegQuality: Int!
-  thumbnailLargePx: Int!
-  thumbnailMediumPx: Int!
-  thumbnailSmallPx: Int!
+  thumbnailVariants: [ThumbnailVariant!]!
   useOriginalsForLightbox: Boolean!
 }
 
@@ -129,9 +126,6 @@ type DiskInfo {
 
 input EditServerSettingsInput {
   thumbnailJpegQuality: Int
-  thumbnailLargePx: Int
-  thumbnailMediumPx: Int
-  thumbnailSmallPx: Int
   useOriginalsForLightbox: Boolean
 }
 
@@ -504,11 +498,8 @@ type ServerInfo {
 }
 
 type ServerSettings {
-  thumbnailDimensions: ThumbnailDimensions!
   thumbnailJpegQuality: Int!
-  thumbnailLargePx: Int!
-  thumbnailMediumPx: Int!
-  thumbnailSmallPx: Int!
+  thumbnailVariants: [ThumbnailVariant!]!
   useOriginalsForLightbox: Boolean!
 }
 
@@ -538,10 +529,12 @@ enum ThemeMode {
   light
 }
 
-type ThumbnailDimensions {
-  lg: Int!
-  md: Int!
-  sm: Int!
+type ThumbnailVariant {
+  format: String!
+  mimeType: String!
+  quality: Int!
+  token: String!
+  width: Int!
 }
 
 type User {

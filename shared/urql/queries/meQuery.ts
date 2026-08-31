@@ -17,14 +17,9 @@ export const meQuery = gql(/* GraphQL */ `
     clientInfo {
       baseUrl
       useOriginalsForLightbox
-      thumbnailSmallPx
-      thumbnailMediumPx
-      thumbnailLargePx
       thumbnailJpegQuality
-      thumbnailDimensions {
-        sm
-        md
-        lg
+      thumbnailVariants {
+        ...ThumbnailVariantFragment
       }
       canWrite
     }

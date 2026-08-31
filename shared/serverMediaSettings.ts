@@ -1,16 +1,12 @@
+import { THUMBNAIL_JPEG_QUALITY } from './thumbnailVariants.js';
+
 export const DEFAULT_SERVER_MEDIA_SETTINGS = {
   useOriginalsForLightbox: false,
-  thumbnailSmallPx: 250,
-  thumbnailMediumPx: 500,
-  thumbnailLargePx: 2500,
-  thumbnailJpegQuality: 60,
+  thumbnailJpegQuality: THUMBNAIL_JPEG_QUALITY,
 } as const;
 
 export interface ServerMediaSettings {
   useOriginalsForLightbox: boolean;
-  thumbnailSmallPx: number;
-  thumbnailMediumPx: number;
-  thumbnailLargePx: number;
   thumbnailJpegQuality: number;
 }
 
@@ -20,13 +16,11 @@ export interface ServerThumbnailDimensions {
   lg: number;
 }
 
-export const serverThumbnailDimensions = (
-  settings: Pick<
-    ServerMediaSettings,
-    'thumbnailSmallPx' | 'thumbnailMediumPx' | 'thumbnailLargePx'
-  >,
-): ServerThumbnailDimensions => ({
-  sm: settings.thumbnailSmallPx,
-  md: settings.thumbnailMediumPx,
-  lg: settings.thumbnailLargePx,
-});
+export const LEGACY_THUMBNAIL_DIMENSIONS: ServerThumbnailDimensions = {
+  sm: 250,
+  md: 500,
+  lg: 2500,
+};
+
+export const serverThumbnailDimensions = (): ServerThumbnailDimensions =>
+  LEGACY_THUMBNAIL_DIMENSIONS;

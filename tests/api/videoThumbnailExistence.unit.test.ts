@@ -5,14 +5,15 @@ import { tmpdir } from 'node:os';
 import type { FileFields } from '../../backend/db/picrDb';
 import { picrConfig } from '../../backend/config/picrConfig';
 import {
-  missingVideoPosterSizes,
+  missingVideoPosterVariants,
   videoThumbnailBaselineArtifactsExist,
 } from '../../backend/media/videoThumbnailExistence';
 import {
   videoPosterFramePath,
-  videoPosterPath,
+  videoPosterVariantPath,
   videoScrubPath,
 } from '../../backend/media/videoThumbnailPaths';
+import { thumbnailVariantForToken } from '../../shared/thumbnailVariants';
 
 test('videoThumbnailBaselineArtifactsExist requires scrub sprite and poster frame', async () => {
   const root = await mkdtempRoot();
@@ -34,7 +35,7 @@ test('videoThumbnailBaselineArtifactsExist requires scrub sprite and poster fram
   }
 });
 
-test('missingVideoPosterSizes reports poster derivatives independently of baseline artifacts', async () => {
+test('missingVideoPosterVariants reports poster derivatives independently of baseline artifacts', async () => {
   const root = await mkdtempRoot();
   picrConfig.cachePath = join(root, 'cache');
   picrConfig.mediaPath = join(root, 'media');
@@ -43,11 +44,15 @@ test('missingVideoPosterSizes reports poster derivatives independently of baseli
     name: 'clip.mp4',
     fileHash: 'content-hash',
   } as FileFields;
+  const existing = thumbnailVariantForToken('v1-250j80')!;
+  const missing = thumbnailVariantForToken('v1-500j80')!;
 
   try {
-    await touch(videoPosterPath(file, 'sm'));
+    await touch(videoPosterVariantPath(file, existing));
 
-    expect(missingVideoPosterSizes(file)).toEqual(['md', 'lg']);
+    expect(missingVideoPosterVariants(file, [existing, missing])).toEqual([
+      missing,
+    ]);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

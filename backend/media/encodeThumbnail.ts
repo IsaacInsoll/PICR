@@ -8,9 +8,9 @@ import {
 } from '@shared/serverMediaSettings.js';
 import { getServerMediaSettings } from './serverMediaSettings.js';
 
-// Video poster thumbnails still use this per-size encoder. Image thumbnails use
-// encodeImageThumbnails.ts because they need a different orientation/colour
-// policy and decode-once batching across sizes.
+// Legacy per-size encoder retained for older tests/comparisons. Current image
+// thumbnails and video poster variants use encodeImageThumbnails.ts so they can
+// share the token-based ladder and decode-once batching.
 
 type ThumbnailOutputExtension = '.jpg';
 
@@ -29,7 +29,7 @@ export const encodeThumbnail = async (
   options?: EncodeThumbnailOptions,
 ): Promise<OutputInfo[]> => {
   const settings = options?.settings ?? (await getServerMediaSettings());
-  const px = serverThumbnailDimensions(settings)[size];
+  const px = serverThumbnailDimensions()[size];
   const jpgPath = outputPath('.jpg');
 
   const img = openSharp(input).withMetadata().resize(px, px, sharpOpts);

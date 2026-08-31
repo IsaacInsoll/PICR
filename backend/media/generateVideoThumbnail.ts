@@ -1,14 +1,13 @@
-import { thumbnailSizes, type ThumbnailSize } from '@shared/thumbnailSize.js';
+import type { ThumbnailSize } from '@shared/thumbnailSize.js';
 import type { PicrVideoMetadata } from '@shared/types/metadata.js';
 import { copyFile, mkdtemp, rm } from 'node:fs/promises';
 import { log } from '../logger.js';
 import * as ji from 'join-images';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import type { FileFields } from '../db/picrDb.js';
-import { encodeThumbnail } from './encodeThumbnail.js';
 import {
   videoPosterFramePath,
-  videoPosterPath,
+  videoPosterVariantPath,
   videoScrubPath,
 } from './videoThumbnailPaths.js';
 import { runFfmpeg } from './ffmpeg.js';
@@ -24,15 +23,17 @@ import { db } from '../db/picrDb.js';
 import { dbFile } from '../db/models/index.js';
 import { eq } from 'drizzle-orm';
 import {
-  missingVideoPosterSizes,
+  missingVideoPosterVariants,
   videoThumbnailBaselineArtifactsExist,
 } from './videoThumbnailExistence.js';
 import { atomicWrite } from './atomicWrite.js';
-import {
-  serverThumbnailDimensions,
-  type ServerMediaSettings,
-} from '@shared/serverMediaSettings.js';
+import { serverThumbnailDimensions } from '@shared/serverMediaSettings.js';
 import { getServerMediaSettings } from './serverMediaSettings.js';
+import {
+  thumbnailVariantLadderForSettings,
+  type ThumbnailVariant,
+} from '@shared/thumbnailVariants.js';
+import { encodeImageThumbnailVariants } from './encodeImageThumbnails.js';
 
 const numberOfVideoSnapshots = 10;
 
@@ -67,14 +68,17 @@ const processVideoThumbnail = async (
 
   try {
     const settings = await getServerMediaSettings();
+    const currentVariants = thumbnailVariantLadderForSettings(settings);
     if (videoThumbnailBaselineArtifactsExist(file)) {
-      const missingPosters = missingVideoPosterSizes(file);
-      if (missingPosters.length > 0) {
-        await encodeVideoPosters(
+      const missingPosterVariants = missingVideoPosterVariants(
+        file,
+        currentVariants,
+      );
+      if (missingPosterVariants.length > 0) {
+        await encodeVideoPosterVariants(
           file,
           videoPosterFramePath(file),
-          settings,
-          missingPosters,
+          missingPosterVariants,
         );
       } else {
         log(
@@ -92,7 +96,6 @@ const processVideoThumbnail = async (
         file,
         timestamps,
         tempDir,
-        settings,
       );
       if (candidates.length === 0) {
         throw new Error('No candidate frames were extracted');
@@ -110,7 +113,11 @@ const processVideoThumbnail = async (
       await atomicWrite(cachedPosterFramePath, (tempPath) =>
         copyFile(posterFramePath, tempPath),
       );
-      await encodeVideoPosters(file, cachedPosterFramePath, settings);
+      await encodeVideoPosterVariants(
+        file,
+        cachedPosterFramePath,
+        currentVariants,
+      );
 
       const blurHash = await encodeImageToBlurhash(cachedPosterFramePath);
       if (blurHash) await persistVideoBlurHash(file, blurHash);
@@ -142,9 +149,8 @@ const extractCandidateFrames = async (
   file: FileFields,
   timestamps: number[],
   outFile: string,
-  settings: ServerMediaSettings,
 ): Promise<ExtractedCandidate[]> => {
-  const px = serverThumbnailDimensions(settings).md;
+  const px = serverThumbnailDimensions().md;
   const candidates: ExtractedCandidate[] = [];
 
   for (const [index, timestamp] of timestamps.entries()) {
@@ -212,21 +218,15 @@ const mergeImages = async (files: string[], outputPath: string) => {
   await atomicWrite(outputPath, (tempPath) => img.toFile(tempPath));
 };
 
-const encodeVideoPosters = async (
+const encodeVideoPosterVariants = async (
   file: FileFields,
   posterFramePath: string,
-  settings: ServerMediaSettings,
-  sizes: readonly ThumbnailSize[] = thumbnailSizes,
+  variants: readonly ThumbnailVariant[],
 ): Promise<void> => {
-  await Promise.all(
-    sizes.map((posterSize) =>
-      encodeThumbnail(
-        posterFramePath,
-        posterSize,
-        (extension) => videoPosterPath(file, posterSize, extension),
-        { settings },
-      ),
-    ),
+  if (variants.length === 0) return;
+
+  await encodeImageThumbnailVariants(posterFramePath, variants, (variant) =>
+    videoPosterVariantPath(file, variant),
   );
 };
 
@@ -261,6 +261,20 @@ export const generateVideoThumbnail = async (
   });
   videoThumbnailQueue[key] = p;
   return p;
+};
+
+export const generateVideoThumbnailVariant = async (
+  file: FileFields,
+  variant: ThumbnailVariant,
+): Promise<void> => {
+  const currentQuality =
+    (await getServerMediaSettings()).thumbnailJpegQuality === variant.quality;
+  if (!currentQuality) {
+    throw new Error(
+      `Cannot generate stale video thumbnail variant ${variant.token}`,
+    );
+  }
+  return generateVideoThumbnail(file, 'md');
 };
 
 export const awaitVideoThumbnailGeneration = (

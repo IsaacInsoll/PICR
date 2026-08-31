@@ -179,6 +179,9 @@ tiles are not covered either — no fixture produces one.
   shared query uses a new arg the built image doesn't have.
 - There is no `test:api:fresh`. Rebuild first, e.g.
   `npm run build:local && npm run test:api`.
+- Do not run `npm run build:local` and `npm run test:api` in parallel. The API
+  suite builds/runs the Docker image from `dist`, and `build:local` rewrites
+  that tree while it runs.
 
 ## CI Expectations
 

@@ -70,7 +70,7 @@ import {
 import { editServerSettings } from './mutations/editServerSettings.js';
 import {
   serverSettingsType,
-  thumbnailDimensionsType,
+  thumbnailVariantType,
 } from './types/serverSettingsType.js';
 
 const queries = new GraphQLObjectType({
@@ -148,7 +148,7 @@ const types = [
   serverInfoType,
   serverSettingsType,
   taskType,
-  thumbnailDimensionsType,
+  thumbnailVariantType,
   userType,
   userDeviceType,
   videoFileType,

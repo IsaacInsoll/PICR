@@ -11,12 +11,20 @@ test('video poster frame path is a versioned cache artifact', () => {
   );
 });
 
-test('video cache variant enumeration includes the persisted poster frame', () => {
+test('video cache variant enumeration includes the persisted poster frame', async () => {
   picrConfig.cachePath = '/cache';
 
   expect(
-    thumbnailVariantPaths('videos', 'clip.mp4', 'hash', 'Video').map(
-      ({ path }) => path,
-    ),
+    (
+      await thumbnailVariantPaths('videos', 'clip.mp4', 'hash', 'Video', {
+        entries: async () => [
+          {
+            name: 'clip.mp4-v2-posterframe-hash.jpg',
+            isDirectory: false,
+            isFile: true,
+          },
+        ],
+      })
+    ).map(({ path }) => path),
   ).toContain('/cache/thumbs/videos/clip.mp4-v2-posterframe-hash.jpg');
 });

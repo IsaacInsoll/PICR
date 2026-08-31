@@ -4,7 +4,11 @@ import { promises as fs } from 'node:fs';
 import { db } from '../db/picrDb.js';
 import { dbFile } from '../db/models/index.js';
 import { contentHashForDb } from '../filesystem/fileHash.js';
-import { thumbnailVariantPaths } from '../media/thumbnailVariants.js';
+import {
+  createThumbnailVariantIndex,
+  thumbnailVariantDestinationPath,
+  thumbnailVariantPaths,
+} from '../media/thumbnailVariants.js';
 import { moveEntryNoOverwrite } from '../media/moveThumbnailFile.js';
 import { log } from '../logger.js';
 
@@ -135,6 +139,7 @@ export const migrateThumbnailHashes = async (): Promise<void> => {
     .select({ total: count() })
     .from(dbFile)
     .where(liveHashedFiles);
+  const thumbnailIndex = createThumbnailVariantIndex();
 
   log(
     'info',
@@ -172,23 +177,23 @@ export const migrateThumbnailHashes = async (): Promise<void> => {
         continue;
       }
 
-      const sources = thumbnailVariantPaths(
+      const sources = await thumbnailVariantPaths(
         row.relativePath,
         row.name,
         oldHash,
         row.type,
-      );
-      const dests = thumbnailVariantPaths(
-        row.relativePath,
-        row.name,
-        newHash,
-        row.type,
+        thumbnailIndex,
       );
 
-      for (let i = 0; i < sources.length; i++) {
-        const from = sources[i].path;
-        const to = dests[i].path;
-        const isDir = sources[i].isDirectory;
+      for (const [i, source] of sources.entries()) {
+        const from = source.path;
+        const to = thumbnailVariantDestinationPath(
+          row.relativePath,
+          row.name,
+          newHash,
+          source,
+        );
+        const isDir = source.isDirectory;
         // Contain per-variant filesystem failures: a single unmovable/anomalous
         // cache entry must never throw out of this blocking boot migration and
         // take the server down. A skipped variant simply regenerates later under

@@ -18,14 +18,9 @@ export const serverInfoQuery = gql(/* GraphQL */ `
       }
       settings {
         useOriginalsForLightbox
-        thumbnailSmallPx
-        thumbnailMediumPx
-        thumbnailLargePx
         thumbnailJpegQuality
-        thumbnailDimensions {
-          sm
-          md
-          lg
+        thumbnailVariants {
+          ...ThumbnailVariantFragment
         }
       }
       videoAcceleration {
