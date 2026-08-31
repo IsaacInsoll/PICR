@@ -19,6 +19,7 @@ import type {
   ThumbnailVariantToken,
   ThumbnailVariantWidth,
 } from '@shared/thumbnailVariants.js';
+import { renderEscapedHtmlTemplate } from './htmlTemplate.js';
 
 let cachedIndexHtml: string | undefined;
 
@@ -104,11 +105,7 @@ export const picrTemplate = async (req: Request, res: Response) => {
     const publicDir = resolvePublicDir();
     cachedIndexHtml = readFileSync(publicDir + '/index.html', 'utf8');
   }
-  let html = cachedIndexHtml;
-  Object.entries(fields).forEach(([key, value]) => {
-    html = html.replaceAll(`{${key}}`, value);
-  });
-  res.send(html);
+  res.send(renderEscapedHtmlTemplate(cachedIndexHtml, fields));
 };
 
 const fieldDefaults: ITemplateFields = {

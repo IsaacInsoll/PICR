@@ -696,6 +696,10 @@ enabled.
 Every producer of an image route must encode that final filename with
 `encodeURIComponent`. Raw spaces and URL delimiters are unsafe in clients, and
 backend-produced URLs can be interpolated into HTML metadata or notifications.
+Rich-link template fields must go through `renderEscapedHtmlTemplate`; never
+interpolate folder names, summaries, request URLs, or media URLs directly into
+`index.html`. The renderer escapes text/attribute delimiters and performs one
+placeholder pass so field values cannot introduce another substitution.
 
 The legacy `sm`/`md`/`lg` routes remain as compatibility aliases. They may serve
 old cache files when present, but missing legacy entries should resolve to the
