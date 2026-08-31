@@ -19,6 +19,11 @@ Testing is split into two suites under `tests/`:
 - Integration-test cleanup that performs API assertions must not mask an earlier
   test-body failure. Surface cleanup failures when the body passed; otherwise
   preserve the original failure after best-effort cleanup.
+- Before a Docker integration test sends a Ping hint for a host-side fixture
+  mutation, use the Ping probe endpoint to confirm the backend container sees
+  the expected path state. Completion of the host filesystem call does not
+  guarantee that a CI bind mount is already presenting that state to the
+  sibling container.
 - Exception: pure backend or shared-primitive unit tests that guard load-bearing
   invariants (e.g. file queue ordering/coalescing or shared i18n catalog
   contracts) are allowed in `tests/api`. They mock their dependencies and need

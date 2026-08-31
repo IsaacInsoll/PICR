@@ -26,6 +26,20 @@ const postPing = (body: unknown, authorization = `Bearer ${pingToken}`) =>
     body: JSON.stringify(body),
   });
 
+const waitForProbe = async (path: string, expected: 'missing' | 'visible') => {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < 10_000) {
+    const response = await postPing({ ...payload(), probePath: path });
+    expect(response.status).toBe(200);
+    const result = (await response.json()) as {
+      probe: 'ignored' | 'missing' | 'visible';
+    };
+    if (result.probe === expected) return;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error(`Timed out waiting for backend probe to report ${expected}`);
+};
+
 type TestClient = Awaited<ReturnType<typeof createTestGraphqlClient>>;
 
 const findFileNamed = async (client: TestClient, name: string) => {
@@ -126,6 +140,7 @@ test.skipIf(!!process.env.ACT)(
   async () => {
     const suffix = Math.random().toString(36).slice(2, 8);
     const name = `ping-lifecycle-${suffix}.txt`;
+    const relativePath = `Birthday Video/${name}`;
     const path = join(
       process.cwd(),
       'tests/api/env/media/Birthday Video',
@@ -148,6 +163,7 @@ test.skipIf(!!process.env.ACT)(
     try {
       await writeFile(path, `first ${suffix}`);
       await utimes(path, oldEnoughForFastPath, oldEnoughForFastPath);
+      await waitForProbe(relativePath, 'visible');
       await sendDirectoryHint();
       const added = await waitForFile(client, name, Boolean);
       expect(added?.id).toBeDefined();
@@ -164,12 +180,14 @@ test.skipIf(!!process.env.ACT)(
       expect(modified?.id).toBe(added?.id);
 
       await rm(path);
+      await waitForProbe(relativePath, 'missing');
       await sendDirectoryHint();
       await waitForFile(client, name, (file) => !file);
       bodyCompleted = true;
     } finally {
       try {
         await rm(path, { force: true });
+        await waitForProbe(relativePath, 'missing');
         await sendDirectoryHint();
         await waitForFile(client, name, (file) => !file);
       } catch (cleanupError) {
