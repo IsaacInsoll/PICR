@@ -89,19 +89,13 @@ updates:
       interval: monthly
       time: '06:00'
       timezone: America/New_York
-    open-pull-requests-limit: 1
-    cooldown:
-      semver-minor-days: 21
-      semver-patch-days: 7
-    ignore:
-      - dependency-name: '*'
-        update-types:
-          - version-update:semver-major
+    open-pull-requests-limit: 0
     labels:
       - dependencies
       - npm
     groups:
-      npm-app:
+      npm-app-security:
+        applies-to: security-updates
         patterns:
           - '*'
 

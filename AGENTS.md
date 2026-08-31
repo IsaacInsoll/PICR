@@ -344,11 +344,13 @@ Dependabot's `cooldown` option is ecosystem-specific. GitHub currently rejects
 cooldowns on the npm update entries rather than copying them into the Actions
 entry. PICR intentionally checks grouped npm minor/patch updates monthly with a
 21-day minor and 7-day patch cooldown, ignores routine npm major-version PRs,
-and checks grouped GitHub Actions updates quarterly. Security updates remain a
-separate repository setting and must not be disabled to reduce version-update
-noise. Keep workflow `push` validation limited to `master`; pull requests have
-their own validation event, and allowing all branch pushes doubles CI for every
-Dependabot PR.
+and checks grouped GitHub Actions updates quarterly. The React Native app is the
+exception: routine `/app` version updates are disabled and its security updates
+are grouped, because Expo dependency upgrades are coordinated manually during
+app maintenance. Security updates remain a separate repository setting and must
+not be disabled to reduce version-update noise. Keep workflow `push` validation
+limited to `master`; pull requests have their own validation event, and allowing
+all branch pushes doubles CI for every Dependabot PR.
 
 Frontend dev runtime note:
 
