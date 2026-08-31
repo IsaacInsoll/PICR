@@ -32,7 +32,7 @@ export const ensureDecodedImage = async (
   const decoder = decoderFor(file);
   if (decoder === 'none') return fullPathForFile(file);
 
-  const target = decodedImagePath(file);
+  const target = decodedImagePath(file, decoder);
   if (existsSync(target)) return target;
 
   const failureKey = decodeFailureKey(file, decoder);
@@ -91,6 +91,14 @@ const decodeRawPreview = async (
         ['-b', `-${tag}`, source],
         candidate,
       );
+      await runProcess(picrConfig.exiftoolPath ?? 'exiftool', [
+        '-m',
+        '-overwrite_original',
+        '-TagsFromFile',
+        source,
+        '-Orientation',
+        candidate,
+      ]);
       await validateCandidate(candidate);
       await rename(candidate, target);
       return;

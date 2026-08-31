@@ -742,6 +742,12 @@ frontend `srcset` selection.
 - Existing decoded cache hits are trusted by existence, like generated
   thumbnails. New decoded intermediates must be validated before the atomic
   rename into the cache.
+- RAW embedded previews may omit the source file's EXIF Orientation tag. Copy
+  only that tag from the RAW into the temporary JPEG, validate the preview, then
+  promote it without modifying the original RAW. Preview extraction tries
+  `JpgFromRaw`, `PreviewImage`, and `ThumbnailImage` in that order. RAW decoded
+  intermediates use the `decoded-raw-v2` cache variant so upgrades do not trust
+  unversioned previews created before orientation propagation was added.
 - `addFile()` uses a `typeChanged` gate so existing files reclassify during the
   normal boot scan when optional decoder capabilities appear. Do not bulk-clear
   `fileHash` to force this.
