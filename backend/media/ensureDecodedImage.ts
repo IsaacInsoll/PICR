@@ -11,6 +11,11 @@ import { decodedImagePath } from './decodedImagePath.js';
 import { decoderFor, type ImageDecoder } from './decoderFor.js';
 import { openSharp } from './openSharp.js';
 
+export type DecodableImageFile = Pick<
+  FileFields,
+  'fileHash' | 'id' | 'name' | 'relativePath'
+>;
+
 const decodeTimeoutMs = 30_000;
 const inFlightDecodes = new Map<string, Promise<string>>();
 const reportedFailures = new Set<string>();
@@ -21,7 +26,9 @@ const rawPreviewTags = [
   'ThumbnailImage',
 ] as const;
 
-export const ensureDecodedImage = async (file: FileFields): Promise<string> => {
+export const ensureDecodedImage = async (
+  file: DecodableImageFile,
+): Promise<string> => {
   const decoder = decoderFor(file);
   if (decoder === 'none') return fullPathForFile(file);
 
@@ -45,7 +52,7 @@ export const ensureDecodedImage = async (file: FileFields): Promise<string> => {
 };
 
 const decodeImage = async (
-  file: FileFields,
+  file: DecodableImageFile,
   decoder: Exclude<ImageDecoder, 'none'>,
   target: string,
 ): Promise<string> => {
@@ -69,7 +76,7 @@ const decodeImage = async (
 };
 
 const decodeRawPreview = async (
-  file: FileFields,
+  file: DecodableImageFile,
   target: string,
 ): Promise<void> => {
   const source = fullPathForFile(file);
@@ -99,7 +106,7 @@ const decodeRawPreview = async (
 };
 
 const decodeWithMagick = async (
-  file: FileFields,
+  file: DecodableImageFile,
   target: string,
 ): Promise<void> => {
   const candidate = tempPath(target, 0);
@@ -209,6 +216,6 @@ const removeIfExists = async (path: string): Promise<void> => {
 };
 
 const decodeFailureKey = (
-  file: FileFields,
+  file: DecodableImageFile,
   decoder: Exclude<ImageDecoder, 'none'>,
 ): string => `${file.id}-${file.fileHash ?? ''}-${decoder}`;

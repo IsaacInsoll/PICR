@@ -4,13 +4,17 @@ import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import type { FileFields } from '../../backend/db/picrDb';
 import { picrConfig } from '../../backend/config/picrConfig';
-import { videoThumbnailArtifactsExist } from '../../backend/media/videoThumbnailExistence';
 import {
+  missingVideoPosterSizes,
+  videoThumbnailBaselineArtifactsExist,
+} from '../../backend/media/videoThumbnailExistence';
+import {
+  videoPosterFramePath,
   videoPosterPath,
   videoScrubPath,
 } from '../../backend/media/videoThumbnailPaths';
 
-test('videoThumbnailArtifactsExist requires JPEG posters and scrub sprite', async () => {
+test('videoThumbnailBaselineArtifactsExist requires scrub sprite and poster frame', async () => {
   const root = await mkdtempRoot();
   picrConfig.cachePath = join(root, 'cache');
   picrConfig.mediaPath = join(root, 'media');
@@ -22,13 +26,28 @@ test('videoThumbnailArtifactsExist requires JPEG posters and scrub sprite', asyn
 
   try {
     await touch(videoScrubPath(file));
-    await Promise.all(
-      (['sm', 'md', 'lg'] as const).map((size) =>
-        touch(videoPosterPath(file, size)),
-      ),
-    );
+    await touch(videoPosterFramePath(file));
 
-    expect(videoThumbnailArtifactsExist(file)).toBe(true);
+    expect(videoThumbnailBaselineArtifactsExist(file)).toBe(true);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('missingVideoPosterSizes reports poster derivatives independently of baseline artifacts', async () => {
+  const root = await mkdtempRoot();
+  picrConfig.cachePath = join(root, 'cache');
+  picrConfig.mediaPath = join(root, 'media');
+  const file = {
+    relativePath: 'videos',
+    name: 'clip.mp4',
+    fileHash: 'content-hash',
+  } as FileFields;
+
+  try {
+    await touch(videoPosterPath(file, 'sm'));
+
+    expect(missingVideoPosterSizes(file)).toEqual(['md', 'lg']);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

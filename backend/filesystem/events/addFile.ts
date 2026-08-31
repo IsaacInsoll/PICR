@@ -4,8 +4,7 @@ import { folderList, relativePath } from '../fileManager.js';
 import { log } from '../../logger.js';
 import { contentHashForStats } from '../fileHash.js';
 import { FileType } from '@shared/gql/graphql.js';
-import { getImageRatio } from '../../media/getImageRatio.js';
-import { getImageMetadata } from '../../media/getImageMetadata.js';
+import { getImageMetadataAndDimensions } from '../../media/getImageMetadata.js';
 import { getVideoMetadata } from '../../media/getVideoMetadata.js';
 import { encodeImageToBlurhash } from '../../media/blurHash.js';
 import { moveThumbnailFile } from '../../media/moveThumbnailFile.js';
@@ -194,9 +193,12 @@ const addFileUnlocked = async (
       try {
         const src = await ensureDecodedImage(file);
         // deleteAllThumbs(filePath);
-        file.imageRatio = await getImageRatio(src);
-        const meta = await getImageMetadata(file, src);
-        file.metadata = JSON.stringify(meta);
+        const { dimensions, imageRatio, metadata } =
+          await getImageMetadataAndDimensions(file, src);
+        file.imageWidth = dimensions.width;
+        file.imageHeight = dimensions.height;
+        file.imageRatio = imageRatio;
+        file.metadata = JSON.stringify(metadata);
         file.blurHash = await encodeImageToBlurhash(src);
         shouldGenerateThumbs = generateThumbs;
       } catch (error) {
@@ -206,6 +208,8 @@ const addFileUnlocked = async (
           `Downgrading ${file.name} to generic file after image decode failed: ${message}`,
         );
         file.type = FileType.File;
+        file.imageWidth = null;
+        file.imageHeight = null;
         file.imageRatio = 0;
         file.metadata = null;
         file.blurHash = null;
@@ -229,7 +233,12 @@ const addFileUnlocked = async (
       case FileType.Image:
         try {
           const src = await ensureDecodedImage(file);
-          file.metadata = JSON.stringify(await getImageMetadata(file, src));
+          const { dimensions, imageRatio, metadata } =
+            await getImageMetadataAndDimensions(file, src);
+          file.imageWidth = dimensions.width;
+          file.imageHeight = dimensions.height;
+          file.imageRatio = imageRatio;
+          file.metadata = JSON.stringify(metadata);
         } catch (error) {
           const message =
             error instanceof Error ? error.message : String(error);
@@ -238,6 +247,8 @@ const addFileUnlocked = async (
             `Downgrading ${file.name} to generic file after image decode failed: ${message}`,
           );
           file.type = FileType.File;
+          file.imageWidth = null;
+          file.imageHeight = null;
           file.imageRatio = 0;
           file.metadata = null;
           file.blurHash = null;

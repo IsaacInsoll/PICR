@@ -30,8 +30,14 @@ import {
   mergeDuplicateFileRows,
 } from '../filesystem/fileIdentity.js';
 
+export interface DbMigrationContext {
+  previousBootedVersion: string | null | undefined;
+}
+
 // This does the "picr" side of migrations, for the DB side see schemaMigration.ts
-export const dbMigrate = async (config: IPicrConfiguration) => {
+export const dbMigrate = async (
+  config: IPicrConfiguration,
+): Promise<DbMigrationContext> => {
   const opts = await getServerOptions();
   assertDatabaseVersionCompatible(opts, config.version);
 
@@ -81,6 +87,7 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
   await runThumbnailHashMigrationIfNeeded(lastBootedVersion);
 
   await setServerOptions({ lastBootedVersion: config.version });
+  return { previousBootedVersion: lastBootedVersion };
 };
 
 const removeDuplicates = async () => {

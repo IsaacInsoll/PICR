@@ -19,6 +19,8 @@ interface MockFileRow {
   rating: number;
   metadata?: string | null;
   blurHash?: string | null;
+  imageWidth?: number | null;
+  imageHeight?: number | null;
   imageRatio?: number | null;
   duration?: number | null;
   stIno?: bigint | null;
@@ -174,10 +176,11 @@ const loadAddFile = async ({
     addToQueue,
   }));
   vi.doMock('../../backend/media/getImageMetadata.js', () => ({
-    getImageMetadata: vi.fn(async () => ({ camera: 'mock camera' })),
-  }));
-  vi.doMock('../../backend/media/getImageRatio.js', () => ({
-    getImageRatio: vi.fn(async () => 1.5),
+    getImageMetadataAndDimensions: vi.fn(async () => ({
+      dimensions: { width: 3000, height: 2000 },
+      imageRatio: 1.5,
+      metadata: { Camera: 'mock camera', Width: 3000, Height: 2000 },
+    })),
   }));
   vi.doMock('../../backend/media/getVideoMetadata.js', () => ({
     getVideoMetadata: vi.fn(async () => ({
@@ -302,6 +305,8 @@ test('queues thumbnail generation only after persisting a new image row', async 
       exists: true,
       existsRescan: true,
       fileHash: contentHashForStats(stats),
+      imageWidth: 3000,
+      imageHeight: 2000,
       imageRatio: 1.5,
       blurHash: 'mock-blurhash',
       type: 'Image',
@@ -334,6 +339,8 @@ test('does not queue thumbnail generation when image decoding fails', async () =
   expect(files[0]).toMatchObject({
     exists: true,
     existsRescan: true,
+    imageWidth: null,
+    imageHeight: null,
     imageRatio: 0,
     metadata: null,
     blurHash: null,
@@ -468,8 +475,10 @@ test('does not queue thumbnail generation for a metadata-only image refresh', as
     exists: true,
     existsRescan: true,
     fileHash: hash,
+    imageWidth: 3000,
+    imageHeight: 2000,
     imageRatio: 1.5,
-    metadata: '{"camera":"mock camera"}',
+    metadata: '{"Camera":"mock camera","Width":3000,"Height":2000}',
     type: 'Image',
   });
   expect(addToQueue).not.toHaveBeenCalled();
@@ -522,8 +531,10 @@ test('queues thumbnail generation after persisting a changed image hash', async 
       existsRescan: true,
       fileHash: newHash,
       fileLastModified: newStats.mtime,
+      imageWidth: 3000,
+      imageHeight: 2000,
       imageRatio: 1.5,
-      metadata: '{"camera":"mock camera"}',
+      metadata: '{"Camera":"mock camera","Width":3000,"Height":2000}',
       type: 'Image',
     });
   });

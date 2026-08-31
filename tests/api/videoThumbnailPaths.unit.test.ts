@@ -1,0 +1,22 @@
+import { expect, test } from 'vitest';
+import { picrConfig } from '../../backend/config/picrConfig.js';
+import { thumbnailVariantPaths } from '../../backend/media/thumbnailVariants.js';
+import { videoPosterFramePathForParts } from '../../backend/media/videoThumbnailPaths.js';
+
+test('video poster frame path is a versioned cache artifact', () => {
+  picrConfig.cachePath = '/cache';
+
+  expect(videoPosterFramePathForParts('videos', 'clip.mp4', 'hash')).toBe(
+    '/cache/thumbs/videos/clip.mp4-v2-posterframe-hash.jpg',
+  );
+});
+
+test('video cache variant enumeration includes the persisted poster frame', () => {
+  picrConfig.cachePath = '/cache';
+
+  expect(
+    thumbnailVariantPaths('videos', 'clip.mp4', 'hash', 'Video').map(
+      ({ path }) => path,
+    ),
+  ).toContain('/cache/thumbs/videos/clip.mp4-v2-posterframe-hash.jpg');
+});

@@ -305,6 +305,7 @@
     "volume": "Volume"
   },
   "task": {
+    "imageDimensionBackfill": "Mise à jour des dimensions des images",
     "mediaImport": "Importation des fichiers et génération des miniatures",
     "mediaScan": "Recherche de nouveaux médias…"
   },

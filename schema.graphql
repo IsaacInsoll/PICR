@@ -326,6 +326,12 @@ type MediaScanningInfo {
   scheduledScanHours: Int!
 }
 
+enum MediaTypeFilter {
+  All
+  Image
+  Video
+}
+
 type Mutation {
   addComment(comment: String, flag: FileFlag, id: ID!, nickName: String, rating: Int): FileInterface!
   auth(password: String!, user: String!): String!
@@ -337,7 +343,7 @@ type Mutation {
   editServerSettings(input: EditServerSettingsInput!): ServerSettings!
   editUser(commentPermissions: CommentPermissions, enabled: Boolean, expiresAt: DateTime, folderId: ID, galleryPasscode: String, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
   editUserDevice(enabled: Boolean!, name: String, notificationToken: String!, userId: ID!): UserDevice!
-  generateThumbnails(folderId: ID): Boolean!
+  generateThumbnails(folderId: ID, mediaType: MediaTypeFilter = All): Boolean!
   generateZip(folderId: ID): String!
   recordFolderVisit(folderId: ID!): Boolean!
   renameFolder(folderId: ID!, newPath: String!, oldPath: String!): Folder!

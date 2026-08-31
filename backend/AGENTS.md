@@ -118,6 +118,17 @@ the flag — set it only via env, not via any UI mutation. Public-link view
 notifications are sent from `recordFolderVisit`, and download notifications are
 sent from `generateZip` after a download row is written.
 
+Active `Image` rows are expected to have positive oriented `imageWidth` and
+`imageHeight` values. The columns are nullable because non-image rows do not use
+them and because Drizzle SQL migrations run before PICR's boot backfill, but
+missing image dimensions are not normal runtime state. Populate dimensions in
+the same decode/metadata path that classifies an image. Post-boot dimension
+backfill is repair work: if an existing image cannot be decoded there, log/count
+the failure and leave the row unchanged so a flaky mount or transient decoder
+failure does not rewrite user-visible media state. Let normal file scanning
+handle durable type changes. Do not spread nullable-dimension handling into
+gallery code or thumbnail selection.
+
 Folder rows can be `exists=false` while `existsRescan=true` after a watcher
 delete, because `removeFolder()` archives the row without clearing
 `existsRescan`. `addFolder()` must reactivate rows when either flag is false;
@@ -182,6 +193,37 @@ const user = await dbUserForId(userId); // throws if not found
    If the command fails (e.g. DB not reachable), tell the user to run it themselves rather than creating the file manually.
 
 4. Server auto-migrates on startup (dev and production)
+
+---
+
+### Boot Migration Phases
+
+`schemaMigration()` and `dbMigrate()` run before Express listens. Keep only
+work there that must finish before serving traffic: schema changes, compatibility
+guards, token-secret setup, and structural data repairs where users could
+otherwise interact with rows that are about to be merged or reclassified. The
+Docker healthcheck hits `/readyz`, which is only reachable after Express starts;
+slow pre-listen work can make an otherwise healthy container look failed.
+
+Use `postBootMaintenance()` for resumable derived-data repair where serving
+before completion means stale data, not wrong behavior. Run it after
+`express.listen()` and shutdown-handler registration, but before `fileWatcher()`
+and scheduled scans unless a task has a proven reason to run concurrently with
+that boot/watch/scheduled scanner work. Express is already accepting traffic at
+this point, so request-triggered work such as on-view scans may still overlap.
+Deferred maintenance must catch/log its own top-level failures and continue
+startup so stale derived data does not take the server down after it is already
+listening. Maintenance tasks that actually do work should leave a concise
+info-level stdout trail for production operators: start, completion with elapsed
+time and affected row/file counts where applicable, and failure summaries that
+explain what was left stale. Keep no-op maintenance quiet so routine boots do
+not accumulate noise in long-lived server logs.
+
+`lastBootedVersion` is stamped at the end of `dbMigrate()`, before
+post-boot maintenance runs. Post-boot tasks may read the previous booted version
+for logging or fresh-install shortcuts, but required completion must be gated by
+durable data state or by a task-specific durable marker. If a task can only be
+made safe with the global version gate, keep it pre-listen.
 
 ---
 

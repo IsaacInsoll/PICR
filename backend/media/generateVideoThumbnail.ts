@@ -1,12 +1,16 @@
-import type { ThumbnailSize } from '@shared/thumbnailSize.js';
+import { thumbnailSizes, type ThumbnailSize } from '@shared/thumbnailSize.js';
 import type { PicrVideoMetadata } from '@shared/types/metadata.js';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { copyFile, mkdtemp, rm } from 'node:fs/promises';
 import { log } from '../logger.js';
 import * as ji from 'join-images';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import type { FileFields } from '../db/picrDb.js';
 import { encodeThumbnail } from './encodeThumbnail.js';
-import { videoPosterPath, videoScrubPath } from './videoThumbnailPaths.js';
+import {
+  videoPosterFramePath,
+  videoPosterPath,
+  videoScrubPath,
+} from './videoThumbnailPaths.js';
 import { runFfmpeg } from './ffmpeg.js';
 import { openSharp } from './openSharp.js';
 import {
@@ -19,7 +23,10 @@ import { encodeImageToBlurhash } from './blurHash.js';
 import { db } from '../db/picrDb.js';
 import { dbFile } from '../db/models/index.js';
 import { eq } from 'drizzle-orm';
-import { videoThumbnailArtifactsExist } from './videoThumbnailExistence.js';
+import {
+  missingVideoPosterSizes,
+  videoThumbnailBaselineArtifactsExist,
+} from './videoThumbnailExistence.js';
 import { atomicWrite } from './atomicWrite.js';
 import {
   serverThumbnailDimensions,
@@ -58,13 +65,26 @@ const processVideoThumbnail = async (
     );
   }
 
-  if (await videoThumbnailsExist(file)) {
-    log('info', 'Skipping ' + file.name + ' because video thumbnails exist');
-    return;
-  }
-
   try {
     const settings = await getServerMediaSettings();
+    if (videoThumbnailBaselineArtifactsExist(file)) {
+      const missingPosters = missingVideoPosterSizes(file);
+      if (missingPosters.length > 0) {
+        await encodeVideoPosters(
+          file,
+          videoPosterFramePath(file),
+          settings,
+          missingPosters,
+        );
+      } else {
+        log(
+          'info',
+          'Skipping ' + file.name + ' because video thumbnails exist',
+        );
+      }
+      return;
+    }
+
     const timestamps = frameTimestamps(Duration, numberOfVideoSnapshots);
     const tempDir = await mkdtemp(join(tmpdir(), 'picr-video-thumbnail-'));
     try {
@@ -86,9 +106,13 @@ const processVideoThumbnail = async (
       const selected = candidates[pickPosterFrame(candidates)];
       const posterFramePath = join(tempDir, 'poster.jpg');
       await extractPosterFrame(file, selected.timestamp, posterFramePath);
-      await encodeVideoPosters(file, posterFramePath, settings);
+      const cachedPosterFramePath = videoPosterFramePath(file);
+      await atomicWrite(cachedPosterFramePath, (tempPath) =>
+        copyFile(posterFramePath, tempPath),
+      );
+      await encodeVideoPosters(file, cachedPosterFramePath, settings);
 
-      const blurHash = await encodeImageToBlurhash(posterFramePath);
+      const blurHash = await encodeImageToBlurhash(cachedPosterFramePath);
       if (blurHash) await persistVideoBlurHash(file, blurHash);
     } finally {
       await rm(tempDir, { recursive: true, force: true });
@@ -192,9 +216,10 @@ const encodeVideoPosters = async (
   file: FileFields,
   posterFramePath: string,
   settings: ServerMediaSettings,
+  sizes: readonly ThumbnailSize[] = thumbnailSizes,
 ): Promise<void> => {
   await Promise.all(
-    (['sm', 'md', 'lg'] as const).map((posterSize) =>
+    sizes.map((posterSize) =>
       encodeThumbnail(
         posterFramePath,
         posterSize,
@@ -221,10 +246,6 @@ const persistVideoBlurHash = async (
       `Error saving video blurhash for ${file.name}: ${String(error)}`,
     );
   }
-};
-
-const videoThumbnailsExist = async (file: FileFields): Promise<boolean> => {
-  return videoThumbnailArtifactsExist(file);
 };
 
 export const generateVideoThumbnail = async (

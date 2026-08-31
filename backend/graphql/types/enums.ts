@@ -31,6 +31,14 @@ export const fileFlagEnum = new GraphQLEnumType(
 export const fileTypeEnum = new GraphQLEnumType(
   enumToGQL('FileType', fileTypeOptions),
 );
+export const mediaTypeFilterEnum = new GraphQLEnumType({
+  name: 'MediaTypeFilter',
+  values: {
+    All: { value: 'All' },
+    Image: { value: 'Image' },
+    Video: { value: 'Video' },
+  },
+});
 export const userTypeEnum = new GraphQLEnumType(
   enumToGQL('UserType', userTypeOptions),
 );

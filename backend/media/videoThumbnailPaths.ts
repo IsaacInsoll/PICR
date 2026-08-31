@@ -32,6 +32,17 @@ export const videoScrubPath = (file: FileFields): string => {
   return videoScrubPathForParts(relativePath(p), fileName, file.fileHash ?? '');
 };
 
+export const videoPosterFramePath = (file: FileFields): string => {
+  const fp = fullPathForFile(file);
+  const fileName = basename(fp);
+  const p = dirname(fp);
+  return videoPosterFramePathForParts(
+    relativePath(p),
+    fileName,
+    file.fileHash ?? '',
+  );
+};
+
 export const videoPosterPathForParts = (
   relativePath: string,
   name: string,
@@ -50,6 +61,15 @@ export const videoScrubPathForParts = (
 ): string => {
   const base = picrConfig.cachePath + `/thumbs/${relativePath}/`;
   return `${base}${name}-v${VIDEO_THUMBNAIL_CACHE_VERSION}-scrub-${hash}.jpg`;
+};
+
+export const videoPosterFramePathForParts = (
+  relativePath: string,
+  name: string,
+  hash: string,
+): string => {
+  const base = picrConfig.cachePath + `/thumbs/${relativePath}/`;
+  return `${base}${name}-v${VIDEO_THUMBNAIL_CACHE_VERSION}-posterframe-${hash}.jpg`;
 };
 
 export const legacyVideoMontagePathForParts = (

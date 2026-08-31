@@ -7,6 +7,7 @@ import { taskType } from '../types/taskType.js';
 import { allSubfolderIds } from '../../helpers/allSubfolders.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import { mediaScanTaskStatus } from '../../filesystem/mediaScanActivity.js';
+import { postBootMaintenanceTaskStatus } from '../../boot/postBootMaintenanceStatus.js';
 
 export const taskResolver: PicrResolver<object, QueryTasksArgs> = async (
   _,
@@ -29,6 +30,9 @@ export const taskResolver: PicrResolver<object, QueryTasksArgs> = async (
 
     const thumbs = queueTaskStatus();
     if (thumbs) taskList.push(thumbs);
+
+    const maintenance = postBootMaintenanceTaskStatus();
+    if (maintenance) taskList.push(maintenance);
   }
 
   return taskList;

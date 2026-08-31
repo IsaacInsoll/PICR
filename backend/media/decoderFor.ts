@@ -1,4 +1,3 @@
-import type { FileFields } from '../db/picrDb.js';
 import { picrConfig } from '../config/picrConfig.js';
 import {
   isHeicFormat,
@@ -10,7 +9,7 @@ import {
 
 export type ImageDecoder = 'none' | 'exiftool' | 'magick';
 
-export const decoderFor = (file: FileFields): ImageDecoder => {
+export const decoderFor = (file: { name: string }): ImageDecoder => {
   if (isSharpReadableFormat(file.name)) return 'none';
   if (isRawFormat(file.name)) {
     if (picrConfig.mediaCaps.raw) return 'exiftool';

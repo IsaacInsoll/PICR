@@ -4,6 +4,7 @@ import type { FileFields } from '../db/picrDb.js';
 import { thumbnailSizes } from '@shared/thumbnailSize.js';
 import {
   legacyVideoMontagePathForParts,
+  videoPosterFramePathForParts,
   videoPosterPathForParts,
   videoScrubPathForParts,
 } from './videoThumbnailPaths.js';
@@ -67,6 +68,10 @@ export const thumbnailVariantPaths = (
     }
     variants.push({
       path: videoScrubPathForParts(relativePath, name, hash),
+      isDirectory: false,
+    });
+    variants.push({
+      path: videoPosterFramePathForParts(relativePath, name, hash),
       isDirectory: false,
     });
     // Transitional cleanup for pre-v2 montage directories. New video variants

@@ -39,6 +39,9 @@ test('tasks without steps render the indeterminate loader', () => {
 });
 
 test('known backend task IDs select translated labels', () => {
+  expect(mediaTaskTranslationKey('image-dimension-backfill')).toBe(
+    'task.imageDimensionBackfill',
+  );
   expect(mediaTaskTranslationKey('media-scan')).toBe('task.mediaScan');
   expect(mediaTaskTranslationKey('media-import')).toBe('task.mediaImport');
   expect(mediaTaskTranslationKey('zip-task')).toBeNull();

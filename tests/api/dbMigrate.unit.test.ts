@@ -14,6 +14,8 @@ const fileRow = (props: Pick<FileFields, 'exists' | 'id'>) =>
     fileSize: 100,
     flag: null,
     folderId: 10,
+    imageWidth: null,
+    imageHeight: null,
     imageRatio: null,
     latestComment: null,
     metadata: '{}',
@@ -111,6 +113,9 @@ const loadDbMigrate = async ({
   }));
   vi.doMock('../../backend/boot/migrateThumbnailHashes.js', () => ({
     runThumbnailHashMigrationIfNeeded: vi.fn(),
+  }));
+  vi.doMock('../../backend/boot/backfillImageDimensions.js', () => ({
+    backfillImageDimensions: vi.fn(),
   }));
   vi.doMock('../../backend/filesystem/fileIdentity.js', () => ({
     compareFilesForIdentity: vi.fn((a: FileFields, b: FileFields) => {

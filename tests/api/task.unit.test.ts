@@ -19,6 +19,12 @@ const loadTaskResolver = async (permissions: FolderPermissions) => {
     step: 0,
     totalSteps: 2,
   }));
+  const postBootMaintenanceTaskStatus = vi.fn(() => ({
+    id: 'image-dimension-backfill',
+    name: 'Updating image dimensions',
+    step: 1,
+    totalSteps: 3,
+  }));
 
   vi.doMock('../../backend/auth/contextPermissions.js', () => ({
     contextPermissions,
@@ -35,6 +41,9 @@ const loadTaskResolver = async (permissions: FolderPermissions) => {
   vi.doMock('../../backend/filesystem/fileQueue.js', () => ({
     queueTaskStatus,
   }));
+  vi.doMock('../../backend/boot/postBootMaintenanceStatus.js', () => ({
+    postBootMaintenanceTaskStatus,
+  }));
 
   const { taskResolver } =
     await import('../../backend/graphql/queries/task.js');
@@ -47,6 +56,7 @@ const loadTaskResolver = async (permissions: FolderPermissions) => {
   return {
     allSubfolderIds,
     mediaScanTaskStatus,
+    postBootMaintenanceTaskStatus,
     queueTaskStatus,
     queueZipTaskStatus,
     result,
@@ -58,17 +68,19 @@ afterEach(() => {
   vi.resetModules();
 });
 
-test('folder-scoped admins receive ZIP, scan, and import tasks', async () => {
+test('folder-scoped admins receive ZIP, scan, import, and maintenance tasks', async () => {
   const result = await loadTaskResolver('Admin');
 
   expect(result.result).toEqual([
     expect.objectContaining({ id: 'zip-task' }),
     expect.objectContaining({ id: 'media-scan' }),
     expect.objectContaining({ id: 'media-import' }),
+    expect.objectContaining({ id: 'image-dimension-backfill' }),
   ]);
   expect(result.queueZipTaskStatus).toHaveBeenCalledWith([2, 3]);
   expect(result.mediaScanTaskStatus).toHaveBeenCalledOnce();
   expect(result.queueTaskStatus).toHaveBeenCalledOnce();
+  expect(result.postBootMaintenanceTaskStatus).toHaveBeenCalledOnce();
 });
 
 test('link users receive accessible ZIP tasks without global maintenance', async () => {
@@ -77,4 +89,5 @@ test('link users receive accessible ZIP tasks without global maintenance', async
   expect(result.result).toEqual([expect.objectContaining({ id: 'zip-task' })]);
   expect(result.mediaScanTaskStatus).not.toHaveBeenCalled();
   expect(result.queueTaskStatus).not.toHaveBeenCalled();
+  expect(result.postBootMaintenanceTaskStatus).not.toHaveBeenCalled();
 });
