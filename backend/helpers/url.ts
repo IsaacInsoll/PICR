@@ -24,6 +24,6 @@ export const urlForImage = async (
   );
   return (
     picrConfig.baseUrl +
-    `image/${file.id}/${variant.token}/${file.fileHash}/${file.name}`
+    `image/${file.id}/${variant.token}/${file.fileHash}/${encodeURIComponent(file.name)}`
   );
 };

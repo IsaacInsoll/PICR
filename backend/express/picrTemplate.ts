@@ -136,7 +136,7 @@ const imagePathFor = (
   const path = `/image/${file.id}/${token}/${file.fileHash}/`;
   // The filename segment is decorative; the token picks the cache entry.
   if (file.type === 'Video') return path + 'poster.jpg';
-  return path + file.name;
+  return path + encodeURIComponent(file.name);
 };
 
 const imagePathForVariant = async (

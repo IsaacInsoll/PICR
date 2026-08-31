@@ -85,5 +85,6 @@ export const imageURL = (
     return path + 'poster.jpg';
   }
 
-  return path + (extension ? name + extension : name);
+  const filename = extension ? name + extension : name;
+  return path + encodeURIComponent(String(filename));
 };

@@ -693,6 +693,9 @@ cache file, MIME type, and encoder path. Explicit `.avif` legacy thumbnail
 requests still return 404 while AVIF is not generated. New thumbnail formats
 must be added through the shared format registry and benchmarked before they are
 enabled.
+Every producer of an image route must encode that final filename with
+`encodeURIComponent`. Raw spaces and URL delimiters are unsafe in clients, and
+backend-produced URLs can be interpolated into HTML metadata or notifications.
 
 The legacy `sm`/`md`/`lg` routes remain as compatibility aliases. They may serve
 old cache files when present, but missing legacy entries should resolve to the

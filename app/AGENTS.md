@@ -442,3 +442,7 @@ path to work around stale generated state.
 2. Check auth token is valid
 3. Check network connectivity
 4. Clear image cache in settings
+
+Media URL helpers must encode the final filename path segment with
+`encodeURIComponent`. Keep fixed video artifact names such as `poster.jpg`
+unchanged.
