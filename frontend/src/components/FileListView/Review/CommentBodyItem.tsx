@@ -133,7 +133,8 @@ const FilePreview = ({
         onClick={onClick}
         clickable={Boolean(onClick) || Boolean(linkTo)}
         file={file}
-        size="sm"
+        targetWidth={Math.ceil(96 * (file.imageRatio ?? 1))}
+        sizes={`${Math.ceil(96 * (file.imageRatio ?? 1))}px`}
         style={{
           width: 96 * (file.imageRatio ?? 1),
           height: 80,

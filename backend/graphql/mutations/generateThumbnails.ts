@@ -6,23 +6,9 @@ import { and, asc, eq, inArray } from 'drizzle-orm';
 import { dbFile } from '../../db/models/index.js';
 import { db } from '../../db/picrDb.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
-import {
-  MediaTypeFilter,
-  type MutationGenerateThumbnailsArgs,
-} from '@shared/gql/graphql.js';
+import type { MutationGenerateThumbnailsArgs } from '@shared/gql/graphql.js';
 import { mediaTypeFilterEnum } from '../types/enums.js';
-
-export const mediaTypesForGenerateThumbnails = (
-  mediaType: MediaTypeFilter | null | undefined,
-): readonly ['Image', 'Video'] | readonly ['Image'] | readonly ['Video'] => {
-  if (mediaType === MediaTypeFilter.Image) {
-    return ['Image'];
-  }
-  if (mediaType === MediaTypeFilter.Video) {
-    return ['Video'];
-  }
-  return ['Image', 'Video'];
-};
+import { mediaTypesForThumbnailWork } from '../../media/mediaTypeFilter.js';
 
 const resolver: PicrResolver<object, MutationGenerateThumbnailsArgs> = async (
   _,
@@ -41,7 +27,7 @@ const resolver: PicrResolver<object, MutationGenerateThumbnailsArgs> = async (
     where: and(
       inArray(dbFile.folderId, folderIds),
       eq(dbFile.exists, true),
-      inArray(dbFile.type, mediaTypesForGenerateThumbnails(params.mediaType)),
+      inArray(dbFile.type, mediaTypesForThumbnailWork(params.mediaType)),
     ),
     orderBy: asc(dbFile.name),
   }); //.then(x=>x.map(f=>f.id));

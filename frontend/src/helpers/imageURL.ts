@@ -1,10 +1,13 @@
 import type { ImageUrlFileInput } from '@shared/types/ui';
 import type { AllSize } from '@shared/thumbnailSize';
+import type { ThumbnailVariantToken } from '@shared/thumbnailVariants';
 import { withBasePath } from './baseHref';
+
+export type ImageRouteSize = AllSize | ThumbnailVariantToken;
 
 export const imageURL = (
   file: ImageUrlFileInput,
-  size: AllSize,
+  size: ImageRouteSize,
   extension?: string,
   // frame?: number,
 ) => {

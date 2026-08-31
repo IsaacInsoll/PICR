@@ -42,12 +42,13 @@ export const sendFolderViewedNotification = async (
   }
 
   const heroImage = await heroImageForFolder(folder);
+  const imageUrl = heroImage ? await urlForImage(heroImage, 250) : undefined;
   await sendNotification(folder, {
     title: user.name,
     message: `${type} ${folder.name}`,
     type: type === 'View' ? 'viewed' : 'downloaded',
     url: userUrlForFolder(folder.id),
-    imageUrl: heroImage ? urlForImage(heroImage, 'sm') : undefined,
+    imageUrl,
   });
 };
 
@@ -58,13 +59,14 @@ export const sendCommentAddedNotification = async (
   type: NotificationType,
   value?: string,
 ) => {
+  const imageUrl = await urlForImage(file, 250);
   await sendNotification(folder, {
     title: user.name,
     message: `${type} ${value} on ${file.name} in ${folder.name}`,
     type,
     userId: user.id,
     url: userUrlForFile(file),
-    imageUrl: urlForImage(file, 'sm'),
+    imageUrl,
   });
 };
 

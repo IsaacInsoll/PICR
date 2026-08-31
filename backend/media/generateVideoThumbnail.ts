@@ -1,8 +1,6 @@
 import type { ThumbnailSize } from '@shared/thumbnailSize.js';
 import type { PicrVideoMetadata } from '@shared/types/metadata.js';
-import { copyFile, mkdtemp, rm } from 'node:fs/promises';
 import { log } from '../logger.js';
-import * as ji from 'join-images';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import type { FileFields } from '../db/picrDb.js';
 import {
@@ -10,15 +8,6 @@ import {
   videoPosterVariantPath,
   videoScrubPath,
 } from './videoThumbnailPaths.js';
-import { runFfmpeg } from './ffmpeg.js';
-import { openSharp } from './openSharp.js';
-import {
-  pickPosterFrame,
-  type PosterFrameCandidate,
-} from './pickPosterFrame.js';
-import { tmpdir } from 'node:os';
-import { join } from 'path';
-import { encodeImageToBlurhash } from './blurHash.js';
 import { db } from '../db/picrDb.js';
 import { dbFile } from '../db/models/index.js';
 import { eq } from 'drizzle-orm';
@@ -26,29 +15,22 @@ import {
   missingVideoPosterVariants,
   videoThumbnailBaselineArtifactsExist,
 } from './videoThumbnailExistence.js';
-import { atomicWrite } from './atomicWrite.js';
-import { serverThumbnailDimensions } from '@shared/serverMediaSettings.js';
 import { getServerMediaSettings } from './serverMediaSettings.js';
 import {
   thumbnailVariantLadderForSettings,
   type ThumbnailVariant,
 } from '@shared/thumbnailVariants.js';
 import { encodeImageThumbnailVariants } from './encodeImageThumbnails.js';
-
-const numberOfVideoSnapshots = 10;
+import { generateVideoThumbnailArtifacts } from './videoThumbnailPipeline.js';
 
 // This operation takes some time, and might be requested multiple times before it completes
 // so lets queue it up
 const videoThumbnailQueue: { [key: string]: Promise<void> } = {};
 
-// NOTE: video thumbnails are generated on the CPU on purpose, even when VAAPI
-// hardware acceleration is available. Benchmarking on real Intel hardware showed
-// VAAPI ~16-19% SLOWER than CPU for this workload: extracting 10 seeked frames is
-// dominated by GPU upload/download/init overhead rather than decode cost, so the
-// GPU loses. (Whole-video transcoding is the opposite — VAAPI ~2.5-2.9x faster —
-// but PICR has no transcoding workload yet.) A VAAPI thumbnail pipeline is kept in
-// the admin benchmark only (see backend/media/vaapiVideo.ts) for comparison and
-// in case future hardware/codecs change the calculus.
+// Production video thumbnail generation is CPU-only for now. The admin benchmark
+// keeps a VAAPI comparison row so future video work can re-check whether a
+// hardware path is worth adding without changing this production path first.
+const VIDEO_THUMBNAIL_CANDIDATE_PX = 500;
 
 const processVideoThumbnail = async (
   file: FileFields,
@@ -89,41 +71,16 @@ const processVideoThumbnail = async (
       return;
     }
 
-    const timestamps = frameTimestamps(Duration, numberOfVideoSnapshots);
-    const tempDir = await mkdtemp(join(tmpdir(), 'picr-video-thumbnail-'));
-    try {
-      const candidates = await extractCandidateFrames(
-        file,
-        timestamps,
-        tempDir,
-      );
-      if (candidates.length === 0) {
-        throw new Error('No candidate frames were extracted');
-      }
-
-      await mergeImages(
-        candidates.map(({ path }) => path),
-        videoScrubPath(file),
-      );
-
-      const selected = candidates[pickPosterFrame(candidates)];
-      const posterFramePath = join(tempDir, 'poster.jpg');
-      await extractPosterFrame(file, selected.timestamp, posterFramePath);
-      const cachedPosterFramePath = videoPosterFramePath(file);
-      await atomicWrite(cachedPosterFramePath, (tempPath) =>
-        copyFile(posterFramePath, tempPath),
-      );
-      await encodeVideoPosterVariants(
-        file,
-        cachedPosterFramePath,
-        currentVariants,
-      );
-
-      const blurHash = await encodeImageToBlurhash(cachedPosterFramePath);
-      if (blurHash) await persistVideoBlurHash(file, blurHash);
-    } finally {
-      await rm(tempDir, { recursive: true, force: true });
-    }
+    const { blurHash } = await generateVideoThumbnailArtifacts({
+      sourcePath: fullPathForFile(file),
+      duration: Duration,
+      thumbnailPx: VIDEO_THUMBNAIL_CANDIDATE_PX,
+      scrubPath: videoScrubPath(file),
+      posterFramePath: videoPosterFramePath(file),
+      variants: currentVariants,
+      posterVariantPath: (variant) => videoPosterVariantPath(file, variant),
+    });
+    if (blurHash) await persistVideoBlurHash(file, blurHash);
   } catch (e) {
     log(
       'error',
@@ -132,90 +89,6 @@ const processVideoThumbnail = async (
     log('error', String(e));
     throw e;
   }
-};
-
-interface ExtractedCandidate extends PosterFrameCandidate {
-  path: string;
-  timestamp: number;
-}
-
-const frameTimestamps = (duration: number, count: number): number[] =>
-  Array.from(
-    { length: count },
-    (_, index) => ((index + 1) / (count + 2)) * duration,
-  );
-
-const extractCandidateFrames = async (
-  file: FileFields,
-  timestamps: number[],
-  outFile: string,
-): Promise<ExtractedCandidate[]> => {
-  const px = serverThumbnailDimensions().md;
-  const candidates: ExtractedCandidate[] = [];
-
-  for (const [index, timestamp] of timestamps.entries()) {
-    const outputPath = `${outFile}/md_${index + 1}.jpg`;
-    await extractScaledFrame(file, timestamp, px, outputPath);
-    const stats = await frameStats(outputPath);
-    candidates.push({ path: outputPath, timestamp, ...stats });
-  }
-
-  return candidates;
-};
-
-const extractScaledFrame = async (
-  file: FileFields,
-  timestamp: number,
-  px: number,
-  outputPath: string,
-): Promise<void> => {
-  await runFfmpeg([
-    '-y',
-    '-ss',
-    timestamp.toFixed(3),
-    '-i',
-    fullPathForFile(file),
-    '-frames:v',
-    '1',
-    '-vf',
-    `scale=${px}:${px}:force_original_aspect_ratio=decrease`,
-    '-q:v',
-    '4',
-    outputPath,
-  ]);
-};
-
-const extractPosterFrame = async (
-  file: FileFields,
-  timestamp: number,
-  outputPath: string,
-): Promise<void> => {
-  await runFfmpeg([
-    '-y',
-    '-ss',
-    timestamp.toFixed(3),
-    '-i',
-    fullPathForFile(file),
-    '-frames:v',
-    '1',
-    '-q:v',
-    '2',
-    outputPath,
-  ]);
-};
-
-const frameStats = async (path: string): Promise<PosterFrameCandidate> => {
-  const stats = await openSharp(path).greyscale().stats();
-  const channel = stats.channels[0];
-  return {
-    lumaMean: channel.mean,
-    lumaStdev: channel.stdev,
-  };
-};
-
-const mergeImages = async (files: string[], outputPath: string) => {
-  const img = await ji.joinImages(files, { direction: 'vertical' });
-  await atomicWrite(outputPath, (tempPath) => img.toFile(tempPath));
 };
 
 const encodeVideoPosterVariants = async (

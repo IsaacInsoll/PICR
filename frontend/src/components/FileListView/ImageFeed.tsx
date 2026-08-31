@@ -37,7 +37,7 @@ import { PicrFolder, PicrGenericFile } from '../PicrFolder';
 import { FileLink } from '../FileLink';
 import { useInView } from 'react-intersection-observer';
 import { useLazyLoad } from '../../hooks/useLazyLoad';
-import { useCanDownload } from '../../hooks/useMe';
+import { useCanDownload, useThumbnailVariants } from '../../hooks/useMe';
 import type {
   FolderContentsItem,
   ViewFolderFileWithHero,
@@ -46,6 +46,7 @@ import type {
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 import { LazyPicrVideoPlayer } from '../LazyPicrVideoPlayer';
 import { useTranslation } from 'react-i18next';
+import { thumbnailRouteSizeForWidth } from '../../helpers/thumbnailVariantImages';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 
@@ -97,6 +98,7 @@ const FeedItem = ({
 }) => {
   const { isNone } = useCommentPermissions();
   const canDownload = useCanDownload();
+  const thumbnailVariants = useThumbnailVariants();
   const isMobile = useIsMobile();
   const theme = useAtomValue(themeModeAtom);
   const borderRadius = theme.thumbnailBorderRadius ?? DEFAULT_BORDER_RADIUS;
@@ -147,7 +149,8 @@ const FeedItem = ({
             <Box style={{ ...dimensions, overflowY: 'hidden' }}>
               <PicrImage
                 file={file}
-                size="lg"
+                targetWidth={Math.ceil(width)}
+                sizes={`${Math.ceil(width)}px`}
                 clickable={true}
                 style={dimensions}
               />
@@ -161,7 +164,10 @@ const FeedItem = ({
               duration={
                 'duration' in file ? (file.duration ?? undefined) : undefined
               }
-              poster={videoPosterURL(file)}
+              poster={videoPosterURL(
+                file,
+                thumbnailRouteSizeForWidth(thumbnailVariants, width),
+              )}
               src={videoPlaybackSource(file)}
               style={dimensions}
               title={fileName ?? ''}

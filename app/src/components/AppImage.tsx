@@ -1,10 +1,13 @@
 import { CachedImage } from '@georstat/react-native-image-cache';
-import type { AllSize, ThumbnailSize } from '@shared/thumbnailSize';
+import type { AllSize } from '@shared/thumbnailSize';
+import type { ThumbnailVariantToken } from '@shared/thumbnailVariants';
 import type { PicrFile } from '@shared/types/picr';
 import type { ImageUrlFileInput } from '@shared/types/ui';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
-import { View } from 'react-native';
+import { PixelRatio, View } from 'react-native';
 import { useState } from 'react';
+import { useThumbnailVariants } from '@/src/hooks/useMe';
+import { thumbnailRouteSizeForWidth } from '@/src/helpers/thumbnailRouteSize';
 
 type AppImageFile = Pick<
   PicrFile,
@@ -15,23 +18,31 @@ type AppImageFile = Pick<
 //TODO: copy PBIGImage and use ExpoImage so we can do BlurRadius prop, and progressively load higher res images?
 export const AppImage = ({
   file,
-  size,
   width,
 }: {
   file: AppImageFile;
-  size?: ThumbnailSize;
   width?: number;
 }) => {
   const baseUrl = useLoginDetails()?.server;
+  const thumbnailVariants = useThumbnailVariants();
 
   const [viewWidth, setViewWidth] = useState(0);
   const w = width ?? viewWidth;
   const height = w / (file.imageRatio ?? 1);
 
-  const sourceSize: ThumbnailSize = size ?? (w > 250 ? 'lg' : 'md');
+  const sourceSize = thumbnailRouteSizeForWidth(
+    thumbnailVariants,
+    PixelRatio.getPixelSizeForLayoutSize(w),
+  );
+  const thumbnailSourceSize = thumbnailRouteSizeForWidth(
+    thumbnailVariants,
+    250,
+  );
 
   const source =
-    w === 0 || !baseUrl ? undefined : baseUrl + imageURL(file, sourceSize);
+    w === 0 || !baseUrl || !sourceSize
+      ? undefined
+      : baseUrl + imageURL(file, sourceSize);
 
   // console.log(width, viewWidth, height, file.fileHash);
 
@@ -48,7 +59,11 @@ export const AppImage = ({
       <CachedImage
         source={source ?? ''}
         style={{ width: w, height }}
-        thumbnailSource={baseUrl ? baseUrl + imageURL(file, 'sm') : ''}
+        thumbnailSource={
+          baseUrl && thumbnailSourceSize
+            ? baseUrl + imageURL(file, thumbnailSourceSize)
+            : ''
+        }
         onError={() => {
           // console.log('Error getting image: ' + source);
         }}
@@ -61,7 +76,7 @@ export const AppImage = ({
 // but then I had to add the base URL anyway so whatever
 export const imageURL = (
   file: ImageUrlFileInput,
-  size: AllSize,
+  size: AllSize | ThumbnailVariantToken,
   extension?: string,
 ) => {
   const { id, fileHash, name, type } = file;

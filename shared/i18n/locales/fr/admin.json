@@ -252,8 +252,16 @@
       "completeDescription": "PICR a terminé l'analyse de ce dossier."
     },
     "thumbnails": {
-      "generate_one": "Générer la miniature",
-      "generate_other": "Générer les miniatures"
+      "action": "Générer les miniatures",
+      "checking": "Vérification de l'état des miniatures...",
+      "completeDescription": "Toutes les miniatures de ce dossier sont à jour.",
+      "generateMissing_one": "Générer 1 miniature manquante",
+      "generateMissing_other": "Générer {{count}} miniatures manquantes",
+      "missingArtifacts_one": "1 fichier de miniature est manquant.",
+      "missingArtifacts_other": "{{count}} fichiers de miniatures sont manquants.",
+      "missingDescription_one": "1 fichier nécessite la génération de miniatures.",
+      "missingDescription_other": "{{count}} fichiers nécessitent la génération de miniatures.",
+      "title": "Générer les miniatures"
     },
     "moveRename": {
       "title": "Déplacer ou renommer le dossier : {{folder}}",
@@ -613,8 +621,10 @@
     },
     "benchmark": {
       "run": "Lancer le test de performances",
-      "confirmation": "Ce test peut prendre quelques minutes et solliciter fortement le processeur. Voulez-vous vraiment continuer ?",
+      "confirmation": "Ce test prend généralement moins d’une minute et peut solliciter fortement le processeur. Voulez-vous vraiment continuer ?",
       "running": "Test de performances en cours…",
+      "runningEstimate": "La plupart des exécutions se terminent en moins d’une minute. L’estimation de progression ralentit ensuite, mais le test continue de travailler.",
+      "elapsedSecondsSuffix": " s",
       "version": "Version de PICR",
       "assets": "Ressources",
       "image_one": "{{count}} image",

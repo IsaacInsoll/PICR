@@ -225,7 +225,7 @@ const SearchResultRow = ({ item }: { item: SearchResultItem }) => {
             file={item}
             variant="rounded-fit"
             style={styles.thumbnail}
-            size="sm"
+            targetWidth={250}
           />
           <View style={{ flex: 1, gap: 6 }}>
             <PTitle level={4}>{item.name}</PTitle>

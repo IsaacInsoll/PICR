@@ -7,7 +7,6 @@ import { getUUID } from '../helpers/getUUID';
 import { meQuery } from '@shared/urql/queries/meQuery';
 import type { ExtraUserProps } from '@shared/extraUserProps';
 import { extraUserProps } from '@shared/extraUserProps';
-import { serverThumbnailDimensions } from '@shared/serverMediaSettings';
 
 export const useMe = (
   options: { pause?: boolean } = {},
@@ -17,6 +16,9 @@ export const useMe = (
         clientInfo: {
           useOriginalsForLightbox: boolean;
           thumbnailJpegQuality: number;
+          thumbnailVariants: NonNullable<
+            MeQueryQuery['clientInfo']
+          >['thumbnailVariants'];
           baseUrl: string;
           canWrite: boolean;
         };
@@ -46,8 +48,9 @@ export const useOriginalsForLightbox = () => {
   return me?.clientInfo.useOriginalsForLightbox ?? false;
 };
 
-export const useServerThumbnailDimensions = () => {
-  return serverThumbnailDimensions();
+export const useThumbnailVariants = () => {
+  const me = useMe();
+  return me?.clientInfo.thumbnailVariants ?? [];
 };
 
 export const useBaseUrl = () => {

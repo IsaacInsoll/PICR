@@ -10,10 +10,20 @@ export const FilePreview = ({
   file: PicrFile;
   imageProps?: ThumbnailImageComponentImageProps;
 }) => {
+  const width =
+    imageProps && typeof imageProps.style.width === 'number'
+      ? imageProps.style.width
+      : undefined;
   if (file.type === 'Video') {
     return <PicrVideoPreview file={file} {...imageProps} />;
   }
   return (
-    <PicrImage file={file} size="md" clickable={true} {...(imageProps ?? {})} />
+    <PicrImage
+      {...(imageProps ?? {})}
+      file={file}
+      targetWidth={width ?? 500}
+      clickable={true}
+      sizes={width ? `${Math.ceil(width)}px` : undefined}
+    />
   );
 };

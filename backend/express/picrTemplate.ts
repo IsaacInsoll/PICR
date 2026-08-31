@@ -13,6 +13,12 @@ import {
   principalUser,
   requestAuthentication,
 } from '../types/RequestAuthentication.js';
+import { getServerMediaSettings } from '../media/serverMediaSettings.js';
+import { thumbnailVariantForWidth } from '@shared/thumbnailVariants.js';
+import type {
+  ThumbnailVariantToken,
+  ThumbnailVariantWidth,
+} from '@shared/thumbnailVariants.js';
 
 let cachedIndexHtml: string | undefined;
 
@@ -86,7 +92,8 @@ export const picrTemplate = async (req: Request, res: Response) => {
           title: joinTitles([folder.name, fields.title]),
           description: summary,
           image: thumb
-            ? strippedBase + imagePathFor(fileFieldsToTemplateFile(thumb), 'md')
+            ? strippedBase +
+              (await imagePathForVariant(fileFieldsToTemplateFile(thumb), 500))
             : fields.image,
         };
       }
@@ -124,9 +131,22 @@ const fileFieldsToTemplateFile = (f: FileFields): TemplateMediaFile => {
 
 const imagePathFor = (
   file: TemplateMediaFile,
-  size: 'raw' | 'sm' | 'md' | 'lg',
+  token: ThumbnailVariantToken,
 ) => {
-  const path = `/image/${file.id}/${size}/${file.fileHash}/`;
-  if (file.type === 'Video' && size !== 'raw') return path + 'poster.jpg';
+  const path = `/image/${file.id}/${token}/${file.fileHash}/`;
+  // The filename segment is decorative; the token picks the cache entry.
+  if (file.type === 'Video') return path + 'poster.jpg';
   return path + file.name;
+};
+
+const imagePathForVariant = async (
+  file: TemplateMediaFile,
+  width: ThumbnailVariantWidth,
+): Promise<string> => {
+  const settings = await getServerMediaSettings();
+  const variant = thumbnailVariantForWidth(
+    width,
+    settings.thumbnailJpegQuality,
+  );
+  return imagePathFor(file, variant.token);
 };

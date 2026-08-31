@@ -1,16 +1,20 @@
-import { imageURL } from '../helpers/imageURL';
 import { normalizeDisplayName } from '@shared/displayName';
 import { Image } from '@mantine/core';
-import type { ThumbnailSize } from '@shared/thumbnailSize';
 import { Blurhash } from 'react-blurhash';
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import type { PicrFile } from '@shared/types/picr';
 import { useNoDownloadMediaProps } from '../hooks/useNoDownloadMediaProps';
+import { useThumbnailVariants } from '../hooks/useMe';
+import {
+  thumbnailSrcSet,
+  thumbnailUrlForWidth,
+} from '../helpers/thumbnailVariantImages';
 
 interface PicrImageProps {
   file: PicrFile;
-  size: ThumbnailSize;
+  targetWidth: number;
+  sizes?: string;
   onClick?: (file: PicrFile) => void;
   onImageLoaded?: (file: PicrFile) => void;
   style?: CSSProperties;
@@ -18,7 +22,8 @@ interface PicrImageProps {
 }
 export const PicrImage = ({
   file,
-  size,
+  targetWidth,
+  sizes,
   onClick,
   onImageLoaded,
   style,
@@ -28,10 +33,16 @@ export const PicrImage = ({
   //<picture> is HTML5 that allows you to specify multiple sources for a child image tag
   const [loaded, setLoaded] = useState(false);
   const noDownloadMediaProps = useNoDownloadMediaProps();
+  const variants = useThumbnailVariants();
+  const srcSet = thumbnailSrcSet(file, variants);
+  const src = thumbnailUrlForWidth(file, targetWidth, variants);
+  const imageSizes = sizes ?? `${Math.ceil(targetWidth)}px`;
   return (
     <div style={{ ...style, position: 'relative' }}>
       <picture>
-        <source srcSet={imageURL(file, size)} type="image/jpeg" />
+        {srcSet ? (
+          <source srcSet={srcSet} sizes={imageSizes} type="image/jpeg" />
+        ) : null}
         {!loaded && file.blurHash ? (
           <Blurhash
             hash={file.blurHash}
@@ -51,7 +62,8 @@ export const PicrImage = ({
         ) : null}
         <Image
           {...noDownloadMediaProps}
-          src={imageURL(file, size)}
+          src={src}
+          sizes={srcSet ? imageSizes : undefined}
           fit="contain"
           alt={normalizeDisplayName(file.name) ?? ''}
           onLoad={() => {

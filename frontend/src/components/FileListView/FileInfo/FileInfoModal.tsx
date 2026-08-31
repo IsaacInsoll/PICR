@@ -37,7 +37,6 @@ export const FileInfoModal = ({ file }: { file: PicrFile }) => {
     >
       {file.type === 'Image' || file.type === 'Video' ? (
         <Box mb={16}>
-          {/*<PicrImage file={file} size="md" clickable={false} />*/}
           <FilePreview file={file} />
         </Box>
       ) : null}

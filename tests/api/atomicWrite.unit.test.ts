@@ -2,9 +2,7 @@ import { mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, expect, test } from 'vitest';
-import { DEFAULT_SERVER_MEDIA_SETTINGS } from '../../shared/serverMediaSettings.js';
 import { atomicWrite } from '../../backend/media/atomicWrite.js';
-import { encodeThumbnail } from '../../backend/media/encodeThumbnail.js';
 import { openSharp } from '../../backend/media/openSharp.js';
 
 const tempRoots: string[] = [];
@@ -49,12 +47,18 @@ test('concurrent image encodes promote a complete decodable thumbnail', async ()
   const outputPath = () => targetPath;
 
   await Promise.all([
-    encodeThumbnail(input, 'sm', outputPath, {
-      settings: DEFAULT_SERVER_MEDIA_SETTINGS,
-    }),
-    encodeThumbnail(input, 'sm', outputPath, {
-      settings: DEFAULT_SERVER_MEDIA_SETTINGS,
-    }),
+    atomicWrite(outputPath(), (tempPath) =>
+      openSharp(input)
+        .resize(250, 250, { fit: 'inside', withoutEnlargement: true })
+        .jpeg()
+        .toFile(tempPath),
+    ),
+    atomicWrite(outputPath(), (tempPath) =>
+      openSharp(input)
+        .resize(250, 250, { fit: 'inside', withoutEnlargement: true })
+        .jpeg()
+        .toFile(tempPath),
+    ),
   ]);
 
   const metadata = await openSharp(targetPath).metadata();

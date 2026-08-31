@@ -179,7 +179,7 @@ const RecentUsers = ({ users }: { users: RecentUsersQueryQuery['users'] }) => {
                   <PFileView
                     file={user.folder.heroImage}
                     variant="rounded-fit"
-                    size="sm"
+                    targetWidth={250}
                   />
                   <View style={{ justifyContent: 'center', gap: 4 }}>
                     <View

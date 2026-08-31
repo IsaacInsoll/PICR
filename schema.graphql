@@ -191,6 +191,7 @@ type Folder {
   relativePath: String!
   subFolders: [Folder!]!
   subtitle: String
+  thumbnailCompletion(mediaType: MediaTypeFilter = All): ThumbnailCompletion!
   title: String
   totalDirectSize: String!
   totalFiles: Int!
@@ -527,6 +528,14 @@ enum ThemeMode {
   auto
   dark
   light
+}
+
+type ThumbnailCompletion {
+  completeFiles: Int!
+  incompleteFiles: Int!
+  missingArtifacts: Int!
+  totalArtifacts: Int!
+  totalFiles: Int!
 }
 
 type ThumbnailVariant {

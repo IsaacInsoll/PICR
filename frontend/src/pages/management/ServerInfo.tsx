@@ -10,6 +10,8 @@ import {
   Group,
   Modal,
   NumberInput,
+  Progress,
+  RollingNumber,
   SimpleGrid,
   Stack,
   Switch,
@@ -1158,9 +1160,13 @@ const Benchmark = () => {
   const [opened, setOpened] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [assetPath, setAssetPath] = useState('');
+  const [benchmarkStartedAt, setBenchmarkStartedAt] = useState<number | null>(
+    null,
+  );
 
   const startBenchmark = () => {
     setConfirmed(true);
+    setBenchmarkStartedAt(Date.now());
     const trimmedAssetPath = assetPath.trim();
     void runBenchmark({ assetPath: trimmedAssetPath || undefined });
   };
@@ -1179,6 +1185,7 @@ const Benchmark = () => {
         onClick={() => {
           setOpened(true);
           setConfirmed(false);
+          setBenchmarkStartedAt(null);
         }}
       >
         <BenchmarkIcon /> {t('server.benchmark.run')}
@@ -1215,10 +1222,7 @@ const Benchmark = () => {
               </Group>
             </>
           ) : result.fetching ? (
-            <Group gap="sm">
-              <LoadingIndicator size="small" />
-              <Text size="sm">{t('server.benchmark.running')}</Text>
-            </Group>
+            <BenchmarkProgress startedAt={benchmarkStartedAt} />
           ) : result.error ? (
             <>
               <Text c="red" size="sm">
@@ -1333,6 +1337,54 @@ const BenchmarkResultLine = ({
       </Text>
       {typeof value === 'string' ? <Code>{value}</Code> : value}
     </Group>
+  );
+};
+
+const BENCHMARK_EXPECTED_SECONDS = 60;
+const BENCHMARK_SLOW_CAP_SECONDS = 180;
+
+const BenchmarkProgress = ({ startedAt }: { startedAt: number | null }) => {
+  const { t } = useTranslation('admin');
+  const now = useNow(1000);
+  const elapsedSeconds =
+    startedAt == null ? 0 : Math.max(0, Math.floor((now - startedAt) / 1000));
+  const progressValue = benchmarkProgressValue(elapsedSeconds);
+
+  return (
+    <Stack gap="sm">
+      <Group justify="space-between" align="center" wrap="nowrap">
+        <Text size="sm" fw={500}>
+          {t('server.benchmark.running')}
+        </Text>
+        <Code>
+          <RollingNumber
+            value={elapsedSeconds}
+            suffix={t('server.benchmark.elapsedSecondsSuffix')}
+          />
+        </Code>
+      </Group>
+      <Progress value={progressValue} striped animated radius="xl" size="md" />
+      <Text size="xs" c="dimmed">
+        {t('server.benchmark.runningEstimate')}
+      </Text>
+    </Stack>
+  );
+};
+
+const benchmarkProgressValue = (elapsedSeconds: number): number => {
+  if (elapsedSeconds <= BENCHMARK_EXPECTED_SECONDS) {
+    return (elapsedSeconds / BENCHMARK_EXPECTED_SECONDS) * 90;
+  }
+
+  const slowProgressSeconds = Math.min(
+    elapsedSeconds - BENCHMARK_EXPECTED_SECONDS,
+    BENCHMARK_SLOW_CAP_SECONDS - BENCHMARK_EXPECTED_SECONDS,
+  );
+  return (
+    90 +
+    (slowProgressSeconds /
+      (BENCHMARK_SLOW_CAP_SECONDS - BENCHMARK_EXPECTED_SECONDS)) *
+      9
   );
 };
 

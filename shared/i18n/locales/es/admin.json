@@ -252,8 +252,16 @@
       "completeDescription": "PICR terminó de revisar esta carpeta."
     },
     "thumbnails": {
-      "generate_one": "Generar miniatura",
-      "generate_other": "Generar miniaturas"
+      "action": "Generar miniaturas",
+      "checking": "Comprobando estado de miniaturas...",
+      "completeDescription": "Todas las miniaturas de esta carpeta están actualizadas.",
+      "generateMissing_one": "Generar 1 miniatura faltante",
+      "generateMissing_other": "Generar {{count}} miniaturas faltantes",
+      "missingArtifacts_one": "Falta 1 archivo de miniatura.",
+      "missingArtifacts_other": "Faltan {{count}} archivos de miniatura.",
+      "missingDescription_one": "1 archivo necesita generación de miniaturas.",
+      "missingDescription_other": "{{count}} archivos necesitan generación de miniaturas.",
+      "title": "Generar miniaturas"
     },
     "moveRename": {
       "title": "Mover/Cambiar nombre de carpeta: {{folder}}",
@@ -626,8 +634,10 @@
     },
     "benchmark": {
       "run": "Ejecutar punto de referencia",
-      "confirmation": "Este punto de referencia puede tardar hasta un par de minutos y puede consumir una cantidad significativa de CPU mientras se ejecuta. ¿Estás seguro de que quieres continuar?",
+      "confirmation": "Este punto de referencia suele tardar menos de un minuto y puede consumir bastante CPU mientras se ejecuta. ¿Estás seguro de que quieres continuar?",
       "running": "Ejecución de referencia...",
+      "runningEstimate": "La mayoría de las ejecuciones terminan en menos de un minuto. La estimación de progreso se ralentiza después, pero el benchmark sigue trabajando.",
+      "elapsedSecondsSuffix": " s",
       "version": "Versión PICR",
       "assets": "Activos",
       "image_one": "Imagen {{count}}",

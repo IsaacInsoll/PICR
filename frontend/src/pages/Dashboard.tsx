@@ -6,7 +6,7 @@ import {
 import { useQuickFind } from '../components/QuickFind/useQuickFind';
 import { TaskSummary } from '../components/TaskSummary';
 import { Page } from '../components/Page';
-import { useMe } from '../hooks/useMe';
+import { useMe, useThumbnailVariants } from '../hooks/useMe';
 import {
   Anchor,
   Badge,
@@ -42,7 +42,6 @@ import type { PicrFolder } from '@shared/types/picr';
 import type { RecentUsersQueryQuery } from '@shared/gql/graphql';
 import { useFolderLink } from '../hooks/useSetFolder';
 import { formatBytes } from '@shared/prettyBytes';
-import { imageURL } from '../helpers/imageURL';
 import type { ImageUrlFileInput } from '@shared/types/ui';
 import { DateDisplay } from '../components/FileListView/Filtering/PrettyDate';
 import { PicrAvatar } from '../components/PicrAvatar';
@@ -65,6 +64,7 @@ import { isNewerPicrVersion } from '../helpers/versionUpdates';
 import { useLanguage } from '../i18n/useLanguage';
 import { useTranslation } from 'react-i18next';
 import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
+import { thumbnailUrlForWidth } from '../helpers/thumbnailVariantImages';
 
 const dashboardLimits = {
   desktop: {
@@ -471,10 +471,14 @@ const FolderCover = ({
   size: number;
   fill?: boolean;
 }) => {
+  const thumbnailVariants = useThumbnailVariants();
   const hasCover =
     heroImage?.__typename === 'Image' || heroImage?.__typename === 'Video';
   const src = hasCover
-    ? imageURL(heroImage, 'sm').replace(' ', '%20')
+    ? thumbnailUrlForWidth(heroImage, size, thumbnailVariants)?.replace(
+        ' ',
+        '%20',
+      )
     : undefined;
   return (
     <Box

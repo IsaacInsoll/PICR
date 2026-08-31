@@ -1,28 +1,13 @@
 import type { JpegOptions, OutputInfo, ResizeOptions, Sharp } from 'sharp';
-import type { ThumbnailSize } from '@shared/thumbnailSize.js';
 import { openSharp, type SharpInput } from './openSharp.js';
 import { atomicWrite } from './atomicWrite.js';
-import {
-  serverThumbnailDimensions,
-  type ServerMediaSettings,
-} from '@shared/serverMediaSettings.js';
-import { getServerMediaSettings } from './serverMediaSettings.js';
 import type {
   ThumbnailVariant,
   ThumbnailVariantExtension,
   ThumbnailVariantFormat,
   ThumbnailVariantToken,
 } from '@shared/thumbnailVariants.js';
-import { thumbnailVariantFormats } from '@shared/thumbnailVariants.js';
 
-type LegacyThumbnailOutputExtension = '.jpg';
-
-export type ImageThumbnailOutputPath = (
-  size: ThumbnailSize,
-  extension: LegacyThumbnailOutputExtension,
-) => string;
-
-export type ImageThumbnailResults = Map<ThumbnailSize, OutputInfo[] | null>;
 export type ImageThumbnailVariantResults = Map<
   ThumbnailVariantToken,
   OutputInfo[] | null
@@ -48,34 +33,6 @@ type ImageThumbnailTargetResults<Key extends string> = Map<
   Key,
   OutputInfo[] | null
 >;
-
-export interface EncodeImageThumbnailsOptions {
-  settings?: ServerMediaSettings;
-}
-
-export const encodeImageThumbnails = async (
-  input: SharpInput,
-  sizes: readonly ThumbnailSize[],
-  outputPath: ImageThumbnailOutputPath,
-  options?: EncodeImageThumbnailsOptions,
-): Promise<ImageThumbnailResults> => {
-  const settings = options?.settings ?? (await getServerMediaSettings());
-  const dimensions = serverThumbnailDimensions();
-  const targets: readonly ImageThumbnailEncodeTarget<
-    ThumbnailSize,
-    LegacyThumbnailOutputExtension
-  >[] = sizes.map((size) => ({
-    key: size,
-    width: dimensions[size],
-    format: thumbnailVariantFormats.jpeg.format,
-    extension: thumbnailVariantFormats.jpeg.extension,
-    quality: settings.thumbnailJpegQuality,
-  }));
-
-  return encodeImageThumbnailTargets(input, targets, (target) =>
-    outputPath(target.key, target.extension),
-  );
-};
 
 export const encodeImageThumbnailVariants = async (
   input: SharpInput,

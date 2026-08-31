@@ -252,8 +252,16 @@
       "completeDescription": "PICR hat die Überprüfung dieses Ordners abgeschlossen."
     },
     "thumbnails": {
-      "generate_one": "Miniaturansicht generieren",
-      "generate_other": "Miniaturansichten generieren"
+      "action": "Miniaturansichten generieren",
+      "checking": "Miniaturbildstatus wird geprüft...",
+      "completeDescription": "Alle Miniaturansichten in diesem Ordner sind aktuell.",
+      "generateMissing_one": "1 fehlende Miniaturansicht generieren",
+      "generateMissing_other": "{{count}} fehlende Miniaturansichten generieren",
+      "missingArtifacts_one": "1 Miniaturbilddatei fehlt.",
+      "missingArtifacts_other": "{{count}} Miniaturbilddateien fehlen.",
+      "missingDescription_one": "Für 1 Datei müssen Miniaturansichten generiert werden.",
+      "missingDescription_other": "Für {{count}} Dateien müssen Miniaturansichten generiert werden.",
+      "title": "Miniaturansichten generieren"
     },
     "moveRename": {
       "title": "Ordner verschieben/umbenennen: {{folder}}",
@@ -626,8 +634,10 @@
     },
     "benchmark": {
       "run": "Benchmark ausführen",
-      "confirmation": "Dieser Benchmark kann einige Minuten dauern und während der Ausführung möglicherweise viel CPU verbrauchen. Sind Sie sicher, dass Sie fortfahren möchten?",
+      "confirmation": "Dieser Benchmark dauert normalerweise weniger als eine Minute und kann während der Ausführung viel CPU verbrauchen. Sind Sie sicher, dass Sie fortfahren möchten?",
       "running": "Lauf-Benchmark…",
+      "runningEstimate": "Die meisten Läufe sind in weniger als einer Minute fertig. Die Fortschrittsschätzung verlangsamt sich danach, aber der Benchmark arbeitet weiter.",
+      "elapsedSecondsSuffix": " s",
       "version": "PICR-Version",
       "assets": "Vermögenswerte",
       "image_one": "{{count}}-Bild",

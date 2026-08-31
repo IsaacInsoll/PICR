@@ -26,25 +26,21 @@ const deferred = () => {
 };
 
 const loadGenerateImageThumbnail = async ({
-  encodeImageThumbnailsImpl,
+  encodeImageThumbnailVariantsImpl,
   existingThumbnails = [],
 }: {
-  encodeImageThumbnailsImpl?: (
+  encodeImageThumbnailVariantsImpl?: (
     input: string,
-    sizes: readonly string[],
+    variants: readonly { token: string }[],
   ) => Promise<Map<string, unknown[] | null>>;
   existingThumbnails?: string[];
 } = {}) => {
   vi.resetModules();
 
-  const encodeImageThumbnails = vi.fn(
-    encodeImageThumbnailsImpl ??
-      (async (_input: string, sizes: readonly string[]) =>
-        new Map(sizes.map((size) => [size, [{ width: 250 }]]))),
-  );
   const encodeImageThumbnailVariants = vi.fn(
-    async (_input: string, variants: readonly { token: string }[]) =>
-      new Map(variants.map((variant) => [variant.token, [{ width: 250 }]])),
+    encodeImageThumbnailVariantsImpl ??
+      (async (_input: string, variants: readonly { token: string }[]) =>
+        new Map(variants.map((variant) => [variant.token, [{ width: 250 }]]))),
   );
   const ensureDecodedImage = vi.fn(async () => '/cache/decoded.jpg');
 
@@ -60,7 +56,6 @@ const loadGenerateImageThumbnail = async ({
   vi.doMock('../../backend/logger.js', () => ({ log: vi.fn() }));
   vi.doMock('../../backend/media/encodeImageThumbnails.js', () => ({
     encodeImageThumbnailVariants,
-    encodeImageThumbnails,
   }));
   vi.doMock('../../backend/media/ensureDecodedImage.js', () => ({
     ensureDecodedImage,
@@ -94,7 +89,6 @@ const loadGenerateImageThumbnail = async ({
   const module = await import('../../backend/media/generateImageThumbnail.js');
   return {
     encodeImageThumbnailVariants,
-    encodeImageThumbnails,
     ensureDecodedImage,
     module,
   };
@@ -105,21 +99,35 @@ afterEach(() => {
   vi.resetModules();
 });
 
-test('dedupes concurrent image thumbnail generation for the same file hash and size', async () => {
+const variant = {
+  cacheVersion: 'v1',
+  extension: '.jpg',
+  format: 'jpeg',
+  generationPolicy: 'eager',
+  letter: 'j',
+  mimeType: 'image/jpeg',
+  quality: 80,
+  token: 'v1-1000j80',
+  width: 1000,
+};
+
+test('dedupes concurrent image thumbnail generation for the same file hash and token', async () => {
   const encodeStarted = deferred();
   const finishEncode = deferred();
-  const { encodeImageThumbnails, ensureDecodedImage, module } =
+  const { encodeImageThumbnailVariants, ensureDecodedImage, module } =
     await loadGenerateImageThumbnail({
-      encodeImageThumbnailsImpl: async (_input, sizes) => {
+      encodeImageThumbnailVariantsImpl: async (_input, variants) => {
         encodeStarted.resolve();
         await finishEncode.promise;
-        return new Map(sizes.map((size) => [size, [{ width: 500 }]]));
+        return new Map(
+          variants.map((variant) => [variant.token, [{ width: 500 }]]),
+        );
       },
     });
 
-  const first = module.generateThumbnail(file(), 'md');
+  const first = module.generateThumbnailVariant(file(), variant);
   await encodeStarted.promise;
-  const second = module.generateThumbnail(file(), 'md');
+  const second = module.generateThumbnailVariant(file(), variant);
 
   finishEncode.resolve();
   await expect(Promise.all([first, second])).resolves.toEqual([
@@ -128,45 +136,24 @@ test('dedupes concurrent image thumbnail generation for the same file hash and s
   ]);
 
   expect(ensureDecodedImage).toHaveBeenCalledOnce();
-  expect(encodeImageThumbnails).toHaveBeenCalledOnce();
-});
-
-test('does not dedupe different thumbnail sizes together', async () => {
-  const { encodeImageThumbnails, module } = await loadGenerateImageThumbnail();
-
-  await Promise.all([
-    module.generateThumbnail(file(), 'sm'),
-    module.generateThumbnail(file(), 'md'),
-  ]);
-
-  expect(encodeImageThumbnails).toHaveBeenCalledTimes(2);
+  expect(encodeImageThumbnailVariants).toHaveBeenCalledOnce();
 });
 
 test('does not dedupe different file hashes together', async () => {
-  const { encodeImageThumbnails, module } = await loadGenerateImageThumbnail();
+  const { encodeImageThumbnailVariants, module } =
+    await loadGenerateImageThumbnail();
 
   await Promise.all([
-    module.generateThumbnail(file({ fileHash: 'hash-a' }), 'md'),
-    module.generateThumbnail(file({ fileHash: 'hash-b' }), 'md'),
+    module.generateThumbnailVariant(file({ fileHash: 'hash-a' }), variant),
+    module.generateThumbnailVariant(file({ fileHash: 'hash-b' }), variant),
   ]);
 
-  expect(encodeImageThumbnails).toHaveBeenCalledTimes(2);
+  expect(encodeImageThumbnailVariants).toHaveBeenCalledTimes(2);
 });
 
 test('dedupes image thumbnail variants by concrete token', async () => {
   const { encodeImageThumbnailVariants, module } =
     await loadGenerateImageThumbnail();
-  const variant = {
-    cacheVersion: 'v1',
-    extension: '.jpg',
-    format: 'jpeg',
-    generationPolicy: 'eager',
-    letter: 'j',
-    mimeType: 'image/jpeg',
-    quality: 80,
-    token: 'v1-1000j80',
-    width: 1000,
-  };
 
   await Promise.all([
     module.generateThumbnailVariant(file(), variant),
@@ -177,20 +164,22 @@ test('dedupes image thumbnail variants by concrete token', async () => {
 });
 
 test('clears failed image thumbnail generation so a later retry can run', async () => {
-  const encodeImageThumbnails = vi
+  const encodeImageThumbnailVariants = vi
     .fn()
     .mockRejectedValueOnce(new Error('disk full'))
-    .mockResolvedValueOnce(new Map([['md', [{ width: 500 }]]]));
+    .mockResolvedValueOnce(new Map([[variant.token, [{ width: 500 }]]]));
   const { module } = await loadGenerateImageThumbnail({
-    encodeImageThumbnailsImpl: encodeImageThumbnails,
+    encodeImageThumbnailVariantsImpl: encodeImageThumbnailVariants,
   });
 
-  await expect(module.generateThumbnail(file(), 'md')).resolves.toBeNull();
-  await expect(module.generateThumbnail(file(), 'md')).resolves.toEqual([
-    { width: 500 },
-  ]);
+  await expect(
+    module.generateThumbnailVariant(file(), variant),
+  ).resolves.toBeNull();
+  await expect(
+    module.generateThumbnailVariant(file(), variant),
+  ).resolves.toEqual([{ width: 500 }]);
 
-  expect(encodeImageThumbnails).toHaveBeenCalledTimes(2);
+  expect(encodeImageThumbnailVariants).toHaveBeenCalledTimes(2);
 });
 
 test('decodes once for all missing image thumbnail variants', async () => {

@@ -258,10 +258,22 @@
       "completeDescription": "PICR завершив перевірку цієї папки."
     },
     "thumbnails": {
-      "generate_one": "Створити мініатюру",
-      "generate_few": "Створити мініатюри",
-      "generate_many": "Створити мініатюри",
-      "generate_other": "Створити мініатюри"
+      "action": "Створити мініатюри",
+      "checking": "Перевірка стану мініатюр...",
+      "completeDescription": "Усі мініатюри в цій папці актуальні.",
+      "generateMissing_one": "Створити 1 відсутню мініатюру",
+      "generateMissing_few": "Створити {{count}} відсутні мініатюри",
+      "generateMissing_many": "Створити {{count}} відсутніх мініатюр",
+      "generateMissing_other": "Створити {{count}} відсутньої мініатюри",
+      "missingArtifacts_one": "Відсутній 1 файл мініатюри.",
+      "missingArtifacts_few": "Відсутні {{count}} файли мініатюр.",
+      "missingArtifacts_many": "Відсутні {{count}} файлів мініатюр.",
+      "missingArtifacts_other": "Відсутньо {{count}} файла мініатюри.",
+      "missingDescription_one": "1 файл потребує створення мініатюр.",
+      "missingDescription_few": "{{count}} файли потребують створення мініатюр.",
+      "missingDescription_many": "{{count}} файлів потребують створення мініатюр.",
+      "missingDescription_other": "{{count}} файла потребують створення мініатюр.",
+      "title": "Створити мініатюри"
     },
     "moveRename": {
       "title": "Перемістити/перейменувати папку: {{folder}}",
@@ -650,8 +662,10 @@
     },
     "benchmark": {
       "run": "Запустіть Benchmark",
-      "confirmation": "Цей контрольний тест може зайняти кілька хвилин і може використовувати значну кількість ЦП під час виконання. Ви впевнені, що бажаєте продовжити?",
+      "confirmation": "Цей контрольний тест зазвичай триває менше хвилини й може використовувати значну кількість ЦП під час виконання. Ви впевнені, що бажаєте продовжити?",
       "running": "Виконується контрольний тест…",
+      "runningEstimate": "Більшість запусків завершується менш ніж за хвилину. Після цього оцінка прогресу сповільнюється, але benchmark продовжує працювати.",
+      "elapsedSecondsSuffix": " с",
       "version": "Версія PICR",
       "assets": "Активи",
       "image_one": "{{count}} зображення",

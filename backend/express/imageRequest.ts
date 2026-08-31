@@ -37,6 +37,8 @@ type ResolvedImageRouteSize =
   | { kind: 'legacy'; size: ThumbnailSize }
   | { kind: 'variant'; variant: ThumbnailVariant };
 
+const warnedLegacyThumbnailSizes = new Set<ThumbnailSize>();
+
 export const imageRequest = async (
   req: Request<{
     id: number;
@@ -136,10 +138,11 @@ export const imageRequest = async (
   }
 
   if (routeSize.kind === 'legacy') {
+    warnLegacyThumbnailRoute(routeSize.size);
     const legacyPath =
       file.type === 'Video'
-        ? fullPathFor(file, routeSize.size, '.jpg')
-        : thumbnailPath(file, routeSize.size, '.jpg');
+        ? fullPathFor(file, routeSize.size)
+        : thumbnailPath(file, routeSize.size);
     if (existsSync(legacyPath)) {
       sendCachedFile(res, legacyPath, routeSize.kind);
       return;
@@ -175,7 +178,7 @@ export const imageRequest = async (
     return;
   }
 
-  sendCachedFile(res, fullPathFor(file, routeSize.size, extension), 'raw');
+  sendCachedFile(res, fullPathFor(file, routeSize.size), 'raw');
 };
 
 type VideoArtifactStatus = 'ok' | 'failed' | 'missing';
@@ -253,6 +256,15 @@ const currentVariantForLegacySize = async (
   return thumbnailVariantForWidth(
     legacyVariantWidths[size],
     settings.thumbnailJpegQuality,
+  );
+};
+
+const warnLegacyThumbnailRoute = (size: ThumbnailSize): void => {
+  if (warnedLegacyThumbnailSizes.has(size)) return;
+  warnedLegacyThumbnailSizes.add(size);
+  log(
+    'warn',
+    `Legacy thumbnail route /image/:id/${size}/... was used. PICR 1.x serves it for compatibility, but clients should request thumbnail variant tokens before 2.0 removes legacy thumbnail routes.`,
   );
 };
 

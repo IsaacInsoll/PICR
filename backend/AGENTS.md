@@ -306,11 +306,20 @@ media-processing work. Local asset overrides must stay under
 `picrConfig.mediaPath`, and real-media benchmark steps should count per-file
 failures instead of aborting the whole run on the first corrupt file. When a
 benchmark row is labelled as current image production, keep its Sharp pipeline
-aligned with `backend/media/encodeImageThumbnails.ts`; label old comparison rows
-as historical/pre-R0. Current video poster variant rows use the same variant
-encoder as image thumbnails, while `backend/media/encodeThumbnail.ts` is a
-legacy per-size helper and should not be treated as the current production
-poster path.
+aligned by calling `backend/media/encodeImageThumbnails.ts`; label old
+comparison rows as historical/pre-R0. Current video thumbnail rows should share
+`backend/media/videoThumbnailPipeline.ts` with production generation. Keep the
+default admin benchmark production-focused enough to complete under common
+reverse-proxy timeouts on typical self-hosted hardware. Quality sweeps, worker
+sweeps, historical pipeline comparisons, and other experiments belong in an
+explicit diagnostic mode or `.scratch` scripts/notes, not the normal modal.
+
+Video thumbnail candidate extraction has two CPU shapes: one ffmpeg process with
+`split` and one process per timestamp with input seeking. The split path is
+faster for short clips but O(video duration), so never use it unconditionally for
+production. Keep it duration-guarded, give it an explicit timeout, and fall back
+to the seek loop if it fails; benchmark details should report which extractor
+was actually used.
 
 ### FFmpeg/FFprobe Configuration
 
@@ -337,14 +346,13 @@ poster path.
 - VAAPI drivers ship in the `amd64` Docker image only; `arm64` has no drivers
   and always resolves to CPU. Anything that runs ffmpeg VAAPI filters must
   therefore tolerate the drivers being absent.
-- **Production video thumbnails are intentionally CPU-only.** VAAPI benchmarked
-  ~16-19% slower than CPU for seek-based poster/scrub extraction (GPU
-  upload/download overhead dominates), so `generateVideoThumbnail.ts` does not
-  use VAAPI. The VAAPI thumbnail helper (`media/vaapiVideo.ts`,
-  `extractVaapiThumbnailFrames`) is benchmark/reference-only. VAAPI is retained
-  because it is ~2.5-2.9x faster for whole-video transcode — groundwork for a
-  future transcoding feature. Don't wire VAAPI into the thumbnail path without
-  re-benchmarking.
+- Production video thumbnails are currently CPU-only. The VAAPI thumbnail helper
+  (`media/vaapiVideo.ts`, `extractVaapiThumbnailFrames`) is
+  benchmark/reference-only so CPU vs VAAPI can be compared on real hardware
+  before changing production behavior. VAAPI remains important for whole-video
+  transcode groundwork, where it has benchmarked substantially faster on
+  supported hardware. Don't wire VAAPI into the thumbnail path without
+  re-benchmarking the full production-shaped thumbnail pipeline.
 
 ### Media Write Access
 
@@ -691,11 +699,22 @@ old cache files when present, but missing legacy entries should resolve to the
 current token ladder rather than creating new tier-named files. `raw` remains the
 original file and `scrub` remains the video scrub sprite; neither belongs in the
 shared thumbnail variant ladder.
+Do not add new frontend, app, notification, or metadata producers of legacy
+thumbnail URLs; new callers should choose a thumbnail variant token by required
+pixel width. Keep the legacy route warning low-noise so production logs can
+prove whether old external links or cached clients still hit it before the 2.0
+route removal.
 
 Changing `thumbnailJpegQuality` creates a new reachable token set. Old
 same-width variants at the previous quality are intentionally not generated on
 demand for request-surface safety, so thumbnail cleanup must sweep stale-quality
 token variants as well as legacy `sm`/`md`/`lg` files.
+
+Folder thumbnail completion must use the directory index from
+`createThumbnailVariantIndex()`. Do not check each expected artifact with
+`existsSync()` or `stat()` in a resolver path; root-level admin folders can mean
+hundreds of thousands of cache artifacts, and synchronous per-artifact probes
+block the server event loop.
 
 Legacy thumbnail dimension columns remain on `ServerOptions` for upgrade
 compatibility, but they are no longer published through GraphQL and application

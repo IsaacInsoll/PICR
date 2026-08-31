@@ -7,12 +7,9 @@ import type { ThumbnailVariant } from '@shared/thumbnailVariants.js';
 
 export const VIDEO_THUMBNAIL_CACHE_VERSION = 2;
 
-export type VideoThumbnailExtension = '.jpg' | '.avif';
-
 export const videoPosterPath = (
   file: FileFields,
   size: ThumbnailSize,
-  extension: VideoThumbnailExtension = '.jpg',
 ): string => {
   const fp = fullPathForFile(file);
   const fileName = basename(fp);
@@ -22,7 +19,6 @@ export const videoPosterPath = (
     fileName,
     file.fileHash ?? '',
     size,
-    extension,
   );
 };
 
@@ -49,10 +45,9 @@ export const videoPosterPathForParts = (
   name: string,
   hash: string,
   size: ThumbnailSize,
-  extension: VideoThumbnailExtension = '.jpg',
 ): string => {
   const base = picrConfig.cachePath + `/thumbs/${relativePath}/`;
-  return `${base}${name}-v${VIDEO_THUMBNAIL_CACHE_VERSION}-${size}-${hash}${extension}`;
+  return `${base}${name}-v${VIDEO_THUMBNAIL_CACHE_VERSION}-${size}-${hash}.jpg`;
 };
 
 export const videoPosterVariantPath = (
