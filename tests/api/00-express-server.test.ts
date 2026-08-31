@@ -12,6 +12,24 @@ test('Express Server Online', async () => {
   expect(text).toContain('<div id="root"></div>');
 });
 
+test('Compresses frontend JavaScript when the client accepts gzip', async () => {
+  const indexResponse = await fetch(testUrl, {
+    headers: { 'accept-encoding': 'identity' },
+  });
+  const indexHtml = await indexResponse.text();
+  const entryPath = indexHtml.match(/src="([^"]+\.js)"/)?.[1];
+  if (!entryPath) throw new Error('Frontend entry script was not found');
+
+  const response = await fetch(new URL(entryPath, testUrl), {
+    headers: { 'accept-encoding': 'gzip' },
+  });
+
+  expect(response.status).toBe(200);
+  expect(response.headers.get('content-encoding')).toBe('gzip');
+  expect(response.headers.get('vary')).toContain('Accept-Encoding');
+  expect((await response.text()).length).toBeGreaterThan(1_000);
+});
+
 test('Health endpoints are served before the frontend catch-all', async () => {
   const healthResponse = await fetch(`${testUrl}healthz`);
   expect(healthResponse.status).toBe(200);

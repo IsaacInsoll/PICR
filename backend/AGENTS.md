@@ -729,6 +729,13 @@ errors. When an integration is disabled, do not register its route. Keep a
 `picrTemplate` SPA fallback; without it, an unknown `POST /api/*` can return the
 frontend HTML with status `200` and look like a successful integration call.
 
+The global `compression` middleware is registered before every route so
+compressible frontend assets, HTML, and API responses negotiate Brotli/gzip
+without special handling in each route. It uses MIME-based filtering, so JPEG,
+AVIF, video, and ZIP responses are not recompressed. Keep compression ahead of
+`express.static` and `picrTemplate`; moving it below either silently restores
+uncompressed frontend payloads.
+
 ### Image Request Flow
 
 1. Validate file exists and hash matches

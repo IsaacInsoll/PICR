@@ -1,4 +1,5 @@
 import express from 'express';
+import compression from 'compression';
 import { gqlServer } from '../graphql/gqlServer.js';
 import { imageRequest } from './imageRequest.js';
 import { zipRequest } from './zipRequest.js';
@@ -12,6 +13,7 @@ import { registerMediaChangedRoute } from './mediaChanged.js';
 export const expressServer = () => {
   const exp = express();
   exp.set('trust proxy', 1);
+  exp.use(compression());
   const router = express.Router();
   const readyz = createReadyz();
 

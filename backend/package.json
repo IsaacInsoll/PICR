@@ -16,6 +16,7 @@
     "archiver": "^7.0.1",
     "blurhash": "^2.0.5",
     "chokidar": "^5",
+    "compression": "^1.8.1",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.45.2",
     "exif-reader": "^2.0.3",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@types/archiver": "^6.0.4",
+    "@types/compression": "^1.8.1",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^25.1",
