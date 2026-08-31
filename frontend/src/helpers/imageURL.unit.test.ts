@@ -8,6 +8,8 @@ const image = {
   fileHash: 'image-hash',
   name: 'Annun taidetta-001.jpg',
   type: FileType.Image,
+  imageWidth: 1200,
+  imageHeight: 800,
 };
 
 describe('imageURL', () => {

@@ -7,14 +7,12 @@ import type {
 } from 'yet-another-react-lightbox';
 import { imageURL } from '../../../helpers/imageURL';
 import { isBrowserDisplayableOriginal } from '@shared/imageFormats';
-import {
-  videoPlaybackSource,
-  videoPosterURL,
-} from '../../../helpers/videoPlaybackSource';
+import { videoPlaybackSource } from '../../../helpers/videoPlaybackSource';
 import type { ThumbnailVariantFragmentFragment } from '@shared/gql/graphql';
 import {
   sortedThumbnailVariants,
-  thumbnailVariantForWidth,
+  thumbnailImageCandidates,
+  thumbnailUrlForWidth,
 } from '../../../helpers/thumbnailVariantImages';
 import type { ThumbnailVariantToken } from '@shared/thumbnailVariants';
 
@@ -58,32 +56,39 @@ export const filesForLightbox = (
               src: imageURL(file, 'raw'),
               blurHash: file.blurHash,
             }
-          : {
-              srcSet: sortedVariants.map((variant): ImageSource => {
-                const width = variant.width;
-                const height = width / (file.imageRatio ?? 1);
-                return {
-                  src: imageURL(file, variant.token as ThumbnailVariantToken),
-                  width,
-                  height,
-                };
-              }),
-              src: largestVariant
+          : (() => {
+              const candidates = thumbnailImageCandidates(
+                file,
+                thumbnailVariants,
+              );
+              const largestCandidate = candidates.at(-1);
+              const fallbackSrc = largestVariant
                 ? imageURL(file, largestVariant.token as ThumbnailVariantToken)
-                : undefined,
-              blurHash: file.blurHash,
-            }
+                : undefined;
+              return {
+                ...(largestCandidate
+                  ? {
+                      srcSet: candidates.map(
+                        ({ src, width, height }): ImageSource => ({
+                          src,
+                          width,
+                          height,
+                        }),
+                      ),
+                      width: largestCandidate.width,
+                      height: largestCandidate.height,
+                    }
+                  : {}),
+                src: largestCandidate?.src ?? fallbackSrc,
+                blurHash: file.blurHash,
+              };
+            })()
         : file.type === 'Video'
           ? (() => {
-              const posterVariant = thumbnailVariantForWidth(
-                thumbnailVariants,
-                2560,
-              );
-              const poster = videoPosterURL(
+              const poster = thumbnailUrlForWidth(
                 file,
-                posterVariant
-                  ? (posterVariant.token as ThumbnailVariantToken)
-                  : undefined,
+                2560,
+                thumbnailVariants,
               );
               return {
                 type: 'picr-video',

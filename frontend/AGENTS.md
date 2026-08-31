@@ -10,6 +10,13 @@ That Vitest config must reuse the root `sharedAliases` table: frontend runtime
 modules may use NodeNext-style `@shared/*.js` imports even though the tests load
 the corresponding shared TypeScript source directly.
 
+Responsive thumbnail `srcset` entries must use the encoded image's intrinsic
+width, derived from the oriented source dimensions and the server's nominal
+long-edge variant ladder. Deduplicate clamped variants by keeping the lowest
+rung. If authoritative dimensions are absent during an upgrade backfill or
+cannot be recovered, omit `srcset` and retain the ordinary `src` fallback; do
+not revive nominal-width descriptors or stale metadata-summary dimensions.
+
 The public-link recipient email and gallery passcode are metadata for the
 client, not administrator login credentials. Keep their autocomplete hints set
 to `off` and `new-password`, respectively, so password managers do not fill the

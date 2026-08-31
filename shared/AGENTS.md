@@ -99,6 +99,14 @@ ExifTool availability depends on the server environment. Browser-displayable
 originals are a narrower set than sharp-readable inputs: TIFF is sharp-readable
 but should not be handed to a browser lightbox as a raw `<img>` source.
 
+Responsive thumbnail `w` descriptors describe the encoded pixel width, not the
+variant's nominal long-edge target. Use `renderedThumbnailVariants` with the
+oriented source dimensions; it mirrors Sharp's `fit: 'inside'` and
+`withoutEnlargement: true` behavior and retains the lowest variant when several
+rungs clamp to the same width. Keep `thumbnailVariantForWidth` nominal because
+the app also consumes that shared selector; web-specific dimension-aware
+selection belongs in the frontend wrapper.
+
 ## Auth Error Contract
 
 Auth error metadata is shared across backend, frontend, and app:
