@@ -17,13 +17,11 @@ export const serverInfoQuery = gql(/* GraphQL */ `
         heic
       }
       settings {
-        avifEnabled
         useOriginalsForLightbox
         thumbnailSmallPx
         thumbnailMediumPx
         thumbnailLargePx
         thumbnailJpegQuality
-        thumbnailAvifQuality
         thumbnailDimensions {
           sm
           md

@@ -10,7 +10,7 @@ import {
   videoScrubPath,
 } from '../../backend/media/videoThumbnailPaths';
 
-test('videoThumbnailArtifactsExist requires AVIF posters only when AVIF is enabled', async () => {
+test('videoThumbnailArtifactsExist requires JPEG posters and scrub sprite', async () => {
   const root = await mkdtempRoot();
   picrConfig.cachePath = join(root, 'cache');
   picrConfig.mediaPath = join(root, 'media');
@@ -28,16 +28,7 @@ test('videoThumbnailArtifactsExist requires AVIF posters only when AVIF is enabl
       ),
     );
 
-    expect(videoThumbnailArtifactsExist(file, false)).toBe(true);
-    expect(videoThumbnailArtifactsExist(file, true)).toBe(false);
-
-    await Promise.all(
-      (['sm', 'md', 'lg'] as const).map((size) =>
-        touch(videoPosterPath(file, size, '.avif')),
-      ),
-    );
-
-    expect(videoThumbnailArtifactsExist(file, true)).toBe(true);
+    expect(videoThumbnailArtifactsExist(file)).toBe(true);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

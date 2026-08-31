@@ -10,7 +10,6 @@ export type ServerMediaSettingsPatch = Partial<ServerMediaSettings>;
 export const resolveServerMediaSettings = (
   opts: Partial<ServerOptionsFields>,
 ): ServerMediaSettings => ({
-  avifEnabled: opts.avifEnabled ?? DEFAULT_SERVER_MEDIA_SETTINGS.avifEnabled,
   useOriginalsForLightbox:
     opts.useOriginalsForLightbox ??
     DEFAULT_SERVER_MEDIA_SETTINGS.useOriginalsForLightbox,
@@ -23,9 +22,6 @@ export const resolveServerMediaSettings = (
   thumbnailJpegQuality:
     opts.thumbnailJpegQuality ??
     DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailJpegQuality,
-  thumbnailAvifQuality:
-    opts.thumbnailAvifQuality ??
-    DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailAvifQuality,
 });
 
 export const getServerMediaSettings = async (): Promise<ServerMediaSettings> =>
@@ -58,7 +54,6 @@ export const validateServerMediaSettings = (
   }
 
   validateQuality('JPEG quality', settings.thumbnailJpegQuality);
-  validateQuality('AVIF quality', settings.thumbnailAvifQuality);
 
   return settings;
 };

@@ -10,13 +10,11 @@ import { thumbnailDimensionsType } from './serverSettingsType.js';
 export const clientInfoType = new GraphQLObjectType({
   name: 'ClientInfo',
   fields: () => ({
-    avifEnabled: { type: new GraphQLNonNull(GraphQLBoolean) },
     useOriginalsForLightbox: { type: new GraphQLNonNull(GraphQLBoolean) },
     thumbnailSmallPx: { type: new GraphQLNonNull(GraphQLInt) },
     thumbnailMediumPx: { type: new GraphQLNonNull(GraphQLInt) },
     thumbnailLargePx: { type: new GraphQLNonNull(GraphQLInt) },
     thumbnailJpegQuality: { type: new GraphQLNonNull(GraphQLInt) },
-    thumbnailAvifQuality: { type: new GraphQLNonNull(GraphQLInt) },
     thumbnailDimensions: {
       type: new GraphQLNonNull(thumbnailDimensionsType),
     },

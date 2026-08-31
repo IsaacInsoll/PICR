@@ -39,8 +39,14 @@ const deferred = () => {
 
 const loadAddFile = async ({
   initialFiles = [],
+  updateMetadata = false,
+  sharpReadable = false,
+  ensureDecodedImageImpl,
 }: {
   initialFiles?: MockFileRow[];
+  updateMetadata?: boolean;
+  sharpReadable?: boolean;
+  ensureDecodedImageImpl?: (file: MockFileRow) => Promise<string>;
 } = {}) => {
   vi.resetModules();
 
@@ -48,6 +54,10 @@ const loadAddFile = async ({
   const insertStarted = deferred();
   const finishInsert = deferred();
   let nextFileId = Math.max(0, ...files.map((file) => file.id)) + 1;
+  const addToQueue = vi.fn();
+  const ensureDecodedImage = vi.fn(
+    ensureDecodedImageImpl ?? (async () => `${mediaRoot}/decoded.jpg`),
+  );
   const moveThumbnailFile = vi.fn();
 
   const columns = {
@@ -95,7 +105,7 @@ const loadAddFile = async ({
     isPsbFormat: vi.fn(() => false),
     isPsdFormat: vi.fn(() => false),
     isRawFormat: vi.fn(() => false),
-    isSharpReadableFormat: vi.fn(() => false),
+    isSharpReadableFormat: vi.fn(() => sharpReadable),
   }));
   vi.doMock('../../backend/db/models/index.js', () => columns);
   vi.doMock('../../backend/config/picrConfig.js', () => ({
@@ -107,7 +117,7 @@ const loadAddFile = async ({
         raw: false,
       },
       mediaPath: mediaRoot,
-      updateMetadata: false,
+      updateMetadata,
     },
   }));
   vi.doMock('../../backend/filesystem/events/addFolder.js', () => ({
@@ -152,22 +162,29 @@ const loadAddFile = async ({
   }));
   vi.doMock('../../backend/logger.js', () => ({ log: vi.fn() }));
   vi.doMock('../../backend/media/blurHash.js', () => ({
-    encodeImageToBlurhash: vi.fn(),
+    encodeImageToBlurhash: vi.fn(async () => 'mock-blurhash'),
   }));
   vi.doMock('../../backend/media/ensureDecodedImage.js', () => ({
-    ensureDecodedImage: vi.fn(),
+    ensureDecodedImage,
   }));
   vi.doMock('../../backend/media/generateImageThumbnail.js', () => ({
     generateAllThumbs: vi.fn(),
   }));
+  vi.doMock('../../backend/filesystem/fileQueue.js', () => ({
+    addToQueue,
+  }));
   vi.doMock('../../backend/media/getImageMetadata.js', () => ({
-    getImageMetadata: vi.fn(),
+    getImageMetadata: vi.fn(async () => ({ camera: 'mock camera' })),
   }));
   vi.doMock('../../backend/media/getImageRatio.js', () => ({
-    getImageRatio: vi.fn(),
+    getImageRatio: vi.fn(async () => 1.5),
   }));
   vi.doMock('../../backend/media/getVideoMetadata.js', () => ({
-    getVideoMetadata: vi.fn(),
+    getVideoMetadata: vi.fn(async () => ({
+      Duration: 12,
+      Height: 720,
+      Width: 1280,
+    })),
   }));
   vi.doMock('../../backend/media/moveThumbnailFile.js', () => ({
     moveThumbnailFile,
@@ -253,7 +270,9 @@ const loadAddFile = async ({
   const { addFile } =
     await import('../../backend/filesystem/events/addFile.js');
   return {
+    addToQueue,
     addFile,
+    ensureDecodedImage,
     files,
     finishInsert,
     insertStarted: insertStarted.promise,
@@ -264,6 +283,254 @@ const loadAddFile = async ({
 afterEach(() => {
   vi.restoreAllMocks();
   vi.resetModules();
+});
+
+test('queues thumbnail generation only after persisting a new image row', async () => {
+  const stats = {
+    birthtime: new Date('2026-08-10T00:00:00.000Z'),
+    mtime: new Date('2026-08-10T00:00:00.000Z'),
+    size: 1024,
+  };
+  const { addFile, addToQueue, files, finishInsert } = await loadAddFile({
+    sharpReadable: true,
+  });
+
+  addToQueue.mockImplementation((action, payload) => {
+    expect(action).toBe('generateThumbnails');
+    expect(payload).toEqual({ id: 1 });
+    expect(files[0]).toMatchObject({
+      exists: true,
+      existsRescan: true,
+      fileHash: contentHashForStats(stats),
+      imageRatio: 1.5,
+      blurHash: 'mock-blurhash',
+      type: 'Image',
+    });
+  });
+
+  finishInsert.resolve();
+  await addFile(`${mediaRoot}/exports/IMG_0001.jpg`, true, stats);
+
+  expect(addToQueue).toHaveBeenCalledOnce();
+});
+
+test('does not queue thumbnail generation when image decoding fails', async () => {
+  const stats = {
+    birthtime: new Date('2026-08-10T00:00:00.000Z'),
+    mtime: new Date('2026-08-10T00:00:00.000Z'),
+    size: 1024,
+  };
+  const { addFile, addToQueue, files, finishInsert } = await loadAddFile({
+    ensureDecodedImageImpl: async () => {
+      throw new Error('decode failed');
+    },
+    sharpReadable: true,
+  });
+
+  finishInsert.resolve();
+  await addFile(`${mediaRoot}/exports/IMG_0001.jpg`, true, stats);
+
+  expect(addToQueue).not.toHaveBeenCalled();
+  expect(files[0]).toMatchObject({
+    exists: true,
+    existsRescan: true,
+    imageRatio: 0,
+    metadata: null,
+    blurHash: null,
+    type: 'File',
+  });
+});
+
+test('queues thumbnail generation only after persisting a new video row', async () => {
+  const stats = {
+    birthtime: new Date('2026-08-10T00:00:00.000Z'),
+    mtime: new Date('2026-08-10T00:00:00.000Z'),
+    size: 1024,
+  };
+  const { addFile, addToQueue, files, finishInsert } = await loadAddFile();
+
+  addToQueue.mockImplementation((action, payload) => {
+    expect(action).toBe('generateThumbnails');
+    expect(payload).toEqual({ id: 1 });
+    expect(files[0]).toMatchObject({
+      duration: 12,
+      exists: true,
+      existsRescan: true,
+      fileHash: contentHashForStats(stats),
+      imageRatio: 1280 / 720,
+      type: 'Video',
+    });
+  });
+
+  finishInsert.resolve();
+  await addFile(`${mediaRoot}/exports/clip.mp4`, true, stats);
+
+  expect(addToQueue).toHaveBeenCalledOnce();
+});
+
+test('does not queue thumbnail generation for a pure image move', async () => {
+  const stats = {
+    birthtime: new Date('2026-08-10T00:00:00.000Z'),
+    mtime: new Date('2026-08-10T00:00:00.000Z'),
+    size: 1024,
+  };
+  const hash = contentHashForStats(stats);
+  const { addFile, addToQueue, ensureDecodedImage, files, moveThumbnailFile } =
+    await loadAddFile({
+      initialFiles: [
+        {
+          blurHash: 'existing-blurhash',
+          createdAt: new Date('2026-08-10T00:00:00.000Z'),
+          exists: true,
+          existsRescan: true,
+          fileCreated: stats.birthtime,
+          fileHash: hash,
+          fileLastModified: stats.mtime,
+          fileSize: stats.size,
+          folderId: 23,
+          id: 7,
+          imageRatio: 1.5,
+          metadata: '{"camera":"existing camera"}',
+          name: 'old.jpg',
+          rating: 0,
+          relativePath: 'exports',
+          totalComments: 0,
+          type: 'Image',
+          updatedAt: new Date('2026-08-10T00:00:00.000Z'),
+        },
+      ],
+      sharpReadable: true,
+    });
+
+  await addFile(
+    `${mediaRoot}/exports/IMG_0001.jpg`,
+    true,
+    stats,
+    `${mediaRoot}/exports/old.jpg`,
+  );
+
+  expect(files).toHaveLength(1);
+  expect(files[0]).toMatchObject({
+    id: 7,
+    name: 'IMG_0001.jpg',
+    relativePath: 'exports',
+  });
+  expect(moveThumbnailFile).toHaveBeenCalledWith(
+    'exports',
+    'exports',
+    'old.jpg',
+    'IMG_0001.jpg',
+    hash,
+    'Image',
+  );
+  expect(ensureDecodedImage).not.toHaveBeenCalled();
+  expect(addToQueue).not.toHaveBeenCalled();
+});
+
+test('does not queue thumbnail generation for a metadata-only image refresh', async () => {
+  const stats = {
+    birthtime: new Date('2026-08-10T00:00:00.000Z'),
+    mtime: new Date('2026-08-10T00:00:00.000Z'),
+    size: 1024,
+  };
+  const hash = contentHashForStats(stats);
+  const { addFile, addToQueue, files } = await loadAddFile({
+    initialFiles: [
+      {
+        blurHash: 'existing-blurhash',
+        createdAt: new Date('2026-08-10T00:00:00.000Z'),
+        exists: true,
+        existsRescan: true,
+        fileCreated: stats.birthtime,
+        fileHash: hash,
+        fileLastModified: stats.mtime,
+        fileSize: stats.size,
+        folderId: 23,
+        id: 7,
+        imageRatio: 1.5,
+        metadata: '{"camera":"old camera"}',
+        name: 'IMG_0001.jpg',
+        rating: 0,
+        relativePath: 'exports',
+        totalComments: 0,
+        type: 'Image',
+        updatedAt: new Date('2026-08-10T00:00:00.000Z'),
+      },
+    ],
+    sharpReadable: true,
+    updateMetadata: true,
+  });
+
+  await addFile(`${mediaRoot}/exports/IMG_0001.jpg`, true, stats);
+
+  expect(files[0]).toMatchObject({
+    blurHash: 'existing-blurhash',
+    exists: true,
+    existsRescan: true,
+    fileHash: hash,
+    imageRatio: 1.5,
+    metadata: '{"camera":"mock camera"}',
+    type: 'Image',
+  });
+  expect(addToQueue).not.toHaveBeenCalled();
+});
+
+test('queues thumbnail generation after persisting a changed image hash', async () => {
+  const oldStats = {
+    birthtime: new Date('2026-08-10T00:00:00.000Z'),
+    mtime: new Date('2026-08-10T00:00:00.000Z'),
+    size: 1024,
+  };
+  const newStats = {
+    birthtime: new Date('2026-08-11T00:00:00.000Z'),
+    mtime: new Date('2026-08-11T00:00:00.000Z'),
+    size: 2048,
+  };
+  const { addFile, addToQueue, files } = await loadAddFile({
+    initialFiles: [
+      {
+        blurHash: 'old-blurhash',
+        createdAt: new Date('2026-08-10T00:00:00.000Z'),
+        exists: true,
+        existsRescan: true,
+        fileCreated: oldStats.birthtime,
+        fileHash: contentHashForStats(oldStats),
+        fileLastModified: oldStats.mtime,
+        fileSize: oldStats.size,
+        folderId: 23,
+        id: 7,
+        imageRatio: 1.2,
+        metadata: '{"camera":"old camera"}',
+        name: 'IMG_0001.jpg',
+        rating: 0,
+        relativePath: 'exports',
+        totalComments: 0,
+        type: 'Image',
+        updatedAt: new Date('2026-08-10T00:00:00.000Z'),
+      },
+    ],
+    sharpReadable: true,
+  });
+  const newHash = contentHashForStats(newStats);
+
+  addToQueue.mockImplementation((action, payload) => {
+    expect(action).toBe('generateThumbnails');
+    expect(payload).toEqual({ id: 7 });
+    expect(files[0]).toMatchObject({
+      blurHash: 'mock-blurhash',
+      exists: true,
+      existsRescan: true,
+      fileHash: newHash,
+      fileLastModified: newStats.mtime,
+      imageRatio: 1.5,
+      metadata: '{"camera":"mock camera"}',
+      type: 'Image',
+    });
+  });
+
+  await addFile(`${mediaRoot}/exports/IMG_0001.jpg`, true, newStats);
+
+  expect(addToQueue).toHaveBeenCalledOnce();
 });
 
 test('concurrent imports for the same path share the inserted file row', async () => {

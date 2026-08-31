@@ -42,13 +42,11 @@ const resolver: PicrResolver<object, EditServerSettingsArgs> = async (
 export const editServerSettingsInputType = new GraphQLInputObjectType({
   name: 'EditServerSettingsInput',
   fields: () => ({
-    avifEnabled: { type: GraphQLBoolean },
     useOriginalsForLightbox: { type: GraphQLBoolean },
     thumbnailSmallPx: { type: GraphQLInt },
     thumbnailMediumPx: { type: GraphQLInt },
     thumbnailLargePx: { type: GraphQLInt },
     thumbnailJpegQuality: { type: GraphQLInt },
-    thumbnailAvifQuality: { type: GraphQLInt },
   }),
 });
 

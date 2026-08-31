@@ -1,6 +1,5 @@
 import * as ji from 'join-images';
 import { encode } from 'blurhash';
-import { default as exifReader } from 'exif-reader';
 import {
   mkdir,
   readdir,
@@ -19,6 +18,7 @@ import { picrConfig } from '../config/picrConfig.js';
 import { probe, runFfmpeg } from '../media/ffmpeg.js';
 import { extractZip } from '../helpers/extractZip.js';
 import { getServerMediaSettings } from '../media/serverMediaSettings.js';
+import { embeddedExifJpegPreviewForImage } from '../media/exifPreview.js';
 
 const benchmarkAssetUrl = 'https://photosummaryapp.com/picr-demo-data.zip';
 const benchmarkAssetDownloadTimeoutMs = 60_000;
@@ -45,7 +45,10 @@ const videoExtensions = new Set(['.mp4', '.mov', '.m4v', '.webm']);
 
 type BenchmarkStepStatus = 'completed' | 'skipped' | 'failed';
 type ImageResizeMode = 'decode-per-size' | 'decode-once';
-type ImageResizePipeline = 'production' | 'future-srgb' | 'future-keep-icc';
+type ImageResizePipeline =
+  | 'legacy-metadata'
+  | 'image-production-srgb'
+  | 'future-keep-icc';
 
 export interface NamedBenchmarkStepResult {
   key: string;
@@ -162,7 +165,6 @@ export const runBenchmark = async (
       imageFiles,
       currentThumbnailLadder,
       currentJpegQuality: settings.thumbnailJpegQuality,
-      currentAvifQuality: settings.thumbnailAvifQuality,
     })),
     await videoStep(
       'video-thumbnail-cpu',
@@ -280,12 +282,10 @@ const imageSteps = async ({
   imageFiles,
   currentThumbnailLadder,
   currentJpegQuality,
-  currentAvifQuality,
 }: {
   imageFiles: string[];
   currentThumbnailLadder: number[];
   currentJpegQuality: number;
-  currentAvifQuality: number;
 }): Promise<NamedBenchmarkStepResult[]> => {
   if (imageFiles.length === 0) {
     return [skippedStep('image-benchmarks', 'Image Benchmarks')];
@@ -293,50 +293,50 @@ const imageSteps = async ({
 
   const steps: StepDefinition[] = [
     imageResizeStep({
-      key: 'jpeg-current-config-production',
-      name: `JPEG q${currentJpegQuality} current ladder, production pipeline`,
+      key: 'jpeg-current-config-legacy-metadata',
+      name: `JPEG q${currentJpegQuality} current ladder, pre-R0 metadata pipeline`,
       files: imageFiles,
       sizes: currentThumbnailLadder,
       quality: currentJpegQuality,
       mode: 'decode-per-size',
-      pipeline: 'production',
+      pipeline: 'legacy-metadata',
     }),
     imageResizeStep({
-      key: 'jpeg-current-config-future-srgb-decode-once',
-      name: `JPEG q${currentJpegQuality} current ladder, future sRGB, decode once`,
+      key: 'jpeg-current-config-image-production-decode-once',
+      name: `JPEG q${currentJpegQuality} current ladder, image production pipeline`,
       files: imageFiles,
       sizes: currentThumbnailLadder,
       quality: currentJpegQuality,
       mode: 'decode-once',
-      pipeline: 'future-srgb',
+      pipeline: 'image-production-srgb',
     }),
     imageResizeStep({
-      key: 'jpeg-ladder-q75-future-srgb-decode-once',
-      name: 'JPEG q75 full ladder, future sRGB, decode once',
+      key: 'jpeg-ladder-q75-image-production-decode-once',
+      name: 'JPEG q75 full ladder, image production pipeline',
       files: imageFiles,
       sizes: futureThumbnailLadder,
       quality: 75,
       mode: 'decode-once',
-      pipeline: 'future-srgb',
+      pipeline: 'image-production-srgb',
     }),
     imageResizeStep({
-      key: 'jpeg-ladder-q80-future-srgb-decode-per-size',
-      name: 'JPEG q80 full ladder, future sRGB, decode per size',
+      key: 'jpeg-ladder-q80-image-production-decode-per-size',
+      name: 'JPEG q80 full ladder, image production pipeline, decode per size',
       files: imageFiles,
       sizes: futureThumbnailLadder,
       quality: 80,
       mode: 'decode-per-size',
-      pipeline: 'future-srgb',
+      pipeline: 'image-production-srgb',
     }),
     ...[1, 2, 4, 8].map((concurrency) =>
       imageResizeStep({
-        key: `jpeg-ladder-q80-future-srgb-decode-once-c${concurrency}`,
-        name: `JPEG q80 full ladder, future sRGB, decode once, ${concurrency} worker${concurrency === 1 ? '' : 's'}`,
+        key: `jpeg-ladder-q80-image-production-decode-once-c${concurrency}`,
+        name: `JPEG q80 full ladder, image production pipeline, ${concurrency} worker${concurrency === 1 ? '' : 's'}`,
         files: imageFiles,
         sizes: futureThumbnailLadder,
         quality: 80,
         mode: 'decode-once',
-        pipeline: 'future-srgb',
+        pipeline: 'image-production-srgb',
         concurrency,
       }),
     ),
@@ -351,23 +351,13 @@ const imageSteps = async ({
       includedInTotal: false,
     }),
     imageResizeStep({
-      key: 'jpeg-ladder-q85-future-srgb-decode-once',
-      name: 'JPEG q85 full ladder, future sRGB, decode once',
+      key: 'jpeg-ladder-q85-image-production-decode-once',
+      name: 'JPEG q85 full ladder, image production pipeline',
       files: imageFiles,
       sizes: futureThumbnailLadder,
       quality: 85,
       mode: 'decode-once',
-      pipeline: 'future-srgb',
-    }),
-    imageResizeStep({
-      key: 'avif-current-config-production',
-      name: `AVIF q${currentAvifQuality} current ladder, production pipeline`,
-      files: imageFiles,
-      sizes: currentThumbnailLadder,
-      quality: currentAvifQuality,
-      mode: 'decode-per-size',
-      pipeline: 'production',
-      format: 'avif',
+      pipeline: 'image-production-srgb',
     }),
     blurhashStep({
       key: 'blurhash-full-decode',
@@ -399,7 +389,6 @@ const imageResizeStep = ({
   mode,
   pipeline,
   concurrency = 1,
-  format = 'jpeg',
   includedInTotal,
 }: {
   key: string;
@@ -410,7 +399,6 @@ const imageResizeStep = ({
   mode: ImageResizeMode;
   pipeline: ImageResizePipeline;
   concurrency?: number;
-  format?: 'jpeg' | 'avif';
   includedInTotal?: boolean;
 }): StepDefinition => ({
   key,
@@ -424,8 +412,7 @@ const imageResizeStep = ({
     const { failed, firstError, processed } = await mapConcurrent(
       files,
       concurrency,
-      (file, index) =>
-        runner(file, index, dir, sizes, quality, format, pipeline),
+      (file, index) => runner(file, index, dir, sizes, quality, pipeline),
     );
     if (processed === 0 && failed > 0) {
       throw new Error(
@@ -438,7 +425,7 @@ const imageResizeStep = ({
         `${processed}/${files.length} images`,
         `${sizes.length} sizes`,
         `q${quality}`,
-        format.toUpperCase(),
+        'JPEG',
         mode === 'decode-once' ? 'decode once' : 'decode per size',
         imagePipelineDetail(pipeline),
         failed > 0 ? `${failed} failed` : null,
@@ -454,27 +441,22 @@ const resizeImagePerSize = async (
   dir: string,
   sizes: readonly number[],
   quality: number,
-  format: 'jpeg' | 'avif',
   pipeline: ImageResizePipeline,
 ) => {
   for (const px of sizes) {
-    const out = path.join(dir, `${index}-${px}.${format}`);
+    const out = path.join(dir, `${index}-${px}.jpg`);
     const resizeOptions = {
       fit: 'inside' as const,
       withoutEnlargement: true,
     };
     const image =
-      pipeline === 'production'
+      pipeline === 'legacy-metadata'
         ? openSharp(file).withMetadata().resize(px, px, resizeOptions)
         : futureOutputPolicy(
             openSharp(file).rotate().resize(px, px, resizeOptions),
             pipeline,
           );
-    if (format === 'jpeg') {
-      await image.jpeg({ quality }).toFile(out);
-    } else {
-      await image.avif({ quality }).toFile(out);
-    }
+    await image.jpeg({ quality }).toFile(out);
   }
 };
 
@@ -482,7 +464,6 @@ const futureOutputPolicy = (
   image: ReturnType<typeof openSharp>,
   pipeline: ImageResizePipeline,
 ) => {
-  if (pipeline === 'production') return image;
   if (pipeline === 'future-keep-icc') {
     return image.keepIccProfile();
   }
@@ -490,13 +471,13 @@ const futureOutputPolicy = (
 };
 
 const imagePipelineDetail = (pipeline: ImageResizePipeline) => {
-  if (pipeline === 'production') {
-    return 'production: withMetadata, no explicit rotate';
+  if (pipeline === 'legacy-metadata') {
+    return 'pre-R0: withMetadata, no explicit rotate';
   }
   if (pipeline === 'future-keep-icc') {
     return 'future: auto-oriented, EXIF/XMP stripped, source ICC kept';
   }
-  return 'future: auto-oriented, EXIF/XMP stripped, sRGB ICC';
+  return 'image production: auto-oriented, EXIF/XMP stripped, sRGB ICC';
 };
 
 const resizeImageDecodeOnce = async (
@@ -505,10 +486,9 @@ const resizeImageDecodeOnce = async (
   dir: string,
   sizes: readonly number[],
   quality: number,
-  format: 'jpeg' | 'avif',
   pipeline: ImageResizePipeline,
 ) => {
-  if (pipeline !== 'future-srgb') {
+  if (pipeline !== 'image-production-srgb') {
     throw new Error(`Decode-once is not supported for ${pipeline}`);
   }
 
@@ -519,7 +499,7 @@ const resizeImageDecodeOnce = async (
     .toBuffer({ resolveWithObject: true });
 
   for (const px of sizes) {
-    const out = path.join(dir, `${index}-${px}.${format}`);
+    const out = path.join(dir, `${index}-${px}.jpg`);
     const image = openSharp(data, {
       raw: {
         width: info.width,
@@ -532,11 +512,7 @@ const resizeImageDecodeOnce = async (
         withoutEnlargement: true,
       })
       .withIccProfile('srgb');
-    if (format === 'jpeg') {
-      await image.jpeg({ quality }).toFile(out);
-    } else {
-      await image.avif({ quality }).toFile(out);
-    }
+    await image.jpeg({ quality }).toFile(out);
   }
 };
 
@@ -571,7 +547,7 @@ const blurhashStep = ({
         continue;
       }
 
-      const preview = await safeExifPreview(file);
+      const preview = await embeddedExifJpegPreviewForImage(file);
       if (preview) {
         try {
           await encodeBlurhashFromInput(preview);
@@ -980,62 +956,6 @@ const directorySize = async (directory: string): Promise<bigint> => {
   const sizes = await Promise.all(files.map((file) => stat(file)));
   return sizes.reduce((total, file) => total + BigInt(file.size), 0n);
 };
-
-interface ExifWithThumbnail {
-  Thumbnail?: {
-    Compression?: number;
-    JPEGInterchangeFormat?: number;
-    JPEGInterchangeFormatLength?: number;
-  };
-}
-
-const exifPreview = async (file: string): Promise<Buffer | null> => {
-  const { exif } = await openSharp(file).metadata();
-  if (!exif) return null;
-  const parsed = exifReader(exif) as ExifWithThumbnail;
-  const offset = parsed.Thumbnail?.JPEGInterchangeFormat;
-  const length = parsed.Thumbnail?.JPEGInterchangeFormatLength;
-  if (
-    typeof offset !== 'number' ||
-    typeof length !== 'number' ||
-    length <= 0 ||
-    offset < 0
-  ) {
-    return null;
-  }
-
-  return (
-    previewSlice(exif, offset + exifTiffHeaderOffset, length) ??
-    previewSlice(exif, offset, length)
-  );
-};
-
-const safeExifPreview = async (file: string): Promise<Buffer | null> => {
-  try {
-    return await exifPreview(file);
-  } catch {
-    return null;
-  }
-};
-
-const exifTiffHeaderOffset = 6;
-
-const previewSlice = (
-  exif: Buffer,
-  offset: number,
-  length: number,
-): Buffer | null => {
-  if (offset < 0 || offset + length > exif.length) return null;
-  const preview = exif.subarray(offset, offset + length);
-  return isJpeg(preview) ? preview : null;
-};
-
-const isJpeg = (buffer: Buffer) =>
-  buffer.length >= 4 &&
-  buffer[0] === 0xff &&
-  buffer[1] === 0xd8 &&
-  buffer[buffer.length - 2] === 0xff &&
-  buffer[buffer.length - 1] === 0xd9;
 
 const encodeBlurhashFromInput = async (input: Buffer | string) => {
   const { data, info } = await openSharp(input)

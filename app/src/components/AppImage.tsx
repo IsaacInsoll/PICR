@@ -67,7 +67,7 @@ export const imageURL = (
   const { id, fileHash, name, type } = file;
   const path = `image/${id}/${size}/${fileHash}/`;
   if (type === 'Video' && size !== 'raw') {
-    return path + (extension === '.avif' ? 'poster.avif' : 'poster.jpg');
+    return path + 'poster.jpg';
   }
 
   return path + (extension ? name + extension : name);

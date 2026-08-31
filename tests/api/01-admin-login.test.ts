@@ -134,13 +134,11 @@ test('Root admin can edit server media settings', async () => {
   const client = await createTestGraphqlClient(headers);
 
   const customSettings = {
-    avifEnabled: true,
     useOriginalsForLightbox: true,
     thumbnailSmallPx: 240,
     thumbnailMediumPx: 640,
     thumbnailLargePx: 3000,
     thumbnailJpegQuality: 72,
-    thumbnailAvifQuality: 48,
   };
 
   try {

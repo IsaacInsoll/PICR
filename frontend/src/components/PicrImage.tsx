@@ -6,7 +6,6 @@ import { Blurhash } from 'react-blurhash';
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import type { PicrFile } from '@shared/types/picr';
-import { useAvifEnabled } from '../hooks/useMe';
 import { useNoDownloadMediaProps } from '../hooks/useNoDownloadMediaProps';
 
 interface PicrImageProps {
@@ -28,14 +27,10 @@ export const PicrImage = ({
   //<Image> is a mantine object that is pretty much an <img> tag
   //<picture> is HTML5 that allows you to specify multiple sources for a child image tag
   const [loaded, setLoaded] = useState(false);
-  const avif = useAvifEnabled();
   const noDownloadMediaProps = useNoDownloadMediaProps();
   return (
     <div style={{ ...style, position: 'relative' }}>
       <picture>
-        {avif ? (
-          <source srcSet={imageURL(file, size, '.avif')} type="image/avif" />
-        ) : null}
         <source srcSet={imageURL(file, size)} type="image/jpeg" />
         {!loaded && file.blurHash ? (
           <Blurhash

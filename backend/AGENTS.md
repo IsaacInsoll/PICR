@@ -263,10 +263,10 @@ steps that write more files are penalized by measurement overhead rather than
 media-processing work. Local asset overrides must stay under
 `picrConfig.mediaPath`, and real-media benchmark steps should count per-file
 failures instead of aborting the whole run on the first corrupt file. When a
-benchmark row is labelled as a current production baseline, keep its Sharp
-pipeline aligned with `backend/media/encodeThumbnail.ts`; use separate future
-rows for planned changes such as physical rotation, EXIF/XMP stripping, or ICC
-profile policy.
+benchmark row is labelled as current image production, keep its Sharp pipeline
+aligned with `backend/media/encodeImageThumbnails.ts`; label old comparison rows
+as historical/pre-R0. Video poster rows still align with
+`backend/media/encodeThumbnail.ts`.
 
 ### FFmpeg/FFprobe Configuration
 
@@ -557,6 +557,23 @@ contracts between watcher, on-view, scheduled, and manual scans.
   `addFile()` can call it while resolving a missing parent folder, so do not rely
   only on scan-folder or file-queue serialization to prevent duplicate folder
   rows.
+- `addFile()` queues thumbnail generation only after the `Files` row has been
+  persisted with `exists=true` and the current `fileHash`. Do not move that
+  enqueue earlier: thumbnail workers resolve rows through `dbFileForId()`, which
+  filters to active rows and uses the persisted hash for cache paths.
+  Thumbnail-generation failures must stay isolated from row persistence; they
+  should not downgrade an image to a generic file or prevent a video row from
+  receiving its latest hash/existence flags.
+- Image thumbnail generation is single-flight by `file.id`, `fileHash`, and
+  size. Keep request-time cache-miss generation and queue-worker generation
+  joined on the same promise; duplicate writes waste the thumbnail worker pool
+  even though `atomicWrite()` prevents partial-file corruption.
+- `fileQueue` runs only adjacent `generateThumbnails` items concurrently, using
+  `picrConfig.thumbnailWorkerCount`. Filesystem mutation actions (`add`,
+  `unlink`, `renameDir`, etc.) remain serial and must not be batched across.
+- `UV_THREADPOOL_SIZE` must be set before Node starts. The Docker image sets it
+  with `ENV`; assigning `process.env.UV_THREADPOOL_SIZE` inside app code is too
+  late once any import has touched libuv/Sharp.
 - Recursive scanner calls carry a visited-folder set. If corrupt `parentId`
   data creates a folder cycle, skip the repeated folder and log a warning;
   waiting on the per-folder lock from the same scan stack would deadlock.
@@ -611,7 +628,7 @@ probes cannot collectively trip the UI threshold.
 | `lg`  | Default 2500px, configurable server-wide | Full-screen view |
 | `raw` | Original                                 | Direct download  |
 
-Thumbnail dimensions and JPEG/AVIF quality are stored on the singleton
+Thumbnail dimensions and JPEG quality are stored on the singleton
 `ServerOptions` row. The disk cache filename is still tier-based (`sm`/`md`/`lg`)
 rather than config-keyed, so changing media settings affects only newly generated
 or regenerated thumbnails. Existing cache files continue to be served until they
@@ -621,7 +638,7 @@ are deleted, regenerated, or the source media hash changes.
 
 ```typescript
 // Uses sharp library
-// Generates JPEG and optional AVIF with ServerOptions quality settings
+// Generates JPEG with the ServerOptions quality setting
 // Creates blurhash for placeholder
 ```
 
@@ -639,6 +656,25 @@ are deleted, regenerated, or the source media hash changes.
 - `addFile()` uses a `typeChanged` gate so existing files reclassify during the
   normal boot scan when optional decoder capabilities appear. Do not bulk-clear
   `fileHash` to force this.
+- Image thumbnail generation decodes each source once, auto-orients pixels with
+  Sharp `.rotate()`, converts to sRGB, strips EXIF/XMP, and writes a web-friendly
+  sRGB ICC profile. Do not reintroduce per-size source opens or metadata-carried
+  orientation without re-benchmarking and revisiting stored source dimensions.
+- Image blurhash generation first tries an embedded EXIF IFD1 JPEG preview and
+  falls back to the full image when the preview is absent, corrupt, non-JPEG,
+  has a mismatched aspect ratio, or comes from a source with a rotating EXIF
+  orientation. EXIF thumbnail offsets are relative to the TIFF header inside
+  Sharp's `Exif\0\0` buffer, so production parsing adds the 6-byte EXIF prefix
+  before slicing preview bytes. Any preview optimization must keep a
+  full-decode fallback because Lightroom/camera previews can be missing or stale.
+- Blurhashes auto-orient so the placeholder matches the pre-rotated thumbnail and
+  the oriented `imageRatio` it is drawn into. An extracted IFD1 preview is a bare
+  JPEG stream carrying no EXIF of its own, so `.rotate()` cannot orient it — that
+  is why rotated sources are refused a preview rather than rotated after
+  extraction. Adding `.rotate()` without that refusal makes the stored hash
+  depend on whether a preview happened to exist, which is worse than not
+  rotating at all. Committed fixtures are all orientation 1, so a rotated
+  fixture is needed to cover this end to end.
 - Legacy pre-v2 video montage cache directories can contain non-PICR metadata
   directories from NAS filesystems (for example Synology `@eaDir`). New video
   thumbnails are versioned files, but cleanup/rename code still sees old
@@ -661,8 +697,7 @@ are deleted, regenerated, or the source media hash changes.
 ```
 
 - Video poster files are named
-  `<name>-v${VIDEO_THUMBNAIL_CACHE_VERSION}-<size>-<hash>.jpg`, plus `.avif`
-  when AVIF is enabled. The scrub sprite is JPEG-only:
+  `<name>-v${VIDEO_THUMBNAIL_CACHE_VERSION}-<size>-<hash>.jpg`. The scrub sprite is JPEG-only:
   `<name>-v${VIDEO_THUMBNAIL_CACHE_VERSION}-scrub-<hash>.jpg`.
 - Client poster URLs use the normal `/image/:id/:size/:hash/poster.jpg` path
   for `sm`/`md`/`lg`. The scrub sprite is served by the backend-local
@@ -755,7 +790,7 @@ uncompressed frontend payloads.
 1. Validate file exists and hash matches
 2. Check if thumbnail exists
 3. Generate on-demand if missing
-4. Return JPEG or AVIF based on config
+4. Return JPEG thumbnail/poster
 
 Generated thumbnail/poster responses use a one-hour `Cache-Control` TTL with
 revalidation, not year-long immutable caching, because regenerated cache files can

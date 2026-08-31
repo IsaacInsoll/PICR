@@ -28,6 +28,7 @@ export const picrConfig: IPicrConfiguration = {
   onViewScanMode: 'off',
   pollingSeconds: 20,
   scheduledScanHours: 0,
+  thumbnailWorkerCount: 1,
   loginRateLimitEnabled: true,
   loginRateLimitWindowMinutes: 15,
   loginRateLimitIpMaxAttempts: 30,

@@ -16,13 +16,11 @@ export const meQuery = gql(/* GraphQL */ `
     }
     clientInfo {
       baseUrl
-      avifEnabled
       useOriginalsForLightbox
       thumbnailSmallPx
       thumbnailMediumPx
       thumbnailLargePx
       thumbnailJpegQuality
-      thumbnailAvifQuality
       thumbnailDimensions {
         sm
         md

@@ -7,7 +7,6 @@ import { FileType } from '@shared/gql/graphql.js';
 import { getImageRatio } from '../../media/getImageRatio.js';
 import { getImageMetadata } from '../../media/getImageMetadata.js';
 import { getVideoMetadata } from '../../media/getVideoMetadata.js';
-import { generateAllThumbs } from '../../media/generateImageThumbnail.js';
 import { encodeImageToBlurhash } from '../../media/blurHash.js';
 import { moveThumbnailFile } from '../../media/moveThumbnailFile.js';
 import { picrConfig } from '../../config/picrConfig.js';
@@ -27,6 +26,7 @@ import {
   isRawFormat,
   isSharpReadableFormat,
 } from '@shared/imageFormats.js';
+import { addToQueue } from '../fileQueue.js';
 
 const inFlightPathImports = new Map<string, Promise<void>>();
 
@@ -155,6 +155,7 @@ const addFileUnlocked = async (
   const newHash = contentHashForStats(stats);
   const typeChanged = (wasRenamed ? renamedFromType : file.type) !== type;
   const hashChanged = file.fileHash !== newHash;
+  let shouldGenerateThumbs = false;
   // A pure move: the file was renamed/relocated but its content (size + mtime,
   // and therefore its content hash) is unchanged. Relocate the cached thumbnails
   // and skip all media processing (no re-decode/metadata/blurhash/regeneration).
@@ -197,7 +198,7 @@ const addFileUnlocked = async (
         const meta = await getImageMetadata(file, src);
         file.metadata = JSON.stringify(meta);
         file.blurHash = await encodeImageToBlurhash(src);
-        if (generateThumbs) await generateAllThumbs(file); // will skip if thumbs exist
+        shouldGenerateThumbs = generateThumbs;
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         log(
@@ -218,7 +219,7 @@ const addFileUnlocked = async (
         meta.Height && meta.Width && meta.Height > 0
           ? meta.Width / meta.Height
           : 0;
-      if (generateThumbs) await generateAllThumbs(file);
+      shouldGenerateThumbs = generateThumbs;
     }
   } else if (picrConfig.updateMetadata) {
     log('info', '🔄️ update metadata: ' + file.id);
@@ -255,6 +256,9 @@ const addFileUnlocked = async (
     .update(dbFile)
     .set({ ...file, updatedAt: new Date() })
     .where(eq(dbFile.id, file.id));
+  if (shouldGenerateThumbs) {
+    addToQueue('generateThumbnails', { id: file.id });
+  }
   // console.log(file);
   log(
     'info',

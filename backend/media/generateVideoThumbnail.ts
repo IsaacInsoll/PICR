@@ -16,7 +16,7 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'path';
 import { encodeImageToBlurhash } from './blurHash.js';
-import { db, getServerOptions } from '../db/picrDb.js';
+import { db } from '../db/picrDb.js';
 import { dbFile } from '../db/models/index.js';
 import { eq } from 'drizzle-orm';
 import { videoThumbnailArtifactsExist } from './videoThumbnailExistence.js';
@@ -224,8 +224,7 @@ const persistVideoBlurHash = async (
 };
 
 const videoThumbnailsExist = async (file: FileFields): Promise<boolean> => {
-  const opts = await getServerOptions();
-  return videoThumbnailArtifactsExist(file, opts.avifEnabled ?? false);
+  return videoThumbnailArtifactsExist(file);
 };
 
 export const generateVideoThumbnail = async (

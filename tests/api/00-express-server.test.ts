@@ -72,6 +72,10 @@ test('Request Image from Express Server', async () => {
   };
   await testSize('sm');
   await testSize('md');
+  const avifResponse = await fetch(
+    `${testUrl}image/${id}/md/${fileHash}/${name}.avif`,
+  );
+  expect(avifResponse.status).toBe(404);
   await testSize('lg');
   await testSize('raw');
 });

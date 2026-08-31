@@ -1,9 +1,4 @@
-import type {
-  AvifOptions,
-  JpegOptions,
-  OutputInfo,
-  ResizeOptions,
-} from 'sharp';
+import type { JpegOptions, OutputInfo, ResizeOptions } from 'sharp';
 import type { ThumbnailSize } from '@shared/thumbnailSize.js';
 import { openSharp, type SharpInput } from './openSharp.js';
 import { atomicWrite } from './atomicWrite.js';
@@ -13,7 +8,11 @@ import {
 } from '@shared/serverMediaSettings.js';
 import { getServerMediaSettings } from './serverMediaSettings.js';
 
-type ThumbnailOutputExtension = '.jpg' | '.avif';
+// Video poster thumbnails still use this per-size encoder. Image thumbnails use
+// encodeImageThumbnails.ts because they need a different orientation/colour
+// policy and decode-once batching across sizes.
+
+type ThumbnailOutputExtension = '.jpg';
 
 export type ThumbnailOutputPath = (
   extension: ThumbnailOutputExtension,
@@ -43,16 +42,6 @@ export const encodeThumbnail = async (
         .toFile(tempPath),
     ),
   ];
-  if (settings.avifEnabled) {
-    promises.push(
-      atomicWrite(outputPath('.avif'), (tempPath) =>
-        img
-          .clone()
-          .avif({ ...avifOptions, quality: settings.thumbnailAvifQuality })
-          .toFile(tempPath),
-      ),
-    );
-  }
   return Promise.all(promises);
 };
 
@@ -62,4 +51,3 @@ const sharpOpts: ResizeOptions = {
 };
 
 const jpegOptions: JpegOptions = {};
-const avifOptions: AvifOptions = {};

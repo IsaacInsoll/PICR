@@ -19,13 +19,11 @@ export const useMe = (
   | (NonNullable<MeQueryQuery['me']> &
       ExtraUserProps & {
         clientInfo: {
-          avifEnabled?: boolean;
           useOriginalsForLightbox: boolean;
           thumbnailSmallPx: number;
           thumbnailMediumPx: number;
           thumbnailLargePx: number;
           thumbnailJpegQuality: number;
-          thumbnailAvifQuality: number;
           thumbnailDimensions: ServerThumbnailDimensions;
           baseUrl: string;
           canWrite: boolean;
@@ -49,11 +47,6 @@ export const useMe = (
   };
   // console.log(me);
   return me;
-};
-
-export const useAvifEnabled = () => {
-  const me = useMe();
-  return me?.clientInfo.avifEnabled ?? false;
 };
 
 export const useOriginalsForLightbox = () => {

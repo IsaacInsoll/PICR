@@ -78,10 +78,8 @@ type Branding {
 }
 
 type ClientInfo {
-  avifEnabled: Boolean!
   baseUrl: String!
   canWrite: Boolean!
-  thumbnailAvifQuality: Int!
   thumbnailDimensions: ThumbnailDimensions!
   thumbnailJpegQuality: Int!
   thumbnailLargePx: Int!
@@ -130,8 +128,6 @@ type DiskInfo {
 }
 
 input EditServerSettingsInput {
-  avifEnabled: Boolean
-  thumbnailAvifQuality: Int
   thumbnailJpegQuality: Int
   thumbnailLargePx: Int
   thumbnailMediumPx: Int
@@ -502,8 +498,6 @@ type ServerInfo {
 }
 
 type ServerSettings {
-  avifEnabled: Boolean!
-  thumbnailAvifQuality: Int!
   thumbnailDimensions: ThumbnailDimensions!
   thumbnailJpegQuality: Int!
   thumbnailLargePx: Int!

@@ -11,7 +11,7 @@ import {
   awaitVideoThumbnailGeneration,
   generateVideoThumbnail,
 } from '../media/generateVideoThumbnail.js';
-import { db, getServerOptions, type FileFields } from '../db/picrDb.js';
+import { db, type FileFields } from '../db/picrDb.js';
 import { dbFile } from '../db/models/index.js';
 import { and, eq } from 'drizzle-orm';
 import { thumbnailPath } from '../media/thumbnailPath.js';
@@ -62,6 +62,10 @@ export const imageRequest = async (
       : 'public, max-age=3600, must-revalidate',
   );
   const extension = extname(filename).toLowerCase(); //extension ignored for original file, only used for thumbs
+  if (size !== 'raw' && extension === '.avif') {
+    res.sendStatus(404);
+    return;
+  }
   if (size === 'scrub') {
     if (file.type !== 'Video') {
       res.sendStatus(404);
@@ -82,13 +86,7 @@ export const imageRequest = async (
   }
 
   if (file.type === 'Video' && size !== 'raw') {
-    const requestedExtension = extension === '.avif' ? '.avif' : '.jpg';
-    const opts = await getServerOptions();
-    const posterExtension =
-      requestedExtension === '.avif' && !opts.avifEnabled
-        ? '.jpg'
-        : requestedExtension;
-    const posterPath = fullPathFor(file, size, posterExtension);
+    const posterPath = fullPathFor(file, size, '.jpg');
     const videoStatus = await ensureVideoArtifact(
       file,
       size,
@@ -111,17 +109,7 @@ export const imageRequest = async (
   if (size !== 'raw' && !existsSync(fp)) {
     if (file.type === 'Image') {
       await generateThumbnail(file, size);
-      const opts = await getServerOptions();
-      // The below works fine (return JPEG when AVIF requested and doesn't exist, but it feels dodgy)
-      if (extension === '.avif' && !opts.avifEnabled) {
-        // console.log('⚠️ AVIF not enabled for this server, returning original');
-        return res.sendFile(fullPathFor(file, size)); //intentionally excluding extension as server doesn't support AVIF
-      }
-      const tp = thumbnailPath(
-        file,
-        size,
-        extension === '.avif' ? '.avif' : '.jpg',
-      );
+      const tp = thumbnailPath(file, size, '.jpg');
       res.sendFile(tp);
       return;
     }
