@@ -143,13 +143,162 @@ test('French browser locale covers public gallery, passcode, and login', async (
   }
 });
 
+const addedLanguageCases = [
+  {
+    language: 'German',
+    locale: 'de-CH',
+    timezoneId: 'Europe/Zurich',
+    htmlLanguage: 'de',
+    loginTitle: 'Bei PICR anmelden',
+    username: 'Benutzername',
+    password: 'Passwort',
+    submit: 'Anmelden',
+    home: 'Startseite',
+    fileCount: '10 Dateien',
+    galleriesHeading: 'Ihre Galerien',
+    feedbackHeading: 'Kundenfeedback',
+  },
+  {
+    language: 'Spanish',
+    locale: 'es-MX',
+    timezoneId: 'America/Mexico_City',
+    htmlLanguage: 'es',
+    loginTitle: 'Iniciar sesión en PICR',
+    username: 'Nombre de usuario',
+    password: 'Contraseña',
+    submit: 'Iniciar sesión',
+    home: 'Inicio',
+    fileCount: '10 archivos',
+    galleriesHeading: 'Tus galerías',
+    feedbackHeading: 'Comentarios del cliente',
+  },
+  {
+    language: 'Ukrainian',
+    locale: 'uk-UA',
+    timezoneId: 'Europe/Kyiv',
+    htmlLanguage: 'uk',
+    loginTitle: 'Увійти в PICR',
+    username: "Ім'я користувача",
+    password: 'Пароль',
+    submit: 'Увійти',
+    home: 'Головна',
+    fileCount: '10 файлів',
+    galleriesHeading: 'Ваші галереї',
+    feedbackHeading: 'Відгуки клієнтів',
+  },
+] as const;
+
+for (const languageCase of addedLanguageCases) {
+  test(`${languageCase.language} regional locale covers gallery, override, login, and root folder`, async ({
+    browser,
+  }) => {
+    const suffix = Math.random().toString(36).slice(2, 8);
+    const uuid = `i18n-${languageCase.htmlLanguage}-${suffix}`;
+    const authHeader = await adminAuthHeader();
+    let createdUserId: string | undefined;
+
+    const context = await browser.newContext({
+      baseURL: testUrl,
+      locale: languageCase.locale,
+      timezoneId: languageCase.timezoneId,
+      viewport: { width: 390, height: 844 },
+    });
+    await context.route('https://www.gravatar.com/**', async (route) => {
+      await route.fulfill({ status: 204 });
+    });
+    const page = await context.newPage();
+    const failures = trackBrowserFailures(page);
+
+    try {
+      const createUserResult = await gqlRequest<{
+        editUser?: { id: string };
+      }>(
+        editUserMutationText,
+        {
+          folderId: photoFolderId,
+          name: `${languageCase.language} i18n smoke`,
+          username: `i18n-${languageCase.htmlLanguage}-${suffix}@example.com`,
+          uuid,
+          enabled: true,
+          commentPermissions: 'read',
+        },
+        authHeader,
+      );
+      expect(createUserResult.errors).toBeUndefined();
+      createdUserId = createUserResult.data?.editUser?.id;
+      expect(createdUserId).toBeTruthy();
+
+      const galleryPath = `/s/${uuid}/${photoFolderId}`;
+      await page.goto(galleryPath, { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('html')).toHaveAttribute(
+        'lang',
+        languageCase.htmlLanguage,
+      );
+      await expect(
+        page.getByText(languageCase.fileCount, { exact: true }).first(),
+      ).toBeVisible();
+      expect(
+        await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth >
+            document.documentElement.clientWidth,
+        ),
+      ).toBe(false);
+
+      await page.goto(`${galleryPath}?lng=en`, {
+        waitUntil: 'domcontentloaded',
+      });
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+      await expect(
+        page.getByText('10 Files', { exact: true }).first(),
+      ).toBeVisible();
+
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('html')).toHaveAttribute(
+        'lang',
+        languageCase.htmlLanguage,
+      );
+      await expect(page.getByText(languageCase.loginTitle)).toBeVisible();
+      await page
+        .getByLabel(languageCase.username)
+        .fill(defaultCredentials.username);
+      await page
+        .getByRole('textbox', { name: languageCase.password })
+        .fill(defaultCredentials.password);
+      await page
+        .getByRole('button', { name: languageCase.submit, exact: true })
+        .click();
+      await page.waitForURL('**/admin', { timeout: 15_000 });
+      await expectDashboardReady(page, {
+        galleriesHeading: languageCase.galleriesHeading,
+        feedbackHeading: languageCase.feedbackHeading,
+      });
+
+      await page.goto('/admin/f/1', { waitUntil: 'domcontentloaded' });
+      await expect(
+        page.getByRole('heading', { name: languageCase.home, exact: true }),
+      ).toBeVisible();
+      expectNoBrowserFailures(failures);
+    } finally {
+      await context.close();
+      if (createdUserId) {
+        await gqlRequest<{ deleteUser?: boolean }>(
+          deleteUserMutationText,
+          { id: createdUserId },
+          authHeader,
+        );
+      }
+    }
+  });
+}
+
 test('unsupported browser locale falls back to English and honors a Greek query override', async ({
   browser,
 }) => {
   const context = await browser.newContext({
     baseURL: testUrl,
-    locale: 'de-DE',
-    timezoneId: 'Europe/Berlin',
+    locale: 'ja-JP',
+    timezoneId: 'Asia/Tokyo',
   });
   const page = await context.newPage();
   const failures = trackBrowserFailures(page);

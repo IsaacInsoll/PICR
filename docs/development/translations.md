@@ -18,6 +18,14 @@ Catalogs live under `shared/i18n/locales/<language>/` and use three namespaces:
 | `gallery` | Public galleries and file-review UI                                     |
 | `admin`   | Login, dashboard, settings, users, links, and branding                  |
 
+These namespaces organize catalogs for i18next; they are not network-level chunks. `resources.ts`
+statically imports every namespace for every supported language, and the frontend entry point
+initializes i18next with that complete object. Consequently, a public-gallery visitor currently
+downloads the admin catalogs and every unselected language as part of the initial JavaScript graph.
+The built-in Express server applies negotiated HTTP compression to these assets. When evaluating
+catalog growth, measure both minified raw bytes and the gzip/Brotli transfer size rather than treating
+source JSON size as the shipping cost.
+
 Use US English for source strings. Keep keys semantic and grouped by feature; do not use the English
 sentence itself as a key.
 
@@ -61,9 +69,10 @@ Before editing code:
 4. If the language introduces a new script, audit the complete body and branding-heading font stacks
    before translating. Verify both interface text and user-supplied folder/gallery names; CSS alone
    does not prove that the required glyphs render.
-5. Count the resulting catalog languages. Catalogs are eagerly bundled today; revisit lazy loading at
-   roughly five supported languages rather than adding another eager catalog automatically at that
-   threshold.
+5. Count and measure the resulting catalogs. They are eagerly bundled today, but the backend compresses
+   their containing JavaScript response. Record the raw and gzip/Brotli build sizes when adding a
+   language, and revisit lazy loading before another large language batch or when the compressed locale
+   chunk becomes material to startup performance.
 
 ### 2. Register and translate it
 

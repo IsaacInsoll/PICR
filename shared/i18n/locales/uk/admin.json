@@ -1,0 +1,770 @@
+{
+  "login": {
+    "title": "Увійти в PICR",
+    "username": "Ім'я користувача",
+    "password": "Пароль",
+    "passwordPlaceholder": "Ваш пароль",
+    "failed": "Помилка входу. Перевірте своє ім'я користувача та пароль",
+    "submit": "Увійти"
+  },
+  "shell": {
+    "filesAndFolders": "Файли та папки",
+    "dashboard": "Приладова панель",
+    "search": "Пошук",
+    "settings": "Налаштування",
+    "logOut": "Вийти",
+    "openInApp": "Відкрити в додатку",
+    "app": {
+      "downloadTitle": "Завантажте програму PICR",
+      "openAutomatically": "PICR має відкритися автоматично, якщо його встановлено.",
+      "open": "Відкрийте додаток"
+    }
+  },
+  "notFound": {
+    "title": "Сторінка не знайдена",
+    "description": "Нам не вдалося знайти сторінку, яку ви шукаєте.",
+    "contact": "Перевірте адресу та повторіть спробу."
+  },
+  "dashboard": {
+    "searchPlaceholder": "Пошук фотографій і папок…",
+    "stats": {
+      "media_one": "медіафайл",
+      "media_few": "медіафайли",
+      "media_many": "медіафайлів",
+      "media_other": "медіафайла",
+      "photo_one": "фото",
+      "photo_few": "фото",
+      "photo_many": "фото",
+      "photo_other": "фото",
+      "folder_one": "папка",
+      "folder_few": "папки",
+      "folder_many": "папок",
+      "folder_other": "папки"
+    },
+    "updateAvailable": "Доступне оновлення: v{{version}}",
+    "viewAll": "Переглянути всі",
+    "galleries": {
+      "title": "Ваші галереї",
+      "empty": "Тут ще немає папок"
+    },
+    "feedback": {
+      "title": "Відгуки клієнтів",
+      "empty": "Ще немає коментарів чи оцінок"
+    },
+    "clients": {
+      "title": "Останні клієнти",
+      "empty": "Клієнтів ще немає"
+    },
+    "modified": {
+      "title": "Нещодавно змінено",
+      "empty": "Останнім часом нічого не змінено"
+    }
+  },
+  "quickFind": {
+    "placeholder": "Пошук фотографій і папок",
+    "empty": "Нічого не знайдено",
+    "searchAllFolders": "Пошук у всіх папках",
+    "limit": {
+      "title": "Ліміт пошуку досягнуто",
+      "description": "Результати обмежені 100 файлами та папками. Використовуйте більш конкретний пошук."
+    },
+    "scope": {
+      "current": "Ця папка",
+      "all": "Усі папки"
+    },
+    "type": {
+      "all": "все",
+      "file": "Файли",
+      "folder": "Папки"
+    }
+  },
+  "tips": {
+    "publicLink": "Публічні посилання дозволяють вашим клієнтам отримати доступ до папки за «секретним посиланням». Вхід не потрібен!",
+    "users": "Користувачі мають ім'я користувача та пароль. Користувачі, які керують папками, можуть керувати користувачами та посиланнями у своїх вкладених папках.",
+    "branding": "Ви можете встановити один або кілька брендів, що містять логотип і колірну схему. Бренди застосовуються до папки та всіх її вкладених папок, наприклад, темний бренд для фотографій для фітнесу та яскравий бренд для весільних фотографій.",
+    "logs": "PICR веде журнал кожного разу, коли користувач відкриває папку, щоб ви могли перевірити, хто використовує ваші посилання.",
+    "dashboard": "PICR дозволяє ділитися своїми фотографіями та відео зі своїми клієнтами."
+  },
+  "settings": {
+    "title": "Налаштування PICR",
+    "serverInfo": "Інформація про сервер",
+    "tabs": {
+      "info": "Інформація",
+      "media": "ЗМІ",
+      "storage": "Зберігання",
+      "users": "Користувачі",
+      "links": "Посилання",
+      "branding": "брендинг",
+      "logs": "Журнали"
+    }
+  },
+  "common": {
+    "root": "Корінь",
+    "error": "Помилка",
+    "actions": "Дії",
+    "enabled": "Увімкнено",
+    "disabled": "Вимкнено",
+    "unnamed": "Без назви",
+    "never": "Ніколи",
+    "none": "Жодного",
+    "yes": "так",
+    "no": "немає",
+    "unknown": "Невідомий",
+    "unavailable": "Недоступний",
+    "save": "зберегти",
+    "delete": "Видалити",
+    "cancel": "Скасувати",
+    "close": "Закрити"
+  },
+  "users": {
+    "search": "Пошук користувачів",
+    "filteredCount": "{{visible}} з {{total}}",
+    "add": "Додати користувача",
+    "columns": {
+      "user": "Користувач",
+      "email": "Електронна пошта",
+      "folder": "Папка",
+      "lastAccess": "Останній доступ",
+      "status": "Статус"
+    },
+    "editor": {
+      "title": "Керувати користувачами",
+      "titleForFolder": "Керувати користувачами для: {{folder}}",
+      "account": "Обліковий запис",
+      "name": "Ім'я",
+      "namePlaceholder": "НАПРИКЛАД: «Генеральний директор компанії» або «Валентина» (необов'язково)",
+      "email": "Електронна пошта",
+      "emailPlaceholder": "НАПРИКЛАД: kimk або kim@example.com",
+      "password": "Пароль",
+      "enabled": "Увімкнено",
+      "enabledDescription": "Чи може цей користувач увійти?",
+      "access": "Доступ",
+      "notifications": "Сповіщення",
+      "ntfyPlaceholder": "НАПРИКЛАД: https://ntfy.sh/xyz",
+      "ntfyUrl": "URL-адреса сповіщень NTFY",
+      "ntfyDescription": "Отримуйте сповіщення на свій телефон",
+      "ntfyEmail": "Сповіщення NTFY електронною поштою",
+      "ntfyEmailDescription": "Також надсилайте сповіщення NTFY на цю електронну адресу облікового запису",
+      "create": "Створити користувача",
+      "deleteTitle": "Видалити користувача",
+      "deleteConfirmation": "Ви впевнені, що хочете видалити цього користувача? Цю дію неможливо скасувати, і вони більше не зможуть увійти."
+    }
+  },
+  "links": {
+    "columns": {
+      "link": "Посилання",
+      "comments": "Коментарі",
+      "mode": "Режим",
+      "passcode": "Пароль"
+    },
+    "passcodeSet": "встановити",
+    "passcodeProtected": "пароль захищений паролем",
+    "noPasscode": "немає пароля",
+    "expired": "Термін дії минув",
+    "includeParents": "Додайте посилання з батьківських папок",
+    "includeParentsShort": "Батьки",
+    "includeChildren": "Додайте посилання з дочірніх папок",
+    "includeChildrenShort": "діти",
+    "create": "Створити посилання",
+    "empty": "Публічні посилання не знайдено",
+    "search": "Пошук загальнодоступних посилань",
+    "copied": "Загальнодоступне посилання скопійовано",
+    "copy": "Копіювати публічне посилання",
+    "copyFailed": "Не вдалося скопіювати посилання, скопіюйте його вручну",
+    "mode": {
+      "label": "Режим посилання",
+      "finalDelivery": "Остаточна здача",
+      "proofsOnly": "Лише докази",
+      "downloadsAllowed": "Завантаження дозволено",
+      "noDownloads": "Немає завантажень",
+      "finalDeliveryDescription": "Клієнти можуть завантажити файли за цим посиланням.",
+      "proofsOnlyDescription": "Клієнти можуть переглядати файли, але не можуть їх завантажувати."
+    },
+    "comments": {
+      "label": "Коментарі",
+      "none": "Жодного",
+      "read": "Прочитайте",
+      "edit": "Редагувати",
+      "noneDescription": "Коментарі приховані.",
+      "readDescription": "Існуючі коментарі видно, але нові коментарі додавати не можна.",
+      "editDescription": "Коментарі видно, і можна додавати нові коментарі."
+    },
+    "editor": {
+      "title": "Керувати публічним посиланням для",
+      "publicUrl": "Публічна URL-адреса",
+      "publicLink": "Ідентифікатор публічного посилання",
+      "publicLinkDescription": "Секретна частина URL-адреси, надіслана вашому клієнту",
+      "fullLink": "Повне посилання:",
+      "idPlaceholder": "public-link-id",
+      "cannotUse": "Не можна використовувати:",
+      "space": "простір",
+      "minimumLength": "Використовуйте принаймні 6 символів",
+      "generatePretty": "Згенеруйте читабельний ID посилання",
+      "generateRandom": "Згенеруйте випадковий ідентифікатор посилання",
+      "publicLinkEnabled": "Публічне посилання ввімкнено",
+      "recipient": "одержувач",
+      "email": "Електронна пошта",
+      "optional": "Додатково",
+      "passcode": "Пароль галереї",
+      "expiration": "Термін придатності",
+      "expirationDescription": "Необов'язково — після закінчення цього часу галерея стане недоступною.",
+      "enabledDescription": "Чи можна використати це посилання?",
+      "nameRequired": "Введіть назву для цього посилання",
+      "deleteTitle": "Видалити публічне посилання",
+      "deleteConfirmation": "Ви впевнені, що хочете видалити це загальнодоступне посилання? Він негайно перестане працювати."
+    }
+  },
+  "folder": {
+    "tabs": {
+      "folder": "Папка",
+      "links": "Посилання",
+      "accessLogs": "Журнали доступу"
+    },
+    "details": "Деталі папки",
+    "title": "Назва галереї",
+    "titlePlaceholder": "Назва папки",
+    "subtitle": "Підзаголовок галереї",
+    "subtitlePlaceholder": "Підзаголовок за бажанням",
+    "manageTitle": "Керувати папкою: {{folder}}",
+    "view": "Переглянути папку",
+    "manage": "Керувати папкою",
+    "admin": "Адміністрація",
+    "manageNamed": "Керуйте {{folder}}",
+    "selector": {
+      "label": "Папка",
+      "description": "Цей користувач може керувати загальнодоступними посиланнями та іншими користувачами в цій папці",
+      "placeholder": "Назва папки"
+    },
+    "branding": {
+      "inherit": "Успадкувати від батьківської папки",
+      "create": "Створіть новий брендинг",
+      "add": "Додайте брендинг",
+      "select": "Виберіть брендинг",
+      "edit": "Редагувати вибране брендування",
+      "currentlyInheriting": "Наразі успадковується {{name}}",
+      "default": "брендування за замовчуванням",
+      "thisFolder": "цю папку",
+      "modalTitle": "Брендування папок",
+      "inheritedDescription": "<strong>{{folder}}</strong> не має власного бренду. Наразі він успадковує <strong>{{branding}}</strong>.",
+      "createFor": "Створіть бренд для {{folder}}",
+      "editNamed": "Редагувати {{branding}}",
+      "editWarning": "Це вплине на всі папки, які використовують {{branding}}."
+    },
+    "scan": {
+      "action": "Сканувати папку",
+      "settling": "Сканування папки в черзі",
+      "settlingDescription": "PICR перевіряє цю папку на наявність змін.",
+      "complete": "Сканування папки завершено",
+      "completeDescription": "PICR завершив перевірку цієї папки."
+    },
+    "thumbnails": {
+      "generate_one": "Створити мініатюру",
+      "generate_few": "Створити мініатюри",
+      "generate_many": "Створити мініатюри",
+      "generate_other": "Створити мініатюри"
+    },
+    "moveRename": {
+      "title": "Перемістити/перейменувати папку: {{folder}}",
+      "name": "Назва папки",
+      "parent": "Батьківська папка",
+      "parentDescription": "Перемістіть цю папку під вибрану батьківську папку",
+      "newPath": "Новий шлях: {{path}}",
+      "action": "Перемістити/перейменувати",
+      "validation": {
+        "loginRequired": "Необхідно ввійти.",
+        "adminRequired": "Потрібні права адміністратора.",
+        "readOnly": "Сервер доступний лише для читання.",
+        "rootFolder": "Кореневі папки неможливо перемістити або перейменувати.",
+        "accountRoot": "Вашу кореневу папку не можна перемістити або перейменувати.",
+        "pathUnavailable": "Шлях до папки недоступний для цього облікового запису.",
+        "pathInvalid": "Недійсний шлях до папки.",
+        "selectParent": "Виберіть батьківську папку.",
+        "parentOutsideRoot": "Виберіть батьківську папку в кореневій папці.",
+        "selfParent": "Виберіть батьківську папку, яка не є цією папкою.",
+        "descendant": "Неможливо перемістити папку у власну вкладену папку.",
+        "conflict": "Папка з такою назвою вже існує в цьому місці.",
+        "noChanges": "Жодних змін для застосування.",
+        "name": {
+          "required": "Потрібно вказати назву папки.",
+          "forwardSlash": "Назва папки не може містити косу риску.",
+          "backslash": "Назва папки не може містити зворотну косу риску.",
+          "invalid": "Недійсна назва папки."
+        }
+      }
+    },
+    "csv": {
+      "title": "Експорт імен файлів",
+      "action": "Експорт імен файлів",
+      "formatLabel": "Формат експорту",
+      "format": {
+        "picr": "Плагін PICR CSV (назва файлу, рейтинг, прапор)",
+        "comma": "Lightroom (через кому)",
+        "space": "Capture One & Photo Mechanic (з розділенням пробілом)"
+      },
+      "pluginPrefix": "Імпортуйте ці дані в Lightroom Classic за допомогою",
+      "pluginName": "Плагін PICR Lightroom",
+      "excludeExtensions": "Виключити розширення файлів",
+      "useFilters": "Використовуйте поточні фільтри",
+      "includeSubfolders": "Включати вкладені папки",
+      "includeSubfoldersDescription": "Експортувати всі файли в дереві папок (макс. 10 000)",
+      "loading": "Завантаження…",
+      "loadError": "Неможливо завантажити файли з вкладених папок.",
+      "loadingSubfolders": "Завантаження файлів із вкладених папок…",
+      "loaded": "{{returned}} із файлів {{available}} завантажено {{truncated}}",
+      "truncated": "(урізаний)",
+      "noFiles": "Файли не знайдено.",
+      "previewCount_one": "{{count}} файл у попередньому перегляді експорту",
+      "previewCount_few": "{{count}} файли у попередньому перегляді експорту",
+      "previewCount_many": "{{count}} файлів у попередньому перегляді експорту",
+      "previewCount_other": "{{count}} файла у попередньому перегляді експорту",
+      "empty": "Ще немає файлів для експорту.",
+      "copy": "Копіювати в буфер обміну",
+      "download": "Завантажити"
+    },
+    "banner": {
+      "title": "Установити зображення банера",
+      "edit": "Редагувати банер",
+      "clear": "Чітке зображення банера",
+      "setHero": "Встановити як зображення героя",
+      "setHeroOrBanner": "Установити як герой / зображення банера",
+      "setImage": "Установити як зображення банера",
+      "changeSize": "Змінити розмір банера",
+      "textPosition": "Позиція тексту",
+      "mobilePreview": "Мобільний попередній перегляд",
+      "position": {
+        "top": {
+          "left": "Вгорі ліворуч",
+          "center": "Верхній центр",
+          "right": "Вгорі справа"
+        },
+        "center": {
+          "left": "Середній лівий",
+          "center": "Середній центр",
+          "right": "Посередині справа"
+        },
+        "bottom": {
+          "left": "Внизу зліва",
+          "center": "Нижній центр",
+          "right": "Праворуч внизу"
+        }
+      },
+      "size": {
+        "classic": "класичний",
+        "widescreen": "широкоекранний",
+        "cinematic": "Кінематографічний",
+        "full": "Повний екран"
+      },
+      "sizeDescription": {
+        "classic": "Високий і захоплюючий",
+        "widescreen": "Збалансований пейзаж",
+        "cinematic": "Широкий і компактний",
+        "full": "Заповнює весь екран"
+      }
+    }
+  },
+  "branding": {
+    "appliedTo": "Застосовується до:",
+    "outsideScope": "Ця папка знаходиться поза вашим доступом",
+    "view": {
+      "list": "Список",
+      "gallery": "Галерея",
+      "feed": "годувати"
+    },
+    "mode": {
+      "label": "Тема",
+      "auto": "Авто",
+      "light": "світло",
+      "dark": "Темний",
+      "description": "<code>Auto</code> означає, що <emphasis> відповідає налаштуванням пристрою користувача </emphasis>."
+    },
+    "layout": {
+      "justified": "Фіксовані ряди",
+      "masonry": "Стаціонарні колони"
+    },
+    "headingAlignment": {
+      "left": "Ліворуч",
+      "center": "центр"
+    },
+    "sort": {
+      "label": "Типове сортування",
+      "description": "Початковий порядок сортування під час відкриття галереї. Глядачі все ще можуть змінити це.",
+      "appDefault": "Додаток за умовчанням",
+      "appDefaultFilename": "Додаток за умовчанням (назва файлу)",
+      "summary": "{{type}} {{direction}}",
+      "type": {
+        "Filename": "Ім'я файлу",
+        "LastModified": "Змінено",
+        "DateTaken": "Дата зйомки",
+        "Rating": "Рейтинг",
+        "RecentlyCommented": "Прокоментував"
+      },
+      "direction": {
+        "Asc": "Висхідний",
+        "Desc": "Спускається"
+      }
+    },
+    "list": {
+      "search": "Брендування пошуку",
+      "filteredCount": "{{visible}} з {{total}}",
+      "add": "Додати брендинг",
+      "empty": "Немає попередніх налаштувань брендингу, які відповідають цьому пошуковому запиту.",
+      "unnamed": "Бренд без назви",
+      "themeSummary": "Фон {{mode}}, колір {{color}}",
+      "noFolders": "Немає папок",
+      "more_one": "+ ще {{count}}",
+      "more_few": "+ ще {{count}}",
+      "more_many": "+ ще {{count}}",
+      "more_other": "+ ще {{count}}"
+    },
+    "drawer": {
+      "createTitle": "Створення бренду",
+      "editTitle": "Редагувати брендинг: {{name}}",
+      "previewGallery": "Попередній перегляд галереї",
+      "showOverlay": "Показати накладання",
+      "create": "Створити"
+    },
+    "form": {
+      "tabs": {
+        "branding": "брендинг",
+        "gallery": "Зовнішній вигляд галереї",
+        "footer": "нижній колонтитул"
+      },
+      "identity": "Ідентичність",
+      "name": "Ім'я",
+      "namePlaceholder": "Фірмова назва",
+      "logoUrl": "URL-адреса логотипу",
+      "logoUrlPlaceholder": "https://example.com/logo.png",
+      "theme": "Тема",
+      "views": "Перегляди",
+      "availableViews": "Доступні види",
+      "availableViewsDescription": "Обмежте, до яких переглядів мають доступ користувачі посилання. Адміністратори завжди бачать усі перегляди.",
+      "defaultView": "Перегляд за замовчуванням",
+      "defaultViewDescription": "Куди потрапляють користувачі Link, коли відкривають галерею",
+      "galleryStyling": "Стилізація галереї",
+      "galleryLayout": "Макет галереї",
+      "galleryLayoutDescription": "Фіксовані рядки обрізають плитки до вирівняних рядів. Фіксовані стовпці зберігають співвідношення сторін кожного зображення в макеті кладки.",
+      "thumbnailSize": "Розмір мініатюри",
+      "thumbnailSpacing": "Інтервал між мініатюрами",
+      "thumbnailBorderRadius": "Радіус межі ескізу",
+      "typography": "Типографіка",
+      "headingSize": "Розмір заголовка",
+      "headingAlignment": "Вирівнювання заголовка",
+      "business": "Бізнес",
+      "businessName": "Назва компанії",
+      "businessNamePlaceholder": "Назва вашої студії",
+      "websiteUrl": "URL веб-сайту",
+      "websiteUrlPlaceholder": "https://yourstudio.example",
+      "socialLinks": "Соціальні посилання",
+      "addLink": "Додайте посилання",
+      "custom": "Custom",
+      "color": "Колір"
+    },
+    "social": {
+      "willSaveAs": "Буде збережено як: {{value}}",
+      "labelPlaceholder": "Мітка (наприклад, слідкуйте за нами)",
+      "newTab": "Нова вкладка",
+      "moveUp": "Рухатися вгору",
+      "moveDown": "Рухатися вниз",
+      "remove": "видалити"
+    },
+    "socialType": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "youtube": "YouTube",
+      "twitter": "Твіттер / X",
+      "pinterest": "Pinterest",
+      "linkedin": "LinkedIn",
+      "whatsapp": "WhatsApp",
+      "vimeo": "Vimeo",
+      "google_review": "Огляд Google",
+      "email": "Електронна пошта",
+      "phone": "Телефон / Дзвінок",
+      "website": "Веб-сайт"
+    },
+    "socialPlaceholder": {
+      "instagram": "yourstudio або https://instagram.com/yourstudio",
+      "facebook": "ваша сторінка або https://facebook.com/yourpage",
+      "tiktok": "yourhandle або https://tiktok.com/@yourhandle",
+      "youtube": "https://youtube.com/@yourchannel",
+      "twitter": "yourhandle або https://x.com/yourhandle",
+      "pinterest": "ваше ім'я або https://pinterest.com/yourname",
+      "linkedin": "ваше ім'я або https://linkedin.com/in/yourname",
+      "whatsapp": "61400111222 або https://wa.me/61400111222",
+      "vimeo": "ваше ім'я або https://vimeo.com/yourname",
+      "google_review": "Вставте посилання на відгук",
+      "email": "you@example.com",
+      "phone": "+61400111222",
+      "website": "https://yourstudio.example"
+    }
+  },
+  "accessLogs": {
+    "empty": "Ще ніхто не використовував публічне посилання для перегляду цієї папки",
+    "filterLabel": "Фільтрувати за посиланням",
+    "filterPlaceholder": "Будь-який користувач або посилання",
+    "columns": {
+      "time": "час",
+      "ipAddress": "IP-адреса",
+      "userAgent": "Агент користувача"
+    }
+  },
+  "server": {
+    "version": {
+      "title": "Версія та оновлення",
+      "description": "Версія PICR, яку ви використовуєте. Підтримуючи його в актуальному стані, ви отримуєте найновіші функції та виправлення.",
+      "viewReleases": "Переглянути випуски PICR",
+      "current": "Версія PICR",
+      "devBuild": "Розробник збірки",
+      "upToDate": "В актуальному стані",
+      "latest": "Останній випуск",
+      "latestDescription": "Найновіша версія доступна для завантаження.",
+      "developmentBuild": "Розробка побудови",
+      "developmentBuildDescription": "Створено з початкового коду, а не з офіційного випуску.",
+      "developerMode": "Режим розробника",
+      "developerModeDescription": "Увімкнено лише для розробки збірок PICR."
+    },
+    "storage": {
+      "title": "Зберігання",
+      "description": "Місце на диску, яке використовується вашими оригінальними фотографіями та ескізами, створеними PICR.",
+      "canWrite": "Може писати",
+      "canWriteDescription": "Чи дозволено PICR вносити зміни до ваших папок із фотографіями.",
+      "analytics": "Аналітика зберігання",
+      "usage": "Використання сховища",
+      "usageDescription": "Додає дисковий простір для медіа та кешу. Це сканує ваші папки, тому це може зайняти деякий час.",
+      "calculate": "Обчислити",
+      "calculating": "Розрахунок…",
+      "media": "ЗМІ",
+      "files": "Файли",
+      "fileLimit_one": "Папка містить {{count}} файл; показано {{limit}} найбільших",
+      "fileLimit_few": "Папка містить {{count}} файли; показано {{limit}} найбільших",
+      "fileLimit_many": "Папка містить {{count}} файлів; показано {{limit}} найбільших",
+      "fileLimit_other": "Папка містить {{count}} файла; показано {{limit}} найбільших",
+      "mediaDescription": "Ваші оригінальні фотографії та відео.",
+      "cache": "Кеш",
+      "cacheDescription": "Створено мініатюри та попередній перегляд PICR. Безпечно видалити — вони відновлюються автоматично.",
+      "diskSpace": "Місце на диску",
+      "diskSpaceDescription": "Вільне місце на диску, де зберігаються ваші медіафайли.",
+      "freeOf": "{{free}} вільний від {{total}}"
+    },
+    "media": {
+      "title": "Медіа та продуктивність",
+      "description": "Як PICR генерує попередній перегляд і які додаткові мультимедійні формати може обробляти цей сервер.",
+      "saveError": "Не вдалося зберегти налаштування медіа",
+      "saved": "Налаштування медіа збережено",
+      "savedDescription": "Нові налаштування ескізів застосовуватимуться під час наступного створення попереднього перегляду.",
+      "thumbnails": "Мініатюри",
+      "thumbnailDescription": "Зміни застосовуються, коли ескізи створюються повторно; існуючі попередні перегляди залишаються такими, як вони є, доки не буде повторно створено або очищено.",
+      "smallWidth": "Невелика ширина",
+      "mediumWidth": "Середня ширина",
+      "largeWidth": "Велика ширина",
+      "jpegQuality": "Якість JPEG",
+      "useOriginals": "Використовуйте оригінали для лайтбоксів",
+      "useOriginalsDescription": "Лише для зображень, які можна завантажити та відобразити у браузері (наприклад, JPEG, а не PSD). Доказові посилання зберігають оптимізований попередній перегляд.",
+      "save": "Зберегти налаштування медіа"
+    },
+    "capabilities": {
+      "title": "Можливості сервера",
+      "description": "Формати та прискорення, виявлені в цьому середовищі сервера.",
+      "imageFormats": "Формати зображень",
+      "imageFormatsDescription": "Типи файлів камери та дизайну PICR можуть відкриватися на додаток до JPEG і PNG.",
+      "videoAcceleration": "Прискорення відео",
+      "videoAccelerationWhenAvailable": "Використовує ваше графічне обладнання, щоб пришвидшити ескізи відео та відтворення, якщо вони доступні.",
+      "videoAccelerationDescription": "Використовує ваше графічне обладнання для пришвидшення ескізів і відтворення відео.",
+      "cpuOnly": "тільки ЦП"
+    },
+    "server": {
+      "title": "Сервер",
+      "description": "Де працює PICR і як його налаштовано.",
+      "clientUrl": "URL клієнта",
+      "clientUrlDescription": "Адреса, яку ви використовуєте у своєму веб-переглядачі, відрізняється від URL-адреси сервера нижче, що може порушити попередній перегляд посилання для спільного використання.",
+      "serverUrl": "URL-адреса сервера",
+      "serverUrlDescription": "Загальнодоступна адреса, яка використовується для посилань для обміну та попереднього перегляду в соціальних мережах.",
+      "uptime": "Час роботи",
+      "uptimeDescription": "Як довго триває цей процес."
+    },
+    "duration": {
+      "dayShort_one": "{{count}}д",
+      "dayShort_few": "{{count}}д",
+      "dayShort_many": "{{count}}д",
+      "dayShort_other": "{{count}}д",
+      "hourShort_one": "{{count}}год",
+      "hourShort_few": "{{count}}год",
+      "hourShort_many": "{{count}}год",
+      "hourShort_other": "{{count}}год",
+      "minuteShort_one": "{{count}}хв",
+      "minuteShort_few": "{{count}}хв",
+      "minuteShort_many": "{{count}}хв",
+      "minuteShort_other": "{{count}}хв"
+    },
+    "system": {
+      "platform": "Платформа",
+      "memory": "Пам'ять",
+      "database": "База даних"
+    },
+    "scanning": {
+      "title": "Сканування носіїв",
+      "description": "Як PICR виявляє нові, змінені та переміщені файли у папці медіа.",
+      "fileWatcher": "Переглядач файлів",
+      "fileWatcherDescription": "Спостерігає за змінами в медіа-папці.",
+      "onView": "Сканування на екрані",
+      "onViewDescription": "Перевіряє папку, коли хтось її відкриває.",
+      "scheduled": "Сканування за розкладом",
+      "scheduledDescription": "Періодична повна звірка всієї бібліотеки.",
+      "everyHours_one": "Кожну {{count}} годину",
+      "everyHours_few": "Кожні {{count}} години",
+      "everyHours_many": "Кожні {{count}} годин",
+      "everyHours_other": "Кожні {{count}} години",
+      "off": "Вимкнено",
+      "running": "Біг",
+      "next": "Далі: {{date}}",
+      "inodeTracking": "Відстеження Inode",
+      "ping": "PICR Ping",
+      "pingDescription": "Отримує підказки про зміни в реальному часі від спостерігачів, які працюють поруч із віддаленим сховищем медіа.",
+      "pingCoordinator": "Координатор ping",
+      "pingCoordinatorActivity": "Папки {{scanned}} проскановано · {{pending}} очікує на розгляд",
+      "pingSource": "{{path}} · Запитуйте {{version}}",
+      "pingSourceActivity": "Останнє використання {{lastSeen}} · Підказки {{hints}} після запуску сервера",
+      "pingSourceScans": "Екземпляр {{instance}} · Остання партія {{lastBatch}} · Остання звірка {{lastReconcile}}",
+      "mediaRoot": "Корінь медіа",
+      "pingStates": {
+        "disabled": "Вимкнено",
+        "awaiting": "Очікування контакту",
+        "connected": "Підключено",
+        "stale": "Несвіжий",
+        "degraded": "Деградували",
+        "error": "Помилка"
+      },
+      "lastScheduled": "Останнє заплановане сканування",
+      "neverRun": "Ніколи не бігайте",
+      "completed": "Виконано",
+      "unsettled": "Неврегульований",
+      "pass_one": "{{count}} прохід",
+      "pass_few": "{{count}} проходи",
+      "pass_many": "{{count}} проходів",
+      "pass_other": "{{count}} проходу",
+      "lastResult": "{{status}} після {{passes}} — {{added}} додано, {{changed}} змінено, {{moved}} переміщено, {{removed}} видалено, {{skipped}} пропущено",
+      "modes": {
+        "off": "Вимкнено",
+        "native": "Рідна",
+        "polling": "Опитування",
+        "direct": "Прямий",
+        "directAndNew": "Прямий і новий",
+        "oneLevel": "Один рівень"
+      }
+    },
+    "benchmark": {
+      "run": "Запустіть Benchmark",
+      "confirmation": "Цей контрольний тест може зайняти кілька хвилин і може використовувати значну кількість ЦП під час виконання. Ви впевнені, що бажаєте продовжити?",
+      "running": "Виконується контрольний тест…",
+      "version": "Версія PICR",
+      "assets": "Активи",
+      "image_one": "{{count}} зображення",
+      "image_few": "{{count}} зображення",
+      "image_many": "{{count}} зображень",
+      "image_other": "{{count}} зображення",
+      "video_one": "{{count}} відео",
+      "video_few": "{{count}} відео",
+      "video_many": "{{count}} відео",
+      "video_other": "{{count}} відео",
+      "assetCounts": "{{images}}, {{videos}}",
+      "assetSetup": "Налаштування активів (не включено до загальної кількості)",
+      "jpegResize": "Змінити розмір JPEG",
+      "avifResize": "Змінити розмір AVIF",
+      "videoThumbnailCpu": "Мініатюра відео (ЦП)",
+      "videoThumbnailVaapi": "Мініатюра відео (VAAPI)",
+      "videoTranscodeCpu": "Перекодування відео (ЦП)",
+      "videoTranscodeVaapi": "Перекодування відео (VAAPI)",
+      "total": "Всього",
+      "totalValue": "{{duration}} (налаштування ресурсу виключено)",
+      "copied": "Результати тестування скопійовано",
+      "copy": "Копіювати результати"
+    }
+  },
+  "font": {
+    "label": "Шрифт заголовка",
+    "help": "Застосовується лише до заголовків і заголовків розділів",
+    "headingOnly": "Тільки заголовок",
+    "category": {
+      "sans": "Без зарубок",
+      "serif": "Засічки",
+      "display": "Дисплей",
+      "script": "Сценарій",
+      "mono": "Мононуклеоз",
+      "accessibility": "Доступність"
+    },
+    "description": {
+      "default": "Доброзичливий, злегка округлий, доступний; поточний шрифт заголовка PICR.",
+      "signika": "Привітний, трохи округлий, доступний.",
+      "inter": "Чіткий сучасний інтерфейс користувача без; нейтральний і добре читабельний.",
+      "source-sans-3": "Спокійний редакторський сан; чистий і універсальний.",
+      "manrope": "Мінімальний, геометричний, сучасний.",
+      "merriweather-sans": "Збалансований і трохи класичний sans.",
+      "montserrat": "Жирний, геометричний, брендинговий.",
+      "merriweather": "Класичний, читабельний із засічками з теплотою.",
+      "lora": "М'які, романтичні засічки з ніжним відтінком.",
+      "libre-baskerville": "Елегантний, літературний, вишуканий.",
+      "bebas-neue": "Жирний, стислий дисплей.",
+      "abril-fatface": "Висока контрастність, елегантний дисплей із засічками.",
+      "poiret-one": "Тонкий, художній, декоративний.",
+      "amatic-sc": "Мальована, грайлива, неформальна.",
+      "oleo-script": "Дружній ретро сценарій.",
+      "pacifico": "Веселий і грайливий сценарій.",
+      "pinyon-script": "Формальне каліграфічне письмо.",
+      "dancing-script": "Читабельний сценарій з теплотою.",
+      "jetbrains-mono": "Чистий, технічний моно для відображення в стилі метаданих.",
+      "atkinson-hyperlegible-next": "Висока розбірливість без розроблена для візуальної доступності.",
+      "atkinson-hyperlegible-mono": "Моноширинний компаньйон, оптимізований для розбірливості."
+    },
+    "suitability": {
+      "family": "родина",
+      "kids": "діти",
+      "casualLifestyle": "невимушений спосіб життя",
+      "generalGalleries": "загальні галереї",
+      "commercial": "комерційний",
+      "product": "продукт",
+      "documentary": "документальний",
+      "modernPortfolios": "сучасні портфоліо",
+      "weddings": "весілля",
+      "portraits": "портрети",
+      "storytellingGalleries": "галереї розповідей",
+      "architecture": "архітектура",
+      "interiors": "інтер'єрів",
+      "designForwardPortfolios": "проектні портфоліо",
+      "travel": "подорожі",
+      "editorial": "редакційна",
+      "fashion": "мода",
+      "boldEditorial": "смілива редакція",
+      "modernBranding": "сучасний брендинг",
+      "storytelling": "оповідання",
+      "elopements": "втечі",
+      "nature": "природи",
+      "portraiture": "портрет",
+      "fineArt": "образотворче мистецтво",
+      "heritage": "спадщина",
+      "blackAndWhite": "чорно-білий",
+      "sports": "спорт",
+      "automotive": "автомобільний",
+      "boldBranding": "сміливе брендування",
+      "luxury": "розкіш",
+      "editorialCovers": "редакційні обкладинки",
+      "conceptual": "концептуальний",
+      "boutique": "бутик",
+      "casualEvents": "випадкові події",
+      "creativeBrands": "креативні бренди",
+      "lifestyle": "спосіб життя",
+      "food": "харчування",
+      "casualBranding": "повсякденний брендинг",
+      "beachy": "пляжний",
+      "casualGalleries": "випадкові галереї",
+      "luxuryWeddings": "розкішні весілля",
+      "invitations": "запрошення",
+      "romanticGalleries": "романтичні галереї",
+      "archival": "архівний",
+      "technicalShoots": "технічні зйомки",
+      "filmLabs": "кінолабораторії",
+      "accessibilityFocusedGalleries": "галереї, орієнтовані на доступність",
+      "olderAudiences": "старша аудиторія",
+      "accessibilityMetadataHeavyViews": "доступність + перегляди з великою кількістю метаданих"
+    }
+  }
+}

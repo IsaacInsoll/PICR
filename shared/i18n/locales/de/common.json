@@ -1,0 +1,20 @@
+{
+  "date": {
+    "invalid": "Ungültiges Datum"
+  },
+  "language": {
+    "label": "Sprache"
+  },
+  "folder": {
+    "home": "Startseite"
+  },
+  "update": {
+    "available": "Neue Version verfügbar",
+    "autoRefresh": "PICR wird automatisch aktualisiert, wenn Sie inaktiv sind.",
+    "refreshNow": "Jetzt aktualisieren"
+  },
+  "table": {
+    "rowActions": "Zeilenaktionen",
+    "noRecords": "Keine Aufzeichnungen"
+  }
+}

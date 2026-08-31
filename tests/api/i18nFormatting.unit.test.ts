@@ -96,10 +96,19 @@ describe('formatRelativeTime', () => {
     expect(formatRelativeTime('2024-01-15T10:30:00Z', 'el-GR', now)).toBe(
       'πριν από 2 ώρες',
     );
+    expect(formatRelativeTime('2024-01-15T10:30:00Z', 'de-DE', now)).toBe(
+      'vor 2 Stunden',
+    );
+    expect(formatRelativeTime('2024-01-15T10:30:00Z', 'es-MX', now)).toBe(
+      'hace 2 horas',
+    );
+    expect(formatRelativeTime('2024-01-15T10:30:00Z', 'uk-UA', now)).toBe(
+      '2 години тому',
+    );
   });
 
   it('falls back to English prose for unsupported regional locales', () => {
-    expect(formatRelativeTime('2024-01-15T10:30:00Z', 'de-DE', now)).toBe(
+    expect(formatRelativeTime('2024-01-15T10:30:00Z', 'ja-JP', now)).toBe(
       '2 hours ago',
     );
   });

@@ -1,0 +1,742 @@
+{
+  "login": {
+    "title": "Bei PICR anmelden",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "passwordPlaceholder": "Ihr Passwort",
+    "failed": "Fehler bei der Anmeldung. Bitte überprüfen Sie Ihren Benutzernamen und Ihr Passwort",
+    "submit": "Anmelden"
+  },
+  "shell": {
+    "filesAndFolders": "Dateien und Ordner",
+    "dashboard": "Armaturenbrett",
+    "search": "Suchen",
+    "settings": "Einstellungen",
+    "logOut": "Abmelden",
+    "openInApp": "In der App öffnen",
+    "app": {
+      "downloadTitle": "Laden Sie die PICR-App herunter",
+      "openAutomatically": "PICR sollte automatisch geöffnet werden, wenn es installiert ist.",
+      "open": "App öffnen"
+    }
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Wir konnten die von Ihnen gesuchte Seite nicht finden.",
+    "contact": "Überprüfen Sie die Adresse und versuchen Sie es erneut."
+  },
+  "dashboard": {
+    "searchPlaceholder": "Fotos und Ordner durchsuchen…",
+    "stats": {
+      "media_one": "Medienelement",
+      "media_other": "Medien",
+      "photo_one": "Foto",
+      "photo_other": "Fotos",
+      "folder_one": "Ordner",
+      "folder_other": "Ordner"
+    },
+    "updateAvailable": "Update verfügbar: v{{version}}",
+    "viewAll": "Alle anzeigen",
+    "galleries": {
+      "title": "Ihre Galerien",
+      "empty": "Hier sind noch keine Ordner vorhanden"
+    },
+    "feedback": {
+      "title": "Kundenfeedback",
+      "empty": "Noch keine Kommentare oder Bewertungen"
+    },
+    "clients": {
+      "title": "Aktuelle Kunden",
+      "empty": "Noch keine Kundenbesuche"
+    },
+    "modified": {
+      "title": "Kürzlich geändert",
+      "empty": "In letzter Zeit hat sich nichts geändert"
+    }
+  },
+  "quickFind": {
+    "placeholder": "Durchsuchen Sie Fotos und Ordner",
+    "empty": "Nichts gefunden",
+    "searchAllFolders": "Alle Ordner durchsuchen",
+    "limit": {
+      "title": "Suchlimit erreicht",
+      "description": "Die Ergebnisse sind auf 100 Dateien und Ordner begrenzt. Verwenden Sie eine spezifischere Suche."
+    },
+    "scope": {
+      "current": "Dieser Ordner",
+      "all": "Alle Ordner"
+    },
+    "type": {
+      "all": "Alles",
+      "file": "Dateien",
+      "folder": "Ordner"
+    }
+  },
+  "tips": {
+    "publicLink": "Öffentliche Links ermöglichen Ihren Kunden den Zugriff auf einen Ordner mit einem „geheimen Link“. Kein Login erforderlich!",
+    "users": "Benutzer haben einen Benutzernamen und ein Passwort. Benutzer, die Ordner verwalten, können Benutzer und Links in ihren Unterordnern verwalten.",
+    "branding": "Sie können eine oder mehrere Marken mit Logo und Farbschema einrichten. Marken gelten für einen Ordner und alle seine Unterordner – zum Beispiel eine dunkle Marke für Fitnessfotos und eine helle Marke für Hochzeitsfotos.",
+    "logs": "PICR protokolliert jedes Mal, wenn ein Benutzer einen Ordner öffnet, sodass Sie überprüfen können, wer Ihre Links verwendet.",
+    "dashboard": "Mit PICR können Sie Ihre Fotos und Videos mit Ihren Kunden teilen."
+  },
+  "settings": {
+    "title": "PICR-Einstellungen",
+    "serverInfo": "Serverinformationen",
+    "tabs": {
+      "info": "Info",
+      "media": "Medien",
+      "storage": "Lagerung",
+      "users": "Benutzer",
+      "links": "Links",
+      "branding": "Branding",
+      "logs": "Protokolle"
+    }
+  },
+  "common": {
+    "root": "Wurzel",
+    "error": "Fehler",
+    "actions": "Aktionen",
+    "enabled": "Ermöglicht",
+    "disabled": "Deaktiviert",
+    "unnamed": "Unbenannt",
+    "never": "Niemals",
+    "none": "Keiner",
+    "yes": "Ja",
+    "no": "NEIN",
+    "unknown": "Unbekannt",
+    "unavailable": "Nicht verfügbar",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "cancel": "Stornieren",
+    "close": "Schließen"
+  },
+  "users": {
+    "search": "Benutzer suchen",
+    "filteredCount": "{{visible}} von {{total}}",
+    "add": "Benutzer hinzufügen",
+    "columns": {
+      "user": "Benutzer",
+      "email": "E-Mail",
+      "folder": "Ordner",
+      "lastAccess": "Letzter Zugriff",
+      "status": "Status"
+    },
+    "editor": {
+      "title": "Benutzer verwalten",
+      "titleForFolder": "Benutzer verwalten für: {{folder}}",
+      "account": "Konto",
+      "name": "Name",
+      "namePlaceholder": "ZB: „Unternehmens-CEO“ oder „Valentina“ (optional)",
+      "email": "E-Mail",
+      "emailPlaceholder": "ZB: kimk oder kim@example.com",
+      "password": "Passwort",
+      "enabled": "Ermöglicht",
+      "enabledDescription": "Kann sich dieser Benutzer anmelden?",
+      "access": "Zugang",
+      "notifications": "Benachrichtigungen",
+      "ntfyPlaceholder": "ZB: https://ntfy.sh/xyz",
+      "ntfyUrl": "NTFY-Benachrichtigungs-URL",
+      "ntfyDescription": "Erhalten Sie Benachrichtigungen auf Ihrem Telefon",
+      "ntfyEmail": "NTFY-Benachrichtigungen per E-Mail senden",
+      "ntfyEmailDescription": "Senden Sie auch NTFY-Benachrichtigungen an die E-Mail-Adresse dieses Kontos",
+      "create": "Benutzer erstellen",
+      "deleteTitle": "Benutzer löschen",
+      "deleteConfirmation": "Sind Sie sicher, dass Sie diesen Benutzer löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden und sie können sich nicht mehr anmelden."
+    }
+  },
+  "links": {
+    "columns": {
+      "link": "Link",
+      "comments": "Kommentare",
+      "mode": "Modus",
+      "passcode": "Passcode"
+    },
+    "passcodeSet": "Satz",
+    "passcodeProtected": "Passcode passwortgeschützt",
+    "noPasscode": "kein Passwort",
+    "expired": "Abgelaufen",
+    "includeParents": "Fügen Sie Links von übergeordneten Ordnern ein",
+    "includeParentsShort": "Eltern",
+    "includeChildren": "Fügen Sie Links aus untergeordneten Ordnern ein",
+    "includeChildrenShort": "Kinder",
+    "create": "Verknüpfung erstellen",
+    "empty": "Keine öffentlichen Links gefunden",
+    "search": "Durchsuchen Sie öffentliche Links",
+    "copied": "Öffentlicher Link kopiert",
+    "copy": "Öffentlichen Link kopieren",
+    "copyFailed": "Der Link konnte nicht kopiert werden. Kopieren Sie ihn manuell",
+    "mode": {
+      "label": "Link-Modus",
+      "finalDelivery": "Endgültige Lieferung",
+      "proofsOnly": "Nur Beweise",
+      "downloadsAllowed": "Downloads erlaubt",
+      "noDownloads": "Keine Downloads",
+      "finalDeliveryDescription": "Kunden können Dateien über diesen Link herunterladen.",
+      "proofsOnlyDescription": "Kunden können Dateien überprüfen, aber nicht herunterladen."
+    },
+    "comments": {
+      "label": "Kommentare",
+      "none": "Keiner",
+      "read": "Lesen",
+      "edit": "Bearbeiten",
+      "noneDescription": "Kommentare werden ausgeblendet.",
+      "readDescription": "Vorhandene Kommentare sind sichtbar, neue Kommentare können jedoch nicht hinzugefügt werden.",
+      "editDescription": "Kommentare sind sichtbar und neue Kommentare können hinzugefügt werden."
+    },
+    "editor": {
+      "title": "Öffentlichen Link verwalten für",
+      "publicUrl": "Öffentliche URL",
+      "publicLink": "Öffentliche Link-ID",
+      "publicLinkDescription": "Der geheime Teil der URL, der mit Ihrem Kunden geteilt wird",
+      "fullLink": "Vollständiger Link:",
+      "idPlaceholder": "public-link-id",
+      "cannotUse": "Kann nicht verwendet werden:",
+      "space": "Raum",
+      "minimumLength": "Verwenden Sie mindestens 6 Zeichen",
+      "generatePretty": "Generieren Sie eine lesbare Link-ID",
+      "generateRandom": "Generieren Sie eine zufällige Link-ID",
+      "publicLinkEnabled": "Öffentlicher Link aktiviert",
+      "recipient": "Empfänger",
+      "email": "E-Mail",
+      "optional": "Optional",
+      "passcode": "Galerie-Passcode",
+      "expiration": "Verfallsdatum",
+      "expirationDescription": "Optional – die Galerie ist nach dieser Zeit nicht mehr verfügbar.",
+      "enabledDescription": "Kann dieser Link verwendet werden?",
+      "nameRequired": "Geben Sie einen Namen für diesen Link ein",
+      "deleteTitle": "Öffentlichen Link löschen",
+      "deleteConfirmation": "Sind Sie sicher, dass Sie diesen öffentlichen Link löschen möchten? Es wird sofort nicht mehr funktionieren."
+    }
+  },
+  "folder": {
+    "tabs": {
+      "folder": "Ordner",
+      "links": "Links",
+      "accessLogs": "Zugriffsprotokolle"
+    },
+    "details": "Ordnerdetails",
+    "title": "Galerietitel",
+    "titlePlaceholder": "Ordnername",
+    "subtitle": "Untertitel der Galerie",
+    "subtitlePlaceholder": "Optionaler Untertitel",
+    "manageTitle": "Ordner verwalten: {{folder}}",
+    "view": "Ordner anzeigen",
+    "manage": "Ordner verwalten",
+    "admin": "Verwaltung",
+    "manageNamed": "{{folder}} verwalten",
+    "selector": {
+      "label": "Ordner",
+      "description": "Dieser Benutzer kann öffentliche Links und andere Benutzer in diesem Ordner steuern",
+      "placeholder": "Ordnername"
+    },
+    "branding": {
+      "inherit": "Vom übergeordneten Ordner übernehmen",
+      "create": "Erstellen Sie ein neues Branding",
+      "add": "Branding hinzufügen",
+      "select": "Branding auswählen",
+      "edit": "Bearbeiten Sie das ausgewählte Branding",
+      "currentlyInheriting": "Erbt derzeit {{name}}",
+      "default": "Standard-Branding",
+      "thisFolder": "diesen Ordner",
+      "modalTitle": "Ordner-Branding",
+      "inheritedDescription": "<strong>{{folder}}</strong> hat kein eigenes Branding. Es erbt derzeit <strong>{{branding}}</strong>.",
+      "createFor": "Erstellen Sie ein Branding für {{folder}}",
+      "editNamed": "Bearbeiten Sie {{branding}}",
+      "editWarning": "Dies betrifft alle Ordner, die {{branding}} verwenden."
+    },
+    "scan": {
+      "action": "Ordner scannen",
+      "settling": "Ordner-Scan in der Warteschlange",
+      "settlingDescription": "PICR überprüft diesen Ordner auf Änderungen.",
+      "complete": "Ordnerscan abgeschlossen",
+      "completeDescription": "PICR hat die Überprüfung dieses Ordners abgeschlossen."
+    },
+    "thumbnails": {
+      "generate_one": "Miniaturansicht generieren",
+      "generate_other": "Miniaturansichten generieren"
+    },
+    "moveRename": {
+      "title": "Ordner verschieben/umbenennen: {{folder}}",
+      "name": "Ordnername",
+      "parent": "Übergeordneter Ordner",
+      "parentDescription": "Verschieben Sie diesen Ordner unter den ausgewählten übergeordneten Ordner",
+      "newPath": "Neuer Pfad: {{path}}",
+      "action": "Verschieben/Umbenennen",
+      "validation": {
+        "loginRequired": "Anmeldung erforderlich.",
+        "adminRequired": "Administratorrechte erforderlich.",
+        "readOnly": "Der Server ist schreibgeschützt.",
+        "rootFolder": "Stammordner können nicht verschoben oder umbenannt werden.",
+        "accountRoot": "Ihr Stammordner kann nicht verschoben oder umbenannt werden.",
+        "pathUnavailable": "Der Ordnerpfad ist für dieses Konto nicht verfügbar.",
+        "pathInvalid": "Ordnerpfad ungültig.",
+        "selectParent": "Wählen Sie einen übergeordneten Ordner aus.",
+        "parentOutsideRoot": "Wählen Sie einen übergeordneten Ordner in Ihrem Stammordner aus.",
+        "selfParent": "Wählen Sie einen übergeordneten Ordner, der nicht dieser Ordner ist.",
+        "descendant": "Ein Ordner kann nicht in einen eigenen Unterordner verschoben werden.",
+        "conflict": "An diesem Speicherort ist bereits ein Ordner mit diesem Namen vorhanden.",
+        "noChanges": "Es sind keine Änderungen anzuwenden.",
+        "name": {
+          "required": "Ordnername ist erforderlich.",
+          "forwardSlash": "Der Ordnername darf keinen Schrägstrich enthalten.",
+          "backslash": "Der Ordnername darf keinen Backslash enthalten.",
+          "invalid": "Der Ordnername ist ungültig."
+        }
+      }
+    },
+    "csv": {
+      "title": "Dateinamen exportieren",
+      "action": "Dateinamen exportieren",
+      "formatLabel": "Exportformat",
+      "format": {
+        "picr": "PICR-Plugin CSV (Dateiname, Bewertung, Flag)",
+        "comma": "Lightroom (durch Kommas getrennt)",
+        "space": "Capture One & Photo Mechanic (durch Leerzeichen getrennt)"
+      },
+      "pluginPrefix": "Importieren Sie diese Daten mit in Lightroom Classic",
+      "pluginName": "PICR Lightroom-Plugin",
+      "excludeExtensions": "Dateierweiterungen ausschließen",
+      "useFilters": "Verwenden Sie aktuelle Filter",
+      "includeSubfolders": "Unterordner einschließen",
+      "includeSubfoldersDescription": "Alle Dateien im Ordnerbaum exportieren (maximal 10.000)",
+      "loading": "Laden…",
+      "loadError": "Dateien aus Unterordnern können nicht geladen werden.",
+      "loadingSubfolders": "Dateien aus Unterordnern werden geladen…",
+      "loaded": "{{returned}} der geladenen {{available}}-Dateien{{truncated}}",
+      "truncated": "(gekürzt)",
+      "noFiles": "Keine Dateien gefunden.",
+      "previewCount_one": "{{count}}-Datei in der Exportvorschau",
+      "previewCount_other": "{{count}}-Dateien in der Exportvorschau",
+      "empty": "Noch keine Dateien zum Exportieren.",
+      "copy": "In die Zwischenablage kopieren",
+      "download": "Herunterladen"
+    },
+    "banner": {
+      "title": "Bannerbild festlegen",
+      "edit": "Banner bearbeiten",
+      "clear": "Klares Bannerbild",
+      "setHero": "Als Heldenbild festlegen",
+      "setHeroOrBanner": "Als Helden-/Bannerbild festlegen",
+      "setImage": "Als Bannerbild festlegen",
+      "changeSize": "Bannergröße ändern",
+      "textPosition": "Textposition",
+      "mobilePreview": "Mobile Vorschau",
+      "position": {
+        "top": {
+          "left": "Oben links",
+          "center": "Oben in der Mitte",
+          "right": "Oben rechts"
+        },
+        "center": {
+          "left": "Mitte links",
+          "center": "Mittlere Mitte",
+          "right": "Mitte rechts"
+        },
+        "bottom": {
+          "left": "Unten links",
+          "center": "Unten in der Mitte",
+          "right": "Unten rechts"
+        }
+      },
+      "size": {
+        "classic": "Klassiker",
+        "widescreen": "Breitbild",
+        "cinematic": "Filmisch",
+        "full": "Vollbild"
+      },
+      "sizeDescription": {
+        "classic": "Groß und eindringlich",
+        "widescreen": "Ausgewogene Landschaft",
+        "cinematic": "Breit und kompakt",
+        "full": "Füllt den Bildschirm"
+      }
+    }
+  },
+  "branding": {
+    "appliedTo": "Angewendet auf:",
+    "outsideScope": "Dieser Ordner liegt außerhalb Ihres Zugriffsbereichs",
+    "view": {
+      "list": "Liste",
+      "gallery": "Galerie",
+      "feed": "Füttern"
+    },
+    "mode": {
+      "label": "Thema",
+      "auto": "Auto",
+      "light": "Licht",
+      "dark": "Dunkel",
+      "description": "<code>Auto</code> bedeutet, dass <emphasis> mit der Geräteeinstellung </emphasis> des Benutzers übereinstimmt."
+    },
+    "layout": {
+      "justified": "Feste Reihen",
+      "masonry": "Feste Spalten"
+    },
+    "headingAlignment": {
+      "left": "Links",
+      "center": "Center"
+    },
+    "sort": {
+      "label": "Standardsortierung",
+      "description": "Erste Sortierreihenfolge beim Öffnen der Galerie. Zuschauer können es immer noch ändern.",
+      "appDefault": "App-Standard",
+      "appDefaultFilename": "App-Standard (Dateiname)",
+      "summary": "{{type}} {{direction}}",
+      "type": {
+        "Filename": "Dateiname",
+        "LastModified": "Geändert",
+        "DateTaken": "Aufnahmedatum",
+        "Rating": "Bewertung",
+        "RecentlyCommented": "Kommentiert"
+      },
+      "direction": {
+        "Asc": "Aufsteigend",
+        "Desc": "Absteigend"
+      }
+    },
+    "list": {
+      "search": "Such-Branding",
+      "filteredCount": "{{visible}} von {{total}}",
+      "add": "Branding hinzufügen",
+      "empty": "Für diese Suche stimmen keine Branding-Voreinstellungen überein.",
+      "unnamed": "Unbenanntes Branding",
+      "themeSummary": "{{mode}} Hintergrund, {{color}} hervorgehobene Farbe",
+      "noFolders": "Keine Ordner",
+      "more_one": "+ {{count}} mehr",
+      "more_other": "+ {{count}} mehr"
+    },
+    "drawer": {
+      "createTitle": "Branding erstellen",
+      "editTitle": "Branding bearbeiten: {{name}}",
+      "previewGallery": "Vorschaugalerie",
+      "showOverlay": "Overlay anzeigen",
+      "create": "Erstellen"
+    },
+    "form": {
+      "tabs": {
+        "branding": "Branding",
+        "gallery": "Galerie-Auftritt",
+        "footer": "Fußzeile"
+      },
+      "identity": "Identität",
+      "name": "Name",
+      "namePlaceholder": "Markenname",
+      "logoUrl": "Logo-URL",
+      "logoUrlPlaceholder": "https://example.com/logo.png",
+      "theme": "Thema",
+      "views": "Ansichten",
+      "availableViews": "Verfügbare Ansichten",
+      "availableViewsDescription": "Beschränken Sie, auf welche Ansichten Link-Benutzer zugreifen können. Administratoren sehen immer alle Ansichten.",
+      "defaultView": "Standardansicht",
+      "defaultViewDescription": "Wo Link-Benutzer landen, wenn sie die Galerie öffnen",
+      "galleryStyling": "Galerie-Styling",
+      "galleryLayout": "Galerielayout",
+      "galleryLayoutDescription": "Korrigierte Reihen, die Kacheln auf ausgerichtete Reihen zuschneiden. Feste Spalten bewahren das Seitenverhältnis jedes Bildes in einem Mauerwerkslayout.",
+      "thumbnailSize": "Miniaturbildgröße",
+      "thumbnailSpacing": "Miniaturbildabstand",
+      "thumbnailBorderRadius": "Miniaturbild-Randradius",
+      "typography": "Typografie",
+      "headingSize": "Überschriftengröße",
+      "headingAlignment": "Ausrichtung der Überschrift",
+      "business": "Geschäft",
+      "businessName": "Firmenname",
+      "businessNamePlaceholder": "Ihr Studioname",
+      "websiteUrl": "Website-URL",
+      "websiteUrlPlaceholder": "https://yourstudio.example",
+      "socialLinks": "Soziale Links",
+      "addLink": "Link hinzufügen",
+      "custom": "Brauch",
+      "color": "Farbe"
+    },
+    "social": {
+      "willSaveAs": "Wird gespeichert als: {{value}}",
+      "labelPlaceholder": "Label (z. B. „Folge uns“)",
+      "newTab": "Neuer Tab",
+      "moveUp": "Bewegen Sie sich nach oben",
+      "moveDown": "Bewegen Sie sich nach unten",
+      "remove": "Entfernen"
+    },
+    "socialType": {
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "tiktok": "TikTok",
+      "youtube": "YouTube",
+      "twitter": "Twitter / X",
+      "pinterest": "Pinterest",
+      "linkedin": "LinkedIn",
+      "whatsapp": "WhatsApp",
+      "vimeo": "Vimeo",
+      "google_review": "Google-Rezension",
+      "email": "E-Mail",
+      "phone": "Telefon / Anruf",
+      "website": "Webseite"
+    },
+    "socialPlaceholder": {
+      "instagram": "yourstudio oder https://instagram.com/yourstudio",
+      "facebook": "yourpage oder https://facebook.com/yourpage",
+      "tiktok": "yourhandle oder https://tiktok.com/@yourhandle",
+      "youtube": "https://youtube.com/@yourchannel",
+      "twitter": "yourhandle oder https://x.com/yourhandle",
+      "pinterest": "IhrName oder https://pinterest.com/yourname",
+      "linkedin": "IhrName oder https://linkedin.com/in/yourname",
+      "whatsapp": "61400111222 oder https://wa.me/61400111222",
+      "vimeo": "IhrName oder https://vimeo.com/yourname",
+      "google_review": "Fügen Sie Ihren Bewertungslink ein",
+      "email": "you@example.com",
+      "phone": "+61400111222",
+      "website": "https://yourstudio.example"
+    }
+  },
+  "accessLogs": {
+    "empty": "Bisher hat noch niemand einen öffentlichen Link verwendet, um diesen Ordner anzuzeigen",
+    "filterLabel": "Nach Link filtern",
+    "filterPlaceholder": "Jeder Benutzer oder Link",
+    "columns": {
+      "time": "Zeit",
+      "ipAddress": "IP-Adresse",
+      "userAgent": "Benutzeragent"
+    }
+  },
+  "server": {
+    "version": {
+      "title": "Version & Updates",
+      "description": "Die Version von PICR, die Sie ausführen. Wenn Sie es auf dem neuesten Stand halten, erhalten Sie die neuesten Funktionen und Fehlerbehebungen.",
+      "viewReleases": "PICR-Veröffentlichungen anzeigen",
+      "current": "PICR-Version",
+      "devBuild": "Entwickler-Build",
+      "upToDate": "Auf dem neuesten Stand",
+      "latest": "Neueste Veröffentlichung",
+      "latestDescription": "Die neueste Version steht zum Download zur Verfügung.",
+      "developmentBuild": "Entwicklungsaufbau",
+      "developmentBuildDescription": "Gebaut aus dem Quellcode und nicht aus einer offiziellen Veröffentlichung.",
+      "developerMode": "Entwicklermodus",
+      "developerModeDescription": "Nur für Entwicklungs-Builds von PICR aktiviert."
+    },
+    "storage": {
+      "title": "Lagerung",
+      "description": "Speicherplatz, der von Ihren Originalfotos und den von PICR generierten Miniaturansichten verwendet wird.",
+      "canWrite": "Kann schreiben",
+      "canWriteDescription": "Ob PICR Änderungen an Ihren Fotoordnern vornehmen darf.",
+      "analytics": "Speicheranalyse",
+      "usage": "Speichernutzung",
+      "usageDescription": "Fügt Speicherplatz für Ihre Medien und Ihren Cache hinzu. Dadurch werden Ihre Ordner gescannt, daher kann es einen Moment dauern.",
+      "calculate": "Berechnen",
+      "calculating": "Berechnen…",
+      "media": "Medien",
+      "files": "Dateien",
+      "fileLimit_one": "Der Ordner enthält die Datei {{count}}. zeigt das größte {{limit}}",
+      "fileLimit_other": "Der Ordner enthält {{count}}-Dateien. zeigt das größte {{limit}}",
+      "mediaDescription": "Ihre Originalfotos und -videos.",
+      "cache": "Cache",
+      "cacheDescription": "Miniaturansichten und Vorschauen, die PICR erstellt hat. Sicher zu löschen – sie werden automatisch neu generiert.",
+      "diskSpace": "Speicherplatz",
+      "diskSpaceDescription": "Freier Speicherplatz auf dem Laufwerk, auf dem sich Ihre Medien befinden.",
+      "freeOf": "{{free}} frei von {{total}}"
+    },
+    "media": {
+      "title": "Medien & Performance",
+      "description": "Wie PICR Vorschauen generiert und welche zusätzlichen Medienformate dieser Server verarbeiten kann.",
+      "saveError": "Die Medieneinstellungen konnten nicht gespeichert werden",
+      "saved": "Medieneinstellungen gespeichert",
+      "savedDescription": "Die neuen Miniaturbildeinstellungen werden bei der nächsten Vorschaugenerierung angewendet.",
+      "thumbnails": "Miniaturansichten",
+      "thumbnailDescription": "Änderungen werden wirksam, wenn Miniaturansichten erneut generiert werden. Vorhandene Vorschauen bleiben unverändert, bis sie neu generiert oder gelöscht werden.",
+      "smallWidth": "Geringe Breite",
+      "mediumWidth": "Mittlere Breite",
+      "largeWidth": "Große Breite",
+      "jpegQuality": "JPEG-Qualität",
+      "useOriginals": "Verwenden Sie Originale für den Leuchtkasten",
+      "useOriginalsDescription": "Nur für herunterladbare, im Browser anzeigbare Bilder (z. B. JPEG statt PSD). Proof-Links sorgen für eine optimierte Vorschau.",
+      "save": "Medieneinstellungen speichern"
+    },
+    "capabilities": {
+      "title": "Serverfunktionen",
+      "description": "In dieser Serverumgebung erkannte Formate und Beschleunigungen.",
+      "imageFormats": "Bildformate",
+      "imageFormatsDescription": "Kamera- und Designdateitypen PICR können zusätzlich zu JPEG und PNG geöffnet werden.",
+      "videoAcceleration": "Videobeschleunigung",
+      "videoAccelerationWhenAvailable": "Verwendet Ihre Grafikhardware, um Video-Miniaturansichten und -Wiedergabe zu beschleunigen, sofern verfügbar.",
+      "videoAccelerationDescription": "Nutzt Ihre Grafikhardware, um die Miniaturansichten und Wiedergabe von Videos zu beschleunigen.",
+      "cpuOnly": "Nur CPU"
+    },
+    "server": {
+      "title": "Server",
+      "description": "Wo PICR ausgeführt wird und wie es konfiguriert ist.",
+      "clientUrl": "Client-URL",
+      "clientUrlDescription": "Die Adresse, die Sie in Ihrem Browser verwenden – sie weicht von der unten aufgeführten Server-URL ab, was dazu führen kann, dass die Vorschau des Share-Links nicht mehr angezeigt wird.",
+      "serverUrl": "Server-URL",
+      "serverUrlDescription": "Die öffentliche Adresse, die für Freigabelinks und soziale Vorschauen verwendet wird.",
+      "uptime": "Betriebszeit",
+      "uptimeDescription": "Wie lange läuft dieser Prozess?"
+    },
+    "duration": {
+      "dayShort_one": "{{count}}d",
+      "dayShort_other": "{{count}}d",
+      "hourShort_one": "{{count}}h",
+      "hourShort_other": "{{count}}h",
+      "minuteShort_one": "{{count}}m",
+      "minuteShort_other": "{{count}}m"
+    },
+    "system": {
+      "platform": "Plattform",
+      "memory": "Erinnerung",
+      "database": "Datenbank"
+    },
+    "scanning": {
+      "title": "Scannen von Medien",
+      "description": "So erkennt PICR neue, geänderte und verschobene Dateien in Ihrem Medienordner.",
+      "fileWatcher": "Dateibeobachter",
+      "fileWatcherDescription": "Überwacht den Medienordner auf Live-Änderungen.",
+      "onView": "Scan vor Ort",
+      "onViewDescription": "Überprüft einen Ordner erneut, wenn ihn jemand öffnet.",
+      "scheduled": "Geplanter Scan",
+      "scheduledDescription": "Periodischer vollständiger Abgleich der gesamten Bibliothek.",
+      "everyHours_one": "Jeder {{count}}h",
+      "everyHours_other": "Jeder {{count}}h",
+      "off": "Aus",
+      "running": "Läuft",
+      "next": "Weiter: {{date}}",
+      "inodeTracking": "Inode-Tracking",
+      "ping": "PICR-Ping",
+      "pingDescription": "Empfängt Live-Änderungshinweise von Beobachtern, die neben dem Remote-Medienspeicher ausgeführt werden.",
+      "pingCoordinator": "Ping-Koordinator",
+      "pingCoordinatorActivity": "{{scanned}}-Ordner gescannt · {{pending}} ausstehend",
+      "pingSource": "{{path}} · Ping {{version}}",
+      "pingSourceActivity": "Zuletzt gesehene {{lastSeen}} · {{hints}}-Hinweise seit Serverstart",
+      "pingSourceScans": "Instanz {{instance}} · Letzter Stapel {{lastBatch}} · Letzter Abgleich {{lastReconcile}}",
+      "mediaRoot": "Medienstamm",
+      "pingStates": {
+        "disabled": "Deaktiviert",
+        "awaiting": "Warten auf Kontakt",
+        "connected": "Verbunden",
+        "stale": "Abgestanden",
+        "degraded": "Degradiert",
+        "error": "Fehler"
+      },
+      "lastScheduled": "Letzter geplanter Scan",
+      "neverRun": "Laufen Sie niemals",
+      "completed": "Vollendet",
+      "unsettled": "Unruhig",
+      "pass_one": "{{count}} übergeben",
+      "pass_other": "{{count}} ist erfolgreich",
+      "lastResult": "{{status}} nach {{passes}} – {{added}} hinzugefügt, {{changed}} geändert, {{moved}} verschoben, {{removed}} entfernt, {{skipped}} übersprungen",
+      "modes": {
+        "off": "Aus",
+        "native": "Einheimisch",
+        "polling": "Umfrage",
+        "direct": "Direkt",
+        "directAndNew": "Direkt und neu",
+        "oneLevel": "Eine Ebene"
+      }
+    },
+    "benchmark": {
+      "run": "Benchmark ausführen",
+      "confirmation": "Dieser Benchmark kann einige Minuten dauern und während der Ausführung möglicherweise viel CPU verbrauchen. Sind Sie sicher, dass Sie fortfahren möchten?",
+      "running": "Lauf-Benchmark…",
+      "version": "PICR-Version",
+      "assets": "Vermögenswerte",
+      "image_one": "{{count}}-Bild",
+      "image_other": "{{count}}-Bilder",
+      "video_one": "{{count}}-Video",
+      "video_other": "{{count}}-Videos",
+      "assetCounts": "{{images}}, {{videos}}",
+      "assetSetup": "Asset-Setup (nicht im Gesamtumfang enthalten)",
+      "jpegResize": "JPEG-Größe ändern",
+      "avifResize": "AVIF-Größe ändern",
+      "videoThumbnailCpu": "Video-Thumbnail (CPU)",
+      "videoThumbnailVaapi": "Video-Thumbnail (VAAPI)",
+      "videoTranscodeCpu": "Videotranskodierung (CPU)",
+      "videoTranscodeVaapi": "Videotranskodierung (VAAPI)",
+      "total": "Gesamt",
+      "totalValue": "{{duration}} (Asset-Einrichtung ausgeschlossen)",
+      "copied": "Benchmark-Ergebnisse kopiert",
+      "copy": "Ergebnisse kopieren"
+    }
+  },
+  "font": {
+    "label": "Schriftart der Überschrift",
+    "help": "Gilt nur für Titel und Abschnittsüberschriften",
+    "headingOnly": "Nur Überschrift",
+    "category": {
+      "sans": "Ohne Serifen",
+      "serif": "Serife",
+      "display": "Anzeige",
+      "script": "Skript",
+      "mono": "Mono",
+      "accessibility": "Zugänglichkeit"
+    },
+    "description": {
+      "default": "Freundlich, leicht rundlich, zugänglich; aktuelle PICR-Überschriftenschriftart.",
+      "signika": "Freundlich, leicht rundlich, zugänglich.",
+      "inter": "Klare moderne Benutzeroberfläche ohne; neutral und gut lesbar.",
+      "source-sans-3": "Ruhige redaktionelle Sans; sauber und vielseitig.",
+      "manrope": "Minimal, geometrisch, zeitgenössisch.",
+      "merriweather-sans": "Ausgewogene und leicht klassische Sans.",
+      "montserrat": "Mutig, geometrisch, markenorientiert.",
+      "merriweather": "Klassische, gut lesbare Serife mit Wärme.",
+      "lora": "Weiche, romantische Serife mit sanftem Ton.",
+      "libre-baskerville": "Elegant, literarisch, raffiniert.",
+      "bebas-neue": "Fettgedruckte, komprimierte Darstellung.",
+      "abril-fatface": "Hoher Kontrast, elegante Display-Serife.",
+      "poiret-one": "Dünn, kunstvoll, dekorativ.",
+      "amatic-sc": "Handgezeichnet, verspielt, ungezwungen.",
+      "oleo-script": "Freundliches Retro-Skript.",
+      "pacifico": "Lustiges und verspieltes Drehbuch.",
+      "pinyon-script": "Formale kalligraphische Schrift.",
+      "dancing-script": "Lesbares Drehbuch mit Wärme.",
+      "jetbrains-mono": "Sauberes, technisches Mono für Darstellungen im Metadatenstil.",
+      "atkinson-hyperlegible-next": "Gut lesbare Sans, die auf visuelle Zugänglichkeit ausgelegt sind.",
+      "atkinson-hyperlegible-mono": "Monospaced-Begleiter, optimiert für Lesbarkeit."
+    },
+    "suitability": {
+      "family": "Familie",
+      "kids": "Kinder",
+      "casualLifestyle": "Lässiger Lebensstil",
+      "generalGalleries": "allgemeine Galerien",
+      "commercial": "kommerziell",
+      "product": "Produkt",
+      "documentary": "Dokumentarfilm",
+      "modernPortfolios": "moderne Portfolios",
+      "weddings": "Hochzeiten",
+      "portraits": "Porträts",
+      "storytellingGalleries": "Galerien zum Geschichtenerzählen",
+      "architecture": "Architektur",
+      "interiors": "Innenräume",
+      "designForwardPortfolios": "Design-orientierte Portfolios",
+      "travel": "reisen",
+      "editorial": "Leitartikel",
+      "fashion": "Mode",
+      "boldEditorial": "fetter Leitartikel",
+      "modernBranding": "modernes Branding",
+      "storytelling": "Geschichtenerzählen",
+      "elopements": "Elopements",
+      "nature": "Natur",
+      "portraiture": "Porträtmalerei",
+      "fineArt": "schöne Kunst",
+      "heritage": "Erbe",
+      "blackAndWhite": "schwarz-weiß",
+      "sports": "Sport",
+      "automotive": "Automobil",
+      "boldBranding": "Mutiges Branding",
+      "luxury": "Luxus",
+      "editorialCovers": "redaktionelle Cover",
+      "conceptual": "konzeptionell",
+      "boutique": "Boutique",
+      "casualEvents": "Gelegenheitsveranstaltungen",
+      "creativeBrands": "kreative Marken",
+      "lifestyle": "Lebensstil",
+      "food": "Essen",
+      "casualBranding": "Lässiges Branding",
+      "beachy": "strandig",
+      "casualGalleries": "Gelegenheitsgalerien",
+      "luxuryWeddings": "Luxushochzeiten",
+      "invitations": "Einladungen",
+      "romanticGalleries": "romantische Galerien",
+      "archival": "Archiv",
+      "technicalShoots": "technische Aufnahmen",
+      "filmLabs": "Filmlabore",
+      "accessibilityFocusedGalleries": "Galerien, die auf Barrierefreiheit ausgerichtet sind",
+      "olderAudiences": "älteres Publikum",
+      "accessibilityMetadataHeavyViews": "Barrierefreiheit + Metadaten-lastige Ansichten"
+    }
+  }
+}
