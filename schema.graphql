@@ -268,7 +268,9 @@ type Image implements FileInterface {
   folder: Folder
   folderId: ID!
   id: ID!
+  imageHeight: Int
   imageRatio: Float
+  imageWidth: Int
   latestComment: DateTime
   metadata: ImageMetadataSummary
   name: String!

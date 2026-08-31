@@ -128,6 +128,11 @@ the failure and leave the row unchanged so a flaky mount or transient decoder
 failure does not rewrite user-visible media state. Let normal file scanning
 handle durable type changes. Do not spread nullable-dimension handling into
 gallery code or thumbnail selection.
+GraphQL publishes these columns as nullable `Image.imageWidth` and
+`Image.imageHeight`. They are the authoritative responsive-image dimensions:
+legacy metadata JSON can contain pre-orientation width/height values until the
+post-boot backfill rewrites it. Clients must use only positive pairs and keep a
+defined fallback while maintenance is still running or repair failed.
 
 Folder rows can be `exists=false` while `existsRescan=true` after a watcher
 delete, because `removeFolder()` archives the row without clearing
