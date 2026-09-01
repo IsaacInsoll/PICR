@@ -11,7 +11,7 @@ This guide takes one shoot from the filesystem to a tested recipient link.
 
 Create a folder below the host path mounted at `/home/node/app/media`, then place the client files inside it. For example:
 
-```text
+```text title="Example media folder"
 Client Media/
 └── 2026-08 Smith Family/
     ├── IMG_0001.jpg
@@ -67,7 +67,9 @@ Save the link, then copy its URL. Create a separate link for each person or team
 
 ## 6. Check the recipient experience
 
+:::tip[Test the recipient link, not the administrator view]
 Open the copied link in a private/incognito browser window. This avoids using your signed-in administrator session.
+:::
 
 Check that:
 

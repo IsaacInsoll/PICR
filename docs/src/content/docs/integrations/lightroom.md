@@ -75,13 +75,15 @@ The result reports updated photos, unchanged photos, and paths that could not be
 | Rejected           | Rejected/black flag                |
 | No PICR flag value | Leave the Lightroom flag unchanged |
 
+:::caution[Back up the Lightroom catalog before importing]
 The import changes matching Lightroom catalog metadata. Make a Lightroom catalog backup before a large or unfamiliar import.
+:::
 
 ## Filename matching
 
 The plugin strips the extension before matching. This supports a common proofing workflow:
 
-```text
+```text title="Proof-to-original filename matching"
 PICR proof: IMG_0001.jpg
 Lightroom original: IMG_0001.CR3
 ```

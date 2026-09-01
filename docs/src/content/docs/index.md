@@ -1,22 +1,11 @@
 ---
 title: PICR
 description: Self-hosted photo and video galleries for photographers and their clients.
-template: splash
-hero:
-  title: PICR
-  tagline: Publish polished client galleries from media you already store and control.
-  actions:
-    - text: Install PICR
-      link: /PICR/getting-started/install/
-      icon: right-arrow
-      variant: primary
-    - text: Create your first gallery
-      link: /PICR/getting-started/first-gallery/
-      icon: right-arrow
-      variant: minimal
 ---
 
 PICR turns folders on your server or NAS into branded photo and video galleries. Your originals stay in your own storage; PICR indexes them, creates previews, and gives each client a purpose-built gallery instead of a generic shared drive.
+
+Start with [Install PICR](/PICR/getting-started/install/), or jump directly to the topic you need from the manual navigation.
 
 ![PICR galleries displayed on desktop and mobile devices](../../../images/picr-header.png)
 

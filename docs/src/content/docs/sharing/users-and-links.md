@@ -16,7 +16,9 @@ Every account and public link has a home folder. It can access that folder and i
 
 For example, a link assigned to `Commercial/Porsche` can open every shoot below `Porsche`. A link assigned to `Commercial/Porsche/Taycan Launch` cannot browse back to the rest of the Porsche library.
 
-This makes folder structure part of the access model. Assign the narrowest folder that contains everything the person needs.
+:::tip[Use the narrowest useful folder]
+Folder structure is part of PICR's access model. Assign the narrowest folder that contains everything the person needs.
+:::
 
 ## Administrator accounts
 
@@ -38,7 +40,7 @@ Use an email address as the username for anyone who will use the PICR mobile app
 
 A public link normally looks like:
 
-```text
+```text title="Example public link"
 https://clients.example.com/s/smith-family-a7kd/
 ```
 
@@ -82,7 +84,9 @@ Changing a link ID changes the gallery URL. Copy and test the new URL before sen
 - **Disable** is reversible and is useful for temporarily withdrawing access.
 - **Delete** removes the public-link record from normal use.
 
+:::caution[Access changes are not file recall]
 These controls stop future gallery API access through that link. They do not retract files already downloaded or invalidate an independent media URL a recipient previously obtained.
+:::
 
 ## Review permissions
 

@@ -41,7 +41,9 @@ Or:
 
 > Rate possible selections with one star, then narrow the strongest choices to two stars. Your final two-star set will be edited and delivered.
 
-Avoid asking for ratings and flags simultaneously unless each has a distinct meaning.
+:::tip[Give recipients one clear decision rule]
+Avoid asking for ratings and flags simultaneously unless each has a distinct meaning. A short instruction at the start of proofing produces much cleaner selections.
+:::
 
 ## Review the results
 

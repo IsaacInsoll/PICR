@@ -3,7 +3,9 @@ title: Backups and upgrades
 description: Back up PICR's media and PostgreSQL state, upgrade safely, and understand compatibility limits.
 ---
 
+:::danger[A media backup alone cannot restore PICR]
 A complete PICR recovery needs both the original media library and the PostgreSQL database. The thumbnail cache alone is never a backup.
+:::
 
 ## What to protect
 
@@ -20,14 +22,16 @@ Back up the media and database on a schedule that matches how quickly client rev
 
 For the installation guide's `db` service, create a logical SQL backup with `pg_dump`:
 
-```bash
+```bash title="Create a dated PostgreSQL backup"
 mkdir -p backups
 docker compose exec -T db pg_dump -U picr -d picr > backups/picr-$(date +%Y-%m-%d).sql
 ```
 
 The command writes the dump on the Docker host. Store it somewhere independent of the server along with your media and Compose configuration.
 
+:::caution[Do not copy a live PostgreSQL data directory]
 `pg_dump` is safer than copying PostgreSQL's live data directory. A raw filesystem copy is valid only when PostgreSQL is fully stopped or when it is taken by a storage snapshot system designed to preserve database consistency.
+:::
 
 If your database service, user, or database name differs from the installation example, adjust the command.
 
@@ -37,7 +41,7 @@ A backup is only useful if it restores. Periodically test a dump against a dispo
 
 The basic restore command for an empty database is:
 
-```bash
+```bash title="Restore into an empty PostgreSQL database"
 docker compose exec -T db psql -U picr -d picr < backups/picr-2026-09-01.sql
 ```
 
@@ -55,7 +59,9 @@ Keep recoverable copies of:
 - The PICR Ping token and NAS Compose project if Ping is used
 - Custom UID/GID or mount configuration needed for media and cache permissions
 
-These files may contain secrets. Store them in a protected backup, not a public source repository.
+:::caution[Protect configuration backups]
+These files may contain passwords and notification tokens. Store them in a protected backup, not a public source repository.
+:::
 
 ## Before every PICR upgrade
 
@@ -65,7 +71,7 @@ These files may contain secrets. Store them in a protected backup, not a public 
 4. Record the running PICR and PostgreSQL versions.
 5. Pull and recreate PICR:
 
-   ```bash
+   ```bash title="Upgrade the PICR container"
    docker compose pull picr
    docker compose up -d picr
    docker compose logs -f picr
@@ -90,7 +96,9 @@ The database records a minimum compatible PICR version when a migration makes ol
 
 Changing `postgres:17` to another PostgreSQL major version is not a normal PICR image update. PostgreSQL data directories are major-version specific and need their own supported migration process, commonly a logical dump/restore or `pg_upgrade` workflow.
 
+:::danger[Do not casually change the PostgreSQL major version]
 Do not change the database image major merely because a newer tag exists. Follow PICR release guidance and PostgreSQL's migration requirements, and retain the old database backup until the upgraded installation is verified.
+:::
 
 ## Rollback
 
@@ -101,4 +109,6 @@ If an application upgrade fails:
 3. If the prior PICR version remains above the database compatibility floor, it may be safe to run it against the upgraded database.
 4. Otherwise, restore the pre-upgrade PostgreSQL backup before starting the older PICR image.
 
+:::danger[Protect the only production copy]
 Never test a questionable downgrade against the only copy of production data.
+:::

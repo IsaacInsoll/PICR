@@ -65,7 +65,9 @@ Administrators can also set an image or video as the folder hero from its menu. 
 
 When downloads are allowed, the folder menu offers a ZIP download. PICR prepares the archive in the background and reuses it while the folder contents remain unchanged.
 
-Public links in proofing mode do not offer normal individual or ZIP download controls. The sharing guide covers proofing and delivery in detail.
+:::note[Proofing links hide downloads]
+Public links in proofing mode do not offer normal individual or ZIP download controls. The [proofing and delivery guide](/PICR/sharing/delivery/) explains the behaviour and its limits.
+:::
 
 ## Export a selection
 

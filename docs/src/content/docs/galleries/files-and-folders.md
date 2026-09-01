@@ -11,7 +11,7 @@ PICR does not replace your storage or import originals into a private library. Y
 
 Given this host folder:
 
-```text
+```text title="Example media library"
 Client Media/
 ├── Families/
 │   ├── 2026-08 Smith Family/
@@ -69,7 +69,7 @@ There is no single required folder structure. Two useful patterns are:
 
 ### One link per shoot
 
-```text
+```text title="One gallery per shoot"
 Families/
 ├── 2026 Smith Family/
 └── 2027 Smith Family/
@@ -79,7 +79,7 @@ Create a new public link on each shoot folder. This keeps deliveries and access 
 
 ### One continuing client library
 
-```text
+```text title="One continuing client library"
 Commercial/
 └── Porsche/
     ├── Taycan Launch/
@@ -95,7 +95,9 @@ Use separate recipient links on the same folder when multiple people need access
 
 PICR is read-only by default, so filesystem changes normally happen outside the application.
 
+:::caution[External moves can separate gallery history]
 PICR attempts to recognise moves and renames, but not every filesystem exposes enough stable identity information. If an external rename looks like a deletion followed by a new folder, PICR may lose the database relationships that held its links, branding assignment, comments, and ratings.
+:::
 
 For important galleries:
 

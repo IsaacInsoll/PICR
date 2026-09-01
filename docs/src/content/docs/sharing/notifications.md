@@ -15,7 +15,9 @@ Logs identify the public link, folder, time, event type, IP address, and browser
 
 To avoid filling the database with refreshes, an identical link, folder, activity type, IP address, session, and browser combination is logged at most once per hour.
 
-`DISABLE_ACCESS_LOGS=true` stops new view and download logs. Existing rows remain in PostgreSQL.
+:::caution[Access logs power link-open notifications]
+`DISABLE_ACCESS_LOGS=true` stops new view and download logs. Existing rows remain in PostgreSQL, but link-view and folder-download notifications are also suppressed.
+:::
 
 ## Notification events
 
@@ -54,7 +56,9 @@ See [PICR mobile app](/PICR/integrations/mobile-app/) for login requirements and
 4. Enter its full ntfy topic URL, such as `https://ntfy.sh/picr-name-random-characters`.
 5. Optionally enable ntfy email delivery when the account username is an email address.
 
+:::caution[Keep the ntfy topic private]
 Treat the topic URL as a secret: anyone who knows a public ntfy topic may be able to subscribe to it. Self-host ntfy or review its service terms if notification metadata is sensitive.
+:::
 
 Email delivery is subject to the [ntfy server's rate limits](https://docs.ntfy.sh/publish/#e-mail-notifications).
 

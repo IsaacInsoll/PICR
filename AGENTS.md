@@ -151,6 +151,8 @@ gh issue view <number> --comments --json number,title,state,body,comments,labels
 
 - Root `readme.md` is customer-facing and should not be updated for developer workflow/troubleshooting notes.
 - Published customer documentation belongs under `docs/src/content/docs/*`. Astro/Starlight builds these files into the GitHub Pages site with clean, extensionless routes.
+- The customer-manual homepage intentionally uses Starlight's standard documentation template so the full sidebar is visible immediately. Do not switch it to the `splash` template without revisiting that navigation decision.
+- Starlight's `lastUpdated` footer uses Git history. Keep `fetch-depth: 0` on the documentation workflow checkout so deployed dates are based on complete history.
 - Durable guides for human developers and contributors belong under `docs/development/*` (for example, a guide to adding translations). These files and `docs/CONTRIBUTING.md` remain repository-native Markdown and are not published by Starlight.
 - The `docs/` directory is an independent npm package. Install it with `npm --prefix docs ci`, preview it with `npm --prefix docs start`, validate it with `npm --prefix docs run check`, and build it with `npm --prefix docs run build`. Run `npm --prefix docs run check:links` after building.
 - `docs/.astro/` and `docs/dist/` are generated, ignored by Git and excluded from root Prettier checks. Do not commit or edit them directly.

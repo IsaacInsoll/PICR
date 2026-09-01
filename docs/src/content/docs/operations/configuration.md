@@ -14,7 +14,9 @@ The [installation guide](/PICR/getting-started/install/) contains a complete sta
 | `DATABASE_URL` | PostgreSQL URL, for example `postgres://picr:password@db/picr`                     |
 | `BASE_URL`     | Public PICR URL used in links and notifications; must be a valid URL ending in `/` |
 
+:::tip[Configure the recipient-facing URL]
 `BASE_URL` should be the HTTPS address recipients actually use, including any path prefix. It does not control which hostnames the HTTP server listens on.
+:::
 
 ## First administrator
 
@@ -60,7 +62,9 @@ Thumbnail JPEG quality and use-of-originals settings are stored in PostgreSQL an
 | ----------- | ------- | -------------------------------------------------------------------- |
 | `CAN_WRITE` | `false` | Requests media rename/move support after a real write probe succeeds |
 
-This variable alone is insufficient. The Docker media mount must also be read-write and the container user must have filesystem permission. Read [Enable rename and move access](/PICR/operations/write-access/) before changing it.
+:::caution[Write access needs three checks]
+`CAN_WRITE=true` alone is insufficient. The Docker media mount must also be read-write and the container user must have filesystem permission. Read [Enable rename and move access](/PICR/operations/write-access/) before changing it.
+:::
 
 ## Access logs
 
@@ -94,11 +98,13 @@ New installations do not need `TOKEN_SECRET` in Compose. PICR creates one on fir
 
 Generate a Ping token with:
 
-```bash
+```bash title="Generate a PICR Ping token"
 openssl rand -hex 32
 ```
 
+:::danger[Keep signing and Ping secrets private]
 Do not put either secret in a URL or public repository.
+:::
 
 ## Logging and diagnostics
 
@@ -107,7 +113,9 @@ Do not put either secret in a URL or public repository.
 | `CONSOLE_LOGGING` | `false` | Also writes application logs to the container console   |
 | `DEBUG_SQL`       | `false` | Logs verbose database queries for short-lived diagnosis |
 
+:::caution[Use SQL logging only for diagnosis]
 PICR normally writes `info.log` and `error.log` under the cache location. Enable SQL logging only while investigating a specific issue; it is noisy and may expose operational detail.
+:::
 
 ## Server and video settings
 
@@ -123,7 +131,7 @@ VAAPI also requires a passed-through `/dev/dri` device and render-group permissi
 
 After editing Compose:
 
-```bash
+```bash title="Apply and inspect configuration changes"
 docker compose up -d picr
 docker compose logs --tail=100 picr
 ```

@@ -15,11 +15,13 @@ PICR reads an ordinary filesystem, so it needs a strategy for noticing when that
 | NAS disks should sleep between active jobs                 | Watcher off, on-view scanning, and a scheduled safety scan            |
 | You only change the library occasionally                   | Watcher off and manual **Scan Now**                                   |
 
+:::tip[Start with one primary method]
 Start with one primary real-time method. Add a scheduled scan as a backstop when missing an event would matter.
+:::
 
 ## Native watching
 
-```yaml
+```yaml title="compose.yml — native watcher"
 environment:
   FILE_WATCHER: native
 ```
@@ -30,7 +32,7 @@ Events do not always cross SMB, NFS, Docker, virtualisation, or NAS boundaries r
 
 ## Polling
 
-```yaml
+```yaml title="compose.yml — polling watcher"
 environment:
   FILE_WATCHER: polling
   POLLING_SECONDS: '20'
@@ -42,7 +44,7 @@ A shorter interval finds changes sooner but creates more filesystem activity. A 
 
 ## Watcher off
 
-```yaml
+```yaml title="compose.yml — continuous watcher disabled"
 environment:
   FILE_WATCHER: 'off'
 ```
@@ -64,7 +66,7 @@ The root/Home folder always uses a direct-only scan so opening Home does not une
 
 A useful low-I/O setup is:
 
-```yaml
+```yaml title="compose.yml — low-I/O scanning"
 environment:
   FILE_WATCHER: 'off'
   ON_VIEW_SCAN: direct_and_new
@@ -77,7 +79,7 @@ The page is served from PICR's current database immediately; scanning continues 
 
 `SCHEDULED_SCAN_HOURS` runs a whole-library reconciliation at that interval:
 
-```yaml
+```yaml title="compose.yml — daily safety scan"
 environment:
   SCHEDULED_SCAN_HOURS: '24'
 ```
@@ -117,7 +119,9 @@ Server and Ping logs provide the detailed path or delivery error when something 
 
 PICR tries to retain file and folder identity across moves and renames. Same-filesystem inode identity is the strongest signal; unique file signatures can also help in some cases.
 
+:::caution[Moves need stable filesystem identity]
 On filesystems without stable identity, a move may look like removal followed by addition. The media reappears, but database-linked public links, branding, comments, ratings, or flags may not follow it.
+:::
 
 For important reviewed galleries, use PICR's optional [rename and move support](/PICR/operations/write-access/) or keep the path stable.
 
@@ -125,7 +129,7 @@ For important reviewed galleries, use PICR's optional [rename and move support](
 
 Scanning environment variables are read when PICR starts. After editing Compose, recreate the application container:
 
-```bash
+```bash title="Apply scanning configuration changes"
 docker compose up -d picr
 ```
 

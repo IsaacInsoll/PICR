@@ -16,9 +16,11 @@ Change the mode by editing the public link. Other links to the same folder keep 
 
 Proof mode removes PICR's normal individual download buttons, folder ZIP action, drag behaviour, and direct-original source from the lightbox. The backend also rejects a proof link that attempts to generate a ZIP.
 
+:::caution[Proofing mode is not DRM]
 This discourages casual downloading and keeps the interface focused on review. It is not digital rights management. Anything rendered by a web browser can potentially be captured, and previously obtained media URLs are not revoked when a link changes mode.
 
 Use proof-sized exports, watermarks, or other workflow controls when the consequence of copying is significant. Do not rely on a browser control as a guarantee that pixels cannot be saved.
+:::
 
 ## Final delivery
 
@@ -47,7 +49,9 @@ Keeping proofs and finished files in separate folders makes it easier to preserv
 
 PICR records folder ZIP generation as download activity for the public link and can notify eligible signed-in users. Repeated identical activity is deduplicated to avoid log and notification spam.
 
-Direct media delivery is content-addressed for caching and performance. Access controls should therefore be applied before sharing: disabling or expiring a gallery link prevents future gallery navigation, but does not recall a raw media URL or file already received.
+:::note[Apply access controls before sharing]
+Direct media delivery is content-addressed for caching and performance. Disabling or expiring a gallery link prevents future gallery navigation, but does not recall a raw media URL or file already received.
+:::
 
 ## Delivery checklist
 

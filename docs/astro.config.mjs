@@ -9,6 +9,11 @@ export default defineConfig({
       title: 'PICR',
       description:
         'Documentation for PICR, a self-hosted photo and video gallery for photographers.',
+      logo: {
+        src: './src/assets/picr-logo.svg',
+        alt: '',
+      },
+      lastUpdated: true,
       social: [
         {
           icon: 'github',

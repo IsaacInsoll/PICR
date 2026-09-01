@@ -40,7 +40,9 @@ PICR identifies these video containers:
 - FLV
 - MKV
 
+:::note[Container support does not guarantee browser playback]
 FFmpeg and FFprobe extract metadata and create poster/scrub previews. Actual playback still depends on the codecs supported by the recipient's browser and device. A recognised container is not a guarantee that every browser can decode the video stream inside it.
+:::
 
 For widest client compatibility, H.264 video with AAC audio in an MP4 container remains a practical delivery choice.
 
@@ -62,12 +64,14 @@ PICR reads metadata; it does not write edits back into original media.
 
 Generated previews live in the mounted cache directory, not beside the originals. The cache includes multiple JPEG widths so browsers can request an appropriate size for the layout and screen.
 
-The cache is regenerable:
+:::tip[The cache is regenerable]
 
 - It does not need to be part of normal backups.
 - You can clear its contents when reclaiming storage.
 - Do not delete the cache directory itself unless you recreate its ownership and write permissions.
 - A cold cache makes the first gallery views slower while previews regenerate.
+
+:::
 
 See [Troubleshooting](/PICR/operations/troubleshooting/#thumbnails-not-showing--permission-denied-errors) for cache permission errors.
 
@@ -97,7 +101,7 @@ Changing thumbnail quality changes the generated variant identity. New requests 
 
 PICR chooses a thumbnail-worker count based on CPU and memory, capped at eight by default. On a small NAS, reduce concurrency when imports compete with other services:
 
-```yaml
+```yaml title="compose.yml — reduce thumbnail concurrency"
 environment:
   THUMBNAIL_WORKERS: '2'
 ```

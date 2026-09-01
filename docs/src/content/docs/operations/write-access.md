@@ -3,7 +3,9 @@ title: Enable rename and move access
 description: Safely enable optional media write access for folder rename and move operations.
 ---
 
-> You can run PICR in read-only mode and enable this later, once it's needed.
+:::note[Start read-only]
+You can run PICR in read-only mode and enable this later, once it is needed.
+:::
 
 Before enabling writes, make sure both your media and PICR database have current
 backups. See [Backups and upgrades](/PICR/operations/backups-and-upgrades/).
@@ -20,7 +22,7 @@ If you want to **rename or move folders** from inside PICR, you must enable writ
 
 Example:
 
-```yaml
+```yaml title="compose.yml — enable media writes" ":rw" "CAN_WRITE=true"
 services:
   picr:
     volumes:
@@ -67,7 +69,7 @@ Recommended approach:
 
 Example:
 
-```yaml
+```yaml title="compose.yml — run as the media owner"
 services:
   picr:
     user: '1026:100'
@@ -79,15 +81,15 @@ services:
 
 You can quickly test from inside the container:
 
-```bash
+```bash title="Test media writes from the container"
 docker exec -it picr sh -lc 'id; ls -ld /home/node/app/media; test_file="/home/node/app/media/.picr-write-test-manual-$(date +%s)"; printf "picr-write-test\n" > "$test_file" && rm "$test_file"'
 ```
 
 ## Why this is risky
 
-Write access means PICR can change your files and folders. If your admin password is leaked, or the server is hacked, an
-attacker could rename, move, or delete your media.  
-That’s why we keep write access **off by default**.
+:::danger[Write access expands the impact of a compromised server]
+Write access means PICR can change your files and folders. If an administrator password is leaked or the server is compromised, an attacker could rename, move, or delete media. That is why PICR keeps write access **off by default**.
+:::
 
 If you enable it, make sure you:
 

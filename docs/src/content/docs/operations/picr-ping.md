@@ -32,7 +32,7 @@ detection.
 Ping sends directory paths as hints. It does not send remote file statistics or
 tell PICR to replay raw Chokidar events:
 
-```text
+```text title="PICR Ping data flow"
 NAS filesystem → PICR Ping → authenticated directory hints → PICR scanner
                                                        ├→ metadata/database
                                                        └→ thumbnail queue
@@ -45,14 +45,16 @@ normal settling rules, and handles additions, changes, moves, and deletions.
 This keeps the NAS watcher from becoming an authoritative source of filesystem
 state.
 
-Pings are realtime hints, not a durable event log. Keep a scheduled scan as a
-safety net for outages and configuration mistakes. The recommended pairing is:
+:::caution[Keep a scheduled safety scan]
+Pings are realtime hints, not a durable event log. Keep a scheduled scan as a safety net for outages and configuration mistakes. The recommended pairing is:
 
-```yaml
+```yaml title="PICR environment — Ping with a safety scan"
 FILE_WATCHER: 'off'
 ON_VIEW_SCAN: 'off'
 SCHEDULED_SCAN_HOURS: '12'
 ```
+
+:::
 
 Ping can run alongside `FILE_WATCHER=native` or `polling` while you test it, but
 `off` avoids duplicate continuous monitoring once Ping is trusted.
@@ -72,25 +74,26 @@ each project's `.env` file.
 
 Generate 32 random bytes as 64 hexadecimal characters:
 
-```bash
+```bash title="Generate the shared Ping token"
 openssl rand -hex 32
 ```
 
 Create a `.env` file on both hosts:
 
-```dotenv
+```dotenv title=".env — use the same token on both hosts" "replace-with-the-64-character-value"
 PICR_PING_TOKEN=replace-with-the-64-character-value
 ```
 
-Treat this as an infrastructure secret. Do not put it in a URL, commit it, or
-reuse it as a general PICR API key.
+:::danger[Protect the Ping token]
+Treat this as an infrastructure secret. Do not put it in a URL, commit it, or reuse it as a general PICR API key.
+:::
 
 ### 2. Configure the PICR host
 
 This is a complete PICR/Postgres example. Replace the media path, cache path,
 public URL, and database password for your installation.
 
-```yaml
+```yaml title="compose.yml — PICR host" "/mnt/nas/photos" "https://clients.example.com/" "replace-this-password"
 services:
   picr:
     image: isaacinsoll/picr
@@ -135,10 +138,11 @@ route. Requests receive `404`, which makes accidental exposure opt-in.
 
 ### 3. Validate Ping on the NAS in dry-run mode
 
-Start with `DRY_RUN=true`. Dry run does not require a URL or token, makes no
-outbound requests, and logs every directory hint after path mapping.
+:::tip[Validate paths before enabling delivery]
+Start with `DRY_RUN=true`. Dry run does not require a URL or token, makes no outbound requests, and logs every directory hint after path mapping.
+:::
 
-```yaml
+```yaml title="compose.yml — NAS dry run" "DRY_RUN: 'true'" "/volume1/photos"
 services:
   picr-ping:
     image: isaacinsoll/picr-ping:latest
@@ -171,7 +175,7 @@ period needed for large media libraries.
 Start the project and follow its logs. The ready line reports exactly how many
 directories and entries Chokidar is watching:
 
-```text
+```text title="Expected watcher-ready log"
 ✔ Watching 697 directories · 74,631 entries
 ```
 
@@ -186,7 +190,7 @@ Ping deliberately ignores dotfiles and dot-directories, Synology `@eaDir`,
 
 After dry-run paths look correct, change the Ping environment to:
 
-```yaml
+```yaml title="compose.yml — enable Ping delivery" "DRY_RUN: 'false'" "PICR_URL"
 environment:
   DRY_RUN: 'false'
   PICR_URL: http://192.168.1.50:6900/
@@ -205,7 +209,7 @@ sent in the `Authorization` header, not in query strings.
 On startup, Ping samples one visible file and asks PICR to verify its mapped
 path without starting a scan. Look for a log like:
 
-```text
+```text title="Expected path-verification log"
 ✅ Path mapping verified: Weddings/Smith/IMG_001.CR3
 ```
 
@@ -221,10 +225,9 @@ inside PICR's media root.
 | its media root             | `/media`     | empty            |
 | `Archive/Studio`           | `/media`     | `Archive/Studio` |
 
-Paths are relative, use forward slashes, and are case-sensitive. Do not add a
-leading or trailing slash. For example, a file at
-`/media/Weddings/Smith/IMG_001.CR3` with `PATH_PREFIX=Archive/Studio` is reported
-as `Archive/Studio/Weddings/Smith`.
+:::caution[Map paths relative to PICR's media root]
+Paths are relative, use forward slashes, and are case-sensitive. Do not add a leading or trailing slash. For example, a file at `/media/Weddings/Smith/IMG_001.CR3` with `PATH_PREFIX=Archive/Studio` is reported as `Archive/Studio/Weddings/Smith`.
+:::
 
 Use one Ping container per watch root. Give each one a stable, descriptive
 `PICR_PING_NAME` and a distinct prefix. PICR retains independent heartbeat and
@@ -248,8 +251,9 @@ reconcile status for each source.
 | `RECONCILE_ON_START`    | `auto`   | `auto`, `true`, or `false` startup reconciliation                           |
 | `PING_HEALTH_PORT`      | `6901`   | Loopback-only health server port inside the container                       |
 
-The defaults are intentional. Avoid tuning batching or stability until real
-logs demonstrate a problem.
+:::tip[Keep the defaults until logs show a problem]
+The batching and stability defaults are intentional. Tune them only when real logs demonstrate a problem.
+:::
 
 ## What to expect
 
@@ -326,11 +330,9 @@ Build the image in CI and pull it on the NAS. Building Node dependencies on the
 NAS is slower, creates unnecessary I/O, and does not test the published
 multi-architecture artifact.
 
-Do not restart Ping merely because startup takes time. `ignoreInitial=true`
-suppresses initial events, but Chokidar must still walk the tree to establish
-watches. That walk reads directory metadata, spins sleeping drives up, and may
-take several minutes for a large library. The Docker healthcheck therefore has
-a five-minute startup period.
+:::caution[Large libraries can take several minutes to start]
+Do not restart Ping merely because startup takes time. `ignoreInitial=true` suppresses initial events, but Chokidar must still walk the tree to establish watches. That walk reads directory metadata, spins sleeping drives up, and may take several minutes for a large library. The Docker healthcheck therefore has a five-minute startup period.
+:::
 
 ## Troubleshooting
 
@@ -358,7 +360,7 @@ paste the token into logs or URLs.
 This usually means a host inotify limit, not a full disk. Check both limits on
 the NAS host:
 
-```bash
+```bash title="Check NAS inotify limits"
 sysctl fs.inotify.max_user_watches fs.inotify.max_user_instances
 ```
 
@@ -383,8 +385,6 @@ repairs this, and the scheduled scan catches anything still missed. Confirm
 
 ### Symlinks expose unexpected media
 
-PICR and Ping both follow symlinked directories for consistent behavior. A
-symlink inside the media root can therefore expose readable content physically
-outside it. Remove the symlink or adjust host permissions if that is not
-intended. The Ping mount remains read-only, but read-only does not prevent
-content from being indexed or shared.
+:::danger[Symlinks can expose media outside the mounted tree]
+PICR and Ping both follow symlinked directories for consistent behavior. A symlink inside the media root can therefore expose readable content physically outside it. Remove the symlink or adjust host permissions if that is not intended. The Ping mount remains read-only, but read-only does not prevent content from being indexed or shared.
+:::

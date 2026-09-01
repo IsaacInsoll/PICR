@@ -23,7 +23,9 @@ The app currently requires:
 - A password of at least eight characters
 - The full URL of a reachable PICR server
 
+:::caution[Change the default username before mobile sign-in]
 The first installation account defaults to the username `admin`, which the mobile login form does not accept as an email address. Change it to an email-address username under **Settings → Admin Users** before signing into the app.
+:::
 
 The account's home folder controls which galleries and events it can access. Use a root-scoped account for the whole library or a narrower account for a particular photographer or business area.
 
@@ -37,7 +39,9 @@ Enter:
 
 The app stores the server details and authentication credentials on the device so it can reconnect to that server.
 
+:::tip[Use a reachable HTTPS address]
 Use a publicly trusted HTTPS certificate. The device must be able to reach the server directly; a URL that only resolves inside another private network will not work while the phone is elsewhere.
+:::
 
 ## Enable link-open notifications
 

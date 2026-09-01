@@ -3,7 +3,9 @@ title: Install PICR
 description: Install PICR with Docker and prepare your media, cache, and database storage.
 ---
 
+:::note[Supported installation]
 PICR is distributed as a Docker image. Docker Compose is the recommended and officially supported installation method.
+:::
 
 You will need:
 
@@ -17,14 +19,14 @@ You will need:
 
 Create a working directory on the Docker host:
 
-```bash
+```bash title="Create the PICR directories"
 mkdir -p picr/cache picr/data
 cd picr
 ```
 
 PICR runs as UID `1000` by default and must be able to write to `cache`:
 
-```bash
+```bash title="Set cache ownership"
 sudo chown -R 1000:1000 ./cache
 ```
 
@@ -34,7 +36,7 @@ The PostgreSQL container initialises `data` itself. If your Docker or NAS setup 
 
 Create `compose.yml` in the `picr` directory:
 
-```yaml
+```yaml title="compose.yml" "/path/to/your/client-media" "https://clients.example.com/" "change-this-database-password"
 services:
   picr:
     image: isaacinsoll/picr
@@ -72,11 +74,13 @@ services:
       - ./data:/var/lib/postgresql/data
 ```
 
+:::caution[Change the example values]
 Change these values before starting:
 
 - Replace `/path/to/your/client-media` with the absolute host path to your gallery library.
 - Replace both copies of `change-this-database-password` with the same strong password. If it contains URL-special characters, URL-encode the password in `DATABASE_URL`.
 - Replace `https://clients.example.com/` with the address recipients will use, including the trailing slash.
+  :::
 
 The media mount is read-only by default. PICR can index, preview, and share the library without permission to modify your originals.
 
@@ -86,7 +90,7 @@ The health check and `depends_on` setting make PICR wait for PostgreSQL to becom
 
 Start the services and follow the first boot:
 
-```bash
+```bash title="Start PICR and follow first boot"
 docker compose up -d
 docker compose logs -f picr
 ```
@@ -100,7 +104,7 @@ On a new database, PICR creates an administrator account:
 
 If PICR generated the password, find the log entry with:
 
-```bash
+```bash title="Read the generated administrator password"
 docker compose logs picr
 ```
 
@@ -124,9 +128,11 @@ Continue with [Create your first gallery](/PICR/getting-started/first-gallery/).
 | `data`   | Users, public links, branding, comments, ratings, access logs, and other PICR state |   Yes    |
 | `cache`  | Regenerable thumbnails and generated downloads                                      |    No    |
 
+:::caution[Back up PICR state as well as media]
 Do not treat the media library as the only PICR backup. Recipient links, reviews, and branding live in PostgreSQL.
 
 Follow [Backups and upgrades](/PICR/operations/backups-and-upgrades/) to create a consistent PostgreSQL dump and restore it safely. Copying the live `data` directory is not a substitute for that process.
+:::
 
 It is safe to clear the **contents** of `cache`; PICR regenerates them. Keep the cache directory itself and its write permissions intact. See [Troubleshooting](/PICR/operations/troubleshooting/) if thumbnails fail with a permission error.
 
@@ -151,7 +157,9 @@ PICR serves HTTP on port `6900`; it does not terminate HTTPS itself. Put it behi
 
 Set `BASE_URL` to the final public HTTPS address. PICR uses it when generating recipient links and notifications.
 
+:::tip[Use HTTPS]
 HTTPS is recommended even on a private LAN. Browsers restrict clipboard and other features on plain-HTTP addresses, so **Copy Link** is more reliable from a secure origin.
+:::
 
 ## Upgrade PICR
 
@@ -161,7 +169,7 @@ Before an upgrade:
 2. Create a PostgreSQL dump as described in [Backups and upgrades](/PICR/operations/backups-and-upgrades/).
 3. Pull and restart the application:
 
-   ```bash
+   ```bash title="Upgrade PICR"
    docker compose pull picr
    docker compose up -d
    docker compose logs -f picr
@@ -186,11 +194,13 @@ The [configuration reference](/PICR/operations/configuration/) groups those sett
 
 PICR's `amd64` image includes VAAPI drivers for compatible Intel and AMD GPUs. Detection is optional and a missing or unusable GPU does not stop PICR.
 
+:::note[VAAPI is informational for normal gallery use]
 Current poster and scrub-thumbnail generation still uses the CPU because it performs better for that workload. VAAPI is visible on **Settings → Server Info** and in the benchmark tool, but it does not currently make normal gallery use faster.
+:::
 
 To expose a GPU to PICR:
 
-```yaml
+```yaml title="compose.yml — optional VAAPI device"
 services:
   picr:
     devices:
@@ -201,7 +211,7 @@ services:
 
 Find the host's numeric render-group ID with:
 
-```bash
+```bash title="Find the render-group ID"
 getent group render
 ```
 

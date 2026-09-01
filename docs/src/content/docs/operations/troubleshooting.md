@@ -30,7 +30,7 @@ the NAS media owner. The cache volume must be writable by the same container use
 
 Stop the container, fix ownership of the `cache` folder, then restart:
 
-```bash
+```bash title="Reset cache ownership for the default container user"
 docker compose down
 sudo chown -R 1000:1000 ./cache
 docker compose up -d
@@ -38,7 +38,7 @@ docker compose up -d
 
 For a custom container user, replace `1000:1000` with the UID/GID from your Compose file:
 
-```bash
+```bash title="Reset cache ownership for a custom container user"
 docker compose down
 sudo chown -R 1026:100 ./cache
 sudo find ./cache -type d -exec chmod 775 {} +
@@ -50,7 +50,7 @@ Thumbnails will regenerate automatically once the container has write access.
 
 You can verify cache write access from inside the running container:
 
-```bash
+```bash title="Verify cache writes from inside PICR"
 docker compose exec picr sh -lc '
 set -eu
 id
@@ -77,7 +77,11 @@ If you deleted the `cache` folder and restarted, Docker will have recreated it a
 
 The safe way to clear the thumbnail cache is to **delete the contents** of the folder, not the folder itself:
 
-```bash
+:::danger[Verify the directory before deleting cache contents]
+Run this only from the PICR Compose directory after confirming that `./cache` is the mounted PICR cache. The command permanently deletes everything matched inside that directory.
+:::
+
+```bash title="Clear cache contents, but keep the cache directory" "rm -rf ./cache/*"
 rm -rf ./cache/*
 ```
 
@@ -92,7 +96,7 @@ Both Synology DSM and DaVinci Resolve run their own Postgres servers on `5432` b
 
 Fix — expose the container on a different host port in `compose.yml`:
 
-```yaml
+```yaml title="compose.yml — optional PostgreSQL host port"
 db:
   ports:
     - '54321:5432'
@@ -116,11 +120,9 @@ PICR retries its startup migrations once after 10 seconds if Postgres is not rea
 
 ## Hardware video acceleration not working
 
-> Note: VAAPI does not currently speed up poster/scrub thumbnail generation (the
-> CPU benchmarked faster), so seeing "CPU only" does not mean anything is broken
-> for normal use. These steps are for confirming the GPU is _detected_ — useful
-> for the benchmark and for upcoming transcoding features. See
-> [Hardware Video Acceleration](/PICR/getting-started/install/#optional-hardware-video-acceleration).
+:::note[CPU-only is normal for gallery thumbnails]
+VAAPI does not currently speed up poster/scrub thumbnail generation because the CPU benchmarked faster. Seeing “CPU only” does not mean anything is broken for normal use. These steps only confirm that the GPU is detected for the benchmark and future processing features. See [Hardware video acceleration](/PICR/getting-started/install/#optional-hardware-video-acceleration).
+:::
 
 If the admin **Server Info** page shows "CPU only" when you expected VAAPI to be
 detected, work through these. The reason shown on that page (and in the startup
@@ -131,14 +133,14 @@ On `arm64` PICR always uses the CPU.
 
 **2. Is the render device inside the container?**
 
-```bash
+```bash title="Check for a render device"
 docker compose exec picr ls -l /dev/dri
 ```
 
 You should see `renderD128` (or similar). If it's missing, add the device mapping
 to your `picr` service:
 
-```yaml
+```yaml title="compose.yml — pass through the render device"
 devices:
   - /dev/dri:/dev/dri
 ```
@@ -146,11 +148,11 @@ devices:
 **3. Does the container user have permission?** PICR runs as `node`, which must be
 in the host's `render` group. Check the host GID and add it under `group_add`:
 
-```bash
+```bash title="Find the host render-group ID"
 getent group render        # e.g. render:x:992:  -> use 992
 ```
 
-```yaml
+```yaml title="compose.yml — grant render-group access"
 group_add:
   - '992'
 ```
@@ -161,7 +163,7 @@ can't be opened.
 **4. Can the GPU actually be used?** Inspect VAAPI support from inside the
 container:
 
-```bash
+```bash title="Probe VAAPI inside PICR"
 docker compose exec picr vainfo --display drm --device /dev/dri/renderD128
 ```
 

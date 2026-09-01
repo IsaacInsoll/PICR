@@ -72,6 +72,10 @@ When setting or editing a banner, choose its presentation:
 Horizontal and vertical alignment controls position the image and heading for
 the selected crop. Preview both desktop and phone layouts before saving.
 
+:::tip[Preview the actual recipient experience]
+Open a public link in a private browser and check both desktop and phone layouts. The signed-in administrator view can expose controls and views that a recipient's branding preset hides.
+:::
+
 ## Gallery Appearance
 
 The **Gallery Appearance** settings in the branding form control how thumbnails look in the Gallery view:
