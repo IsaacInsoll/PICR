@@ -255,6 +255,12 @@ because public-link management and recent-client views read `Query.users` lists
 and graphcache will not add a newly-created `User` entity to those lists
 automatically.
 
+GraphQL value objects without an `id`, such as `ThumbnailVariant`, must be
+declared in the cache `keys` configuration with a function that returns `null`.
+This tells Graphcache to embed them on their parent instead of attempting entity
+normalization and warning for every selected list item. When replacing one of
+these schema types, update its cache key declaration at the same time.
+
 ## Utility Functions
 
 ### File Utilities (`files/`)
