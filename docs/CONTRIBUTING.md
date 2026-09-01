@@ -15,7 +15,7 @@ I have a private trello board currently tracking everything that needs to be don
 
 ## Getting started
 
-The [Development Docs](docs/development/index.md) should have everything you need to get started. If you need any help just get in touch.
+The [Development Docs](development/index.md) should have everything you need to get started. If you need any help just get in touch.
 
 ## Can I send a Pull Request?
 

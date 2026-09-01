@@ -1,4 +1,7 @@
-# Comments / Ratings / Flags
+---
+title: Comments, ratings, and flags
+description: Collect client feedback and review decisions on individual files.
+---
 
 ## Types
 
@@ -31,6 +34,8 @@ Once the client has done this you can easily log in and filter for just `approve
 
 ## Syncing to Lightroom
 
-If you use Lightroom Classic, you can sync ratings and flags back to your catalog using the [Lightroom Plugin](lightroom-plugin.md). This saves you from manually updating each image in Lightroom after client review.
+If you use Lightroom Classic, you can sync ratings and flags back to your catalog using the
+[Lightroom Classic plugin](/PICR/integrations/lightroom/). This saves you from manually updating each
+image in Lightroom after client review.
 
 > If there are workflow features you would love to see in PICR that don't yet exist, please open an issue on GitHub to let us know!

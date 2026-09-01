@@ -2,7 +2,7 @@
 
 PICR uses i18next and react-i18next for the web interface. English is the typed source catalog. The
 languages configured in the current checkout are listed in `shared/i18n/languages.ts`; the languages
-released to customers are listed on the [Languages](../languages.md) page. The React Native app and
+released to customers are listed on the [Languages](../src/content/docs/reference/languages.md) page. The React Native app and
 server-sent notifications are not localized yet.
 
 Coordinate new languages and fluent reviewers through the relevant GitHub issue. Plain JSON pull
@@ -135,8 +135,8 @@ in the next section and commit their corrections before describing the language 
 
 After approval, update every customer-facing language list:
 
-- `docs/languages.md`
-- the feature summary in `docs/index.md`
+- `docs/src/content/docs/reference/languages.md`
+- the feature summary in `docs/src/content/docs/index.md`
 - the language-support sentence in `readme.md`
 
 Also update the relevant issue/release notes and any language examples in this guide that became

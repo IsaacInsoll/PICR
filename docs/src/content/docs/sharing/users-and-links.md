@@ -1,4 +1,7 @@
-# User Accounts
+---
+title: Users and public links
+description: Control administrator access and create links for clients to view galleries.
+---
 
 ## Types
 

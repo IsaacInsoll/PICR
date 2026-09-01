@@ -1,4 +1,7 @@
-# Languages
+---
+title: Languages
+description: See which languages PICR supports and which parts of the product are translated.
+---
 
 PICR's web interface supports:
 
@@ -21,4 +24,4 @@ The React Native app and server-sent notifications are currently English-only. T
 follow-up projects because they need their own language preference and delivery design.
 
 Want to improve a translation or add a language? See the
-[translation contribution guide](development/translations.md).
+[translation contribution guide](https://github.com/IsaacInsoll/PICR/blob/master/docs/development/translations.md).

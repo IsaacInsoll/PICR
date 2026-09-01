@@ -1,4 +1,7 @@
-# Enabling Rename / Move (Write Access)
+---
+title: Enable rename and move access
+description: Safely enable optional media write access for folder rename and move operations.
+---
 
 > You can run PICR in read-only mode and enable this later, once it's needed.
 

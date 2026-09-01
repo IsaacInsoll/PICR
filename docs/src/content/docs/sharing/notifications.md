@@ -1,4 +1,7 @@
-# Notifications
+---
+title: Notifications
+description: Receive notifications when clients visit galleries or leave feedback.
+---
 
 The Picr notification system is basic but does everything you need it to do.
 

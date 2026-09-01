@@ -1,4 +1,7 @@
-# Branding and Theming
+---
+title: Branding and theming
+description: Customize gallery colors, fonts, layouts, banners, footers, and social links.
+---
 
 PICR allows you to customize the appearance of shared galleries with custom branding. This helps photographers maintain their brand identity when sharing photos with clients.
 

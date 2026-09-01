@@ -1,4 +1,7 @@
-# Files and Folders
+---
+title: Files and folders
+description: Understand PICR's media library and organize galleries for different client workflows.
+---
 
 ## Overview
 

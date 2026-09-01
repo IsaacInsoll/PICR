@@ -1,4 +1,7 @@
-# Lightroom Plugin
+---
+title: Lightroom Classic plugin
+description: Sync PICR ratings and flags back into an Adobe Lightroom Classic catalog.
+---
 
 PICR includes a free Lightroom Classic plugin that lets you import ratings and flags from PICR back into Lightroom.
 
@@ -44,9 +47,8 @@ Then restart Lightroom.
    - Enable **Include subfolders** if needed
 4. Click **Copy to clipboard**
 
-![PICR CSV Export Options](images/lightroom-export-csv.png)
-![](images/export-csv-1.png)
-![](images/export-csv-2.png)
+![PICR CSV export options](../../../../images/export-csv-1.png)
+![PICR CSV export data](../../../../images/export-csv-2.png)
 
 ### Step 2: Import in Lightroom
 
@@ -54,7 +56,7 @@ Then restart Lightroom.
 2. Go to **Library → Plug-in Extras → Import PICR Data**
 3. Paste the CSV data into the text field
 4. Click **Import**
-   ![](images/export-csv-3.png)
+   ![PICR Lightroom import results](../../../../images/export-csv-3.png)
 
 ### Step 3: Review Results
 

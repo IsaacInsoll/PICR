@@ -1,3 +1,8 @@
+---
+title: Privacy policy
+description: Understand how the PICR mobile app stores credentials and uses device permissions.
+---
+
 > A privacy policy is required for publishing on Apple App Store / Google Play
 
 **Privacy Policy**

@@ -1,4 +1,7 @@
-# PICR Ping
+---
+title: PICR Ping
+description: Detect media changes in real time when PICR reads a library from a separate NAS.
+---
 
 PICR Ping provides realtime media detection when your library lives on a NAS
 and PICR runs elsewhere. It is a small, read-only watcher that runs beside the
