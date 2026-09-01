@@ -37,10 +37,14 @@ test('admin login renders the dashboard and a folder view with no browser/runtim
   await expect(page.getByText('Something went wrong')).toHaveCount(0);
   expectNoBrowserFailures(failures);
 
-  // Authenticated folder view (gallery / app shell) renders.
-  await page.goto(`/admin/f/${photoFolderId}`, {
-    waitUntil: 'domcontentloaded',
-  });
+  // Follow the real client-side folder link. A second page.goto() would unload
+  // the dashboard and cancel any lazy bundle preloads still in flight, which
+  // Chromium correctly reports as net::ERR_ABORTED request failures.
+  const photoFolderLink = page
+    .locator(`a[href="/admin/f/${photoFolderId}"]`)
+    .first();
+  await expect(photoFolderLink).toBeVisible({ timeout: 15_000 });
+  await photoFolderLink.click();
   await page.waitForTimeout(1500);
   await expect(page).toHaveURL(new RegExp(`/admin/f/${photoFolderId}`));
   await expect(page.locator('#root')).toBeVisible();

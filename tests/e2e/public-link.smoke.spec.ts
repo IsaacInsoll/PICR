@@ -1,6 +1,10 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { photoFolderId } from '../api/testVariables';
+import {
+  expectNoBrowserFailures,
+  trackBrowserFailures,
+} from './browserFailures';
 import {
   deleteBrandingMutationText,
   deleteUserMutationText,
@@ -17,12 +21,6 @@ type GqlResult<T> = {
 
 const testUrl = 'http://localhost:6901/';
 
-type BrowserFailureSignals = {
-  consoleErrors: string[];
-  pageErrors: string[];
-  requestFailures: string[];
-};
-
 async function gqlRequest<T>(
   query: string,
   variables: Record<string, unknown>,
@@ -37,41 +35,6 @@ async function gqlRequest<T>(
     body: JSON.stringify({ query, variables }),
   });
   return (await response.json()) as GqlResult<T>;
-}
-
-function trackBrowserFailures(page: Page) {
-  const failures: BrowserFailureSignals = {
-    consoleErrors: [],
-    pageErrors: [],
-    requestFailures: [],
-  };
-
-  page.on('console', (msg) => {
-    if (msg.type() === 'error') {
-      failures.consoleErrors.push(msg.text());
-    }
-  });
-
-  page.on('pageerror', (error) => {
-    failures.pageErrors.push(error.message);
-  });
-
-  page.on('requestfailed', (request) => {
-    const resourceType = request.resourceType();
-    if (resourceType === 'script' || resourceType === 'document') {
-      failures.requestFailures.push(
-        `${resourceType} ${request.url()} ${request.failure()?.errorText ?? ''}`,
-      );
-    }
-  });
-
-  return failures;
-}
-
-function expectNoBrowserFailures(failures: BrowserFailureSignals) {
-  expect(failures.consoleErrors).toEqual([]);
-  expect(failures.pageErrors).toEqual([]);
-  expect(failures.requestFailures).toEqual([]);
 }
 
 test('public link and login routes load with no browser/runtime errors', async ({
