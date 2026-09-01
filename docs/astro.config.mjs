@@ -22,8 +22,7 @@ export default defineConfig({
         },
       ],
       editLink: {
-        baseUrl:
-          'https://github.com/IsaacInsoll/PICR/edit/master/docs/src/content/docs/',
+        baseUrl: 'https://github.com/IsaacInsoll/PICR/edit/master/docs/',
       },
       customCss: ['./src/styles/custom.css'],
       sidebar: [

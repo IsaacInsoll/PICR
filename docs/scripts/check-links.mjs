@@ -3,9 +3,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const siteBase = '/PICR';
+const repositoryEditBase =
+  'https://github.com/IsaacInsoll/PICR/edit/master/docs/';
+const contentSourceRoot = 'src/content/docs/';
 const outputDirectory = fileURLToPath(new URL('../dist/', import.meta.url));
 const htmlFiles = [];
 const failures = [];
+let editLinkCount = 0;
 
 async function collectHtmlFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -48,6 +52,24 @@ for (const sourceFile of htmlFiles) {
   const references = sourceHtml.matchAll(/(?:href|src)=["']([^"']+)["']/g);
 
   for (const [, reference] of references) {
+    if (reference.startsWith('https://github.com/IsaacInsoll/PICR/edit/')) {
+      editLinkCount += 1;
+
+      const sourcePath = reference.slice(repositoryEditBase.length);
+      const sourceRootOccurrences =
+        sourcePath.split(contentSourceRoot).length - 1;
+
+      if (
+        !reference.startsWith(repositoryEditBase) ||
+        !sourcePath.startsWith(contentSourceRoot) ||
+        sourceRootOccurrences !== 1
+      ) {
+        failures.push(
+          `${path.relative(outputDirectory, sourceFile)} -> ${reference} (invalid edit link)`,
+        );
+      }
+    }
+
     if (reference !== siteBase && !reference.startsWith(`${siteBase}/`)) {
       continue;
     }
@@ -80,12 +102,16 @@ for (const sourceFile of htmlFiles) {
   }
 }
 
+if (editLinkCount === 0) {
+  failures.push('No generated documentation edit links were found.');
+}
+
 if (failures.length > 0) {
   console.error('Generated documentation contains broken internal links:');
   console.error(failures.map((failure) => `- ${failure}`).join('\n'));
   process.exitCode = 1;
 } else {
   console.log(
-    `Validated ${htmlFiles.length} generated HTML files and their internal ${siteBase} links.`,
+    `Validated ${htmlFiles.length} generated HTML files, their internal ${siteBase} links, and ${editLinkCount} edit links.`,
   );
 }

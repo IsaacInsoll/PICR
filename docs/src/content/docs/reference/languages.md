@@ -34,6 +34,6 @@ PICR translates its own interface, not customer-authored or recorded content. Th
 
 The mobile app and server-sent push/ntfy notification text are currently English-only.
 
-## Contribute a translation
+## Request a language or suggest a correction
 
-Translations are stored in the repository and require review by a fluent speaker before release. See the [translation contribution guide](https://github.com/IsaacInsoll/PICR/blob/master/docs/development/translations.md) for catalogs, validation, and review requirements.
+To request another language or share a translation suggestion or correction, leave a comment on [language requests and translation feedback](https://github.com/IsaacInsoll/PICR/issues/84). Include the language and the wording you would like added or changed. You do not need to edit the translation files yourself.
