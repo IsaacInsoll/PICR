@@ -24,6 +24,7 @@ Brandings are **named presets** that can be applied to any folder and will casca
 | **Thumbnail Corners** | Border radius of thumbnails — from sharp corners to pill/circle (XS–XL presets) |
 | **Available Views**   | Restrict which gallery views (List, Gallery, Feed) link users can access        |
 | **Default View**      | Which view link users land on when opening the gallery                          |
+| **Default Sort**      | Initial file order, direction, and whether folders are grouped first            |
 | **Footer Title**      | Business name shown in the gallery footer (links to Footer URL if set)          |
 | **Footer URL**        | Website URL for the footer business name link                                   |
 | **Social Links**      | Row of icon buttons linking to your social media profiles                       |
@@ -61,6 +62,16 @@ A banner image is a full-width decorative photo displayed at the very top of a f
 
 Banner images only display on the folder they are explicitly assigned to — they do not cascade to subfolders.
 
+When setting or editing a banner, choose its presentation:
+
+- **Classic** — 3:2
+- **Widescreen** — 16:9
+- **Cinematic** — 21:9
+- **Full Screen** — fills the viewport
+
+Horizontal and vertical alignment controls position the image and heading for
+the selected crop. Preview both desktop and phone layouts before saving.
+
 ## Gallery Appearance
 
 The **Gallery Appearance** settings in the branding form control how thumbnails look in the Gallery view:
@@ -76,6 +87,7 @@ Under **Gallery Defaults** in the branding form you can:
 
 - **Restrict available views** — check only the views you want link users to see. Admins always see all views regardless.
 - **Set a default view** — choose which view link users land on when opening a gallery. The default view must be one of the available views.
+- **Set a default sort** — choose the initial sort type and direction and whether folders stay grouped before files.
 
 If a link user's saved view preference is not in the available views, they are automatically redirected to the default view.
 
@@ -170,4 +182,7 @@ Choose from a range of accent colors that will be used for buttons, links, and h
 
 ## Mobile App
 
-The PICR mobile app fully supports custom branding. When clients view galleries through the app, they'll see your custom fonts, colors, and theme settings.
+The mobile app is for signed-in PICR users, not public-link recipients. It uses
+the gallery's configured heading font, but its native light/dark colours and
+layout are currently app-specific. Use the web public-link preview when checking
+the complete recipient branding experience.

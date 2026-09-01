@@ -5,6 +5,9 @@ description: Safely enable optional media write access for folder rename and mov
 
 > You can run PICR in read-only mode and enable this later, once it's needed.
 
+Before enabling writes, make sure both your media and PICR database have current
+backups. See [Backups and upgrades](/PICR/operations/backups-and-upgrades/).
+
 By default PICR only has **read** access to your media folder. This is the safest option.
 
 If you want to **rename or move folders** from inside PICR, you must enable write access in two places:

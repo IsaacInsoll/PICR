@@ -126,6 +126,8 @@ Continue with [Create your first gallery](/PICR/getting-started/first-gallery/).
 
 Do not treat the media library as the only PICR backup. Recipient links, reviews, and branding live in PostgreSQL.
 
+Follow [Backups and upgrades](/PICR/operations/backups-and-upgrades/) to create a consistent PostgreSQL dump and restore it safely. Copying the live `data` directory is not a substitute for that process.
+
 It is safe to clear the **contents** of `cache`; PICR regenerates them. Keep the cache directory itself and its write permissions intact. See [Troubleshooting](/PICR/operations/troubleshooting/) if thumbnails fail with a permission error.
 
 ## Choose how PICR detects changes
@@ -141,6 +143,8 @@ The example uses polling because it works reliably with many Docker and NAS moun
 
 Avoid enabling every method without a reason. Start with polling, or native watching for local storage, then change strategy if your storage has different reliability or spin-down requirements.
 
+See [Scanning and change detection](/PICR/operations/scanning/) for strategy comparisons, manual scans, scheduled reconciliation, and monitoring.
+
 ## Publish PICR with HTTPS
 
 PICR serves HTTP on port `6900`; it does not terminate HTTPS itself. Put it behind a reverse proxy such as Nginx Proxy Manager, Caddy, Traefik, or another proxy you already operate.
@@ -154,7 +158,7 @@ HTTPS is recommended even on a private LAN. Browsers restrict clipboard and othe
 Before an upgrade:
 
 1. Read the [release notes](https://github.com/IsaacInsoll/PICR/releases).
-2. Back up the PostgreSQL `data` location.
+2. Create a PostgreSQL dump as described in [Backups and upgrades](/PICR/operations/backups-and-upgrades/).
 3. Pull and restart the application:
 
    ```bash
@@ -176,6 +180,7 @@ PostgreSQL major-version upgrades are separate. Do not change `postgres:17` to a
 - `TOKEN_SECRET` is optional. New installations generate and store a secret automatically; the environment setting is retained for explicit and older deployments.
 
 The repository [.env.example](https://github.com/IsaacInsoll/PICR/blob/master/.env.example) lists all supported settings.
+The [configuration reference](/PICR/operations/configuration/) groups those settings by customer task.
 
 ## Optional hardware video acceleration
 

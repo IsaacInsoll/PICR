@@ -40,7 +40,7 @@ The display fields change the gallery heading without renaming the folder on dis
 
 ## How changes are detected
 
-PICR scans the media root at startup and can detect later changes through native filesystem events, polling, on-view scans, scheduled scans, or [PICR Ping](/PICR/operations/picr-ping/).
+PICR scans the media root at startup and can detect later changes through native filesystem events, polling, on-view scans, scheduled scans, or [PICR Ping](/PICR/operations/picr-ping/). [Scanning and change detection](/PICR/operations/scanning/) explains when to use each strategy.
 
 If a folder is missing or out of date:
 
@@ -100,7 +100,7 @@ PICR attempts to recognise moves and renames, but not every filesystem exposes e
 For important galleries:
 
 - Prefer a stable folder structure after links and reviews exist.
-- Keep backups of both the media library and PostgreSQL database.
+- Keep backups of both the media library and PostgreSQL database. See [Backups and upgrades](/PICR/operations/backups-and-upgrades/) for a restorable backup procedure.
 - If you need frequent moves or renames, read [Enable rename and move access](/PICR/operations/write-access/). PICR's own move/rename operation preserves the database relationships, but requires deliberately granting media write access.
 
 ## Deleting files

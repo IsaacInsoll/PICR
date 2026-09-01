@@ -81,7 +81,7 @@ every subsystem the commit touches, run:
 - `npm run format` then `npm run format:check`
 - `npm run lint` in the subsystem (`eslint <file>` is not a substitute — subsystem lint also runs checks such as
   `css:types:check` in `frontend`)
-- `npx tsc --noEmit` in the subsystem
+- `npx tsc --noEmit` in the subsystem (for `docs`, use `npm run check` instead)
 - `npm run i18n:check` from the root if any user-facing string or locale catalog changed
 
 The full test suite is deliberately **not** on that list; it belongs to `npm run workflow`, which the user runs. The root
@@ -301,6 +301,14 @@ cd frontend && npx tsc --noEmit  # Frontend only
 cd shared && npx tsc --noEmit    # Shared only
 cd app && npm run typecheck      # App only
 cd ping && npm run typecheck     # Ping only
+cd docs && npm run check         # Astro content and TypeScript diagnostics
+
+# Documentation validation
+# Astro's validator is the type/content check for the Starlight site. A bare
+# `npx tsc --noEmit` also traverses TypeScript source shipped inside Starlight
+# and can report incompatible duplicate `satteri` types from its transitive
+# dependency tree even when the site is valid. For docs changes, run:
+# cd docs && npm run check && npm run build && npm run check:links
 
 # Install sequencing
 npm run install-all              # Preferred install flow for all subsystems

@@ -40,7 +40,7 @@ Because the media library remains an ordinary filesystem, you can keep using Lig
 - Push notifications through the PICR mobile app and optional ntfy notifications
 - Comments, star ratings, approve/reject flags, CSV export, and a Lightroom Classic plugin
 - Read-only media access by default, with optional controlled rename and move support
-- English, French, and Greek web interfaces
+- 🇺🇸 English, 🇫🇷 French, 🇩🇪 German, 🇬🇷 Greek, 🇪🇸 Spanish, and 🇺🇦 Ukrainian web interfaces
 
 ## Start here
 

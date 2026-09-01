@@ -1,50 +1,80 @@
 ---
-title: Privacy policy
-description: Understand how the PICR mobile app stores credentials and uses device permissions.
+title: Mobile app privacy policy
+description: Understand what the PICR mobile app stores and how self-hosted galleries and push notifications are delivered.
 ---
 
-> A privacy policy is required for publishing on Apple App Store / Google Play
+Effective date: 1 September 2026
 
-**Privacy Policy**
+This privacy policy applies to the PICR mobile application for iOS and Android, provided by Isaac Insoll (the **Application**). PICR is a self-hosted product: the Application connects to a PICR server chosen and operated by the user or their organisation.
 
-This privacy policy applies to the PICR app (hereby referred to as "Application") for mobile devices that was created by Isaac Insoll (hereby referred to as "Service Provider") as a Free service. This service is intended for use "AS IS".
+## Information the Application uses
 
-**What information does the Application obtain and how is it used?**
+To sign in and communicate with a chosen PICR server, the Application stores:
 
-The Application does not obtain any information when you download and use it. It connects to your own PICR server and no data is shared outside of that.
+- Server URL
+- PICR username
+- PICR password
+- Authentication token returned by that server
 
-**Does the Application collect precise real time location information of the device?**
+These values are stored locally using the operating system's secure credential storage through Expo SecureStore. Expo describes SecureStore as encrypted local key-value storage intended for values such as tokens and secrets. See the [Expo SecureStore documentation](https://docs.expo.dev/versions/latest/sdk/securestore/).
 
-This Application does not collect precise information about the location of your mobile device.
+The Application requests gallery, account, media, comment, and server information directly from the chosen PICR server. The operator of that server controls its storage, network, access logs, retention, and other privacy practices.
 
-**Do third parties see and/or have access to information obtained by the Application?**
+## Images and cached data
 
-Since the Application does not collect any information, no data is shared with third parties.
+The Application caches gallery images on the device to improve browsing performance. Signed-in users can clear this image cache from the Application's **Settings** screen.
 
-**What are my opt-out rights?**
+When a user chooses to download media, the Application may request access to the device's photo or media library and save the selected file there. The operating system controls that permission, and it can be changed in device settings.
 
-You can stop all collection of information by the Application easily by uninstalling it. You may use the standard uninstall processes as may be available as part of your mobile device or via the mobile application marketplace or network.
+The Application does not request or use precise location data.
 
-**Children**
+## Push notifications and third-party delivery
 
-The Application is not used to knowingly solicit data from or market to children under the age of 13.
+Push notifications are optional. When notification permission is granted, the Application obtains an Expo push token. If the user enables **Allow Notifications**, the token and device name are registered with their chosen PICR server.
 
-The Service Provider does not knowingly collect personally identifiable information from children. The Service Provider encourages all children to never submit any personally identifiable information through the Application and/or Services. The Service Provider encourage parents and legal guardians to monitor their children's Internet usage and to help enforce this Policy by instructing their children never to provide personally identifiable information through the Application and/or Services without their permission. If you have reason to believe that a child has provided personally identifiable information to the Service Provider through the Application and/or Services, please contact the Service Provider (isaac@isaacinsoll.com) so that they will be able to take the necessary actions. You must also be at least 16 years of age to consent to the processing of your personally identifiable information in your country (in some countries we may allow your parent or guardian to do so on your behalf).
+For an eligible event, that self-hosted server sends a notification through the Expo Push Service. The payload can contain:
 
-**Security**
+- PICR recipient or account name associated with the event
+- Event type, such as viewed, downloaded, commented, rated, or flagged
+- Folder or filename
+- Administrator deep link to the related folder or file
+- Optional media-preview URL
 
-The Service Provider is concerned about safeguarding the confidentiality of your information. However, since the Application does not collect any information, there is no risk of your data being accessed by unauthorized individuals.
+Expo then routes the notification through Google Firebase Cloud Messaging for Android or Apple Push Notification service for iOS. Expo's documentation describes this delivery chain and the use of an Expo push token: [Send notifications with the Expo Push Service](https://docs.expo.dev/push-notifications/sending-notifications/).
 
-**Changes**
+Notification content therefore passes through Expo and the relevant Apple or Google push infrastructure. Avoid putting information in PICR recipient names, filenames, folder names, or comments that would be inappropriate to expose in a device notification.
 
-This Privacy Policy may be updated from time to time for any reason. The Service Provider will notify you of any changes to their Privacy Policy by updating this page with the new Privacy Policy. You are advised to consult this Privacy Policy regularly for any changes, as continued use is deemed approval of all changes.
+Users can turn off **Allow Notifications** in the Application and can revoke notification permission in operating-system settings. Turning off **Allow Notifications** marks that device record as disabled on the PICR server. The server operator controls retention or deletion of server-side device records.
 
-This privacy policy is effective as of 2025-08-13
+## Other third parties
 
-**Your Consent**
+The Application is distributed through Apple App Store and Google Play, whose own account, download, diagnostic, and store policies may apply independently.
 
-By using the Application, you are consenting to the processing of your information as set forth in this Privacy Policy now and as amended by the Service Provider.
+PICR does not provide a hosted gallery account for the Application. Normal gallery data is requested from the self-hosted server selected by the user rather than an Isaac Insoll-operated PICR cloud service.
 
-**Contact Us**
+## Data retention and deletion
 
-If you have any questions regarding privacy while using the Application, or have questions about the practices, please contact the Service Provider via https://github.com/IsaacInsoll/PICR/issues
+- Logging out removes the saved PICR login from the Application's secure local storage.
+- **Clear image cache** removes cached gallery previews managed by the Application.
+- Uninstalling the Application removes its locally managed application data according to the device platform's behaviour.
+- Data stored by the selected PICR server—including accounts, registered devices, access logs, comments, and gallery state—must be managed by that server's operator.
+
+## Security
+
+Use a PICR server with a publicly trusted HTTPS certificate. HTTPS protects credentials, tokens, gallery data, and media while travelling between the device and server.
+
+No system can guarantee absolute security. Users and server operators are responsible for protecting device access, PICR credentials, backups, server updates, and network configuration.
+
+## Children
+
+The Application is not directed at children under 13 and is not knowingly used to solicit personal information from them. A parent or guardian who believes a child has supplied personal information through a PICR deployment should contact that deployment's operator and may also use the contact method below.
+
+## Changes to this policy
+
+This policy may be updated when the Application's behaviour or service providers change. The current version and effective date are published on this page. Continued use after an update constitutes acceptance where permitted by applicable law.
+
+## Contact
+
+For questions about the Application or this policy, open an issue in the [PICR GitHub repository](https://github.com/IsaacInsoll/PICR/issues).
+
+For data held by a particular self-hosted PICR server, contact the person or organisation operating that server.

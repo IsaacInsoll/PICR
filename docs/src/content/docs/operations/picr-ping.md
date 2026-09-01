@@ -7,6 +7,9 @@ PICR Ping provides realtime media detection when your library lives on a NAS
 and PICR runs elsewhere. It is a small, read-only watcher that runs beside the
 media and tells PICR which directories may have changed.
 
+If you are still choosing between native watching, polling, on-view scans, and
+Ping, start with [Scan your media library](/PICR/operations/scanning/).
+
 Run the current `latest` PICR and PICR Ping images together. Ping releases are
 published only after the matching PICR backend support is available; any future
 exception will be called out in the release documentation.

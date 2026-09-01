@@ -3,6 +3,11 @@ title: Troubleshooting
 description: Resolve common PICR installation, database, thumbnail, and browser problems.
 ---
 
+For expected configuration and runtime status, also see
+[Configuration reference](/PICR/operations/configuration/),
+[Scan your media library](/PICR/operations/scanning/), and
+[Media and thumbnails](/PICR/operations/media-and-thumbnails/).
+
 ## Thumbnails not showing / permission denied errors
 
 **Symptoms:**

@@ -5,23 +5,35 @@ description: See which languages PICR supports and which parts of the product ar
 
 PICR's web interface supports:
 
-- English
-- French
-- Greek
+- 🇺🇸 English
+- 🇫🇷 French / Français
+- 🇩🇪 German / Deutsch
+- 🇬🇷 Greek / Ελληνικά
+- 🇪🇸 Spanish / Español
+- 🇺🇦 Ukrainian / Українська
 
-PICR uses a supported language from your browser when one is available and otherwise falls back to
-English, so setting your browser's preferred language is how you choose the interface language. There
-is no in-app language selector at the moment. If you would like a language selector added please open a ticket.
+PICR selects a supported language from the browser's preferences and falls back to English. The normal signed-in and gallery interfaces do not currently expose a persistent language selector, so browser preference is the primary customer control.
 
-Dates and numbers continue to use your browser's regional conventions where possible. For example,
-the interface can use English text while retaining Australian date formatting.
+Regional browser settings are preserved for dates and numbers where possible. For example, a browser can use the English catalog while retaining Australian date formatting, or use German text with Swiss regional formatting.
 
-PICR translates its interface, not content supplied by photographers or clients. Folder and file
-names, comments, branding text, access-log device names, and exported machine-readable values remain
-exactly as entered or recorded.
+## What is translated
 
-The React Native app and server-sent notifications are currently English-only. They are separate
-follow-up projects because they need their own language preference and delivery design.
+The web catalogs cover:
 
-Want to improve a translation or add a language? See the
-[translation contribution guide](https://github.com/IsaacInsoll/PICR/blob/master/docs/development/translations.md).
+- Public galleries, passcodes, downloads, and review controls
+- Login, dashboard, folders, users, links, branding, and server settings
+- Shared actions, dates, status messages, and errors
+
+PICR translates its own interface, not customer-authored or recorded content. These remain exactly as entered or detected:
+
+- Folder and filenames
+- Gallery titles, subtitles, and branding text
+- Recipient names and comments
+- Access-log device information
+- Machine-readable CSV values
+
+The mobile app and server-sent push/ntfy notification text are currently English-only.
+
+## Contribute a translation
+
+Translations are stored in the repository and require review by a fluent speaker before release. See the [translation contribution guide](https://github.com/IsaacInsoll/PICR/blob/master/docs/development/translations.md) for catalogs, validation, and review requirements.

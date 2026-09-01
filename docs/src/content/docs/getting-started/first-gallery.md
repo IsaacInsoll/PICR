@@ -63,7 +63,7 @@ Open **Manage → Links** and create a public link for the recipient. At minimum
 
 Save the link, then copy its URL. Create a separate link for each person or team when you want independent access history, settings, or revocation.
 
-The dedicated sharing guide explains these controls in detail. For this first gallery, the important part is to test the exact link you intend to send.
+[Users and recipient links](/PICR/sharing/users-and-links/) explains each access control, while [Proofing and final delivery](/PICR/sharing/delivery/) covers the two delivery modes. For this first gallery, the important part is to test the exact link you intend to send.
 
 ## 6. Check the recipient experience
 
@@ -84,7 +84,7 @@ Test on a phone-sized screen as well as a desktop before sending an important de
 
 Send the tested URL through your normal client communication. PICR records recipient views and downloads unless access logging is disabled.
 
-You can review activity from the dashboard or the folder's **Manage → Access Logs** tab. The PICR mobile app can notify signed-in users when a recipient opens a link; notification setup is covered in the sharing section.
+You can review activity from the dashboard or the folder's **Manage → Access Logs** tab. The PICR mobile app can notify signed-in users when a recipient opens a link; see [Notifications](/PICR/sharing/notifications/) for setup and supported events.
 
 ## What to learn next
 

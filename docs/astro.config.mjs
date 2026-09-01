@@ -76,7 +76,36 @@ export default defineConfig({
         },
         {
           label: 'Operations',
-          items: [{ autogenerate: { directory: 'operations' } }],
+          items: [
+            {
+              slug: 'operations/scanning',
+              label: 'Scan your media library',
+            },
+            {
+              slug: 'operations/media-and-thumbnails',
+              label: 'Media and thumbnails',
+            },
+            {
+              slug: 'operations/backups-and-upgrades',
+              label: 'Backups and upgrades',
+            },
+            {
+              slug: 'operations/configuration',
+              label: 'Configuration reference',
+            },
+            {
+              slug: 'operations/picr-ping',
+              label: 'PICR Ping',
+            },
+            {
+              slug: 'operations/write-access',
+              label: 'Rename and move access',
+            },
+            {
+              slug: 'operations/troubleshooting',
+              label: 'Troubleshooting',
+            },
+          ],
         },
         {
           label: 'Integrations',
@@ -93,7 +122,16 @@ export default defineConfig({
         },
         {
           label: 'Reference',
-          items: [{ autogenerate: { directory: 'reference' } }],
+          items: [
+            {
+              slug: 'reference/languages',
+              label: 'Languages',
+            },
+            {
+              slug: 'reference/privacy-policy',
+              label: 'Mobile app privacy',
+            },
+          ],
         },
       ],
     }),

@@ -1,138 +1,122 @@
 ---
 title: Lightroom Classic plugin
-description: Sync PICR ratings and flags back into an Adobe Lightroom Classic catalog.
+description: Import PICR ratings and flags into an Adobe Lightroom Classic catalog.
 ---
 
-PICR includes a free Lightroom Classic plugin that lets you import ratings and flags from PICR back into Lightroom.
+PICR includes a Lightroom Classic plugin that imports the current PICR ratings and approve/reject flags into matching Lightroom photos.
 
-This is useful when clients have reviewed and rated images in PICR - you can sync those ratings back to your Lightroom catalog without manually updating each photo.
+This is a manual CSV handoff, not a live connection between Lightroom and the PICR server. Comments are not imported.
 
-## Installation
+## Download the matching plugin
 
-### Download
+The plugin is bundled with the running PICR version:
 
-The Lightroom plugin is bundled with your PICR installation and always matches your PICR version.
+1. Open a folder as a signed-in PICR user.
+2. Choose **CSV Export** from the folder menu.
+3. Select **PICR plugin CSV**.
+4. Select the **PICR Lightroom Plugin** download link.
+5. Extract the downloaded ZIP.
 
-1. In PICR, go to any folder and click **CSV Export**
-2. Select **PICR plugin CSV** format
-3. Click the **PICR Lightroom Plugin** download link
-4. Extract the zip file
+Download a fresh copy after upgrading PICR so the plugin and exporter stay aligned.
 
-### Install in Lightroom
+## Install in Lightroom Classic
 
-**Option A: Copy to Modules folder**
+### Add through Plug-in Manager
 
-Copy the extracted `picr.lrplugin` folder to:
+1. In Lightroom Classic, choose **File → Plug-in Manager**.
+2. Select **Add**.
+3. Choose the extracted `picr.lrplugin` folder.
+4. Confirm that it appears as installed and running.
 
-- **macOS**: `~/Library/Application Support/Adobe/Lightroom/Modules/`
-- **Windows**: `C:\Users\<username>\AppData\Roaming\Adobe\Lightroom\Modules\`
+### Or copy to the Modules folder
 
-Then restart Lightroom.
+Copy `picr.lrplugin` to:
 
-**Option B: Add via Plugin Manager**
+- macOS: `~/Library/Application Support/Adobe/Lightroom/Modules/`
+- Windows: `C:\Users\<username>\AppData\Roaming\Adobe\Lightroom\Modules\`
 
-1. In Lightroom, go to **File → Plug-in Manager**
-2. Click **Add**
-3. Navigate to the extracted `picr.lrplugin` folder
-4. Click **Done**
+Restart Lightroom Classic after copying it manually.
 
-## Usage
+## Export a reviewed selection from PICR
 
-### Step 1: Export from PICR
-
-1. In PICR, navigate to the folder you want to sync
-2. Click the folder menu and select **CSV Export**
-3. Configure the export options:
-   - Format: **PICR plugin CSV**
-   - Enable **Include subfolders** if needed
-4. Click **Copy to clipboard**
+1. Open the reviewed folder in PICR.
+2. Apply any rating, flag, filename, or metadata filters you want the export to follow.
+3. Choose **CSV Export**.
+4. Select **PICR plugin CSV**.
+5. Keep **Use current filters** enabled to export only the visible selection, or disable it for every file in the folder.
+6. Enable **Include subfolders** when the Lightroom folder tree matches the PICR tree.
+7. Copy the generated data to the clipboard.
 
 ![PICR CSV export options](../../../../images/export-csv-1.png)
 ![PICR CSV export data](../../../../images/export-csv-2.png)
 
-### Step 2: Import in Lightroom
+The PICR format has no header row. Each line contains a filename, rating, and flag.
 
-1. In Lightroom, select the **same folder** in the Library module
-2. Go to **Library → Plug-in Extras → Import PICR Data**
-3. Paste the CSV data into the text field
-4. Click **Import**
-   ![PICR Lightroom import results](../../../../images/export-csv-3.png)
+When subfolders are included, paths are relative to the selected PICR folder. PICR reports if a very large recursive export is truncated; narrow the folder or filters before importing an incomplete selection.
 
-### Step 3: Review Results
+## Import into Lightroom Classic
 
-The plugin will show you:
+1. In Lightroom's Library module, select the folder corresponding to the PICR export root.
+2. Choose **Library → Plug-in Extras → Import PICR Data**.
+3. Paste the CSV data.
+4. Select **Import**.
 
-- How many files were updated
-- Any files that couldn't be found
-- If all files were already up to date
+![PICR Lightroom import results](../../../../images/export-csv-3.png)
 
-## Features
+The result reports updated photos, unchanged photos, and paths that could not be matched.
 
-### Ratings
+## Rating and flag mapping
 
-PICR ratings (0-5 stars) are synced to Lightroom's star ratings.
+| PICR value         | Lightroom value                    |
+| ------------------ | ---------------------------------- |
+| 0 stars            | Unrated                            |
+| 1–5 stars          | 1–5 stars                          |
+| Approved           | Picked/white flag                  |
+| Rejected           | Rejected/black flag                |
+| No PICR flag value | Leave the Lightroom flag unchanged |
 
-| PICR      | Lightroom |
-| --------- | --------- |
-| 0 stars   | Unrated   |
-| 1-5 stars | 1-5 stars |
+The import changes matching Lightroom catalog metadata. Make a Lightroom catalog backup before a large or unfamiliar import.
 
-### Flags
+## Filename matching
 
-PICR approval flags are synced to Lightroom's pick status.
+The plugin strips the extension before matching. This supports a common proofing workflow:
 
-| PICR Flag | Lightroom           |
-| --------- | ------------------- |
-| Approved  | Picked (white flag) |
-| Rejected  | Rejected (black X)  |
-| None      | No change           |
+```text
+PICR proof: IMG_0001.jpg
+Lightroom original: IMG_0001.CR3
+```
 
-### Subfolders
+Subfolder exports include their relative path so identical basenames in different folders can still match the intended location.
 
-When exporting from PICR with "Include subfolders" enabled, the plugin will match files in the corresponding Lightroom subfolders.
+Lightroom virtual copies are represented using the plugin's copy-name convention; for example, `photo-2.jpg` can match Lightroom's first virtual copy of `photo`.
 
-### Extension Matching
+## Recommended workflow
 
-The plugin matches by filename without extension. This means:
-
-- `photo.jpg` in PICR matches `photo.NEF` or `photo.CR2` in Lightroom
-- Perfect for workflows where you export JPGs to PICR but keep RAW files in Lightroom
-
-## Typical Workflow
-
-1. **Export JPGs** from Lightroom to a folder
-2. **Add folder** to PICR and share with client
-3. **Client reviews** and rates/approves images in PICR
-4. **Export CSV** from PICR
-5. **Import to Lightroom** using the plugin
-6. **Filter in Lightroom** by rating or flag to find approved images
-7. **Continue editing** the selected images
+1. Export JPEG proofs from Lightroom into a PICR folder.
+2. Create a proofs-only public link with **Edit** review permission.
+3. Ask the recipient to use either ratings or approve/reject flags consistently.
+4. Filter and inspect the completed selection in PICR.
+5. Export PICR plugin CSV.
+6. Select the matching Lightroom folder and import the data.
+7. Filter the Lightroom catalog by the imported rating or flag.
+8. Finish editing and publish a separate final-delivery gallery.
 
 ## Troubleshooting
 
-### "No files from the CSV were found"
+### No files were found
 
-- Make sure you have the correct folder selected in Lightroom
-- Check that the folder structure matches (if using subfolders)
-- Verify the files exist in your Lightroom catalog
+- Confirm the selected Lightroom folder corresponds to the PICR export root.
+- If the PICR export includes subfolders, confirm the relative folder structure also exists in the Lightroom catalog.
+- Confirm the proof and original use the same basename before the extension.
+- Look for renamed files, duplicate basenames, and unexpected virtual-copy suffixes.
 
-### Files not matching
+### Some files were not found
 
-- The plugin strips file extensions before matching
-- Virtual copies are supported (e.g., `photo-2.jpg` matches "Copy 1")
-- Check for typos in filenames
+Read the paths in the import result. Re-export a narrower folder or correct the folder/filename mismatch rather than manually altering a large CSV.
 
-### Plugin not appearing in menu
+### Plugin does not appear
 
-1. Go to **File → Plug-in Manager**
-2. Find "PICR Lightroom Plugin" in the list
-3. Make sure it shows as "Installed and running"
-4. If not, try clicking **Reload Plug-in**
-
-## Updates
-
-The plugin version always matches your PICR installation. After updating PICR:
-
-1. Download the new plugin from the CSV Export dialog (as described above)
-2. Replace the `picr.lrplugin` folder with the new version
-3. In Lightroom, go to **File → Plug-in Manager** and click **Reload Plug-in**
+1. Open **File → Plug-in Manager**.
+2. Confirm `PICR Lightroom Plugin` is listed and running.
+3. Select **Reload Plug-in** after replacing it during a PICR upgrade.
+4. If it is absent, add the extracted `picr.lrplugin` directory again.

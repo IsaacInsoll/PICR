@@ -7,9 +7,9 @@ PICR offers three web gallery views. The controls available to a recipient can b
 
 ## Choose a gallery view
 
-- **Gallery** — a thumbnail grid for scanning a large set quickly. Branding can use justified or masonry layout and control thumbnail size and spacing.
-- **Feed** — larger media displayed in a vertical sequence, useful for storytelling and smaller selections.
-- **List** — a compact table with filenames and useful details, suited to production and review work.
+- **Gallery** — (typical photo gallery). a thumbnail grid for scanning a large set quickly. Branding can use justified or masonry layout and control thumbnail size and spacing.
+- **Feed** — (instagram lots-of-scrolling style) larger media displayed in a vertical sequence, useful for storytelling and smaller selections.
+- **List** — (google drive style) a compact table with filenames and useful details, suited to production and review work.
 
 Changing the view updates the URL and remembers the choice in that browser. If a public-link recipient's saved choice is not allowed by the gallery branding, PICR uses the configured default or the first available view.
 
