@@ -14,9 +14,11 @@ services:
       - '6901:6900'
     environment:
       - DATABASE_URL=postgres://user:pass@test-db/picr
-      - USE_POLLING=true
-      - POLLING_INTERVAL=100
+      # Ping integration coverage must prove the inbound hint caused the scan;
+      # an active watcher could import the fixture independently and false-pass.
+      - FILE_WATCHER=off
       - BASE_URL=http://localhost:6901/
+      - PICR_PING_TOKEN=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
       # Pin the first-boot admin credentials so the suite logs in deterministically
       # (matches defaultCredentials). Without this the auto-created admin would get
       # a random password and every auth test would fail.

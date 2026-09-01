@@ -29,6 +29,8 @@ const fileRow = (props: Partial<FileFields> & Pick<FileFields, 'id'>) =>
     flag: null,
     folderId: 10,
     id: props.id,
+    imageWidth: null,
+    imageHeight: null,
     imageRatio: null,
     latestComment: null,
     metadata: '{}',

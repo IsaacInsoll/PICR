@@ -16,12 +16,16 @@ export const fileFragment = gql(/* GraphQL */ `
     latestComment
     folderId
     ... on Video {
+      imageWidth
+      imageHeight
       imageRatio
       blurHash
       duration
       ...VideoMetadataFragment
     }
     ... on Image {
+      imageWidth
+      imageHeight
       imageRatio
       blurHash
       ...ImageMetadataFragment

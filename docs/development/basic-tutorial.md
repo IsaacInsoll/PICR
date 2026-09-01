@@ -57,7 +57,10 @@ which should then show some updated auto-generated files:
 - `shared/gql/graphql.ts` this contains generated TypeScript GraphQL types and operation result types
 - `shared/urql/graphql.schema.json` used by URQL to do amazing caching work
 
-You can check `codegen.ts` if you want to learn more.
+Codegen imports and validates the executable backend schema directly, so the
+development server and database do not need to be running. You can check
+`backend/codegen.ts` and `backend/scripts/exportGraphqlSchema.ts` if you want to learn
+more.
 You will never need to edit these files manually but they should be commited when you make changes to graphql.
 
 **RESULT**: If you use a graphQL client (Either built into your IDE or standalone like Altair) you should see the extra field is available in our GraphQL API

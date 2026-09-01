@@ -10,6 +10,20 @@ Testing is split into two suites under `tests/`:
 - API tests validate GraphQL/backend behavior against the Dockerized backend.
 - E2E tests validate that key frontend routes load in a browser and do not throw console errors.
 - Keep these suites integration-focused; do not add frontend component unit tests here.
+- `fileParallelism: false` prevents overlap but does not guarantee lexical file
+  order. Numbered API tests share state, so assertions must tolerate state
+  created by another file unless the test establishes or resets it explicitly.
+- The API Compose environment runs with `FILE_WATCHER=off`. Tests for inbound
+  Ping hints must prove that the Ping coordinator caused the filesystem change;
+  an active watcher could otherwise import the same fixture and false-pass.
+- Integration-test cleanup that performs API assertions must not mask an earlier
+  test-body failure. Surface cleanup failures when the body passed; otherwise
+  preserve the original failure after best-effort cleanup.
+- Before a Docker integration test sends a Ping hint for a host-side fixture
+  mutation, use the Ping probe endpoint to confirm the backend container sees
+  the expected path state. Completion of the host filesystem call does not
+  guarantee that a CI bind mount is already presenting that state to the
+  sibling container.
 - Exception: pure backend or shared-primitive unit tests that guard load-bearing
   invariants (e.g. file queue ordering/coalescing or shared i18n catalog
   contracts) are allowed in `tests/api`. They mock their dependencies and need
@@ -97,12 +111,21 @@ tests/
   active. Keep running package replacements against those same files; do not
   update snapshots to make a migration pass without review and an explanation
   of every visual difference.
+- Image-tile snapshots include the encoded JPEG pixels as well as the gallery
+  layout. An intentional thumbnail width, quality, or source-selection change
+  can therefore produce sparse content-only diffs even when the explicit row
+  geometry assertions pass. Inspect the actual and diff images, explain the
+  encoder/source change, and regenerate only the affected baselines; do not
+  hide this kind of change by loosening the screenshot tolerance.
 - Visual baselines are Linux PNGs under
   `tests/e2e/gallery.visual.spec.ts-snapshots/` and are committed. They are
   generated on a developer machine but also compared on the Ubuntu CI runner,
   which shares the `-linux` platform suffix. The folder-tile baselines are the
   only ones containing rendered text and a `backdrop-filter` blur, so they are
   the most likely to drift between distributions.
+- Apple Silicon `act` runs use Linux ARM64 but share the same `-linux` suffix
+  as the x64 Ubuntu CI runner. If an ARM64 snapshot diff does not reproduce on
+  x64 Linux, keep the x64 Linux baseline; do not promote the ARM-only pixels.
 
 ### Covered Tile Shapes
 
@@ -165,6 +188,9 @@ tiles are not covered either — no fixture produces one.
   shared query uses a new arg the built image doesn't have.
 - There is no `test:api:fresh`. Rebuild first, e.g.
   `npm run build:local && npm run test:api`.
+- Do not run `npm run build:local` and `npm run test:api` in parallel. The API
+  suite builds/runs the Docker image from `dist`, and `build:local` rewrites
+  that tree while it runs.
 
 ## CI Expectations
 

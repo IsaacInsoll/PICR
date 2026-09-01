@@ -27,6 +27,7 @@ const loadFileWatcher = async (scanFolderTreeError?: Error) => {
       removedFolders: 0,
       ignored: 0,
       skippedEntries: 0,
+      unavailableFolders: 0,
       unsettledFiles: 0,
       unsettledFolders: 0,
       completed: true,
@@ -70,7 +71,7 @@ const loadFileWatcher = async (scanFolderTreeError?: Error) => {
   vi.doMock('../../backend/filesystem/fileManager.js', () => ({
     relativePath: (path: string) => path.replace(mediaPath, ''),
   }));
-  vi.doMock('../../backend/filesystem/ignoredPaths.js', () => ({
+  vi.doMock('@shared/filesystem/ignoredPaths.js', () => ({
     ignoredPathPattern: /ignored/,
   }));
   vi.doMock('../../backend/config/picrConfig.js', () => ({

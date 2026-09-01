@@ -5,14 +5,16 @@ import type {
   ImageSource,
   Slide,
 } from 'yet-another-react-lightbox';
-import { thumbnailSizes } from '@shared/thumbnailSize';
 import { imageURL } from '../../../helpers/imageURL';
 import { isBrowserDisplayableOriginal } from '@shared/imageFormats';
-import type { ServerThumbnailDimensions } from '@shared/serverMediaSettings';
+import { videoPlaybackSource } from '../../../helpers/videoPlaybackSource';
+import type { ThumbnailVariantFragmentFragment } from '@shared/gql/graphql';
 import {
-  videoPlaybackSource,
-  videoPosterURL,
-} from '../../../helpers/videoPlaybackSource';
+  sortedThumbnailVariants,
+  thumbnailImageCandidates,
+  thumbnailUrlForWidth,
+} from '../../../helpers/thumbnailVariantImages';
+import type { ThumbnailVariantToken } from '@shared/thumbnailVariants';
 
 export interface PicrVideoSlide extends GenericSlide {
   type: 'picr-video';
@@ -37,8 +39,10 @@ export const filesForLightbox = (
   files: PicrFile[],
   canDownload: boolean,
   useOriginalsForLightbox: boolean,
-  thumbnailDimensions: ServerThumbnailDimensions,
+  thumbnailVariants: readonly ThumbnailVariantFragmentFragment[],
 ): Slide[] => {
+  const sortedVariants = sortedThumbnailVariants(thumbnailVariants);
+  const largestVariant = sortedVariants.at(-1);
   return files.map((file) => {
     const title = normalizeDisplayName(file.name) ?? '';
     const useOriginal =
@@ -52,18 +56,40 @@ export const filesForLightbox = (
               src: imageURL(file, 'raw'),
               blurHash: file.blurHash,
             }
-          : {
-              srcSet: thumbnailSizes.map((size): ImageSource => {
-                const width = thumbnailDimensions[size];
-                const height = width / (file.imageRatio ?? 1);
-                return { src: imageURL(file, size), width, height };
-              }),
-              src: imageURL(file, 'lg'),
-              blurHash: file.blurHash,
-            }
+          : (() => {
+              const candidates = thumbnailImageCandidates(
+                file,
+                thumbnailVariants,
+              );
+              const largestCandidate = candidates.at(-1);
+              const fallbackSrc = largestVariant
+                ? imageURL(file, largestVariant.token as ThumbnailVariantToken)
+                : undefined;
+              return {
+                ...(largestCandidate
+                  ? {
+                      srcSet: candidates.map(
+                        ({ src, width, height }): ImageSource => ({
+                          src,
+                          width,
+                          height,
+                        }),
+                      ),
+                      width: largestCandidate.width,
+                      height: largestCandidate.height,
+                    }
+                  : {}),
+                src: largestCandidate?.src ?? fallbackSrc,
+                blurHash: file.blurHash,
+              };
+            })()
         : file.type === 'Video'
           ? (() => {
-              const poster = videoPosterURL(file);
+              const poster = thumbnailUrlForWidth(
+                file,
+                2560,
+                thumbnailVariants,
+              );
               return {
                 type: 'picr-video',
                 src: videoPlaybackSource(file),

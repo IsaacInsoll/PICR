@@ -1,0 +1,16 @@
+**
+!ping/
+!ping/package.json
+!ping/package-lock.json
+!ping/tsconfig.json
+!ping/tsconfig.build.json
+!ping/src/
+!ping/src/**
+!shared/
+!shared/package.json
+!shared/banner.ts
+!shared/filesystem/
+!shared/filesystem/ignoredPaths.ts
+!shared/ping/
+!shared/ping/protocol.ts
+!tsconfig.base.json

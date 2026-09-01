@@ -5,7 +5,7 @@ side project relative to core PICR, so the work is intentionally split into
 small phases that can be picked up and put down without leaving the repository
 in an ambiguous state.
 
-Last reviewed: 2026-08-26
+Last reviewed: 2026-09-01
 
 ## Current status
 
@@ -36,8 +36,11 @@ Phase 3 contract cleanup is in progress. The native public-link route/provider
 has been removed, authenticated notification routes are allowlisted, and client
 gallery deep links now fall back to the browser. Login failures now use the
 app's typed local outcomes rather than English message matching without changing
-the backend API. Native Maestro execution can resume when its additional
-coverage is useful; Expo SDK upgrades remain deliberately separate.
+the backend API. The app now targets the current server GraphQL contract and
+uses its published thumbnail-variant tokens for native image and video-poster
+requests; legacy server-schema negotiation is deliberately out of scope while
+the app has no external user base. Native Maestro execution can resume when its
+additional coverage is useful; Expo SDK upgrades remain deliberately separate.
 
 ## Product direction
 

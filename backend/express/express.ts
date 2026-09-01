@@ -1,4 +1,5 @@
 import express from 'express';
+import compression from 'compression';
 import { gqlServer } from '../graphql/gqlServer.js';
 import { imageRequest } from './imageRequest.js';
 import { zipRequest } from './zipRequest.js';
@@ -7,10 +8,12 @@ import { getBasePrefix } from './basePath.js';
 import { resolvePublicDir } from './resolvePublicDir.js';
 import { drainOnViewScanRequests } from '../filesystem/onViewScan.js';
 import { createReadyz, healthz } from './health.js';
+import { registerMediaChangedRoute } from './mediaChanged.js';
 
 export const expressServer = () => {
   const exp = express();
   exp.set('trust proxy', 1);
+  exp.use(compression());
   const router = express.Router();
   const readyz = createReadyz();
 
@@ -22,6 +25,7 @@ export const expressServer = () => {
   exp.get('/readyz', readyz);
   router.get('/healthz', healthz);
   router.get('/readyz', readyz);
+  registerMediaChangedRoute(router);
   router.all('/graphql', (req, res, next) => {
     res.on('finish', () => drainOnViewScanRequests(req));
     return gqlServer(req, res, next);
@@ -29,6 +33,9 @@ export const expressServer = () => {
   router.use(express.static(publicDir, { index: false }));
   router.get('/image/:id/:size/:hash/:filename', imageRequest); //filename is ignored but nice for users to see a 'nice' name
   router.get('/zip/:folderId/:hash/:filename', zipRequest); //filename is ignored but nice for users to see a 'nice' name
+  router.use('/api', (_req, res) =>
+    res.status(404).json({ error: 'Not found' }),
+  );
   // exp.get('/debug',debug);
   //catch all other URLS and return the front end template
   router.use(picrTemplate);

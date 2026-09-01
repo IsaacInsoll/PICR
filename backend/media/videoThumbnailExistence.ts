@@ -1,19 +1,21 @@
 import { existsSync } from 'node:fs';
 import type { FileFields } from '../db/picrDb.js';
-import { videoPosterPath, videoScrubPath } from './videoThumbnailPaths.js';
+import {
+  videoPosterFramePath,
+  videoPosterVariantPath,
+  videoScrubPath,
+} from './videoThumbnailPaths.js';
+import type { ThumbnailVariant } from '@shared/thumbnailVariants.js';
 
-export const videoThumbnailArtifactsExist = (
+export const videoThumbnailBaselineArtifactsExist = (
   file: FileFields,
-  avifEnabled: boolean,
-): boolean => {
-  const expectedPostersExist =
-    (['sm', 'md', 'lg'] as const).every((posterSize) =>
-      existsSync(videoPosterPath(file, posterSize)),
-    ) &&
-    (!avifEnabled ||
-      (['sm', 'md', 'lg'] as const).every((posterSize) =>
-        existsSync(videoPosterPath(file, posterSize, '.avif')),
-      ));
+): boolean =>
+  existsSync(videoScrubPath(file)) && existsSync(videoPosterFramePath(file));
 
-  return existsSync(videoScrubPath(file)) && expectedPostersExist;
-};
+export const missingVideoPosterVariants = (
+  file: FileFields,
+  variants: readonly ThumbnailVariant[],
+): ThumbnailVariant[] =>
+  variants.filter(
+    (variant) => !existsSync(videoPosterVariantPath(file, variant)),
+  );

@@ -14,6 +14,18 @@ describe('resolveLanguage', () => {
       catalogLanguage: 'el',
       formattingLocale: 'el-GR',
     });
+    expect(resolveLanguage('de-CH')).toEqual({
+      catalogLanguage: 'de',
+      formattingLocale: 'de-CH',
+    });
+    expect(resolveLanguage('es-MX')).toEqual({
+      catalogLanguage: 'es',
+      formattingLocale: 'es-MX',
+    });
+    expect(resolveLanguage('uk-UA')).toEqual({
+      catalogLanguage: 'uk',
+      formattingLocale: 'uk-UA',
+    });
   });
 
   it('canonicalizes locale tags', () => {
@@ -24,9 +36,9 @@ describe('resolveLanguage', () => {
   });
 
   it('uses English catalogs without discarding a valid unsupported locale', () => {
-    expect(resolveLanguage('de-DE')).toEqual({
+    expect(resolveLanguage('ja-JP')).toEqual({
       catalogLanguage: 'en',
-      formattingLocale: 'de-DE',
+      formattingLocale: 'ja-JP',
     });
   });
 
@@ -46,6 +58,9 @@ describe('formattingLocaleForLanguage', () => {
     expect(formattingLocaleForLanguage('en', ['en-AU'])).toBe('en-AU');
     expect(formattingLocaleForLanguage('fr', ['fr-CA'])).toBe('fr-CA');
     expect(formattingLocaleForLanguage('el', ['el-GR'])).toBe('el-GR');
+    expect(formattingLocaleForLanguage('de', ['de-CH'])).toBe('de-CH');
+    expect(formattingLocaleForLanguage('es', ['es-MX'])).toBe('es-MX');
+    expect(formattingLocaleForLanguage('uk', ['uk-UA'])).toBe('uk-UA');
   });
 
   it('finds a matching regional locale after switching languages', () => {

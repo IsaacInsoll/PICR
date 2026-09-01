@@ -1,10 +1,11 @@
-import type { AllSize, ThumbnailSize } from '@shared/thumbnailSize';
 import type { PicrFile } from '@shared/types/picr';
-import type { ImageUrlFileInput } from '@shared/types/ui';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
-import { View } from 'react-native';
+import { PixelRatio, View } from 'react-native';
 import { useState } from 'react';
 import { Image as ExpoImage } from 'expo-image';
+import { useThumbnailVariants } from '@/src/hooks/useMe';
+import { thumbnailRouteSizeForWidth } from '@/src/helpers/thumbnailRouteSize';
+import { imageURL } from '@/src/helpers/imageURL';
 
 type AppImageFile = Pick<
   PicrFile,
@@ -15,23 +16,27 @@ type AppImageFile = Pick<
 //TODO: copy PBIGImage and use ExpoImage so we can do BlurRadius prop, and progressively load higher res images?
 export const AppImage = ({
   file,
-  size,
   width,
 }: {
   file: AppImageFile;
-  size?: ThumbnailSize;
   width?: number;
 }) => {
   const baseUrl = useLoginDetails()?.server;
+  const thumbnailVariants = useThumbnailVariants();
 
   const [viewWidth, setViewWidth] = useState(0);
   const w = width ?? viewWidth;
   const height = w / (file.imageRatio ?? 1);
 
-  const sourceSize: ThumbnailSize = size ?? (w > 250 ? 'lg' : 'md');
+  const sourceSize = thumbnailRouteSizeForWidth(
+    thumbnailVariants,
+    PixelRatio.getPixelSizeForLayoutSize(w),
+  );
 
   const source =
-    w === 0 || !baseUrl ? undefined : baseUrl + imageURL(file, sourceSize);
+    w === 0 || !baseUrl || !sourceSize
+      ? undefined
+      : baseUrl + imageURL(file, sourceSize);
 
   // console.log(width, viewWidth, height, file.fileHash);
 
@@ -58,20 +63,4 @@ export const AppImage = ({
       />
     </View>
   );
-};
-
-// copied from imageURL in frontend because we were having import issues
-// but then I had to add the base URL anyway so whatever
-export const imageURL = (
-  file: ImageUrlFileInput,
-  size: AllSize,
-  extension?: string,
-) => {
-  const { id, fileHash, name, type } = file;
-  const path = `image/${id}/${size}/${fileHash}/`;
-  if (type === 'Video' && size !== 'raw') {
-    return path + (extension === '.avif' ? 'poster.avif' : 'poster.jpg');
-  }
-
-  return path + (extension ? name + extension : name);
 };

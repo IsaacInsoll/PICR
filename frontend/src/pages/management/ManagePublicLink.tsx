@@ -230,6 +230,7 @@ export const ManagePublicLink = ({
               label={t('links.editor.email')}
               value={username}
               description={t('links.editor.optional')}
+              autoComplete="off"
               onChange={(e) => setUsername(e.currentTarget.value)}
             />
             <PasswordInput
@@ -237,13 +238,8 @@ export const ManagePublicLink = ({
               label={t('links.editor.passcode')}
               value={galleryPasscode}
               description={t('links.editor.optional')}
+              autoComplete="new-password"
               onChange={(e) => setGalleryPasscode(e.currentTarget.value)}
-            />
-            <Switch
-              checked={enabled}
-              label={t('common.enabled')}
-              description={t('links.editor.enabledDescription')}
-              onChange={(event) => setEnabled(event.currentTarget.checked)}
             />
             <DateTimePicker
               value={expiresAt}
@@ -268,6 +264,14 @@ export const ManagePublicLink = ({
 
           <Stack gap="md">
             <Divider label={t('users.editor.access')} labelPosition="left" />
+            <Switch
+              checked={enabled}
+              withThumbIndicator={true}
+              size="md"
+              label={t('links.editor.publicLinkEnabled')}
+              description={t('links.editor.enabledDescription')}
+              onChange={(event) => setEnabled(event.currentTarget.checked)}
+            />
             <LinkModeSelector value={linkMode} onChange={setLinkMode} />
             <CommentPermissionsSelector
               value={commentPermissions}

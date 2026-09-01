@@ -23,7 +23,10 @@ export const AppTaskSummary = ({ folderId }: { folderId: string }) => {
   return (
     <View style={{ width: '100%' }}>
       {remaining.map(({ id, name, step, totalSteps }) => {
-        const hasSteps = step && totalSteps && totalSteps > 0;
+        const hasSteps =
+          typeof step === 'number' &&
+          typeof totalSteps === 'number' &&
+          totalSteps > 0;
         const percent = hasSteps
           ? ((step / totalSteps) * 100.0).toFixed(1)
           : null;
@@ -36,7 +39,7 @@ export const AppTaskSummary = ({ folderId }: { folderId: string }) => {
           >
             <InlineAppLoadingIndicator />
             <PTitle level={4}>{name}</PTitle>
-            <PTitle level={4}>({percent}%)</PTitle>
+            {percent ? <PTitle level={4}>({percent}%)</PTitle> : null}
           </PView>
         );
       })}

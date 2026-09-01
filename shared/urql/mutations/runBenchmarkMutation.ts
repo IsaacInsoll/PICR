@@ -1,44 +1,28 @@
 import { gql } from '../gql';
 
 export const runBenchmarkMutation = gql(/* GraphQL */ `
-  mutation RunBenchmarkMutation {
-    runBenchmark {
+  mutation RunBenchmarkMutation($assetPath: String) {
+    runBenchmark(assetPath: $assetPath) {
       totalMs
       appVersion
       imageCount
       videoCount
       assetSourceUrl
       assetPath
-      assetSetup {
-        ms
-        skippedReason
-      }
-      jpegResize {
-        ms
-        skippedReason
-      }
-      avifResize {
-        ms
-        skippedReason
-      }
-      videoThumbnailCpu {
-        ms
-        skippedReason
-      }
-      videoThumbnailAccelerated {
-        ms
-        skippedReason
-      }
-      videoTranscodeCpu {
-        ms
-        skippedReason
-      }
-      videoTranscodeAccelerated {
-        ms
-        skippedReason
-      }
+      cpuCount
+      uvThreadpoolSize
       videoAccelerationMode
       videoAccelerationReason
+      steps {
+        key
+        name
+        status
+        ms
+        skippedReason
+        outputBytes
+        details
+        includedInTotal
+      }
     }
   }
 `);

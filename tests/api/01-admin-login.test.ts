@@ -7,6 +7,9 @@ import { serverInfoQuery } from '../../shared/urql/queries/serverInfoQuery';
 import { gte } from 'semver';
 import { DEFAULT_SERVER_MEDIA_SETTINGS } from '../../shared/serverMediaSettings';
 import { editServerSettingsMutation } from '../../shared/urql/mutations/editServerSettingsMutation';
+import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
+import { photoFolderId, testUrl } from './testVariables';
+import { thumbnailVariantForWidth } from '../../shared/thumbnailVariants';
 
 test('Login Mutation Works', async () => {
   const client = await createTestGraphqlClient({});
@@ -105,14 +108,26 @@ test('Server Info Query (kinda slow)', async () => {
   );
   expect(info?.settings).toMatchObject({
     ...DEFAULT_SERVER_MEDIA_SETTINGS,
-    thumbnailDimensions: {
-      sm: DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailSmallPx,
-      md: DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailMediumPx,
-      lg: DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailLargePx,
-    },
+    thumbnailVariants: expect.arrayContaining([
+      expect.objectContaining({
+        token: 'v1-250j80',
+        width: 250,
+        quality: 80,
+      }),
+      expect.objectContaining({
+        token: 'v1-4000j80',
+        width: 4000,
+        quality: 80,
+      }),
+    ]),
   });
   expect(info?.scanning.scheduledScanHours).toBeGreaterThanOrEqual(0);
   expect(info?.scanning.scheduledScan.running).toBe(false);
+  expect(info?.scanning.ping.enabled).toBe(true);
+  expect(info?.scanning.ping.coordinator.state).toMatch(
+    /^(idle|settling|cleanup|degraded)$/,
+  );
+  expect(info?.scanning.ping.sources).toEqual(expect.any(Array));
   // `latest` comes from an unauthenticated GitHub API call which can be rate-limited in CI;
   // the resolver swallows failures and returns ''. Don't fail the suite on that — just warn.
   if (info!.latest === '') {
@@ -128,43 +143,66 @@ test('Root admin can edit server media settings', async () => {
   const headers = await getUserHeader(defaultCredentials);
   const client = await createTestGraphqlClient(headers);
 
-  const customSettings = {
-    avifEnabled: true,
-    useOriginalsForLightbox: true,
-    thumbnailSmallPx: 240,
-    thumbnailMediumPx: 640,
-    thumbnailLargePx: 3000,
-    thumbnailJpegQuality: 72,
-    thumbnailAvifQuality: 48,
-  };
-
   try {
     const editResult = await client
-      .mutation(editServerSettingsMutation, { input: customSettings })
+      .mutation(editServerSettingsMutation, {
+        input: { thumbnailJpegQuality: 75, useOriginalsForLightbox: true },
+      })
       .toPromise();
     expect(editResult.error).toBeUndefined();
     expect(editResult.data?.editServerSettings).toMatchObject({
-      ...customSettings,
-      thumbnailDimensions: { sm: 240, md: 640, lg: 3000 },
+      ...DEFAULT_SERVER_MEDIA_SETTINGS,
+      thumbnailJpegQuality: 75,
+      useOriginalsForLightbox: true,
     });
+    expect(editResult.data?.editServerSettings.thumbnailVariants).toHaveLength(
+      8,
+    );
+    expect(editResult.data?.editServerSettings.thumbnailVariants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ token: 'v1-250j75', quality: 75 }),
+        expect.objectContaining({ token: 'v1-4000j75', quality: 75 }),
+      ]),
+    );
 
     const infoResult = await client.query(serverInfoQuery, {}).toPromise();
     expect(infoResult.error).toBeUndefined();
     expect(infoResult.data?.serverInfo?.settings).toMatchObject({
-      ...customSettings,
-      thumbnailDimensions: { sm: 240, md: 640, lg: 3000 },
+      ...DEFAULT_SERVER_MEDIA_SETTINGS,
+      thumbnailJpegQuality: 75,
+      useOriginalsForLightbox: true,
     });
 
     const meResult = await client.query(meQuery, {}).toPromise();
     expect(meResult.error).toBeUndefined();
     expect(meResult.data?.clientInfo).toMatchObject({
-      ...customSettings,
-      thumbnailDimensions: { sm: 240, md: 640, lg: 3000 },
+      ...DEFAULT_SERVER_MEDIA_SETTINGS,
+      thumbnailJpegQuality: 75,
+      useOriginalsForLightbox: true,
     });
+
+    const folderResult = await client
+      .query(viewFolderQuery, { folderId: photoFolderId })
+      .toPromise();
+    expect(folderResult.error).toBeUndefined();
+    const file = folderResult.data?.folder?.files[0];
+    expect(file).toBeDefined();
+
+    const nonCurrentQualityVariant = thumbnailVariantForWidth(1000, 74);
+    const staleQualityResponse = await fetch(
+      `${testUrl}image/${file!.id}/${nonCurrentQualityVariant.token}/${file!.fileHash}/${file!.name}`,
+      { headers },
+    );
+    expect(staleQualityResponse.status).toBe(404);
+    expect(staleQualityResponse.headers.get('cache-control')).toBeNull();
   } finally {
     await client
       .mutation(editServerSettingsMutation, {
-        input: DEFAULT_SERVER_MEDIA_SETTINGS,
+        input: {
+          thumbnailJpegQuality:
+            DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailJpegQuality,
+          useOriginalsForLightbox: false,
+        },
       })
       .toPromise();
   }

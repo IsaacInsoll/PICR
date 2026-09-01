@@ -8,7 +8,7 @@
 
 📝 [Picr Manual](https://isaacinsoll.github.io/PICR/) for the full feature list and documentation
 
-🌐 [Supported Languages](https://isaacinsoll.github.io/PICR/languages.html): 🇺🇸 English, 🇫🇷 French, 🇬🇷 Greek
+🌐 [Supported Languages](https://isaacinsoll.github.io/PICR/languages.html): 🇺🇸 English, 🇫🇷 French, 🇩🇪 German, 🇬🇷 Greek, 🇪🇸 Spanish, 🇺🇦 Ukrainian
 
 ▶️ [Installation Instructions](https://isaacinsoll.github.io/PICR/install.html) for a sample `compose.yml` and instructions
 

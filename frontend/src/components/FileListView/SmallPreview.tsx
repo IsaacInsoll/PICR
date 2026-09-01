@@ -27,7 +27,8 @@ export const SmallPreview = ({
       <Box style={style}>
         <PicrImage
           file={file.heroImage}
-          size="sm"
+          targetWidth={Math.ceil(height * (file.heroImage.imageRatio ?? 1))}
+          sizes={`${Math.ceil(height * (file.heroImage.imageRatio ?? 1))}px`}
           style={{ width: height * (file.heroImage.imageRatio ?? 1), height }}
         />
       </Box>
@@ -38,7 +39,10 @@ export const SmallPreview = ({
       <Box style={style}>
         <PicrImage
           file={file}
-          size="sm"
+          targetWidth={Math.ceil(
+            height * ((file.imageRatio as number | null) ?? 1),
+          )}
+          sizes={`${Math.ceil(height * ((file.imageRatio as number | null) ?? 1))}px`}
           style={{
             width: height * ((file.imageRatio as number | null) ?? 1),
             height,
@@ -52,7 +56,10 @@ export const SmallPreview = ({
       <Box style={{ ...style, position: 'relative', overflow: 'hidden' }}>
         <PicrImage
           file={file}
-          size="sm"
+          targetWidth={Math.ceil(
+            height * ((file.imageRatio as number | null) ?? 1),
+          )}
+          sizes={`${Math.ceil(height * ((file.imageRatio as number | null) ?? 1))}px`}
           style={{
             width: height * ((file.imageRatio as number | null) ?? 1),
             height,

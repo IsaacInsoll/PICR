@@ -132,6 +132,11 @@ The app must not import from `frontend`, `backend`, or any other non-shared
 subsystem. Move code needed by multiple consumers into `shared/` and import it
 with `@shared/*`.
 
+The app directly provides `graphql` because `@shared/urql/urqlClient` imports
+GraphQL runtime values. Metro resolving a transitive copy from
+`shared/node_modules` is not a dependency contract and can break after an npm
+hoisting change.
+
 ## Known Issues / Tech Debt
 
 ### `app-shared/` Duplicated Hooks
@@ -608,3 +613,22 @@ configured plain-HTTP self-hosted servers.
 2. Check auth token is valid
 3. Check network connectivity
 4. Clear image cache in settings
+
+Media URL helpers must encode the final filename path segment with
+`encodeURIComponent`. Keep fixed video artifact names such as `poster.jpg`
+unchanged.
+
+The native app targets the current PICR GraphQL API; it does not negotiate with
+older server schemas. Generated thumbnail and video-poster URLs must use the
+server-published `clientInfo.thumbnailVariants` tokens selected through
+`src/helpers/thumbnailRouteSize.ts`. Do not fabricate a token from shared
+defaults: JPEG quality is part of the token and a server configured at another
+quality will return 404 for it. Raw media continues to use the `raw` route.
+
+Keep the pure route builder in `src/helpers/imageURL.ts` so image, video,
+full-screen and download paths share filename encoding and can be tested without
+rendering a React Native component.
+
+Backend tasks may omit `step` and `totalSteps` for indeterminate activity such
+as media scanning. Task UI must not render a percentage unless both values are
+numbers and `totalSteps` is positive; `step = 0` is valid determinate progress.

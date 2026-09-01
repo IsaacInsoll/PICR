@@ -29,9 +29,16 @@ import {
   compareFilesForIdentity,
   mergeDuplicateFileRows,
 } from '../filesystem/fileIdentity.js';
+import { THUMBNAIL_JPEG_QUALITY } from '@shared/thumbnailVariants.js';
+
+export interface DbMigrationContext {
+  previousBootedVersion: string | null | undefined;
+}
 
 // This does the "picr" side of migrations, for the DB side see schemaMigration.ts
-export const dbMigrate = async (config: IPicrConfiguration) => {
+export const dbMigrate = async (
+  config: IPicrConfiguration,
+): Promise<DbMigrationContext> => {
   const opts = await getServerOptions();
   assertDatabaseVersionCompatible(opts, config.version);
 
@@ -76,11 +83,21 @@ export const dbMigrate = async (config: IPicrConfiguration) => {
     await removeDuplicateLiveFiles();
   }
 
+  if (
+    shouldRunVersionMigration(
+      lastBootedVersion,
+      THUMBNAIL_QUALITY_DEFAULT_VERSION,
+    )
+  ) {
+    await raiseLegacyThumbnailQualityDefault();
+  }
+
   // Gated internally (also handles a missing/invalid lastBootedVersion when files
   // already exist). Runs before the file watcher so no scan rewrites hashes first.
   await runThumbnailHashMigrationIfNeeded(lastBootedVersion);
 
   await setServerOptions({ lastBootedVersion: config.version });
+  return { previousBootedVersion: lastBootedVersion };
 };
 
 const removeDuplicates = async () => {
@@ -226,6 +243,37 @@ const migrateBrandingRelationship = async () => {
 // rows before scanners start. If this lags behind the released version, the
 // migration skips affected installs that already booted newer buggy releases.
 const DUPLICATE_LIVE_FILE_CLEANUP_VERSION = '1.3.6';
+
+// MUST equal the release version that ships the variant thumbnail ladder.
+const THUMBNAIL_QUALITY_DEFAULT_VERSION = '1.6.0';
+
+// The pre-ladder default. Anything else stored is a deliberate choice and is
+// preserved; picking 60 explicitly was indistinguishable from leaving it alone.
+const LEGACY_DEFAULT_THUMBNAIL_JPEG_QUALITY = 60;
+
+/**
+ * Adopt the new JPEG quality default for installs still sitting on the old one.
+ *
+ * A `null` column already resolves to the current default via
+ * `resolveServerMediaSettings`, so it is deliberately left alone: writing to it
+ * would change nothing at runtime while discarding the "never configured"
+ * signal a future default change would want.
+ *
+ * Must run before the file watcher starts. `thumbnailVariantLadderForSettings`
+ * bakes quality into every token, so generating at the old quality first would
+ * mint variants that are orphaned the moment this lands.
+ */
+const raiseLegacyThumbnailQualityDefault = async (): Promise<void> => {
+  const { thumbnailJpegQuality } = await getServerOptions();
+  if (thumbnailJpegQuality !== LEGACY_DEFAULT_THUMBNAIL_JPEG_QUALITY) return;
+
+  await setServerOptions({ thumbnailJpegQuality: THUMBNAIL_JPEG_QUALITY });
+  log(
+    'info',
+    `🖼️  PICR Migration: thumbnail JPEG quality raised from ${LEGACY_DEFAULT_THUMBNAIL_JPEG_QUALITY} to ${THUMBNAIL_JPEG_QUALITY} (the new default). Previews will be larger and sharper; change it under Server Settings if you preferred smaller files.`,
+    true,
+  );
+};
 
 const shouldRunVersionMigration = (
   lastBootedVersion: string | null | undefined,

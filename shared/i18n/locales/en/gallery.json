@@ -304,6 +304,11 @@
     "unmute": "Unmute",
     "volume": "Volume"
   },
+  "task": {
+    "imageDimensionBackfill": "Updating image dimensions",
+    "mediaImport": "Import Files and Generate Thumbnails",
+    "mediaScan": "Checking for new media…"
+  },
   "view": {
     "feed": "Feed",
     "gallery": "Gallery",

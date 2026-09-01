@@ -3,12 +3,18 @@ import type { DatesProviderSettings, DayOfWeek } from '@mantine/dates';
 
 import 'dayjs/locale/el';
 import 'dayjs/locale/en-au';
+import 'dayjs/locale/de';
+import 'dayjs/locale/es';
 import 'dayjs/locale/fr';
+import 'dayjs/locale/uk';
 
 const dayjsLocales: Record<SupportedLanguage, string> = {
+  de: 'de',
   el: 'el',
   en: 'en-au',
+  es: 'es',
   fr: 'fr',
+  uk: 'uk',
 };
 
 const dayjsLocaleFor = (language: SupportedLanguage): string =>

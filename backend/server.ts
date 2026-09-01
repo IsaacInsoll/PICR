@@ -3,7 +3,7 @@ import { fileWatcher } from './filesystem/fileWatcher.js';
 import { setupRootFolder } from './filesystem/events/addFolder.js';
 import { envPassword } from './boot/envPassword.js';
 import { expressServer } from './express/express.js';
-import { dbMigrate } from './boot/dbMigrate.js';
+import { dbMigrate, type DbMigrationContext } from './boot/dbMigrate.js';
 import { log } from './logger.js';
 import { picrConfig } from './config/picrConfig.js';
 import { initDb } from './db/picrDb.js';
@@ -11,12 +11,15 @@ import { schemaMigration } from './db/schemaMigration.js';
 import { logStartupBanner, logFatalBanner } from './boot/startupBanner.js';
 import { detectInodeSupport } from './boot/detectInodeSupport.js';
 import { startScheduledScan } from './filesystem/scheduledScan.js';
+import { pingScanCoordinator } from './filesystem/pingScanCoordinator.js';
+import { postBootMaintenance } from './boot/postBootMaintenance.js';
 
 export const server = async () => {
+  let migrationContext: DbMigrationContext;
   try {
     await schemaMigration();
     initDb();
-    await dbMigrate(picrConfig);
+    migrationContext = await dbMigrate(picrConfig);
   } catch (e) {
     logFatalBanner(picrConfig, String(e));
     process.exit(1);
@@ -36,6 +39,7 @@ export const server = async () => {
   const gracefulShutdown = (signal: string) => {
     log('info', `${signal} received, shutting down ${appName}...`, true);
     scheduledScan.stop?.();
+    pingScanCoordinator.stop();
     httpServer.close(() => {
       log('info', `💀 ${appName} closed`, true);
       process.exit(0);
@@ -50,6 +54,10 @@ export const server = async () => {
   process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
   process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
+  await postBootMaintenance({
+    currentVersion: picrConfig.version ?? 'unknown',
+    previousBootedVersion: migrationContext.previousBootedVersion,
+  });
   await fileWatcher(picrConfig, rootFolder.id);
   scheduledScan.stop = startScheduledScan(picrConfig, rootFolder.id);
 };

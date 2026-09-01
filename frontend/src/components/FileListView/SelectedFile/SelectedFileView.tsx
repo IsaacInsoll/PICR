@@ -30,7 +30,7 @@ import { videoAutoplayBlessedAtom } from '../../../atoms/videoAutoplayBlessedAto
 import {
   useCanDownload,
   useOriginalsForLightbox,
-  useServerThumbnailDimensions,
+  useThumbnailVariants,
 } from '../../../hooks/useMe';
 import { useNoDownloadMediaProps } from '../../../hooks/useNoDownloadMediaProps';
 import { LazyPicrVideoPlayer } from '../../LazyPicrVideoPlayer';
@@ -89,7 +89,7 @@ export const SelectedFileView = ({
   const setFolder = useSetFolder();
   const canDownload = useCanDownload();
   const useOriginals = useOriginalsForLightbox();
-  const thumbnailDimensions = useServerThumbnailDimensions();
+  const thumbnailVariants = useThumbnailVariants();
   const [autoplayBlessed, setAutoplayBlessed] = useAtom(
     videoAutoplayBlessedAtom,
   );
@@ -123,9 +123,8 @@ export const SelectedFileView = ({
   // navigation, so an inline call here would allocate a new slides array (and
   // hand YARL new slide identities) on each one.
   const slides = useMemo(
-    () =>
-      filesForLightbox(files, canDownload, useOriginals, thumbnailDimensions),
-    [files, canDownload, useOriginals, thumbnailDimensions],
+    () => filesForLightbox(files, canDownload, useOriginals, thumbnailVariants),
+    [files, canDownload, useOriginals, thumbnailVariants],
   );
   const labels = useMemo(() => lightboxLabels(t), [t]);
 

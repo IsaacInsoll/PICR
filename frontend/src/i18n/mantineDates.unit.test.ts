@@ -43,6 +43,15 @@ describe('Mantine date localization', () => {
       firstDayOfWeek: 1,
       weekendDays: [6, 0],
     });
+    expect(datesProviderSettingsFor('de', 'de-CH')).toMatchObject({
+      locale: 'de',
+    });
+    expect(datesProviderSettingsFor('es', 'es-MX')).toMatchObject({
+      locale: 'es',
+    });
+    expect(datesProviderSettingsFor('uk', 'uk-UA')).toMatchObject({
+      locale: 'uk',
+    });
   });
 
   test('derives date order and 12-hour time from the formatting locale', () => {

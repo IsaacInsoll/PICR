@@ -31,7 +31,6 @@ import {
   type BannerHAlign,
   type BannerVAlign,
 } from '@shared/branding/galleryPresets';
-import { imageURL } from '../../helpers/imageURL';
 import {
   currentFolderBannerSizeAtom,
   currentFolderBannerHAlignAtom,
@@ -41,6 +40,8 @@ import {
 import styles from './SetBannerImageModal.module.css';
 import { useTranslation } from 'react-i18next';
 import type { AdminT } from '../../i18n/adminLabels';
+import { useThumbnailVariants } from '../../hooks/useMe';
+import { thumbnailUrlForWidth } from '../../helpers/thumbnailVariantImages';
 
 // Skeleton rows simulate how much gallery is visible below the banner.
 // Shorter banners (cinematic) reveal more rows; taller ones (classic) reveal fewer.
@@ -188,6 +189,7 @@ const SizeCard = ({
   previewTitle: string;
 }) => {
   const { t } = useTranslation('admin');
+  const thumbnailVariants = useThumbnailVariants();
   const skeletons = SKELETON_COUNTS[size];
   return (
     <Box>
@@ -202,7 +204,7 @@ const SizeCard = ({
           style={{ aspectRatio: bannerSizeAspectRatios[size] }}
         >
           <img
-            src={imageURL(file, 'sm')}
+            src={thumbnailUrlForWidth(file, 250, thumbnailVariants)}
             className={styles.previewImage}
             alt=""
           />
@@ -248,6 +250,7 @@ const MobilePreview = ({
   previewTitle: string;
 }) => {
   const { t } = useTranslation('admin');
+  const thumbnailVariants = useThumbnailVariants();
   const skeletons = SKELETON_COUNTS[size];
   return (
     <Box className={styles.mobilePreview}>
@@ -257,7 +260,7 @@ const MobilePreview = ({
           style={{ height: `${bannerSizePortraitPercent[size]}%` }}
         >
           <img
-            src={imageURL(file, 'sm')}
+            src={thumbnailUrlForWidth(file, 250, thumbnailVariants)}
             className={styles.previewImage}
             alt=""
           />

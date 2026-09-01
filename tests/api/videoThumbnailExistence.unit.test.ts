@@ -4,13 +4,18 @@ import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import type { FileFields } from '../../backend/db/picrDb';
 import { picrConfig } from '../../backend/config/picrConfig';
-import { videoThumbnailArtifactsExist } from '../../backend/media/videoThumbnailExistence';
 import {
-  videoPosterPath,
+  missingVideoPosterVariants,
+  videoThumbnailBaselineArtifactsExist,
+} from '../../backend/media/videoThumbnailExistence';
+import {
+  videoPosterFramePath,
+  videoPosterVariantPath,
   videoScrubPath,
 } from '../../backend/media/videoThumbnailPaths';
+import { thumbnailVariantForToken } from '../../shared/thumbnailVariants';
 
-test('videoThumbnailArtifactsExist requires AVIF posters only when AVIF is enabled', async () => {
+test('videoThumbnailBaselineArtifactsExist requires scrub sprite and poster frame', async () => {
   const root = await mkdtempRoot();
   picrConfig.cachePath = join(root, 'cache');
   picrConfig.mediaPath = join(root, 'media');
@@ -22,22 +27,32 @@ test('videoThumbnailArtifactsExist requires AVIF posters only when AVIF is enabl
 
   try {
     await touch(videoScrubPath(file));
-    await Promise.all(
-      (['sm', 'md', 'lg'] as const).map((size) =>
-        touch(videoPosterPath(file, size)),
-      ),
-    );
+    await touch(videoPosterFramePath(file));
 
-    expect(videoThumbnailArtifactsExist(file, false)).toBe(true);
-    expect(videoThumbnailArtifactsExist(file, true)).toBe(false);
+    expect(videoThumbnailBaselineArtifactsExist(file)).toBe(true);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
-    await Promise.all(
-      (['sm', 'md', 'lg'] as const).map((size) =>
-        touch(videoPosterPath(file, size, '.avif')),
-      ),
-    );
+test('missingVideoPosterVariants reports poster derivatives independently of baseline artifacts', async () => {
+  const root = await mkdtempRoot();
+  picrConfig.cachePath = join(root, 'cache');
+  picrConfig.mediaPath = join(root, 'media');
+  const file = {
+    relativePath: 'videos',
+    name: 'clip.mp4',
+    fileHash: 'content-hash',
+  } as FileFields;
+  const existing = thumbnailVariantForToken('v1-250j80')!;
+  const missing = thumbnailVariantForToken('v1-500j80')!;
 
-    expect(videoThumbnailArtifactsExist(file, true)).toBe(true);
+  try {
+    await touch(videoPosterVariantPath(file, existing));
+
+    expect(missingVideoPosterVariants(file, [existing, missing])).toEqual([
+      missing,
+    ]);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

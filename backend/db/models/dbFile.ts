@@ -19,6 +19,7 @@ import { relations } from 'drizzle-orm';
  *
  * Key fields:
  * - `type`: Discriminator for File/Image/Video (maps to GraphQL interface)
+ * - `imageWidth`/`imageHeight`: oriented source dimensions for active images
  * - `imageRatio`: width/height for layout before image loads (images and videos only)
  * - `duration`: length in seconds (videos only)
  * - `blurHash`: nullable tiny placeholder hash for progressive loading (images and video posters)
@@ -37,6 +38,8 @@ export const dbFile = pgTable(
     relativePath: varchar('relativePath', { length: 255 }).notNull(),
     metadata: text('metadata'),
     rating: integer('rating').notNull(), // 0-5
+    imageWidth: integer('imageWidth'),
+    imageHeight: integer('imageHeight'),
     imageRatio: doublePrecision('imageRatio'), // width / height (used for sizing on screen elements before image is loaded
     duration: doublePrecision('duration'), // seconds (video files)
     fileSize: bigint('fileSize', { mode: 'number' }).notNull(),

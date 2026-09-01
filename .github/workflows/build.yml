@@ -12,9 +12,9 @@ jobs:
       matrix:
         os: [ubuntu-24.04]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Use Node.js from .nvmrc
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: 'npm'
@@ -34,6 +34,8 @@ jobs:
         run: npm ci
       - name: '🗃️ [shared] Install Dependencies'
         run: cd shared && npm ci
+      - name: '📡 [ping] Install Dependencies'
+        run: cd ping && npm ci
       - name: '🎨 [format] Prettier check'
         run: npm run format:check
       - name: '🌐 [i18n] Validate locale catalogs'
@@ -42,17 +44,56 @@ jobs:
       # BACKEND
       - name: '🗃️ [backend] Install Dependencies'
         run: cd backend && npm ci
+
+      # Codegen no longer needs a running server or database, so CI can prove
+      # the committed generated files still match the executable schema.
+      # Runs early: it is fast and catches drift before the expensive steps.
+      - name: '🔄 [codegen] Verify generated GraphQL files are up to date'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run gql
+          if ! git diff --exit-code -- schema.graphql shared/gql shared/urql/graphql.schema.json; then
+            echo '::error::Generated GraphQL files are out of date. Run "npm run gql" and commit the result.'
+            exit 1
+          fi
+
       - name: '🗃️ [shared] Lint'
         run: cd shared && npm run lint
       - name: '🗃️ [shared] Type check'
         run: cd shared && npx tsc --noEmit
+
+      # PICR PING
+      - name: '📡 [ping] Lint'
+        run: cd ping && npm run lint
+      - name: '📡 [ping] Type check'
+        run: cd ping && npm run typecheck
+      - name: '📡 [ping] Unit tests'
+        run: cd ping && npm test
+      - name: '📡 [ping] Build'
+        run: cd ping && npm run build
+      - name: '📡 [ping] Set up Docker Buildx'
+        uses: docker/setup-buildx-action@v4
+      - name: '📡 [ping] Build container (no push)'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ping/Dockerfile
+          push: false
+          build-args: |
+            PICR_GIT_SHA=${{ github.sha }}
+            PICR_PING_VERSION=ci
+          tags: picr-ping:ci
+          cache-from: type=gha,scope=picr-ping
+          cache-to: type=gha,mode=max,scope=picr-ping
+
       - name: '🗃️ [backend] Lint'
         run: cd backend && npm run lint
       - name: '🗃️ [backend] Build (TSC + artifact files)'
         # backend build also copies drizzle migrations and backend package files into dist/
         run: cd backend && npm run build
       - name: '🗃️ [backend] Install Dependencies'
-        run: cd dist && npm ci
+        run: cd dist && npm ci --omit=dev
 
       # LIGHTROOM PLUGIN (before frontend so vite copies it to dist/public/)
       - name: '🔌 [lightroom] Build plugin zip'
@@ -126,7 +167,7 @@ jobs:
         run: npm run test:e2e
 
       # ARTIFACT
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: ${{ !env.ACT }}
         name: '🗜️ Generate Build Artifacts'
         with:

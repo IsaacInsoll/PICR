@@ -5,13 +5,21 @@ import { CacheManager } from '@georstat/react-native-image-cache';
 import type { File, Image } from '@shared/gql/graphql';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { Image as ExpoImage } from 'expo-image';
-import { imageURL } from '@/src/components/AppImage';
+import { imageURL } from '@/src/helpers/imageURL';
 import type { ViewStyle } from 'react-native';
-import { Platform, StyleSheet } from 'react-native';
+import {
+  PixelRatio,
+  Platform,
+  StyleSheet,
+  useWindowDimensions,
+} from 'react-native';
 import { useAtom } from 'jotai';
 import type { AllSize } from '@shared/thumbnailSize';
+import type { ThumbnailVariantToken } from '@shared/thumbnailVariants';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
+import { useThumbnailVariants } from '@/src/hooks/useMe';
+import { thumbnailRouteSizeForWidth } from '@/src/helpers/thumbnailRouteSize';
 
 const PBigImageComponent = ({
   file,
@@ -24,7 +32,13 @@ const PBigImageComponent = ({
 }) => {
   // console.log('PBIGImage rendering ' + file.name);
   const ref = useRef(null);
-  const uri = useLocalImageUrl(file, 'lg');
+  const thumbnailVariants = useThumbnailVariants();
+  const { height, width } = useWindowDimensions();
+  const sourceSize = thumbnailRouteSizeForWidth(
+    thumbnailVariants,
+    PixelRatio.getPixelSizeForLayoutSize(Math.max(width, height)),
+  );
+  const uri = useLocalImageUrl(file, sourceSize);
   const [, setFullScreen] = useAtom(fileViewFullscreenAtom);
   const theme = useAppTheme();
   if (!uri) return null;
@@ -82,7 +96,9 @@ PBigImage.displayName = 'PBigImage';
 
 export const useLocalImageUrl = (
   file: Partial<Pick<File, 'id' | 'fileHash' | 'name' | 'type'>>,
-  size: AllSize,
+  // undefined until the server-published variant ladder is known; callers show
+  // their blurhash placeholder rather than requesting a fabricated token.
+  size: AllSize | ThumbnailVariantToken | undefined,
 ) => {
   const [uri, setUri] = useState<string | undefined>(undefined);
   const loginDetails = useLoginDetails();
@@ -90,7 +106,7 @@ export const useLocalImageUrl = (
 
   useEffect(() => {
     let cancelled = false;
-    if (!baseUrl) {
+    if (!baseUrl || !size) {
       setUri(undefined);
       return () => {
         cancelled = true;

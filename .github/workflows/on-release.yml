@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     # Skip for Lightroom plugin releases
-    if: ${{ !startsWith(github.ref_name, 'lightroom-') }}
+    if: ${{ !startsWith(github.ref_name, 'lightroom-') && !startsWith(github.ref_name, 'ping-') }}
     uses: ./.github/workflows/build.yml
   docker_publish:
     needs: build

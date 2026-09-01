@@ -1,40 +1,65 @@
 import type { PicrImageMetadata } from '@shared/types/metadata.js';
 import { default as ex } from 'exif-reader';
 import { XMLParser } from 'fast-xml-parser';
+import type { Metadata } from 'sharp';
 import type { FileFields } from '../db/picrDb.js';
 import { openSharp } from './openSharp.js';
-import { log } from '../logger.js';
 import { fullPathForFile } from '../filesystem/fileManager.js';
+import { log } from '../logger.js';
+import {
+  imageRatioForDimensions,
+  orientedImageDimensionsFromMetadata,
+  type ImageDimensions,
+} from './imageDimensions.js';
 
-export const getImageMetadata = async (file: FileFields, src?: string) => {
+export interface ImageMetadataAndDimensions {
+  dimensions: ImageDimensions;
+  imageRatio: number;
+  metadata: PicrImageMetadata;
+}
+
+export const getImageMetadataAndDimensions = async (
+  file: Pick<FileFields, 'name' | 'relativePath'>,
+  src?: string,
+): Promise<ImageMetadataAndDimensions> => {
   const path = src ?? fullPathForFile(file);
-  try {
-    const { exif, width, height, xmp } = await openSharp(path).metadata();
+  const sharpMetadata = await openSharp(path).metadata();
+  const dimensions = orientedImageDimensionsFromMetadata(sharpMetadata);
 
-    if (!exif) return null;
-    const x = ex(exif);
-    const camera = joinDefined(x.Image?.Make, x.Image?.Model);
-    const lens = joinDefined(x.Photo?.LensMake, x.Photo?.LensModel);
-    // const et = x.Photo?.ExposureTime;
-    const result: PicrImageMetadata = {
-      Camera: camera,
-      Lens: lens,
-      Artist: x.Image?.Artist,
-      DateTimeEdit: toISODateTime(x.Image?.DateTime),
-      DateTimeOriginal: toISODateTime(x.Photo?.DateTimeOriginal),
-      Aperture: x.Photo?.FNumber,
-      ExposureTime: x.Photo?.ExposureTime,
-      Width: width,
-      Height: height,
-      ISO: x.Photo?.ISOSpeedRatings,
-      Rating: getImageRating(xmp),
-    };
-    return result;
-  } catch (e) {
-    log('error', 'Error getting metadata for file: ' + path);
-    log('error', String(e));
-    return null;
+  return {
+    dimensions,
+    imageRatio: imageRatioForDimensions(dimensions),
+    metadata: imageMetadataSummary(sharpMetadata, dimensions),
+  };
+};
+
+const imageMetadataSummary = (
+  metadata: Metadata,
+  dimensions: ImageDimensions,
+): PicrImageMetadata => {
+  const result: PicrImageMetadata = {
+    Width: dimensions.width,
+    Height: dimensions.height,
+    Rating: getImageRating(metadata.xmp),
+  };
+
+  if (!metadata.exif) return result;
+
+  try {
+    const x = ex(metadata.exif);
+    result.Camera = joinDefined(x.Image?.Make, x.Image?.Model);
+    result.Lens = joinDefined(x.Photo?.LensMake, x.Photo?.LensModel);
+    result.Artist = x.Image?.Artist;
+    result.DateTimeEdit = toISODateTime(x.Image?.DateTime);
+    result.DateTimeOriginal = toISODateTime(x.Photo?.DateTimeOriginal);
+    result.Aperture = x.Photo?.FNumber;
+    result.ExposureTime = x.Photo?.ExposureTime;
+    result.ISO = x.Photo?.ISOSpeedRatings;
+  } catch (error) {
+    log('error', `Error parsing EXIF metadata: ${String(error)}`);
   }
+
+  return result;
 };
 
 // Join optional string parts and return null instead of "undefined" when metadata is missing

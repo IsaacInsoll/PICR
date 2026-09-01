@@ -51,6 +51,8 @@ export type PicrFile = {
   rating?: number | null;
   totalComments?: number | null;
   blurHash?: string | null;
+  imageWidth?: number | null;
+  imageHeight?: number | null;
   imageRatio?: number | null;
   duration?: number | null;
   isHeroImage?: boolean;

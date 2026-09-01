@@ -3,26 +3,26 @@ import { picrConfig } from '../config/picrConfig.js';
 import { runFfmpeg } from './ffmpeg.js';
 
 // VAAPI thumbnail montage pipeline. BENCHMARK / REFERENCE ONLY — this is NOT
-// used for production thumbnail generation. Benchmarking on real hardware showed
-// VAAPI ~16-19% slower than CPU for the 10-frame seek montage, so production
-// thumbnails stay on the CPU path (see backend/media/generateVideoThumbnail.ts).
-// It is retained so the admin benchmark can keep comparing CPU vs VAAPI, and as a
-// proven starting point if future hardware/codecs ever flip that result.
+// used for production thumbnail generation. It is retained so the admin
+// benchmark can compare CPU vs VAAPI on real hardware, and as a proven starting
+// point if future hardware/codecs justify an accelerated production path.
 //
-// Mirrors the process model of the CPU benchmark path (a SINGLE ffmpeg process:
-// one decode, a `split` filter fanning out to N seeked frame outputs) so the
-// benchmark is a fair CPU-vs-VAAPI comparison — not N process startups + N device
-// inits. Per frame: GPU decode -> scale_vaapi -> hwdownload -> JPEG.
+// Uses a single ffmpeg process: one decode, a `split` filter fanning out to N
+// seeked frame outputs. The CPU benchmark row reports whether it used the
+// matching split path or the long-video seek-loop fallback, so long-video
+// CPU-vs-VAAPI comparisons are not mistaken for identical algorithms. Per frame:
+// GPU decode -> scale_vaapi -> hwdownload -> JPEG.
 // Dimensions are passed explicitly (even numbers); scale_vaapi does not support
 // `-2` auto sizing the way CPU `scale` does, and explicit dims keep the output
 // identical to the CPU montage.
 export const extractVaapiThumbnailFrames = async (
   source: string,
-  timemarks: number[],
+  timemarks: readonly number[],
   width: number,
   height: number,
   framesDir: string,
   filenamePrefix: string,
+  timeoutMs?: number,
 ): Promise<void> => {
   const count = timemarks.length;
   const first = timemarks[0] ?? 0;
@@ -54,9 +54,11 @@ export const extractVaapiThumbnailFrames = async (
     args.push(
       '-frames:v',
       '1',
+      '-q:v',
+      '4',
       path.join(framesDir, `${filenamePrefix}_${index + 1}.jpg`),
     );
   });
 
-  await runFfmpeg(args);
+  await runFfmpeg(args, timeoutMs === undefined ? undefined : { timeoutMs });
 };

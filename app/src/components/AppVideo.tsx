@@ -1,7 +1,7 @@
 import type { PicrFile } from '@shared/types/picr';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { imageURL } from '@/src/components/AppImage';
+import { imageURL } from '@/src/helpers/imageURL';
 
 type AppVideoFile = Pick<
   PicrFile,

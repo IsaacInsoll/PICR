@@ -165,6 +165,11 @@ There are lots of environment variables you can use, but only a few are needed:
   It defaults to `0` (off). Set `24` for a daily scan that catches changes nobody
   viewed yet; newly-discovered thumbnails are pre-warmed only for small batches.
 
+- `PICR_PING_TOKEN` [optional] enables authenticated directory hints from
+  [PICR Ping](picr-ping.md). It must contain at least 64 characters and should be
+  generated with `openssl rand -hex 32`. Keep it unset when Ping is not used;
+  the integration endpoint is then not registered.
+
 - `CAN_WRITE` [optional] You can turn this on later if needed, see [can_write.md](can_write.md)
   Note: write support needs both `CAN_WRITE=true` and real filesystem write permission on `/home/node/app/media`
   inside the container.
@@ -205,13 +210,12 @@ optional, Linux + `amd64` only, and fully opt-in: with no GPU passed into the
 container PICR behaves exactly as before.
 
 > **What is accelerated today?** Honestly — nothing in normal use yet. PICR's
-> current video workload is poster/scrub thumbnail generation, and benchmarking
-> showed VAAPI is _slower_ than the CPU for that seek-based work (GPU
-> upload/download overhead dominates). So **thumbnails are generated on the
-> CPU**. VAAPI is, however, dramatically faster for whole-video transcoding
-> (~2.5–3×), so this is groundwork for upcoming transcoding features. For now
-> you can see the detected GPU on the **Server Info** page and compare CPU vs
-> VAAPI yourself with the admin **Benchmark** tool.
+> current video workload is poster/scrub thumbnail generation, and production
+> still generates those thumbnails on the CPU. VAAPI is included as groundwork
+> for upcoming video features, especially whole-video transcoding where hardware
+> acceleration can be dramatically faster on supported hardware. For now you can
+> see the detected GPU on the **Server Info** page and compare CPU vs VAAPI
+> yourself with the admin **Benchmark** tool.
 
 ### How it works
 

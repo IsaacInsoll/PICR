@@ -3,6 +3,7 @@ import { addFolder } from './events/addFolder.js';
 import { removeFolder } from './events/removeFolder.js';
 import { renameFolder } from './events/renameFolder.js';
 import type { Task } from '@shared/gql/graphql.js';
+import { MEDIA_IMPORT_TASK_ID } from '@shared/tasks/mediaTaskIds.js';
 import { generateAllThumbs } from '../media/generateImageThumbnail.js';
 import { log } from '../logger.js';
 import { db, dbFileForId } from '../db/picrDb.js';
@@ -10,6 +11,7 @@ import { and, count, eq, isNotNull } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../db/models/index.js';
 import type { Stats } from 'node:fs';
 import { removeFile } from './events/removeFile.js';
+import { picrConfig } from '../config/picrConfig.js';
 
 type QueueAction =
   | 'addDir'
@@ -130,10 +132,13 @@ const processQueueItems = async () => {
 
   try {
     while (pendingQueue.length) {
-      const item = pendingQueue.shift();
+      const item = dequeueItem();
       if (!item) continue;
-      if (item.key) queuedItemsByKey.delete(item.key);
-      await runQueueItem(item.action, item.payload);
+      if (item.action === 'generateThumbnails') {
+        await runThumbnailBatch(item);
+      } else {
+        await runQueueItem(item.action, item.payload);
+      }
     }
   } finally {
     queueProcessing = false;
@@ -143,6 +148,29 @@ const processQueueItems = async () => {
       queueTotal = 0;
     }
   }
+};
+
+const dequeueItem = (): QueueItem | undefined => {
+  const item = pendingQueue.shift();
+  if (item?.key) queuedItemsByKey.delete(item.key);
+  return item;
+};
+
+const runThumbnailBatch = async (firstItem: QueueItem): Promise<void> => {
+  const batch = [firstItem];
+  const workerCount = Math.max(1, Math.floor(picrConfig.thumbnailWorkerCount));
+
+  while (
+    batch.length < workerCount &&
+    pendingQueue[0]?.action === 'generateThumbnails'
+  ) {
+    const item = dequeueItem();
+    if (item) batch.push(item);
+  }
+
+  await Promise.all(
+    batch.map((item) => runQueueItem(item.action, item.payload)),
+  );
 };
 
 const runQueueItem = async (action: QueueAction, payload: QueuePayload) => {
@@ -207,6 +235,7 @@ export const markInitComplete = () => {
 export const queueTaskStatus = (): null | Task => {
   if (queueTotal === 0 || queueDone === queueTotal) return null;
   return {
+    id: MEDIA_IMPORT_TASK_ID,
     name: 'Import Files and Generate Thumbnails',
     step: queueDone,
     totalSteps: queueTotal,

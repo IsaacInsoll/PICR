@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import type { Video } from '@shared/gql/graphql';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEvent } from 'expo';
-import { imageURL } from '@/src/components/AppImage';
+import { imageURL } from '@/src/helpers/imageURL';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useEffect } from 'react';
 import { useAppTheme } from '@/src/hooks/useAppTheme';

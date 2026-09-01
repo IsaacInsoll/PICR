@@ -1,6 +1,5 @@
 import { memo } from 'react';
 import type { ImageProps } from 'expo-image';
-import type { ThumbnailSize } from '@shared/thumbnailSize';
 import { PFileVideo } from '@/src/components/PFileVideo';
 import { StyleSheet, View } from 'react-native';
 import { PFileImage } from '@/src/components/PFileImage';
@@ -15,12 +14,12 @@ const isThumbnailFolder = (
 // Used for thumbnails and gallery, presents image/video/folder thumbnail
 const PFileViewComponent = ({
   file,
-  size,
+  targetWidth,
   variant,
   ...props
 }: {
   file?: ThumbnailItem | null;
-  size: ThumbnailSize;
+  targetWidth: number;
   variant?: 'rounded-fit';
 } & ImageProps) => {
   // I had this in here and it worked, but I prefer the idea of the parent deciding how to render this (IE: if it's a folder)
@@ -36,18 +35,17 @@ const PFileViewComponent = ({
       : { ...props };
 
   const isFolder = isThumbnailFolder(file);
-  //     const uri = useLocalImageUrl(isFolder ? file.heroImage : file, size);
   if (file?.__typename === 'Video') {
-    return <PFileVideo {...p} file={file} />;
+    return <PFileVideo {...p} file={file} targetWidth={targetWidth} />;
   }
   if (file?.__typename === 'Image') {
-    return <PFileImage size={size} {...p} file={file} />;
+    return <PFileImage targetWidth={targetWidth} {...p} file={file} />;
   }
 
   if (isFolder && file.heroImage?.type === 'Image') {
     return (
       <PFileImage
-        size={size}
+        targetWidth={targetWidth}
         {...p}
         file={{ ...file.heroImage, name: file.heroImage.name ?? undefined }}
       />
@@ -57,6 +55,7 @@ const PFileViewComponent = ({
     return (
       <PFileVideo
         {...p}
+        targetWidth={targetWidth}
         file={{ ...file.heroImage, name: file.heroImage.name ?? undefined }}
       />
     );

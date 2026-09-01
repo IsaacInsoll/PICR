@@ -216,7 +216,8 @@ local rating = photo:getRawMetadata('rating')
 local copyName = photo:getFormattedMetadata('copyName')  -- For virtual copies
 
 -- Writing metadata (inside withWriteAccessDo)
-photo:setRawMetadata('rating', 5)  -- 0-5 stars
+photo:setRawMetadata('rating', 5)    -- Set 1-5 stars
+photo:setRawMetadata('rating', nil)  -- Clear the rating
 ```
 
 ### Building UI
@@ -461,6 +462,13 @@ end)
 - Only ONE `withWriteAccessDo` can be active at a time
 - Keep transactions as short as possible
 - Reading metadata doesn't require write access (as of SDK 3.0)
+
+### Clearing Ratings
+
+PICR stores an unrated file as `0`, but `LrPhoto:setRawMetadata('rating', value)`
+requires `nil` to clear a Lightroom rating. Passing numeric `0` raises
+`Invalid rating: 0`. Keep `0` in the CSV contract and comparison logic, then
+convert it to `nil` only at the Lightroom metadata write boundary.
 
 ### Common Gotchas
 

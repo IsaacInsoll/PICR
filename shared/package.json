@@ -17,17 +17,19 @@
     "readable-fractions": "^0.1.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@types/react": "^19.1.10",
+    "@eslint/js": "^9.39.5",
+    "@types/react": "^19.2.18",
     "eslint": "^9.39.1",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.0"
+    "graphql": "^16.14.2",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.66.0"
   },
   "peerDependencies": {
     "@urql/exchange-graphcache": "^9.0.1",
     "@urql/exchange-retry": "^2.0.0",
+    "graphql": "^16.8.1",
     "jotai": "^2.17.1",
     "react": "^19",
     "urql": "^5.0.3"

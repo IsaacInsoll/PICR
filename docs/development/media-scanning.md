@@ -23,6 +23,47 @@ is converted from old 100ms units (`POLLING_INTERVAL=300` becomes
 `POLLING_SECONDS=30`). PICR intentionally no longer applies chokidar's hidden
 3x binary-file delay.
 
+## PICR Ping
+
+[PICR Ping](../picr-ping.md) is an external realtime trigger for deployments
+where the media lives on a NAS and PICR reads it through a network mount. It is
+orthogonal to `FILE_WATCHER`: both can run during migration, while the intended
+steady-state pairing is:
+
+```text
+FILE_WATCHER=off
+ON_VIEW_SCAN=off
+SCHEDULED_SCAN_HOURS=12
+PICR_PING_TOKEN=<shared infrastructure token>
+```
+
+Ping sends media-root-relative directory hints, never raw Chokidar events or
+remote `Stats`. The server validates those paths, resolves them to database
+folders, and funnels them through `scanFolder`. A coordinator adds the behavior
+that a one-shot caller would otherwise miss:
+
+- ancestor/descendant job coalescing and scoped recursive overflow reconciles;
+- repeated discovery passes for fresh or large unsettled files;
+- discovery with `removeMissing: false` before scoped cleanup, improving
+  cross-folder move detection;
+- metadata-first imports followed by queued thumbnail generation;
+- request-local degraded backoff and requeueing so an accepted hint is not
+  silently lost while fresh unrelated hints continue immediately.
+
+Two-phase cleanup is best-effort rather than a global scanner transaction.
+Manual, scheduled, or on-view scans can still interleave and archive a move
+candidate. `ON_VIEW_SCAN=off` is therefore the cleanest Ping pairing. Move
+identity also depends on the underlying scanner: cross-folder file moves and
+folder renames require stable inode hints, while same-folder file renames can
+fall back to a unique size/mtime signature.
+
+Ping uses `ignoreInitial: true`, so its initial tree walk establishes watches
+without sending one hint per existing file. That suppresses events rather than
+work—the NAS still pays for a directory/stat walk at every Ping start. A scoped
+startup reconcile covers changes made while Ping was down or during the initial
+walk. The scheduled scan remains the durable backstop because Ping's ordinary
+delivery queue is in memory.
+
 ## Boot Behavior
 
 Boot reconciliation depends on watcher mode:
@@ -60,13 +101,40 @@ starts. Do not move on-view scanning into the resolver itself.
 
 On-view scans:
 
-- use `generateThumbs: true`;
+- import metadata first with `generateThumbs: false`, then enqueue priority
+  thumbnail work for live files touched within the actual scanned path;
+- perform one additional pass after the normal 10-second settle interval when
+  the first pass finds unsettled files or folders;
 - have a per-folder in-memory cooldown (`ON_VIEW_SCAN_COOLDOWN_MS`, currently
   60 seconds), intentionally longer than the frontend folder-view refresh
   interval;
 - coalesce concurrent scans for the same folder;
 - log and swallow background errors so unhandled rejections do not terminate the
   process.
+
+## Media Activity Reporting
+
+PICR reports logical filesystem reconciliation through the existing task area
+as indeterminate **Checking for new media…** activity. Complete boot,
+scheduled, manual, Ping, and on-view operations participate; individual
+low-level folder scans do not create separate rows.
+
+Each operation must remain active for at least 1.5 seconds before it is reported.
+The threshold is measured per operation, so overlapping fast/no-op on-view
+probes remain hidden even if the server is continuously scanning different
+folders. A slower on-view operation remains active through its settle delay and
+second pass, covering the otherwise silent fresh-file window without flashing
+the page during ordinary navigation.
+
+Filesystem walking remains indeterminate because the final scope is not known at
+the start. Queued imports and thumbnail generation retain their numeric progress
+and use the frontend progress component's supported width transition. The two
+rows remain separate when both kinds of work are active.
+
+Global scan and import activity is visible only when the requesting user has
+folder-scoped Admin permission. A non-root admin may see that unrelated global
+work is happening but receives no paths or filenames. Public-link users retain
+their own ZIP preparation tasks without seeing server maintenance.
 
 ## Scheduled Scanning
 
@@ -139,8 +207,11 @@ Important invariants:
   entry is counted in `ScanFolderResult.skippedEntries`, its DB row is **not**
   archived (it is present on disk, we just could not stat it this pass), and the
   scan keeps processing siblings. An unreadable folder (`readdir` failure)
-  short-circuits that folder without archiving its children. Errors with no
-  filesystem `code` still throw, since they indicate a real bug.
+  increments `unavailableFolders` and short-circuits that folder without
+  archiving its children. `unavailableFolders` blocks recursive completion;
+  `skippedEntries` remains diagnostic because the unreadable-name guard safely
+  isolates individual entries. Errors with no filesystem `code` still throw,
+  since they indicate a real bug.
 
 ## Move Detection
 
@@ -163,15 +234,28 @@ usable inodes degrade to path and hash behavior.
 
 Thumbnail generation depends on scan type:
 
-| Scan type | `generateThumbs` behavior                                              |
-| --------- | ---------------------------------------------------------------------- |
-| Boot      | `false`; metadata-only startup.                                        |
-| On-view   | `true`; active gallery gets thumbnails as files appear.                |
-| Manual    | `true`; admin explicitly asked to scan/pre-warm.                       |
-| Scheduled | metadata first, then queue thumbnails only for small new-file batches. |
+| Scan type | `generateThumbs` behavior                                                   |
+| --------- | --------------------------------------------------------------------------- |
+| Boot      | `false`; metadata-only startup.                                             |
+| On-view   | metadata first, then priority-queue thumbnails touched by up to two passes. |
+| Manual    | `true`; admin explicitly asked to scan/pre-warm.                            |
+| Scheduled | metadata first, then queue thumbnails only for small new-file batches.      |
+| Ping      | metadata first, then queue thumbnails for rows touched below the scan root. |
 
 Thumbnail generation itself is idempotent: existing thumbnail files are skipped
 by the thumbnail helpers.
+
+On-view priority batches intentionally run ahead of ordinary watcher and
+scheduled queue work. Priority insertion is currently linear in the queued
+priority tier, so enqueueing a very large newly viewed folder can be quadratic;
+retain this trade-off unless profiling shows meaningful enqueue latency or
+mixed-mode starvation.
+
+Metadata-first rows can cause the gallery and background queue to request the
+same image thumbnail concurrently. Image cache writes must remain atomic:
+encode to a unique temporary path beside the target and rename only the complete
+artifact. Duplicate encoding work is acceptable; exposing a partial cache file
+is not.
 
 ## Known Caveats
 

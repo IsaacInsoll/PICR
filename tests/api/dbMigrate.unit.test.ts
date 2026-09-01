@@ -14,6 +14,8 @@ const fileRow = (props: Pick<FileFields, 'exists' | 'id'>) =>
     fileSize: 100,
     flag: null,
     folderId: 10,
+    imageWidth: null,
+    imageHeight: null,
     imageRatio: null,
     latestComment: null,
     metadata: '{}',
@@ -29,8 +31,10 @@ const fileRow = (props: Pick<FileFields, 'exists' | 'id'>) =>
 
 const loadDbMigrate = async ({
   lastBootedVersion = '1.3.2',
+  thumbnailJpegQuality = null,
 }: {
   lastBootedVersion?: string;
+  thumbnailJpegQuality?: number | null;
 } = {}) => {
   vi.resetModules();
 
@@ -101,6 +105,7 @@ const loadDbMigrate = async ({
     },
     getServerOptions: vi.fn(async () => ({
       lastBootedVersion,
+      thumbnailJpegQuality,
       tokenSecret: 'token',
     })),
     setServerOptions,
@@ -111,6 +116,9 @@ const loadDbMigrate = async ({
   }));
   vi.doMock('../../backend/boot/migrateThumbnailHashes.js', () => ({
     runThumbnailHashMigrationIfNeeded: vi.fn(),
+  }));
+  vi.doMock('../../backend/boot/backfillImageDimensions.js', () => ({
+    backfillImageDimensions: vi.fn(),
   }));
   vi.doMock('../../backend/filesystem/fileIdentity.js', () => ({
     compareFilesForIdentity: vi.fn((a: FileFields, b: FileFields) => {
@@ -171,4 +179,62 @@ test('runs live duplicate cleanup for the latest released buggy version', async 
   await dbMigrate(config);
 
   expect(mergeDuplicateFileRows).toHaveBeenCalledWith(keeper, [duplicateLive]);
+});
+
+const upgradeToLadderRelease = (): IPicrConfiguration =>
+  ({
+    updateMetadata: false,
+    version: '1.6.0',
+  }) as IPicrConfiguration;
+
+test('adopts the new thumbnail quality default for installs still on 60', async () => {
+  const { dbMigrate, setServerOptions } = await loadDbMigrate({
+    lastBootedVersion: '1.5.1',
+    thumbnailJpegQuality: 60,
+  });
+
+  await dbMigrate(upgradeToLadderRelease());
+
+  expect(setServerOptions).toHaveBeenCalledWith({ thumbnailJpegQuality: 80 });
+});
+
+// A null column already resolves to the current default, so writing to it would
+// change nothing while discarding the "never configured" signal.
+test('leaves an unconfigured thumbnail quality null', async () => {
+  const { dbMigrate, setServerOptions } = await loadDbMigrate({
+    lastBootedVersion: '1.5.1',
+    thumbnailJpegQuality: null,
+  });
+
+  await dbMigrate(upgradeToLadderRelease());
+
+  expect(setServerOptions).not.toHaveBeenCalledWith(
+    expect.objectContaining({ thumbnailJpegQuality: expect.anything() }),
+  );
+});
+
+test('preserves a deliberately chosen thumbnail quality', async () => {
+  const { dbMigrate, setServerOptions } = await loadDbMigrate({
+    lastBootedVersion: '1.5.1',
+    thumbnailJpegQuality: 45,
+  });
+
+  await dbMigrate(upgradeToLadderRelease());
+
+  expect(setServerOptions).not.toHaveBeenCalledWith(
+    expect.objectContaining({ thumbnailJpegQuality: expect.anything() }),
+  );
+});
+
+test('does not re-run the quality default adoption once on the ladder release', async () => {
+  const { dbMigrate, setServerOptions } = await loadDbMigrate({
+    lastBootedVersion: '1.6.0',
+    thumbnailJpegQuality: 60,
+  });
+
+  await dbMigrate(upgradeToLadderRelease());
+
+  expect(setServerOptions).not.toHaveBeenCalledWith(
+    expect.objectContaining({ thumbnailJpegQuality: expect.anything() }),
+  );
 });

@@ -32,6 +32,13 @@ const optionalNonNegativeInteger = z.preprocess((val) => {
   return val;
 }, z.coerce.number().int().min(0).optional());
 
+const optionalPositiveInteger = z.preprocess((val) => {
+  if (typeof val === 'string' && val.trim() === '') {
+    return undefined;
+  }
+  return val;
+}, z.coerce.number().int().positive().optional());
+
 const optionalFileWatcherMode = z.preprocess(
   (val) => {
     if (typeof val === 'string' && val.trim() === '') {
@@ -107,6 +114,7 @@ export const envSchema = z.object({
   FILE_WATCHER: optionalFileWatcherMode,
   ON_VIEW_SCAN: optionalOnViewScanMode,
   SCHEDULED_SCAN_HOURS: optionalNonNegativeInteger,
+  THUMBNAIL_WORKERS: optionalPositiveInteger,
 
   POLLING_SECONDS: optionalPositiveNumber,
   POLLING_INTERVAL: optionalPositiveNumber,
@@ -117,6 +125,13 @@ export const envSchema = z.object({
     })
     .min(64)
     .optional(),
+  PICR_PING_TOKEN: z.preprocess(
+    (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
+    z
+      .string()
+      .min(64, 'PICR_PING_TOKEN must be at least 64 characters')
+      .optional(),
+  ),
   PICR_BUILD_CHANNEL: optionalNonEmptyString,
   PICR_DEVELOPMENT_BUILD_SHA: optionalNonEmptyString,
   PICR_GIT_SHA: optionalNonEmptyString,

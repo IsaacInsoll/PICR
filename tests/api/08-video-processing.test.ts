@@ -4,6 +4,7 @@ import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
 import { testUrl, videoFolderId } from './testVariables';
 import { openSharp } from '../../backend/media/openSharp';
+import { thumbnailVariantForWidth } from '../../shared/thumbnailVariants';
 
 const getVideoFile = async () => {
   const headers = await getUserHeader(defaultCredentials);
@@ -103,6 +104,24 @@ test('Video poster thumbnails and scrub sprite are generated and served', async 
   expect(
     dimensions.find(({ size }) => size === 'lg')?.bytes.length,
   ).toBeGreaterThan(50_000);
+
+  const variant = thumbnailVariantForWidth(1000);
+  const variantResponse = await fetch(
+    `${testUrl}image/${video.id}/${variant.token}/${video.fileHash}/poster.jpg`,
+  );
+  expect(variantResponse.status).toBe(200);
+  expect(variantResponse.headers.get('content-type')).toContain(
+    variant.mimeType,
+  );
+  expect(variantResponse.headers.get('cache-control')).toBe(
+    'public, max-age=86400',
+  );
+  const variantMetadata = await openSharp(
+    Buffer.from(new Uint8Array(await variantResponse.arrayBuffer())),
+  ).metadata();
+  expect(variantMetadata.width).toBeGreaterThanOrEqual(562);
+  expect(variantMetadata.width).toBeLessThanOrEqual(563);
+  expect(variantMetadata.height).toBe(1000);
 
   const scrubResponse = await fetch(
     `${testUrl}image/${video.id}/scrub/${video.fileHash}/scrub.jpg`,

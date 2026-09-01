@@ -8,7 +8,7 @@ import { dbFile, dbFolder } from '../db/models/index.js';
 import { isNotNull } from 'drizzle-orm';
 import type { IPicrConfiguration } from '../config/IPicrConfiguration.js';
 import { createRenameTracker } from './renameTracker.js';
-import { ignoredPathPattern } from './ignoredPaths.js';
+import { ignoredPathPattern } from '@shared/filesystem/ignoredPaths.js';
 import { scanFolderTree } from './scanFolder.js';
 
 export const fileWatcher = async (
@@ -101,7 +101,7 @@ const runBootScanWithoutWatcher = async (rootFolderId: number) => {
     });
     log(
       result.completed ? 'info' : 'warn',
-      `✅ Initial scan ${result.completed ? 'complete' : 'finished with unsettled files'} after ${result.scanPasses} pass(es) in ${((Date.now() - startedAt) / 1000).toFixed(2)} seconds`,
+      `✅ Initial scan ${result.completed ? 'complete' : 'finished with incomplete filesystem work'} after ${result.scanPasses} pass(es) in ${((Date.now() - startedAt) / 1000).toFixed(2)} seconds`,
       true,
     );
   } catch (error) {
