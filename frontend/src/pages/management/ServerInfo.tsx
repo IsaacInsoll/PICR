@@ -10,10 +10,13 @@ import {
   Group,
   Modal,
   NumberInput,
+  Progress,
+  RollingNumber,
   SimpleGrid,
   Stack,
   Switch,
   Text,
+  TextInput,
   ThemeIcon,
   Title,
   Tooltip,
@@ -25,7 +28,6 @@ import { LoadingIndicator } from '../../components/LoadingIndicator';
 import { useMe } from '../../hooks/useMe';
 import {
   BenchmarkIcon,
-  BitrateIcon,
   CircleCheckFilledIcon,
   CircleXIcon,
   ClipboardIcon,
@@ -37,7 +39,6 @@ import {
   ServerIcon,
   StorageIcon,
   SystemIcon,
-  ThumbnailsIcon,
   VideoMetadataIcon,
 } from '../../PicrIcons';
 import { PicrLink } from '../../components/PicrLink';
@@ -47,12 +48,14 @@ import {
 } from '@shared/urql/queries/serverInfoQuery';
 import { runBenchmarkMutation } from '@shared/urql/mutations/runBenchmarkMutation';
 import { editServerSettingsMutation } from '@shared/urql/mutations/editServerSettingsMutation';
-import type { BenchmarkStep, ServerInfoQueryQuery } from '@shared/gql/graphql';
+import type {
+  NamedBenchmarkStep,
+  ServerInfoQueryQuery,
+} from '@shared/gql/graphql';
 import { copyToClipboard } from '../../helpers/copyToClipboard';
 import { notifications } from '@mantine/notifications';
 import { useRequery } from '@shared/hooks/useRequery';
 import { isNewerPicrVersion } from '../../helpers/versionUpdates';
-import { DEFAULT_SERVER_MEDIA_SETTINGS } from '@shared/serverMediaSettings';
 import { useLanguage } from '../../i18n/useLanguage';
 import { useDateFormatters } from '../../i18n/useDateFormatters';
 import { useTranslation } from 'react-i18next';
@@ -462,23 +465,16 @@ const MediaSettingsCard = ({
 };
 
 type ServerSettingsData = ServerInfoData['settings'];
-type NumericSetting = number | '';
 
 interface MediaSettingsFormState {
   useOriginalsForLightbox: boolean;
-  thumbnailSmallPx: NumericSetting;
-  thumbnailMediumPx: NumericSetting;
-  thumbnailLargePx: NumericSetting;
-  thumbnailJpegQuality: NumericSetting;
+  thumbnailJpegQuality: number;
 }
 
 const formStateFor = (
   settings: ServerSettingsData,
 ): MediaSettingsFormState => ({
   useOriginalsForLightbox: settings.useOriginalsForLightbox,
-  thumbnailSmallPx: settings.thumbnailSmallPx,
-  thumbnailMediumPx: settings.thumbnailMediumPx,
-  thumbnailLargePx: settings.thumbnailLargePx,
   thumbnailJpegQuality: settings.thumbnailJpegQuality,
 });
 
@@ -521,48 +517,29 @@ const MediaSettingsControls = ({
 
   return (
     <Stack gap="md">
-      <Box>
-        <Title order={6}>{t('server.media.thumbnails')}</Title>
-        <Text size="xs" c="dimmed" mt={2}>
-          {t('server.media.thumbnailDescription')}
-        </Text>
-      </Box>
-      <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="sm">
-        <PixelInput
-          label={t('server.media.smallWidth')}
-          icon={<ThumbnailsIcon />}
-          value={form.thumbnailSmallPx}
-          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailSmallPx}
-          onChange={(value) => setField('thumbnailSmallPx', value)}
-        />
-        <PixelInput
-          label={t('server.media.mediumWidth')}
-          icon={<ThumbnailsIcon />}
-          value={form.thumbnailMediumPx}
-          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailMediumPx}
-          onChange={(value) => setField('thumbnailMediumPx', value)}
-        />
-        <PixelInput
-          label={t('server.media.largeWidth')}
-          icon={<ThumbnailsIcon />}
-          value={form.thumbnailLargePx}
-          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailLargePx}
-          onChange={(value) => setField('thumbnailLargePx', value)}
-        />
-        <QualityInput
-          label={t('server.media.jpegQuality')}
-          icon={<BitrateIcon />}
-          value={form.thumbnailJpegQuality}
-          defaultValue={DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailJpegQuality}
-          onChange={(value) => setField('thumbnailJpegQuality', value)}
-        />
-      </SimpleGrid>
       <Switch
         checked={form.useOriginalsForLightbox}
         label={t('server.media.useOriginals')}
         description={t('server.media.useOriginalsDescription')}
         onChange={(event) =>
           setField('useOriginalsForLightbox', event.currentTarget.checked)
+        }
+      />
+      <NumberInput
+        label={t('server.media.thumbnailQuality')}
+        description={t('server.media.thumbnailQualityDescription')}
+        value={form.thumbnailJpegQuality}
+        min={1}
+        max={100}
+        step={5}
+        allowDecimal={false}
+        clampBehavior="strict"
+        suffix="%"
+        onChange={(value) =>
+          setField(
+            'thumbnailJpegQuality',
+            typeof value === 'number' ? value : form.thumbnailJpegQuality,
+          )
         }
       />
       <Group justify="flex-end">
@@ -579,89 +556,13 @@ const MediaSettingsControls = ({
   );
 };
 
-const PixelInput = ({
-  label,
-  icon,
-  value,
-  defaultValue,
-  onChange,
-}: {
-  label: string;
-  icon: ReactNode;
-  value: NumericSetting;
-  defaultValue: number;
-  onChange: (value: NumericSetting) => void;
-}) => (
-  <NumberInput
-    label={label}
-    value={value}
-    placeholder={String(defaultValue)}
-    min={16}
-    max={20000}
-    allowDecimal={false}
-    suffix=" px"
-    leftSection={icon}
-    onChange={(next) => onChange(numberInputValue(next))}
-  />
-);
-
-const QualityInput = ({
-  label,
-  icon,
-  value,
-  defaultValue,
-  onChange,
-}: {
-  label: string;
-  icon: ReactNode;
-  value: NumericSetting;
-  defaultValue: number;
-  onChange: (value: NumericSetting) => void;
-}) => (
-  <NumberInput
-    label={label}
-    value={value}
-    placeholder={String(defaultValue)}
-    min={1}
-    max={100}
-    allowDecimal={false}
-    suffix="%"
-    leftSection={icon}
-    onChange={(next) => onChange(numberInputValue(next))}
-  />
-);
-
-const numberInputValue = (value: string | number): NumericSetting =>
-  typeof value === 'number' && Number.isFinite(value) ? value : '';
-
 const payloadFor = (form: MediaSettingsFormState) => ({
   useOriginalsForLightbox: form.useOriginalsForLightbox,
-  thumbnailSmallPx:
-    form.thumbnailSmallPx === ''
-      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailSmallPx
-      : form.thumbnailSmallPx,
-  thumbnailMediumPx:
-    form.thumbnailMediumPx === ''
-      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailMediumPx
-      : form.thumbnailMediumPx,
-  thumbnailLargePx:
-    form.thumbnailLargePx === ''
-      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailLargePx
-      : form.thumbnailLargePx,
-  thumbnailJpegQuality:
-    form.thumbnailJpegQuality === ''
-      ? DEFAULT_SERVER_MEDIA_SETTINGS.thumbnailJpegQuality
-      : form.thumbnailJpegQuality,
+  thumbnailJpegQuality: form.thumbnailJpegQuality,
 });
 
 const serverSettingsKey = (settings: ServerSettingsData) =>
-  [
-    settings.useOriginalsForLightbox,
-    settings.thumbnailSmallPx,
-    settings.thumbnailMediumPx,
-    settings.thumbnailLargePx,
-    settings.thumbnailJpegQuality,
-  ].join(':');
+  [settings.useOriginalsForLightbox, settings.thumbnailJpegQuality].join(':');
 
 const ServerCapabilitiesCard = ({
   caps,
@@ -1258,10 +1159,16 @@ const Benchmark = () => {
   const benchmark = result.data?.runBenchmark;
   const [opened, setOpened] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [assetPath, setAssetPath] = useState('');
+  const [benchmarkStartedAt, setBenchmarkStartedAt] = useState<number | null>(
+    null,
+  );
 
   const startBenchmark = () => {
     setConfirmed(true);
-    void runBenchmark({});
+    setBenchmarkStartedAt(Date.now());
+    const trimmedAssetPath = assetPath.trim();
+    void runBenchmark({ assetPath: trimmedAssetPath || undefined });
   };
 
   const close = () => {
@@ -1278,6 +1185,7 @@ const Benchmark = () => {
         onClick={() => {
           setOpened(true);
           setConfirmed(false);
+          setBenchmarkStartedAt(null);
         }}
       >
         <BenchmarkIcon /> {t('server.benchmark.run')}
@@ -1294,6 +1202,13 @@ const Benchmark = () => {
           {!confirmed ? (
             <>
               <Text size="sm">{t('server.benchmark.confirmation')}</Text>
+              <TextInput
+                label={t('server.benchmark.assetPathOverride')}
+                description={t('server.benchmark.assetPathOverrideDescription')}
+                value={assetPath}
+                onChange={(event) => setAssetPath(event.currentTarget.value)}
+                placeholder={t('server.benchmark.assetPathOverridePlaceholder')}
+              />
               <Group justify="flex-end">
                 <Button variant="default" onClick={close}>
                   {t('common.cancel')}
@@ -1307,10 +1222,7 @@ const Benchmark = () => {
               </Group>
             </>
           ) : result.fetching ? (
-            <Group gap="sm">
-              <LoadingIndicator size="small" />
-              <Text size="sm">{t('server.benchmark.running')}</Text>
-            </Group>
+            <BenchmarkProgress startedAt={benchmarkStartedAt} />
           ) : result.error ? (
             <>
               <Text c="red" size="sm">
@@ -1341,16 +1253,22 @@ const Benchmark = () => {
                   })}
                 />
                 <BenchmarkResultLine
-                  title={t('server.benchmark.assetSetup')}
-                  value={<BenchmarkStepValue step={benchmark.assetSetup} />}
+                  title={t('server.benchmark.assetPath')}
+                  value={benchmark.assetPath}
                 />
                 <BenchmarkResultLine
-                  title={t('server.benchmark.jpegResize')}
-                  value={<BenchmarkStepValue step={benchmark.jpegResize} />}
+                  title={t('server.benchmark.assetSource')}
+                  value={benchmark.assetSourceUrl}
                 />
                 <BenchmarkResultLine
-                  title={t('server.benchmark.avifResize')}
-                  value={<BenchmarkStepValue step={benchmark.avifResize} />}
+                  title={t('server.benchmark.cpuCount')}
+                  value={String(benchmark.cpuCount)}
+                />
+                <BenchmarkResultLine
+                  title={t('server.benchmark.uvThreadpool')}
+                  value={
+                    benchmark.uvThreadpoolSize || t('server.benchmark.default')
+                  }
                 />
                 <BenchmarkResultLine
                   title={t('server.capabilities.videoAcceleration')}
@@ -1360,34 +1278,19 @@ const Benchmark = () => {
                       : `${t('server.capabilities.cpuOnly')} (${benchmark.videoAccelerationReason})`
                   }
                 />
-                <BenchmarkResultLine
-                  title={t('server.benchmark.videoThumbnailCpu')}
-                  value={
-                    <BenchmarkStepValue step={benchmark.videoThumbnailCpu} />
-                  }
-                />
-                <BenchmarkResultLine
-                  title={t('server.benchmark.videoThumbnailVaapi')}
-                  value={
-                    <BenchmarkStepValue
-                      step={benchmark.videoThumbnailAccelerated}
-                    />
-                  }
-                />
-                <BenchmarkResultLine
-                  title={t('server.benchmark.videoTranscodeCpu')}
-                  value={
-                    <BenchmarkStepValue step={benchmark.videoTranscodeCpu} />
-                  }
-                />
-                <BenchmarkResultLine
-                  title={t('server.benchmark.videoTranscodeVaapi')}
-                  value={
-                    <BenchmarkStepValue
-                      step={benchmark.videoTranscodeAccelerated}
-                    />
-                  }
-                />
+                {benchmark.steps.map((step) => (
+                  <BenchmarkResultLine
+                    key={step.key}
+                    title={
+                      step.includedInTotal
+                        ? step.name
+                        : t('server.benchmark.notIncludedStep', {
+                            name: step.name,
+                          })
+                    }
+                    value={<BenchmarkStepValue step={step} />}
+                  />
+                ))}
                 <BenchmarkResultLine
                   title={t('server.benchmark.total')}
                   value={t('server.benchmark.totalValue', {
@@ -1437,59 +1340,154 @@ const BenchmarkResultLine = ({
   );
 };
 
+const BENCHMARK_EXPECTED_SECONDS = 60;
+const BENCHMARK_SLOW_CAP_SECONDS = 180;
+
+const BenchmarkProgress = ({ startedAt }: { startedAt: number | null }) => {
+  const { t } = useTranslation('admin');
+  const now = useNow(1000);
+  const elapsedSeconds =
+    startedAt == null ? 0 : Math.max(0, Math.floor((now - startedAt) / 1000));
+  const progressValue = benchmarkProgressValue(elapsedSeconds);
+
+  return (
+    <Stack gap="sm">
+      <Group justify="space-between" align="center" wrap="nowrap">
+        <Text size="sm" fw={500}>
+          {t('server.benchmark.running')}
+        </Text>
+        <Code>
+          <RollingNumber
+            value={elapsedSeconds}
+            suffix={t('server.benchmark.elapsedSecondsSuffix')}
+          />
+        </Code>
+      </Group>
+      <Progress value={progressValue} striped animated radius="xl" size="md" />
+      <Text size="xs" c="dimmed">
+        {t('server.benchmark.runningEstimate')}
+      </Text>
+    </Stack>
+  );
+};
+
+const benchmarkProgressValue = (elapsedSeconds: number): number => {
+  if (elapsedSeconds <= BENCHMARK_EXPECTED_SECONDS) {
+    return (elapsedSeconds / BENCHMARK_EXPECTED_SECONDS) * 90;
+  }
+
+  const slowProgressSeconds = Math.min(
+    elapsedSeconds - BENCHMARK_EXPECTED_SECONDS,
+    BENCHMARK_SLOW_CAP_SECONDS - BENCHMARK_EXPECTED_SECONDS,
+  );
+  return (
+    90 +
+    (slowProgressSeconds /
+      (BENCHMARK_SLOW_CAP_SECONDS - BENCHMARK_EXPECTED_SECONDS)) *
+      9
+  );
+};
+
 type BenchmarkResultForCopy = {
   appVersion: string;
   imageCount: number;
   videoCount: number;
-  assetSetup: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  jpegResize: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  avifResize: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
+  assetPath: string;
+  assetSourceUrl: string;
+  cpuCount: number;
+  uvThreadpoolSize: string;
   videoAccelerationMode: string;
   videoAccelerationReason: string;
-  videoThumbnailCpu: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  videoThumbnailAccelerated: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  videoTranscodeCpu: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-  videoTranscodeAccelerated: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
+  steps: BenchmarkStepForDisplay[];
   totalMs: number;
 };
 
 const formatBenchmarkResults = (benchmark: BenchmarkResultForCopy) => {
-  return [
+  const lines = [
     `PICR Version: ${benchmark.appVersion}`,
     `Assets: ${benchmark.imageCount} images, ${benchmark.videoCount} videos`,
-    `Asset Setup (not included in total): ${formatStep(benchmark.assetSetup)}`,
-    `JPEG Resize: ${formatStep(benchmark.jpegResize)}`,
-    `AVIF Resize: ${formatStep(benchmark.avifResize)}`,
+    `Asset Path: ${benchmark.assetPath}`,
+    `Asset Source: ${benchmark.assetSourceUrl}`,
+    `CPU Count: ${benchmark.cpuCount}`,
+    `UV Threadpool: ${benchmark.uvThreadpoolSize || 'default'}`,
     `Video Acceleration: ${
       benchmark.videoAccelerationMode === 'vaapi'
         ? 'VAAPI'
         : `CPU only (${benchmark.videoAccelerationReason})`
     }`,
-    `Video Thumbnail (CPU): ${formatStep(benchmark.videoThumbnailCpu)}`,
-    `Video Thumbnail (VAAPI): ${formatStep(benchmark.videoThumbnailAccelerated)}`,
-    `Video Transcode (CPU): ${formatStep(benchmark.videoTranscodeCpu)}`,
-    `Video Transcode (VAAPI): ${formatStep(benchmark.videoTranscodeAccelerated)}`,
-    `Total: ${formatMs(benchmark.totalMs)} (asset setup excluded)`,
-  ].join('\n');
+  ];
+  benchmark.steps.forEach((step) => {
+    lines.push(
+      `${step.name}${step.includedInTotal ? '' : ' (not included in total)'}: ${formatStep(step)}`,
+    );
+  });
+  lines.push(
+    `Total: ${formatMs(benchmark.totalMs)} (completed included steps only)`,
+  );
+  return lines.join('\n');
 };
 
-const formatStep = (step: Pick<BenchmarkStep, 'ms' | 'skippedReason'>) => {
-  return step.skippedReason ?? formatMs(step.ms);
+type BenchmarkStepForDisplay = Pick<
+  NamedBenchmarkStep,
+  | 'name'
+  | 'status'
+  | 'ms'
+  | 'skippedReason'
+  | 'outputBytes'
+  | 'details'
+  | 'includedInTotal'
+>;
+
+const formatStep = (step: BenchmarkStepForDisplay) => {
+  const result =
+    step.status === 'failed'
+      ? `failed after ${formatMs(step.ms)}: ${step.skippedReason ?? 'Unknown error'}`
+      : (step.skippedReason ?? formatMs(step.ms));
+  const parts = [result];
+  if (step.outputBytes != null)
+    parts.push(prettyBytes(String(step.outputBytes)));
+  if (step.details) parts.push(step.details);
+  return parts.join(' | ');
 };
 
-const BenchmarkStepValue = ({
-  step,
-}: {
-  step: Pick<BenchmarkStep, 'ms' | 'skippedReason'>;
-}) => {
-  if (step.skippedReason) {
+const BenchmarkStepValue = ({ step }: { step: BenchmarkStepForDisplay }) => {
+  const { t } = useTranslation('admin');
+  if (step.status === 'skipped') {
     return (
       <Text c="dimmed" size="sm" ta="right">
         {step.skippedReason}
       </Text>
     );
   }
-  return <Code>{formatMs(step.ms)}</Code>;
+  if (step.status === 'failed') {
+    return (
+      <Stack gap={2} align="flex-end">
+        <Text c="red" size="sm" ta="right">
+          {t('server.benchmark.failed')}: {step.skippedReason}
+        </Text>
+        {step.ms != null ? (
+          <Text size="xs" c="dimmed" ta="right">
+            {formatMs(step.ms)}
+          </Text>
+        ) : null}
+      </Stack>
+    );
+  }
+  return (
+    <Stack gap={2} align="flex-end">
+      <Code>{formatMs(step.ms)}</Code>
+      {step.outputBytes != null ? (
+        <Text size="xs" c="dimmed" ta="right">
+          {prettyBytes(String(step.outputBytes))}
+        </Text>
+      ) : null}
+      {step.details ? (
+        <Text size="xs" c="dimmed" ta="right">
+          {step.details}
+        </Text>
+      ) : null}
+    </Stack>
+  );
 };
 
 const formatMs = (ms?: number | null) => {

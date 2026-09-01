@@ -1,4 +1,9 @@
-import { GraphQLFloat, GraphQLObjectType, GraphQLString } from 'graphql';
+import {
+  GraphQLFloat,
+  GraphQLInt,
+  GraphQLObjectType,
+  GraphQLString,
+} from 'graphql';
 import {
   fileInterface,
   fileInterfaceFields,
@@ -10,6 +15,8 @@ export const imageFileType = new GraphQLObjectType({
   interfaces: [fileInterface],
   fields: () => ({
     ...fileInterfaceFields(),
+    imageWidth: { type: GraphQLInt },
+    imageHeight: { type: GraphQLInt },
     imageRatio: { type: GraphQLFloat },
     metadata: { type: imageMetadataSummaryType },
     blurHash: { type: GraphQLString },

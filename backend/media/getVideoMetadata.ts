@@ -4,7 +4,9 @@ import type { FileFields } from '../db/picrDb.js';
 import { log } from '../logger.js';
 import { probe, type FfprobeStream } from './ffmpeg.js';
 
-export const getVideoMetadata = async (file: FileFields) => {
+export const getVideoMetadata = async (
+  file: Pick<FileFields, 'name' | 'relativePath'>,
+) => {
   try {
     const metadata = await probe(fullPathForFile(file));
     const m: PicrVideoMetadata = {};

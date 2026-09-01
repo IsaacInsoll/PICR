@@ -1,31 +1,35 @@
 import {
   GraphQLBoolean,
   GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
+  GraphQLString,
 } from 'graphql';
+import { thumbnailVariantLadderForSettings } from '@shared/thumbnailVariants.js';
 
-export const thumbnailDimensionsType = new GraphQLObjectType({
-  name: 'ThumbnailDimensions',
+export const thumbnailVariantType = new GraphQLObjectType({
+  name: 'ThumbnailVariant',
   fields: () => ({
-    sm: { type: new GraphQLNonNull(GraphQLInt) },
-    md: { type: new GraphQLNonNull(GraphQLInt) },
-    lg: { type: new GraphQLNonNull(GraphQLInt) },
+    token: { type: new GraphQLNonNull(GraphQLString) },
+    width: { type: new GraphQLNonNull(GraphQLInt) },
+    format: { type: new GraphQLNonNull(GraphQLString) },
+    mimeType: { type: new GraphQLNonNull(GraphQLString) },
+    quality: { type: new GraphQLNonNull(GraphQLInt) },
   }),
 });
 
 export const serverSettingsType = new GraphQLObjectType({
   name: 'ServerSettings',
   fields: () => ({
-    avifEnabled: { type: new GraphQLNonNull(GraphQLBoolean) },
     useOriginalsForLightbox: { type: new GraphQLNonNull(GraphQLBoolean) },
-    thumbnailSmallPx: { type: new GraphQLNonNull(GraphQLInt) },
-    thumbnailMediumPx: { type: new GraphQLNonNull(GraphQLInt) },
-    thumbnailLargePx: { type: new GraphQLNonNull(GraphQLInt) },
     thumbnailJpegQuality: { type: new GraphQLNonNull(GraphQLInt) },
-    thumbnailAvifQuality: { type: new GraphQLNonNull(GraphQLInt) },
-    thumbnailDimensions: {
-      type: new GraphQLNonNull(thumbnailDimensionsType),
+    thumbnailVariants: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(thumbnailVariantType)),
+      ),
+      resolve: (settings: { thumbnailJpegQuality: number }) =>
+        thumbnailVariantLadderForSettings(settings),
     },
   }),
 });

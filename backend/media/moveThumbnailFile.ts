@@ -2,7 +2,10 @@ import { promises as fs, constants as fsConstants } from 'node:fs';
 import { dirname, join } from 'path';
 import type { FileFields } from '../db/picrDb.js';
 import { log } from '../logger.js';
-import { thumbnailVariantPaths } from './thumbnailVariants.js';
+import {
+  thumbnailVariantDestinationPath,
+  thumbnailVariantPaths,
+} from './thumbnailVariants.js';
 
 export interface RelocationResult {
   moved: number; // source present, dest absent -> relocated
@@ -203,12 +206,21 @@ export const moveThumbnailFile = async (
 
   if (oldRelativePath === newRelativePath && oldName === newName) return result;
 
-  const sources = thumbnailVariantPaths(oldRelativePath, oldName, hash, type);
-  const dests = thumbnailVariantPaths(newRelativePath, newName, hash, type);
+  const sources = await thumbnailVariantPaths(
+    oldRelativePath,
+    oldName,
+    hash,
+    type,
+  );
 
-  for (let i = 0; i < sources.length; i++) {
-    const from = sources[i].path;
-    const to = dests[i].path;
+  for (const source of sources) {
+    const from = source.path;
+    const to = thumbnailVariantDestinationPath(
+      newRelativePath,
+      newName,
+      hash,
+      source,
+    );
     const [sourceExists, destExists] = await Promise.all([
       pathExists(from),
       pathExists(to),
@@ -225,11 +237,7 @@ export const moveThumbnailFile = async (
         `⚠️ Thumbnail relocation conflict (left both): ${from} -> ${to}`,
       );
     } else {
-      const outcome = await moveEntryNoOverwrite(
-        from,
-        to,
-        sources[i].isDirectory,
-      );
+      const outcome = await moveEntryNoOverwrite(from, to, source.isDirectory);
       if (outcome === 'moved') {
         result.moved++;
       } else {

@@ -118,6 +118,34 @@ the flag — set it only via env, not via any UI mutation. Public-link view
 notifications are sent from `recordFolderVisit`, and download notifications are
 sent from `generateZip` after a download row is written.
 
+Active `Image` rows are expected to have positive oriented `imageWidth` and
+`imageHeight` values. The columns are nullable because non-image rows do not use
+them and because Drizzle SQL migrations run before PICR's boot backfill, but
+missing image dimensions are not normal runtime state. Populate dimensions in
+the same decode/metadata path that classifies an image. Post-boot dimension
+backfill is repair work: if an existing image cannot be decoded there, log/count
+the failure and leave the row unchanged so a flaky mount or transient decoder
+failure does not rewrite user-visible media state. Let normal file scanning
+handle durable type changes. Do not spread nullable-dimension handling into
+gallery code or thumbnail selection.
+GraphQL publishes these columns as nullable `imageWidth`/`imageHeight` on both
+`Image` and `Video`. Videos store their displayed frame size there too,
+following the existing `imageRatio` convention where `image*` describes the
+visual frame of any media type, so responsive selection never branches on file
+type. They are the authoritative responsive dimensions: legacy metadata JSON can
+contain pre-orientation width/height values until the post-boot backfill
+rewrites it. Clients must use only positive pairs and keep a defined fallback
+while maintenance is still running or repair failed.
+
+`backfillImageDimensions` selects rows by _missing dimensions_, never by a
+version stamp, and never touches thumbnail cache entries. That is what keeps
+upgrades incremental: an install that already backfilled its images re-probes
+only its videos, and a partial run resumes where it stopped. Preserve that
+property — do not gate the backfill on a booted-version comparison. Videos use
+`getVideoMetadata` (ffprobe, no decode) rather than the image decode path, and
+rewriting their summary also repairs videos scanned before rotated stream
+dimensions were corrected in 1.3.0.
+
 Folder rows can be `exists=false` while `existsRescan=true` after a watcher
 delete, because `removeFolder()` archives the row without clearing
 `existsRescan`. `addFolder()` must reactivate rows when either flag is false;
@@ -182,6 +210,37 @@ const user = await dbUserForId(userId); // throws if not found
    If the command fails (e.g. DB not reachable), tell the user to run it themselves rather than creating the file manually.
 
 4. Server auto-migrates on startup (dev and production)
+
+---
+
+### Boot Migration Phases
+
+`schemaMigration()` and `dbMigrate()` run before Express listens. Keep only
+work there that must finish before serving traffic: schema changes, compatibility
+guards, token-secret setup, and structural data repairs where users could
+otherwise interact with rows that are about to be merged or reclassified. The
+Docker healthcheck hits `/readyz`, which is only reachable after Express starts;
+slow pre-listen work can make an otherwise healthy container look failed.
+
+Use `postBootMaintenance()` for resumable derived-data repair where serving
+before completion means stale data, not wrong behavior. Run it after
+`express.listen()` and shutdown-handler registration, but before `fileWatcher()`
+and scheduled scans unless a task has a proven reason to run concurrently with
+that boot/watch/scheduled scanner work. Express is already accepting traffic at
+this point, so request-triggered work such as on-view scans may still overlap.
+Deferred maintenance must catch/log its own top-level failures and continue
+startup so stale derived data does not take the server down after it is already
+listening. Maintenance tasks that actually do work should leave a concise
+info-level stdout trail for production operators: start, completion with elapsed
+time and affected row/file counts where applicable, and failure summaries that
+explain what was left stale. Keep no-op maintenance quiet so routine boots do
+not accumulate noise in long-lived server logs.
+
+`lastBootedVersion` is stamped at the end of `dbMigrate()`, before
+post-boot maintenance runs. Post-boot tasks may read the previous booted version
+for logging or fresh-install shortcuts, but required completion must be gated by
+durable data state or by a task-specific durable marker. If a task can only be
+made safe with the global version gate, keep it pre-listen.
 
 ---
 
@@ -254,6 +313,31 @@ policy-controlled: validate paths after any strip-components handling, stream
 file entries, and reject symlinks/special entries. Do not reuse it for user
 uploads without adding explicit upload limits and a fresh threat model.
 
+### Benchmark Timing
+
+`backend/benchmark/runBenchmark.ts` reports step timings intended for production
+performance decisions. Keep setup, output directory cleanup, recursive output
+size scans, and other bookkeeping outside each step's measured `ms`; otherwise
+steps that write more files are penalized by measurement overhead rather than
+media-processing work. Local asset overrides must stay under
+`picrConfig.mediaPath`, and real-media benchmark steps should count per-file
+failures instead of aborting the whole run on the first corrupt file. When a
+benchmark row is labelled as current image production, keep its Sharp pipeline
+aligned by calling `backend/media/encodeImageThumbnails.ts`; label old
+comparison rows as historical/pre-R0. Current video thumbnail rows should share
+`backend/media/videoThumbnailPipeline.ts` with production generation. Keep the
+default admin benchmark production-focused enough to complete under common
+reverse-proxy timeouts on typical self-hosted hardware. Quality sweeps, worker
+sweeps, historical pipeline comparisons, and other experiments belong in an
+explicit diagnostic mode or `.scratch` scripts/notes, not the normal modal.
+
+Video thumbnail candidate extraction has two CPU shapes: one ffmpeg process with
+`split` and one process per timestamp with input seeking. The split path is
+faster for short clips but O(video duration), so never use it unconditionally for
+production. Keep it duration-guarded, give it an explicit timeout, and fall back
+to the seek loop if it fails; benchmark details should report which extractor
+was actually used.
+
 ### FFmpeg/FFprobe Configuration
 
 - Use `backend/media/ffmpeg.ts` for ffmpeg/ffprobe calls. It runs the configured
@@ -279,14 +363,13 @@ uploads without adding explicit upload limits and a fresh threat model.
 - VAAPI drivers ship in the `amd64` Docker image only; `arm64` has no drivers
   and always resolves to CPU. Anything that runs ffmpeg VAAPI filters must
   therefore tolerate the drivers being absent.
-- **Production video thumbnails are intentionally CPU-only.** VAAPI benchmarked
-  ~16-19% slower than CPU for seek-based poster/scrub extraction (GPU
-  upload/download overhead dominates), so `generateVideoThumbnail.ts` does not
-  use VAAPI. The VAAPI thumbnail helper (`media/vaapiVideo.ts`,
-  `extractVaapiThumbnailFrames`) is benchmark/reference-only. VAAPI is retained
-  because it is ~2.5-2.9x faster for whole-video transcode — groundwork for a
-  future transcoding feature. Don't wire VAAPI into the thumbnail path without
-  re-benchmarking.
+- Production video thumbnails are currently CPU-only. The VAAPI thumbnail helper
+  (`media/vaapiVideo.ts`, `extractVaapiThumbnailFrames`) is
+  benchmark/reference-only so CPU vs VAAPI can be compared on real hardware
+  before changing production behavior. VAAPI remains important for whole-video
+  transcode groundwork, where it has benchmarked substantially faster on
+  supported hardware. Don't wire VAAPI into the thumbnail path without
+  re-benchmarking the full production-shaped thumbnail pipeline.
 
 ### Media Write Access
 
@@ -431,9 +514,19 @@ AI agents CAN run `npm run gql` freely - it regenerates:
 - `./schema.graphql` - SDL schema
 - `shared/urql/graphql.schema.json` - Schema for caching
 
-Run after any schema changes. Codegen imports and validates the executable
-schema in-process and writes a temporary introspection snapshot under
-`.scratch/`; it does not require the backend server or database to be running.
+Run after any schema changes. A short-lived backend process imports and
+validates the executable schema, writes a temporary introspection snapshot under
+`.scratch/`, and exits before codegen consumes the snapshot. It does not require
+the backend server or database to be running.
+
+The GraphQL Codegen configuration and dependencies belong in `backend/` so the
+schema exporter and codegen plugins use this package's direct `graphql`
+dependency. Root `npm run gql` delegates to the internal `gql:generate` script
+and then formats the generated artifacts; do not invoke `gql:generate` as the
+normal developer workflow. Keep the JSON snapshot between the exporter and
+codegen processes: it preserves offline generation without passing live
+`GraphQLSchema` objects across module realms or keeping schema import side
+effects alive during codegen.
 
 Codegen is offline but not yet bootstrappable from scratch. Around 36 backend
 files import `@shared/gql/graphql`, and several import runtime _values_ rather
@@ -543,6 +636,23 @@ contracts between watcher, on-view, scheduled, and manual scans.
   `addFile()` can call it while resolving a missing parent folder, so do not rely
   only on scan-folder or file-queue serialization to prevent duplicate folder
   rows.
+- `addFile()` queues thumbnail generation only after the `Files` row has been
+  persisted with `exists=true` and the current `fileHash`. Do not move that
+  enqueue earlier: thumbnail workers resolve rows through `dbFileForId()`, which
+  filters to active rows and uses the persisted hash for cache paths.
+  Thumbnail-generation failures must stay isolated from row persistence; they
+  should not downgrade an image to a generic file or prevent a video row from
+  receiving its latest hash/existence flags.
+- Image thumbnail generation is single-flight by `file.id`, `fileHash`, and
+  size. Keep request-time cache-miss generation and queue-worker generation
+  joined on the same promise; duplicate writes waste the thumbnail worker pool
+  even though `atomicWrite()` prevents partial-file corruption.
+- `fileQueue` runs only adjacent `generateThumbnails` items concurrently, using
+  `picrConfig.thumbnailWorkerCount`. Filesystem mutation actions (`add`,
+  `unlink`, `renameDir`, etc.) remain serial and must not be batched across.
+- `UV_THREADPOOL_SIZE` must be set before Node starts. The Docker image sets it
+  with `ENV`; assigning `process.env.UV_THREADPOOL_SIZE` inside app code is too
+  late once any import has touched libuv/Sharp.
 - Recursive scanner calls carry a visited-folder set. If corrupt `parentId`
   data creates a folder cycle, skip the repeated folder and log a warning;
   waiting on the per-folder lock from the same scan stack would deadlock.
@@ -590,24 +700,68 @@ probes cannot collectively trip the UI threshold.
 
 ### Thumbnail Sizes
 
-| Size  | Dimension                                | Purpose          |
-| ----- | ---------------------------------------- | ---------------- |
-| `sm`  | Default 250px, configurable server-wide  | Grid thumbnails  |
-| `md`  | Default 500px, configurable server-wide  | Medium previews  |
-| `lg`  | Default 2500px, configurable server-wide | Full-screen view |
-| `raw` | Original                                 | Direct download  |
+New image/video poster thumbnails use immutable variant tokens from
+`shared/thumbnailVariants.ts`, for example `v1-1000j80`. The token encodes cache
+version, long-edge width, JPEG format, and JPEG quality, so it is safe for
+long-lived HTTP caching and settings/history confusion does not leak into the
+filename. Keep generation allowlisted to the current published ladder; do not
+turn route tokens into arbitrary width/quality generation.
+`THUMBNAIL_VARIANT_CACHE_VERSION` is part of that contract. Bump it whenever an
+image thumbnail encoder change can make the same source hash, width, format, and
+quality produce different thumbnail bytes: resize options, orientation handling,
+colour/ICC policy, JPEG/WebP encoder options, sharpening, or any other pixel or
+encoding transform. Do not bump it for queue/concurrency changes, frontend
+`srcset` selection, or adding a new width; those do not change the bytes for an
+existing token.
+The final `:filename` segment of `/image/:id/:size/:hash/:filename` is
+decorative for token routes just like legacy routes; use the token's format
+letter/registry entry, not the decorative filename extension, to choose the
+cache file, MIME type, and encoder path. Explicit `.avif` legacy thumbnail
+requests still return 404 while AVIF is not generated. New thumbnail formats
+must be added through the shared format registry and benchmarked before they are
+enabled.
+Every producer of an image route must encode that final filename with
+`encodeURIComponent`. Raw spaces and URL delimiters are unsafe in clients, and
+backend-produced URLs can be interpolated into HTML metadata or notifications.
+Rich-link template fields must go through `renderEscapedHtmlTemplate`; never
+interpolate folder names, summaries, request URLs, or media URLs directly into
+`index.html`. The renderer escapes text/attribute delimiters and performs one
+placeholder pass so field values cannot introduce another substitution.
 
-Thumbnail dimensions and JPEG/AVIF quality are stored on the singleton
-`ServerOptions` row. The disk cache filename is still tier-based (`sm`/`md`/`lg`)
-rather than config-keyed, so changing media settings affects only newly generated
-or regenerated thumbnails. Existing cache files continue to be served until they
-are deleted, regenerated, or the source media hash changes.
+The legacy `sm`/`md`/`lg` routes remain as compatibility aliases. They may serve
+old cache files when present, but missing legacy entries should resolve to the
+current token ladder rather than creating new tier-named files. `raw` remains the
+original file and `scrub` remains the video scrub sprite; neither belongs in the
+shared thumbnail variant ladder.
+Do not add new frontend, app, notification, or metadata producers of legacy
+thumbnail URLs; new callers should choose a thumbnail variant token by required
+pixel width. Keep the legacy route warning low-noise so production logs can
+prove whether old external links or cached clients still hit it before the 2.0
+route removal.
+
+Changing `thumbnailJpegQuality` creates a new reachable token set. Old
+same-width variants at the previous quality are intentionally not generated on
+demand for request-surface safety, so thumbnail cleanup must sweep stale-quality
+token variants as well as legacy `sm`/`md`/`lg` files.
+
+Folder thumbnail completion must use the directory index from
+`createThumbnailVariantIndex()`. Do not check each expected artifact with
+`existsSync()` or `stat()` in a resolver path; root-level admin folders can mean
+hundreds of thousands of cache artifacts, and synchronous per-artifact probes
+block the server event loop.
+
+Legacy thumbnail dimension columns remain on `ServerOptions` for upgrade
+compatibility, but they are no longer published through GraphQL and application
+thumbnail sizing is controlled by the shared variant registry. JPEG quality
+remains configurable and is encoded into the token. Do not reintroduce
+per-install ladder tuning without also revisiting URL/cache invalidation and
+frontend `srcset` selection.
 
 ### Image Processing
 
 ```typescript
 // Uses sharp library
-// Generates JPEG and optional AVIF with ServerOptions quality settings
+// Generates JPEG with the ServerOptions quality setting
 // Creates blurhash for placeholder
 ```
 
@@ -622,9 +776,34 @@ are deleted, regenerated, or the source media hash changes.
 - Existing decoded cache hits are trusted by existence, like generated
   thumbnails. New decoded intermediates must be validated before the atomic
   rename into the cache.
+- RAW embedded previews may omit the source file's EXIF Orientation tag. Copy
+  only that tag from the RAW into the temporary JPEG, validate the preview, then
+  promote it without modifying the original RAW. Preview extraction tries
+  `JpgFromRaw`, `PreviewImage`, and `ThumbnailImage` in that order. RAW decoded
+  intermediates use the `decoded-raw-v2` cache variant so upgrades do not trust
+  unversioned previews created before orientation propagation was added.
 - `addFile()` uses a `typeChanged` gate so existing files reclassify during the
   normal boot scan when optional decoder capabilities appear. Do not bulk-clear
   `fileHash` to force this.
+- Image thumbnail generation decodes each source once, auto-orients pixels with
+  Sharp `.rotate()`, converts to sRGB, strips EXIF/XMP, and writes a web-friendly
+  sRGB ICC profile. Do not reintroduce per-size source opens or metadata-carried
+  orientation without re-benchmarking and revisiting stored source dimensions.
+- Image blurhash generation first tries an embedded EXIF IFD1 JPEG preview and
+  falls back to the full image when the preview is absent, corrupt, non-JPEG,
+  has a mismatched aspect ratio, or comes from a source with a rotating EXIF
+  orientation. EXIF thumbnail offsets are relative to the TIFF header inside
+  Sharp's `Exif\0\0` buffer, so production parsing adds the 6-byte EXIF prefix
+  before slicing preview bytes. Any preview optimization must keep a
+  full-decode fallback because Lightroom/camera previews can be missing or stale.
+- Blurhashes auto-orient so the placeholder matches the pre-rotated thumbnail and
+  the oriented `imageRatio` it is drawn into. An extracted IFD1 preview is a bare
+  JPEG stream carrying no EXIF of its own, so `.rotate()` cannot orient it — that
+  is why rotated sources are refused a preview rather than rotated after
+  extraction. Adding `.rotate()` without that refusal makes the stored hash
+  depend on whether a preview happened to exist, which is worse than not
+  rotating at all. Committed fixtures are all orientation 1, so a rotated
+  fixture is needed to cover this end to end.
 - Legacy pre-v2 video montage cache directories can contain non-PICR metadata
   directories from NAS filesystems (for example Synology `@eaDir`). New video
   thumbnails are versioned files, but cleanup/rename code still sees old
@@ -647,8 +826,7 @@ are deleted, regenerated, or the source media hash changes.
 ```
 
 - Video poster files are named
-  `<name>-v${VIDEO_THUMBNAIL_CACHE_VERSION}-<size>-<hash>.jpg`, plus `.avif`
-  when AVIF is enabled. The scrub sprite is JPEG-only:
+  `<name>-v${VIDEO_THUMBNAIL_CACHE_VERSION}-<size>-<hash>.jpg`. The scrub sprite is JPEG-only:
   `<name>-v${VIDEO_THUMBNAIL_CACHE_VERSION}-scrub-<hash>.jpg`.
 - Client poster URLs use the normal `/image/:id/:size/:hash/poster.jpg` path
   for `sm`/`md`/`lg`. The scrub sprite is served by the backend-local
@@ -741,12 +919,14 @@ uncompressed frontend payloads.
 1. Validate file exists and hash matches
 2. Check if thumbnail exists
 3. Generate on-demand if missing
-4. Return JPEG or AVIF based on config
+4. Return JPEG thumbnail/poster
 
-Generated thumbnail/poster responses use a one-hour `Cache-Control` TTL with
-revalidation, not year-long immutable caching, because regenerated cache files can
-change bytes without changing the URL. Raw originals remain content-addressed by
-`fileHash` and can keep long immutable caching.
+Legacy thumbnail/poster responses use a one-hour `Cache-Control` TTL with
+revalidation because old cache files can change bytes without changing the URL.
+Token thumbnail/poster responses use a 24-hour TTL; their URL encodes width and
+quality, but keeping the TTL finite avoids sticky client failures if server-side
+generation policy changes. Raw originals remain content-addressed by `fileHash`
+and can keep long immutable caching.
 
 ### ZIP Generation
 
@@ -850,36 +1030,14 @@ npm run workflow
 
 ## Troubleshooting
 
-### `npm run gql` fails with network error
+### `npm run gql` fails while loading the schema
 
-The dev server must be running for codegen to introspect the schema:
-
-```bash
-npm run start:server  # In one terminal
-npm run gql           # In another terminal
-```
-
-### `npm run gql` succeeds but generated files don't include new fields
-
-Codegen introspects the **live server** at `http://localhost:6900/graphql`. If a
-server was already running before your schema changes (e.g. a previous `npm start`
-session that wasn't fully killed), that old process will still be on port 6900 and
-codegen will silently introspect the stale schema.
-
-Fix:
-
-1. Kill **all** running server processes — check for any leftover `node` processes
-   on port 6900: `lsof -ti:6900 | xargs kill -9`
-2. Run `npm start` fresh and wait until you see the PICR startup banner in the
-   output (confirms the new server is up and compiled code is loaded)
-3. Verify the new fields are live before running codegen:
-   ```bash
-   curl -s -X POST http://localhost:6900/graphql \
-     -H "Content-Type: application/json" \
-     -d '{"query":"{ __type(name: \"Branding\") { fields { name } } }"}' \
-     | grep -o '"name":"[^"]*"'
-   ```
-4. Then run `npm run gql`
+Codegen does not use the live server. Read the exporter error from the first
+`gql:schema` phase: it imports and validates `backend/graphql/schema.ts` using
+the backend package's tsconfig and dependencies. Fix that schema/import error,
+then rerun the root `npm run gql` wrapper. Do not start a server to work around
+it or run `graphql-codegen` directly against a possibly stale `.scratch`
+snapshot.
 
 ### File watcher not detecting changes
 

@@ -28,12 +28,16 @@ import {
   bannerSizeEnum,
   bannerTextHAlignEnum,
   bannerTextVAlignEnum,
+  mediaTypeFilterEnum,
 } from './enums.js';
 import {
   BANNER_H_ALIGNS,
   BANNER_SIZES,
   BANNER_V_ALIGNS,
 } from '@shared/branding/galleryPresets.js';
+import { thumbnailCompletionType } from './thumbnailCompletionType.js';
+import type { Maybe, MediaTypeFilter } from '@shared/gql/graphql.js';
+import { thumbnailCompletionForFolder } from '../../media/thumbnailCompletion.js';
 
 const nullableEnumValue = <T extends string>(
   value: string | null | undefined,
@@ -171,6 +175,20 @@ export const folderType: GraphQLObjectType<FolderFields, PicrRequestContext> =
               ),
             );
           return total[0].count;
+        },
+      },
+      thumbnailCompletion: {
+        type: new GraphQLNonNull(thumbnailCompletionType),
+        args: {
+          mediaType: { type: mediaTypeFilterEnum, defaultValue: 'All' },
+        },
+        resolve: async (
+          f: FolderFields,
+          params: { mediaType?: Maybe<MediaTypeFilter> },
+          context,
+        ) => {
+          await contextPermissions(context, f.id, 'Admin');
+          return thumbnailCompletionForFolder(f, params.mediaType);
         },
       },
       users: {

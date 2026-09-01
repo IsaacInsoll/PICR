@@ -7,6 +7,8 @@ import { dbFile } from '../../db/models/index.js';
 import { db } from '../../db/picrDb.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationGenerateThumbnailsArgs } from '@shared/gql/graphql.js';
+import { mediaTypeFilterEnum } from '../types/enums.js';
+import { mediaTypesForThumbnailWork } from '../../media/mediaTypeFilter.js';
 
 const resolver: PicrResolver<object, MutationGenerateThumbnailsArgs> = async (
   _,
@@ -22,7 +24,11 @@ const resolver: PicrResolver<object, MutationGenerateThumbnailsArgs> = async (
 
   const files = await db.query.dbFile.findMany({
     columns: { id: true },
-    where: and(inArray(dbFile.folderId, folderIds), eq(dbFile.exists, true)),
+    where: and(
+      inArray(dbFile.folderId, folderIds),
+      eq(dbFile.exists, true),
+      inArray(dbFile.type, mediaTypesForThumbnailWork(params.mediaType)),
+    ),
     orderBy: asc(dbFile.name),
   }); //.then(x=>x.map(f=>f.id));
 
@@ -35,5 +41,6 @@ export const generateThumbnails = {
   resolve: resolver,
   args: {
     folderId: { type: GraphQLID },
+    mediaType: { type: mediaTypeFilterEnum, defaultValue: 'All' },
   },
 };

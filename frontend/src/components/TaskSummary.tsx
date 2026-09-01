@@ -14,6 +14,7 @@ import {
 import { Page } from './Page';
 import { taskQuery } from '@shared/urql/queries/taskQuery';
 import {
+  IMAGE_DIMENSION_BACKFILL_TASK_ID,
   MEDIA_IMPORT_TASK_ID,
   MEDIA_SCAN_TASK_ID,
 } from '@shared/tasks/mediaTaskIds.js';
@@ -27,9 +28,16 @@ interface TaskProgressProps {
   totalSteps?: number | null;
 }
 
+type MediaTaskTranslationKey =
+  | 'task.imageDimensionBackfill'
+  | 'task.mediaImport'
+  | 'task.mediaScan';
+
 export const mediaTaskTranslationKey = (
   id: string | null | undefined,
-): 'task.mediaImport' | 'task.mediaScan' | null => {
+): MediaTaskTranslationKey | null => {
+  if (id === IMAGE_DIMENSION_BACKFILL_TASK_ID)
+    return 'task.imageDimensionBackfill';
   if (id === MEDIA_IMPORT_TASK_ID) return 'task.mediaImport';
   if (id === MEDIA_SCAN_TASK_ID) return 'task.mediaScan';
   return null;
@@ -114,6 +122,14 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
   // ];
 
   if (!remaining?.length) return null;
+  // Keep these calls literal: i18next-cli cannot extract a dynamic key,
+  // even when TypeScript narrows the possible values.
+  const mediaTaskLabels: Record<MediaTaskTranslationKey, string> = {
+    'task.imageDimensionBackfill': t('task.imageDimensionBackfill'),
+    'task.mediaImport': t('task.mediaImport'),
+    'task.mediaScan': t('task.mediaScan'),
+  };
+
   return (
     <Page>
       <Paper shadow="xs" withBorder p="xs" mb="md" mt="lg">
@@ -123,15 +139,9 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
               ({ folder, hash }) => id === folder.id + hash,
             );
             const mediaTaskKey = mediaTaskTranslationKey(id);
-            // Keep these calls literal: i18next-cli cannot extract a dynamic
-            // t(mediaTaskKey), even though TypeScript narrows the key union.
             const displayName = pendingZip
               ? t('download.preparing', { name: pendingZip.folder.name })
-              : mediaTaskKey === 'task.mediaScan'
-                ? t('task.mediaScan')
-                : mediaTaskKey === 'task.mediaImport'
-                  ? t('task.mediaImport')
-                  : name;
+              : (mediaTaskKey && mediaTaskLabels[mediaTaskKey]) || name;
             return (
               <Group gap="small" key={id}>
                 <Text>{displayName}</Text>

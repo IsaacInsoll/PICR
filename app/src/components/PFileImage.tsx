@@ -2,9 +2,10 @@ import { memo } from 'react';
 import type { ImageProps } from 'expo-image';
 import { Image as ExpoImage } from 'expo-image';
 import { useLocalImageUrl } from '@/src/components/PBigImage';
-import type { ThumbnailSize } from '@shared/thumbnailSize';
 import { View } from 'react-native';
 import type { FileType } from '@shared/gql/graphql';
+import { useThumbnailVariants } from '@/src/hooks/useMe';
+import { thumbnailRouteSizeForWidth } from '@/src/helpers/thumbnailRouteSize';
 
 type ThumbnailImageLike = {
   id?: string;
@@ -17,12 +18,14 @@ type ThumbnailImageLike = {
 // Basically an Expo Image using a Picr File as src
 const PFileImageComponent = ({
   file,
-  size,
+  targetWidth,
   ...props
-}: { file?: ThumbnailImageLike | null; size: ThumbnailSize } & ImageProps) => {
+}: { file?: ThumbnailImageLike | null; targetWidth: number } & ImageProps) => {
+  const thumbnailVariants = useThumbnailVariants();
+  const sourceSize = thumbnailRouteSizeForWidth(thumbnailVariants, targetWidth);
   const uri = useLocalImageUrl(
     file ? { ...file, type: file.type ?? undefined } : {},
-    size,
+    sourceSize,
   );
   const blurHash = file?.blurHash ?? undefined;
   if (!uri) return <View {...props} />;

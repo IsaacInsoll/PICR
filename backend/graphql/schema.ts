@@ -65,12 +65,12 @@ import { runBenchmark } from './mutations/runBenchmark.js';
 import { rescanFolder } from './mutations/rescanFolder.js';
 import {
   benchmarkResultType,
-  benchmarkStepType,
+  namedBenchmarkStepType,
 } from './types/benchmarkType.js';
 import { editServerSettings } from './mutations/editServerSettings.js';
 import {
   serverSettingsType,
-  thumbnailDimensionsType,
+  thumbnailVariantType,
 } from './types/serverSettingsType.js';
 
 const queries = new GraphQLObjectType({
@@ -128,7 +128,7 @@ const types = [
   accessTypeEnum,
   accessLogType,
   benchmarkResultType,
-  benchmarkStepType,
+  namedBenchmarkStepType,
   brandingType,
   clientInfoType,
   commentType,
@@ -148,7 +148,7 @@ const types = [
   serverInfoType,
   serverSettingsType,
   taskType,
-  thumbnailDimensionsType,
+  thumbnailVariantType,
   userType,
   userDeviceType,
   videoFileType,

@@ -4,10 +4,9 @@ import { folderList, relativePath } from '../fileManager.js';
 import { log } from '../../logger.js';
 import { contentHashForStats } from '../fileHash.js';
 import { FileType } from '@shared/gql/graphql.js';
-import { getImageRatio } from '../../media/getImageRatio.js';
-import { getImageMetadata } from '../../media/getImageMetadata.js';
+import { getImageMetadataAndDimensions } from '../../media/getImageMetadata.js';
 import { getVideoMetadata } from '../../media/getVideoMetadata.js';
-import { generateAllThumbs } from '../../media/generateImageThumbnail.js';
+import type { PicrVideoMetadata } from '@shared/types/metadata.js';
 import { encodeImageToBlurhash } from '../../media/blurHash.js';
 import { moveThumbnailFile } from '../../media/moveThumbnailFile.js';
 import { picrConfig } from '../../config/picrConfig.js';
@@ -27,6 +26,7 @@ import {
   isRawFormat,
   isSharpReadableFormat,
 } from '@shared/imageFormats.js';
+import { addToQueue } from '../fileQueue.js';
 
 const inFlightPathImports = new Map<string, Promise<void>>();
 
@@ -155,6 +155,7 @@ const addFileUnlocked = async (
   const newHash = contentHashForStats(stats);
   const typeChanged = (wasRenamed ? renamedFromType : file.type) !== type;
   const hashChanged = file.fileHash !== newHash;
+  let shouldGenerateThumbs = false;
   // A pure move: the file was renamed/relocated but its content (size + mtime,
   // and therefore its content hash) is unchanged. Relocate the cached thumbnails
   // and skip all media processing (no re-decode/metadata/blurhash/regeneration).
@@ -193,11 +194,14 @@ const addFileUnlocked = async (
       try {
         const src = await ensureDecodedImage(file);
         // deleteAllThumbs(filePath);
-        file.imageRatio = await getImageRatio(src);
-        const meta = await getImageMetadata(file, src);
-        file.metadata = JSON.stringify(meta);
+        const { dimensions, imageRatio, metadata } =
+          await getImageMetadataAndDimensions(file, src);
+        file.imageWidth = dimensions.width;
+        file.imageHeight = dimensions.height;
+        file.imageRatio = imageRatio;
+        file.metadata = JSON.stringify(metadata);
         file.blurHash = await encodeImageToBlurhash(src);
-        if (generateThumbs) await generateAllThumbs(file); // will skip if thumbs exist
+        shouldGenerateThumbs = generateThumbs;
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         log(
@@ -205,20 +209,16 @@ const addFileUnlocked = async (
           `Downgrading ${file.name} to generic file after image decode failed: ${message}`,
         );
         file.type = FileType.File;
+        file.imageWidth = null;
+        file.imageHeight = null;
         file.imageRatio = 0;
         file.metadata = null;
         file.blurHash = null;
       }
     }
     if (file.type === FileType.Video) {
-      const meta = await getVideoMetadata(file);
-      file.metadata = JSON.stringify(meta);
-      file.duration = meta.Duration ?? null;
-      file.imageRatio =
-        meta.Height && meta.Width && meta.Height > 0
-          ? meta.Width / meta.Height
-          : 0;
-      if (generateThumbs) await generateAllThumbs(file);
+      applyVideoMetadata(file, await getVideoMetadata(file));
+      shouldGenerateThumbs = generateThumbs;
     }
   } else if (picrConfig.updateMetadata) {
     log('info', '🔄️ update metadata: ' + file.id);
@@ -228,7 +228,12 @@ const addFileUnlocked = async (
       case FileType.Image:
         try {
           const src = await ensureDecodedImage(file);
-          file.metadata = JSON.stringify(await getImageMetadata(file, src));
+          const { dimensions, imageRatio, metadata } =
+            await getImageMetadataAndDimensions(file, src);
+          file.imageWidth = dimensions.width;
+          file.imageHeight = dimensions.height;
+          file.imageRatio = imageRatio;
+          file.metadata = JSON.stringify(metadata);
         } catch (error) {
           const message =
             error instanceof Error ? error.message : String(error);
@@ -237,13 +242,15 @@ const addFileUnlocked = async (
             `Downgrading ${file.name} to generic file after image decode failed: ${message}`,
           );
           file.type = FileType.File;
+          file.imageWidth = null;
+          file.imageHeight = null;
           file.imageRatio = 0;
           file.metadata = null;
           file.blurHash = null;
         }
         break;
       case FileType.Video:
-        file.metadata = JSON.stringify(await getVideoMetadata(file));
+        applyVideoMetadata(file, await getVideoMetadata(file));
         break;
       default:
         break;
@@ -255,11 +262,38 @@ const addFileUnlocked = async (
     .update(dbFile)
     .set({ ...file, updatedAt: new Date() })
     .where(eq(dbFile.id, file.id));
+  if (shouldGenerateThumbs) {
+    addToQueue('generateThumbnails', { id: file.id });
+  }
   // console.log(file);
   log(
     'info',
     '➕ [done] ' + (generateThumbs ? '[generateThumbs] ' : '') + filePath,
   );
+};
+
+// Videos store their displayed frame size in the same imageWidth/imageHeight
+// columns as images, so responsive poster selection has one source of truth
+// instead of digging into the metadata JSON summary. Dimensions are cleared
+// rather than left stale when ffprobe cannot report a usable video stream.
+const applyVideoMetadata = (
+  file: FileFields,
+  meta: PicrVideoMetadata,
+): void => {
+  file.metadata = JSON.stringify(meta);
+  file.duration = meta.Duration ?? null;
+
+  const { Width, Height } = meta;
+  if (Width && Height && Width > 0 && Height > 0) {
+    file.imageWidth = Width;
+    file.imageHeight = Height;
+    file.imageRatio = Width / Height;
+    return;
+  }
+
+  file.imageWidth = null;
+  file.imageHeight = null;
+  file.imageRatio = 0;
 };
 
 const findFolderId = async (fullPath: string) => {

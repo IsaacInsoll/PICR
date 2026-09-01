@@ -10,6 +10,16 @@ That Vitest config must reuse the root `sharedAliases` table: frontend runtime
 modules may use NodeNext-style `@shared/*.js` imports even though the tests load
 the corresponding shared TypeScript source directly.
 
+Responsive thumbnail `srcset` entries must use the encoded image's intrinsic
+width, derived from the oriented source dimensions and the server's nominal
+long-edge variant ladder. Deduplicate clamped variants by keeping the lowest
+rung. Read those dimensions from `imageWidth`/`imageHeight`, which
+images and videos both publish, rather than branching on file type or reading
+the metadata JSON summary. If authoritative dimensions are absent during an
+upgrade backfill or cannot be recovered, omit `srcset` and retain the ordinary
+`src` fallback; do not revive nominal-width descriptors or stale
+metadata-summary dimensions, which can predate orientation fixes.
+
 The public-link recipient email and gallery passcode are metadata for the
 client, not administrator login credentials. Keep their autocomplete hints set
 to `off` and `new-password`, respectively, so password managers do not fill the
@@ -731,6 +741,10 @@ function MyComponent() {
 - Avoid GraphQL reads inside frequently rerendered leaf controls like copy/share buttons. In the public-link UI, deriving the link from the current browser origin and `withBasePath(...)` is cheaper than calling `useMe()` just to read `clientInfo.baseUrl`.
 - Live branding preview writes to `themeModeAtom`, which is consumed by the app shell and gallery components. Do not publish every draft form keystroke directly to this atom; debounce preview-only fields and keep non-preview fields local so settings inputs stay responsive.
 - Do not pass inline function components to render slots in gallery/lightbox-style components. React treats a new function identity as a new component type and can remount thumbnails during background query refreshes, resetting image loaded state and causing visible flashes.
+- Media URL helpers must encode the final filename with `encodeURIComponent`
+  before appending it as a path segment. Raw spaces terminate a `srcset` URL,
+  and raw commas or URL delimiters can corrupt its candidate list. Keep fixed
+  video artifact names such as `poster.jpg` unchanged.
 
 ### Folder Hierarchy Data
 

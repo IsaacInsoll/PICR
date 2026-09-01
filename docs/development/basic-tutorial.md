@@ -59,7 +59,7 @@ which should then show some updated auto-generated files:
 
 Codegen imports and validates the executable backend schema directly, so the
 development server and database do not need to be running. You can check
-`codegen.ts` and `backend/scripts/exportGraphqlSchema.ts` if you want to learn
+`backend/codegen.ts` and `backend/scripts/exportGraphqlSchema.ts` if you want to learn
 more.
 You will never need to edit these files manually but they should be commited when you make changes to graphql.
 

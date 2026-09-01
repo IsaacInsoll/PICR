@@ -1,6 +1,5 @@
 //https://benhowell.github.io/react-grid-gallery/examples/custom-overlay
 // TODO: Could use Skeleton as placeholders before content loads?
-import { imageURL } from '../../helpers/imageURL';
 import {
   Gallery,
   type ImageExtended,
@@ -30,6 +29,8 @@ import type {
   ViewFolderFileWithHero,
 } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
+import { useThumbnailVariants } from '../../hooks/useMe';
+import { thumbnailUrlForWidth } from '../../helpers/thumbnailVariantImages';
 
 type GalleryItem = GridImage & {
   file?: ViewFolderFileWithHero;
@@ -52,6 +53,7 @@ export const GridGallery = ({
   const borderRadius = theme.thumbnailBorderRadius ?? DEFAULT_BORDER_RADIUS;
   const isTabletUp = useMediaQuery('(min-width: 48em)');
   const isDesktopUp = useMediaQuery('(min-width: 75em)');
+  const thumbnailVariants = useThumbnailVariants();
   const orderedItems = useMemo(
     () => items || [...folders, ...files],
     [files, folders, items],
@@ -97,7 +99,11 @@ export const GridGallery = ({
               : 1;
           return {
             key: item.id,
-            src: imageURL(item, 'md'),
+            // Layout metadata only: `thumbnailImageComponent` renders the real
+            // image through FilePreview, so this src is never fetched.
+            src:
+              thumbnailUrlForWidth(item, thumbnailSize, thumbnailVariants) ??
+              '',
             width: thumbnailSize,
             height: thumbnailSize / imageRatio,
             file: item,
@@ -117,7 +123,7 @@ export const GridGallery = ({
           href: folderUrl(item),
         };
       }),
-    [orderedItems, thumbnailSize, folderUrl],
+    [orderedItems, thumbnailSize, folderUrl, thumbnailVariants],
   );
   const tileViewportStyle = useCallback(
     (context: { item: ImageExtended<GalleryItem> }) => ({
@@ -181,15 +187,4 @@ const GalleryImage = ({ imageProps, item }: GalleryImageProps) => {
   if (!item.file) return null;
   const file: ViewFolderFileWithHero = item.file;
   return <FilePreview file={file} imageProps={imageProps} />;
-  // if (file.type === 'Video') {
-  //   return <PicrVideoPreview file={file} imageProps={imageProps} />;
-  // }
-  // return (
-  //   <PicrImage
-  //     style={imageProps.style}
-  //     file={file}
-  //     size="md"
-  //     clickable={true}
-  //   />
-  // );
 };

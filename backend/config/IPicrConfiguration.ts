@@ -43,6 +43,7 @@ export interface IPicrConfiguration {
   port?: number;
   pollingSeconds: number;
   scheduledScanHours: number;
+  thumbnailWorkerCount: number;
   dev?: boolean;
   version?: string;
   buildChannel?: string;

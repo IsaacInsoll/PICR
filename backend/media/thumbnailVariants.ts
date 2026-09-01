@@ -1,81 +1,130 @@
-import { join } from 'path';
+import { promises as fs } from 'node:fs';
+import { extname, join } from 'path';
 import { picrConfig } from '../config/picrConfig.js';
 import type { FileFields } from '../db/picrDb.js';
-import { thumbnailSizes } from '@shared/thumbnailSize.js';
-import {
-  legacyVideoMontagePathForParts,
-  videoPosterPathForParts,
-  videoScrubPathForParts,
-} from './videoThumbnailPaths.js';
 
 export interface ThumbnailVariant {
   /** Absolute path to the cache entry. */
   path: string;
   /** Most variants are files; legacy pre-v2 video montage variants are directories. */
   isDirectory: boolean;
+  /** The cache name segment between the original file name and hash. */
+  variantKey: string;
+  /** Output suffix after the hash, including the leading dot when present. */
+  extension: string;
+}
+
+export interface ThumbnailVariantIndex {
+  entries(
+    relativePath: string,
+  ): Promise<readonly ThumbnailVariantDirectoryEntry[]>;
+}
+
+export interface ThumbnailVariantDirectoryEntry {
+  name: string;
+  isDirectory: boolean;
+  isFile: boolean;
 }
 
 /**
- * Every cache entry that *could* exist for a file at the given
- * (`relativePath`, `name`, `hash`). Callers treat absent entries as no-ops —
- * many variants are legitimately never generated (AVIF may be disabled, the
- * decoded intermediate only exists for RAW/PSD/HEIC, thumbnails are lazy so not
- * every size exists, video AVIF depends on server options). Mirrors the paths built
- * by `thumbnailPath.ts` and `decodedImagePath.ts`, but keyed off primitives so
- * both the runtime (a `dbFile` row) and the migration (a DB record) can use it.
- *
- * The variant order is deterministic, so two calls that differ only in
- * `relativePath`/`name` line up positionally (used by `moveThumbnailFile`).
+ * Shared, memoized directory scan for cache variant discovery. Long-running
+ * migrations must reuse one index instance so thousands of files in the same
+ * cache directory do not each call `readdir`.
  */
-export const thumbnailVariantPaths = (
+export const createThumbnailVariantIndex = (): ThumbnailVariantIndex => {
+  const cache = new Map<
+    string,
+    Promise<readonly ThumbnailVariantDirectoryEntry[]>
+  >();
+
+  return {
+    entries: (relativePath) => {
+      const dir = thumbnailVariantDirectory(relativePath);
+      let promise = cache.get(dir);
+      if (!promise) {
+        promise = fs
+          .readdir(dir, { withFileTypes: true })
+          .then((entries) =>
+            entries
+              .map((entry) => ({
+                name: entry.name,
+                isDirectory: entry.isDirectory(),
+                isFile: entry.isFile(),
+              }))
+              .sort((a, b) => a.name.localeCompare(b.name)),
+          )
+          .catch((err) => {
+            if ((err as NodeJS.ErrnoException).code === 'ENOENT') return [];
+            throw err;
+          });
+        cache.set(dir, promise);
+      }
+      return promise;
+    },
+  };
+};
+
+const thumbnailVariantDirectory = (relativePath: string): string =>
+  join(picrConfig.cachePath, 'thumbs', relativePath);
+
+/**
+ * Every existing cache entry for a file at the given (`relativePath`, `name`,
+ * `hash`). Callers discover entries from disk rather than recomputing a fixed
+ * ladder so cleanup keeps working across renamed/generated variant schemes.
+ *
+ * The returned variant key and extension allow callers to relocate an entry
+ * under a new file name/hash without assuming two independently generated lists
+ * line up positionally.
+ */
+export const thumbnailVariantPaths = async (
   relativePath: string,
   name: string,
   hash: string,
   type: FileFields['type'],
-): ThumbnailVariant[] => {
-  const dir = join(picrConfig.cachePath, 'thumbs', relativePath);
-  const variants: ThumbnailVariant[] = [];
+  index: ThumbnailVariantIndex = createThumbnailVariantIndex(),
+): Promise<ThumbnailVariant[]> => {
+  if (!hash || (type !== 'Image' && type !== 'Video')) return [];
 
-  if (type === 'Image') {
-    // Image thumbnails are always written as .jpg, plus .avif when enabled.
-    for (const size of thumbnailSizes) {
-      variants.push({
-        path: join(dir, `${name}-${size}-${hash}.jpg`),
-        isDirectory: false,
-      });
-      variants.push({
-        path: join(dir, `${name}-${size}-${hash}.avif`),
-        isDirectory: false,
-      });
-    }
-    // Decoded intermediate for RAW/PSD/HEIC (absent for sharp-native formats).
-    variants.push({
-      path: join(dir, `${name}-decoded-${hash}.jpg`),
-      isDirectory: false,
-    });
-  } else if (type === 'Video') {
-    for (const size of thumbnailSizes) {
-      variants.push({
-        path: videoPosterPathForParts(relativePath, name, hash, size, '.jpg'),
-        isDirectory: false,
-      });
-      variants.push({
-        path: videoPosterPathForParts(relativePath, name, hash, size, '.avif'),
-        isDirectory: false,
-      });
-    }
-    variants.push({
-      path: videoScrubPathForParts(relativePath, name, hash),
-      isDirectory: false,
-    });
-    // Transitional cleanup for pre-v2 montage directories. New video variants
-    // are versioned files.
-    variants.push({
-      path: legacyVideoMontagePathForParts(relativePath, name, hash, 'md'),
-      isDirectory: true,
-    });
-  }
-  // FileType.File has no thumbnails.
+  const dir = thumbnailVariantDirectory(relativePath);
+  const entries = await index.entries(relativePath);
+  const prefix = `${name}-`;
+  const hashSuffix = `-${hash}`;
 
-  return variants;
+  return entries.flatMap((entry): ThumbnailVariant[] => {
+    if (!entry.name.startsWith(prefix)) return [];
+    if (type === 'Image' && !entry.isFile) return [];
+    if (type === 'Video' && !entry.isFile && !entry.isDirectory) return [];
+
+    const extension = extname(entry.name);
+    const stem = extension
+      ? entry.name.slice(0, -extension.length)
+      : entry.name;
+    if (!stem.endsWith(hashSuffix)) return [];
+
+    const variantKey = stem.slice(
+      prefix.length,
+      stem.length - hashSuffix.length,
+    );
+    if (!variantKey) return [];
+
+    return [
+      {
+        path: join(dir, entry.name),
+        isDirectory: entry.isDirectory,
+        variantKey,
+        extension,
+      },
+    ];
+  });
 };
+
+export const thumbnailVariantDestinationPath = (
+  relativePath: string,
+  name: string,
+  hash: string,
+  variant: Pick<ThumbnailVariant, 'variantKey' | 'extension'>,
+): string =>
+  join(
+    thumbnailVariantDirectory(relativePath),
+    `${name}-${variant.variantKey}-${hash}${variant.extension}`,
+  );

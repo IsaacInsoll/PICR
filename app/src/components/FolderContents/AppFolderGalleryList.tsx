@@ -91,7 +91,7 @@ const MasonryItemComponent = ({
           {image ? (
             <PFileView
               file={image}
-              size="md"
+              targetWidth={500}
               style={style}
               transition={100}
               // onDisplay={() => setImagesLoaded((l) => l + 1)}
@@ -100,7 +100,7 @@ const MasonryItemComponent = ({
           ) : (
             <PFileView
               file={item}
-              size="md"
+              targetWidth={500}
               style={{ height: width / colCount }}
             />
           )}

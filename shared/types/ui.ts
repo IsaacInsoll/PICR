@@ -14,7 +14,10 @@ export type FileIdTarget = Pick<PicrFile, 'id'>;
 export type FileNavigationTarget = FileIdTarget | string;
 
 export type ImageUrlFileInput = Partial<
-  Pick<PicrFile, 'id' | 'fileHash' | 'name' | 'type'>
+  Pick<
+    PicrFile,
+    'id' | 'fileHash' | 'name' | 'type' | 'imageWidth' | 'imageHeight'
+  >
 >;
 
 export type LinkableFolderItem = Pick<PicrFolder, 'title'> & {

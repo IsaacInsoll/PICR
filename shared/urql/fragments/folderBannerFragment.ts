@@ -15,6 +15,8 @@ export const folderBannerFragment = gql(/* GraphQL */ `
       id
       name
       fileHash
+      imageWidth
+      imageHeight
       imageRatio
       blurHash
       type

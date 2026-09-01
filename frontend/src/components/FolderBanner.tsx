@@ -1,7 +1,6 @@
 import type { FolderFragmentFragment } from '@shared/gql/graphql';
 import { ThemeMode } from '@shared/gql/graphql';
-import { imageURL } from '../helpers/imageURL';
-import { useMe } from '../hooks/useMe';
+import { useMe, useThumbnailVariants } from '../hooks/useMe';
 import { useMutation } from 'urql';
 import { editFolderMutation } from '@shared/urql/mutations/editFolderMutation';
 import { useOpenSetBannerImageModal } from '../atoms/modalAtom';
@@ -38,6 +37,10 @@ import {
 import styles from './FolderBanner.module.css';
 import { getBreadcrumbFolders } from '../helpers/getBreadcrumbFolders';
 import { useTranslation } from 'react-i18next';
+import {
+  thumbnailSrcSet,
+  thumbnailUrlForWidth,
+} from '../helpers/thumbnailVariantImages';
 
 const bannerSizeClass: Record<BannerSize, string> = {
   classic: styles.sizeClassic,
@@ -127,6 +130,7 @@ export const FolderBannerView = ({
   const theme = useAtomValue(themeModeAtom);
   const mantineTheme = useMantineTheme();
   const noDownloadMediaProps = useNoDownloadMediaProps();
+  const thumbnailVariants = useThumbnailVariants();
   const computedColorScheme = useComputedColorScheme('light', {
     getInitialValueInEffect: true,
   });
@@ -166,6 +170,8 @@ export const FolderBannerView = ({
   if (!folder.bannerImage) return null;
 
   const bannerImage = folder.bannerImage;
+  const bannerSrcSet = thumbnailSrcSet(bannerImage, thumbnailVariants);
+  const bannerSrc = thumbnailUrlForWidth(bannerImage, 2560, thumbnailVariants);
 
   const justifyClass =
     hAlign === 'left'
@@ -199,7 +205,9 @@ export const FolderBannerView = ({
           component="img"
           className={styles.image}
           ref={setImageRef}
-          src={imageURL(bannerImage, 'lg')}
+          src={bannerSrc}
+          srcSet={bannerSrcSet}
+          sizes="100vw"
           alt=""
           onLoad={() => setLoadedHash(bannerImage.fileHash)}
           style={{

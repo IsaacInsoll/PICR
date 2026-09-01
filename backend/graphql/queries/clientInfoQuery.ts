@@ -4,7 +4,6 @@ import type { PicrResolver } from '../helpers/picrResolver.js';
 import { picrConfig } from '../../config/picrConfig.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 import { resolveServerMediaSettings } from '../../media/serverMediaSettings.js';
-import { serverThumbnailDimensions } from '@shared/serverMediaSettings.js';
 
 const resolver: PicrResolver = async (_, _params, context) => {
   //TODO: fix this doesn't work when accessing as public user
@@ -14,7 +13,6 @@ const resolver: PicrResolver = async (_, _params, context) => {
 
   return {
     ...opts,
-    thumbnailDimensions: serverThumbnailDimensions(opts),
     canWrite: user.userType === 'Admin' && picrConfig.canWrite,
     baseUrl: picrConfig.baseUrl,
   };

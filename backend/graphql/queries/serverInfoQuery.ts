@@ -10,7 +10,6 @@ import { getScheduledScanStatus } from '../../filesystem/scheduledScan.js';
 import { db, getServerOptions } from '../../db/picrDb.js';
 import { folderSize } from '../../helpers/folderSize.js';
 import { resolveServerMediaSettings } from '../../media/serverMediaSettings.js';
-import { serverThumbnailDimensions } from '@shared/serverMediaSettings.js';
 import { pingScanCoordinator } from '../../filesystem/pingScanCoordinator.js';
 import { getPingStatus } from '../../filesystem/pingStatus.js';
 
@@ -28,10 +27,7 @@ const resolver: PicrResolver = async (_, _params, context) => {
     dev: picrConfig.dev,
     canWrite: picrConfig.canWrite,
     mediaCaps: picrConfig.mediaCaps,
-    settings: {
-      ...settings,
-      thumbnailDimensions: serverThumbnailDimensions(settings),
-    },
+    settings,
     videoAcceleration: {
       mode: picrConfig.videoAccelerationMode,
       reason: picrConfig.videoAccelerationReason,

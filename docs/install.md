@@ -210,13 +210,12 @@ optional, Linux + `amd64` only, and fully opt-in: with no GPU passed into the
 container PICR behaves exactly as before.
 
 > **What is accelerated today?** Honestly — nothing in normal use yet. PICR's
-> current video workload is poster/scrub thumbnail generation, and benchmarking
-> showed VAAPI is _slower_ than the CPU for that seek-based work (GPU
-> upload/download overhead dominates). So **thumbnails are generated on the
-> CPU**. VAAPI is, however, dramatically faster for whole-video transcoding
-> (~2.5–3×), so this is groundwork for upcoming transcoding features. For now
-> you can see the detected GPU on the **Server Info** page and compare CPU vs
-> VAAPI yourself with the admin **Benchmark** tool.
+> current video workload is poster/scrub thumbnail generation, and production
+> still generates those thumbnails on the CPU. VAAPI is included as groundwork
+> for upcoming video features, especially whole-video transcoding where hardware
+> acceleration can be dramatically faster on supported hardware. For now you can
+> see the detected GPU on the **Server Info** page and compare CPU vs VAAPI
+> yourself with the admin **Benchmark** tool.
 
 ### How it works
 

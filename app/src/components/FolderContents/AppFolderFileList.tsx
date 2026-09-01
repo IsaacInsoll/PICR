@@ -56,7 +56,7 @@ export const AppFileListItem = ({
             alignItems: 'center',
           }}
         >
-          <PFileView file={item} variant="rounded-fit" size="sm" />
+          <PFileView file={item} variant="rounded-fit" targetWidth={250} />
           <View style={{ gap: 4 }}>
             <PTitle level={4}>{item.name}</PTitle>
             {children ? (

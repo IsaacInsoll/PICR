@@ -6,11 +6,12 @@ import { normalizeDisplayName } from '@shared/displayName';
 import { BackgroundImage, Box, Button } from '@mantine/core';
 import { NavLink } from 'react-router';
 import { FileIcon, FolderIcon } from '../PicrIcons';
-import { imageURL } from '../helpers/imageURL';
 import { useHover } from '@mantine/hooks';
 import { useIsDarkMode } from '../hooks/useIsDarkMode';
 import type { CSSProperties } from 'react';
 import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
+import { useThumbnailVariants } from '../hooks/useMe';
+import { thumbnailUrlForWidth } from '../helpers/thumbnailVariantImages';
 // This import doesn't work with vite :/
 // import { getInitialsColor } from '@mantine/core/lib/components/Avatar/get-initials-color/get-initials-color';
 
@@ -31,11 +32,12 @@ export const PicrFolder = ({
   title?: string;
 }) => {
   const formatFolderName = useFolderNameFormatter();
+  const thumbnailVariants = useThumbnailVariants();
   const folderName = formatFolderName(folder);
   const src =
     folder.heroImage?.__typename === 'Image' ||
     folder.heroImage?.__typename === 'Video'
-      ? imageURL(folder.heroImage, 'md')
+      ? thumbnailUrlForWidth(folder.heroImage, 500, thumbnailVariants)
       : undefined;
   const { hovered, ref } = useHover();
 

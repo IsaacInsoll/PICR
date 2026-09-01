@@ -37,24 +37,15 @@ enum BannerTextVAlign {
 type BenchmarkResult {
   appVersion: String!
   assetPath: String!
-  assetSetup: BenchmarkStep!
   assetSourceUrl: String!
-  avifResize: BenchmarkStep!
+  cpuCount: Int!
   imageCount: Int!
-  jpegResize: BenchmarkStep!
+  steps: [NamedBenchmarkStep!]!
   totalMs: Float!
+  uvThreadpoolSize: String!
   videoAccelerationMode: String!
   videoAccelerationReason: String!
   videoCount: Int!
-  videoThumbnailAccelerated: BenchmarkStep!
-  videoThumbnailCpu: BenchmarkStep!
-  videoTranscodeAccelerated: BenchmarkStep!
-  videoTranscodeCpu: BenchmarkStep!
-}
-
-type BenchmarkStep {
-  ms: Float
-  skippedReason: String
 }
 
 """
@@ -87,15 +78,10 @@ type Branding {
 }
 
 type ClientInfo {
-  avifEnabled: Boolean!
   baseUrl: String!
   canWrite: Boolean!
-  thumbnailAvifQuality: Int!
-  thumbnailDimensions: ThumbnailDimensions!
   thumbnailJpegQuality: Int!
-  thumbnailLargePx: Int!
-  thumbnailMediumPx: Int!
-  thumbnailSmallPx: Int!
+  thumbnailVariants: [ThumbnailVariant!]!
   useOriginalsForLightbox: Boolean!
 }
 
@@ -139,12 +125,7 @@ type DiskInfo {
 }
 
 input EditServerSettingsInput {
-  avifEnabled: Boolean
-  thumbnailAvifQuality: Int
   thumbnailJpegQuality: Int
-  thumbnailLargePx: Int
-  thumbnailMediumPx: Int
-  thumbnailSmallPx: Int
   useOriginalsForLightbox: Boolean
 }
 
@@ -210,6 +191,7 @@ type Folder {
   relativePath: String!
   subFolders: [Folder!]!
   subtitle: String
+  thumbnailCompletion(mediaType: MediaTypeFilter = All): ThumbnailCompletion!
   title: String
   totalDirectSize: String!
   totalFiles: Int!
@@ -286,7 +268,9 @@ type Image implements FileInterface {
   folder: Folder
   folderId: ID!
   id: ID!
+  imageHeight: Int
   imageRatio: Float
+  imageWidth: Int
   latestComment: DateTime
   metadata: ImageMetadataSummary
   name: String!
@@ -339,6 +323,12 @@ type MediaScanningInfo {
   scheduledScanHours: Int!
 }
 
+enum MediaTypeFilter {
+  All
+  Image
+  Video
+}
+
 type Mutation {
   addComment(comment: String, flag: FileFlag, id: ID!, nickName: String, rating: Int): FileInterface!
   auth(password: String!, user: String!): String!
@@ -350,13 +340,24 @@ type Mutation {
   editServerSettings(input: EditServerSettingsInput!): ServerSettings!
   editUser(commentPermissions: CommentPermissions, enabled: Boolean, expiresAt: DateTime, folderId: ID, galleryPasscode: String, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
   editUserDevice(enabled: Boolean!, name: String, notificationToken: String!, userId: ID!): UserDevice!
-  generateThumbnails(folderId: ID): Boolean!
+  generateThumbnails(folderId: ID, mediaType: MediaTypeFilter = All): Boolean!
   generateZip(folderId: ID): String!
   recordFolderVisit(folderId: ID!): Boolean!
   renameFolder(folderId: ID!, newPath: String!, oldPath: String!): Folder!
   rescanFolder(folderId: ID!): Boolean!
-  runBenchmark: BenchmarkResult!
+  runBenchmark(assetPath: String): BenchmarkResult!
   setFolderBranding(brandingId: ID, folderId: ID!): Folder!
+}
+
+type NamedBenchmarkStep {
+  details: String
+  includedInTotal: Boolean!
+  key: String!
+  ms: Float
+  name: String!
+  outputBytes: BigInt
+  skippedReason: String
+  status: String!
 }
 
 type PingCoordinatorStatusInfo {
@@ -500,13 +501,8 @@ type ServerInfo {
 }
 
 type ServerSettings {
-  avifEnabled: Boolean!
-  thumbnailAvifQuality: Int!
-  thumbnailDimensions: ThumbnailDimensions!
   thumbnailJpegQuality: Int!
-  thumbnailLargePx: Int!
-  thumbnailMediumPx: Int!
-  thumbnailSmallPx: Int!
+  thumbnailVariants: [ThumbnailVariant!]!
   useOriginalsForLightbox: Boolean!
 }
 
@@ -536,10 +532,20 @@ enum ThemeMode {
   light
 }
 
-type ThumbnailDimensions {
-  lg: Int!
-  md: Int!
-  sm: Int!
+type ThumbnailCompletion {
+  completeFiles: Int!
+  incompleteFiles: Int!
+  missingArtifacts: Int!
+  totalArtifacts: Int!
+  totalFiles: Int!
+}
+
+type ThumbnailVariant {
+  format: String!
+  mimeType: String!
+  quality: Int!
+  token: String!
+  width: Int!
 }
 
 type User {
@@ -589,7 +595,9 @@ type Video implements FileInterface {
   folder: Folder
   folderId: ID!
   id: ID!
+  imageHeight: Int
   imageRatio: Float
+  imageWidth: Int
   latestComment: DateTime
   metadata: VideoMetadataSummary
   name: String!

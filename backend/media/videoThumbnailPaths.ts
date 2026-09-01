@@ -3,15 +3,13 @@ import { basename, dirname, extname } from 'path';
 import { fullPathForFile, relativePath } from '../filesystem/fileManager.js';
 import { picrConfig } from '../config/picrConfig.js';
 import type { FileFields } from '../db/picrDb.js';
+import type { ThumbnailVariant } from '@shared/thumbnailVariants.js';
 
 export const VIDEO_THUMBNAIL_CACHE_VERSION = 2;
-
-export type VideoThumbnailExtension = '.jpg' | '.avif';
 
 export const videoPosterPath = (
   file: FileFields,
   size: ThumbnailSize,
-  extension: VideoThumbnailExtension = '.jpg',
 ): string => {
   const fp = fullPathForFile(file);
   const fileName = basename(fp);
@@ -21,7 +19,6 @@ export const videoPosterPath = (
     fileName,
     file.fileHash ?? '',
     size,
-    extension,
   );
 };
 
@@ -32,15 +29,50 @@ export const videoScrubPath = (file: FileFields): string => {
   return videoScrubPathForParts(relativePath(p), fileName, file.fileHash ?? '');
 };
 
+export const videoPosterFramePath = (file: FileFields): string => {
+  const fp = fullPathForFile(file);
+  const fileName = basename(fp);
+  const p = dirname(fp);
+  return videoPosterFramePathForParts(
+    relativePath(p),
+    fileName,
+    file.fileHash ?? '',
+  );
+};
+
 export const videoPosterPathForParts = (
   relativePath: string,
   name: string,
   hash: string,
   size: ThumbnailSize,
-  extension: VideoThumbnailExtension = '.jpg',
 ): string => {
   const base = picrConfig.cachePath + `/thumbs/${relativePath}/`;
-  return `${base}${name}-v${VIDEO_THUMBNAIL_CACHE_VERSION}-${size}-${hash}${extension}`;
+  return `${base}${name}-v${VIDEO_THUMBNAIL_CACHE_VERSION}-${size}-${hash}.jpg`;
+};
+
+export const videoPosterVariantPath = (
+  file: Pick<FileFields, 'fileHash' | 'name' | 'relativePath'>,
+  variant: Pick<ThumbnailVariant, 'extension' | 'token'>,
+): string => {
+  const fp = fullPathForFile(file);
+  const fileName = basename(fp);
+  const p = dirname(fp);
+  return videoPosterVariantPathForParts(
+    relativePath(p),
+    fileName,
+    file.fileHash ?? '',
+    variant,
+  );
+};
+
+export const videoPosterVariantPathForParts = (
+  relativePath: string,
+  name: string,
+  hash: string,
+  variant: Pick<ThumbnailVariant, 'extension' | 'token'>,
+): string => {
+  const base = picrConfig.cachePath + `/thumbs/${relativePath}/`;
+  return `${base}${name}-${variant.token}-${hash}${variant.extension}`;
 };
 
 export const videoScrubPathForParts = (
@@ -50,6 +82,15 @@ export const videoScrubPathForParts = (
 ): string => {
   const base = picrConfig.cachePath + `/thumbs/${relativePath}/`;
   return `${base}${name}-v${VIDEO_THUMBNAIL_CACHE_VERSION}-scrub-${hash}.jpg`;
+};
+
+export const videoPosterFramePathForParts = (
+  relativePath: string,
+  name: string,
+  hash: string,
+): string => {
+  const base = picrConfig.cachePath + `/thumbs/${relativePath}/`;
+  return `${base}${name}-v${VIDEO_THUMBNAIL_CACHE_VERSION}-posterframe-${hash}.jpg`;
 };
 
 export const legacyVideoMontagePathForParts = (

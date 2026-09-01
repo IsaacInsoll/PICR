@@ -32,6 +32,13 @@ const optionalNonNegativeInteger = z.preprocess((val) => {
   return val;
 }, z.coerce.number().int().min(0).optional());
 
+const optionalPositiveInteger = z.preprocess((val) => {
+  if (typeof val === 'string' && val.trim() === '') {
+    return undefined;
+  }
+  return val;
+}, z.coerce.number().int().positive().optional());
+
 const optionalFileWatcherMode = z.preprocess(
   (val) => {
     if (typeof val === 'string' && val.trim() === '') {
@@ -107,6 +114,7 @@ export const envSchema = z.object({
   FILE_WATCHER: optionalFileWatcherMode,
   ON_VIEW_SCAN: optionalOnViewScanMode,
   SCHEDULED_SCAN_HOURS: optionalNonNegativeInteger,
+  THUMBNAIL_WORKERS: optionalPositiveInteger,
 
   POLLING_SECONDS: optionalPositiveNumber,
   POLLING_INTERVAL: optionalPositiveNumber,

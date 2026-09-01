@@ -9,6 +9,10 @@ import type {
 import path from 'path';
 import { envSchema } from './envSchema.js';
 import { buildCanWriteWarning, probeWriteAccess } from './mediaWriteAccess.js';
+import { availableParallelism, totalmem } from 'node:os';
+
+const thumbnailWorkerMemoryBudgetBytes = 512 * 1024 * 1024;
+const maxDefaultThumbnailWorkers = 8;
 
 export const configFromEnv = () => {
   config(); // read .ENV
@@ -76,6 +80,7 @@ export const configFromEnv = () => {
     onViewScanMode: d.ON_VIEW_SCAN ?? 'off',
     pollingSeconds,
     scheduledScanHours: d.SCHEDULED_SCAN_HOURS ?? 0,
+    thumbnailWorkerCount: d.THUMBNAIL_WORKERS ?? defaultThumbnailWorkerCount(),
     tokenSecret: d.TOKEN_SECRET,
     pingToken: d.PICR_PING_TOKEN,
     adminUsername: d.ADMIN_USERNAME,
@@ -131,6 +136,16 @@ export const resolvePollingSeconds = (
   pollingSeconds: number | undefined,
   pollingInterval: number | undefined,
 ): number => pollingSeconds ?? (pollingInterval ? pollingInterval / 10 : 20);
+
+export const defaultThumbnailWorkerCount = (): number =>
+  Math.max(
+    1,
+    Math.min(
+      maxDefaultThumbnailWorkers,
+      availableParallelism(),
+      Math.floor(totalmem() / thumbnailWorkerMemoryBudgetBytes),
+    ),
+  );
 
 export const legacyConfigAdvisory = (
   rawEnv: NodeJS.ProcessEnv,

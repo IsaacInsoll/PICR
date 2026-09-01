@@ -18,7 +18,7 @@ This will run the following commands in order. You can run any of these individu
 | `cd shared && npm ci`          | 🗃️ Install shared deps                 | Used by backend/frontend/app builds                           |
 | `cd backend && npm ci`         | 🗃️ Install backend deps                |                                                               |
 | `cd backend && npm run build`  | 🗃️ Build backend + copy artifact files | Runs TSC, then copies package files + migrations into `dist/` |
-| `cd dist && npm ci`            | 🗃️ Install runtime deps for artifact   | Installs the backend runtime deps into `dist/node_modules`    |
+| `cd dist && npm ci --omit=dev` | 🗃️ Install runtime deps for artifact   | Installs only backend runtime deps into `dist/node_modules`   |
 | `cd frontend && npm ci`        | 💄 Install front end deps              |                                                               |
 | `cd frontend && npm run build` | 💄 Build frontend (vite)               | Finds any frontend 'build blockers'                           |
 | `npm run test:api`             | 🧪 Run backend API integration tests   | Vitest + Docker (`tests/api`)                                 |

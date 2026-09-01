@@ -1,37 +1,47 @@
 import {
+  GraphQLBoolean,
   GraphQLFloat,
   GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
+import { GraphQLBigInt } from 'graphql-scalars';
 import type {
   BenchmarkResult,
-  BenchmarkStepResult,
+  NamedBenchmarkStepResult,
 } from '../../benchmark/runBenchmark.js';
 
-export const benchmarkStepType = new GraphQLObjectType<BenchmarkStepResult>({
-  name: 'BenchmarkStep',
-  fields: () => ({
-    ms: { type: GraphQLFloat },
-    skippedReason: { type: GraphQLString },
-  }),
-});
+export const namedBenchmarkStepType =
+  new GraphQLObjectType<NamedBenchmarkStepResult>({
+    name: 'NamedBenchmarkStep',
+    fields: () => ({
+      key: { type: new GraphQLNonNull(GraphQLString) },
+      name: { type: new GraphQLNonNull(GraphQLString) },
+      status: { type: new GraphQLNonNull(GraphQLString) },
+      ms: { type: GraphQLFloat },
+      skippedReason: { type: GraphQLString },
+      outputBytes: { type: GraphQLBigInt },
+      details: { type: GraphQLString },
+      includedInTotal: { type: new GraphQLNonNull(GraphQLBoolean) },
+    }),
+  });
 
 export const benchmarkResultType = new GraphQLObjectType<BenchmarkResult>({
   name: 'BenchmarkResult',
   fields: () => ({
     totalMs: { type: new GraphQLNonNull(GraphQLFloat) },
     appVersion: { type: new GraphQLNonNull(GraphQLString) },
-    assetSetup: { type: new GraphQLNonNull(benchmarkStepType) },
-    jpegResize: { type: new GraphQLNonNull(benchmarkStepType) },
-    avifResize: { type: new GraphQLNonNull(benchmarkStepType) },
-    videoThumbnailCpu: { type: new GraphQLNonNull(benchmarkStepType) },
-    videoThumbnailAccelerated: { type: new GraphQLNonNull(benchmarkStepType) },
-    videoTranscodeCpu: { type: new GraphQLNonNull(benchmarkStepType) },
-    videoTranscodeAccelerated: { type: new GraphQLNonNull(benchmarkStepType) },
+    steps: {
+      type: new GraphQLNonNull(
+        new GraphQLList(new GraphQLNonNull(namedBenchmarkStepType)),
+      ),
+    },
     videoAccelerationMode: { type: new GraphQLNonNull(GraphQLString) },
     videoAccelerationReason: { type: new GraphQLNonNull(GraphQLString) },
+    cpuCount: { type: new GraphQLNonNull(GraphQLInt) },
+    uvThreadpoolSize: { type: new GraphQLNonNull(GraphQLString) },
     imageCount: { type: new GraphQLNonNull(GraphQLInt) },
     videoCount: { type: new GraphQLNonNull(GraphQLInt) },
     assetSourceUrl: { type: new GraphQLNonNull(GraphQLString) },

@@ -12,10 +12,14 @@ export const heroImageFragment = gql(/* GraphQL */ `
       fileHash
       type
       ... on Image {
+        imageWidth
+        imageHeight
         imageRatio
         blurHash
       }
       ... on Video {
+        imageWidth
+        imageHeight
         imageRatio
         blurHash
       }

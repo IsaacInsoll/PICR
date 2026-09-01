@@ -1,10 +1,13 @@
 import type { ImageUrlFileInput } from '@shared/types/ui';
 import type { AllSize } from '@shared/thumbnailSize';
+import type { ThumbnailVariantToken } from '@shared/thumbnailVariants';
 import { withBasePath } from './baseHref';
+
+export type ImageRouteSize = AllSize | ThumbnailVariantToken;
 
 export const imageURL = (
   file: ImageUrlFileInput,
-  size: AllSize,
+  size: ImageRouteSize,
   extension?: string,
   // frame?: number,
 ) => {
@@ -13,10 +16,11 @@ export const imageURL = (
   // if you change the path on the following line, also update imagePathFor in picrTemplate.ts (used by backend)
   const path = withBasePath(`/image/${id}/${size}/${fileHash}/`);
   if (type === 'Video' && size !== 'raw') {
-    return path + (extension === '.avif' ? 'poster.avif' : 'poster.jpg');
+    return path + 'poster.jpg';
   }
 
-  return path + (extension ? name + extension : name);
+  const filename = extension ? name + extension : name;
+  return path + encodeURIComponent(String(filename));
 };
 
 export const videoScrubURL = (file: ImageUrlFileInput) => {

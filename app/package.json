@@ -50,6 +50,7 @@
     "expo-system-ui": "~55.0.11",
     "expo-video": "~55.0.11",
     "expo-web-browser": "~55.0.10",
+    "graphql": "^16.14.2",
     "jotai": "2.17.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",

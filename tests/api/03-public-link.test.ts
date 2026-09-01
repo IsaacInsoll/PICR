@@ -21,6 +21,7 @@ import {
   LinkMode,
   PublicLinkAccessStatus,
 } from '../../shared/gql/graphql';
+import { thumbnailVariantForWidth } from '../../shared/thumbnailVariants';
 
 // Generate unique suffix for this test run to avoid conflicts
 const testSuffix = Math.random().toString(36).slice(2, 8);
@@ -374,9 +375,13 @@ test('Open Graph: social media friendly links', async () => {
     /<meta property="og:url" content="https?:\/\/(.){5,}\/(.){5,}" \/>/gm,
   );
 
-  // the hash changes so lets accept any 64 characters :)
+  const socialThumbnail = thumbnailVariantForWidth(500);
+  // The content hash changes with the fixture metadata, so validate its shape.
   expect(text).toMatch(
-    /<meta property="og:image" content="https?:\/\/(.){5,}\/image\/2\/md\/(.){64}\/XH2A2139.jpg" \/>/gm,
+    new RegExp(
+      `<meta property="og:image" content="https?://[^"]{5,}/image/2/${socialThumbnail.token}/[a-f0-9]{64}/XH2A2139\\.jpg" />`,
+      'gm',
+    ),
   );
 });
 
