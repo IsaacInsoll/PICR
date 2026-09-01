@@ -344,13 +344,57 @@ Dependabot's `cooldown` option is ecosystem-specific. GitHub currently rejects
 cooldowns on the npm update entries rather than copying them into the Actions
 entry. PICR intentionally checks grouped npm minor/patch updates monthly with a
 21-day minor and 7-day patch cooldown, ignores routine npm major-version PRs,
-and checks grouped GitHub Actions updates quarterly. The React Native app is the
-exception: routine `/app` version updates are disabled and its security updates
-are grouped, because Expo dependency upgrades are coordinated manually during
-app maintenance. Security updates remain a separate repository setting and must
-not be disabled to reduce version-update noise. Keep workflow `push` validation
-limited to `master`; pull requests have their own validation event, and allowing
-all branch pushes doubles CI for every Dependabot PR.
+and checks grouped GitHub Actions updates quarterly.
+
+The React Native app is a deliberate exception: `/app` is fully excluded from
+Dependabot PRs, both version and security updates, because Expo/React Native
+dependency upgrades break easily and are coordinated manually during app
+maintenance. Implementing that requires an `ignore` rule, not just a limit:
+
+- `open-pull-requests-limit: 0` disables **version** updates only. Security
+  update PRs are explicitly not subject to that limit, so `/app` still received
+  grouped security PRs (for example #114) while the limit was `0`.
+- `ignore` applies to **both** version and security updates, so
+  `ignore: [{ dependency-name: '*' }]` on the `/app` entry is what actually
+  stops every PR. Keep that rule; do not "simplify" it away.
+- Closing a grouped Dependabot PR does not add ignore rules for the versions it
+  contained, so closing those PRs by hand never makes them stop recurring.
+
+Excluding `/app` from Dependabot PRs does not silence its Dependabot alerts;
+those still appear in the repository security tab and are the intended way to
+review app vulnerabilities before a manual Expo upgrade. Do not disable the
+repository-level security updates setting to reduce version-update noise; scope
+the exclusion in `dependabot.yml` instead.
+
+Security updates bypass most of the noise controls. `groups`, `cooldown`, and
+`open-pull-requests-limit` all default to version updates only, so a security
+wave opens one PR per dependency per directory: `js-yaml` alone produced #98,
+#99, #101, and #102 because it appears in four lockfiles. Every npm entry
+therefore carries a second `<name>-security` group with
+`applies-to: security-updates` so those collapse into one PR per subsystem.
+Keep both groups when editing an entry; a group without `applies-to` does not
+cover security updates. `/app` is the exception and needs no groups at all,
+since its `ignore` rule suppresses both kinds.
+
+`cooldown` is deliberately left at 21-day minor / 7-day patch. It applies only
+to version updates, so raising it delays routine bumps without reducing the
+security PRs that drive most of the volume.
+
+The five npm entries are intentionally kept separate rather than merged into a
+single entry with the plural `directories` key. Consolidating would cut roughly
+five monthly PRs to one, but makes review all-or-nothing across subsystems,
+which does not match how PICR triages these (individual subsystem groups get
+merged or closed independently). Revisit only if that changes.
+
+Labels listed in `dependabot.yml` must already exist in the repository.
+Dependabot does not create missing labels; it comments a "The following labels
+could not be found" warning on every PR and drops them. Only `dependencies`
+is listed for this reason - `npm` and `github-actions` were requested but never
+existed, so they were removed rather than created.
+
+Keep workflow `push` validation limited to `master`; pull requests have their
+own validation event, and allowing all branch pushes doubles CI for every
+Dependabot PR.
 
 Frontend dev runtime note:
 

@@ -9,7 +9,6 @@ updates:
     open-pull-requests-limit: 1
     labels:
       - dependencies
-      - github-actions
     groups:
       github-actions:
         patterns:
@@ -31,9 +30,12 @@ updates:
           - version-update:semver-major
     labels:
       - dependencies
-      - npm
     groups:
       npm-root:
+        patterns:
+          - '*'
+      npm-root-security:
+        applies-to: security-updates
         patterns:
           - '*'
 
@@ -53,9 +55,12 @@ updates:
           - version-update:semver-major
     labels:
       - dependencies
-      - npm
     groups:
       npm-backend:
+        patterns:
+          - '*'
+      npm-backend-security:
+        applies-to: security-updates
         patterns:
           - '*'
 
@@ -77,12 +82,21 @@ updates:
           - version-update:semver-major
     labels:
       - dependencies
-      - npm
     groups:
       npm-frontend:
         patterns:
           - '*'
+      npm-frontend-security:
+        applies-to: security-updates
+        patterns:
+          - '*'
 
+  # React Native / Expo dependency upgrades are coordinated manually during app
+  # maintenance, so Dependabot must not open PRs against /app at all.
+  # `open-pull-requests-limit: 0` only stops *version* updates; security update
+  # PRs ignore that limit, so the wildcard `ignore` rule below is what suppresses
+  # them (`ignore` applies to both version and security updates).
+  # Security alerts for /app remain visible in the Dependabot alerts UI.
   - package-ecosystem: npm
     directory: /app
     schedule:
@@ -90,14 +104,10 @@ updates:
       time: '06:00'
       timezone: America/New_York
     open-pull-requests-limit: 0
+    ignore:
+      - dependency-name: '*'
     labels:
       - dependencies
-      - npm
-    groups:
-      npm-app-security:
-        applies-to: security-updates
-        patterns:
-          - '*'
 
   - package-ecosystem: npm
     directory: /shared
@@ -115,9 +125,12 @@ updates:
           - version-update:semver-major
     labels:
       - dependencies
-      - npm
     groups:
       npm-shared:
+        patterns:
+          - '*'
+      npm-shared-security:
+        applies-to: security-updates
         patterns:
           - '*'
 
@@ -137,8 +150,11 @@ updates:
           - version-update:semver-major
     labels:
       - dependencies
-      - npm
     groups:
       npm-ping:
+        patterns:
+          - '*'
+      npm-ping-security:
+        applies-to: security-updates
         patterns:
           - '*'

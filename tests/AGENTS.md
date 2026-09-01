@@ -111,12 +111,21 @@ tests/
   active. Keep running package replacements against those same files; do not
   update snapshots to make a migration pass without review and an explanation
   of every visual difference.
+- Image-tile snapshots include the encoded JPEG pixels as well as the gallery
+  layout. An intentional thumbnail width, quality, or source-selection change
+  can therefore produce sparse content-only diffs even when the explicit row
+  geometry assertions pass. Inspect the actual and diff images, explain the
+  encoder/source change, and regenerate only the affected baselines; do not
+  hide this kind of change by loosening the screenshot tolerance.
 - Visual baselines are Linux PNGs under
   `tests/e2e/gallery.visual.spec.ts-snapshots/` and are committed. They are
   generated on a developer machine but also compared on the Ubuntu CI runner,
   which shares the `-linux` platform suffix. The folder-tile baselines are the
   only ones containing rendered text and a `backdrop-filter` blur, so they are
   the most likely to drift between distributions.
+- Apple Silicon `act` runs use Linux ARM64 but share the same `-linux` suffix
+  as the x64 Ubuntu CI runner. If an ARM64 snapshot diff does not reproduce on
+  x64 Linux, keep the x64 Linux baseline; do not promote the ARM-only pixels.
 
 ### Covered Tile Shapes
 
