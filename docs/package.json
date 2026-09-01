@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@astrojs/starlight": "0.41.10",
+    "@fontsource/signika": "5.3.0",
     "astro": "7.2.10"
   },
   "devDependencies": {
