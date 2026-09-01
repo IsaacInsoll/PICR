@@ -11,3 +11,5 @@ frontend/src/**/*.module.css.d.ts
 lightroom/*
 app/ios/*
 app/android/*
+docs/.astro/*
+docs/dist/*

@@ -143,15 +143,21 @@ gh issue view <number> --comments --json number,title,state,body,comments,labels
 | `tests/`     | API integration tests (Vitest) + frontend smoke tests (Playwright) | Yes           |
 | `lightroom/` | Lightroom Classic plugin prototype (Lua)                           | Yes           |
 | `ping/`      | NAS-side media watcher and PICR change-hint delivery container     | Yes           |
-| `docs/`      | GitHub Pages documentation site                                    | No            |
+| `docs/`      | Astro/Starlight customer docs and repo-native developer docs       | No            |
 
 **Read the subsystem AGENTS.md files when working in those directories** - they contain detailed patterns, code examples, and troubleshooting guides. This applies equally when **planning** changes, not just implementing them — read the relevant subsystem AGENTS.md files before writing any plan that touches that subsystem.
 
 ## Documentation Boundaries
 
 - Root `readme.md` is customer-facing and should not be updated for developer workflow/troubleshooting notes.
-- Everything under `docs/` feeds the generated documentation site. Keep general product and user documentation customer-facing.
-- Durable guides for human developers and contributors belong under `docs/development/*` (for example, a guide to adding translations).
+- Published customer documentation belongs under `docs/src/content/docs/*`. Astro/Starlight builds these files into the GitHub Pages site with clean, extensionless routes.
+- Durable guides for human developers and contributors belong under `docs/development/*` (for example, a guide to adding translations). These files and `docs/CONTRIBUTING.md` remain repository-native Markdown and are not published by Starlight.
+- The `docs/` directory is an independent npm package. Install it with `npm --prefix docs ci`, preview it with `npm --prefix docs start`, validate it with `npm --prefix docs run check`, and build it with `npm --prefix docs run build`. Run `npm --prefix docs run check:links` after building.
+- `docs/.astro/` and `docs/dist/` are generated, ignored by Git and excluded from root Prettier checks. Do not commit or edit them directly.
+- Keep `ASTRO_TELEMETRY_DISABLED=1` in the Astro package scripts. Without it, Astro attempts to write telemetry preferences outside the workspace in some development and sandbox environments.
+- Search is generated during the production build and may not appear in the development server.
+- `.github/workflows/docs.yml` validates documentation pull requests and deploys `master` to the existing `/PICR/` GitHub Pages site. Before the first deployment, set the repository's Pages source to **GitHub Actions**.
+- The docs package is intentionally omitted from Dependabot for now. Do not add a docs npm entry unless that decision is revisited.
 - Temporary implementation plans and working notes belong under `.scratch/`, not in the generated documentation.
 - Agent-specific repository instructions and recurring AI workflow guidance belong in the relevant `AGENTS.md`.
 
@@ -271,6 +277,7 @@ npm run start:db             # Database only (Docker)
 cd backend && npm run build  # TypeScript → dist/server (for Docker image)
 cd frontend && npm run build # Vite production build
 cd app && npx expo export --platform android  # or --platform ios on macOS
+npm --prefix docs run build  # Astro/Starlight documentation site
 
 # Testing
 npm run workflow             # Full CI workflow (user runs this manually)
@@ -423,6 +430,7 @@ Always suggest running the relevant build as a basic validation:
 - Frontend changes → `cd frontend && npm run build`
 - App changes → `cd app && npx expo export --platform android`
 - Ping changes → `cd ping && npm run build`
+- Docs changes → `npm --prefix docs run check && npm --prefix docs run build && npm --prefix docs run check:links`
 
 Run lint for each touched subsystem before finalizing changes:
 

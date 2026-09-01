@@ -7,11 +7,13 @@ on:
     paths-ignore:
       - 'lightroom/**'
       - 'docs/**'
+      - '.github/workflows/docs.yml'
       - '*.md'
   pull_request:
     paths-ignore:
       - 'lightroom/**'
       - 'docs/**'
+      - '.github/workflows/docs.yml'
       - '*.md'
 
 concurrency:

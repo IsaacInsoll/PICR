@@ -35,8 +35,6 @@ Picr is a self-hosted online image sharing tool for photographers to share photo
 
 ## Manual
 
-> **WORK IN PROGRESS:** Please contact us if you want to help making this manual better
-
 - [Installation Instructions](/PICR/getting-started/install/)
   Picr is typically installed using `docker`
 - [PICR Ping](/PICR/operations/picr-ping/)

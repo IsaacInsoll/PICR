@@ -2,15 +2,15 @@
 
 ### Self-hosted online image sharing tool for photographers to share photos with clients.
 
-👩🏻‍💻 [GitHub](https://github.com/isaacinsoll/picr) | 🐳 [Docker Hub](https://hub.docker.com/r/isaacinsoll/picr) | 📱 [App Store](https://apps.apple.com/us/app/picr-client/id6748066012) | 📱 [Google Play](https://play.google.com/store/apps/details?id=com.isaacinsoll.picr) | 🔌 [Lightroom Plugin](https://isaacinsoll.github.io/PICR/lightroom-plugin.html)
+👩🏻‍💻 [GitHub](https://github.com/isaacinsoll/picr) | 🐳 [Docker Hub](https://hub.docker.com/r/isaacinsoll/picr) | 📱 [App Store](https://apps.apple.com/us/app/picr-client/id6748066012) | 📱 [Google Play](https://play.google.com/store/apps/details?id=com.isaacinsoll.picr) | 🔌 [Lightroom Plugin](https://isaacinsoll.github.io/PICR/integrations/lightroom/)
 
 <img src="docs/images/picr-header.png" width="400"/>
 
 📝 [Picr Manual](https://isaacinsoll.github.io/PICR/) for the full feature list and documentation
 
-🌐 [Supported Languages](https://isaacinsoll.github.io/PICR/languages.html): 🇺🇸 English, 🇫🇷 French, 🇩🇪 German, 🇬🇷 Greek, 🇪🇸 Spanish, 🇺🇦 Ukrainian
+🌐 [Supported Languages](https://isaacinsoll.github.io/PICR/reference/languages/): 🇺🇸 English, 🇫🇷 French, 🇩🇪 German, 🇬🇷 Greek, 🇪🇸 Spanish, 🇺🇦 Ukrainian
 
-▶️ [Installation Instructions](https://isaacinsoll.github.io/PICR/install.html) for a sample `compose.yml` and instructions
+▶️ [Installation Instructions](https://isaacinsoll.github.io/PICR/getting-started/install/) for a sample `compose.yml` and instructions
 
 🧑‍💻 [Development Docs](docs/development/index.md) if you want to contribute
 
