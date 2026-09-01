@@ -15,27 +15,16 @@ export const FileModalFileContext = ({
   file,
   folder,
   showPreview = true,
+  showLocationActions = true,
 }: {
   file: PicrFile;
   folder?: PicrFolder;
   showPreview?: boolean;
+  showLocationActions?: boolean;
 }) => {
   const { t } = useTranslation('gallery');
-  const location = useLocation();
-  const isMobile = useIsSmallScreen();
-  const baseFolderUrl = useBaseViewFolderURL();
-  const folderId = file.folderId;
-  const folderUrl = folderId ? `${baseFolderUrl}${folderId}` : undefined;
-  const fileUrl = folderUrl ? `${folderUrl}/${file.id}` : undefined;
-  const destinationHash = withFileModalState(location.hash);
-  const folderLocation = folderUrl
-    ? { pathname: folderUrl, hash: destinationHash }
-    : undefined;
-  const fileLocation = fileUrl
-    ? { pathname: fileUrl, hash: destinationHash }
-    : undefined;
-  const currentFolderId = folderIdFromPath(location.pathname);
-  const showLocation = folderId ? currentFolderId !== folderId : false;
+  const { showLocation, folderLocation, fileLocation } =
+    useFileModalLocations(file);
 
   // These file links only render when the owning folder is not the current
   // route. Leave them unmarked so closing the lightbox replaces it with the
@@ -56,23 +45,9 @@ export const FileModalFileContext = ({
               </PicrLink>
             </>
           ) : null}
-          <Group grow={isMobile} wrap="wrap">
-            <Button
-              component={NavLink}
-              to={folderLocation}
-              variant="default"
-              leftSection={<FolderOpenIcon />}
-            >
-              {t('comments.openGallery')}
-            </Button>
-            <Button
-              component={NavLink}
-              to={fileLocation}
-              leftSection={<PhotoViewIcon />}
-            >
-              {t('comments.viewFile')}
-            </Button>
-          </Group>
+          {showLocationActions ? (
+            <FileModalLocationActions file={file} />
+          ) : null}
           <Divider />
         </>
       ) : null}
@@ -87,4 +62,64 @@ export const FileModalFileContext = ({
       ) : null}
     </Stack>
   );
+};
+
+export const FileModalLocationActions = ({
+  file,
+  equalWidth = false,
+  className,
+}: {
+  file: PicrFile;
+  equalWidth?: boolean;
+  className?: string;
+}) => {
+  const { t } = useTranslation('gallery');
+  const isMobile = useIsSmallScreen();
+  const { showLocation, folderLocation, fileLocation } =
+    useFileModalLocations(file);
+
+  if (!showLocation || !folderLocation || !fileLocation) return null;
+
+  return (
+    <Group
+      className={className}
+      grow={equalWidth || isMobile}
+      wrap={equalWidth ? 'nowrap' : 'wrap'}
+    >
+      <Button
+        component={NavLink}
+        to={folderLocation}
+        variant="default"
+        leftSection={<FolderOpenIcon />}
+      >
+        {t('comments.openFolder')}
+      </Button>
+      <Button
+        component={NavLink}
+        to={fileLocation}
+        leftSection={<PhotoViewIcon />}
+      >
+        {t('comments.viewFile')}
+      </Button>
+    </Group>
+  );
+};
+
+const useFileModalLocations = (file: PicrFile) => {
+  const location = useLocation();
+  const baseFolderUrl = useBaseViewFolderURL();
+  const folderId = file.folderId;
+  const folderUrl = folderId ? `${baseFolderUrl}${folderId}` : undefined;
+  const fileUrl = folderUrl ? `${folderUrl}/${file.id}` : undefined;
+  const destinationHash = withFileModalState(location.hash);
+  const folderLocation = folderUrl
+    ? { pathname: folderUrl, hash: destinationHash }
+    : undefined;
+  const fileLocation = fileUrl
+    ? { pathname: fileUrl, hash: destinationHash }
+    : undefined;
+  const currentFolderId = folderIdFromPath(location.pathname);
+  const showLocation = folderId ? currentFolderId !== folderId : false;
+
+  return { showLocation, folderLocation, fileLocation };
 };

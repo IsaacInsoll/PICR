@@ -1,7 +1,12 @@
 import { Button, Divider, Group, Modal, Stack, Textarea } from '@mantine/core';
 import { normalizeDisplayName } from '@shared/displayName';
 import { LoadingIndicator } from '../../LoadingIndicator';
-import { Suspense, useState } from 'react';
+import {
+  type ComponentPropsWithoutRef,
+  forwardRef,
+  Suspense,
+  useState,
+} from 'react';
 import { useMutation, useQuery } from 'urql';
 import type { PicrFile, PicrFolder } from '@shared/types/picr';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
@@ -11,8 +16,25 @@ import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { CommentHistory } from './CommentHistory';
 import type { MutationAddCommentArgs } from '@shared/gql/graphql';
 import { useTranslation } from 'react-i18next';
-import { FileModalFileContext } from '../FileModalFileContext';
+import {
+  FileModalFileContext,
+  FileModalLocationActions,
+} from '../FileModalFileContext';
 import { useCloseFileModal } from '../../../hooks/useFileModalNavigation';
+import styles from './CommentModal.module.css';
+
+const ModalScrollArea = forwardRef<
+  HTMLDivElement,
+  ComponentPropsWithoutRef<'div'>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    {...props}
+    className={[styles.modalScrollArea, className].filter(Boolean).join(' ')}
+  />
+));
+
+ModalScrollArea.displayName = 'ModalScrollArea';
 
 export const CommentModal = ({
   file,
@@ -29,21 +51,38 @@ export const CommentModal = ({
   const fileName = normalizeDisplayName(file.name);
 
   return (
-    <>
-      <Modal
-        opened={true}
-        onClose={onClose}
-        title={t('comments.onFile', { name: fileName })}
-        fullScreen={isMobile}
-      >
-        <Stack>
-          <FileModalFileContext file={file} folder={folder} />
-          <Suspense fallback={<LoadingIndicator />}>
-            <CommentBody file={file} highlight={highlight} />
-          </Suspense>
-        </Stack>
-      </Modal>
-    </>
+    <Modal.Root
+      opened={true}
+      onClose={onClose}
+      fullScreen={isMobile}
+      centered={true}
+      scrollAreaComponent={ModalScrollArea}
+    >
+      <Modal.Overlay />
+      <Modal.Content>
+        <Modal.Header>
+          <Modal.Title>{t('comments.onFile', { name: fileName })}</Modal.Title>
+          <Modal.CloseButton />
+        </Modal.Header>
+        <Modal.Body className={styles.modalBody}>
+          <Stack>
+            <FileModalFileContext
+              file={file}
+              folder={folder}
+              showLocationActions={false}
+            />
+            <Suspense fallback={<LoadingIndicator />}>
+              <CommentBody file={file} highlight={highlight} />
+            </Suspense>
+          </Stack>
+        </Modal.Body>
+        <FileModalLocationActions
+          file={file}
+          equalWidth={true}
+          className={styles.modalFooter}
+        />
+      </Modal.Content>
+    </Modal.Root>
   );
 };
 
