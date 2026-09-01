@@ -2,13 +2,13 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: './.scratch/codegen-schema.json',
-  // `src/gql/*` for useQuery/useMutation to return typed object
+  schema: '../.scratch/codegen-schema.json',
+  // `shared/gql/*` lets useQuery/useMutation return typed objects.
   generates: {
-    // used by codegen to add proper typescript typing to results from a gql query/mutation
-    'shared/gql/': {
+    // Used by codegen to add TypeScript types to query/mutation results.
+    '../shared/gql/': {
       preset: 'client',
-      documents: ['./shared/**/*.tsx', './shared/**/*.ts'],
+      documents: ['../shared/**/*.tsx', '../shared/**/*.ts'],
       presetConfig: { fragmentMasking: false },
       plugins: [],
       config: {
@@ -21,12 +21,12 @@ const config: CodegenConfig = {
         },
       },
     },
-    //graphql.schema.json used by URQL for caching
-    'shared/urql/graphql.schema.json': {
+    // Used by URQL for caching.
+    '../shared/urql/graphql.schema.json': {
       plugins: ['introspection'],
     },
-    // `schema.graphql` for phpStorm GQL plugin to auto complete queries
-    './schema.graphql': {
+    // Used by IDE GraphQL plugins to autocomplete queries.
+    '../schema.graphql': {
       plugins: ['schema-ast'],
     },
   },

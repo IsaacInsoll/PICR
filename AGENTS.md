@@ -174,6 +174,21 @@ It does not require a running backend, database, configured environment, or
 open HTTP port. The temporary snapshot is an implementation detail and must not
 be committed.
 
+The GraphQL Codegen configuration and `@graphql-codegen/*` dependencies live in
+`backend/` deliberately. The executable schema producer and every codegen plugin
+must resolve backend's direct `graphql` dependency from the same package tree.
+Do not move codegen back to the root: a newer backend GraphQL can emit
+introspection enum values that an older transitive root GraphQL cannot
+re-introspect. Root `npm run gql` is only the repository-level wrapper.
+
+A backend `graphql` version bump can legitimately change
+`shared/urql/graphql.schema.json`, because that tracked file includes
+graphql-js's own introspection schema. Dependabot cannot run codegen, so its PR
+may pass generation but fail the subsequent generated-file diff. Run
+`npm run gql` on the Dependabot branch and commit the regenerated artifact;
+this expected drift is not a recurrence of the producer/consumer version-skew
+failure.
+
 Do not manually edit generated files, and do not add local type workarounds to
 work around missing generated types. Run `npm run gql` and commit the resulting
 tracked outputs before continuing with type-dependent code.
@@ -250,7 +265,7 @@ npm run start:db             # Database only (Docker)
 # Type checking runs separately via `npx tsc --noEmit -w`.
 # Build/test/docker still run the compiled backend from `dist/server`.
 # If compiled runtime fails with ERR_MODULE_NOT_FOUND from `dist/server`, run:
-# sh ./copy-backend-files.sh && npm --prefix dist ci
+# sh ./copy-backend-files.sh && npm --prefix dist ci --omit=dev
 
 # Building
 cd backend && npm run build  # TypeScript → dist/server (for Docker image)

@@ -514,9 +514,19 @@ AI agents CAN run `npm run gql` freely - it regenerates:
 - `./schema.graphql` - SDL schema
 - `shared/urql/graphql.schema.json` - Schema for caching
 
-Run after any schema changes. Codegen imports and validates the executable
-schema in-process and writes a temporary introspection snapshot under
-`.scratch/`; it does not require the backend server or database to be running.
+Run after any schema changes. A short-lived backend process imports and
+validates the executable schema, writes a temporary introspection snapshot under
+`.scratch/`, and exits before codegen consumes the snapshot. It does not require
+the backend server or database to be running.
+
+The GraphQL Codegen configuration and dependencies belong in `backend/` so the
+schema exporter and codegen plugins use this package's direct `graphql`
+dependency. Root `npm run gql` delegates to the internal `gql:generate` script
+and then formats the generated artifacts; do not invoke `gql:generate` as the
+normal developer workflow. Keep the JSON snapshot between the exporter and
+codegen processes: it preserves offline generation without passing live
+`GraphQLSchema` objects across module realms or keeping schema import side
+effects alive during codegen.
 
 Codegen is offline but not yet bootstrappable from scratch. Around 36 backend
 files import `@shared/gql/graphql`, and several import runtime _values_ rather
@@ -1020,36 +1030,14 @@ npm run workflow
 
 ## Troubleshooting
 
-### `npm run gql` fails with network error
+### `npm run gql` fails while loading the schema
 
-The dev server must be running for codegen to introspect the schema:
-
-```bash
-npm run start:server  # In one terminal
-npm run gql           # In another terminal
-```
-
-### `npm run gql` succeeds but generated files don't include new fields
-
-Codegen introspects the **live server** at `http://localhost:6900/graphql`. If a
-server was already running before your schema changes (e.g. a previous `npm start`
-session that wasn't fully killed), that old process will still be on port 6900 and
-codegen will silently introspect the stale schema.
-
-Fix:
-
-1. Kill **all** running server processes — check for any leftover `node` processes
-   on port 6900: `lsof -ti:6900 | xargs kill -9`
-2. Run `npm start` fresh and wait until you see the PICR startup banner in the
-   output (confirms the new server is up and compiled code is loaded)
-3. Verify the new fields are live before running codegen:
-   ```bash
-   curl -s -X POST http://localhost:6900/graphql \
-     -H "Content-Type: application/json" \
-     -d '{"query":"{ __type(name: \"Branding\") { fields { name } } }"}' \
-     | grep -o '"name":"[^"]*"'
-   ```
-4. Then run `npm run gql`
+Codegen does not use the live server. Read the exporter error from the first
+`gql:schema` phase: it imports and validates `backend/graphql/schema.ts` using
+the backend package's tsconfig and dependencies. Fix that schema/import error,
+then rerun the root `npm run gql` wrapper. Do not start a server to work around
+it or run `graphql-codegen` directly against a possibly stale `.scratch`
+snapshot.
 
 ### File watcher not detecting changes
 

@@ -112,6 +112,11 @@ The app must not import from `frontend`, `backend`, or any other non-shared
 subsystem. Move code needed by multiple consumers into `shared/` and import it
 with `@shared/*`.
 
+The app directly provides `graphql` because `@shared/urql/urqlClient` imports
+GraphQL runtime values. Metro resolving a transitive copy from
+`shared/node_modules` is not a dependency contract and can break after an npm
+hoisting change.
+
 ## Known Issues / Tech Debt
 
 ### `app-shared/` Duplicated Hooks

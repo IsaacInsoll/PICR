@@ -33,10 +33,9 @@
     "tsc:app": "cd app && npm run typecheck",
     "tsc:ping": "npm --prefix ping run typecheck",
     "workflow": "act push --pull=false --artifact-server-path $PWD/.artifacts -P ubuntu-24.04=catthehacker/ubuntu:act-latest",
-    "install-all": "npm ci && npm --prefix shared ci && npm --prefix backend ci && npm --prefix frontend ci && npm --prefix app ci && npm --prefix ping ci && sh ./copy-backend-files.sh && npm --prefix dist ci",
-    "build:local": "npm --prefix backend run build && npm run build:lightroom && npm --prefix frontend run build && npm --prefix dist ci",
-    "gql:schema": "cd backend && TSX_TSCONFIG_PATH=tsconfig.json node --import tsx scripts/exportGraphqlSchema.ts ../.scratch/codegen-schema.json",
-    "gql": "npm run gql:schema && graphql-codegen --config codegen.ts && prettier --write shared/urql/graphql.schema.json frontend/src/fonts.generated.ts app/src/fonts.generated.ts",
+    "install-all": "npm ci && npm --prefix shared ci && npm --prefix backend ci && npm --prefix frontend ci && npm --prefix app ci && npm --prefix ping ci && sh ./copy-backend-files.sh && npm --prefix dist ci --omit=dev",
+    "build:local": "npm --prefix backend run build && npm run build:lightroom && npm --prefix frontend run build && npm --prefix dist ci --omit=dev",
+    "gql": "npm --prefix backend run gql:generate && prettier --write shared/urql/graphql.schema.json frontend/src/fonts.generated.ts app/src/fonts.generated.ts",
     "release": "dotenv -- release-it --only-version",
     "release:ping": "node ping/scripts/release.mjs",
     "release:app:auth": "cd app && npx eas whoami >/dev/null",
@@ -64,9 +63,6 @@
     "start": "concurrently -c \"gray,blue,magenta,cyan,yellow\" npm:start:*"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^5.0.7",
-    "@graphql-codegen/client-preset": "^4.8.3",
-    "@graphql-codegen/introspection": "^4.0.3",
     "@playwright/test": "1.58.2",
     "concurrently": "^10.0.3",
     "dotenv-cli": "^11",
