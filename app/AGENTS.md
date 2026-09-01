@@ -193,6 +193,24 @@ intentionally includes public-link fields such as `uuid`, `commentPermissions`
 and `linkMode` because the web frontend still supports client galleries; do not
 reuse it in the photographer-only app merely to avoid a separate operation.
 
+`src/helpers/authenticatedServerOrigin.ts` is the single contract for server URL
+normalization, the native route key, authenticated GraphQL headers and full
+media URLs. `PicrUserProvider` publishes the authenticated value through
+`AuthenticatedServerOriginProvider`; authenticated descendants must consume
+that context instead of reading `LoginDetails.server`, deriving a hostname from
+Expo Router parameters, or concatenating media paths themselves. Code outside
+the authenticated route provider, such as startup and incoming-notification
+handling, may create the same pure origin from stored login details.
+
+The route key is only `host[:port]`; the HTTP base path remains in `baseUrl` and
+is applied to GraphQL and media requests. Incoming authenticated and public
+gallery links must remove that known base path before matching native routes,
+while browser-bound gallery URLs retain it. Preserve the explicit `http:` or
+`https:` scheme. Plain HTTP is best-effort compatibility for deliberate
+self-hosted development setups, not a release gate: do not silently upgrade it
+to HTTPS, but do not add platform-specific cleartext exceptions unless a real
+use case justifies their maintenance. HTTPS is the supported default.
+
 ## Authentication
 
 The backend accepts arbitrary non-empty admin usernames and its default

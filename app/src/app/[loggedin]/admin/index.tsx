@@ -23,7 +23,6 @@ import type {
 } from '@shared/gql/graphql';
 import { FoldersSortType } from '@shared/gql/graphql';
 import type { AllFoldersRow } from '@shared/types/queryRows';
-import { useHostname } from '@/src/hooks/useHostname';
 import { navBarIconProps } from '@/src/constants';
 import { AppFileListItem } from '@/src/components/FolderContents/AppFolderFileList';
 import { Suspense } from 'react';
@@ -35,6 +34,7 @@ import {
   AppHeaderPadding,
 } from '@/src/components/AppHeaderPadding';
 import { SearchHeaderButton } from '@/src/components/SearchHeaderButton';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 const HomeFolderButton = () => {
   const me = useMe();
@@ -59,10 +59,10 @@ const HomeFolderButton = () => {
 };
 const SettingsButton = () => {
   const theme = useAppTheme();
-  const hostname = useHostname();
+  const origin = useAuthenticatedServerOrigin();
   const href = {
     pathname: '/[loggedin]/admin/settings' as const,
-    params: { loggedin: hostname ?? '' },
+    params: { loggedin: origin.routeKey },
   };
   return (
     <HeaderButton>

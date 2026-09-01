@@ -7,7 +7,6 @@ const loginDetailsSchema = z.object({
   server: z.string().url(),
   username: z.string().min(1),
   password: z.string().min(1),
-  hostname: z.string().optional(),
   token: z.string().optional(),
 });
 
@@ -20,24 +19,13 @@ export type LoginDetails = z.infer<typeof loginDetailsSchema>;
 
 export const loginDetailsAtom = atom<LoginDetails | undefined>(undefined);
 
-export const useLoginDetails = () => {
-  const details = useAtomValue(loginDetailsAtom);
-  if (!details) return undefined;
-  return {
-    ...details,
-    hostname: details.server.replace(/(^\w+:|^)\/\//, ''),
-  };
-};
+export const useLoginDetails = () => useAtomValue(loginDetailsAtom);
 
 export const useSetLoginDetails = () => {
   const setter = useSetAtom(loginDetailsAtom);
   return async (details: LoginDetails) => {
-    const payload: LoginDetails = {
-      ...details,
-      hostname: getHostname(details.server),
-    };
-    setter(payload);
-    await saveLoginDetailsToLocalDevice(payload);
+    setter(details);
+    await saveLoginDetailsToLocalDevice(details);
   };
 };
 
@@ -49,10 +37,6 @@ export const useSetLoggedOut = () => {
     await SecureStore.deleteItemAsync('login');
     router.replace('/login');
   };
-};
-
-const getHostname = (str: string): string => {
-  return str.replace(/(^\w+:|^)\/\//, '');
 };
 
 const saveLoginDetailsToLocalDevice = async (details: LoginDetails) => {

@@ -55,6 +55,26 @@ describe('getLoginDetailsFromLocalDevice', () => {
     expect(SecureStore.setItemAsync).not.toHaveBeenCalled();
   });
 
+  it('strips the obsolete derived hostname from a stored login', async () => {
+    const storedLogin = {
+      server: 'http://192.168.1.2:6900/picr/',
+      hostname: '192.168.1.2:6900/picr/',
+      username: 'admin',
+      password: 'picr1234',
+      token: 'token',
+    };
+    jest
+      .mocked(SecureStore.getItemAsync)
+      .mockResolvedValue(JSON.stringify({ version: 1, login: storedLogin }));
+
+    await expect(getLoginDetailsFromLocalDevice()).resolves.toEqual({
+      server: storedLogin.server,
+      username: storedLogin.username,
+      password: storedLogin.password,
+      token: storedLogin.token,
+    });
+  });
+
   it('removes malformed persisted JSON instead of crashing app startup', async () => {
     jest.mocked(SecureStore.getItemAsync).mockResolvedValue('{broken');
 

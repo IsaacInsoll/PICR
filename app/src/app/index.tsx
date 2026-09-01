@@ -4,12 +4,14 @@ import { PicrUserProvider } from '@/src/components/PicrUserProvider';
 import { Suspense } from 'react';
 import { PText } from '@/src/components/PText';
 import { adminDashboardHref } from '@/src/helpers/appRoutes';
+import { createServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
 
 export default function Index() {
   // console.log('[app index.tsx]');
   const me = useLoginDetails();
-  if (me?.hostname) {
-    const destination = adminDashboardHref(me.hostname);
+  const origin = me ? createServerOrigin(me.server) : null;
+  if (origin) {
+    const destination = adminDashboardHref(origin.routeKey);
     // console.log('[app/index.tsx] redirecting from base URL to ' + destination);
     return <Redirect href={destination} withAnchor />;
   }

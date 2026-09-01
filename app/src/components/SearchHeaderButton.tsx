@@ -4,15 +4,15 @@ import { Link } from 'expo-router';
 import { HeaderButton } from '@react-navigation/elements';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { navBarIconProps } from '@/src/constants';
-import { useHostname } from '@/src/hooks/useHostname';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 export const SearchHeaderButton = ({ folderId }: { folderId?: string }) => {
-  const hostname = useHostname();
+  const origin = useAuthenticatedServerOrigin();
   const theme = useAppTheme();
   const href: Href = {
     pathname: '/[loggedin]/admin/find',
     params: {
-      loggedin: hostname ?? '',
+      loggedin: origin.routeKey,
       ...(folderId ? { folderId } : {}),
     },
   };

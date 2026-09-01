@@ -7,6 +7,9 @@ import {
   notificationTargetFromData,
   publicGalleryBrowserUrlFromIncomingUrl,
 } from '@/src/helpers/appRoutes';
+import { createServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
+
+const basePathOrigin = createServerOrigin('http://192.168.1.2:6900/picr/');
 
 describe('authenticated app routes', () => {
   it('builds dashboard, folder and file routes with the server route key', () => {
@@ -51,6 +54,24 @@ describe('authenticated incoming app routes', () => {
   ])('rejects non-admin incoming URL %s', (url) => {
     expect(authenticatedAppHrefFromIncomingUrl(url)).toBeNull();
   });
+
+  it('removes the authenticated server base path from native routes', () => {
+    expect(
+      authenticatedAppHrefFromIncomingUrl(
+        'http://192.168.1.2:6900/picr/admin/f/12',
+        basePathOrigin ?? undefined,
+      ),
+    ).toBe('/192.168.1.2:6900/admin/f/12');
+  });
+
+  it('rejects authenticated routes for a different logged-in server', () => {
+    expect(
+      authenticatedAppHrefFromIncomingUrl(
+        'https://picr.example.com/admin/f/12',
+        basePathOrigin ?? undefined,
+      ),
+    ).toBeNull();
+  });
 });
 
 describe('public gallery browser routes', () => {
@@ -85,6 +106,15 @@ describe('public gallery browser routes', () => {
   ])('rejects non-gallery URL %s', (url) => {
     expect(publicGalleryBrowserUrlFromIncomingUrl(url)).toBeNull();
   });
+
+  it('preserves the server base path when opening a gallery in the browser', () => {
+    expect(
+      publicGalleryBrowserUrlFromIncomingUrl(
+        'http://192.168.1.2:6900/picr/s/link-user/12',
+        basePathOrigin ?? undefined,
+      ),
+    ).toBe('http://192.168.1.2:6900/picr/s/link-user/12');
+  });
 });
 
 describe('notificationTargetFromData', () => {
@@ -111,6 +141,15 @@ describe('notificationTargetFromData', () => {
       type: 'browser',
       url: 'https://picr.example.com/s/link-user/12',
     });
+  });
+
+  it('uses the authenticated origin for base-path notification URLs', () => {
+    expect(
+      notificationTargetFromData(
+        { url: '/192.168.1.2:6900/picr/admin/f/12' },
+        basePathOrigin ?? undefined,
+      ),
+    ).toEqual({ type: 'app', href: '/192.168.1.2:6900/admin/f/12' });
   });
 
   it.each([

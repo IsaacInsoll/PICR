@@ -1,11 +1,10 @@
 import type { PicrFile } from '@shared/types/picr';
-import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { PixelRatio, View } from 'react-native';
 import { useState } from 'react';
 import { Image as ExpoImage } from 'expo-image';
 import { useThumbnailVariants } from '@/src/hooks/useMe';
 import { thumbnailRouteSizeForWidth } from '@/src/helpers/thumbnailRouteSize';
-import { imageURL } from '@/src/helpers/imageURL';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 type AppImageFile = Pick<
   PicrFile,
@@ -21,7 +20,7 @@ export const AppImage = ({
   file: AppImageFile;
   width?: number;
 }) => {
-  const baseUrl = useLoginDetails()?.server;
+  const origin = useAuthenticatedServerOrigin();
   const thumbnailVariants = useThumbnailVariants();
 
   const [viewWidth, setViewWidth] = useState(0);
@@ -34,9 +33,7 @@ export const AppImage = ({
   );
 
   const source =
-    w === 0 || !baseUrl || !sourceSize
-      ? undefined
-      : baseUrl + imageURL(file, sourceSize);
+    w === 0 || !sourceSize ? undefined : origin.mediaUrl(file, sourceSize);
 
   // console.log(width, viewWidth, height, file.fileHash);
 

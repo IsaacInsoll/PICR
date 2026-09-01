@@ -1,6 +1,7 @@
 import type { LoginDetails } from '@/src/hooks/useLoginDetails';
 import { loginMutation } from '@shared/urql/mutations/loginMutation';
 import { picrUrqlClient } from '@shared/urql/urqlClient';
+import { createServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
 
 export type AppLoginErrorType =
   | 'authentication_rejected'
@@ -21,7 +22,18 @@ export const appLogin = async (data: LoginDetails): Promise<AppLoginResult> => {
   const { server, username, password } = data;
   // console.log(data);
 
-  const newClient = picrUrqlClient(server, {});
+  const origin = createServerOrigin(server);
+  if (!origin) {
+    return {
+      error: {
+        type: 'network_unavailable',
+        message:
+          'Unable to connect to server. Check the server URL and network connection.',
+      },
+    };
+  }
+
+  const newClient = picrUrqlClient(origin.baseUrl, {});
   // TODO: Fix this await mutation crashing on iOS 16.4
   // No errors in console, so I just set minimum target to 17 for now :(
   const result = await newClient

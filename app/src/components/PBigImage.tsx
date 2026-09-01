@@ -3,9 +3,7 @@ import { ZOOM_TYPE, Zoomable } from '@likashefqet/react-native-image-zoom';
 import { memo, useEffect, useRef, useState } from 'react';
 import { CacheManager } from '@georstat/react-native-image-cache';
 import type { File, Image } from '@shared/gql/graphql';
-import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { Image as ExpoImage } from 'expo-image';
-import { imageURL } from '@/src/helpers/imageURL';
 import type { ViewStyle } from 'react-native';
 import {
   PixelRatio,
@@ -20,6 +18,7 @@ import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 import { useThumbnailVariants } from '@/src/hooks/useMe';
 import { thumbnailRouteSizeForWidth } from '@/src/helpers/thumbnailRouteSize';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 const PBigImageComponent = ({
   file,
@@ -101,19 +100,18 @@ export const useLocalImageUrl = (
   size: AllSize | ThumbnailVariantToken | undefined,
 ) => {
   const [uri, setUri] = useState<string | undefined>(undefined);
-  const loginDetails = useLoginDetails();
-  const baseUrl = loginDetails?.server;
+  const origin = useAuthenticatedServerOrigin();
 
   useEffect(() => {
     let cancelled = false;
-    if (!baseUrl || !size) {
+    if (!size) {
       setUri(undefined);
       return () => {
         cancelled = true;
       };
     }
 
-    const source = baseUrl + imageURL(file, size);
+    const source = origin.mediaUrl(file, size);
     CacheManager.get(source, undefined)
       .getPath()
       .then((path) => {
@@ -126,7 +124,7 @@ export const useLocalImageUrl = (
     return () => {
       cancelled = true;
     };
-  }, [baseUrl, file, file.fileHash, file.id, file.name, size]);
+  }, [file, file.fileHash, file.id, file.name, origin, size]);
 
   if (!uri) return null;
   return Platform.OS === 'android' ? `file://${uri}` : uri;

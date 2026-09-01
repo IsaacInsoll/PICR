@@ -46,6 +46,20 @@ describe('appLogin', () => {
     });
   });
 
+  it('uses the canonical base-path origin for the GraphQL client', async () => {
+    mockToPromise.mockResolvedValue({ data: { auth: 'token' } });
+
+    await appLogin({
+      ...loginDetails,
+      server: 'http://192.168.1.2:6900/picr',
+    });
+
+    expect(picrUrqlClient).toHaveBeenCalledWith(
+      'http://192.168.1.2:6900/picr/',
+      {},
+    );
+  });
+
   it('classifies the server empty-token response as rejected authentication', async () => {
     mockToPromise.mockResolvedValue({ data: { auth: '' } });
 

@@ -1,11 +1,11 @@
 import type { Href, LinkProps } from 'expo-router';
 import { Link } from 'expo-router';
-import { useHostname } from '@/src/hooks/useHostname';
 import type { FileIDandName, FolderIDandName } from '@/src/helpers/folderCache';
 import { addToFileCache, addToFolderCache } from '@/src/helpers/folderCache';
 import type { ReactNode } from 'react';
 import type { LinkableItem } from '@shared/types/ui';
 import { adminFileHref, adminFolderHref } from '@/src/helpers/appRoutes';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 export const AppFolderLink = ({
   folder,
@@ -77,13 +77,11 @@ export const AppLink = ({
 };
 
 export const useAppFolderLink = (folder: { id: string }): Href => {
-  const hostname = useHostname();
-  const loggedin = hostname ?? '';
-  return adminFolderHref(loggedin, folder.id);
+  const origin = useAuthenticatedServerOrigin();
+  return adminFolderHref(origin.routeKey, folder.id);
 };
 
 export const useAppFileLink = (file: FileIDandName): Href => {
-  const hostname = useHostname();
-  const loggedin = hostname ?? '';
-  return adminFileHref(loggedin, file.folderId, file.id);
+  const origin = useAuthenticatedServerOrigin();
+  return adminFileHref(origin.routeKey, file.folderId, file.id);
 };

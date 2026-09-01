@@ -11,6 +11,8 @@ import {
   authenticatedAppHrefFromIncomingUrl,
   publicGalleryBrowserUrlFromIncomingUrl,
 } from '@/src/helpers/appRoutes';
+import { useLoginDetails } from '@/src/hooks/useLoginDetails';
+import { createServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
 
 export default function NotFound() {
   const navigation = useNavigation();
@@ -19,8 +21,16 @@ export default function NotFound() {
   const router = useRouter();
 
   const url = Linking.useURL();
-  const authenticatedHref = authenticatedAppHrefFromIncomingUrl(url);
-  const publicGalleryUrl = publicGalleryBrowserUrlFromIncomingUrl(url);
+  const login = useLoginDetails();
+  const origin = login ? createServerOrigin(login.server) : null;
+  const authenticatedHref = authenticatedAppHrefFromIncomingUrl(
+    url,
+    origin ?? undefined,
+  );
+  const publicGalleryUrl = publicGalleryBrowserUrlFromIncomingUrl(
+    url,
+    origin ?? undefined,
+  );
   const [galleryOpenFailed, setGalleryOpenFailed] = useState(false);
   const openPublicGallery = useCallback(async () => {
     if (!publicGalleryUrl) return;

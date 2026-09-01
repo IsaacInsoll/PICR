@@ -42,4 +42,14 @@ describe('loginFormSchema', () => {
 
     expect(result.success).toBe(false);
   });
+
+  it('rejects non-HTTP server origins', () => {
+    const result = loginFormSchema.safeParse({
+      server: 'ftp://picr.example.com/',
+      username: 'admin',
+      password: 'picr1234',
+    });
+
+    expect(result.success).toBe(false);
+  });
 });

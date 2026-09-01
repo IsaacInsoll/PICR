@@ -2,12 +2,14 @@ import { Alert } from 'react-native';
 import * as Linking from 'expo-linking';
 import type { Router } from 'expo-router';
 import { notificationTargetFromData } from '@/src/helpers/appRoutes';
+import type { ServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
 
 export const followNotificationTarget = async (
   data: unknown,
   router: Pick<Router, 'push'>,
+  origin?: Pick<ServerOrigin, 'basePath' | 'routeKey'>,
 ) => {
-  const target = notificationTargetFromData(data);
+  const target = notificationTargetFromData(data, origin);
   if (!target) return;
 
   if (target.type === 'app') {
