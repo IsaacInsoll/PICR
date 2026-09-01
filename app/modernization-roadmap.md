@@ -16,7 +16,7 @@ carousel navigation were manually exercised. Runtime problems found during that
 smoke pass were fixed and rechecked. No EAS build or store release was used.
 
 Phase 2's unit/component safety net is complete. The Jest/React Native Testing
-Library suite currently passes 63 tests across login, URL normalization, auth
+Library suite currently passes 74 tests across login, URL normalization, auth
 expiry, SecureStore migration, route construction, date formatting, branding,
 presentation defaults, photographer file actions, native row identifiers and
 notification settings. It runs from root checks, CI and app release preflight,
@@ -38,9 +38,11 @@ gallery deep links now fall back to the browser. Login failures now use the
 app's typed local outcomes rather than English message matching without changing
 the backend API. The app now targets the current server GraphQL contract and
 uses its published thumbnail-variant tokens for native image and video-poster
-requests; legacy server-schema negotiation is deliberately out of scope while
-the app has no external user base. Native Maestro execution can resume when its
-additional coverage is useful; Expo SDK upgrades remain deliberately separate.
+requests. Its authenticated-user query and app-only view model no longer request
+or expose public-link user fields; legacy server-schema negotiation is
+deliberately out of scope while the app has no external user base. Native
+Maestro execution can resume when its additional coverage is useful; Expo SDK
+upgrades remain deliberately separate.
 
 ## Product direction
 
@@ -113,7 +115,7 @@ resource. The default workflow is local-first:
       advisories in Expo's build/configuration toolchain; the full audit adds
       one path through `jest-expo`. npm's proposed force-fix crosses an Expo SDK
       boundary, so the remainder is deferred to the planned SDK 56/57 upgrades.
-- [x] App unit/component tests exist and pass locally (63 tests on 2026-08-26).
+- [x] App unit/component tests exist and pass locally (74 tests on 2026-09-01).
       Native Maestro execution is scaffolded and deliberately deferred.
 - [ ] Package/store versions are reconciled. `app/package.json` is 1.0.6, while
       the public store listings observed during the audit show older releases.
@@ -241,7 +243,7 @@ backend/shared contracts.
 - [ ] Show useful download failures instead of silently swallowing errors.
 - [ ] Check local notification permission without requesting it merely because
       Settings was opened.
-- [ ] Remove dead public-user fields and branches from app-only view models where
+- [x] Remove dead public-user fields and branches from app-only view models where
       they no longer serve the photographer product.
 
 Exit gate:

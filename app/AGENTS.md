@@ -186,6 +186,13 @@ system browser. Keep this distinction in `src/helpers/appRoutes.ts`; do not
 reintroduce public providers, UUID-aware component branches or partial public
 routes without treating native client galleries as a complete product surface.
 
+The app uses `shared/urql/queries/appMeQuery.ts` and projects it through
+`src/helpers/appMe.ts`. Keep that contract limited to authenticated
+photographer identity and app configuration. The broader shared `meQuery`
+intentionally includes public-link fields such as `uuid`, `commentPermissions`
+and `linkMode` because the web frontend still supports client galleries; do not
+reuse it in the photographer-only app merely to avoid a separate operation.
+
 ## Authentication
 
 The backend accepts arbitrary non-empty admin usernames and its default

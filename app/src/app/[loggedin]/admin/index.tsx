@@ -39,7 +39,7 @@ import { SearchHeaderButton } from '@/src/components/SearchHeaderButton';
 const HomeFolderButton = () => {
   const me = useMe();
   const theme = useAppTheme();
-  if (!me) return null; //hit this issue when making public user access
+  if (!me) return null;
   return (
     <HeaderButton>
       <AppFolderLink
