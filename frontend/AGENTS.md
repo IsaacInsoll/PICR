@@ -13,9 +13,12 @@ the corresponding shared TypeScript source directly.
 Responsive thumbnail `srcset` entries must use the encoded image's intrinsic
 width, derived from the oriented source dimensions and the server's nominal
 long-edge variant ladder. Deduplicate clamped variants by keeping the lowest
-rung. If authoritative dimensions are absent during an upgrade backfill or
-cannot be recovered, omit `srcset` and retain the ordinary `src` fallback; do
-not revive nominal-width descriptors or stale metadata-summary dimensions.
+rung. Read those dimensions from `imageWidth`/`imageHeight`, which
+images and videos both publish, rather than branching on file type or reading
+the metadata JSON summary. If authoritative dimensions are absent during an
+upgrade backfill or cannot be recovered, omit `srcset` and retain the ordinary
+`src` fallback; do not revive nominal-width descriptors or stale
+metadata-summary dimensions, which can predate orientation fixes.
 
 The public-link recipient email and gallery passcode are metadata for the
 client, not administrator login credentials. Keep their autocomplete hints set

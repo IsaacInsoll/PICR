@@ -18,12 +18,10 @@ export const heroImageFragment = gql(/* GraphQL */ `
         blurHash
       }
       ... on Video {
+        imageWidth
+        imageHeight
         imageRatio
         blurHash
-        metadata {
-          Width
-          Height
-        }
       }
     }
   }

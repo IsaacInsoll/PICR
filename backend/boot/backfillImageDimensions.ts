@@ -1,23 +1,40 @@
 import { existsSync } from 'node:fs';
-import { and, asc, count, eq, gt, isNull, or, sql } from 'drizzle-orm';
+import { and, asc, count, gt, inArray, isNull, or, eq, sql } from 'drizzle-orm';
 import { db } from '../db/picrDb.js';
 import { dbFile } from '../db/models/index.js';
+import type { FileFields } from '../db/picrDb.js';
 import { fullPathForFile } from '../filesystem/fileManager.js';
-import {
-  ensureDecodedImage,
-  type DecodableImageFile,
-} from '../media/ensureDecodedImage.js';
+import { ensureDecodedImage } from '../media/ensureDecodedImage.js';
 import { getImageMetadataAndDimensions } from '../media/getImageMetadata.js';
+import { getVideoMetadata } from '../media/getVideoMetadata.js';
 import { log } from '../logger.js';
 import { IMAGE_DIMENSION_BACKFILL_TASK_ID } from '@shared/tasks/mediaTaskIds.js';
 import { withPostBootMaintenanceTask } from './postBootMaintenanceStatus.js';
 
 const IMAGE_DIMENSION_BACKFILL_BATCH_SIZE = 250;
 
+// Images and videos both store their oriented frame size in imageWidth/
+// imageHeight, matching the existing imageRatio convention where "image*"
+// describes the visual frame of any media type.
+const BACKFILL_MEDIA_TYPES = ['Image', 'Video'] as const;
+
 interface BackfillTotals {
   backfilled: number;
   failed: number;
   skippedMissing: number;
+}
+
+type BackfillMediaFile = Pick<
+  FileFields,
+  'fileHash' | 'id' | 'name' | 'relativePath' | 'type'
+>;
+
+interface BackfillDimensionUpdate {
+  imageWidth: number;
+  imageHeight: number;
+  imageRatio: number;
+  metadata: string;
+  duration?: number | null;
 }
 
 export const backfillImageDimensions = async (): Promise<BackfillTotals> => {
@@ -27,20 +44,20 @@ export const backfillImageDimensions = async (): Promise<BackfillTotals> => {
     failed: 0,
     skippedMissing: 0,
   };
-  const totalFiles = await countImagesMissingDimensions();
+  const totalFiles = await countMediaMissingDimensions();
 
   if (totalFiles === 0) return totals;
 
   log(
     'info',
-    `🖼️  PICR Maintenance: backfilling dimensions for ${totalFiles} image row(s)`,
+    `🖼️  PICR Maintenance: backfilling dimensions for ${totalFiles} media row(s)`,
     true,
   );
 
   await withPostBootMaintenanceTask(
     {
       id: IMAGE_DIMENSION_BACKFILL_TASK_ID,
-      name: 'Updating image dimensions',
+      name: 'Updating media dimensions',
       totalSteps: totalFiles,
     },
     async (progress) => {
@@ -59,7 +76,7 @@ export const backfillImageDimensions = async (): Promise<BackfillTotals> => {
 
   log(
     'info',
-    `🖼️  PICR Maintenance complete: ${totals.backfilled} image row(s) backfilled in ${elapsedSeconds(startedAt)} seconds, ${totals.failed} failed, ${totals.skippedMissing} missing source file(s) skipped`,
+    `🖼️  PICR Maintenance complete: ${totals.backfilled} media row(s) backfilled in ${elapsedSeconds(startedAt)} seconds, ${totals.failed} failed, ${totals.skippedMissing} missing source file(s) skipped`,
     true,
   );
 
@@ -69,33 +86,38 @@ export const backfillImageDimensions = async (): Promise<BackfillTotals> => {
 const elapsedSeconds = (startedAt: number): string =>
   ((Date.now() - startedAt) / 1000).toFixed(2);
 
-const countImagesMissingDimensions = async (): Promise<number> => {
+const countMediaMissingDimensions = async (): Promise<number> => {
   const [result] = await db
     .select({ count: count() })
     .from(dbFile)
-    .where(imagesMissingDimensionsWhere());
+    .where(mediaMissingDimensionsWhere());
   return result.count;
 };
 
 const imageDimensionBackfillBatch = async (
   afterId: number | undefined,
-): Promise<DecodableImageFile[]> =>
+): Promise<BackfillMediaFile[]> =>
   db.query.dbFile.findMany({
-    where: imagesMissingDimensionsWhere(afterId),
+    where: mediaMissingDimensionsWhere(afterId),
     columns: {
       fileHash: true,
       id: true,
       name: true,
       relativePath: true,
+      type: true,
     },
     orderBy: [asc(dbFile.id)],
     limit: IMAGE_DIMENSION_BACKFILL_BATCH_SIZE,
   });
 
-const imagesMissingDimensionsWhere = (afterId?: number) =>
+// Selection is by missing dimensions, never by a version stamp, so upgrading
+// only re-reads what is genuinely incomplete. An install that already
+// backfilled its images re-probes nothing but its videos, and no thumbnail
+// cache entry is touched either way.
+const mediaMissingDimensionsWhere = (afterId?: number) =>
   and(
     eq(dbFile.exists, true),
-    eq(dbFile.type, 'Image'),
+    inArray(dbFile.type, [...BACKFILL_MEDIA_TYPES]),
     ...(afterId === undefined ? [] : [gt(dbFile.id, afterId)]),
     or(
       isNull(dbFile.imageWidth),
@@ -105,8 +127,41 @@ const imagesMissingDimensionsWhere = (afterId?: number) =>
     ),
   );
 
+const imageDimensionUpdate = async (
+  file: BackfillMediaFile,
+): Promise<BackfillDimensionUpdate> => {
+  const src = await ensureDecodedImage(file);
+  const { dimensions, imageRatio, metadata } =
+    await getImageMetadataAndDimensions(file, src);
+  return {
+    imageWidth: dimensions.width,
+    imageHeight: dimensions.height,
+    imageRatio,
+    metadata: JSON.stringify(metadata),
+  };
+};
+
+// ffprobe is cheap next to a full image decode, and rewriting the summary also
+// repairs rotated videos scanned before displayed dimensions were corrected.
+const videoDimensionUpdate = async (
+  file: BackfillMediaFile,
+): Promise<BackfillDimensionUpdate> => {
+  const metadata = await getVideoMetadata(file);
+  const { Width, Height } = metadata;
+  if (!Width || !Height || Width <= 0 || Height <= 0) {
+    throw new Error('ffprobe reported no usable video dimensions');
+  }
+  return {
+    imageWidth: Width,
+    imageHeight: Height,
+    imageRatio: Width / Height,
+    metadata: JSON.stringify(metadata),
+    duration: metadata.Duration ?? null,
+  };
+};
+
 const backfillFileDimensions = async (
-  file: DecodableImageFile,
+  file: BackfillMediaFile,
   totals: BackfillTotals,
 ): Promise<void> => {
   if (!existsSync(fullPathForFile(file))) {
@@ -115,25 +170,20 @@ const backfillFileDimensions = async (
   }
 
   try {
-    const src = await ensureDecodedImage(file);
-    const { dimensions, imageRatio, metadata } =
-      await getImageMetadataAndDimensions(file, src);
+    const update =
+      file.type === 'Video'
+        ? await videoDimensionUpdate(file)
+        : await imageDimensionUpdate(file);
     await db
       .update(dbFile)
-      .set({
-        imageWidth: dimensions.width,
-        imageHeight: dimensions.height,
-        imageRatio,
-        metadata: JSON.stringify(metadata),
-        updatedAt: new Date(),
-      })
+      .set({ ...update, updatedAt: new Date() })
       .where(eq(dbFile.id, file.id));
     totals.backfilled++;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     log(
       'error',
-      `Unable to backfill image dimensions for ${file.name}; leaving the row unchanged: ${message}`,
+      `Unable to backfill media dimensions for ${file.name}; leaving the row unchanged: ${message}`,
     );
     totals.failed++;
   }

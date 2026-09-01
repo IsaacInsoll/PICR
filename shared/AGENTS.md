@@ -105,7 +105,9 @@ oriented source dimensions; it mirrors Sharp's `fit: 'inside'` and
 `withoutEnlargement: true` behavior and retains the lowest variant when several
 rungs clamp to the same width. Keep `thumbnailVariantForWidth` nominal because
 the app also consumes that shared selector; web-specific dimension-aware
-selection belongs in the frontend wrapper.
+selection belongs in the frontend wrapper. Images and videos both publish
+`imageWidth`/`imageHeight`, so a caller supplies source dimensions the same way
+for either type.
 
 ## Auth Error Contract
 

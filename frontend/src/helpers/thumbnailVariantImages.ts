@@ -19,29 +19,21 @@ export interface ThumbnailImageCandidate {
   height: number;
 }
 
-const positiveDimensions = (
-  width: number | null | undefined,
-  height: number | null | undefined,
-): ThumbnailSourceDimensions | undefined =>
-  typeof width === 'number' &&
-  Number.isFinite(width) &&
-  width > 0 &&
-  typeof height === 'number' &&
-  Number.isFinite(height) &&
-  height > 0
-    ? { width, height }
-    : undefined;
-
+// Images and videos both publish their oriented frame size as imageWidth/
+// imageHeight, so responsive selection never has to branch on file type or
+// read the metadata JSON summary, whose values can predate orientation fixes.
 const thumbnailSourceDimensions = (
   file: ImageUrlFileInput,
 ): ThumbnailSourceDimensions | undefined => {
-  if (file.type === 'Image') {
-    return positiveDimensions(file.imageWidth, file.imageHeight);
-  }
-  if (file.type === 'Video') {
-    return positiveDimensions(file.metadata?.Width, file.metadata?.Height);
-  }
-  return undefined;
+  const { imageWidth: width, imageHeight: height } = file;
+  return typeof width === 'number' &&
+    Number.isFinite(width) &&
+    width > 0 &&
+    typeof height === 'number' &&
+    Number.isFinite(height) &&
+    height > 0
+    ? { width, height }
+    : undefined;
 };
 
 const renderedVariantsForFile = (

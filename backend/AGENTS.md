@@ -128,11 +128,23 @@ the failure and leave the row unchanged so a flaky mount or transient decoder
 failure does not rewrite user-visible media state. Let normal file scanning
 handle durable type changes. Do not spread nullable-dimension handling into
 gallery code or thumbnail selection.
-GraphQL publishes these columns as nullable `Image.imageWidth` and
-`Image.imageHeight`. They are the authoritative responsive-image dimensions:
-legacy metadata JSON can contain pre-orientation width/height values until the
-post-boot backfill rewrites it. Clients must use only positive pairs and keep a
-defined fallback while maintenance is still running or repair failed.
+GraphQL publishes these columns as nullable `imageWidth`/`imageHeight` on both
+`Image` and `Video`. Videos store their displayed frame size there too,
+following the existing `imageRatio` convention where `image*` describes the
+visual frame of any media type, so responsive selection never branches on file
+type. They are the authoritative responsive dimensions: legacy metadata JSON can
+contain pre-orientation width/height values until the post-boot backfill
+rewrites it. Clients must use only positive pairs and keep a defined fallback
+while maintenance is still running or repair failed.
+
+`backfillImageDimensions` selects rows by _missing dimensions_, never by a
+version stamp, and never touches thumbnail cache entries. That is what keeps
+upgrades incremental: an install that already backfilled its images re-probes
+only its videos, and a partial run resumes where it stopped. Preserve that
+property — do not gate the backfill on a booted-version comparison. Videos use
+`getVideoMetadata` (ffprobe, no decode) rather than the image decode path, and
+rewriting their summary also repairs videos scanned before rotated stream
+dimensions were corrected in 1.3.0.
 
 Folder rows can be `exists=false` while `existsRescan=true` after a watcher
 delete, because `removeFolder()` archives the row without clearing

@@ -6,6 +6,7 @@ import { contentHashForStats } from '../fileHash.js';
 import { FileType } from '@shared/gql/graphql.js';
 import { getImageMetadataAndDimensions } from '../../media/getImageMetadata.js';
 import { getVideoMetadata } from '../../media/getVideoMetadata.js';
+import type { PicrVideoMetadata } from '@shared/types/metadata.js';
 import { encodeImageToBlurhash } from '../../media/blurHash.js';
 import { moveThumbnailFile } from '../../media/moveThumbnailFile.js';
 import { picrConfig } from '../../config/picrConfig.js';
@@ -216,13 +217,7 @@ const addFileUnlocked = async (
       }
     }
     if (file.type === FileType.Video) {
-      const meta = await getVideoMetadata(file);
-      file.metadata = JSON.stringify(meta);
-      file.duration = meta.Duration ?? null;
-      file.imageRatio =
-        meta.Height && meta.Width && meta.Height > 0
-          ? meta.Width / meta.Height
-          : 0;
+      applyVideoMetadata(file, await getVideoMetadata(file));
       shouldGenerateThumbs = generateThumbs;
     }
   } else if (picrConfig.updateMetadata) {
@@ -255,7 +250,7 @@ const addFileUnlocked = async (
         }
         break;
       case FileType.Video:
-        file.metadata = JSON.stringify(await getVideoMetadata(file));
+        applyVideoMetadata(file, await getVideoMetadata(file));
         break;
       default:
         break;
@@ -275,6 +270,30 @@ const addFileUnlocked = async (
     'info',
     '➕ [done] ' + (generateThumbs ? '[generateThumbs] ' : '') + filePath,
   );
+};
+
+// Videos store their displayed frame size in the same imageWidth/imageHeight
+// columns as images, so responsive poster selection has one source of truth
+// instead of digging into the metadata JSON summary. Dimensions are cleared
+// rather than left stale when ffprobe cannot report a usable video stream.
+const applyVideoMetadata = (
+  file: FileFields,
+  meta: PicrVideoMetadata,
+): void => {
+  file.metadata = JSON.stringify(meta);
+  file.duration = meta.Duration ?? null;
+
+  const { Width, Height } = meta;
+  if (Width && Height && Width > 0 && Height > 0) {
+    file.imageWidth = Width;
+    file.imageHeight = Height;
+    file.imageRatio = Width / Height;
+    return;
+  }
+
+  file.imageWidth = null;
+  file.imageHeight = null;
+  file.imageRatio = 0;
 };
 
 const findFolderId = async (fullPath: string) => {

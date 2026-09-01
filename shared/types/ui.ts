@@ -16,13 +16,7 @@ export type FileNavigationTarget = FileIdTarget | string;
 export type ImageUrlFileInput = Partial<
   Pick<
     PicrFile,
-    | 'id'
-    | 'fileHash'
-    | 'name'
-    | 'type'
-    | 'imageWidth'
-    | 'imageHeight'
-    | 'metadata'
+    'id' | 'fileHash' | 'name' | 'type' | 'imageWidth' | 'imageHeight'
   >
 >;
 

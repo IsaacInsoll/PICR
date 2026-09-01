@@ -364,6 +364,10 @@ test('queues thumbnail generation only after persisting a new video row', async 
       exists: true,
       existsRescan: true,
       fileHash: contentHashForStats(stats),
+      // Videos populate the same dimension columns as images so responsive
+      // poster selection has one source of truth.
+      imageWidth: 1280,
+      imageHeight: 720,
       imageRatio: 1280 / 720,
       type: 'Video',
     });

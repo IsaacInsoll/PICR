@@ -69,9 +69,8 @@ describe('filesForLightbox', () => {
       ...portrait,
       name: 'clip.mp4',
       type: FileType.Video,
-      imageWidth: undefined,
-      imageHeight: undefined,
-      metadata: { Width: 1920, Height: 1080 },
+      imageWidth: 1920,
+      imageHeight: 1080,
     };
 
     expect(filesForLightbox([video], false, false, variants)).toMatchObject([

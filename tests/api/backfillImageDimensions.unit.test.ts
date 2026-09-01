@@ -58,10 +58,16 @@ const loadBackfill = async ({
   ensureDecodedImageImpl = async () => '/cache/decoded.jpg',
   existsSyncImpl = () => true,
   files = [baseFile()],
+  videoMetadataImpl = async () => ({
+    Duration: 12.5,
+    Width: 1080,
+    Height: 1920,
+  }),
 }: {
   ensureDecodedImageImpl?: (file: FileFields) => Promise<string>;
   existsSyncImpl?: (path: string) => boolean;
   files?: FileFields[];
+  videoMetadataImpl?: (file: FileFields) => Promise<Record<string, unknown>>;
 } = {}) => {
   vi.resetModules();
 
@@ -79,6 +85,7 @@ const loadBackfill = async ({
   };
   const ensureDecodedImage = vi.fn(ensureDecodedImageImpl);
   const log = vi.fn();
+  const getVideoMetadata = vi.fn(videoMetadataImpl);
   const getImageMetadataAndDimensions = vi.fn(async () => ({
     dimensions: { width: 4000, height: 3000 },
     imageRatio: 4 / 3,
@@ -134,6 +141,9 @@ const loadBackfill = async ({
     count: vi.fn(() => 'count(*)'),
     eq: vi.fn((column: string, value: unknown) => ({ eq: [column, value] })),
     gt: vi.fn((column: string, value: unknown) => ({ gt: [column, value] })),
+    inArray: vi.fn((column: string, values: unknown[]) => ({
+      inArray: [column, values],
+    })),
     isNull: vi.fn((column: string) => ({ isNull: column })),
     or: vi.fn((...conditions: unknown[]) => ({ or: conditions })),
     sql: vi.fn((strings: TemplateStringsArray, ...values: unknown[]) => ({
@@ -151,6 +161,9 @@ const loadBackfill = async ({
   }));
   vi.doMock('../../backend/media/getImageMetadata.js', () => ({
     getImageMetadataAndDimensions,
+  }));
+  vi.doMock('../../backend/media/getVideoMetadata.js', () => ({
+    getVideoMetadata,
   }));
   vi.doMock('../../backend/logger.js', () => ({ log }));
   vi.doMock('../../backend/db/picrDb.js', () => ({
@@ -174,6 +187,7 @@ const loadBackfill = async ({
     files,
     findMany,
     getImageMetadataAndDimensions,
+    getVideoMetadata,
     log,
     update,
   };
@@ -207,12 +221,62 @@ test('backfills dimensions and derives imageRatio for active image rows', async 
   });
   expect(log).toHaveBeenCalledWith(
     'info',
-    expect.stringContaining('1 image row(s) backfilled in'),
+    expect.stringContaining('1 media row(s) backfilled in'),
     true,
   );
 });
 
-test('does not log when no image rows need dimension backfill', async () => {
+test('probes video rows for dimensions instead of decoding them', async () => {
+  const {
+    backfillImageDimensions,
+    ensureDecodedImage,
+    files,
+    getVideoMetadata,
+  } = await loadBackfill({
+    files: [baseFile({ id: 1, name: 'clip.mp4', type: 'Video' })],
+  });
+
+  await expect(backfillImageDimensions()).resolves.toEqual({
+    backfilled: 1,
+    failed: 0,
+    skippedMissing: 0,
+  });
+
+  expect(ensureDecodedImage).not.toHaveBeenCalled();
+  expect(getVideoMetadata).toHaveBeenCalledWith(
+    expect.objectContaining({ id: 1, type: 'Video' }),
+  );
+  // Rewriting the summary is what repairs rotated videos scanned before
+  // displayed dimensions were corrected, so the portrait stays portrait.
+  expect(files[0]).toMatchObject({
+    imageWidth: 1080,
+    imageHeight: 1920,
+    imageRatio: 1080 / 1920,
+    duration: 12.5,
+    metadata: '{"Duration":12.5,"Width":1080,"Height":1920}',
+  });
+});
+
+test('leaves a video row unchanged when ffprobe reports no video stream', async () => {
+  const { backfillImageDimensions, files, log } = await loadBackfill({
+    files: [baseFile({ id: 1, name: 'audio-only.mp4', type: 'Video' })],
+    videoMetadataImpl: async () => ({ Duration: 3 }),
+  });
+
+  await expect(backfillImageDimensions()).resolves.toEqual({
+    backfilled: 0,
+    failed: 1,
+    skippedMissing: 0,
+  });
+
+  expect(files[0]).toMatchObject({ imageWidth: null, imageHeight: null });
+  expect(log).toHaveBeenCalledWith(
+    'error',
+    expect.stringContaining('no usable video dimensions'),
+  );
+});
+
+test('does not log when no media rows need dimension backfill', async () => {
   const { backfillImageDimensions, log } = await loadBackfill({ files: [] });
 
   await expect(backfillImageDimensions()).resolves.toEqual({
@@ -236,6 +300,7 @@ test('selects only the columns needed to backfill dimensions', async () => {
         id: true,
         name: true,
         relativePath: true,
+        type: true,
       },
       limit: 250,
     }),

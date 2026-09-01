@@ -62,14 +62,13 @@ describe('responsive thumbnail variants', () => {
     ]);
   });
 
-  test('uses video metadata dimensions for poster candidates', () => {
+  test('uses the same dimension columns for video poster candidates', () => {
     const video = {
       ...file,
       name: 'clip.mp4',
       type: FileType.Video,
-      imageWidth: undefined,
-      imageHeight: undefined,
-      metadata: { Width: 1920, Height: 1080 },
+      imageWidth: 1920,
+      imageHeight: 1080,
     };
 
     expect(thumbnailRouteSizeForFileWidth(video, variants, 2560)).toBe(
@@ -80,12 +79,14 @@ describe('responsive thumbnail variants', () => {
     );
   });
 
+  // The metadata JSON summary is deliberately not consulted as a fallback: for
+  // rows written before orientation was corrected it can hold transposed
+  // values, which is the exact defect these descriptors exist to fix.
   test('omits srcset but preserves nominal src selection without dimensions', () => {
     const awaitingBackfill = {
       ...file,
       imageWidth: null,
       imageHeight: null,
-      metadata: { Width: 6000, Height: 4000 },
     };
 
     expect(thumbnailSrcSet(awaitingBackfill, variants)).toBeUndefined();
