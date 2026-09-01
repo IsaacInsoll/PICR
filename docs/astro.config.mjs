@@ -55,7 +55,24 @@ export default defineConfig({
         },
         {
           label: 'Sharing and proofing',
-          items: [{ autogenerate: { directory: 'sharing' } }],
+          items: [
+            {
+              slug: 'sharing/users-and-links',
+              label: 'Users and public links',
+            },
+            {
+              slug: 'sharing/delivery',
+              label: 'Proofing and delivery',
+            },
+            {
+              slug: 'sharing/reviews',
+              label: 'Comments, ratings, and flags',
+            },
+            {
+              slug: 'sharing/notifications',
+              label: 'Access logs and notifications',
+            },
+          ],
         },
         {
           label: 'Operations',
@@ -63,7 +80,16 @@ export default defineConfig({
         },
         {
           label: 'Integrations',
-          items: [{ autogenerate: { directory: 'integrations' } }],
+          items: [
+            {
+              slug: 'integrations/mobile-app',
+              label: 'Mobile app',
+            },
+            {
+              slug: 'integrations/lightroom',
+              label: 'Lightroom Classic',
+            },
+          ],
         },
         {
           label: 'Reference',

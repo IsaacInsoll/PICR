@@ -242,7 +242,7 @@ Users are stored in `backend/db/models/dbUser.ts` with two modes:
 Per-user setting (`commentPermissions`): `edit` | `read` | `none`
 
 - Only `edit` allows creating comments
-- `read` vs `none` distinction not currently enforced on backend
+- `read` allows comment/rating/flag queries but rejects mutations; `none` also rejects comment queries, so clients should hide all review UI
 
 ### Link Modes
 

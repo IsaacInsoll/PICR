@@ -1,6 +1,8 @@
 # React Native App Development Guide
 
-Expo/React Native mobile app for PICR, providing gallery viewing and push notifications.
+Expo/React Native mobile app for signed-in PICR users, providing gallery viewing and push notifications. Public-link recipients use the web gallery; public links are not a supported app login or access path. The app's primary customer value is notifying signed-in users when recipients open their links.
+
+The current login form validates the username as an email address. The default first-boot username `admin` must therefore be changed to an email-address username before that account can sign in through the app.
 
 ## Tech Stack
 
@@ -26,7 +28,7 @@ app/
 │   │       ├── admin/          # Admin views
 │   │       │   ├── f/[folderId]/ # Folder view
 │   │       │   └── settings.tsx
-│   │       └── s/[uuid]/       # Public share routes
+│   │       └── s/[uuid]/       # Dormant public-share route code; not a supported customer path
 │   ├── components/             # React Native components
 │   │   ├── FolderContents/     # Gallery views
 │   │   ├── Menus/              # Sort/filter bottom sheets
