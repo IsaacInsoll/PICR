@@ -3,6 +3,8 @@ title: Lightroom Classic plugin
 description: Import PICR ratings and flags into an Adobe Lightroom Classic catalog.
 ---
 
+import { Steps } from '@astrojs/starlight/components';
+
 PICR includes a Lightroom Classic plugin that imports the current PICR ratings and approve/reject flags into matching Lightroom photos.
 
 This is a manual CSV handoff, not a live connection between Lightroom and the PICR server. Comments are not imported.
@@ -94,6 +96,8 @@ Lightroom virtual copies are represented using the plugin's copy-name convention
 
 ## Recommended workflow
 
+<Steps>
+
 1. Export JPEG proofs from Lightroom into a PICR folder.
 2. Create a proofs-only public link with **Edit** review permission.
 3. Ask the recipient to use either ratings or approve/reject flags consistently.
@@ -102,6 +106,8 @@ Lightroom virtual copies are represented using the plugin's copy-name convention
 6. Select the matching Lightroom folder and import the data.
 7. Filter the Lightroom catalog by the imported rating or flag.
 8. Finish editing and publish a separate final-delivery gallery.
+
+</Steps>
 
 ## Troubleshooting
 

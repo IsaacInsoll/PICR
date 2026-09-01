@@ -3,11 +3,36 @@ title: PICR
 description: Self-hosted photo and video galleries for photographers and their clients.
 ---
 
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
+
 PICR turns folders on your server or NAS into branded photo and video galleries. Your originals stay in your own storage; PICR indexes them, creates previews, and gives each client a purpose-built gallery instead of a generic shared drive.
 
-Start with [Install PICR](/PICR/getting-started/install/), or jump directly to the topic you need from the manual navigation.
-
 ![PICR galleries displayed on desktop and mobile devices](../../../images/picr-header.png)
+
+## Start here
+
+<CardGrid>
+  <LinkCard
+    title="Install PICR"
+    href="/PICR/getting-started/install/"
+    description="Deploy PICR with Docker Compose and prepare its storage."
+  />
+  <LinkCard
+    title="Create your first gallery"
+    href="/PICR/getting-started/first-gallery/"
+    description="Publish a media folder, apply branding, and test a recipient link."
+  />
+  <LinkCard
+    title="Share and proof"
+    href="/PICR/sharing/users-and-links/"
+    description="Create scoped recipient links with delivery and review controls."
+  />
+  <LinkCard
+    title="Get link-open notifications"
+    href="/PICR/sharing/notifications/"
+    description="Know when a recipient opens, downloads, or reviews a gallery."
+  />
+</CardGrid>
 
 ## A typical PICR workflow
 
@@ -30,15 +55,6 @@ Because the media library remains an ordinary filesystem, you can keep using Lig
 - Comments, star ratings, approve/reject flags, CSV export, and a Lightroom Classic plugin
 - Read-only media access by default, with optional controlled rename and move support
 - 🇺🇸 English, 🇫🇷 French, 🇩🇪 German, 🇬🇷 Greek, 🇪🇸 Spanish, and 🇺🇦 Ukrainian web interfaces
-
-## Start here
-
-- [Install PICR](/PICR/getting-started/install/) with Docker and prepare its media, cache, and database storage.
-- [Create your first gallery](/PICR/getting-started/first-gallery/) from a folder and check the recipient experience.
-- Learn [how PICR uses files and folders](/PICR/galleries/files-and-folders/).
-- Learn how to [browse, sort, and filter a gallery](/PICR/galleries/browsing/).
-
-The remaining sections cover branding, sharing, proofing, notifications, operations, and integrations in more detail.
 
 ## Project links
 

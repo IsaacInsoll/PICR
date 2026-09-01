@@ -3,6 +3,8 @@ title: Backups and upgrades
 description: Back up PICR's media and PostgreSQL state, upgrade safely, and understand compatibility limits.
 ---
 
+import { Steps } from '@astrojs/starlight/components';
+
 :::danger[A media backup alone cannot restore PICR]
 A complete PICR recovery needs both the original media library and the PostgreSQL database. The thumbnail cache alone is never a backup.
 :::
@@ -65,6 +67,8 @@ These files may contain passwords and notification tokens. Store them in a prote
 
 ## Before every PICR upgrade
 
+<Steps>
+
 1. Read the [release notes](https://github.com/IsaacInsoll/PICR/releases).
 2. Create and retain a fresh PostgreSQL dump.
 3. Confirm the media backup is current.
@@ -78,6 +82,8 @@ These files may contain passwords and notification tokens. Store them in a prote
    ```
 
 6. Confirm login, gallery access, background migrations, thumbnails, and a test public link.
+
+</Steps>
 
 PICR applies application database migrations during startup. Do not interrupt the container merely because the first upgraded boot takes longer than normal; follow the logs and investigate an actual error.
 

@@ -153,8 +153,11 @@ gh issue view <number> --comments --json number,title,state,body,comments,labels
 - Published customer documentation belongs under `docs/src/content/docs/*`. Astro/Starlight builds these files into the GitHub Pages site with clean, extensionless routes.
 - The customer-manual homepage intentionally uses Starlight's standard documentation template so the full sidebar is visible immediately. Do not switch it to the `splash` template without revisiting that navigation decision.
 - Starlight's `lastUpdated` footer uses Git history. Keep `fetch-depth: 0` on the documentation workflow checkout so deployed dates are based on complete history.
+- Customer pages may use `.mdx` when a Starlight component materially improves a workflow. Keep ordinary prose in `.md`; do not convert pages merely for visual decoration.
+- The storage-layout tabs in the installation and scanning guides share the `picr-storage-layout` synchronization key. Keep their tab labels identical so a reader's choice persists between both pages.
 - Durable guides for human developers and contributors belong under `docs/development/*` (for example, a guide to adding translations). These files and `docs/CONTRIBUTING.md` remain repository-native Markdown and are not published by Starlight.
 - The `docs/` directory is an independent npm package. Install it with `npm --prefix docs ci`, preview it with `npm --prefix docs start`, validate it with `npm --prefix docs run check`, and build it with `npm --prefix docs run build`. Run `npm --prefix docs run check:links` after building.
+- The Astro development server does not reliably refresh customer content in this environment, especially after adding, renaming, or changing a page between `.md` and `.mdx`. Restart the docs server and reload the browser before treating a stale preview or missing slug as a source error.
 - `docs/.astro/` and `docs/dist/` are generated, ignored by Git and excluded from root Prettier checks. Do not commit or edit them directly.
 - Keep `ASTRO_TELEMETRY_DISABLED=1` in the Astro package scripts. Without it, Astro attempts to write telemetry preferences outside the workspace in some development and sandbox environments.
 - Search is generated during the production build and may not appear in the development server.

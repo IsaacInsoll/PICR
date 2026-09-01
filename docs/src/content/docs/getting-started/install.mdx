@@ -3,6 +3,8 @@ title: Install PICR
 description: Install PICR with Docker and prepare your media, cache, and database storage.
 ---
 
+import { Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+
 :::note[Supported installation]
 PICR is distributed as a Docker image. Docker Compose is the recommended and officially supported installation method.
 :::
@@ -14,6 +16,17 @@ You will need:
 - A persistent location for PostgreSQL data
 - A writable cache location for thumbnails and generated ZIP files
 - Preferably, a domain name and HTTPS reverse proxy before sending links to clients
+
+## Installation workflow
+
+<Steps>
+
+1. Create persistent cache and database directories on the Docker host.
+2. Add the PICR and PostgreSQL services to a Compose file.
+3. Start the containers, retrieve the first password, and secure the administrator account.
+4. Confirm the media library is visible, then publish PICR through HTTPS.
+
+</Steps>
 
 ## 1. Create the installation folders
 
@@ -138,14 +151,26 @@ It is safe to clear the **contents** of `cache`; PICR regenerates them. Keep the
 
 ## Choose how PICR detects changes
 
-The example uses polling because it works reliably with many Docker and NAS mounts.
+The example uses polling because it works reliably with many Docker and NAS mounts. Choose the tab that most closely matches your storage; the same choice remains selected in the detailed scanning guide.
 
-- `FILE_WATCHER=polling` checks the library at `POLLING_SECONDS` intervals.
-- `FILE_WATCHER=native` uses operating-system filesystem events and is a good fit when media is local to the PICR host.
-- `FILE_WATCHER=off` disables continuous watching. PICR still scans at boot and when an administrator selects **Scan Now**.
-- `ON_VIEW_SCAN=direct_and_new` can refresh active folders while continuous watching is off.
-- `SCHEDULED_SCAN_HOURS=24` adds a daily whole-library reconciliation.
-- [PICR Ping](/PICR/operations/picr-ping/) provides real-time hints when the library lives on a separate NAS.
+<Tabs syncKey="picr-storage-layout">
+  <TabItem label="Local storage">
+    Use `FILE_WATCHER=native` when PICR sees the same local filesystem that
+    receives media changes.
+  </TabItem>
+  <TabItem label="Docker or mounted share">
+    Start with `FILE_WATCHER=polling`. It is dependable when Docker, SMB, or NFS
+    does not pass native events reliably.
+  </TabItem>
+  <TabItem label="Separate NAS">
+    Use [PICR Ping](/PICR/operations/picr-ping/) for real-time hints and keep a
+    scheduled scan as a safety net.
+  </TabItem>
+  <TabItem label="Low-I/O or manual">
+    Set `FILE_WATCHER=off`, then combine manual scans with
+    `ON_VIEW_SCAN=direct_and_new` or `SCHEDULED_SCAN_HOURS=24` as needed.
+  </TabItem>
+</Tabs>
 
 Avoid enabling every method without a reason. Start with polling, or native watching for local storage, then change strategy if your storage has different reliability or spin-down requirements.
 

@@ -3,17 +3,40 @@ title: Scan your media library
 description: Choose how PICR detects additions, changes, moves, and deletions on local or network storage.
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
 PICR reads an ordinary filesystem, so it needs a strategy for noticing when that filesystem changes. The right choice depends on where the media lives and whether low latency, low I/O, or NAS disk spin-down matters most.
 
 ## Choose a strategy
 
-| Storage and priority                                       | Recommended starting point                                            |
-| ---------------------------------------------------------- | --------------------------------------------------------------------- |
-| Media is local to the PICR Docker host                     | `FILE_WATCHER=native`                                                 |
-| Docker or a network mount does not deliver reliable events | `FILE_WATCHER=polling`                                                |
-| Media lives on another NAS and real-time updates matter    | [PICR Ping](/PICR/operations/picr-ping/) with a scheduled safety scan |
-| NAS disks should sleep between active jobs                 | Watcher off, on-view scanning, and a scheduled safety scan            |
-| You only change the library occasionally                   | Watcher off and manual **Scan Now**                                   |
+Choose the layout that most closely matches your storage. This selection is synchronized with the installation guide.
+
+<Tabs syncKey="picr-storage-layout">
+  <TabItem label="Local storage">
+    **Start with:** `FILE_WATCHER=native`
+
+    Native events are efficient and immediate when PICR sees the same local filesystem that receives changes.
+
+  </TabItem>
+  <TabItem label="Docker or mounted share">
+    **Start with:** `FILE_WATCHER=polling`
+
+    Polling is dependable when Docker, SMB, NFS, or virtualisation does not deliver native events reliably.
+
+  </TabItem>
+  <TabItem label="Separate NAS">
+    **Start with:** [PICR Ping](/PICR/operations/picr-ping/) and a scheduled safety scan.
+
+    Ping watches beside the media while PICR verifies every hinted path through its own read-only mount.
+
+  </TabItem>
+  <TabItem label="Low-I/O or manual">
+    **Start with:** `FILE_WATCHER=off`
+
+    Add on-view, scheduled, or manual scans according to how quickly changes need to appear and whether NAS disks should sleep.
+
+  </TabItem>
+</Tabs>
 
 :::tip[Start with one primary method]
 Start with one primary real-time method. Add a scheduled scan as a backstop when missing an event would matter.
