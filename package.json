@@ -67,17 +67,17 @@
     "@graphql-codegen/cli": "^5.0.7",
     "@graphql-codegen/client-preset": "^4.8.3",
     "@graphql-codegen/introspection": "^4.0.3",
-    "@playwright/test": "1.58.2",
-    "concurrently": "^10.0.3",
+    "@playwright/test": "1.62.1",
+    "concurrently": "^10.0.5",
     "dotenv-cli": "^11",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "i18next-cli": "^1.69.2",
-    "prettier": "^3.8",
+    "prettier": "^3.9",
     "release-it": "^21.0.2",
-    "typescript": "^6.0.2",
-    "urql": "^5.0.3",
-    "vitest": "^4.1.4"
+    "typescript": "^6.0.3",
+    "urql": "^5.0.4",
+    "vitest": "^4.1.11"
   },
   "overrides": {
     "lodash": "^4.18.1"
