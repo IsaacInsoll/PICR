@@ -1,80 +1,61 @@
 ---
-title: PICR documentation
-description: Learn how to install PICR and share photo and video galleries with your clients.
+title: PICR
+description: Self-hosted photo and video galleries for photographers and their clients.
 template: splash
 hero:
   title: PICR
-  tagline: Self-hosted photo and video galleries for photographers and their clients.
+  tagline: Publish polished client galleries from media you already store and control.
   actions:
     - text: Install PICR
       link: /PICR/getting-started/install/
       icon: right-arrow
       variant: primary
-    - text: View on GitHub
-      link: https://github.com/IsaacInsoll/PICR
-      icon: external
+    - text: Create your first gallery
+      link: /PICR/getting-started/first-gallery/
+      icon: right-arrow
       variant: minimal
 ---
 
-Picr is a self-hosted online image sharing tool for photographers to share photos with clients.
+PICR turns folders on your server or NAS into branded photo and video galleries. Your originals stay in your own storage; PICR indexes them, creates previews, and gives each client a purpose-built gallery instead of a generic shared drive.
 
 ![PICR galleries displayed on desktop and mobile devices](../../../images/picr-header.png)
 
-- 👩🏻‍💻 [GitHub](https://github.com/isaacinsoll/picr)
-- 🐳 [Docker Hub](https://hub.docker.com/r/isaacinsoll/picr)
-- 🔖 [Releases / Changelog](https://github.com/IsaacInsoll/PICR/releases)
+## A typical PICR workflow
 
-## Features
+1. Export a shoot into a folder inside your mounted media library.
+2. Let PICR detect it, or scan the folder manually.
+3. Add a client-facing title, branding, and a gallery image.
+4. Create a public link for that recipient.
+5. Receive a notification when the link is opened.
+6. Collect comments, ratings, or approvals, then deliver the finished files.
 
-- Cheaper storage: no need to pay for google drive / dropbox
-- Better client experience: UI is tailored for clients receiving photo/video from you, rather than a generic shared folder
-- Logging/Notifications of visits: know when your clients have viewed the data
-- (optional) Ability for clients to rate / approve / comment on images
-- Theming and branding
-- English, French, and Greek web interface
+Because the media library remains an ordinary filesystem, you can keep using Lightroom, a NAS share, synchronisation software, or your existing archive process alongside PICR.
 
-## Manual
+## What PICR provides
 
-- [Installation Instructions](/PICR/getting-started/install/)
-  Picr is typically installed using `docker`
-- [PICR Ping](/PICR/operations/picr-ping/)
-  Realtime media detection when PICR reads a library from a separate NAS.
-- [Troubleshooting](/PICR/operations/troubleshooting/)
-  Common issues and fixes, including thumbnail permission errors
-- [Files and Folders](/PICR/galleries/files-and-folders/)
-  How files and folders work and suggested workflows with multiple examples.
-- [Users and Links](/PICR/sharing/users-and-links/)
-  Explains how users (you) and public links (your clients) work with permissions. Also covers avatars
-- [Comments, Ratings and Flags](/PICR/sharing/reviews/)
-  You can allow users to comment, rate and flag individual files
-- [Branding and Theming](/PICR/galleries/branding/)
-  Customize fonts, colors, and themes for your galleries
-- [Notifications](/PICR/sharing/notifications/)
-  Receive notifications on your iOS / Android device when users access the folders or leave comments/ratings.
-- [Lightroom Plugin](/PICR/integrations/lightroom/)
-  Sync ratings and flags from PICR back to Lightroom Classic.
-- [Languages](/PICR/reference/languages/)
-  Supported languages, language selection, and the current translation scope.
+- Responsive photo and video galleries with list, gallery, and feed layouts
+- Named branding presets with gallery-specific colours, typography, logos, and layout choices
+- Separate recipient links with optional passcodes, expiry dates, proofing controls, and review permissions
+- Link-open, download, comment, rating, and flag activity
+- Push notifications through the PICR mobile app and optional ntfy notifications
+- Comments, star ratings, approve/reject flags, CSV export, and a Lightroom Classic plugin
+- Read-only media access by default, with optional controlled rename and move support
+- English, French, and Greek web interfaces
 
-## 🧑‍💻 Development
+## Start here
 
-We'd love any help you can offer, including:
+- [Install PICR](/PICR/getting-started/install/) with Docker and prepare its media, cache, and database storage.
+- [Create your first gallery](/PICR/getting-started/first-gallery/) from a folder and check the recipient experience.
+- Learn [how PICR uses files and folders](/PICR/galleries/files-and-folders/).
+- Learn how to [browse, sort, and filter a gallery](/PICR/galleries/browsing/).
 
-- Feature Development / Bugfixes (programming)
-- Product Testing / QA (find and log bugs)
-- Documentation (writing these instructions)
+The remaining sections cover branding, sharing, proofing, notifications, operations, and integrations in more detail.
 
-See the [Development Docs](https://github.com/IsaacInsoll/PICR/blob/master/docs/development/index.md) to get started.
+## Project links
 
-## Licensing (human-friendly)
+- [GitHub repository](https://github.com/IsaacInsoll/PICR)
+- [Docker Hub](https://hub.docker.com/r/isaacinsoll/picr)
+- [Releases and changelog](https://github.com/IsaacInsoll/PICR/releases)
+- [Developer documentation](https://github.com/IsaacInsoll/PICR/blob/master/docs/development/index.md)
 
-- PICR is source-available under the Business Source License 1.1 with a simple promise: anyone can self-host or run small paid hosting (up to ~$100k/year from PICR), but large cloud providers (AWS, GCP, Azure, Alibaba, Oracle, IBM, Tencent, etc.) cannot offer it as a managed service without a separate agreement.
-- Each release automatically converts to GPLv3 after 4 years.
-- See `LICENSE` for the legal text
-
-## 🙏 Special Thanks
-
-Thanks to:
-
-- Monique for being the worlds greatest wife and putting up with all the time I spent on this 💖
-- Mason D for providing a bunch of senior software engineering advice 🧔🏻‍♂️
+PICR is source-available under the Business Source License 1.1. Each release converts to GPLv3 after four years; see the repository `LICENSE` for the legal terms.

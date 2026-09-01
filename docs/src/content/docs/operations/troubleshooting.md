@@ -61,7 +61,7 @@ rmdir "/home/node/app/cache/thumbs/__picr_probe__/nested" "/home/node/app/cache/
 **Prevention:**
 
 Create the `cache` (and `data`) folders yourself before the very first `docker compose up`, as described in
-[Installation](/PICR/getting-started/install/#volumes-file-locations). If you let Docker create them it
+[Installation](/PICR/getting-started/install/#storage-and-backups). If you let Docker create them it
 will do so as root.
 
 ---
@@ -115,7 +115,7 @@ PICR retries its startup migrations once after 10 seconds if Postgres is not rea
 > CPU benchmarked faster), so seeing "CPU only" does not mean anything is broken
 > for normal use. These steps are for confirming the GPU is _detected_ — useful
 > for the benchmark and for upcoming transcoding features. See
-> [Hardware Video Acceleration](/PICR/getting-started/install/#hardware-video-acceleration-vaapi).
+> [Hardware Video Acceleration](/PICR/getting-started/install/#optional-hardware-video-acceleration).
 
 If the admin **Server Info** page shows "CPU only" when you expected VAAPI to be
 detected, work through these. The reason shown on that page (and in the startup
@@ -184,7 +184,7 @@ PICR falls back to an older copy method in that situation, so the button should 
 
 1. Copy the URL shown under the link ID in the link editor manually — it is the complete link.
 2. Put PICR behind HTTPS. See
-   [Reverse Proxy / Port Forwarding](/PICR/getting-started/install/#reverse-proxy--port-forwarding).
+   [Publish PICR with HTTPS](/PICR/getting-started/install/#publish-picr-with-https).
 
 Serving PICR over HTTPS is the real fix, and avoids the same class of problem in other browser features.
 

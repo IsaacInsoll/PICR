@@ -3,268 +3,201 @@ title: Install PICR
 description: Install PICR with Docker and prepare your media, cache, and database storage.
 ---
 
-## Using Docker
+PICR is distributed as a Docker image. Docker Compose is the recommended and officially supported installation method.
 
-Picr is built to be run as a docker container on your NAS / Server.
+You will need:
 
-There are other ways you could install it, but docker is recommended and the only officially supported method.
+- A server or NAS that can run Docker Compose
+- A folder containing the media you want PICR to publish
+- A persistent location for PostgreSQL data
+- A writable cache location for thumbnails and generated ZIP files
+- Preferably, a domain name and HTTPS reverse proxy before sending links to clients
 
-If you have never used docker before then just google _"install docker on <type-of-server>"_ (EG: windows 10 / mac os
-15 / synology)
+## 1. Create the installation folders
 
-Once installed, we will use the following docker compose file. This is basically a "recipe" for PICR and a postgres
-database.
+Create a working directory on the Docker host:
 
-## Compose file
+```bash
+mkdir -p picr/cache picr/data
+cd picr
+```
 
-Create an empty folder on your server (perhaps called `picr`) and put the following `compose.yml` file in there.
+PICR runs as UID `1000` by default and must be able to write to `cache`:
+
+```bash
+sudo chown -R 1000:1000 ./cache
+```
+
+The PostgreSQL container initialises `data` itself. If your Docker or NAS setup applies custom users or ACLs, ensure the database container can write there too.
+
+## 2. Create the Compose file
+
+Create `compose.yml` in the `picr` directory:
 
 ```yaml
 services:
   picr:
-    container_name: 'picr'
-    image: 'isaacinsoll/picr'
+    image: isaacinsoll/picr
+    container_name: picr
     restart: unless-stopped
-    # user: "<uid>:<gid>" # if enabling write access on NAS, see can_write.md to find exact IDs
-    volumes:
-      - <path-to-your-shared-images>:/home/node/app/media:ro # read only access to your 'files i give to clients' folder
-      - ./cache:/home/node/app/cache #where PICR will store thumbnails it generates, no need to back it up
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - '6900:6900' # presumably reverse proxy will handle HTTPS
+      - '6900:6900'
+    volumes:
+      - /path/to/your/client-media:/home/node/app/media:ro
+      - ./cache:/home/node/app/cache
     environment:
-      - BASE_URL=https://clients.mydomain.com/ #change this to your URL
-      - DATABASE_URL=postgres://user:pass@db/picr
-      - FILE_WATCHER=polling # recommended if you have > 10,000 files
-      - POLLING_SECONDS=20 # only used when FILE_WATCHER=polling
-      - ON_VIEW_SCAN=off # set direct_and_new with FILE_WATCHER=off for NAS spin-down
-      - SCHEDULED_SCAN_HOURS=0 # set 24 for a daily whole-library backstop
+      BASE_URL: https://clients.example.com/
+      DATABASE_URL: postgres://picr:change-this-database-password@db/picr
+      FILE_WATCHER: polling
+      POLLING_SECONDS: '20'
+
   db:
     image: postgres:17
     container_name: picr-db
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: picr
+      POSTGRES_PASSWORD: change-this-database-password
       POSTGRES_DB: picr
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U user -d picr']
+      test: ['CMD-SHELL', 'pg_isready -U picr -d picr']
       interval: 5s
       timeout: 5s
       retries: 12
       start_period: 5s
     volumes:
-      - ./data:/var/lib/postgresql/data #database storage, you should back this up
+      - ./data:/var/lib/postgresql/data
 ```
 
-The `healthcheck` and `depends_on.condition: service_healthy` pairing is recommended so PICR waits for Postgres to be ready, not just started. PICR also retries its startup migrations once after 10 seconds if the database is still unavailable, which helps with slower disks or NAS startup timing.
+Change these values before starting:
 
-The PICR image also includes its own Docker healthcheck. It checks that the app can answer HTTP requests and reach Postgres, without probing media write access or scanning your media folder.
+- Replace `/path/to/your/client-media` with the absolute host path to your gallery library.
+- Replace both copies of `change-this-database-password` with the same strong password. If it contains URL-special characters, URL-encode the password in `DATABASE_URL`.
+- Replace `https://clients.example.com/` with the address recipients will use, including the trailing slash.
 
-## Upgrades
+The media mount is read-only by default. PICR can index, preview, and share the library without permission to modify your originals.
 
-PICR supports direct upgrades from any release in the previous major version to
-any release in the next major version, unless the release notes explicitly
-declare a required upgrade stop.
+The health check and `depends_on` setting make PICR wait for PostgreSQL to become ready. The PICR image has its own health check for the application and database connection.
 
-Examples:
+## 3. Start PICR and sign in
 
-- Any `0.x` release can upgrade directly to any `1.x` release.
-- Any `1.x` release can upgrade directly to any `2.x` release.
-
-Before upgrading, back up the `data` volume. PICR applies application database
-migrations automatically on startup. Downgrades are supported only to PICR
-versions greater than or equal to the database's minimum supported PICR version.
-To downgrade below that floor, restore a backup taken before the upgrade.
-
-PostgreSQL major-version upgrades are separate from PICR app upgrades. Do not
-change the `db` image from one Postgres major version to another unless the PICR
-docs or release notes provide a database migration path for that change.
-
-## Volumes (File Locations)
-
-**Create these folders before starting PICR for the first time.** If Docker creates them automatically it will do so as
-`root`, which will prevent PICR from writing thumbnails.
+Start the services and follow the first boot:
 
 ```bash
-mkdir -p ./cache ./data
-sudo chown -R 1000:1000 ./cache ./data
+docker compose up -d
+docker compose logs -f picr
 ```
 
-PICR runs inside the container as UID `1000` (the `node` user). The `cache` and `data` folders on your host must be
-owned by that same UID so the container can write to them.
+Open PICR at the address configured by your reverse proxy, or at `http://<server-address>:6900/` while testing locally.
 
-| Folder  | Description                                                                                                                                                                                 | Backup         |
-| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------- |
-| `data`  | database (you should back this up!) <br/>Technically it's used by `db` not `picr`                                                                                                           | Yes            |
-| `media` | mount point containing folders of images, PICR only needs read access. <br/>Often this would be a folder that already exists unless you are starting from scratch                           | Yes            |
-| `cache` | thumbnails, zip files built from your media <br />It is safe to **delete the contents** of this folder, but do not delete the folder itself. <br />Contents will be recreated automatically | (not required) |
+On a new database, PICR creates an administrator account:
 
-If you have a folder you are already using then point the `media` mount to that, otherwise you can make a new folder
-wherever you want.
+- Username: `admin`, unless `ADMIN_USERNAME` is set
+- Password: the value of `ADMIN_PASSWORD`, or a generated password printed once in the PICR logs
 
-Typically `data` and `cache` will be created in the folder you are putting the `compose` file in for simplicity but you
-can put them anywhere that is writable.
+If PICR generated the password, find the log entry with:
 
-> **Thumbnails not showing?** See [Troubleshooting](/PICR/operations/troubleshooting/).
+```bash
+docker compose logs picr
+```
 
-## Reverse Proxy / Port Forwarding
+Sign in and change the administrator username and password under **Settings → Admin Users**.
 
-Like most publicly accessible self hosted apps: PICR doesn't do HTTPS and you are expected to put it behind a _Reverse
-Proxy_ which basically does all the security stuff like HTTPS (and optionally blocking the bad guys).
+PICR generates its own signing secret on first boot and stores it in PostgreSQL. A manual `TOKEN_SECRET` is not required for a new installation.
 
-I'm personally using Nginx Proxy manager but any of them will work fine.
+## 4. Check the library
 
-If you are planning on making this accessible over the internet (rather than just playing around with it within your
-home network) you should definitely set up a reverse proxy. Set `BASE_URL` to the reverse proxy address.
+PICR scans the mounted media root during startup. Open the root folder in PICR and confirm that your folders appear.
 
-### HTTPS is worth it even on your LAN
+With `FILE_WATCHER=polling`, later filesystem changes are detected at the configured interval. If a folder is not current, open its menu, choose **Manage**, and use **Scan Now**.
 
-It is tempting to skip the reverse proxy when PICR is only reachable from your own network, and run it on something like
-`http://192.168.1.50:6900/`. That works, but browsers treat plain HTTP as an insecure origin and switch off a set of
-features on it, regardless of whether the address is local. The most visible one in PICR is clipboard access, which is
-what the **Copy Link** button uses.
+Continue with [Create your first gallery](/PICR/getting-started/first-gallery/).
 
-PICR falls back to an older copy method so those buttons still work over plain HTTP, but other browser features are
-outside its control. `localhost` is exempt from this rule, so local development over HTTP is fine — it is LAN IPs and
-hostnames that are affected. If you can put PICR behind HTTPS, do it.
+## Storage and backups
 
-## Environment variables
+| Location | Contents                                                                            | Back up? |
+| -------- | ----------------------------------------------------------------------------------- | :------: |
+| `media`  | Your original photo, video, and other gallery files                                 |   Yes    |
+| `data`   | Users, public links, branding, comments, ratings, access logs, and other PICR state |   Yes    |
+| `cache`  | Regenerable thumbnails and generated downloads                                      |    No    |
 
-There are lots of environment variables you can use, but only a few are needed:
+Do not treat the media library as the only PICR backup. Recipient links, reviews, and branding live in PostgreSQL.
 
-- `BASE_URL` the public facing URL including a trailing slash. eg https://clients.mydomain.com/.
-  PICR will actually respond on all domains that point to it, but this is the domain used when sending out external
-  links. This URL will also need to be set up on your reverse proxy.
+It is safe to clear the **contents** of `cache`; PICR regenerates them. Keep the cache directory itself and its write permissions intact. See [Troubleshooting](/PICR/operations/troubleshooting/) if thumbnails fail with a permission error.
 
-- `DATABASE_URL` You can leave the defaults here, which match the `db` container listed lower in the docker file.
+## Choose how PICR detects changes
 
-- `ADMIN_PASSWORD` [optional] The password for the admin account created on first boot
-  (minimum 8 characters). If you leave it unset, PICR generates a strong random password
-  and prints it to the logs once on first start (read it with `docker logs picr`).
-  `ADMIN_USERNAME` is also optional and defaults to `admin`. Both only apply when there
-  are no users yet.
+The example uses polling because it works reliably with many Docker and NAS mounts.
 
-- `FILE_WATCHER` [optional] controls how PICR notices media changes.
-  `polling` is useful for Docker, NAS, or large libraries where native file
-  watching is unreliable. `native` uses OS file watching. `off` disables the
-  watcher entirely; PICR scans at boot and when an admin clicks **Scan Now**.
-  Existing installs using `USE_POLLING=true` still work, but `FILE_WATCHER` is
-  the preferred setting for new compose files.
+- `FILE_WATCHER=polling` checks the library at `POLLING_SECONDS` intervals.
+- `FILE_WATCHER=native` uses operating-system filesystem events and is a good fit when media is local to the PICR host.
+- `FILE_WATCHER=off` disables continuous watching. PICR still scans at boot and when an administrator selects **Scan Now**.
+- `ON_VIEW_SCAN=direct_and_new` can refresh active folders while continuous watching is off.
+- `SCHEDULED_SCAN_HOURS=24` adds a daily whole-library reconciliation.
+- [PICR Ping](/PICR/operations/picr-ping/) provides real-time hints when the library lives on a separate NAS.
 
-- `POLLING_SECONDS` [optional] controls the polling interval when
-  `FILE_WATCHER=polling`. Existing installs using `POLLING_INTERVAL` still work:
-  PICR converts the old 100ms units to seconds (`POLLING_INTERVAL=300` becomes
-  `POLLING_SECONDS=30`). The interval now applies equally to all files,
-  including media files.
+Avoid enabling every method without a reason. Start with polling, or native watching for local storage, then change strategy if your storage has different reliability or spin-down requirements.
 
-- `ON_VIEW_SCAN` [optional] controls demand-driven scanning when a gallery folder
-  is viewed. It defaults to `off`. Use `direct_and_new` with `FILE_WATCHER=off`
-  if you want NAS drives to sleep between shoots while still refreshing active
-  galleries in the background.
+## Publish PICR with HTTPS
 
-- `SCHEDULED_SCAN_HOURS` [optional] controls a whole-library reconcile backstop.
-  It defaults to `0` (off). Set `24` for a daily scan that catches changes nobody
-  viewed yet; newly-discovered thumbnails are pre-warmed only for small batches.
+PICR serves HTTP on port `6900`; it does not terminate HTTPS itself. Put it behind a reverse proxy such as Nginx Proxy Manager, Caddy, Traefik, or another proxy you already operate.
 
-- `PICR_PING_TOKEN` [optional] enables authenticated directory hints from
-  [PICR Ping](/PICR/operations/picr-ping/). It must contain at least 64 characters and should be
-  generated with `openssl rand -hex 32`. Keep it unset when Ping is not used;
-  the integration endpoint is then not registered.
+Set `BASE_URL` to the final public HTTPS address. PICR uses it when generating recipient links and notifications.
 
-- `CAN_WRITE` [optional] You can turn this on later if needed, see
-  [Enable rename and move access](/PICR/operations/write-access/).
-  Note: write support needs both `CAN_WRITE=true` and real filesystem write permission on `/home/node/app/media`
-  inside the container.
+HTTPS is recommended even on a private LAN. Browsers restrict clipboard and other features on plain-HTTP addresses, so **Copy Link** is more reliable from a secure origin.
 
-- `LOGIN_RATE_LIMIT_*` [optional] Login brute-force protection controls.
-  Defaults are sensible for most setups (15-minute window, per-IP and per-user/IP limits, temporary block on abuse),
-  so you can usually leave these unset.
+## Upgrade PICR
 
-- `DISABLE_ACCESS_LOGS` [optional] Set to `true` to stop recording AccessLog entries for folder views and downloads.
-  This also suppresses folder-view notifications (they ride on the same code path). Existing log rows are not deleted.
-  Useful for privacy-sensitive deployments or to reduce database growth. Requires a server restart to change.
+Before an upgrade:
 
-- `VIDEO_ACCELERATION` / `VIDEO_ACCELERATION_DEVICE` [optional] Hardware video acceleration (VAAPI).
-  You don't normally need to set either — just pass a GPU into the container and it's auto-detected.
-  See [Hardware Video Acceleration](#hardware-video-acceleration-vaapi) below.
+1. Read the [release notes](https://github.com/IsaacInsoll/PICR/releases).
+2. Back up the PostgreSQL `data` location.
+3. Pull and restart the application:
 
-## Run PICR
+   ```bash
+   docker compose pull picr
+   docker compose up -d
+   docker compose logs -f picr
+   ```
 
-Start the docker compose stack and it should start PICR and the postgres database.
-You should see output in docker saying 'you need a token secret, heres one...', add that to your `compose.yml` and then
-start the container again.
+PICR applies its application database migrations at startup. It supports a direct upgrade from any release in the previous major version to the next major version unless release notes explicitly require an intermediate stop.
 
-If Postgres is still booting when PICR starts, PICR will wait 10 seconds and retry once before treating startup as a real failure.
+PostgreSQL major-version upgrades are separate. Do not change `postgres:17` to a later major version without following a PostgreSQL migration process documented for that PICR release.
 
-Once it's up and running you can then log in. Go to the url (EG: http://<ip-address>:6900/) and log in as `admin`
-(or your `ADMIN_USERNAME`). For the password:
+## Useful optional settings
 
-- If you set `ADMIN_PASSWORD`, use that.
-- If you didn't, PICR generated one and printed it to the logs on first boot — find it with `docker logs picr`
-  (look for the `admin user ... was created with a generated password` line).
+- `ADMIN_USERNAME` and `ADMIN_PASSWORD` set the first administrator credentials when the database has no users. Passwords must contain at least eight characters.
+- `CAN_WRITE=true`, together with a read-write media mount, enables administrator rename and move operations. Read [Enable rename and move access](/PICR/operations/write-access/) before using it.
+- `DISABLE_ACCESS_LOGS=true` stops recording new view/download access logs and suppresses link-open notifications. Existing logs are not deleted.
+- `PICR_PING_TOKEN` enables [PICR Ping](/PICR/operations/picr-ping/) and must contain at least 64 characters.
+- `TOKEN_SECRET` is optional. New installations generate and store a secret automatically; the environment setting is retained for explicit and older deployments.
 
-Change the account details (username and password), then start using PICR 🔥
+The repository [.env.example](https://github.com/IsaacInsoll/PICR/blob/master/.env.example) lists all supported settings.
 
-## Hardware Video Acceleration (VAAPI)
+## Optional hardware video acceleration
 
-PICR detects an Intel or AMD GPU via VAAPI and exposes it for video work. It is
-optional, Linux + `amd64` only, and fully opt-in: with no GPU passed into the
-container PICR behaves exactly as before.
+PICR's `amd64` image includes VAAPI drivers for compatible Intel and AMD GPUs. Detection is optional and a missing or unusable GPU does not stop PICR.
 
-> **What is accelerated today?** Honestly — nothing in normal use yet. PICR's
-> current video workload is poster/scrub thumbnail generation, and production
-> still generates those thumbnails on the CPU. VAAPI is included as groundwork
-> for upcoming video features, especially whole-video transcoding where hardware
-> acceleration can be dramatically faster on supported hardware. For now you can
-> see the detected GPU on the **Server Info** page and compare CPU vs VAAPI
-> yourself with the admin **Benchmark** tool.
+Current poster and scrub-thumbnail generation still uses the CPU because it performs better for that workload. VAAPI is visible on **Settings → Server Info** and in the benchmark tool, but it does not currently make normal gallery use faster.
 
-### How it works
-
-- VAAPI drivers are bundled in the `amd64` image (Intel `iHD` + AMD `radeonsi`).
-  The `arm64` image does not include them.
-- On startup PICR probes the render device and reports VAAPI as available if it
-  works; otherwise it logs one line explaining why. A broken or missing GPU never
-  stops PICR from starting.
-- You can see the resolved status (and which codecs the GPU supports) on the admin
-  **Server Info** page, e.g. _"VAAPI — Intel iHD driver … — H.264, HEVC, VP9"_.
-- The admin **Benchmark** runs each video step on both CPU and VAAPI so you can
-  compare them on your own hardware.
-
-### Enabling it
-
-Pass the GPU render device into the `picr` service. That is usually all you need —
-acceleration is auto-detected:
+To expose a GPU to PICR:
 
 ```yaml
 services:
   picr:
-    # ...existing config from the compose file above...
     devices:
       - /dev/dri:/dev/dri
     group_add:
-      - '<render-gid>' # see below
+      - '<render-group-id>'
 ```
 
-The container runs as the `node` user, so it must be in the host's `render` group
-to reach the GPU. Find that group's numeric ID **on the host**:
+Find the host's numeric render-group ID with:
 
 ```bash
 getent group render
-# e.g. render:x:992:   ->   992 is the GID to use
 ```
 
-Put that number under `group_add`. The GID varies between machines, so don't copy
-a value from another host.
-
-### Optional overrides
-
-- `VIDEO_ACCELERATION=off` — force CPU even when a GPU is present (useful if a
-  driver produces corrupted output).
-- `VIDEO_ACCELERATION_DEVICE=/dev/dri/renderD129` — target a specific render node
-  when you have multiple GPUs (defaults to `/dev/dri/renderD128`).
-
-If acceleration isn't engaging, see
-[Troubleshooting → Hardware video acceleration](/PICR/operations/troubleshooting/#hardware-video-acceleration-not-working).
+The `arm64` image does not include VAAPI drivers. See [Hardware video acceleration troubleshooting](/PICR/operations/troubleshooting/#hardware-video-acceleration-not-working) if an expected GPU is reported as unavailable.

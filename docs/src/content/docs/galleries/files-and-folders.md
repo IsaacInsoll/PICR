@@ -1,36 +1,110 @@
 ---
 title: Files and folders
-description: Understand PICR's media library and organize galleries for different client workflows.
+description: Understand PICR's filesystem-backed library and organize galleries for different client workflows.
 ---
 
-## Overview
+PICR treats the directory mounted at `/home/node/app/media` as the root of its library. Every directory below it can be opened as a gallery, and its files appear as gallery items.
 
-- When setting up PICR you point it at a home (root) folder where all of your images are stored. EG: a folder named
-  `Client Photos`. PICR will only work on files and folders under this subfolder.
-- Permissions for users can be assigned to any folder or subfolder and allows access to that folder and all subfolders under that.
-- No files/folders are created or uploaded in PICR, you just put the files in that folder however you normally do (IE: share that folder over the network)
-- Once files are put in the folder you access PICR to created shared links.
-- You can optionally set a display title and subtitle on folders. These are shown when viewing a folder, while lists still use the original folder name.
+PICR does not replace your storage or import originals into a private library. You continue to add and organise media through Lightroom exports, a network share, synchronisation software, or the host filesystem.
 
-## Example workflow
+## The library mirrors your filesystem
 
-#### Initial setup
+Given this host folder:
 
-- Monique does family photography every weekend and does corporate work for a few clients.
-- Monique creates a folder called `Client Photos` on her NAS, then sets up PICR and mounts that folder as the root.
-- Inside `Client Photos` she creates `Corporate Clients` and `Family Photos` folders
+```text
+Client Media/
+├── Families/
+│   ├── 2026-08 Smith Family/
+│   └── 2026-09 Jones Family/
+└── Commercial/
+    └── Porsche/
+        ├── Taycan Launch/
+        └── Christmas Party/
+```
 
-#### Family Photo Workflow
+PICR shows the same hierarchy. A link to `Porsche` includes its shoot subfolders, while a link to `Taycan Launch` starts at that gallery and does not expose its parent or sibling folders.
 
-- Every family portrait shoot she uses Lightroom to export final images to a new folder under `Family Photos` (EG: `Client Photos\Family Photos\2025 12 Atkins Family`)
-- Once exported, she opens PICR, clicks 'Manage' beside the appropriate folder in the _Recently Modified Folders_ list on the dashboard.
-- Inside the management she clicks enters a name 'Mr and Mrs Atkins', chooses the pretty link button, clicks 'Copy Link' and 'Create'
-- She then emails them with the link she copied.
-- If they do another shoot the following year, it's `2026 12 Atkins Family` and a new link
+This makes the folder chosen for a user or public link its access boundary. Access includes that folder and everything below it.
 
-#### Corporate Clients Workflow
+## Filesystem names and display names
 
-- Every time a new client comes onboard Monique makes a folder for the whole company EG `Porsche`
-- Each shoot gets it's own folder under that EG: `2025 Taycan Shoot`, `2025 Christmas Party`
-- The marketing team get a link created for the top `Porsche` folder, and they appreciate being able to see all media in the one link, with new folders appearing as new shoots are done
-- If multiple users need access (EG: the CEO, the external marketing team) then Monique makes multiple public links on the same folder, so she can track _who_ is accessing the folder and revoke access if necessary
+PICR normally displays a folder's filesystem name. Administrators can add a separate **Title** and **Subtitle** under **Manage → Folder**.
+
+For example:
+
+- Filesystem folder: `2026-08 Smith Family`
+- Display title: `The Smith Family`
+- Subtitle: `August 2026`
+
+The display fields change the gallery heading without renaming the folder on disk. Folder lists continue to use the filesystem name, making it easier for administrators to match PICR with the NAS or server.
+
+## How changes are detected
+
+PICR scans the media root at startup and can detect later changes through native filesystem events, polling, on-view scans, scheduled scans, or [PICR Ping](/PICR/operations/picr-ping/).
+
+If a folder is missing or out of date:
+
+1. Open its closest visible parent.
+2. Choose **Manage** from the folder menu.
+3. Select **Scan Now**.
+
+Use **Generate Thumbnails** from the same page when you want to queue previews for the folder instead of waiting for each item to be requested. PICR never writes thumbnails beside the originals; they are stored in the cache volume.
+
+## Folder presentation
+
+Each folder can have:
+
+- A display title and subtitle
+- A hero image or video used to represent it
+- A still-image banner for the gallery heading
+- A branding preset, or inherited branding from a parent
+- One or more public links
+- Its own access-log view
+
+Set hero and banner images from a media item's menu. Configure the other settings from the folder's **Manage** page.
+
+## Organising repeat clients
+
+There is no single required folder structure. Two useful patterns are:
+
+### One link per shoot
+
+```text
+Families/
+├── 2026 Smith Family/
+└── 2027 Smith Family/
+```
+
+Create a new public link on each shoot folder. This keeps deliveries and access history independent and makes it easy to expire an older gallery.
+
+### One continuing client library
+
+```text
+Commercial/
+└── Porsche/
+    ├── Taycan Launch/
+    ├── Staff Portraits/
+    └── Christmas Party/
+```
+
+Create a link on `Porsche` when the recipient should see all current and future shoots below it. New subfolders appear within the same accessible tree after PICR detects them.
+
+Use separate recipient links on the same folder when multiple people need access. Their passcodes, expiry, permissions, last-access time, and access logs remain independent.
+
+## Rename and move safety
+
+PICR is read-only by default, so filesystem changes normally happen outside the application.
+
+PICR attempts to recognise moves and renames, but not every filesystem exposes enough stable identity information. If an external rename looks like a deletion followed by a new folder, PICR may lose the database relationships that held its links, branding assignment, comments, and ratings.
+
+For important galleries:
+
+- Prefer a stable folder structure after links and reviews exist.
+- Keep backups of both the media library and PostgreSQL database.
+- If you need frequent moves or renames, read [Enable rename and move access](/PICR/operations/write-access/). PICR's own move/rename operation preserves the database relationships, but requires deliberately granting media write access.
+
+## Deleting files
+
+Removing a file or folder from the media library removes it from the gallery after PICR detects the change. The original deletion happens through your filesystem workflow, not PICR's normal read-only interface.
+
+Before removing reviewed media, consider whether you still need its comments, ratings, flags, link history, or Lightroom export. Keep the database backup aligned with the media backup if you need a restorable record of the gallery.

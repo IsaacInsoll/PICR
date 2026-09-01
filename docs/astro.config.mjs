@@ -17,7 +17,8 @@ export default defineConfig({
         },
       ],
       editLink: {
-        baseUrl: 'https://github.com/IsaacInsoll/PICR/edit/master/docs/',
+        baseUrl:
+          'https://github.com/IsaacInsoll/PICR/edit/master/docs/src/content/docs/',
       },
       customCss: ['./src/styles/custom.css'],
       sidebar: [
@@ -29,11 +30,28 @@ export default defineConfig({
               slug: 'getting-started/install',
               label: 'Install PICR',
             },
+            {
+              slug: 'getting-started/first-gallery',
+              label: 'Create your first gallery',
+            },
           ],
         },
         {
           label: 'Galleries',
-          items: [{ autogenerate: { directory: 'galleries' } }],
+          items: [
+            {
+              slug: 'galleries/files-and-folders',
+              label: 'Files and folders',
+            },
+            {
+              slug: 'galleries/browsing',
+              label: 'Browse, sort, and filter',
+            },
+            {
+              slug: 'galleries/branding',
+              label: 'Branding and theming',
+            },
+          ],
         },
         {
           label: 'Sharing and proofing',
