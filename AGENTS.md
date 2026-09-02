@@ -212,6 +212,14 @@ CI regenerates these files and fails the build if the committed copies differ
 `.github/workflows/build.yml`). If that step fails, run `npm run gql` and commit
 the result - do not edit the generated files by hand to satisfy it.
 
+The local `npm run workflow` command uses `act`, which copies the working tree
+and Git index into its container. The generated-file guard uses plain
+`git diff`, so an unstaged generated-file change fails the guard even when
+running `npm run gql` again is idempotent. Before a pre-commit local workflow
+run, stage the intended generated files (or the whole intended commit, excluding
+unrelated working-copy files). A commit is not required; staging makes the
+guard compare regenerated output against the candidate content in the index.
+
 `app/src/graphql.schema.json` was deleted: nothing imported it, and it was never
 a codegen output. The schema URQL actually uses for cache validation is
 `shared/urql/graphql.schema.json`.
