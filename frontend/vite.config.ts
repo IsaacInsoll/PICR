@@ -14,9 +14,7 @@ import { Kind, parse } from 'graphql';
 
 // https://vitejs.dev/config/
 
-const ReactCompilerConfig = {
-  /* ... */
-};
+const ReactCompilerConfig = {/* ... */};
 
 const locatorJsDevRuntime = (): Plugin => ({
   name: 'picr-locatorjs-dev-runtime',

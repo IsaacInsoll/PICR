@@ -3,11 +3,7 @@ import { isPublicLinkExpired } from '@shared/publicLinkExpiration.js';
 import type { UserFields } from '../db/picrDb.js';
 
 export type PublicLinkRejectionReason =
-  | 'not_found'
-  | 'wrong_user_type'
-  | 'disabled'
-  | 'deleted'
-  | 'expired';
+  'not_found' | 'wrong_user_type' | 'disabled' | 'deleted' | 'expired';
 
 export type PublicLinkAuthOutcome =
   | {

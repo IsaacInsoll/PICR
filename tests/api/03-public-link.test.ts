@@ -159,7 +159,9 @@ test('Public Link gallery passcode gates GraphQL access only', async () => {
     },
   });
 
-  const legacyInfo = await (await createTestGraphqlClient({}))
+  const legacyInfo = await (
+    await createTestGraphqlClient({})
+  )
     .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
     .toPromise();
   expect(legacyInfo.error).toBeUndefined();
@@ -183,7 +185,9 @@ test('Public Link gallery passcode gates GraphQL access only', async () => {
   const wrongPasscodeInfo = await wrongPasscodeClient
     .query(publicLinkInfoQuery, { uuid: testPublicLink.uuid })
     .toPromise();
-  const missingLinkInfo = await (await createTestGraphqlClient({}))
+  const missingLinkInfo = await (
+    await createTestGraphqlClient({})
+  )
     .query(publicLinkInfoQuery, { uuid: `missing-${testSuffix}` })
     .toPromise();
 

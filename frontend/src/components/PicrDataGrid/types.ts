@@ -141,11 +141,11 @@ export const createPicrColumns = <TData extends RowData>() => {
   return {
     accessor: <
       TAccessor extends AccessorFn<TData> | DeepKeys<TData>,
-      TValue extends TAccessor extends AccessorFn<TData, infer TReturn>
+      TValue extends (TAccessor extends AccessorFn<TData, infer TReturn>
         ? TReturn
         : TAccessor extends DeepKeys<TData>
           ? DeepValue<TData, TAccessor>
-          : never,
+          : never),
     >(
       accessor: TAccessor,
       column: TAccessor extends AccessorFn<TData>

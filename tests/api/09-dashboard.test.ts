@@ -30,8 +30,7 @@ const expectAuthCode = (
 ) => {
   expect(result.error).toBeDefined();
   const extensions = result.error?.graphQLErrors?.[0]?.extensions as
-    | { code?: string; reason?: string }
-    | undefined;
+    { code?: string; reason?: string } | undefined;
   expect(extensions?.code).toBe(code);
   if (reason) expect(extensions?.reason).toBe(reason);
 };

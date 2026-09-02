@@ -186,9 +186,7 @@ const BrandingSelector = ({ folder }: { folder: PicrFolder }) => {
               ...inheritedBranding,
               socialLinks:
                 (inheritedBranding.socialLinks as
-                  | SocialLink[]
-                  | null
-                  | undefined) ?? null,
+                  SocialLink[] | null | undefined) ?? null,
             }
           : defaultBranding),
         id: '0',

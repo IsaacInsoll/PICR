@@ -207,8 +207,7 @@ const SearchResults = ({
 };
 
 type SearchResultItem =
-  | AppSearchFileFragmentFragment
-  | AppSearchFolderFragmentFragment;
+  AppSearchFileFragmentFragment | AppSearchFolderFragmentFragment;
 
 const SearchResultRow = ({ item }: { item: SearchResultItem }) => {
   const isFolder = isFolderResult(item);

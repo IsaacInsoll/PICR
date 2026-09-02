@@ -5,10 +5,7 @@ const hasControlChars = (value: string) =>
   });
 
 export type FolderNameValidationError =
-  | 'required'
-  | 'forwardSlash'
-  | 'backslash'
-  | 'invalid';
+  'required' | 'forwardSlash' | 'backslash' | 'invalid';
 
 export const validateFolderNameCode = (
   name: string,
