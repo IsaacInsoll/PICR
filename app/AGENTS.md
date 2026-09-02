@@ -256,13 +256,15 @@ await SecureStore.setItemAsync('token', jwtToken);
 
 ```typescript
 // helpers/pushNotifications.ts
-export async function registerForPushNotifications() {
-  // 1. Check if physical device (not simulator)
-  // 2. Request permissions
-  // 3. Get Expo push token
-  // 4. Register with backend via editUserDevice mutation
-}
+await checkPushNotificationRegistrationAsync(); // Never prompts
+await registerForPushNotificationsAsync(); // May prompt after explicit opt-in
 ```
+
+Opening Notification Settings must only check existing local permission. Request
+permission from an explicit user action, such as enabling the notification
+switch. The helpers return a structured registration status; an exception or
+configuration error is not a push token and must not be sent to the backend.
+Expo push tokens remain unavailable on simulators.
 
 ### Deep Linking
 

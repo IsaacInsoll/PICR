@@ -5,7 +5,7 @@ side project relative to core PICR, so the work is intentionally split into
 small phases that can be picked up and put down without leaving the repository
 in an ambiguous state.
 
-Last reviewed: 2026-09-01
+Last reviewed: 2026-09-02
 
 ## Current status
 
@@ -16,7 +16,7 @@ carousel navigation were manually exercised. Runtime problems found during that
 smoke pass were fixed and rechecked. No EAS build or store release was used.
 
 Phase 2's unit/component safety net is complete. The Jest/React Native Testing
-Library suite currently passes 91 tests across login, URL normalization, auth
+Library suite currently passes 96 tests across login, URL normalization, auth
 expiry, SecureStore migration, route construction, date formatting, branding,
 presentation defaults, photographer file actions, native row identifiers and
 notification settings. It runs from root checks, CI and app release preflight,
@@ -42,8 +42,11 @@ requests. Its authenticated-user query and app-only view model no longer request
 or expose public-link user fields. One authenticated server-origin contract now
 owns GraphQL headers, media URLs, native route keys and base-path-aware incoming
 links; legacy server-schema negotiation is deliberately out of scope while the
-app has no external user base. Native Maestro execution can resume when its
-additional coverage is useful; Expo SDK upgrades remain deliberately separate.
+app has no external user base. Download failures now give the photographer
+useful feedback, and opening Notification Settings checks local permission
+without prompting; permission is requested only after explicit opt-in. Native
+Maestro execution can resume when its additional coverage is useful; Expo SDK
+upgrades remain deliberately separate.
 
 ## Product direction
 
@@ -116,7 +119,7 @@ resource. The default workflow is local-first:
       advisories in Expo's build/configuration toolchain; the full audit adds
       one path through `jest-expo`. npm's proposed force-fix crosses an Expo SDK
       boundary, so the remainder is deferred to the planned SDK 56/57 upgrades.
-- [x] App unit/component tests exist and pass locally (91 tests on 2026-09-01).
+- [x] App unit/component tests exist and pass locally (96 tests on 2026-09-02).
       Native Maestro execution is scaffolded and deliberately deferred.
 - [ ] Package/store versions are reconciled. `app/package.json` is 1.0.6, while
       the public store listings observed during the audit show older releases.
@@ -243,8 +246,8 @@ backend/shared contracts.
 - [x] Preserve plain-HTTP URLs on a best-effort basis without silently upgrading
       them. HTTPS is the supported default; native cleartext-policy work and
       physical-device HTTP coverage are not release gates unless demand emerges.
-- [ ] Show useful download failures instead of silently swallowing errors.
-- [ ] Check local notification permission without requesting it merely because
+- [x] Show useful download failures instead of silently swallowing errors.
+- [x] Check local notification permission without requesting it merely because
       Settings was opened.
 - [x] Remove dead public-user fields and branches from app-only view models where
       they no longer serve the photographer product.

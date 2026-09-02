@@ -9,7 +9,10 @@ import {
   NotificationSettings,
   NotificationToggle,
 } from '@/src/components/NotificationSettings';
-import { registerForPushNotificationsAsync } from '@/src/helpers/pushNotifications';
+import {
+  checkPushNotificationRegistrationAsync,
+  registerForPushNotificationsAsync,
+} from '@/src/helpers/pushNotifications';
 
 const mockMutate =
   jest.fn<(variables: Record<string, unknown>) => Promise<{ error?: Error }>>();
@@ -22,6 +25,7 @@ jest.mock('urql', () => ({
 }));
 
 jest.mock('@/src/helpers/pushNotifications', () => ({
+  checkPushNotificationRegistrationAsync: jest.fn(),
   registerForPushNotificationsAsync: jest.fn(),
 }));
 
@@ -46,11 +50,14 @@ describe('NotificationSettings', () => {
     mockMutate.mockReset();
     mockRequery.mockReset();
     mockUseQuery.mockReset();
+    jest.mocked(checkPushNotificationRegistrationAsync).mockReset();
     jest.mocked(registerForPushNotificationsAsync).mockReset();
   });
 
   it('settles into an explicit unavailable state without a device push token', async () => {
-    jest.mocked(registerForPushNotificationsAsync).mockResolvedValue(undefined);
+    jest
+      .mocked(checkPushNotificationRegistrationAsync)
+      .mockResolvedValue({ status: 'unavailable' });
 
     await render(<NotificationSettings />);
 
@@ -61,6 +68,42 @@ describe('NotificationSettings', () => {
       expect(
         screen.getByTestId('notification-toggle-unavailable'),
       ).toBeOnTheScreen();
+    });
+    expect(registerForPushNotificationsAsync).not.toHaveBeenCalled();
+  });
+
+  it('requests permission only after the user explicitly enables notifications', async () => {
+    jest
+      .mocked(checkPushNotificationRegistrationAsync)
+      .mockResolvedValue({ status: 'permission-required' });
+    jest.mocked(registerForPushNotificationsAsync).mockResolvedValue({
+      status: 'registered',
+      token: 'new-token',
+    });
+    mockMutate.mockResolvedValue({});
+    mockUseQuery.mockReturnValue([
+      { data: { userDevices: [{ enabled: true }] } },
+      mockRequery,
+    ]);
+
+    await render(<NotificationSettings />);
+
+    const permissionToggle = await screen.findByTestId(
+      'notification-toggle-permission-required',
+    );
+    expect(registerForPushNotificationsAsync).not.toHaveBeenCalled();
+
+    await fireEvent(permissionToggle, 'valueChange', true);
+
+    await waitFor(() => {
+      expect(registerForPushNotificationsAsync).toHaveBeenCalledTimes(1);
+      expect(screen.getByTestId('notification-toggle')).toBeOnTheScreen();
+    });
+    expect(mockMutate).toHaveBeenCalledWith({
+      enabled: true,
+      name: 'Test Device',
+      token: 'new-token DEV',
+      userId: 'user-1',
     });
   });
 

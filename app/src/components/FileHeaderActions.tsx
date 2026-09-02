@@ -52,7 +52,10 @@ export const FileHeaderActions = ({
       setDownloadState('saved');
     } catch {
       setDownloadState('idle');
-      // Phase 3 will replace the existing silent failure with user feedback.
+      Alert.alert(
+        'Download failed',
+        'PICR could not save this file. Please try again.',
+      );
     }
   };
 

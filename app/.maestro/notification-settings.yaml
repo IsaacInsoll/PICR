@@ -27,6 +27,22 @@ tags:
 - runFlow:
     when:
       visible:
+        id: notification-toggle-permission-required
+    commands:
+      - tapOn:
+          id: notification-toggle-permission-required
+      - runFlow:
+          when:
+            visible: Allow
+          commands:
+            - tapOn: Allow
+      - extendedWaitUntil:
+          visible:
+            id: ^notification-toggle$
+          timeout: 20000
+- runFlow:
+    when:
+      visible:
         id: notification-toggle-unavailable
     commands:
       - assertVisible:
