@@ -1,40 +1,10 @@
 /* eslint-disable */
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
-export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+/** Internal type. DO NOT USE DIRECTLY. */
+type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+/** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-/** All built-in and custom scalars, mapped to their actual values */
-export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  /** The `BigInt` scalar type represents non-fractional signed whole numeric values. */
-  BigInt: { input: string; output: string; }
-  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  DateTime: { input: string; output: string; }
-  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSON: { input: unknown; output: unknown; }
-};
-
-export type AccessLog = {
-  __typename?: 'AccessLog';
-  folder?: Maybe<Folder>;
-  folderId?: Maybe<Scalars['ID']['output']>;
-  id: Scalars['ID']['output'];
-  ipAddress?: Maybe<Scalars['String']['output']>;
-  timestamp: Scalars['DateTime']['output'];
-  type: AccessType;
-  user?: Maybe<User>;
-  userAgent?: Maybe<Scalars['String']['output']>;
-  userId?: Maybe<Scalars['ID']['output']>;
-};
-
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+export type * from './schema.js';
 export enum AccessType {
   Download = 'Download',
   View = 'View'
@@ -59,113 +29,15 @@ export enum BannerTextVAlign {
   Top = 'top'
 }
 
-export type BenchmarkResult = {
-  __typename?: 'BenchmarkResult';
-  appVersion: Scalars['String']['output'];
-  assetPath: Scalars['String']['output'];
-  assetSourceUrl: Scalars['String']['output'];
-  cpuCount: Scalars['Int']['output'];
-  imageCount: Scalars['Int']['output'];
-  steps: Array<NamedBenchmarkStep>;
-  totalMs: Scalars['Float']['output'];
-  uvThreadpoolSize: Scalars['String']['output'];
-  videoAccelerationMode: Scalars['String']['output'];
-  videoAccelerationReason: Scalars['String']['output'];
-  videoCount: Scalars['Int']['output'];
-};
-
-export type Branding = {
-  __typename?: 'Branding';
-  availableViews?: Maybe<Array<Scalars['String']['output']>>;
-  defaultFileSort?: Maybe<Scalars['String']['output']>;
-  defaultView?: Maybe<Scalars['String']['output']>;
-  folder?: Maybe<Folder>;
-  folderId?: Maybe<Scalars['ID']['output']>;
-  folders: Array<Folder>;
-  footerTitle?: Maybe<Scalars['String']['output']>;
-  footerUrl?: Maybe<Scalars['String']['output']>;
-  galleryLayout?: Maybe<GalleryLayout>;
-  headingAlignment?: Maybe<HeadingAlignment>;
-  headingFontKey?: Maybe<HeadingFontKey>;
-  headingFontSize?: Maybe<Scalars['Int']['output']>;
-  id: Scalars['ID']['output'];
-  logoUrl?: Maybe<Scalars['String']['output']>;
-  mode?: Maybe<ThemeMode>;
-  name?: Maybe<Scalars['String']['output']>;
-  primaryColor?: Maybe<PrimaryColor>;
-  socialLinks?: Maybe<Scalars['JSON']['output']>;
-  thumbnailBorderRadius?: Maybe<Scalars['Int']['output']>;
-  thumbnailSize?: Maybe<Scalars['Int']['output']>;
-  thumbnailSpacing?: Maybe<Scalars['Int']['output']>;
-};
-
-export type ClientInfo = {
-  __typename?: 'ClientInfo';
-  baseUrl: Scalars['String']['output'];
-  canWrite: Scalars['Boolean']['output'];
-  thumbnailJpegQuality: Scalars['Int']['output'];
-  thumbnailVariants: Array<ThumbnailVariant>;
-  useOriginalsForLightbox: Scalars['Boolean']['output'];
-};
-
-export type Comment = {
-  __typename?: 'Comment';
-  comment?: Maybe<Scalars['String']['output']>;
-  file?: Maybe<FileInterface>;
-  id?: Maybe<Scalars['ID']['output']>;
-  systemGenerated: Scalars['Boolean']['output'];
-  timestamp: Scalars['DateTime']['output'];
-  user?: Maybe<User>;
-  userId?: Maybe<Scalars['ID']['output']>;
-};
-
 export enum CommentPermissions {
   Edit = 'edit',
   None = 'none',
   Read = 'read'
 }
 
-export type DashboardStats = {
-  __typename?: 'DashboardStats';
-  totalFiles: Scalars['Int']['output'];
-  totalFolders: Scalars['Int']['output'];
-  totalImages: Scalars['Int']['output'];
-  totalSize: Scalars['String']['output'];
-};
-
-export type DashboardUpdateInfo = {
-  __typename?: 'DashboardUpdateInfo';
-  latest: Scalars['String']['output'];
-  version: Scalars['String']['output'];
-};
-
-export type DiskInfo = {
-  __typename?: 'DiskInfo';
-  free: Scalars['BigInt']['output'];
-  path: Scalars['String']['output'];
-  total: Scalars['BigInt']['output'];
-};
-
 export type EditServerSettingsInput = {
-  thumbnailJpegQuality?: InputMaybe<Scalars['Int']['input']>;
-  useOriginalsForLightbox?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type File = FileInterface & {
-  __typename?: 'File';
-  fileCreated: Scalars['DateTime']['output'];
-  fileHash: Scalars['String']['output'];
-  fileLastModified: Scalars['DateTime']['output'];
-  fileSize: Scalars['BigInt']['output'];
-  flag?: Maybe<FileFlag>;
-  folder?: Maybe<Folder>;
-  folderId: Scalars['ID']['output'];
-  id: Scalars['ID']['output'];
-  latestComment?: Maybe<Scalars['DateTime']['output']>;
-  name: Scalars['String']['output'];
-  rating?: Maybe<Scalars['Int']['output']>;
-  totalComments?: Maybe<Scalars['Int']['output']>;
-  type: FileType;
+  thumbnailJpegQuality?: number | null | undefined;
+  useOriginalsForLightbox?: boolean | null | undefined;
 };
 
 export enum FileFlag {
@@ -174,75 +46,11 @@ export enum FileFlag {
   Rejected = 'rejected'
 }
 
-export type FileInterface = {
-  fileCreated: Scalars['DateTime']['output'];
-  fileHash: Scalars['String']['output'];
-  fileLastModified: Scalars['DateTime']['output'];
-  fileSize: Scalars['BigInt']['output'];
-  flag?: Maybe<FileFlag>;
-  folder?: Maybe<Folder>;
-  folderId: Scalars['ID']['output'];
-  id: Scalars['ID']['output'];
-  latestComment?: Maybe<Scalars['DateTime']['output']>;
-  name: Scalars['String']['output'];
-  rating?: Maybe<Scalars['Int']['output']>;
-  totalComments?: Maybe<Scalars['Int']['output']>;
-  type: FileType;
-};
-
 export enum FileType {
   File = 'File',
   Image = 'Image',
   Video = 'Video'
 }
-
-export type Folder = {
-  __typename?: 'Folder';
-  bannerImage?: Maybe<Image>;
-  bannerSize?: Maybe<BannerSize>;
-  bannerTextHAlign?: Maybe<BannerTextHAlign>;
-  bannerTextVAlign?: Maybe<BannerTextVAlign>;
-  branding?: Maybe<Branding>;
-  brandingId?: Maybe<Scalars['ID']['output']>;
-  files: Array<FileInterface>;
-  folderLastModified: Scalars['DateTime']['output'];
-  heroImage?: Maybe<FileInterface>;
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  parentId?: Maybe<Scalars['ID']['output']>;
-  parents: Array<Folder>;
-  permissions?: Maybe<FolderPermissions>;
-  relativePath: Scalars['String']['output'];
-  subFolders: Array<Folder>;
-  subtitle?: Maybe<Scalars['String']['output']>;
-  thumbnailCompletion: ThumbnailCompletion;
-  title?: Maybe<Scalars['String']['output']>;
-  totalDirectSize: Scalars['String']['output'];
-  totalFiles: Scalars['Int']['output'];
-  totalFolders: Scalars['Int']['output'];
-  totalImages: Scalars['Int']['output'];
-  totalSize: Scalars['String']['output'];
-  users?: Maybe<Array<User>>;
-};
-
-
-export type FolderThumbnailCompletionArgs = {
-  mediaType?: InputMaybe<MediaTypeFilter>;
-};
-
-export type FolderFileExport = {
-  __typename?: 'FolderFileExport';
-  file: FileInterface;
-  relativePath: Scalars['String']['output'];
-};
-
-export type FolderFilesResult = {
-  __typename?: 'FolderFilesResult';
-  files: Array<FolderFileExport>;
-  totalAvailable: Scalars['Int']['output'];
-  totalReturned: Scalars['Int']['output'];
-  truncated: Scalars['Boolean']['output'];
-};
 
 export enum FolderPermissions {
   Admin = 'Admin',
@@ -289,275 +97,16 @@ export enum HeadingFontKey {
   SourceSans3 = 'sourceSans3'
 }
 
-export type Image = FileInterface & {
-  __typename?: 'Image';
-  blurHash?: Maybe<Scalars['String']['output']>;
-  fileCreated: Scalars['DateTime']['output'];
-  fileHash: Scalars['String']['output'];
-  fileLastModified: Scalars['DateTime']['output'];
-  fileSize: Scalars['BigInt']['output'];
-  flag?: Maybe<FileFlag>;
-  folder?: Maybe<Folder>;
-  folderId: Scalars['ID']['output'];
-  id: Scalars['ID']['output'];
-  imageHeight?: Maybe<Scalars['Int']['output']>;
-  imageRatio?: Maybe<Scalars['Float']['output']>;
-  imageWidth?: Maybe<Scalars['Int']['output']>;
-  latestComment?: Maybe<Scalars['DateTime']['output']>;
-  metadata?: Maybe<ImageMetadataSummary>;
-  name: Scalars['String']['output'];
-  rating?: Maybe<Scalars['Int']['output']>;
-  totalComments?: Maybe<Scalars['Int']['output']>;
-  type: FileType;
-};
-
-export type ImageMetadataSummary = {
-  __typename?: 'ImageMetadataSummary';
-  Aperture?: Maybe<Scalars['Float']['output']>;
-  Artist?: Maybe<Scalars['String']['output']>;
-  Camera?: Maybe<Scalars['String']['output']>;
-  DateTimeEdit?: Maybe<Scalars['String']['output']>;
-  DateTimeOriginal?: Maybe<Scalars['String']['output']>;
-  ExposureTime?: Maybe<Scalars['Float']['output']>;
-  Height?: Maybe<Scalars['Int']['output']>;
-  ISO?: Maybe<Scalars['Float']['output']>;
-  Lens?: Maybe<Scalars['String']['output']>;
-  Rating?: Maybe<Scalars['Int']['output']>;
-  Width?: Maybe<Scalars['Int']['output']>;
-};
-
-export type InodeSupportInfo = {
-  __typename?: 'InodeSupportInfo';
-  reason: Scalars['String']['output'];
-  status: Scalars['String']['output'];
-};
-
 export enum LinkMode {
   FinalDelivery = 'final_delivery',
   ProofNoDownloads = 'proof_no_downloads'
 }
-
-export type MediaCapsInfo = {
-  __typename?: 'MediaCapsInfo';
-  heic: Scalars['Boolean']['output'];
-  psb: Scalars['Boolean']['output'];
-  psd: Scalars['Boolean']['output'];
-  raw: Scalars['Boolean']['output'];
-};
-
-export type MediaScanningInfo = {
-  __typename?: 'MediaScanningInfo';
-  fileWatcherMode: Scalars['String']['output'];
-  onViewScanMode: Scalars['String']['output'];
-  ping: PingStatusInfo;
-  scheduledScan: ScheduledScanStatusInfo;
-  scheduledScanHours: Scalars['Int']['output'];
-};
 
 export enum MediaTypeFilter {
   All = 'All',
   Image = 'Image',
   Video = 'Video'
 }
-
-export type Mutation = {
-  __typename?: 'Mutation';
-  addComment: FileInterface;
-  auth: Scalars['String']['output'];
-  deleteBranding: Scalars['Boolean']['output'];
-  deleteUser: Scalars['Boolean']['output'];
-  editAdminUser: User;
-  editBranding: Branding;
-  editFolder: Folder;
-  editServerSettings: ServerSettings;
-  editUser: User;
-  editUserDevice: UserDevice;
-  generateThumbnails: Scalars['Boolean']['output'];
-  generateZip: Scalars['String']['output'];
-  recordFolderVisit: Scalars['Boolean']['output'];
-  renameFolder: Folder;
-  rescanFolder: Scalars['Boolean']['output'];
-  runBenchmark: BenchmarkResult;
-  setFolderBranding: Folder;
-};
-
-
-export type MutationAddCommentArgs = {
-  comment?: InputMaybe<Scalars['String']['input']>;
-  flag?: InputMaybe<FileFlag>;
-  id: Scalars['ID']['input'];
-  nickName?: InputMaybe<Scalars['String']['input']>;
-  rating?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type MutationAuthArgs = {
-  password: Scalars['String']['input'];
-  user: Scalars['String']['input'];
-};
-
-
-export type MutationDeleteBrandingArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type MutationDeleteUserArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type MutationEditAdminUserArgs = {
-  commentPermissions?: InputMaybe<CommentPermissions>;
-  enabled?: InputMaybe<Scalars['Boolean']['input']>;
-  folderId?: InputMaybe<Scalars['ID']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  ntfy?: InputMaybe<Scalars['String']['input']>;
-  ntfyEmail?: InputMaybe<Scalars['Boolean']['input']>;
-  password?: InputMaybe<Scalars['String']['input']>;
-  username?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type MutationEditBrandingArgs = {
-  availableViews?: InputMaybe<Array<Scalars['String']['input']>>;
-  defaultFileSort?: InputMaybe<Scalars['String']['input']>;
-  defaultView?: InputMaybe<Scalars['String']['input']>;
-  footerTitle?: InputMaybe<Scalars['String']['input']>;
-  footerUrl?: InputMaybe<Scalars['String']['input']>;
-  galleryLayout?: InputMaybe<GalleryLayout>;
-  headingAlignment?: InputMaybe<HeadingAlignment>;
-  headingFontKey?: InputMaybe<HeadingFontKey>;
-  headingFontSize?: InputMaybe<Scalars['Int']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  logoUrl?: InputMaybe<Scalars['String']['input']>;
-  mode?: InputMaybe<ThemeMode>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  primaryColor?: InputMaybe<PrimaryColor>;
-  socialLinks?: InputMaybe<Scalars['JSON']['input']>;
-  thumbnailBorderRadius?: InputMaybe<Scalars['Int']['input']>;
-  thumbnailSize?: InputMaybe<Scalars['Int']['input']>;
-  thumbnailSpacing?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type MutationEditFolderArgs = {
-  bannerImageId?: InputMaybe<Scalars['ID']['input']>;
-  bannerSize?: InputMaybe<BannerSize>;
-  bannerTextHAlign?: InputMaybe<BannerTextHAlign>;
-  bannerTextVAlign?: InputMaybe<BannerTextVAlign>;
-  folderId: Scalars['ID']['input'];
-  heroImageId?: InputMaybe<Scalars['ID']['input']>;
-  subtitle?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type MutationEditServerSettingsArgs = {
-  input: EditServerSettingsInput;
-};
-
-
-export type MutationEditUserArgs = {
-  commentPermissions?: InputMaybe<CommentPermissions>;
-  enabled?: InputMaybe<Scalars['Boolean']['input']>;
-  expiresAt?: InputMaybe<Scalars['DateTime']['input']>;
-  folderId?: InputMaybe<Scalars['ID']['input']>;
-  galleryPasscode?: InputMaybe<Scalars['String']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
-  linkMode?: InputMaybe<LinkMode>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  username?: InputMaybe<Scalars['String']['input']>;
-  uuid?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type MutationEditUserDeviceArgs = {
-  enabled: Scalars['Boolean']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  notificationToken: Scalars['String']['input'];
-  userId: Scalars['ID']['input'];
-};
-
-
-export type MutationGenerateThumbnailsArgs = {
-  folderId?: InputMaybe<Scalars['ID']['input']>;
-  mediaType?: InputMaybe<MediaTypeFilter>;
-};
-
-
-export type MutationGenerateZipArgs = {
-  folderId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-
-export type MutationRecordFolderVisitArgs = {
-  folderId: Scalars['ID']['input'];
-};
-
-
-export type MutationRenameFolderArgs = {
-  folderId: Scalars['ID']['input'];
-  newPath: Scalars['String']['input'];
-  oldPath: Scalars['String']['input'];
-};
-
-
-export type MutationRescanFolderArgs = {
-  folderId: Scalars['ID']['input'];
-};
-
-
-export type MutationRunBenchmarkArgs = {
-  assetPath?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type MutationSetFolderBrandingArgs = {
-  brandingId?: InputMaybe<Scalars['ID']['input']>;
-  folderId: Scalars['ID']['input'];
-};
-
-export type NamedBenchmarkStep = {
-  __typename?: 'NamedBenchmarkStep';
-  details?: Maybe<Scalars['String']['output']>;
-  includedInTotal: Scalars['Boolean']['output'];
-  key: Scalars['String']['output'];
-  ms?: Maybe<Scalars['Float']['output']>;
-  name: Scalars['String']['output'];
-  outputBytes?: Maybe<Scalars['BigInt']['output']>;
-  skippedReason?: Maybe<Scalars['String']['output']>;
-  status: Scalars['String']['output'];
-};
-
-export type PingCoordinatorStatusInfo = {
-  __typename?: 'PingCoordinatorStatusInfo';
-  foldersScanned: Scalars['Int']['output'];
-  lastError?: Maybe<Scalars['String']['output']>;
-  pendingFolders: Scalars['Int']['output'];
-  state: Scalars['String']['output'];
-};
-
-export type PingSourceStatusInfo = {
-  __typename?: 'PingSourceStatusInfo';
-  hintsReceived: Scalars['Int']['output'];
-  instanceId: Scalars['String']['output'];
-  lastBatchAt?: Maybe<Scalars['String']['output']>;
-  lastError?: Maybe<Scalars['String']['output']>;
-  lastReconcileAt?: Maybe<Scalars['String']['output']>;
-  lastSeenAt: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-  pingVersion: Scalars['String']['output'];
-  watchPrefix: Scalars['String']['output'];
-};
-
-export type PingStatusInfo = {
-  __typename?: 'PingStatusInfo';
-  coordinator: PingCoordinatorStatusInfo;
-  enabled: Scalars['Boolean']['output'];
-  sources: Array<PingSourceStatusInfo>;
-};
 
 export enum PrimaryColor {
   Blue = 'blue',
@@ -583,272 +132,11 @@ export enum PublicLinkAccessStatus {
   Unavailable = 'UNAVAILABLE'
 }
 
-export type PublicLinkBrandingPreview = {
-  __typename?: 'PublicLinkBrandingPreview';
-  headingAlignment?: Maybe<HeadingAlignment>;
-  headingFontKey?: Maybe<HeadingFontKey>;
-  headingFontSize?: Maybe<Scalars['Int']['output']>;
-  mode?: Maybe<ThemeMode>;
-  primaryColor?: Maybe<PrimaryColor>;
-};
-
-export type PublicLinkInfo = {
-  __typename?: 'PublicLinkInfo';
-  /** @deprecated Use status. */
-  available: Scalars['Boolean']['output'];
-  branding?: Maybe<PublicLinkBrandingPreview>;
-  /** Expiration timestamp for available and expired links. Available links carry it so a client holding a cached AVAILABLE result can still name the deadline the moment a request is rejected as expired; do not restrict this to EXPIRED. Hidden while a passcode is required and for unavailable links. */
-  expiresAt?: Maybe<Scalars['DateTime']['output']>;
-  galleryName?: Maybe<Scalars['String']['output']>;
-  /** @deprecated Use status. */
-  requiresPasscode: Scalars['Boolean']['output'];
-  status: PublicLinkAccessStatus;
-  /** @deprecated Use status. */
-  unlocked: Scalars['Boolean']['output'];
-};
-
-export type Query = {
-  __typename?: 'Query';
-  accessLogs: Array<AccessLog>;
-  admins: Array<User>;
-  allFolders: Array<Maybe<Folder>>;
-  brandings: Array<Branding>;
-  clientInfo?: Maybe<ClientInfo>;
-  comments: Array<Comment>;
-  dashboardStats: DashboardStats;
-  dashboardUpdateInfo: DashboardUpdateInfo;
-  file: FileInterface;
-  folder: Folder;
-  folderFiles: FolderFilesResult;
-  me?: Maybe<User>;
-  publicLinkInfo: PublicLinkInfo;
-  searchFiles: Array<File>;
-  searchFolders: Array<Folder>;
-  serverInfo?: Maybe<ServerInfo>;
-  tasks: Array<Task>;
-  user: User;
-  userDevices: Array<UserDevice>;
-  users: Array<User>;
-};
-
-
-export type QueryAccessLogsArgs = {
-  folderId: Scalars['ID']['input'];
-  includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
-  userId?: InputMaybe<Scalars['ID']['input']>;
-  userType?: InputMaybe<UserType>;
-};
-
-
-export type QueryAllFoldersArgs = {
-  id: Scalars['ID']['input'];
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  sort?: InputMaybe<FoldersSortType>;
-};
-
-
-export type QueryCommentsArgs = {
-  fileId?: InputMaybe<Scalars['ID']['input']>;
-  folderId?: InputMaybe<Scalars['ID']['input']>;
-  includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryDashboardStatsArgs = {
-  folderId: Scalars['ID']['input'];
-};
-
-
-export type QueryFileArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryFolderArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryFolderFilesArgs = {
-  folderId: Scalars['ID']['input'];
-  includeSubfolders?: InputMaybe<Scalars['Boolean']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryPublicLinkInfoArgs = {
-  uuid: Scalars['String']['input'];
-};
-
-
-export type QuerySearchFilesArgs = {
-  folderId?: InputMaybe<Scalars['ID']['input']>;
-  query: Scalars['String']['input'];
-};
-
-
-export type QuerySearchFoldersArgs = {
-  folderId?: InputMaybe<Scalars['ID']['input']>;
-  query: Scalars['String']['input'];
-};
-
-
-export type QueryTasksArgs = {
-  folderId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-
-export type QueryUserArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryUserDevicesArgs = {
-  notificationToken?: InputMaybe<Scalars['String']['input']>;
-  userId?: InputMaybe<Scalars['ID']['input']>;
-};
-
-
-export type QueryUsersArgs = {
-  folderId: Scalars['ID']['input'];
-  includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
-  includeParents?: InputMaybe<Scalars['Boolean']['input']>;
-  sortByRecent?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type ScheduledScanResultInfo = {
-  __typename?: 'ScheduledScanResultInfo';
-  addedFiles: Scalars['Int']['output'];
-  addedFolders: Scalars['Int']['output'];
-  changedFiles: Scalars['Int']['output'];
-  cleanupRun: Scalars['Boolean']['output'];
-  completed: Scalars['Boolean']['output'];
-  ignored: Scalars['Int']['output'];
-  movedFiles: Scalars['Int']['output'];
-  movedFolders: Scalars['Int']['output'];
-  removedFiles: Scalars['Int']['output'];
-  removedFolders: Scalars['Int']['output'];
-  scanPasses: Scalars['Int']['output'];
-  skippedEntries: Scalars['Int']['output'];
-  unsettledFiles: Scalars['Int']['output'];
-  unsettledFolders: Scalars['Int']['output'];
-};
-
-export type ScheduledScanStatusInfo = {
-  __typename?: 'ScheduledScanStatusInfo';
-  lastCompletedAt?: Maybe<Scalars['String']['output']>;
-  lastDurationMs?: Maybe<Scalars['Int']['output']>;
-  lastError?: Maybe<Scalars['String']['output']>;
-  lastResult?: Maybe<ScheduledScanResultInfo>;
-  lastStartedAt?: Maybe<Scalars['String']['output']>;
-  nextScanAt?: Maybe<Scalars['String']['output']>;
-  running: Scalars['Boolean']['output'];
-};
-
-export type ServerInfo = {
-  __typename?: 'ServerInfo';
-  cacheSize: Scalars['BigInt']['output'];
-  canWrite: Scalars['Boolean']['output'];
-  databaseUrl: Scalars['String']['output'];
-  dev: Scalars['Boolean']['output'];
-  developmentBuildSha?: Maybe<Scalars['String']['output']>;
-  disk?: Maybe<DiskInfo>;
-  host: Scalars['String']['output'];
-  inodeSupport: InodeSupportInfo;
-  latest: Scalars['String']['output'];
-  mediaCaps: MediaCapsInfo;
-  mediaSize: Scalars['BigInt']['output'];
-  scanning: MediaScanningInfo;
-  settings: ServerSettings;
-  system: SystemInfo;
-  version: Scalars['String']['output'];
-  videoAcceleration: VideoAccelerationInfo;
-};
-
-export type ServerSettings = {
-  __typename?: 'ServerSettings';
-  thumbnailJpegQuality: Scalars['Int']['output'];
-  thumbnailVariants: Array<ThumbnailVariant>;
-  useOriginalsForLightbox: Scalars['Boolean']['output'];
-};
-
-export type SystemInfo = {
-  __typename?: 'SystemInfo';
-  databaseVersion?: Maybe<Scalars['String']['output']>;
-  ffmpegVersion?: Maybe<Scalars['String']['output']>;
-  imageMagickVersion?: Maybe<Scalars['String']['output']>;
-  nodeVersion: Scalars['String']['output'];
-  platform: Scalars['String']['output'];
-  totalMemory: Scalars['BigInt']['output'];
-  uptimeSeconds: Scalars['Int']['output'];
-};
-
-export type Task = {
-  __typename?: 'Task';
-  folder?: Maybe<Folder>;
-  id?: Maybe<Scalars['ID']['output']>;
-  name: Scalars['String']['output'];
-  startTime?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<Scalars['String']['output']>;
-  step?: Maybe<Scalars['Int']['output']>;
-  totalSteps?: Maybe<Scalars['Int']['output']>;
-};
-
 export enum ThemeMode {
   Auto = 'auto',
   Dark = 'dark',
   Light = 'light'
 }
-
-export type ThumbnailCompletion = {
-  __typename?: 'ThumbnailCompletion';
-  completeFiles: Scalars['Int']['output'];
-  incompleteFiles: Scalars['Int']['output'];
-  missingArtifacts: Scalars['Int']['output'];
-  totalArtifacts: Scalars['Int']['output'];
-  totalFiles: Scalars['Int']['output'];
-};
-
-export type ThumbnailVariant = {
-  __typename?: 'ThumbnailVariant';
-  format: Scalars['String']['output'];
-  mimeType: Scalars['String']['output'];
-  quality: Scalars['Int']['output'];
-  token: Scalars['String']['output'];
-  width: Scalars['Int']['output'];
-};
-
-export type User = {
-  __typename?: 'User';
-  commentPermissions?: Maybe<CommentPermissions>;
-  deleted?: Maybe<Scalars['Boolean']['output']>;
-  enabled?: Maybe<Scalars['Boolean']['output']>;
-  expiresAt?: Maybe<Scalars['DateTime']['output']>;
-  folder?: Maybe<Folder>;
-  folderId: Scalars['ID']['output'];
-  galleryPasscode?: Maybe<Scalars['String']['output']>;
-  gravatar?: Maybe<Scalars['String']['output']>;
-  hasGalleryPasscode: Scalars['Boolean']['output'];
-  id?: Maybe<Scalars['ID']['output']>;
-  lastAccess?: Maybe<Scalars['DateTime']['output']>;
-  linkMode?: Maybe<LinkMode>;
-  name?: Maybe<Scalars['String']['output']>;
-  ntfy?: Maybe<Scalars['String']['output']>;
-  ntfyEmail?: Maybe<Scalars['Boolean']['output']>;
-  userType?: Maybe<UserType>;
-  username?: Maybe<Scalars['String']['output']>;
-  uuid?: Maybe<Scalars['String']['output']>;
-};
-
-export type UserDevice = {
-  __typename?: 'UserDevice';
-  enabled: Scalars['Boolean']['output'];
-  id: Scalars['ID']['output'];
-  name?: Maybe<Scalars['String']['output']>;
-  notificationToken?: Maybe<Scalars['String']['output']>;
-  userId: Scalars['ID']['output'];
-};
 
 export enum UserType {
   Admin = 'Admin',
@@ -857,466 +145,629 @@ export enum UserType {
   User = 'User'
 }
 
-export type Video = FileInterface & {
-  __typename?: 'Video';
-  blurHash?: Maybe<Scalars['String']['output']>;
-  duration?: Maybe<Scalars['Float']['output']>;
-  fileCreated: Scalars['DateTime']['output'];
-  fileHash: Scalars['String']['output'];
-  fileLastModified: Scalars['DateTime']['output'];
-  fileSize: Scalars['BigInt']['output'];
-  flag?: Maybe<FileFlag>;
-  folder?: Maybe<Folder>;
-  folderId: Scalars['ID']['output'];
-  id: Scalars['ID']['output'];
-  imageHeight?: Maybe<Scalars['Int']['output']>;
-  imageRatio?: Maybe<Scalars['Float']['output']>;
-  imageWidth?: Maybe<Scalars['Int']['output']>;
-  latestComment?: Maybe<Scalars['DateTime']['output']>;
-  metadata?: Maybe<VideoMetadataSummary>;
-  name: Scalars['String']['output'];
-  rating?: Maybe<Scalars['Int']['output']>;
-  totalComments?: Maybe<Scalars['Int']['output']>;
-  type: FileType;
-};
+export type AppCommentHistoryCommentFragmentFragment = { id: string | null, comment: string | null, systemGenerated: boolean, timestamp: string, userId: string | null, file:
+    | { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+          | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+          | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+          | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+         | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null }
+    | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+          | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+          | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+          | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+         | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null, metadata: { Camera: string | null, Lens: string | null, Artist: string | null, DateTimeOriginal: string | null, DateTimeEdit: string | null, Aperture: number | null, ExposureTime: number | null, ISO: number | null, Width: number | null, Height: number | null, Rating: number | null } | null }
+    | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, duration: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+          | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+          | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+          | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+         | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null, metadata: { Bitrate: number | null, Duration: number | null, Format: string | null, VideoCodec: string | null, VideoCodecDescription: string | null, Width: number | null, Height: number | null, Framerate: number | null, AudioCodec: string | null, AudioCodecDescription: string | null } | null }
+   | null, user: { id: string | null, gravatar: string | null, name: string | null } | null };
 
-export type VideoAccelerationInfo = {
-  __typename?: 'VideoAccelerationInfo';
-  codecs: Array<Scalars['String']['output']>;
-  driver?: Maybe<Scalars['String']['output']>;
-  mode: Scalars['String']['output'];
-  reason: Scalars['String']['output'];
-};
+export type AppCommentHistoryUserFragmentFragment = { id: string | null, gravatar: string | null, name: string | null };
 
-export type VideoMetadataSummary = {
-  __typename?: 'VideoMetadataSummary';
-  AudioCodec?: Maybe<Scalars['String']['output']>;
-  AudioCodecDescription?: Maybe<Scalars['String']['output']>;
-  Bitrate?: Maybe<Scalars['Int']['output']>;
-  Duration?: Maybe<Scalars['Float']['output']>;
-  Format?: Maybe<Scalars['String']['output']>;
-  Framerate?: Maybe<Scalars['Float']['output']>;
-  Height?: Maybe<Scalars['Int']['output']>;
-  VideoCodec?: Maybe<Scalars['String']['output']>;
-  VideoCodecDescription?: Maybe<Scalars['String']['output']>;
-  Width?: Maybe<Scalars['Int']['output']>;
-};
+export type AppRecentUserFragmentFragment = { id: string | null, name: string | null, folderId: string, lastAccess: string | null, gravatar: string | null, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null };
 
-export type AppCommentHistoryCommentFragmentFragment = { __typename?: 'Comment', id?: string | null, comment?: string | null, systemGenerated: boolean, timestamp: string, userId?: string | null, file?: { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null, metadata?: { __typename?: 'ImageMetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null, Width?: number | null, Height?: number | null, Rating?: number | null } | null } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, duration?: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null, metadata?: { __typename?: 'VideoMetadataSummary', Bitrate?: number | null, Duration?: number | null, Format?: string | null, VideoCodec?: string | null, VideoCodecDescription?: string | null, Width?: number | null, Height?: number | null, Framerate?: number | null, AudioCodec?: string | null, AudioCodecDescription?: string | null } | null } | null, user?: { __typename?: 'User', id?: string | null, gravatar?: string | null, name?: string | null } | null };
+type AppSearchFileFragment_File_Fragment = { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null };
 
-export type AppCommentHistoryUserFragmentFragment = { __typename?: 'User', id?: string | null, gravatar?: string | null, name?: string | null };
+type AppSearchFileFragment_Image_Fragment = { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null, metadata: { Camera: string | null, Lens: string | null, Artist: string | null, DateTimeOriginal: string | null, DateTimeEdit: string | null, Aperture: number | null, ExposureTime: number | null, ISO: number | null, Width: number | null, Height: number | null, Rating: number | null } | null };
 
-export type AppRecentUserFragmentFragment = { __typename?: 'User', id?: string | null, name?: string | null, folderId: string, lastAccess?: string | null, gravatar?: string | null, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null };
+type AppSearchFileFragment_Video_Fragment = { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, duration: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null, metadata: { Bitrate: number | null, Duration: number | null, Format: string | null, VideoCodec: string | null, VideoCodecDescription: string | null, Width: number | null, Height: number | null, Framerate: number | null, AudioCodec: string | null, AudioCodecDescription: string | null } | null };
 
-type AppSearchFileFragment_File_Fragment = { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null };
+export type AppSearchFileFragmentFragment =
+  | AppSearchFileFragment_File_Fragment
+  | AppSearchFileFragment_Image_Fragment
+  | AppSearchFileFragment_Video_Fragment
+;
 
-type AppSearchFileFragment_Image_Fragment = { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null, metadata?: { __typename?: 'ImageMetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null, Width?: number | null, Height?: number | null, Rating?: number | null } | null };
+export type AppSearchFolderFragmentFragment = { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+    | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+    | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+    | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+   | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null };
 
-type AppSearchFileFragment_Video_Fragment = { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, duration?: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null, metadata?: { __typename?: 'VideoMetadataSummary', Bitrate?: number | null, Duration?: number | null, Format?: string | null, VideoCodec?: string | null, VideoCodecDescription?: string | null, Width?: number | null, Height?: number | null, Framerate?: number | null, AudioCodec?: string | null, AudioCodecDescription?: string | null } | null };
+type AppViewFolderFileFragment_File_Fragment = { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string };
 
-export type AppSearchFileFragmentFragment = AppSearchFileFragment_File_Fragment | AppSearchFileFragment_Image_Fragment | AppSearchFileFragment_Video_Fragment;
+type AppViewFolderFileFragment_Image_Fragment = { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Camera: string | null, Lens: string | null, Artist: string | null, DateTimeOriginal: string | null, DateTimeEdit: string | null, Aperture: number | null, ExposureTime: number | null, ISO: number | null, Width: number | null, Height: number | null, Rating: number | null } | null };
 
-export type AppSearchFolderFragmentFragment = { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null };
+type AppViewFolderFileFragment_Video_Fragment = { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, duration: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Bitrate: number | null, Duration: number | null, Format: string | null, VideoCodec: string | null, VideoCodecDescription: string | null, Width: number | null, Height: number | null, Framerate: number | null, AudioCodec: string | null, AudioCodecDescription: string | null } | null };
 
-type AppViewFolderFileFragment_File_Fragment = { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string };
+export type AppViewFolderFileFragmentFragment =
+  | AppViewFolderFileFragment_File_Fragment
+  | AppViewFolderFileFragment_Image_Fragment
+  | AppViewFolderFileFragment_Video_Fragment
+;
 
-type AppViewFolderFileFragment_Image_Fragment = { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'ImageMetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null, Width?: number | null, Height?: number | null, Rating?: number | null } | null };
+export type AppViewFolderSubFolderFragmentFragment = { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, users: Array<{ id: string | null, name: string | null, enabled: boolean | null, commentPermissions: CommentPermissions | null, gravatar: string | null }> | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+    | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+    | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+    | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+   | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null };
 
-type AppViewFolderFileFragment_Video_Fragment = { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, duration?: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'VideoMetadataSummary', Bitrate?: number | null, Duration?: number | null, Format?: string | null, VideoCodec?: string | null, VideoCodecDescription?: string | null, Width?: number | null, Height?: number | null, Framerate?: number | null, AudioCodec?: string | null, AudioCodecDescription?: string | null } | null };
+export type BrandingFragmentFragment = { id: string, name: string | null, mode: ThemeMode | null, primaryColor: PrimaryColor | null, logoUrl: string | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown };
 
-export type AppViewFolderFileFragmentFragment = AppViewFolderFileFragment_File_Fragment | AppViewFolderFileFragment_Image_Fragment | AppViewFolderFileFragment_Video_Fragment;
+type FileFragment_File_Fragment = { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string };
 
-export type AppViewFolderSubFolderFragmentFragment = { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, users?: Array<{ __typename?: 'User', id?: string | null, name?: string | null, enabled?: boolean | null, commentPermissions?: CommentPermissions | null, gravatar?: string | null }> | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null };
+type FileFragment_Image_Fragment = { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Camera: string | null, Lens: string | null, Artist: string | null, DateTimeOriginal: string | null, DateTimeEdit: string | null, Aperture: number | null, ExposureTime: number | null, ISO: number | null, Width: number | null, Height: number | null, Rating: number | null } | null };
 
-export type BrandingFragmentFragment = { __typename?: 'Branding', id: string, name?: string | null, mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, logoUrl?: string | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null };
+type FileFragment_Video_Fragment = { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, duration: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Bitrate: number | null, Duration: number | null, Format: string | null, VideoCodec: string | null, VideoCodecDescription: string | null, Width: number | null, Height: number | null, Framerate: number | null, AudioCodec: string | null, AudioCodecDescription: string | null } | null };
 
-type FileFragment_File_Fragment = { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string };
+export type FileFragmentFragment =
+  | FileFragment_File_Fragment
+  | FileFragment_Image_Fragment
+  | FileFragment_Video_Fragment
+;
 
-type FileFragment_Image_Fragment = { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'ImageMetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null, Width?: number | null, Height?: number | null, Rating?: number | null } | null };
+export type FolderBannerFragmentFragment = { bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null };
 
-type FileFragment_Video_Fragment = { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, duration?: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'VideoMetadataSummary', Bitrate?: number | null, Duration?: number | null, Format?: string | null, VideoCodec?: string | null, VideoCodecDescription?: string | null, Width?: number | null, Height?: number | null, Framerate?: number | null, AudioCodec?: string | null, AudioCodecDescription?: string | null } | null };
+export type FolderFragmentFragment = { __typename: 'Folder', brandingId: string | null, permissions: FolderPermissions | null, id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, branding: { id: string, name: string | null, mode: ThemeMode | null, primaryColor: PrimaryColor | null, logoUrl: string | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+    | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+    | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+    | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+   | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null };
 
-export type FileFragmentFragment = FileFragment_File_Fragment | FileFragment_Image_Fragment | FileFragment_Video_Fragment;
+export type FolderPlaceholderIdentityFragmentFragment = { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null };
 
-export type FolderBannerFragmentFragment = { __typename?: 'Folder', bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null };
+export type HeroImageFragmentFragment = { heroImage:
+    | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+    | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+    | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+   | null };
 
-export type FolderFragmentFragment = { __typename: 'Folder', brandingId?: string | null, permissions?: FolderPermissions | null, id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, branding?: { __typename?: 'Branding', id: string, name?: string | null, mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, logoUrl?: string | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null };
+export type ImageMetadataFragmentFragment = { metadata: { Camera: string | null, Lens: string | null, Artist: string | null, DateTimeOriginal: string | null, DateTimeEdit: string | null, Aperture: number | null, ExposureTime: number | null, ISO: number | null, Width: number | null, Height: number | null, Rating: number | null } | null };
 
-export type FolderPlaceholderIdentityFragmentFragment = { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null };
+export type MinimumFolderFragmentFragment = { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+    | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+    | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+    | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+   | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null };
 
-export type HeroImageFragmentFragment = { __typename?: 'Folder', heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null };
+export type ThumbnailVariantFragmentFragment = { token: string, width: number, format: string, mimeType: string, quality: number };
 
-export type ImageMetadataFragmentFragment = { __typename?: 'Image', metadata?: { __typename?: 'ImageMetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null, Width?: number | null, Height?: number | null, Rating?: number | null } | null };
-
-export type MinimumFolderFragmentFragment = { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null };
-
-export type ThumbnailVariantFragmentFragment = { __typename?: 'ThumbnailVariant', token: string, width: number, format: string, mimeType: string, quality: number };
-
-export type TreeSizeFragmentFragment = { __typename?: 'Folder', id: string, name: string, parentId?: string | null, totalFiles: number, totalFolders: number, totalSize: string, totalDirectSize: string };
+export type TreeSizeFragmentFragment = { id: string, name: string, parentId: string | null, totalFiles: number, totalFolders: number, totalSize: string, totalDirectSize: string };
 
 export type TreeSizeQueryQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
+  folderId: string | number;
 }>;
 
 
-export type TreeSizeQueryQuery = { __typename?: 'Query', folder: { __typename?: 'Folder', id: string, name: string, parentId?: string | null, totalFiles: number, totalFolders: number, totalSize: string, totalDirectSize: string, parents: Array<{ __typename?: 'Folder', id: string, name: string, parentId?: string | null }>, files: Array<{ __typename?: 'File', id: string, name: string, type: FileType, fileSize: string } | { __typename?: 'Image', id: string, name: string, type: FileType, fileSize: string } | { __typename?: 'Video', id: string, name: string, type: FileType, fileSize: string }>, subFolders: Array<{ __typename?: 'Folder', id: string, name: string, parentId?: string | null, totalFiles: number, totalFolders: number, totalSize: string, totalDirectSize: string, subFolders: Array<{ __typename?: 'Folder', id: string, name: string, parentId?: string | null, totalFiles: number, totalFolders: number, totalSize: string, totalDirectSize: string }> }> } };
+export type TreeSizeQueryQuery = { folder: { id: string, name: string, parentId: string | null, totalFiles: number, totalFolders: number, totalSize: string, totalDirectSize: string, parents: Array<{ id: string, name: string, parentId: string | null }>, files: Array<
+      | { id: string, name: string, type: FileType, fileSize: string }
+      | { id: string, name: string, type: FileType, fileSize: string }
+      | { id: string, name: string, type: FileType, fileSize: string }
+    >, subFolders: Array<{ id: string, name: string, parentId: string | null, totalFiles: number, totalFolders: number, totalSize: string, totalDirectSize: string, subFolders: Array<{ id: string, name: string, parentId: string | null, totalFiles: number, totalFolders: number, totalSize: string, totalDirectSize: string }> }> } };
 
-export type UserFragmentFragment = { __typename?: 'User', id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, folderId: string, lastAccess?: string | null, commentPermissions?: CommentPermissions | null, linkMode?: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode?: string | null, expiresAt?: string | null, gravatar?: string | null, ntfy?: string | null, ntfyEmail?: boolean | null, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null };
+export type UserFragmentFragment = { id: string | null, name: string | null, username: string | null, enabled: boolean | null, uuid: string | null, folderId: string, lastAccess: string | null, commentPermissions: CommentPermissions | null, linkMode: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode: string | null, expiresAt: string | null, gravatar: string | null, ntfy: string | null, ntfyEmail: boolean | null, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null };
 
-export type VideoMetadataFragmentFragment = { __typename?: 'Video', metadata?: { __typename?: 'VideoMetadataSummary', Bitrate?: number | null, Duration?: number | null, Format?: string | null, VideoCodec?: string | null, VideoCodecDescription?: string | null, Width?: number | null, Height?: number | null, Framerate?: number | null, AudioCodec?: string | null, AudioCodecDescription?: string | null } | null };
+export type VideoMetadataFragmentFragment = { metadata: { Bitrate: number | null, Duration: number | null, Format: string | null, VideoCodec: string | null, VideoCodecDescription: string | null, Width: number | null, Height: number | null, Framerate: number | null, AudioCodec: string | null, AudioCodecDescription: string | null } | null };
 
 export type AddCommentMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-  rating?: InputMaybe<Scalars['Int']['input']>;
-  flag?: InputMaybe<FileFlag>;
-  comment?: InputMaybe<Scalars['String']['input']>;
-  nickName?: InputMaybe<Scalars['String']['input']>;
+  id: string | number;
+  rating?: number | null | undefined;
+  flag?: FileFlag | null | undefined;
+  comment?: string | null | undefined;
+  nickName?: string | null | undefined;
 }>;
 
 
-export type AddCommentMutation = { __typename?: 'Mutation', addComment: { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'ImageMetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null, Width?: number | null, Height?: number | null, Rating?: number | null } | null } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, duration?: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'VideoMetadataSummary', Bitrate?: number | null, Duration?: number | null, Format?: string | null, VideoCodec?: string | null, VideoCodecDescription?: string | null, Width?: number | null, Height?: number | null, Framerate?: number | null, AudioCodec?: string | null, AudioCodecDescription?: string | null } | null } };
+export type AddCommentMutation = { addComment:
+    | { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string }
+    | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Camera: string | null, Lens: string | null, Artist: string | null, DateTimeOriginal: string | null, DateTimeEdit: string | null, Aperture: number | null, ExposureTime: number | null, ISO: number | null, Width: number | null, Height: number | null, Rating: number | null } | null }
+    | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, duration: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Bitrate: number | null, Duration: number | null, Format: string | null, VideoCodec: string | null, VideoCodecDescription: string | null, Width: number | null, Height: number | null, Framerate: number | null, AudioCodec: string | null, AudioCodecDescription: string | null } | null }
+   };
 
 export type DeleteBrandingMutationMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
+  id: string | number;
 }>;
 
 
-export type DeleteBrandingMutationMutation = { __typename?: 'Mutation', deleteBranding: boolean };
+export type DeleteBrandingMutationMutation = { deleteBranding: boolean };
 
 export type DeleteUserMutationVariables = Exact<{
-  id: Scalars['ID']['input'];
+  id: string | number;
 }>;
 
 
-export type DeleteUserMutation = { __typename?: 'Mutation', deleteUser: boolean };
+export type DeleteUserMutation = { deleteUser: boolean };
 
 export type EditAdminUserMutationMutationVariables = Exact<{
-  id?: InputMaybe<Scalars['ID']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  username?: InputMaybe<Scalars['String']['input']>;
-  password?: InputMaybe<Scalars['String']['input']>;
-  enabled?: InputMaybe<Scalars['Boolean']['input']>;
-  folderId?: InputMaybe<Scalars['ID']['input']>;
-  commentPermissions?: InputMaybe<CommentPermissions>;
-  ntfy?: InputMaybe<Scalars['String']['input']>;
-  ntfyEmail?: InputMaybe<Scalars['Boolean']['input']>;
+  id?: string | number | null | undefined;
+  name?: string | null | undefined;
+  username?: string | null | undefined;
+  password?: string | null | undefined;
+  enabled?: boolean | null | undefined;
+  folderId?: string | number | null | undefined;
+  commentPermissions?: CommentPermissions | null | undefined;
+  ntfy?: string | null | undefined;
+  ntfyEmail?: boolean | null | undefined;
 }>;
 
 
-export type EditAdminUserMutationMutation = { __typename?: 'Mutation', editAdminUser: { __typename?: 'User', id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, folderId: string, lastAccess?: string | null, commentPermissions?: CommentPermissions | null, linkMode?: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode?: string | null, expiresAt?: string | null, gravatar?: string | null, ntfy?: string | null, ntfyEmail?: boolean | null, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null } };
+export type EditAdminUserMutationMutation = { editAdminUser: { id: string | null, name: string | null, username: string | null, enabled: boolean | null, uuid: string | null, folderId: string, lastAccess: string | null, commentPermissions: CommentPermissions | null, linkMode: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode: string | null, expiresAt: string | null, gravatar: string | null, ntfy: string | null, ntfyEmail: boolean | null, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null } };
 
 export type EditBrandingMutationMutationVariables = Exact<{
-  id?: InputMaybe<Scalars['ID']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  mode?: InputMaybe<ThemeMode>;
-  primaryColor?: InputMaybe<PrimaryColor>;
-  logoUrl?: InputMaybe<Scalars['String']['input']>;
-  headingFontKey?: InputMaybe<HeadingFontKey>;
-  availableViews?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
-  defaultView?: InputMaybe<Scalars['String']['input']>;
-  galleryLayout?: InputMaybe<GalleryLayout>;
-  defaultFileSort?: InputMaybe<Scalars['String']['input']>;
-  thumbnailSize?: InputMaybe<Scalars['Int']['input']>;
-  thumbnailSpacing?: InputMaybe<Scalars['Int']['input']>;
-  thumbnailBorderRadius?: InputMaybe<Scalars['Int']['input']>;
-  headingFontSize?: InputMaybe<Scalars['Int']['input']>;
-  headingAlignment?: InputMaybe<HeadingAlignment>;
-  footerTitle?: InputMaybe<Scalars['String']['input']>;
-  footerUrl?: InputMaybe<Scalars['String']['input']>;
-  socialLinks?: InputMaybe<Scalars['JSON']['input']>;
+  id?: string | number | null | undefined;
+  name?: string | null | undefined;
+  mode?: ThemeMode | null | undefined;
+  primaryColor?: PrimaryColor | null | undefined;
+  logoUrl?: string | null | undefined;
+  headingFontKey?: HeadingFontKey | null | undefined;
+  availableViews?: Array<string> | string | null | undefined;
+  defaultView?: string | null | undefined;
+  galleryLayout?: GalleryLayout | null | undefined;
+  defaultFileSort?: string | null | undefined;
+  thumbnailSize?: number | null | undefined;
+  thumbnailSpacing?: number | null | undefined;
+  thumbnailBorderRadius?: number | null | undefined;
+  headingFontSize?: number | null | undefined;
+  headingAlignment?: HeadingAlignment | null | undefined;
+  footerTitle?: string | null | undefined;
+  footerUrl?: string | null | undefined;
+  socialLinks?: unknown;
 }>;
 
 
-export type EditBrandingMutationMutation = { __typename?: 'Mutation', editBranding: { __typename?: 'Branding', id: string, name?: string | null, mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, logoUrl?: string | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null, folders: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null }> } };
+export type EditBrandingMutationMutation = { editBranding: { id: string, name: string | null, mode: ThemeMode | null, primaryColor: PrimaryColor | null, logoUrl: string | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown, folders: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null }> } };
 
 export type EditFolderMutationVariables = Exact<{
-  folderId: Scalars['ID']['input'];
-  heroImageId?: InputMaybe<Scalars['ID']['input']>;
-  bannerImageId?: InputMaybe<Scalars['ID']['input']>;
-  bannerSize?: InputMaybe<BannerSize>;
-  bannerTextHAlign?: InputMaybe<BannerTextHAlign>;
-  bannerTextVAlign?: InputMaybe<BannerTextVAlign>;
-  title?: InputMaybe<Scalars['String']['input']>;
-  subtitle?: InputMaybe<Scalars['String']['input']>;
+  folderId: string | number;
+  heroImageId?: string | number | null | undefined;
+  bannerImageId?: string | number | null | undefined;
+  bannerSize?: BannerSize | null | undefined;
+  bannerTextHAlign?: BannerTextHAlign | null | undefined;
+  bannerTextVAlign?: BannerTextVAlign | null | undefined;
+  title?: string | null | undefined;
+  subtitle?: string | null | undefined;
 }>;
 
 
-export type EditFolderMutation = { __typename?: 'Mutation', editFolder: { __typename: 'Folder', brandingId?: string | null, permissions?: FolderPermissions | null, id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, branding?: { __typename?: 'Branding', id: string, name?: string | null, mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, logoUrl?: string | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } };
+export type EditFolderMutation = { editFolder: { __typename: 'Folder', brandingId: string | null, permissions: FolderPermissions | null, id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, branding: { id: string, name: string | null, mode: ThemeMode | null, primaryColor: PrimaryColor | null, logoUrl: string | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } };
 
 export type EditServerSettingsMutationMutationVariables = Exact<{
   input: EditServerSettingsInput;
 }>;
 
 
-export type EditServerSettingsMutationMutation = { __typename?: 'Mutation', editServerSettings: { __typename?: 'ServerSettings', useOriginalsForLightbox: boolean, thumbnailJpegQuality: number, thumbnailVariants: Array<{ __typename?: 'ThumbnailVariant', token: string, width: number, format: string, mimeType: string, quality: number }> } };
+export type EditServerSettingsMutationMutation = { editServerSettings: { useOriginalsForLightbox: boolean, thumbnailJpegQuality: number, thumbnailVariants: Array<{ token: string, width: number, format: string, mimeType: string, quality: number }> } };
 
 export type EditUserDeviceMutationMutationVariables = Exact<{
-  token: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  userId: Scalars['ID']['input'];
-  enabled: Scalars['Boolean']['input'];
+  token: string;
+  name: string;
+  userId: string | number;
+  enabled: boolean;
 }>;
 
 
-export type EditUserDeviceMutationMutation = { __typename?: 'Mutation', editUserDevice: { __typename?: 'UserDevice', userId: string, enabled: boolean, name?: string | null, notificationToken?: string | null } };
+export type EditUserDeviceMutationMutation = { editUserDevice: { userId: string, enabled: boolean, name: string | null, notificationToken: string | null } };
 
 export type EditUserMutationMutationVariables = Exact<{
-  id?: InputMaybe<Scalars['ID']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  username?: InputMaybe<Scalars['String']['input']>;
-  uuid?: InputMaybe<Scalars['String']['input']>;
-  enabled?: InputMaybe<Scalars['Boolean']['input']>;
-  folderId?: InputMaybe<Scalars['ID']['input']>;
-  commentPermissions?: InputMaybe<CommentPermissions>;
-  linkMode?: InputMaybe<LinkMode>;
-  galleryPasscode?: InputMaybe<Scalars['String']['input']>;
-  expiresAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: string | number | null | undefined;
+  name?: string | null | undefined;
+  username?: string | null | undefined;
+  uuid?: string | null | undefined;
+  enabled?: boolean | null | undefined;
+  folderId?: string | number | null | undefined;
+  commentPermissions?: CommentPermissions | null | undefined;
+  linkMode?: LinkMode | null | undefined;
+  galleryPasscode?: string | null | undefined;
+  expiresAt?: string | null | undefined;
 }>;
 
 
-export type EditUserMutationMutation = { __typename?: 'Mutation', editUser: { __typename?: 'User', id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, folderId: string, lastAccess?: string | null, commentPermissions?: CommentPermissions | null, linkMode?: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode?: string | null, expiresAt?: string | null, gravatar?: string | null, ntfy?: string | null, ntfyEmail?: boolean | null, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null } };
+export type EditUserMutationMutation = { editUser: { id: string | null, name: string | null, username: string | null, enabled: boolean | null, uuid: string | null, folderId: string, lastAccess: string | null, commentPermissions: CommentPermissions | null, linkMode: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode: string | null, expiresAt: string | null, gravatar: string | null, ntfy: string | null, ntfyEmail: boolean | null, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null } };
 
 export type GenerateThumbnailsQueryMutationVariables = Exact<{
-  folderId: Scalars['ID']['input'];
-  mediaType?: InputMaybe<MediaTypeFilter>;
+  folderId: string | number;
+  mediaType?: MediaTypeFilter | null | undefined;
 }>;
 
 
-export type GenerateThumbnailsQueryMutation = { __typename?: 'Mutation', generateThumbnails: boolean };
+export type GenerateThumbnailsQueryMutation = { generateThumbnails: boolean };
 
 export type GenerateZipMutationVariables = Exact<{
-  folderId: Scalars['ID']['input'];
+  folderId: string | number;
 }>;
 
 
-export type GenerateZipMutation = { __typename?: 'Mutation', generateZip: string };
+export type GenerateZipMutation = { generateZip: string };
 
 export type LoginMutationVariables = Exact<{
-  username: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  username: string;
+  password: string;
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', auth: string };
+export type LoginMutation = { auth: string };
 
 export type RecordFolderVisitMutationVariables = Exact<{
-  folderId: Scalars['ID']['input'];
+  folderId: string | number;
 }>;
 
 
-export type RecordFolderVisitMutation = { __typename?: 'Mutation', recordFolderVisit: boolean };
+export type RecordFolderVisitMutation = { recordFolderVisit: boolean };
 
 export type RenameFolderMutationVariables = Exact<{
-  folderId: Scalars['ID']['input'];
-  oldPath: Scalars['String']['input'];
-  newPath: Scalars['String']['input'];
+  folderId: string | number;
+  oldPath: string;
+  newPath: string;
 }>;
 
 
-export type RenameFolderMutation = { __typename?: 'Mutation', renameFolder: { __typename: 'Folder', brandingId?: string | null, permissions?: FolderPermissions | null, id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, branding?: { __typename?: 'Branding', id: string, name?: string | null, mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, logoUrl?: string | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } };
+export type RenameFolderMutation = { renameFolder: { __typename: 'Folder', brandingId: string | null, permissions: FolderPermissions | null, id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, branding: { id: string, name: string | null, mode: ThemeMode | null, primaryColor: PrimaryColor | null, logoUrl: string | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } };
 
 export type RescanFolderMutationVariables = Exact<{
-  folderId: Scalars['ID']['input'];
+  folderId: string | number;
 }>;
 
 
-export type RescanFolderMutation = { __typename?: 'Mutation', rescanFolder: boolean };
+export type RescanFolderMutation = { rescanFolder: boolean };
 
 export type RunBenchmarkMutationMutationVariables = Exact<{
-  assetPath?: InputMaybe<Scalars['String']['input']>;
+  assetPath?: string | null | undefined;
 }>;
 
 
-export type RunBenchmarkMutationMutation = { __typename?: 'Mutation', runBenchmark: { __typename?: 'BenchmarkResult', totalMs: number, appVersion: string, imageCount: number, videoCount: number, assetSourceUrl: string, assetPath: string, cpuCount: number, uvThreadpoolSize: string, videoAccelerationMode: string, videoAccelerationReason: string, steps: Array<{ __typename?: 'NamedBenchmarkStep', key: string, name: string, status: string, ms?: number | null, skippedReason?: string | null, outputBytes?: string | null, details?: string | null, includedInTotal: boolean }> } };
+export type RunBenchmarkMutationMutation = { runBenchmark: { totalMs: number, appVersion: string, imageCount: number, videoCount: number, assetSourceUrl: string, assetPath: string, cpuCount: number, uvThreadpoolSize: string, videoAccelerationMode: string, videoAccelerationReason: string, steps: Array<{ key: string, name: string, status: string, ms: number | null, skippedReason: string | null, outputBytes: string | null, details: string | null, includedInTotal: boolean }> } };
 
 export type SetFolderBrandingMutationMutationVariables = Exact<{
-  folderId: Scalars['ID']['input'];
-  brandingId?: InputMaybe<Scalars['ID']['input']>;
+  folderId: string | number;
+  brandingId?: string | number | null | undefined;
 }>;
 
 
-export type SetFolderBrandingMutationMutation = { __typename?: 'Mutation', setFolderBranding: { __typename: 'Folder', brandingId?: string | null, permissions?: FolderPermissions | null, id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, branding?: { __typename?: 'Branding', id: string, name?: string | null, mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, logoUrl?: string | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } };
+export type SetFolderBrandingMutationMutation = { setFolderBranding: { __typename: 'Folder', brandingId: string | null, permissions: FolderPermissions | null, id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, branding: { id: string, name: string | null, mode: ThemeMode | null, primaryColor: PrimaryColor | null, logoUrl: string | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } };
 
 export type AccessLogsQueryQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
-  userId?: InputMaybe<Scalars['ID']['input']>;
-  includeChildren?: InputMaybe<Scalars['Boolean']['input']>;
-  userType?: InputMaybe<UserType>;
+  folderId: string | number;
+  userId?: string | number | null | undefined;
+  includeChildren?: boolean | null | undefined;
+  userType?: UserType | null | undefined;
 }>;
 
 
-export type AccessLogsQueryQuery = { __typename?: 'Query', accessLogs: Array<{ __typename?: 'AccessLog', id: string, timestamp: string, type: AccessType, userId?: string | null, folderId?: string | null, ipAddress?: string | null, userAgent?: string | null, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null }> };
+export type AccessLogsQueryQuery = { accessLogs: Array<{ id: string, timestamp: string, type: AccessType, userId: string | null, folderId: string | null, ipAddress: string | null, userAgent: string | null, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null }> };
 
 export type CommentHistoryQueryQueryVariables = Exact<{
-  fileId?: InputMaybe<Scalars['ID']['input']>;
-  folderId?: InputMaybe<Scalars['ID']['input']>;
+  fileId?: string | number | null | undefined;
+  folderId?: string | number | null | undefined;
 }>;
 
 
-export type CommentHistoryQueryQuery = { __typename?: 'Query', comments: Array<{ __typename?: 'Comment', id?: string | null, comment?: string | null, systemGenerated: boolean, timestamp: string, userId?: string | null, file?: { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null, metadata?: { __typename?: 'ImageMetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null, Width?: number | null, Height?: number | null, Rating?: number | null } | null } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, duration?: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null, metadata?: { __typename?: 'VideoMetadataSummary', Bitrate?: number | null, Duration?: number | null, Format?: string | null, VideoCodec?: string | null, VideoCodecDescription?: string | null, Width?: number | null, Height?: number | null, Framerate?: number | null, AudioCodec?: string | null, AudioCodecDescription?: string | null } | null } | null, user?: { __typename?: 'User', id?: string | null, gravatar?: string | null, name?: string | null } | null }> };
+export type CommentHistoryQueryQuery = { comments: Array<{ id: string | null, comment: string | null, systemGenerated: boolean, timestamp: string, userId: string | null, file:
+      | { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+            | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+           | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+            | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+           | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null, metadata: { Camera: string | null, Lens: string | null, Artist: string | null, DateTimeOriginal: string | null, DateTimeEdit: string | null, Aperture: number | null, ExposureTime: number | null, ISO: number | null, Width: number | null, Height: number | null, Rating: number | null } | null }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, duration: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+            | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+           | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null, metadata: { Bitrate: number | null, Duration: number | null, Format: string | null, VideoCodec: string | null, VideoCodecDescription: string | null, Width: number | null, Height: number | null, Framerate: number | null, AudioCodec: string | null, AudioCodecDescription: string | null } | null }
+     | null, user: { id: string | null, gravatar: string | null, name: string | null } | null }> };
 
 export type DashboardCommentsQueryQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-  limit?: InputMaybe<Scalars['Int']['input']>;
+  id: string | number;
+  limit?: number | null | undefined;
 }>;
 
 
-export type DashboardCommentsQueryQuery = { __typename?: 'Query', comments: Array<{ __typename?: 'Comment', id?: string | null, comment?: string | null, systemGenerated: boolean, timestamp: string, userId?: string | null, file?: { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null, metadata?: { __typename?: 'ImageMetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null, Width?: number | null, Height?: number | null, Rating?: number | null } | null } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, duration?: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null, metadata?: { __typename?: 'VideoMetadataSummary', Bitrate?: number | null, Duration?: number | null, Format?: string | null, VideoCodec?: string | null, VideoCodecDescription?: string | null, Width?: number | null, Height?: number | null, Framerate?: number | null, AudioCodec?: string | null, AudioCodecDescription?: string | null } | null } | null, user?: { __typename?: 'User', id?: string | null, gravatar?: string | null, name?: string | null } | null }> };
+export type DashboardCommentsQueryQuery = { comments: Array<{ id: string | null, comment: string | null, systemGenerated: boolean, timestamp: string, userId: string | null, file:
+      | { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+            | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+           | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+            | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+           | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null, metadata: { Camera: string | null, Lens: string | null, Artist: string | null, DateTimeOriginal: string | null, DateTimeEdit: string | null, Aperture: number | null, ExposureTime: number | null, ISO: number | null, Width: number | null, Height: number | null, Rating: number | null } | null }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, duration: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+            | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+            | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+           | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null, metadata: { Bitrate: number | null, Duration: number | null, Format: string | null, VideoCodec: string | null, VideoCodecDescription: string | null, Width: number | null, Height: number | null, Framerate: number | null, AudioCodec: string | null, AudioCodecDescription: string | null } | null }
+     | null, user: { id: string | null, gravatar: string | null, name: string | null } | null }> };
 
 export type DashboardGalleriesQueryQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
+  id: string | number;
 }>;
 
 
-export type DashboardGalleriesQueryQuery = { __typename?: 'Query', folder: { __typename?: 'Folder', id: string, branding?: { __typename?: 'Branding', id: string, name?: string | null, mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, logoUrl?: string | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null } | null, subFolders: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null }> } };
+export type DashboardGalleriesQueryQuery = { folder: { id: string, branding: { id: string, name: string | null, mode: ThemeMode | null, primaryColor: PrimaryColor | null, logoUrl: string | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown } | null, subFolders: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null }> } };
 
 export type DashboardStatsQueryQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
+  folderId: string | number;
 }>;
 
 
-export type DashboardStatsQueryQuery = { __typename?: 'Query', dashboardStats: { __typename?: 'DashboardStats', totalFiles: number, totalImages: number, totalFolders: number, totalSize: string } };
+export type DashboardStatsQueryQuery = { dashboardStats: { totalFiles: number, totalImages: number, totalFolders: number, totalSize: string } };
 
 export type DashboardUpdateInfoQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type DashboardUpdateInfoQueryQuery = { __typename?: 'Query', dashboardUpdateInfo: { __typename?: 'DashboardUpdateInfo', version: string, latest: string } };
+export type DashboardUpdateInfoQueryQuery = { dashboardUpdateInfo: { version: string, latest: string } };
 
 export type FolderFilesQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
-  includeSubfolders?: InputMaybe<Scalars['Boolean']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
+  folderId: string | number;
+  includeSubfolders?: boolean | null | undefined;
+  limit?: number | null | undefined;
 }>;
 
 
-export type FolderFilesQuery = { __typename?: 'Query', folderFiles: { __typename?: 'FolderFilesResult', totalAvailable: number, totalReturned: number, truncated: boolean, files: Array<{ __typename?: 'FolderFileExport', relativePath: string, file: { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'ImageMetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null, Width?: number | null, Height?: number | null, Rating?: number | null } | null } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, duration?: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'VideoMetadataSummary', Bitrate?: number | null, Duration?: number | null, Format?: string | null, VideoCodec?: string | null, VideoCodecDescription?: string | null, Width?: number | null, Height?: number | null, Framerate?: number | null, AudioCodec?: string | null, AudioCodecDescription?: string | null } | null } }> } };
+export type FolderFilesQuery = { folderFiles: { totalAvailable: number, totalReturned: number, truncated: boolean, files: Array<{ relativePath: string, file:
+        | { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Camera: string | null, Lens: string | null, Artist: string | null, DateTimeOriginal: string | null, DateTimeEdit: string | null, Aperture: number | null, ExposureTime: number | null, ISO: number | null, Width: number | null, Height: number | null, Rating: number | null } | null }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, duration: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Bitrate: number | null, Duration: number | null, Format: string | null, VideoCodec: string | null, VideoCodecDescription: string | null, Width: number | null, Height: number | null, Framerate: number | null, AudioCodec: string | null, AudioCodecDescription: string | null } | null }
+       }> } };
 
 export type FolderPlaceholderIdentityQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
+  folderId: string | number;
 }>;
 
 
-export type FolderPlaceholderIdentityQuery = { __typename?: 'Query', folder: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null } };
+export type FolderPlaceholderIdentityQuery = { folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null } };
 
 export type FolderPlaceholderQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
+  folderId: string | number;
 }>;
 
 
-export type FolderPlaceholderQuery = { __typename?: 'Query', folder: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } };
+export type FolderPlaceholderQuery = { folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } };
 
 export type GenerateThumbnailsStatsQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
+  folderId: string | number;
 }>;
 
 
-export type GenerateThumbnailsStatsQuery = { __typename?: 'Query', folder: { __typename: 'Folder', brandingId?: string | null, permissions?: FolderPermissions | null, id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, thumbnailCompletion: { __typename?: 'ThumbnailCompletion', totalFiles: number, incompleteFiles: number, missingArtifacts: number }, branding?: { __typename?: 'Branding', id: string, name?: string | null, mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, logoUrl?: string | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } };
+export type GenerateThumbnailsStatsQuery = { folder: { __typename: 'Folder', brandingId: string | null, permissions: FolderPermissions | null, id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, thumbnailCompletion: { totalFiles: number, incompleteFiles: number, missingArtifacts: number }, branding: { id: string, name: string | null, mode: ThemeMode | null, primaryColor: PrimaryColor | null, logoUrl: string | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } };
 
 export type ManageFolderQueryQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
-  includeParents: Scalars['Boolean']['input'];
-  includeChildren: Scalars['Boolean']['input'];
+  folderId: string | number;
+  includeParents: boolean;
+  includeChildren: boolean;
 }>;
 
 
-export type ManageFolderQueryQuery = { __typename?: 'Query', folder: { __typename: 'Folder', brandingId?: string | null, permissions?: FolderPermissions | null, id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, branding?: { __typename?: 'Branding', id: string, name?: string | null, mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, logoUrl?: string | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null }, users: Array<{ __typename?: 'User', folderId: string, id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, lastAccess?: string | null, commentPermissions?: CommentPermissions | null, linkMode?: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode?: string | null, expiresAt?: string | null, gravatar?: string | null, ntfy?: string | null, ntfyEmail?: boolean | null, folder?: { __typename: 'Folder', brandingId?: string | null, permissions?: FolderPermissions | null, id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, branding?: { __typename?: 'Branding', id: string, name?: string | null, mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, logoUrl?: string | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null }> };
+export type ManageFolderQueryQuery = { folder: { __typename: 'Folder', brandingId: string | null, permissions: FolderPermissions | null, id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, branding: { id: string, name: string | null, mode: ThemeMode | null, primaryColor: PrimaryColor | null, logoUrl: string | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null }, users: Array<{ folderId: string, id: string | null, name: string | null, username: string | null, enabled: boolean | null, uuid: string | null, lastAccess: string | null, commentPermissions: CommentPermissions | null, linkMode: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode: string | null, expiresAt: string | null, gravatar: string | null, ntfy: string | null, ntfyEmail: boolean | null, folder: { __typename: 'Folder', brandingId: string | null, permissions: FolderPermissions | null, id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, branding: { id: string, name: string | null, mode: ThemeMode | null, primaryColor: PrimaryColor | null, logoUrl: string | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null }> };
 
 export type MeGalleryPasscodeQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeGalleryPasscodeQueryQuery = { __typename?: 'Query', me?: { __typename?: 'User', id?: string | null, galleryPasscode?: string | null } | null };
+export type MeGalleryPasscodeQueryQuery = { me: { id: string | null, galleryPasscode: string | null } | null };
 
 export type MeQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQueryQuery = { __typename?: 'Query', me?: { __typename?: 'User', id?: string | null, userType?: UserType | null, name?: string | null, folderId: string, uuid?: string | null, commentPermissions?: CommentPermissions | null, linkMode?: LinkMode | null, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null } | null, clientInfo?: { __typename?: 'ClientInfo', baseUrl: string, useOriginalsForLightbox: boolean, thumbnailJpegQuality: number, canWrite: boolean, thumbnailVariants: Array<{ __typename?: 'ThumbnailVariant', token: string, width: number, format: string, mimeType: string, quality: number }> } | null };
+export type MeQueryQuery = { me: { id: string | null, userType: UserType | null, name: string | null, folderId: string, uuid: string | null, commentPermissions: CommentPermissions | null, linkMode: LinkMode | null, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null } | null, clientInfo: { baseUrl: string, useOriginalsForLightbox: boolean, thumbnailJpegQuality: number, canWrite: boolean, thumbnailVariants: Array<{ token: string, width: number, format: string, mimeType: string, quality: number }> } | null };
 
 export type PublicLinkInfoQueryQueryVariables = Exact<{
-  uuid: Scalars['String']['input'];
+  uuid: string;
 }>;
 
 
-export type PublicLinkInfoQueryQuery = { __typename?: 'Query', publicLinkInfo: { __typename?: 'PublicLinkInfo', status: PublicLinkAccessStatus, expiresAt?: string | null, available: boolean, requiresPasscode: boolean, unlocked: boolean, galleryName?: string | null, branding?: { __typename?: 'PublicLinkBrandingPreview', mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, headingFontKey?: HeadingFontKey | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null } | null } };
+export type PublicLinkInfoQueryQuery = { publicLinkInfo: { status: PublicLinkAccessStatus, expiresAt: string | null, available: boolean, requiresPasscode: boolean, unlocked: boolean, galleryName: string | null, branding: { mode: ThemeMode | null, primaryColor: PrimaryColor | null, headingFontKey: HeadingFontKey | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null } | null } };
 
 export type ReadAllFoldersQueryQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-  sort?: InputMaybe<FoldersSortType>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
+  id: string | number;
+  sort?: FoldersSortType | null | undefined;
+  limit?: number | null | undefined;
 }>;
 
 
-export type ReadAllFoldersQueryQuery = { __typename?: 'Query', allFolders: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null> };
+export type ReadAllFoldersQueryQuery = { allFolders: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null> };
 
 export type RecentUsersQueryQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
+  folderId: string | number;
 }>;
 
 
-export type RecentUsersQueryQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id?: string | null, name?: string | null, folderId: string, lastAccess?: string | null, gravatar?: string | null, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null }> };
+export type RecentUsersQueryQuery = { users: Array<{ id: string | null, name: string | null, folderId: string, lastAccess: string | null, gravatar: string | null, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null }> };
 
 export type SearchQueryQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
-  query: Scalars['String']['input'];
+  folderId: string | number;
+  query: string;
 }>;
 
 
-export type SearchQueryQuery = { __typename?: 'Query', searchFolders: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null }>, searchFiles: Array<{ __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null }> };
+export type SearchQueryQuery = { searchFolders: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null }>, searchFiles: Array<{ __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null }> };
 
 export type ServerInfoQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ServerInfoQueryQuery = { __typename?: 'Query', serverInfo?: { __typename?: 'ServerInfo', version: string, developmentBuildSha?: string | null, latest: string, databaseUrl: string, dev: boolean, host: string, canWrite: boolean, mediaCaps: { __typename?: 'MediaCapsInfo', raw: boolean, psd: boolean, psb: boolean, heic: boolean }, settings: { __typename?: 'ServerSettings', useOriginalsForLightbox: boolean, thumbnailJpegQuality: number, thumbnailVariants: Array<{ __typename?: 'ThumbnailVariant', token: string, width: number, format: string, mimeType: string, quality: number }> }, videoAcceleration: { __typename?: 'VideoAccelerationInfo', mode: string, reason: string, driver?: string | null, codecs: Array<string> }, inodeSupport: { __typename?: 'InodeSupportInfo', status: string, reason: string }, scanning: { __typename?: 'MediaScanningInfo', fileWatcherMode: string, onViewScanMode: string, scheduledScanHours: number, scheduledScan: { __typename?: 'ScheduledScanStatusInfo', running: boolean, nextScanAt?: string | null, lastStartedAt?: string | null, lastCompletedAt?: string | null, lastDurationMs?: number | null, lastError?: string | null, lastResult?: { __typename?: 'ScheduledScanResultInfo', completed: boolean, cleanupRun: boolean, scanPasses: number, addedFiles: number, changedFiles: number, removedFiles: number, addedFolders: number, movedFiles: number, movedFolders: number, removedFolders: number, ignored: number, skippedEntries: number, unsettledFiles: number, unsettledFolders: number } | null }, ping: { __typename?: 'PingStatusInfo', enabled: boolean, sources: Array<{ __typename?: 'PingSourceStatusInfo', name: string, watchPrefix: string, instanceId: string, lastSeenAt: string, lastBatchAt?: string | null, lastReconcileAt?: string | null, hintsReceived: number, pingVersion: string, lastError?: string | null }>, coordinator: { __typename?: 'PingCoordinatorStatusInfo', state: string, pendingFolders: number, foldersScanned: number, lastError?: string | null } } }, system: { __typename?: 'SystemInfo', nodeVersion: string, platform: string, totalMemory: string, uptimeSeconds: number, databaseVersion?: string | null, ffmpegVersion?: string | null, imageMagickVersion?: string | null }, disk?: { __typename?: 'DiskInfo', path: string, free: string, total: string } | null } | null };
+export type ServerInfoQueryQuery = { serverInfo: { version: string, developmentBuildSha: string | null, latest: string, databaseUrl: string, dev: boolean, host: string, canWrite: boolean, mediaCaps: { raw: boolean, psd: boolean, psb: boolean, heic: boolean }, settings: { useOriginalsForLightbox: boolean, thumbnailJpegQuality: number, thumbnailVariants: Array<{ token: string, width: number, format: string, mimeType: string, quality: number }> }, videoAcceleration: { mode: string, reason: string, driver: string | null, codecs: Array<string> }, inodeSupport: { status: string, reason: string }, scanning: { fileWatcherMode: string, onViewScanMode: string, scheduledScanHours: number, scheduledScan: { running: boolean, nextScanAt: string | null, lastStartedAt: string | null, lastCompletedAt: string | null, lastDurationMs: number | null, lastError: string | null, lastResult: { completed: boolean, cleanupRun: boolean, scanPasses: number, addedFiles: number, changedFiles: number, removedFiles: number, addedFolders: number, movedFiles: number, movedFolders: number, removedFolders: number, ignored: number, skippedEntries: number, unsettledFiles: number, unsettledFolders: number } | null }, ping: { enabled: boolean, sources: Array<{ name: string, watchPrefix: string, instanceId: string, lastSeenAt: string, lastBatchAt: string | null, lastReconcileAt: string | null, hintsReceived: number, pingVersion: string, lastError: string | null }>, coordinator: { state: string, pendingFolders: number, foldersScanned: number, lastError: string | null } } }, system: { nodeVersion: string, platform: string, totalMemory: string, uptimeSeconds: number, databaseVersion: string | null, ffmpegVersion: string | null, imageMagickVersion: string | null }, disk: { path: string, free: string, total: string } | null } | null };
 
 export type ExpensiveServerFileSizeQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ExpensiveServerFileSizeQueryQuery = { __typename?: 'Query', serverInfo?: { __typename?: 'ServerInfo', cacheSize: string, mediaSize: string } | null };
+export type ExpensiveServerFileSizeQueryQuery = { serverInfo: { cacheSize: string, mediaSize: string } | null };
 
 export type TaskQueryQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
+  folderId: string | number;
 }>;
 
 
-export type TaskQueryQuery = { __typename?: 'Query', tasks: Array<{ __typename?: 'Task', id?: string | null, name: string, step?: number | null, totalSteps?: number | null, status?: string | null }> };
+export type TaskQueryQuery = { tasks: Array<{ id: string | null, name: string, step: number | null, totalSteps: number | null, status: string | null }> };
 
 export type UserDeviceQueryQueryVariables = Exact<{
-  userId: Scalars['ID']['input'];
-  token: Scalars['String']['input'];
+  userId: string | number;
+  token: string;
 }>;
 
 
-export type UserDeviceQueryQuery = { __typename?: 'Query', userDevices: Array<{ __typename?: 'UserDevice', userId: string, enabled: boolean, name?: string | null, notificationToken?: string | null }> };
+export type UserDeviceQueryQuery = { userDevices: Array<{ userId: string, enabled: boolean, name: string | null, notificationToken: string | null }> };
 
 export type ViewAdminsQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ViewAdminsQueryQuery = { __typename?: 'Query', admins: Array<{ __typename?: 'User', id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, folderId: string, lastAccess?: string | null, commentPermissions?: CommentPermissions | null, linkMode?: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode?: string | null, expiresAt?: string | null, gravatar?: string | null, ntfy?: string | null, ntfyEmail?: boolean | null, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null }> };
+export type ViewAdminsQueryQuery = { admins: Array<{ id: string | null, name: string | null, username: string | null, enabled: boolean | null, uuid: string | null, folderId: string, lastAccess: string | null, commentPermissions: CommentPermissions | null, linkMode: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode: string | null, expiresAt: string | null, gravatar: string | null, ntfy: string | null, ntfyEmail: boolean | null, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null }> };
 
 export type ViewBrandingsQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ViewBrandingsQueryQuery = { __typename?: 'Query', brandings: Array<{ __typename?: 'Branding', id: string, name?: string | null, logoUrl?: string | null, primaryColor?: PrimaryColor | null, mode?: ThemeMode | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null, folders: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null }> }> };
+export type ViewBrandingsQueryQuery = { brandings: Array<{ id: string, name: string | null, logoUrl: string | null, primaryColor: PrimaryColor | null, mode: ThemeMode | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown, folders: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null }> }> };
 
 export type ViewFileQueryVariables = Exact<{
-  fileId: Scalars['ID']['input'];
+  fileId: string | number;
 }>;
 
 
-export type ViewFileQuery = { __typename?: 'Query', file: { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'ImageMetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null, Width?: number | null, Height?: number | null, Rating?: number | null } | null } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, duration?: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'VideoMetadataSummary', Bitrate?: number | null, Duration?: number | null, Format?: string | null, VideoCodec?: string | null, VideoCodecDescription?: string | null, Width?: number | null, Height?: number | null, Framerate?: number | null, AudioCodec?: string | null, AudioCodecDescription?: string | null } | null } };
+export type ViewFileQuery = { file:
+    | { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string }
+    | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Camera: string | null, Lens: string | null, Artist: string | null, DateTimeOriginal: string | null, DateTimeEdit: string | null, Aperture: number | null, ExposureTime: number | null, ISO: number | null, Width: number | null, Height: number | null, Rating: number | null } | null }
+    | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, duration: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Bitrate: number | null, Duration: number | null, Format: string | null, VideoCodec: string | null, VideoCodecDescription: string | null, Width: number | null, Height: number | null, Framerate: number | null, AudioCodec: string | null, AudioCodecDescription: string | null } | null }
+   };
 
 export type ViewFolderQueryVariables = Exact<{
-  folderId: Scalars['ID']['input'];
+  folderId: string | number;
 }>;
 
 
-export type ViewFolderQuery = { __typename?: 'Query', folder: { __typename: 'Folder', brandingId?: string | null, permissions?: FolderPermissions | null, id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, files: Array<{ __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'ImageMetadataSummary', Camera?: string | null, Lens?: string | null, Artist?: string | null, DateTimeOriginal?: string | null, DateTimeEdit?: string | null, Aperture?: number | null, ExposureTime?: number | null, ISO?: number | null, Width?: number | null, Height?: number | null, Rating?: number | null } | null } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, duration?: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag?: FileFlag | null, rating?: number | null, totalComments?: number | null, latestComment?: string | null, folderId: string, metadata?: { __typename?: 'VideoMetadataSummary', Bitrate?: number | null, Duration?: number | null, Format?: string | null, VideoCodec?: string | null, VideoCodecDescription?: string | null, Width?: number | null, Height?: number | null, Framerate?: number | null, AudioCodec?: string | null, AudioCodecDescription?: string | null } | null }>, subFolders: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, users?: Array<{ __typename?: 'User', id?: string | null, name?: string | null, enabled?: boolean | null, commentPermissions?: CommentPermissions | null, gravatar?: string | null }> | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null }>, branding?: { __typename?: 'Branding', id: string, name?: string | null, mode?: ThemeMode | null, primaryColor?: PrimaryColor | null, logoUrl?: string | null, headingFontKey?: HeadingFontKey | null, availableViews?: Array<string> | null, defaultView?: string | null, galleryLayout?: GalleryLayout | null, defaultFileSort?: string | null, thumbnailSize?: number | null, thumbnailSpacing?: number | null, thumbnailBorderRadius?: number | null, headingFontSize?: number | null, headingAlignment?: HeadingAlignment | null, footerTitle?: string | null, footerUrl?: string | null, socialLinks?: unknown | null } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } };
+export type ViewFolderQuery = { folder: { __typename: 'Folder', brandingId: string | null, permissions: FolderPermissions | null, id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, files: Array<
+      | { __typename: 'File', id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Camera: string | null, Lens: string | null, Artist: string | null, DateTimeOriginal: string | null, DateTimeEdit: string | null, Aperture: number | null, ExposureTime: number | null, ISO: number | null, Width: number | null, Height: number | null, Rating: number | null } | null }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, duration: number | null, id: string, name: string, type: FileType, fileHash: string, fileSize: string, fileCreated: string, fileLastModified: string, flag: FileFlag | null, rating: number | null, totalComments: number | null, latestComment: string | null, folderId: string, metadata: { Bitrate: number | null, Duration: number | null, Format: string | null, VideoCodec: string | null, VideoCodecDescription: string | null, Width: number | null, Height: number | null, Framerate: number | null, AudioCodec: string | null, AudioCodecDescription: string | null } | null }
+    >, subFolders: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, users: Array<{ id: string | null, name: string | null, enabled: boolean | null, commentPermissions: CommentPermissions | null, gravatar: string | null }> | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null }>, branding: { id: string, name: string | null, mode: ThemeMode | null, primaryColor: PrimaryColor | null, logoUrl: string | null, headingFontKey: HeadingFontKey | null, availableViews: Array<string> | null, defaultView: string | null, galleryLayout: GalleryLayout | null, defaultFileSort: string | null, thumbnailSize: number | null, thumbnailSpacing: number | null, thumbnailBorderRadius: number | null, headingFontSize: number | null, headingAlignment: HeadingAlignment | null, footerTitle: string | null, footerUrl: string | null, socialLinks: unknown } | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+      | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+      | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+     | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } };
 
 export type ViewUserQueryQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
+  id: string | number;
 }>;
 
 
-export type ViewUserQueryQuery = { __typename?: 'Query', user: { __typename?: 'User', id?: string | null, name?: string | null, username?: string | null, enabled?: boolean | null, uuid?: string | null, folderId: string, lastAccess?: string | null, commentPermissions?: CommentPermissions | null, linkMode?: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode?: string | null, expiresAt?: string | null, gravatar?: string | null, ntfy?: string | null, ntfyEmail?: boolean | null, folder?: { __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null, folderLastModified: string, bannerSize?: BannerSize | null, bannerTextHAlign?: BannerTextHAlign | null, bannerTextVAlign?: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title?: string | null, subtitle?: string | null, parentId?: string | null }>, heroImage?: { __typename: 'File', id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Image', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | { __typename: 'Video', imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, id: string, name: string, fileHash: string, type: FileType } | null, bannerImage?: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth?: number | null, imageHeight?: number | null, imageRatio?: number | null, blurHash?: string | null, type: FileType } | null } | null } };
+export type ViewUserQueryQuery = { user: { id: string | null, name: string | null, username: string | null, enabled: boolean | null, uuid: string | null, folderId: string, lastAccess: string | null, commentPermissions: CommentPermissions | null, linkMode: LinkMode | null, hasGalleryPasscode: boolean, galleryPasscode: string | null, expiresAt: string | null, gravatar: string | null, ntfy: string | null, ntfyEmail: boolean | null, folder: { __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null, folderLastModified: string, bannerSize: BannerSize | null, bannerTextHAlign: BannerTextHAlign | null, bannerTextVAlign: BannerTextVAlign | null, parents: Array<{ __typename: 'Folder', id: string, name: string, title: string | null, subtitle: string | null, parentId: string | null }>, heroImage:
+        | { __typename: 'File', id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Image', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+        | { __typename: 'Video', imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, id: string, name: string, fileHash: string, type: FileType }
+       | null, bannerImage: { __typename: 'Image', id: string, name: string, fileHash: string, imageWidth: number | null, imageHeight: number | null, imageRatio: number | null, blurHash: string | null, type: FileType } | null } | null } };
 
 export const VideoMetadataFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"VideoMetadataFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Video"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Video"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Bitrate"}},{"kind":"Field","name":{"kind":"Name","value":"Duration"}},{"kind":"Field","name":{"kind":"Name","value":"Format"}},{"kind":"Field","name":{"kind":"Name","value":"VideoCodec"}},{"kind":"Field","name":{"kind":"Name","value":"VideoCodecDescription"}},{"kind":"Field","name":{"kind":"Name","value":"Width"}},{"kind":"Field","name":{"kind":"Name","value":"Height"}},{"kind":"Field","name":{"kind":"Name","value":"Framerate"}},{"kind":"Field","name":{"kind":"Name","value":"AudioCodec"}},{"kind":"Field","name":{"kind":"Name","value":"AudioCodecDescription"}}]}}]}}]}}]} as unknown as DocumentNode<VideoMetadataFragmentFragment, unknown>;
 export const ImageMetadataFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ImageMetadataFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Image"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Image"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"metadata"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Camera"}},{"kind":"Field","name":{"kind":"Name","value":"Lens"}},{"kind":"Field","name":{"kind":"Name","value":"Artist"}},{"kind":"Field","name":{"kind":"Name","value":"DateTimeOriginal"}},{"kind":"Field","name":{"kind":"Name","value":"DateTimeEdit"}},{"kind":"Field","name":{"kind":"Name","value":"Aperture"}},{"kind":"Field","name":{"kind":"Name","value":"ExposureTime"}},{"kind":"Field","name":{"kind":"Name","value":"ISO"}},{"kind":"Field","name":{"kind":"Name","value":"Width"}},{"kind":"Field","name":{"kind":"Name","value":"Height"}},{"kind":"Field","name":{"kind":"Name","value":"Rating"}}]}}]}}]}}]} as unknown as DocumentNode<ImageMetadataFragmentFragment, unknown>;

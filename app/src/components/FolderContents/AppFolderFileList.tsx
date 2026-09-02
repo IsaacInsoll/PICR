@@ -15,6 +15,9 @@ import type {
   ViewFolderSubFolder,
 } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
+import type { AllFoldersRow } from '@shared/types/queryRows';
+
+type AppFileListItemValue = FolderContentsItem | AllFoldersRow;
 
 export const AppFolderFileList = ({
   items,
@@ -41,7 +44,7 @@ export const AppFileListItem = ({
   item,
   children,
 }: {
-  item: FolderContentsItem;
+  item: AppFileListItemValue;
   children?: React.ReactNode;
 }) => {
   const isFolder = !isFolderContentsFile(item);
@@ -73,7 +76,11 @@ export const AppFileListItem = ({
   );
 };
 
-const FolderDetails = ({ folder }: { folder: ViewFolderSubFolder }) => {
+const FolderDetails = ({
+  folder,
+}: {
+  folder: ViewFolderSubFolder | AllFoldersRow;
+}) => {
   void folder;
   return <PText variant="dimmed">Folder</PText>;
 };

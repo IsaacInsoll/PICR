@@ -195,6 +195,19 @@ Do not move codegen back to the root: a newer backend GraphQL can emit
 introspection enum values that an older transitive root GraphQL cannot
 re-introspect. Root `npm run gql` is only the repository-level wrapper.
 
+Codegen's document inputs are deliberately limited to the handwritten files in
+`shared/urql/{fragments,mutations,queries}`. Do not broaden them to all of
+`shared/**/*.ts`: Codegen 7's loader will try to parse the generated
+`shared/gql/*.ts` files as GraphQL source documents. The client preset now emits
+operation types in `shared/gql/graphql.ts`, while the separate TypeScript plugin
+emits complete schema types in `shared/gql/schema.ts`. `graphql.ts` re-exports
+the schema module's types so existing consumers retain one stable generated
+import path. Keep that re-export type-only and keep its `.js` extension: backend
+NodeNext type-checking requires the extension, while Metro must be able to erase
+the import rather than trying to resolve a nonexistent source-side `schema.js`.
+Also keep `enumType: 'native'` on the client preset: PICR uses generated runtime
+enum objects such as `FileFlag.Approved` from `graphql.ts`.
+
 A backend `graphql` version bump can legitimately change
 `shared/urql/graphql.schema.json`, because that tracked file includes
 graphql-js's own introspection schema. Dependabot cannot run codegen, so its PR

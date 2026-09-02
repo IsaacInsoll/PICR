@@ -1,5 +1,15 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
+const scalarConfig = {
+  strictScalars: true,
+  defaultScalarType: 'unknown',
+  scalars: {
+    DateTime: 'string',
+    BigInt: 'string',
+    JSON: 'unknown',
+  },
+};
+
 const config: CodegenConfig = {
   overwrite: true,
   schema: '../.scratch/codegen-schema.json',
@@ -8,18 +18,28 @@ const config: CodegenConfig = {
     // Used by codegen to add TypeScript types to query/mutation results.
     '../shared/gql/': {
       preset: 'client',
-      documents: ['../shared/**/*.tsx', '../shared/**/*.ts'],
+      // Keep this scoped to handwritten operation files. Codegen 7's loader
+      // otherwise attempts to parse shared/gql/*.ts as source documents.
+      documents: [
+        '../shared/urql/fragments/**/*.ts',
+        '../shared/urql/mutations/**/*.ts',
+        '../shared/urql/queries/**/*.ts',
+      ],
       presetConfig: { fragmentMasking: false },
-      plugins: [],
+      // Preserve the existing generated-module API while Codegen 6 emits
+      // complete schema models into a separate file.
+      plugins: [{ add: { content: "export type * from './schema.js';" } }],
       config: {
-        strictScalars: true,
-        defaultScalarType: 'unknown',
-        scalars: {
-          DateTime: 'string',
-          BigInt: 'string',
-          JSON: 'unknown',
-        },
+        ...scalarConfig,
+        // Preserve runtime enum objects such as FileFlag.Approved.
+        enumType: 'native',
       },
+    },
+    // Codegen 6's client preset emits operation types only. Shared utilities
+    // also use complete schema types such as Query and ImageMetadataSummary.
+    '../shared/gql/schema.ts': {
+      plugins: ['typescript'],
+      config: scalarConfig,
     },
     // Used by URQL for caching.
     '../shared/urql/graphql.schema.json': {
