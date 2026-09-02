@@ -88,7 +88,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'expo-build-properties',
       {
         ios: {
-          deploymentTarget: '16.0',
+          deploymentTarget: '16.4',
         },
       },
     ],
@@ -98,7 +98,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         initialOrientation: 'DEFAULT',
       },
     ],
-    ['@rnrepo/expo-config-plugin'],
   ],
   experiments: {
     typedRoutes: true,

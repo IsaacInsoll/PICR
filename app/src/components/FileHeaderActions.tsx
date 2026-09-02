@@ -1,12 +1,12 @@
 import { Alert, View } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
-import { HeaderButton } from '@react-navigation/elements';
+import { HeaderButton } from 'expo-router/react-navigation';
 import { Ionicons } from '@expo/vector-icons';
 import type { ViewFolderFile } from '@shared/files/sortFiles';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { useLocalImageUrl } from '@/src/components/PBigImage';
 import { navBarIconProps } from '@/src/constants';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 type FileHeaderActionsFile = Pick<
   ViewFolderFile,
@@ -26,11 +26,14 @@ export const FileHeaderActions = ({
 }) => {
   const theme = useAppTheme();
   const uri = useLocalImageUrl(file, 'raw');
-  const [downloadState, setDownloadState] = useState<
-    'idle' | 'saving' | 'saved'
-  >('idle');
-
-  useEffect(() => setDownloadState('idle'), [file.id]);
+  const [downloadProgress, setDownloadProgress] = useState<{
+    fileId: string;
+    state: 'idle' | 'saving' | 'saved';
+  }>({ fileId: file.id, state: 'idle' });
+  const downloadState =
+    downloadProgress.fileId === file.id ? downloadProgress.state : 'idle';
+  const setDownloadState = (state: 'idle' | 'saving' | 'saved') =>
+    setDownloadProgress({ fileId: file.id, state });
 
   const download = async () => {
     onDownload();

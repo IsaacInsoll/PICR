@@ -1,4 +1,4 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from 'expo-router';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { Platform } from 'react-native';
 import { getHeadingFontFamilyForLevel } from '@/src/helpers/headingFont';

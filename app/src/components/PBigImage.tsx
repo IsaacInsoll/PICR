@@ -99,35 +99,36 @@ export const useLocalImageUrl = (
   // their blurhash placeholder rather than requesting a fabricated token.
   size: AllSize | ThumbnailVariantToken | undefined,
 ) => {
-  const [uri, setUri] = useState<string | undefined>(undefined);
+  const [cachedImage, setCachedImage] = useState<{
+    source: string;
+    uri: string | null;
+  } | null>(null);
   const origin = useAuthenticatedServerOrigin();
+  const source = size ? origin.mediaUrl(file, size) : null;
 
   useEffect(() => {
-    let cancelled = false;
-    if (!size) {
-      setUri(undefined);
-      return () => {
-        cancelled = true;
-      };
-    }
+    if (!source) return;
 
-    const source = origin.mediaUrl(file, size);
+    let cancelled = false;
     CacheManager.get(source, undefined)
       .getPath()
       .then((path) => {
-        if (!cancelled) setUri(path);
+        if (!cancelled) setCachedImage({ source, uri: path ?? null });
       })
       .catch(() => {
-        if (!cancelled) setUri(undefined);
+        if (!cancelled) setCachedImage({ source, uri: null });
       });
 
     return () => {
       cancelled = true;
     };
-  }, [file, file.fileHash, file.id, file.name, origin, size]);
+  }, [source]);
 
-  if (!uri) return null;
-  return Platform.OS === 'android' ? `file://${uri}` : uri;
+  if (!source || cachedImage?.source !== source || !cachedImage.uri)
+    return null;
+  return Platform.OS === 'android'
+    ? `file://${cachedImage.uri}`
+    : cachedImage.uri;
 };
 
 const styles = StyleSheet.create({

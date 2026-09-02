@@ -5,19 +5,18 @@ Expo/React Native mobile app for PICR, providing gallery viewing and push notifi
 Long-term app cleanup, upgrades, and monorepo work are tracked in
 [`modernization-roadmap.md`](./modernization-roadmap.md).
 
-`@rnrepo/expo-config-plugin` is intentionally pinned to `0.1.0-beta.0`. A caret
-range also admits `0.1.0-beta.1`, whose published peer dependency supports Expo
-54 rather than the app's Expo 55 baseline; normal npm resolution and
-`npm audit fix` then fail with `ERESOLVE`. Reassess or remove the plugin during
-the SDK 56 upgrade rather than widening this prerelease range.
+`@rnrepo/expo-config-plugin` was removed during the SDK 57 upgrade. Its pinned
+beta only injected an external Android prebuild Gradle plugin and Maven
+repository; React Native already supplies Android precompiled artifacts. Do not
+reintroduce that repository dependency without a measured build-time benefit
+and current React Native compatibility evidence.
 
-After applying the current SDK 55 patches and safe `npm audit fix` updates,
-`npm audit --omit=dev` retains 11 moderate advisories in Expo's
-build/configuration toolchain through `@expo/config-plugins` → `xcode` →
-`uuid`. The full audit reports one additional path through the SDK-matched
-`jest-expo` development dependency. npm's force-fix suggestion is an invalid
-downgrade to Expo 46. Do not use `npm audit fix --force` for these; reassess them
-as part of the SDK 56 and 57 upgrades.
+After the SDK 57 upgrade and safe `npm audit fix`, `npm audit --omit=dev`
+retains 14 moderate transitive advisories. They come from Expo Router's
+`query-string` → `decode-uri-component` path and Expo's build/configuration
+toolchain through `@expo/config-plugins` → `xcode` → `uuid`. npm's force-fix
+suggestions are invalid downgrades to Expo Router 5 and Expo 46. Do not use
+`npm audit fix --force`; wait for SDK-compatible upstream fixes.
 
 Keep `@gorhom/bottom-sheet` at 5.2.7 or newer on React Native's New
 Architecture. Version 5.2.6 calls an undefined
@@ -29,9 +28,9 @@ Architecture. Version 5.2.6 calls an undefined
 
 | Technology         | Version | Purpose                |
 | ------------------ | ------- | ---------------------- |
-| Expo               | SDK 55  | React Native framework |
-| Expo Router        | 55.0    | File-based navigation  |
-| React Native       | 0.83    | Mobile UI              |
+| Expo               | SDK 57  | React Native framework |
+| Expo Router        | 57.0    | File-based navigation  |
+| React Native       | 0.86    | Mobile UI              |
 | React              | 19.2    | UI framework           |
 | URQL               | 5.0     | GraphQL client         |
 | Jotai              | 2.17    | State management       |
@@ -66,6 +65,13 @@ app/
 ## Navigation (Expo Router)
 
 File-based routing - file structure = URL structure.
+
+Expo Router 56 and later no longer permit application imports from
+`@react-navigation/*`. Import matching runtime APIs such as `HeaderButton`,
+`NavigationContainer` and `useHeaderHeight` from
+`expo-router/react-navigation`, and import native-stack option types directly
+from `expo-router`. Keep `standard-navigation` in Jest's transformed dependency
+allowlist because Expo Router publishes that nested dependency as ESM.
 
 ### Route Structure
 
@@ -105,12 +111,27 @@ router.back();
 
 ### Metro Configuration
 
+PICR is not an npm workspace yet, so Expo cannot automatically configure its
+monorepo layout. Metro 0.84 (Expo SDK 57) must use the repository root as its
+single canonical watch root; narrower sibling roots trigger Metro file-map's
+`Failed to collapse` invariant when Expo's TypeScript resolver traverses the
+root `tsconfig.base.json`. Keep app dependencies ahead of root dependencies in
+`nodeModulesPaths`.
+
 ```javascript
+const path = require('node:path');
+const repositoryRoot = path.resolve(__dirname, '..');
+const sharedRoot = path.resolve(__dirname, '../shared');
+
 // metro.config.js
 config.resolver.extraNodeModules = {
-  '@shared': __dirname + '/../shared',
+  '@shared': sharedRoot,
 };
-config.watchFolders = [__dirname + '/../shared'];
+config.resolver.nodeModulesPaths = [
+  path.resolve(__dirname, 'node_modules'),
+  path.resolve(repositoryRoot, 'node_modules'),
+];
+config.watchFolders = [repositoryRoot];
 ```
 
 ### Import Patterns

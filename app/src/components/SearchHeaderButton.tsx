@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { Href } from 'expo-router';
 import { Link } from 'expo-router';
-import { HeaderButton } from '@react-navigation/elements';
+import { HeaderButton } from 'expo-router/react-navigation';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { navBarIconProps } from '@/src/constants';
 import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';

@@ -15,7 +15,7 @@ import { PTitle } from '@/src/components/PTitle';
 import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { AppFolderLink } from '@/src/components/AppFolderLink';
-import { HeaderButton } from '@react-navigation/elements';
+import { HeaderButton } from 'expo-router/react-navigation';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import type {
   ReadAllFoldersQueryQuery,

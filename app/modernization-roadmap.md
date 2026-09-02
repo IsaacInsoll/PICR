@@ -268,24 +268,35 @@ Exit gate:
 
 ## Phase 4: Upgrade Expo SDK 55 → 56
 
-Goal: make one attributable framework upgrade.
+Goal: apply the SDK 56 compatibility changes required on the way to SDK 57.
 
-- [ ] Read the SDK 56 release notes and every used Expo module's relevant
-      changelog.
-- [ ] Upgrade Expo to SDK 56 and run `npx expo install --fix`.
-- [ ] Raise the iOS deployment target from 16.0 to the SDK 56 minimum of 16.4.
+> Status (2026-09-02): Expo's current upgrade guidance recommends that SDK 55
+> apps skip the SDK 56 runtime and upgrade directly to SDK 57 because SDK 56's
+> Hermes V1 regression is fixed there. The SDK 56 compatibility work below was
+> therefore completed as part of the direct SDK 55 → 57 upgrade; no intermediate
+> SDK 56 development client was built.
+
+- [x] Read the SDK 56 release notes and relevant breaking changes for the Expo
+      modules used by the app.
+- [x] Upgrade directly through the SDK 56 compatibility boundary to SDK 57 and
+      run `npx expo install --fix`.
+- [x] Raise the iOS deployment target from 16.0 to the SDK 56 minimum of 16.4.
 - [ ] Confirm the available local/EAS Xcode image satisfies SDK 56 requirements.
-- [ ] Reassess `@rnrepo/expo-config-plugin`; measure whether SDK 56 build
-      improvements make it unnecessary.
-- [ ] Review all native community libraries for React Native 0.85/New
-      Architecture compatibility.
+- [x] Remove the obsolete pinned `@rnrepo/expo-config-plugin` beta and its
+      external Android Maven repository. React Native already supplies Android
+      precompiled artifacts.
+- [x] Review native community libraries for React Native 0.85/0.86 and New
+      Architecture compatibility. Upgrade `@kolking/react-native-rating` for
+      the removal of `StyleSheet.absoluteFillObject`, and replace application
+      imports from `@react-navigation/*` with Expo Router's SDK 56 entry point.
 - [ ] Rebuild development clients locally where possible; an old development
       client is not valid upgrade evidence. SDK 56 is an intermediate validation
       point, not a store release.
 
 Exit gate:
 
-- [ ] Clean install, lint, typecheck, tests, Expo Doctor and both exports pass.
+- [x] Clean install, lint, typecheck, tests, Expo Doctor and both final SDK 57
+      exports pass.
 - [ ] Android and iOS development builds pass the real-device smoke checklist.
 - [ ] No unresolved warning is hidden by a release script.
 
@@ -293,10 +304,13 @@ Exit gate:
 
 Goal: reach the current stable Expo SDK and React Native 0.86.
 
-- [ ] Read the SDK 57 and React Native 0.86 release notes.
-- [ ] Upgrade Expo to SDK 57 and run `npx expo install --fix`.
-- [ ] Review the SDK 57 Hermes/Reanimated memory regression and its current fix
+- [x] Read the SDK 57 and React Native 0.86 release notes.
+- [x] Upgrade Expo to SDK 57 and run `npx expo install --fix`. The resulting
+      baseline is Expo 57.0.19, React Native 0.86.3 and React 19.2.3.
+- [x] Review the SDK 57 Hermes/Reanimated memory regression and its current fix
       or recommended configuration before enabling worklets bundle mode.
+      Expo 57.0.19 includes React Native 0.86.3, which contains the fix; the
+      unsupported worklets bundle mode remains disabled.
 - [ ] Re-evaluate image caching: SDK 57 adds additional `expo-image` cache APIs
       that may replace the legacy third-party cache.
 - [ ] Rebuild development clients locally. Request a production-like EAS preview
@@ -305,10 +319,19 @@ Goal: reach the current stable Expo SDK and React Native 0.86.
 
 Exit gate:
 
-- [ ] Clean install, lint, typecheck, tests, Expo Doctor and both exports pass.
+- [x] `npm ci`, dependency alignment, lint, typecheck, 103 Jest tests, the
+      Hermes-shaped polyfill check, Expo Doctor (21/21), CNG prebuild and both
+      native exports pass.
 - [ ] Android and iOS preview builds pass the full smoke checklist.
 - [ ] Bundle size and startup/memory measurements are recorded for comparison
       with the SDK 55 baseline.
+      The SDK 57 exports currently contain a 7.4 MB Android Hermes bundle and a
+      7.3 MB iOS Hermes bundle; no comparable SDK 55 bundle or startup/memory
+      baseline was captured before the upgrade.
+
+Remaining upgrade gates are an iOS development build and production-server
+smoke test, an Android development build/smoke test, and a later physical-device
+check for push notifications and media-library saving before the next release.
 
 ## Phase 6: Convert the repository to real workspaces safely
 

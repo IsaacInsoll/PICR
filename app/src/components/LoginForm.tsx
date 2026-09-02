@@ -31,8 +31,8 @@ export const LoginForm = () => {
 
   const {
     control,
+    getValues,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<LoginFormValues>({
@@ -77,7 +77,7 @@ export const LoginForm = () => {
         keyboardType="url"
         control={control}
         onBlur={() => {
-          const server = watch('server');
+          const server = getValues('server');
           const normalizedServer = normalizeServerUrl(server);
           if (normalizedServer !== server) {
             setValue('server', normalizedServer);

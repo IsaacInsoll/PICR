@@ -1,12 +1,16 @@
 import { Alert } from 'react-native';
 import * as Linking from 'expo-linking';
-import type { Router } from 'expo-router';
+import type { Href } from 'expo-router';
 import { notificationTargetFromData } from '@/src/helpers/appRoutes';
 import type { ServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
 
+export type NotificationRouter = {
+  push: (href: Href) => void;
+};
+
 export const followNotificationTarget = async (
   data: unknown,
-  router: Pick<Router, 'push'>,
+  router: NotificationRouter,
   origin?: Pick<ServerOrigin, 'basePath' | 'routeKey'>,
 ) => {
   const target = notificationTargetFromData(data, origin);

@@ -15,7 +15,7 @@ import {
 import * as MediaLibrary from 'expo-media-library';
 import { FileHeaderActions } from '@/src/components/FileHeaderActions';
 import { FileType } from '@shared/gql/graphql';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer } from 'expo-router/react-navigation';
 import { Alert } from 'react-native';
 
 const localUri = 'file:///tmp/photo.jpg';

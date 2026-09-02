@@ -32,21 +32,34 @@ export default function NotFound() {
     origin ?? undefined,
   );
   const [galleryOpenFailed, setGalleryOpenFailed] = useState(false);
-  const openPublicGallery = useCallback(async () => {
+  const launchPublicGallery = useCallback(async () => {
     if (!publicGalleryUrl) return;
 
-    setGalleryOpenFailed(false);
     try {
       await Linking.openURL(publicGalleryUrl);
       router.replace('/');
+      return true;
     } catch {
-      setGalleryOpenFailed(true);
+      return false;
     }
   }, [publicGalleryUrl, router]);
 
   useEffect(() => {
-    void openPublicGallery();
-  }, [openPublicGallery]);
+    let cancelled = false;
+    void launchPublicGallery().then((opened) => {
+      if (!cancelled && opened === false) setGalleryOpenFailed(true);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [launchPublicGallery]);
+
+  const retryPublicGallery = async () => {
+    setGalleryOpenFailed(false);
+    const opened = await launchPublicGallery();
+    if (opened === false) setGalleryOpenFailed(true);
+  };
 
   if (authenticatedHref) return <Redirect href={authenticatedHref} />;
 
@@ -69,7 +82,7 @@ export default function NotFound() {
                 The gallery link could not be opened.
               </PText>
               <Button
-                onPress={() => void openPublicGallery()}
+                onPress={() => void retryPublicGallery()}
                 title="Try again"
               />
             </>

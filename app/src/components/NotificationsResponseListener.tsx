@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import * as Notifications from 'expo-notifications';
-import type { Router } from 'expo-router';
 import { useRouter } from 'expo-router';
 import { followNotificationTarget } from '@/src/helpers/followNotificationTarget';
+import type { NotificationRouter } from '@/src/helpers/followNotificationTarget';
 import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { createServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
 import type { ServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
@@ -36,7 +36,7 @@ const notificationReceived = (event: Notifications.Notification) => {
 
 const notificationResponseReceived = (
   event: Notifications.NotificationResponse,
-  router: Router,
+  router: NotificationRouter,
   origin?: Pick<ServerOrigin, 'basePath' | 'routeKey'>,
 ) => {
   const data = event.notification.request.content.data;
