@@ -2,8 +2,7 @@ import type { Href } from 'expo-router';
 import type { ServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
 
 export type NotificationTarget =
-  | { type: 'app'; href: Href }
-  | { type: 'browser'; url: string };
+  { type: 'app'; href: Href } | { type: 'browser'; url: string };
 
 const appProtocols = new Set(['picr:', 'picrdev:', 'http:', 'https:']);
 

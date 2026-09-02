@@ -17,7 +17,7 @@ import { filterFiles } from '@shared/files/filterFiles';
 import type { ViewFolder } from '@shared/files/sortFiles';
 import { sortFiles } from '@shared/files/sortFiles';
 import { folderFilesQuery } from '@shared/urql/queries/folderFilesQuery';
-import { fileSortAtom } from '../../atoms/fileSortAtom';
+import { useFileSort } from '../../hooks/useFileSort';
 import { copyToClipboard } from '../../helpers/copyToClipboard';
 import { ClipboardIcon, DownloadIcon } from '../../PicrIcons';
 import { useTranslation } from 'react-i18next';
@@ -68,7 +68,7 @@ export const FolderCsvExportModal = ({
 }) => {
   const { t } = useTranslation('admin');
   const filters = useAtomValue(filterOptions);
-  const sort = useAtomValue(fileSortAtom);
+  const [sort] = useFileSort();
   const [format, setFormat] = useState<ExportFormat>('picr');
   const [excludeExtensions, setExcludeExtensions] = useState(false);
   const [useFilters, setUseFilters] = useState(true);

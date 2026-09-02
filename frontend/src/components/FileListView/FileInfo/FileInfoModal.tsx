@@ -1,21 +1,26 @@
-import { Box, Group, Modal, Table } from '@mantine/core';
+import { Group, Modal, Stack, Table } from '@mantine/core';
 import { normalizeDisplayName } from '@shared/displayName';
 import { MetadataTableRows } from './metadataTableRows';
 import { useIsSmallScreen } from '../../../hooks/useIsMobile';
 import { StatCard } from './StatCard';
-import { useSetAtom } from 'jotai';
-import { closeModalAtom } from '../../../atoms/modalAtom';
-import { FilePreview } from '../FilePreview';
 import { prettyBytes } from '@shared/prettyBytes';
 import { isUnavailableFileCreatedDate } from '@shared/prettyDate';
-import type { PicrFile } from '@shared/types/picr';
+import type { PicrFile, PicrFolder } from '@shared/types/picr';
 import { useTranslation } from 'react-i18next';
 import { fileTypeLabel } from '../../../i18n/galleryLabels';
 import { useDateFormatters } from '../../../i18n/useDateFormatters';
+import { FileModalFileContext } from '../FileModalFileContext';
+import { useCloseFileModal } from '../../../hooks/useFileModalNavigation';
 
-export const FileInfoModal = ({ file }: { file: PicrFile }) => {
+export const FileInfoModal = ({
+  file,
+  folder,
+}: {
+  file: PicrFile;
+  folder?: PicrFolder;
+}) => {
   const { t } = useTranslation('gallery');
-  const onClose = useSetAtom(closeModalAtom);
+  const onClose = useCloseFileModal();
   const isMobile = useIsSmallScreen();
   const { formattingLocale, prettyDate } = useDateFormatters();
   const fileName = normalizeDisplayName(file.name);
@@ -35,40 +40,47 @@ export const FileInfoModal = ({ file }: { file: PicrFile }) => {
       overlayProps={{ blur: 3 }}
       // transitionProps={{ transition: 'fade', duration: 200 }}
     >
-      {file.type === 'Image' || file.type === 'Video' ? (
-        <Box mb={16}>
-          <FilePreview file={file} />
-        </Box>
-      ) : null}
-      <Group style={{ width: '100%' }}>
-        <StatCard
-          label={t('file.size')}
-          value={prettyBytes(file.fileSize ?? 0, { locale: formattingLocale })}
+      <Stack>
+        <FileModalFileContext
+          file={file}
+          folder={folder}
+          showPreview={file.type === 'Image' || file.type === 'Video'}
         />
-        <StatCard label={t('file.type')} value={fileTypeLabel(file.type, t)} />
-        <StatCard
-          label={t('file.modified')}
-          value={prettyDate(file.fileLastModified ?? '')}
-        />
-        {showFileCreated ? (
+        <Group style={{ width: '100%' }}>
           <StatCard
-            label={t('file.created')}
-            value={prettyDate(file.fileCreated ?? '')}
+            label={t('file.size')}
+            value={prettyBytes(file.fileSize ?? 0, {
+              locale: formattingLocale,
+            })}
           />
+          <StatCard
+            label={t('file.type')}
+            value={fileTypeLabel(file.type, t)}
+          />
+          <StatCard
+            label={t('file.modified')}
+            value={prettyDate(file.fileLastModified ?? '')}
+          />
+          {showFileCreated ? (
+            <StatCard
+              label={t('file.created')}
+              value={prettyDate(file.fileCreated ?? '')}
+            />
+          ) : null}
+        </Group>
+        {file.metadata != null ? (
+          <Table>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th colSpan={2}>{t('file.metadata')}</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              <MetadataTableRows file={file} />
+            </Table.Tbody>
+          </Table>
         ) : null}
-      </Group>
-      {file.metadata != null ? (
-        <Table>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th colSpan={2}>{t('file.metadata')}</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            <MetadataTableRows file={file} />
-          </Table.Tbody>
-        </Table>
-      ) : null}
+      </Stack>
     </Modal>
   );
 };

@@ -29,9 +29,17 @@ export function trackBrowserFailures(page: Page): BrowserFailureSignals {
 
   page.on('requestfailed', (request) => {
     const resourceType = request.resourceType();
-    if (resourceType === 'script' || resourceType === 'document') {
+    const errorText = request.failure()?.errorText ?? '';
+
+    // Chromium aborts in-flight lazy preloads when a navigation no longer
+    // needs them. Those cancellations are expected; other script/document
+    // failures still indicate a broken browser load.
+    if (
+      (resourceType === 'script' || resourceType === 'document') &&
+      errorText !== 'net::ERR_ABORTED'
+    ) {
       failures.requestFailures.push(
-        `${resourceType} ${request.url()} ${request.failure()?.errorText ?? ''}`,
+        `${resourceType} ${request.url()} ${errorText}`,
       );
     }
   });

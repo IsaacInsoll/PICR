@@ -19,7 +19,7 @@ import { Page } from '../Page';
 import { PicrImage } from '../PicrImage';
 import { FileReview } from './Review/FileReview';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
-import { useOpenFileInfoModal } from '../../atoms/modalAtom';
+import { useOpenFileInfoModal } from '../../hooks/useFileModalNavigation';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useFolderLink } from '../../hooks/useSetFolder';
 import { useSelectedFileId } from '../../hooks/useSelectedFileId';

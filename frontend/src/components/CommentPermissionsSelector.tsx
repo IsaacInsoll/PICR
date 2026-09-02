@@ -44,9 +44,7 @@ export const CommentPermissionsSelector = ({
 const options: Array<{
   value: CommentPermissions;
   labelKey:
-    | 'links.comments.none'
-    | 'links.comments.read'
-    | 'links.comments.edit';
+    'links.comments.none' | 'links.comments.read' | 'links.comments.edit';
   descriptionKey:
     | 'links.comments.noneDescription'
     | 'links.comments.readDescription'

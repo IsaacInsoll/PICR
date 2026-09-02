@@ -25,7 +25,7 @@ is converted from old 100ms units (`POLLING_INTERVAL=300` becomes
 
 ## PICR Ping
 
-[PICR Ping](../picr-ping.md) is an external realtime trigger for deployments
+[PICR Ping](../src/content/docs/operations/picr-ping.md) is an external realtime trigger for deployments
 where the media lives on a NAS and PICR reads it through a network mount. It is
 orthogonal to `FILE_WATCHER`: both can run during migration, while the intended
 steady-state pairing is:

@@ -2,11 +2,11 @@ import type { PicrFile } from '@shared/types/picr';
 import { normalizeDisplayName } from '@shared/displayName';
 import { useSelectedFileId } from '../../hooks/useSelectedFileId';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
+import { useOpenSetBannerImageModal } from '../../atoms/modalAtom';
 import {
   useOpenCommentsModal,
   useOpenFileInfoModal,
-  useOpenSetBannerImageModal,
-} from '../../atoms/modalAtom';
+} from '../../hooks/useFileModalNavigation';
 import { Group, Menu, Text } from '@mantine/core';
 import { imageURL } from '../../helpers/imageURL';
 import {

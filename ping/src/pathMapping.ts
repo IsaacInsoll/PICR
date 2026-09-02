@@ -36,11 +36,7 @@ const parentOf = (path: string) => {
 };
 
 export type WatchEventName =
-  | 'add'
-  | 'addDir'
-  | 'change'
-  | 'unlink'
-  | 'unlinkDir';
+  'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
 
 export type MappedWatchEvent = {
   directories: string[];

@@ -1,0 +1,20 @@
+.modalScrollArea {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modalBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.modalFooter {
+  flex: 0 0 auto;
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md)
+    var(--mantine-spacing-md);
+  border-top: rem(1px) solid
+    light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+  background-color: var(--mantine-color-body);
+}

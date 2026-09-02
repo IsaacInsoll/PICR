@@ -8,8 +8,7 @@ const options: Array<{
   labelKey: 'links.mode.finalDelivery' | 'links.mode.proofsOnly';
   shortDescriptionKey: 'links.mode.downloadsAllowed' | 'links.mode.noDownloads';
   descriptionKey:
-    | 'links.mode.finalDeliveryDescription'
-    | 'links.mode.proofsOnlyDescription';
+    'links.mode.finalDeliveryDescription' | 'links.mode.proofsOnlyDescription';
 }> = [
   {
     value: LinkMode.FinalDelivery,

@@ -3,11 +3,7 @@ import type { ViewFolderQuery } from '@shared/gql/graphql';
 import { DefaultFilterOptions, filterFiles } from './filterFiles';
 
 export type FileSortType =
-  | 'Filename'
-  | 'LastModified'
-  | 'DateTaken'
-  | 'RecentlyCommented'
-  | 'Rating';
+  'Filename' | 'LastModified' | 'DateTaken' | 'RecentlyCommented' | 'Rating';
 export type FileSortDirection = 'Asc' | 'Desc';
 
 export interface FileSort {

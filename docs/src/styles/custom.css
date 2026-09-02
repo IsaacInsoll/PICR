@@ -1,0 +1,20 @@
+@import '@fontsource/signika/600.css';
+@import '@fontsource/signika/700.css';
+
+:root {
+  --sl-color-accent-low: #102a56;
+  --sl-color-accent: #3b82f6;
+  --sl-color-accent-high: #bfdbfe;
+  --picr-heading-font: 'Signika', var(--sl-font-system);
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #dbeafe;
+  --sl-color-accent: #2563eb;
+  --sl-color-accent-high: #172554;
+}
+
+:is(h1, h2, h3, h4, h5, h6),
+.site-title {
+  font-family: var(--picr-heading-font);
+}

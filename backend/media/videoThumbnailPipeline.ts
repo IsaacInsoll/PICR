@@ -54,9 +54,7 @@ export interface GeneratedVideoThumbnailArtifacts {
 }
 
 export type VideoCandidateExtractionMethod =
-  | 'split'
-  | 'seek-loop'
-  | 'vaapi-split';
+  'split' | 'seek-loop' | 'vaapi-split';
 
 export interface VideoCandidateExtractionResult {
   method: VideoCandidateExtractionMethod;

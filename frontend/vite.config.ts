@@ -14,9 +14,7 @@ import { Kind, parse } from 'graphql';
 
 // https://vitejs.dev/config/
 
-const ReactCompilerConfig = {
-  /* ... */
-};
+const ReactCompilerConfig = {/* ... */};
 
 const locatorJsDevRuntime = (): Plugin => ({
   name: 'picr-locatorjs-dev-runtime',
@@ -388,11 +386,6 @@ export default defineConfig(async ({ command, mode }) => {
         {
           find: '@shared',
           replacement: path.resolve(repoRoot, 'shared'),
-        },
-        {
-          // /esm/icons/index.mjs only exports the icons statically, so no separate chunks are created
-          find: '@tabler/icons-react',
-          replacement: '@tabler/icons-react/dist/esm/icons/index.mjs',
         },
       ],
     },

@@ -41,10 +41,7 @@ export type ProbePayload = ProtocolBase & {
 };
 
 export type PingPayload =
-  | ChangePayload
-  | HeartbeatPayload
-  | ProbePayload
-  | ReconcilePayload;
+  ChangePayload | HeartbeatPayload | ProbePayload | ReconcilePayload;
 
 export type ProtocolContext = {
   changePayload: (directories: string[]) => ChangePayload;

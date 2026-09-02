@@ -3,15 +3,19 @@
     "add": "Add Comment",
     "all": "All",
     "comments": "Comments",
+    "gallery": "Gallery",
     "inFolder": "in",
     "newest": "Newest",
     "newestFirst": "Newest First",
     "oldest": "Oldest",
     "oldestFirst": "Oldest First",
     "onFile": "Comments on {{name}}",
+    "openFolder": "Open Folder",
     "ratings": "Ratings",
     "system": "System",
-    "text": "Text"
+    "text": "Text",
+    "viewFeedback": "View feedback",
+    "viewFile": "View file"
   },
   "count": {
     "comment_one": "{{count}} Comment",

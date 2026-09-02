@@ -16,11 +16,7 @@ import { sendExpoNotifications } from './sendExpoNotification.js';
 import { heroImageForFolder } from '../graphql/helpers/heroImageForFolder.js';
 
 export type NotificationType =
-  | 'downloaded'
-  | 'viewed'
-  | 'rated'
-  | 'flagged'
-  | 'commented';
+  'downloaded' | 'viewed' | 'rated' | 'flagged' | 'commented';
 
 export interface NotificationPayload {
   title: string; // it will just be 'PICR' or something like that for now

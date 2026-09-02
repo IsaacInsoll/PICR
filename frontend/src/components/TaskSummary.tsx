@@ -29,9 +29,7 @@ interface TaskProgressProps {
 }
 
 type MediaTaskTranslationKey =
-  | 'task.imageDimensionBackfill'
-  | 'task.mediaImport'
-  | 'task.mediaScan';
+  'task.imageDimensionBackfill' | 'task.mediaImport' | 'task.mediaScan';
 
 export const mediaTaskTranslationKey = (
   id: string | null | undefined,

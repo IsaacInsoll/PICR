@@ -231,6 +231,7 @@ export const picrUrqlClient = (url: string, headers: HeadersInit) => {
 // shared/urql/urqlCacheExchange.ts
 export const urqlCacheExchange = cacheExchange({
   schema,
+  globalIDs: fileGlobalIDs,
   keys: {
     // Non-normalizable types (return null for no caching)
     ImageMetadataSummary: () => null,
@@ -249,6 +250,13 @@ export const urqlCacheExchange = cacheExchange({
   },
 });
 ```
+
+`File`, `Image` and `Video` are concrete GraphQL views of the same mutable
+Files-table row. A rename/rescan can change which typename represents an ID, so
+both app and frontend cache exchanges use `fileGlobalIDs` from
+`urql/fileCacheIdentity.ts`. Keep this identity rule shared even if only one
+client has a `Query.file(id:)` root resolver: folder and comment queries can
+still reference the same row across a type transition.
 
 Public links are users: `editUser` must invalidate `users` as well as `folder`,
 because public-link management and recent-client views read `Query.users` lists

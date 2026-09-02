@@ -112,17 +112,26 @@ const LeftSide = ({
         ) : null}
         {!folder || !isMobile ? (
           <Button
-            {...homeFolderLink}
+            component={Link}
+            to="/admin"
             leftSection={<PicrLogo style={{ width: 16 }} />}
             variant="subtle"
             color="gray"
             size="xs"
           >
-            {formatFolderName(me.folder) ?? homeLabel}
+            PICR
           </Button>
         ) : null}
         {!isMobile ? (
           <>
+            <ActionIcon
+              {...homeFolderLink}
+              variant="subtle"
+              color="gray"
+              aria-label={formatFolderName(me.folder) ?? homeLabel}
+            >
+              <HomeIcon />
+            </ActionIcon>
             <ActionIcon
               variant="subtle"
               color="gray"

@@ -1,5 +1,5 @@
 import useMeasure from 'react-use-measure';
-import { selectedViewAtom } from '../selectedViewAtom';
+import { useSelectedView } from '../../hooks/useSelectedView';
 import { lazy, Suspense, useCallback, useEffect, type MouseEvent } from 'react';
 import { GridGallery } from './GridGallery';
 import { ImageFeed } from './ImageFeed';
@@ -8,13 +8,13 @@ import {
   filterOptions,
   resetFilterOptions,
 } from '@shared/filterAtom';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { FilteringOptions } from './Filtering/FilteringOptions';
 import { Transition } from '@mantine/core';
 import { useParams } from 'react-router';
 import { useSelectedFileId } from '../../hooks/useSelectedFileId';
 import { FileListView } from './FileListView';
-import { fileSortAtom } from '../../atoms/fileSortAtom';
+import { useFileSort } from '../../hooks/useFileSort';
 import type {
   ViewFolderFileWithHero,
   ViewFolderSubFolder,
@@ -80,7 +80,7 @@ export const FolderContentsView = ({
   const fileId = ['manage', 'activity'].includes(fileIdParam ?? '')
     ? undefined
     : fileIdParam;
-  const [view, setView] = useAtom(selectedViewAtom);
+  const [view, setView] = useSelectedView();
   const me = useMe();
   const branding = folder.branding;
   const formatFolderName = useFolderNameFormatter();
@@ -124,7 +124,7 @@ export const FolderContentsView = ({
   const filtering = useAtomValue(filterAtom);
   const filters = useAtomValue(filterOptions);
   const resetFilters = useSetAtom(resetFilterOptions);
-  const sort = useAtomValue(fileSortAtom);
+  const [sort] = useFileSort();
   const moveFolder = useAtomValue(moveRenameFolderAtom);
   const closeMoveFolderModal = useCloseMoveRenameFolderModal();
   const bannerImageFile = useSetBannerImageFile();

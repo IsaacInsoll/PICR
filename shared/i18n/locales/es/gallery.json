@@ -3,15 +3,19 @@
     "add": "Agregar comentario",
     "all": "Todo",
     "comments": "Comentarios",
+    "gallery": "Galería",
     "inFolder": "en",
     "newest": "El más nuevo",
     "newestFirst": "Lo más nuevo primero",
     "oldest": "más antiguo",
     "oldestFirst": "El más viejo primero",
     "onFile": "Comentarios en{{name}}",
+    "openFolder": "Abrir carpeta",
     "ratings": "Calificaciones",
     "system": "Sistema",
-    "text": "Texto"
+    "text": "Texto",
+    "viewFeedback": "Ver comentario",
+    "viewFile": "Ver archivo"
   },
   "count": {
     "comment_one": "{{count}} Comentar",

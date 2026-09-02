@@ -164,6 +164,13 @@ tiles are not covered either — no fixture produces one.
   catching up before section headings render, especially on CI. Use
   `expectDashboardReady()` instead of a bare default-timeout text assertion for
   dashboard readiness.
+- For an in-app route transition within one smoke test, click the real
+  `PicrLink`/anchor instead of calling `page.goto()` again. A full document
+  navigation cancels lazy bundle preloads that are still in flight, and Chromium
+  reports those expected cancellations as `net::ERR_ABORTED` script failures to
+  the browser-failure collector. The shared collector ignores that exact
+  expected cancellation while retaining every other script/document failure;
+  do not broaden the exception to other network errors.
 - `PicrVideoPreview` advances its scrub frame on a 1s `setInterval`, so any
   video screenshot needs `page.clock.install()` before navigating.
 - Branding scenarios must create a branding, assign it with

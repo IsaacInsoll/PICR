@@ -3,12 +3,7 @@ import { PICR_PING_STALE_AFTER_MS } from '@shared/ping/protocol.js';
 export const PING_STALE_AFTER_MS = PICR_PING_STALE_AFTER_MS;
 
 export type PingDisplayState =
-  | 'awaiting'
-  | 'connected'
-  | 'degraded'
-  | 'disabled'
-  | 'error'
-  | 'stale';
+  'awaiting' | 'connected' | 'degraded' | 'disabled' | 'error' | 'stale';
 
 interface PingSourceLike {
   lastError?: string | null;

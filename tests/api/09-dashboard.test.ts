@@ -30,8 +30,7 @@ const expectAuthCode = (
 ) => {
   expect(result.error).toBeDefined();
   const extensions = result.error?.graphQLErrors?.[0]?.extensions as
-    | { code?: string; reason?: string }
-    | undefined;
+    { code?: string; reason?: string } | undefined;
   expect(extensions?.code).toBe(code);
   if (reason) expect(extensions?.reason).toBe(reason);
 };
@@ -68,6 +67,14 @@ test('Dashboard comments query returns subtree comments with the file attached',
   const mine = comments.find((c) => c.comment === uniqueText);
   expect(mine).toBeDefined();
   expect(mine?.file?.id).toBe(file.id);
+
+  // Comment.file must expose FileInterface, not the concrete `File` type, so a
+  // comment's file reports the same runtime type as the folder query does. When
+  // it was typed as `File` this was always 'File', the `... on Image` half of
+  // FileFragment never matched, and the frontend normalized the same row into
+  // two cache entities. Asserting `id` alone does not catch that regression.
+  expect(file.__typename).toBe('Image');
+  expect(mine?.file?.__typename).toBe(file.__typename);
 });
 
 test('Dashboard comments query respects the limit argument', async () => {

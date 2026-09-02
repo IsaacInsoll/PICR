@@ -1,6 +1,7 @@
 import type { File, Folder } from '@shared/gql/graphql';
 
-export type FolderIDandName = Pick<Folder, 'id' | 'name' | 'title'>;
+export type FolderIDandName = Pick<Folder, 'id' | 'name'> &
+  Partial<Pick<Folder, 'title'>>;
 export type FileIDandName = Pick<File, 'id' | 'name' | 'folderId'>;
 
 export const folderCache: {

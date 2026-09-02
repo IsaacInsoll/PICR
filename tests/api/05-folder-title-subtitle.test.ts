@@ -15,13 +15,11 @@ const expectAuthCode = (
   expect(result.error).toBeDefined();
   const actualCode = (
     result.error?.graphQLErrors?.[0]?.extensions as
-      | { code?: string; reason?: string }
-      | undefined
+      { code?: string; reason?: string } | undefined
   )?.code;
   const actualReason = (
     result.error?.graphQLErrors?.[0]?.extensions as
-      | { code?: string; reason?: string }
-      | undefined
+      { code?: string; reason?: string } | undefined
   )?.reason;
   expect(actualCode).toBe(code);
   expect(actualReason).toBe(reason);

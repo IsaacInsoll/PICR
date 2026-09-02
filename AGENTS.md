@@ -81,7 +81,7 @@ every subsystem the commit touches, run:
 - `npm run format` then `npm run format:check`
 - `npm run lint` in the subsystem (`eslint <file>` is not a substitute — subsystem lint also runs checks such as
   `css:types:check` in `frontend`)
-- `npx tsc --noEmit` in the subsystem
+- `npx tsc --noEmit` in the subsystem (for `docs`, use `npm run check` instead)
 - `npm run i18n:check` from the root if any user-facing string or locale catalog changed
 
 The full test suite is deliberately **not** on that list; it belongs to `npm run workflow`, which the user runs. The root
@@ -143,15 +143,29 @@ gh issue view <number> --comments --json number,title,state,body,comments,labels
 | `tests/`     | API integration tests (Vitest) + frontend smoke tests (Playwright) | Yes           |
 | `lightroom/` | Lightroom Classic plugin prototype (Lua)                           | Yes           |
 | `ping/`      | NAS-side media watcher and PICR change-hint delivery container     | Yes           |
-| `docs/`      | GitHub Pages documentation site                                    | No            |
+| `docs/`      | Astro/Starlight customer docs and repo-native developer docs       | No            |
 
 **Read the subsystem AGENTS.md files when working in those directories** - they contain detailed patterns, code examples, and troubleshooting guides. This applies equally when **planning** changes, not just implementing them — read the relevant subsystem AGENTS.md files before writing any plan that touches that subsystem.
 
 ## Documentation Boundaries
 
 - Root `readme.md` is customer-facing and should not be updated for developer workflow/troubleshooting notes.
-- Everything under `docs/` feeds the generated documentation site. Keep general product and user documentation customer-facing.
-- Durable guides for human developers and contributors belong under `docs/development/*` (for example, a guide to adding translations).
+- Published customer documentation belongs under `docs/src/content/docs/*`. Astro/Starlight builds these files into the GitHub Pages site with clean, extensionless routes.
+- The customer-manual homepage intentionally uses Starlight's standard documentation template so the full sidebar is visible immediately. Do not switch it to the `splash` template without revisiting that navigation decision.
+- The documentation header and favicon use copies of the official production assets from `frontend/public/logo192.png` and `frontend/public/favicon.ico`. Keep the docs copies in sync if PICR's product branding changes; do not substitute a generic camera mark.
+- Documentation headings and the site title use PICR's default Signika family through the docs package's pinned `@fontsource/signika` dependency. Keep body and code text on Starlight's default stacks for manual readability.
+- Starlight's `lastUpdated` footer uses Git history. Keep `fetch-depth: 0` on the documentation workflow checkout so deployed dates are based on complete history.
+- Starlight appends each content entry's docs-package-relative `filePath` (for example, `src/content/docs/index.mdx`) to `editLink.baseUrl`. Keep that base at the docs package root (`https://github.com/IsaacInsoll/PICR/edit/master/docs/`); including `src/content/docs/` duplicates the source path, while omitting `docs/` points GitHub at the wrong repository location.
+- Customer pages may use `.mdx` when a Starlight component materially improves a workflow. Keep ordinary prose in `.md`; do not convert pages merely for visual decoration.
+- The storage-layout tabs in the installation and scanning guides share the `picr-storage-layout` synchronization key. Keep their tab labels identical so a reader's choice persists between both pages.
+- Durable guides for human developers and contributors belong under `docs/development/*` (for example, a guide to adding translations). These files and `docs/CONTRIBUTING.md` remain repository-native Markdown and are not published by Starlight.
+- The `docs/` directory is an independent npm package. Install it with `npm --prefix docs ci`, preview it with `npm --prefix docs start`, validate it with `npm --prefix docs run check`, and build it with `npm --prefix docs run build`. Run `npm --prefix docs run check:links` after building.
+- The Astro development server does not reliably refresh customer content in this environment, especially after adding, renaming, or changing a page between `.md` and `.mdx`. Restart the docs server and reload the browser before treating a stale preview or missing slug as a source error.
+- `docs/.astro/` and `docs/dist/` are generated, ignored by Git and excluded from root Prettier checks. Do not commit or edit them directly.
+- Keep `ASTRO_TELEMETRY_DISABLED=1` in the Astro package scripts. Without it, Astro attempts to write telemetry preferences outside the workspace in some development and sandbox environments.
+- Search is generated during the production build and may not appear in the development server.
+- `.github/workflows/docs.yml` validates documentation pull requests and deploys `master` to the existing `/PICR/` GitHub Pages site. Before the first deployment, set the repository's Pages source to **GitHub Actions**.
+- The docs package is intentionally omitted from Dependabot for now. Do not add a docs npm entry unless that decision is revisited.
 - Temporary implementation plans and working notes belong under `.scratch/`, not in the generated documentation.
 - Agent-specific repository instructions and recurring AI workflow guidance belong in the relevant `AGENTS.md`.
 
@@ -181,6 +195,19 @@ Do not move codegen back to the root: a newer backend GraphQL can emit
 introspection enum values that an older transitive root GraphQL cannot
 re-introspect. Root `npm run gql` is only the repository-level wrapper.
 
+Codegen's document inputs are deliberately limited to the handwritten files in
+`shared/urql/{fragments,mutations,queries}`. Do not broaden them to all of
+`shared/**/*.ts`: Codegen 7's loader will try to parse the generated
+`shared/gql/*.ts` files as GraphQL source documents. The client preset now emits
+operation types in `shared/gql/graphql.ts`, while the separate TypeScript plugin
+emits complete schema types in `shared/gql/schema.ts`. `graphql.ts` re-exports
+the schema module's types so existing consumers retain one stable generated
+import path. Keep that re-export type-only and keep its `.js` extension: backend
+NodeNext type-checking requires the extension, while Metro must be able to erase
+the import rather than trying to resolve a nonexistent source-side `schema.js`.
+Also keep `enumType: 'native'` on the client preset: PICR uses generated runtime
+enum objects such as `FileFlag.Approved` from `graphql.ts`.
+
 A backend `graphql` version bump can legitimately change
 `shared/urql/graphql.schema.json`, because that tracked file includes
 graphql-js's own introspection schema. Dependabot cannot run codegen, so its PR
@@ -197,6 +224,14 @@ CI regenerates these files and fails the build if the committed copies differ
 (`🔄 [codegen] Verify generated GraphQL files are up to date` in
 `.github/workflows/build.yml`). If that step fails, run `npm run gql` and commit
 the result - do not edit the generated files by hand to satisfy it.
+
+The local `npm run workflow` command uses `act`, which copies the working tree
+and Git index into its container. The generated-file guard uses plain
+`git diff`, so an unstaged generated-file change fails the guard even when
+running `npm run gql` again is idempotent. Before a pre-commit local workflow
+run, stage the intended generated files (or the whole intended commit, excluding
+unrelated working-copy files). A commit is not required; staging makes the
+guard compare regenerated output against the candidate content in the index.
 
 `app/src/graphql.schema.json` was deleted: nothing imported it, and it was never
 a codegen output. The schema URQL actually uses for cache validation is
@@ -236,7 +271,7 @@ Users are stored in `backend/db/models/dbUser.ts` with two modes:
 Per-user setting (`commentPermissions`): `edit` | `read` | `none`
 
 - Only `edit` allows creating comments
-- `read` vs `none` distinction not currently enforced on backend
+- `read` allows comment/rating/flag queries but rejects mutations; `none` also rejects comment queries, so clients should hide all review UI
 
 ### Link Modes
 
@@ -271,6 +306,7 @@ npm run start:db             # Database only (Docker)
 cd backend && npm run build  # TypeScript → dist/server (for Docker image)
 cd frontend && npm run build # Vite production build
 cd app && npx expo export --platform android  # or --platform ios on macOS
+npm --prefix docs run build  # Astro/Starlight documentation site
 
 # Testing
 npm run workflow             # Full CI workflow (user runs this manually)
@@ -294,6 +330,14 @@ cd frontend && npx tsc --noEmit  # Frontend only
 cd shared && npx tsc --noEmit    # Shared only
 cd app && npm run typecheck      # App only
 cd ping && npm run typecheck     # Ping only
+cd docs && npm run check         # Astro content and TypeScript diagnostics
+
+# Documentation validation
+# Astro's validator is the type/content check for the Starlight site. A bare
+# `npx tsc --noEmit` also traverses TypeScript source shipped inside Starlight
+# and can report incompatible duplicate `satteri` types from its transitive
+# dependency tree even when the site is valid. For docs changes, run:
+# cd docs && npm run check && npm run build && npm run check:links
 
 # Install sequencing
 npm run install-all              # Preferred install flow for all subsystems
@@ -423,6 +467,7 @@ Always suggest running the relevant build as a basic validation:
 - Frontend changes → `cd frontend && npm run build`
 - App changes → `cd app && npx expo export --platform android`
 - Ping changes → `cd ping && npm run build`
+- Docs changes → `npm --prefix docs run check && npm --prefix docs run build && npm --prefix docs run check:links`
 
 Run lint for each touched subsystem before finalizing changes:
 

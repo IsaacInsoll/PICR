@@ -15,7 +15,7 @@ import { FileFlag } from '@shared/gql/graphql';
 import type { PicrFile } from '@shared/types/picr';
 import { PicrImage } from '../../PicrImage';
 import { FileFlagBadge } from './FileFlagBadge';
-import { useOpenCommentsModal } from '../../../atoms/modalAtom';
+import { useOpenCommentsModal } from '../../../hooks/useFileModalNavigation';
 import type { CommentHistoryProps } from './CommentHistory';
 import { PicrAvatar } from '../../PicrAvatar';
 import { useIsMobile } from '../../../hooks/useIsMobile';
@@ -25,6 +25,10 @@ import { PrettyFolderPath } from '../../PrettyFolderPath';
 import { useTranslation } from 'react-i18next';
 import { useDateFormatters } from '../../../i18n/useDateFormatters';
 import { useFolderNameFormatter } from '../../../i18n/useFolderNameFormatter';
+import type { NavLinkProps } from 'react-router';
+import { useFileModalLink } from '../../../hooks/useFileModalLink';
+
+type FileModalLinkProps = Pick<NavLinkProps, 'to' | 'replace' | 'state'>;
 
 export const CommentBodyItem = ({
   comment,
@@ -38,14 +42,14 @@ export const CommentBodyItem = ({
   const { prettyDate } = useDateFormatters();
   const displayUser = user ?? { id: 'system', name: t('comments.system') };
   const baseFolderUrl = useBaseViewFolderURL();
+  const modalLink = useFileModalLink({
+    mode: 'comments',
+    fileId: file?.id ?? '',
+    highlight: id ?? undefined,
+  });
 
   const showFile = file && !p.singleFile;
-  const commentLink =
-    p.showFolderContext && file?.folder
-      ? `${baseFolderUrl}${file.folder.id}#m=comments-${file.id}${
-          id ? `-${id}` : ''
-        }`
-      : undefined;
+  const commentLink = p.showFolderContext && file ? modalLink : undefined;
   const folderLink =
     p.showFolderContext && file?.folder
       ? `${baseFolderUrl}${file.folder.id}`
@@ -55,10 +59,9 @@ export const CommentBodyItem = ({
   const isMobile = useIsMobile();
   const compact = Boolean(p.compact);
   const openFileComment = () => {
-    if (!file || !id) return;
-    openCommentModal(file.id, id);
+    if (!file) return;
+    openCommentModal(file.id, id ?? undefined);
   };
-
   const showFilePreview = showFile && !compact;
 
   // We could use the 'title' prop on `Item` but it's a huge font size
@@ -84,7 +87,7 @@ export const CommentBodyItem = ({
             <FilePreview
               file={file as PicrFile}
               onClick={commentLink ? undefined : openFileComment}
-              linkTo={commentLink}
+              link={commentLink}
             />
           ) : null}
           <Stack style={{ flexGrow: 1 }} gap="xs">
@@ -92,7 +95,24 @@ export const CommentBodyItem = ({
               {displayUser.name}
             </Text>
             {systemGenerated ? (
-              <CommentAction comment={comment} />
+              commentLink ? (
+                <PicrLink
+                  {...commentLink}
+                  c="inherit"
+                  underline="never"
+                  aria-label={t('comments.viewFeedback')}
+                >
+                  <CommentAction comment={comment} />
+                </PicrLink>
+              ) : (
+                <CommentAction comment={comment} />
+              )
+            ) : commentLink ? (
+              <PicrLink {...commentLink} c="inherit" underline="never">
+                <Text size="sm" lineClamp={compact ? 2 : undefined}>
+                  {comment.comment}
+                </Text>
+              </PicrLink>
             ) : (
               <Text size="sm" lineClamp={compact ? 2 : undefined}>
                 {comment.comment}
@@ -102,7 +122,7 @@ export const CommentBodyItem = ({
               {showFile ? (
                 <FileContext
                   file={file as PicrFile}
-                  linkTo={commentLink}
+                  link={commentLink}
                   folderLink={folderLink}
                   inFolderLabel={t('comments.inFolder')}
                 />
@@ -121,17 +141,17 @@ export const CommentBodyItem = ({
 const FilePreview = ({
   file,
   onClick,
-  linkTo,
+  link,
 }: {
   file: PicrFile;
   onClick?: () => void;
-  linkTo?: string;
+  link?: FileModalLinkProps;
 }) => {
   const image =
     file.type === 'Image' ? (
       <PicrImage
         onClick={onClick}
-        clickable={Boolean(onClick) || Boolean(linkTo)}
+        clickable={Boolean(onClick) || Boolean(link)}
         file={file}
         targetWidth={Math.ceil(96 * (file.imageRatio ?? 1))}
         sizes={`${Math.ceil(96 * (file.imageRatio ?? 1))}px`}
@@ -144,19 +164,25 @@ const FilePreview = ({
 
   return (
     <Box>
-      {linkTo && image ? <PicrLink to={linkTo}>{image}</PicrLink> : image}
+      {link && image ? (
+        <PicrLink {...link} tabIndex={-1}>
+          {image}
+        </PicrLink>
+      ) : (
+        image
+      )}
     </Box>
   );
 };
 
 const FileContext = ({
   file,
-  linkTo,
+  link,
   folderLink,
   inFolderLabel,
 }: {
   file: PicrFile;
-  linkTo?: string;
+  link?: FileModalLinkProps;
   folderLink?: string;
   inFolderLabel: string;
 }) => {
@@ -165,11 +191,11 @@ const FileContext = ({
     <Code style={{ opacity: 0.33 }}>{normalizeDisplayName(file.name)}</Code>
   );
 
-  if (!linkTo) return fileName;
+  if (!link) return fileName;
 
   return (
     <Group gap={4}>
-      <PicrLink to={linkTo} underline="never">
+      <PicrLink {...link} underline="never">
         {fileName}
       </PicrLink>
       {file.folder ? (
@@ -183,7 +209,7 @@ const FileContext = ({
             disabled={file.folder.parents?.length === 0}
             label={<PrettyFolderPath folder={file.folder} subColor="blue.8" />}
           >
-            <PicrLink to={folderLink ?? linkTo} underline="never">
+            <PicrLink to={folderLink ?? link.to} underline="never">
               <Code style={{ opacity: 0.33 }}>
                 {formatFolderName(file.folder)}
               </Code>

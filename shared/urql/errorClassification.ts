@@ -8,7 +8,9 @@ import {
 
 export type GlobalErrorType = 'network_unavailable' | 'no_permissions';
 export type GlobalErrorReason = {
-  [Reason in AuthErrorReason]: (typeof authErrorCatalog)[Reason]['globalAction'] extends 'global_no_permissions'
+  [
+    Reason in AuthErrorReason
+  ]: (typeof authErrorCatalog)[Reason]['globalAction'] extends 'global_no_permissions'
     ? Reason
     : never;
 }[AuthErrorReason];

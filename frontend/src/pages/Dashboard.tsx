@@ -456,9 +456,7 @@ const FolderCard = ({
 };
 
 type HeroImageInput =
-  | (ImageUrlFileInput & { __typename?: string })
-  | null
-  | undefined;
+  (ImageUrlFileInput & { __typename?: string }) | null | undefined;
 
 // heroImage when one is set, otherwise a generic folder icon (mosaic rejected).
 // `fill` makes it stretch to the parent's full height (full-bleed card thumb).

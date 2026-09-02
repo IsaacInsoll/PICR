@@ -140,8 +140,7 @@ test('Ping activity remains visible across resolution, settling, and cleanup', a
 
 test('accepts raw paths before database resolution completes', async () => {
   let finishResolution:
-    | ((value: ReturnType<typeof resolution>) => void)
-    | null = null;
+    ((value: ReturnType<typeof resolution>) => void) | null = null;
   const resolveFolder = vi
     .fn()
     .mockImplementationOnce(

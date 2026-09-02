@@ -5,9 +5,11 @@ import { useMutation } from 'urql';
 import { notifications } from '@mantine/notifications';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
 import { FileFlag } from '@shared/gql/graphql';
-import { useAtomValue } from 'jotai';
 import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
-import { modalTypeAtom, useOpenCommentsModal } from '../../../atoms/modalAtom';
+import {
+  useFileModalState,
+  useOpenCommentsModal,
+} from '../../../hooks/useFileModalNavigation';
 import type { ReviewableFile } from '../Review/FileReview';
 import { useTranslation } from 'react-i18next';
 
@@ -43,7 +45,7 @@ export const useLightboxShortcuts = ({
   const { canEdit, canView } = useCommentPermissions();
   const [, mutate] = useMutation(addCommentMutation);
   const openComment = useOpenCommentsModal();
-  const modalOpen = !!useAtomValue(modalTypeAtom);
+  const modalOpen = Boolean(useFileModalState());
 
   // Keep the latest values in a ref so the keydown listener is registered once
   // per open (not re-bound on every slide change) while always seeing fresh data.

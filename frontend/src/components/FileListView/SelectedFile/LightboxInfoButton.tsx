@@ -1,4 +1,4 @@
-import { useOpenFileInfoModal } from '../../../atoms/modalAtom';
+import { useOpenFileInfoModal } from '../../../hooks/useFileModalNavigation';
 import { InfoIcon } from '../../../PicrIcons';
 import type { PicrFile } from '@shared/types/picr';
 import { useLightboxState } from 'yet-another-react-lightbox';

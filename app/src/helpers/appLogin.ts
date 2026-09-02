@@ -4,9 +4,7 @@ import { picrUrqlClient } from '@shared/urql/urqlClient';
 import { createServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
 
 export type AppLoginErrorType =
-  | 'authentication_rejected'
-  | 'network_unavailable'
-  | 'server_error';
+  'authentication_rejected' | 'network_unavailable' | 'server_error';
 
 export type AppLoginResult =
   | { token: string; error?: never }

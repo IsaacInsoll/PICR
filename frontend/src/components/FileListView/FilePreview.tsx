@@ -6,9 +6,11 @@ import { PicrImage } from '../PicrImage';
 export const FilePreview = ({
   file,
   imageProps,
+  clickable = true,
 }: {
   file: PicrFile;
   imageProps?: ThumbnailImageComponentImageProps;
+  clickable?: boolean;
 }) => {
   const width =
     imageProps && typeof imageProps.style.width === 'number'
@@ -22,7 +24,7 @@ export const FilePreview = ({
       {...(imageProps ?? {})}
       file={file}
       targetWidth={width ?? 500}
-      clickable={true}
+      clickable={clickable}
       sizes={width ? `${Math.ceil(width)}px` : undefined}
     />
   );

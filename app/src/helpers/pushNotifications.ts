@@ -8,10 +8,7 @@ export type PushNotificationRegistration =
   | { status: 'registered'; token: string }
   | {
       status:
-        | 'permission-required'
-        | 'permission-denied'
-        | 'unavailable'
-        | 'error';
+        'permission-required' | 'permission-denied' | 'unavailable' | 'error';
     };
 
 const resolvePushNotificationRegistration = async (
