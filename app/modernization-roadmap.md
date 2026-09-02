@@ -16,7 +16,7 @@ carousel navigation were manually exercised. Runtime problems found during that
 smoke pass were fixed and rechecked. No EAS build or store release was used.
 
 Phase 2's unit/component safety net is complete. The Jest/React Native Testing
-Library suite currently passes 96 tests across login, URL normalization, auth
+Library suite currently passes 103 tests across login, URL normalization, auth
 expiry, SecureStore migration, route construction, date formatting, branding,
 presentation defaults, photographer file actions, native row identifiers and
 notification settings. It runs from root checks, CI and app release preflight,
@@ -44,9 +44,15 @@ owns GraphQL headers, media URLs, native route keys and base-path-aware incoming
 links; legacy server-schema negotiation is deliberately out of scope while the
 app has no external user base. Download failures now give the photographer
 useful feedback, and opening Notification Settings checks local permission
-without prompting; permission is requested only after explicit opt-in. Native
-Maestro execution can resume when its additional coverage is useful; Expo SDK
-upgrades remain deliberately separate.
+without prompting; permission is requested only after explicit opt-in. The
+native route tree and every advertised link target have been audited, and
+incoming authenticated URLs now match only implemented native route shapes.
+The only remaining Phase 3 implementation decision is whether the app should
+continue retaining the password for startup re-authentication. Closing the
+phase also requires a fresh-default-server `admin` login, HTTPS media/download
+smoke coverage and native Maestro execution; shared login-error metadata remains
+separately approved core API work rather than an app-modernization blocker. Expo
+SDK upgrades remain deliberately separate.
 
 ## Product direction
 
@@ -119,7 +125,7 @@ resource. The default workflow is local-first:
       advisories in Expo's build/configuration toolchain; the full audit adds
       one path through `jest-expo`. npm's proposed force-fix crosses an Expo SDK
       boundary, so the remainder is deferred to the planned SDK 56/57 upgrades.
-- [x] App unit/component tests exist and pass locally (96 tests on 2026-09-02).
+- [x] App unit/component tests exist and pass locally (103 tests on 2026-09-02).
       Native Maestro execution is scaffolded and deliberately deferred.
 - [ ] Package/store versions are reconciled. `app/package.json` is 1.0.6, while
       the public store listings observed during the audit show older releases.
@@ -254,7 +260,7 @@ backend/shared contracts.
 
 Exit gate:
 
-- [ ] The route tree contains no advertised but unmatched native route.
+- [x] The route tree contains no advertised but unmatched native route.
 - [ ] A fresh default PICR installation can log in as `admin`.
 - [ ] Authenticated media and downloads work against HTTPS. Plain HTTP retains
       contract-test coverage but does not block the phase or a release.

@@ -36,6 +36,14 @@ describe('authenticated incoming app routes', () => {
   it.each([
     ['picr://picr.example.com/admin', '/picr.example.com/admin'],
     [
+      'picr://picr.example.com/admin/find?folderId=12',
+      '/picr.example.com/admin/find?folderId=12',
+    ],
+    [
+      'picr://picr.example.com/admin/settings',
+      '/picr.example.com/admin/settings',
+    ],
+    [
       'picrdev://picr.example.com/admin/f/12/34?from=push',
       '/picr.example.com/admin/f/12/34?from=push',
     ],
@@ -51,6 +59,10 @@ describe('authenticated incoming app routes', () => {
     'picr://user@picr.example.com/admin',
     'picr://picr.example.com/s/link-user/12',
     'https://picr.example.com/not-an-app-route',
+    'https://picr.example.com/admin/arbitrary',
+    'https://picr.example.com/admin/settings/branding',
+    'https://picr.example.com/admin/f/not-a-folder',
+    'https://picr.example.com/admin/f/12/34/extra',
   ])('rejects non-admin incoming URL %s', (url) => {
     expect(authenticatedAppHrefFromIncomingUrl(url)).toBeNull();
   });
@@ -159,6 +171,7 @@ describe('notificationTargetFromData', () => {
     { url: '' },
     { url: 12 },
     { url: 'https://picr.example.com/arbitrary' },
+    { url: 'https://picr.example.com/admin/settings/branding' },
   ])('ignores invalid or unrelated notification data %#', (data) => {
     expect(notificationTargetFromData(data)).toBeNull();
   });

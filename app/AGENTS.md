@@ -185,6 +185,10 @@ Public `/s/:uuid/...` gallery URLs belong to the frontend and must open in the
 system browser. Keep this distinction in `src/helpers/appRoutes.ts`; do not
 reintroduce public providers, UUID-aware component branches or partial public
 routes without treating native client galleries as a complete product surface.
+Incoming authenticated links must match an exact native route shape; a generic
+`/admin` prefix is not an allowlist because the web frontend has additional
+admin routes that the app does not implement. Keep the accepted path matcher,
+Expo Router file tree and `appRoutes` tests in sync.
 
 The app uses `shared/urql/queries/appMeQuery.ts` and projects it through
 `src/helpers/appMe.ts`. Keep that contract limited to authenticated

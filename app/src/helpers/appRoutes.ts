@@ -26,6 +26,12 @@ const relativeRoute = (value: string): URL | null =>
 
 type ServerRouteOrigin = Pick<ServerOrigin, 'basePath' | 'routeKey'>;
 
+const authenticatedRoutePathPattern =
+  /^\/admin(?:\/(?:find|settings|f\/\d+(?:\/\d+)?))?\/?$/;
+
+const isAuthenticatedRoutePath = (path: string) =>
+  authenticatedRoutePathPattern.test(path);
+
 const serverRoutePath = (
   url: URL,
   origin?: ServerRouteOrigin,
@@ -49,7 +55,7 @@ const absoluteAuthenticatedHref = (
   const url = absoluteRoute(value);
   if (!url) return null;
   const path = serverRoutePath(url, origin);
-  if (!path || !/^\/admin(?:\/|$)/.test(path)) return null;
+  if (!path || !isAuthenticatedRoutePath(path)) return null;
 
   return `/${origin?.routeKey ?? url.host}${path}${url.search}${url.hash}` as Href;
 };
@@ -61,7 +67,7 @@ const relativeAuthenticatedHref = (
   const url = relativeRoute(value);
   if (!url) return null;
   const path = serverRoutePath(url, origin);
-  return path && /^\/admin(?:\/|$)/.test(path)
+  return path && isAuthenticatedRoutePath(path)
     ? (`/${origin?.routeKey ?? url.host}${path}${url.search}${url.hash}` as Href)
     : null;
 };
