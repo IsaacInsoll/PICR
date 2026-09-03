@@ -35,10 +35,14 @@ export const urqlCacheConfig = {
     },
   },
   keys: {
+    BenchmarkResult: () => null,
     ClientInfo: () => null,
     FolderFileExport: () => null,
     FolderFilesResult: () => null,
     ImageMetadataSummary: () => null,
+    NamedBenchmarkStep: () => null,
+    ServerSettings: () => null,
+    ThumbnailVariant: () => null,
     VideoMetadataSummary: () => null,
     Task: () => null,
   },
@@ -49,7 +53,7 @@ export const urqlCacheConfig = {
         invalidateQueries(cache, ['folder', 'users']),
       editAdminUser: (_, args, cache) => invalidateQueries(cache, ['admins']),
       deleteUser: (_, args, cache) =>
-        invalidateQueries(cache, ['admins', 'users']),
+        invalidateQueries(cache, ['admins', 'folder', 'users']),
       addComment: (_, args, cache) => invalidateQueries(cache, ['comments']),
       deleteBranding: (_, args, cache) =>
         invalidateQueries(cache, ['brandings', 'folder']),

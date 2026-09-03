@@ -199,7 +199,11 @@ export const folderType: GraphQLObjectType<FolderFields, PicrRequestContext> =
           if (permissions !== 'Admin') return null;
 
           const users = await db.query.dbUser.findMany({
-            where: eq(dbUser.folderId, f.id),
+            where: and(
+              eq(dbUser.folderId, f.id),
+              eq(dbUser.userType, 'Link'),
+              eq(dbUser.deleted, false),
+            ),
           });
 
           return users.map((pl) => {

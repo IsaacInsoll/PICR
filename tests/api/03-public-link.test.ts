@@ -722,6 +722,16 @@ test('Re-enabled link works, then deleted link fails', async () => {
   expect(deletedInfoResult.data?.publicLinkInfo.status).toBe(
     PublicLinkAccessStatus.Unavailable,
   );
+
+  const adminFolderResult = await adminClient
+    .query(viewFolderQuery, { folderId: '1' })
+    .toPromise();
+  const photoFolder = adminFolderResult.data?.folder?.subFolders.find(
+    (folder) => folder.id === photoFolderId,
+  );
+  expect(photoFolder?.users?.some((user) => user.id === createdUserId)).toBe(
+    false,
+  );
 });
 
 test('Access logs no longer show deleted user', async () => {

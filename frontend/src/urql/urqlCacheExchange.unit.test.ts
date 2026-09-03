@@ -129,6 +129,13 @@ const video: MockFile = {
 };
 
 describe('file modal Graphcache resolution', () => {
+  test('embeds keyless server configuration result types', () => {
+    expect(urqlCacheConfig.keys.ThumbnailVariant()).toBeNull();
+    expect(urqlCacheConfig.keys.ServerSettings()).toBeNull();
+    expect(urqlCacheConfig.keys.BenchmarkResult()).toBeNull();
+    expect(urqlCacheConfig.keys.NamedBenchmarkStep()).toBeNull();
+  });
+
   test('reuses a complete image normalized by the dashboard comment query', async () => {
     const { client, mockFetch } = createCacheClient([image]);
     await client
