@@ -590,6 +590,15 @@
       "running": "En cours",
       "next": "Prochaine : {{date}}",
       "inodeTracking": "Suivi des inodes",
+      "inodeReasons": {
+        "notDetected": "La prise en charge des inodes n'a pas encore été détectée.",
+        "noSample": "Aucune entrée multimédia n'est encore disponible pour l'échantillonnage.",
+        "enabled": "Les identifiants d'inode sont présents et utilisés pour suivre les déplacements/renommages.",
+        "disabled": "Ce système de fichiers ne signale aucun inode ; la détection des déplacements utilise le chemin et le hachage du contenu.",
+        "unableToReadMediaPath": "Impossible de lire le chemin des médias : {{reason}}",
+        "unableToStatSample": "Impossible d'inspecter l'entrée multimédia échantillonnée : {{reason}}",
+        "unknown": "Détail de l'état de prise en charge des inodes : {{reason}}"
+      },
       "ping": "PICR Ping",
       "pingDescription": "Reçoit en direct les indications de changement des observateurs exécutés près du stockage multimédia distant.",
       "pingCoordinator": "Coordinateur Ping",

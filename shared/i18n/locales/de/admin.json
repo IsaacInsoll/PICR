@@ -603,6 +603,15 @@
       "running": "Läuft",
       "next": "Weiter: {{date}}",
       "inodeTracking": "Inode-Tracking",
+      "inodeReasons": {
+        "notDetected": "Die Inode-Unterstützung wurde noch nicht erkannt.",
+        "noSample": "Es sind noch keine Medieneinträge zum Prüfen verfügbar.",
+        "enabled": "Inode-Kennungen sind vorhanden und werden für die Verschiebe-/Umbenennungsverfolgung verwendet.",
+        "disabled": "Dieses Dateisystem meldet keine Inodes; die Verschiebeerkennung fällt auf Pfad und Inhalts-Hash zurück.",
+        "unableToReadMediaPath": "Der Medienpfad konnte nicht gelesen werden: {{reason}}",
+        "unableToStatSample": "Der geprüfte Medieneintrag konnte nicht untersucht werden: {{reason}}",
+        "unknown": "Detail zum Inode-Unterstützungsstatus: {{reason}}"
+      },
       "ping": "PICR-Ping",
       "pingDescription": "Empfängt Live-Änderungshinweise von Beobachtern, die neben dem Remote-Medienspeicher ausgeführt werden.",
       "pingCoordinator": "Ping-Koordinator",

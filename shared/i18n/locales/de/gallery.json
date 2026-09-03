@@ -139,6 +139,7 @@
     "imageOptions": "Bildoptionen",
     "metadata": "Metadaten",
     "metadataFiltering": "Metadatenfilterung",
+    "metadataUnavailableEmpty": "Nicht verfügbar, da diese Bilder diese Metadaten nicht enthalten",
     "metadataUnavailable": "Nicht verfügbar, da alle Bilder {{value}} sind",
     "rating": "Bewertung",
     "ratingComparison": {

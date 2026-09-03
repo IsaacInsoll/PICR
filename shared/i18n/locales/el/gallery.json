@@ -139,6 +139,7 @@
     "imageOptions": "Επιλογές εικόνας",
     "metadata": "Μεταδεδομένα",
     "metadataFiltering": "Φιλτράρισμα μεταδεδομένων",
+    "metadataUnavailableEmpty": "Δεν είναι διαθέσιμο, επειδή αυτές οι εικόνες δεν περιλαμβάνουν αυτά τα μεταδεδομένα",
     "metadataUnavailable": "Δεν είναι διαθέσιμο, καθώς όλες οι εικόνες είναι {{value}}",
     "rating": "Αξιολόγηση",
     "ratingComparison": {

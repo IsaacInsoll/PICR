@@ -590,6 +590,15 @@
       "running": "Running",
       "next": "Next: {{date}}",
       "inodeTracking": "Inode tracking",
+      "inodeReasons": {
+        "notDetected": "Inode support has not been detected yet.",
+        "noSample": "No media entries are available to sample yet.",
+        "enabled": "Inode identifiers are present and used for move/rename tracking.",
+        "disabled": "This filesystem reports no inodes; move detection falls back to path and content hash.",
+        "unableToReadMediaPath": "Unable to read the media path: {{reason}}",
+        "unableToStatSample": "Unable to inspect the sampled media entry: {{reason}}",
+        "unknown": "Inode support status detail: {{reason}}"
+      },
       "ping": "PICR Ping",
       "pingDescription": "Receives live change hints from watchers running beside remote media storage.",
       "pingCoordinator": "Ping coordinator",

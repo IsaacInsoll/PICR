@@ -603,6 +603,15 @@
       "running": "Correr",
       "next": "Siguiente: {{date}}",
       "inodeTracking": "Seguimiento de inodos",
+      "inodeReasons": {
+        "notDetected": "La compatibilidad con inodos aún no se ha detectado.",
+        "noSample": "Aún no hay entradas multimedia disponibles para comprobar.",
+        "enabled": "Los identificadores de inodo están presentes y se usan para seguir movimientos/cambios de nombre.",
+        "disabled": "Este sistema de archivos no informa inodos; la detección de movimientos vuelve a la ruta y al hash del contenido.",
+        "unableToReadMediaPath": "No se pudo leer la ruta de medios: {{reason}}",
+        "unableToStatSample": "No se pudo inspeccionar la entrada multimedia muestreada: {{reason}}",
+        "unknown": "Detalle del estado de compatibilidad con inodos: {{reason}}"
+      },
       "ping": "Ping PICR",
       "pingDescription": "Recibe sugerencias de cambios en vivo de observadores que se ejecutan junto al almacenamiento de medios remoto.",
       "pingCoordinator": "coordinador de ping",

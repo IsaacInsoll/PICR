@@ -884,6 +884,35 @@ const scanModeLabel = (mode: string, t: AdminT) => {
   }
 };
 
+const inodeReasonLabel = (reason: string, t: AdminT) => {
+  switch (reason) {
+    case 'Inode support not yet detected':
+      return t('server.scanning.inodeReasons.notDetected');
+    case 'No non-ignored media entries found to sample yet':
+      return t('server.scanning.inodeReasons.noSample');
+    case 'Inode identifiers present; used for move/rename tracking':
+      return t('server.scanning.inodeReasons.enabled');
+    case 'Filesystem reports no inodes; move detection falls back to path and content hash':
+      return t('server.scanning.inodeReasons.disabled');
+  }
+
+  const unableToReadPrefix = 'Unable to read media path:';
+  if (reason.startsWith(unableToReadPrefix)) {
+    return t('server.scanning.inodeReasons.unableToReadMediaPath', {
+      reason: reason.slice(unableToReadPrefix.length).trim(),
+    });
+  }
+
+  const unableToStatPrefix = 'Unable to stat sampled media entry:';
+  if (reason.startsWith(unableToStatPrefix)) {
+    return t('server.scanning.inodeReasons.unableToStatSample', {
+      reason: reason.slice(unableToStatPrefix.length).trim(),
+    });
+  }
+
+  return t('server.scanning.inodeReasons.unknown', { reason });
+};
+
 const formatDuration = (durationMs: number) => {
   if (durationMs < 1000) return `${durationMs}ms`;
   const seconds = durationMs / 1000;
@@ -1139,7 +1168,7 @@ const ScanningCard = ({
       </InfoRow>
       <InfoRow
         label={t('server.scanning.inodeTracking')}
-        description={inode.reason}
+        description={inodeReasonLabel(inode.reason, t)}
       >
         <InodeBadge status={inode.status} />
       </InfoRow>

@@ -149,6 +149,7 @@
     "imageOptions": "Параметри зображення",
     "metadata": "Метадані",
     "metadataFiltering": "Фільтрація метаданих",
+    "metadataUnavailableEmpty": "Недоступно, оскільки ці зображення не містять цих метаданих",
     "metadataUnavailable": "Недоступно, оскільки всі зображення мають {{value}}",
     "rating": "Рейтинг",
     "ratingComparison": {

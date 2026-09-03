@@ -29,6 +29,7 @@ export const MetadataSelect = ({
     formattingLocale,
     invalidDateLabel,
   );
+  const onlyOption = data[0]?.label ?? options[0];
 
   const label = metadataDescription(title, metadataDescriptionTranslator(t));
   // <MultiSelect> only accepts string values so we need to do some conversion back-and-forth as some metadata is numeric such as aperture and shutter speed
@@ -43,7 +44,9 @@ export const MetadataSelect = ({
       disabled={solo}
       description={
         solo
-          ? t('filter.metadataUnavailable', { value: options[0] })
+          ? options.length === 0
+            ? t('filter.metadataUnavailableEmpty')
+            : t('filter.metadataUnavailable', { value: onlyOption })
           : undefined
       }
       leftSection={metadataIcons[title as keyof typeof metadataIcons]}
