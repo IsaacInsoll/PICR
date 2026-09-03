@@ -780,6 +780,8 @@ function MyComponent() {
 - Prefer Mantine primitives/props (`Paper`, `Overlay`, `Container`, spacing, radius, shadow) over ad-hoc wrapper `div` styling.
 - Prefer Mantine theme tokens/helpers (`useMantineTheme`, `alpha`, color scales, `primaryColor`) over hardcoded hex/RGBA values.
 - Use CSS modules for static layout/styling; keep inline `style` only for runtime-calculated values (for example transforms and computed dimensions).
+- Mantine 9's `Collapse` component uses `expanded={boolean}` for its open
+  state in this repo, not the older/common `in` or `opened` prop names.
 
 ### Typed CSS Modules
 

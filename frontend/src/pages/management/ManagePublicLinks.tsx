@@ -5,10 +5,18 @@ import { manageFolderQuery } from '@shared/urql/queries/manageFolderQuery';
 import QueryFeedback from '../../components/QueryFeedback';
 import { ManagePublicLink } from './ManagePublicLink';
 import type { PicrFolder } from '@shared/types/picr';
-import { DisconnectedIcon, PublicLinkIcon, SearchIcon } from '../../PicrIcons';
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  DisconnectedIcon,
+  PublicLinkIcon,
+  SearchIcon,
+} from '../../PicrIcons';
 import { ModalLoadingIndicator } from '../../components/ModalLoadingIndicator';
 import {
+  Anchor,
   Button,
+  Collapse,
   Divider,
   Group,
   Stack,
@@ -58,6 +66,7 @@ export const ManagePublicLinks = ({
   const [includeChildren, setIncludeChildren] = useState(
     relations === 'children',
   );
+  const [showRelatedFilters, setShowRelatedFilters] = useState(false);
   const [search, setSearch] = useState('');
 
   const [localLinkId, setLocalLinkId] = useState<string | null>(null);
@@ -112,20 +121,6 @@ export const ManagePublicLinks = ({
         <Stack>
           <Divider />
           <Tips type="PublicLink" />
-          <Group justify="flex-end" pb="xs">
-            <Switch
-              checked={includeParents}
-              onChange={(e) => setIncludeParents(e.currentTarget.checked)}
-              label={t('links.includeParentsShort')}
-              aria-label={t('links.includeParents')}
-            />
-            <Switch
-              checked={includeChildren}
-              onChange={(e) => setIncludeChildren(e.currentTarget.checked)}
-              label={t('links.includeChildrenShort')}
-              aria-label={t('links.includeChildren')}
-            />
-          </Group>
         </Stack>
       ) : null}
       <Suspense fallback={<LoadingIndicator />}>
@@ -139,6 +134,60 @@ export const ManagePublicLinks = ({
           setSearch={setSearch}
         />
       </Suspense>
+      {relations === 'options' ? (
+        <Stack gap="xs" pt="xs">
+          <Group justify="flex-end">
+            <Anchor
+              component="button"
+              type="button"
+              size="xs"
+              c="dimmed"
+              onClick={() => setShowRelatedFilters((opened) => !opened)}
+              aria-expanded={showRelatedFilters}
+              style={{ lineHeight: 1.2 }}
+            >
+              <span
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+              >
+                {t('links.relatedFilters')}
+                {showRelatedFilters ? (
+                  <ChevronUpIcon size={14} />
+                ) : (
+                  <ChevronDownIcon size={14} />
+                )}
+              </span>
+            </Anchor>
+          </Group>
+          <Collapse expanded={showRelatedFilters}>
+            <Stack gap="xs" pb="xs">
+              <Switch
+                checked={includeParents}
+                onChange={(e) => setIncludeParents(e.currentTarget.checked)}
+                label={t('links.includeParentsShort')}
+                description={t('links.includeParentsDescription')}
+                aria-label={t('links.includeParents')}
+                style={{ width: '100%' }}
+                styles={{
+                  body: { width: '100%' },
+                  labelWrapper: { flex: 1 },
+                }}
+              />
+              <Switch
+                checked={includeChildren}
+                onChange={(e) => setIncludeChildren(e.currentTarget.checked)}
+                label={t('links.includeChildrenShort')}
+                description={t('links.includeChildrenDescription')}
+                aria-label={t('links.includeChildren')}
+                style={{ width: '100%' }}
+                styles={{
+                  body: { width: '100%' },
+                  labelWrapper: { flex: 1 },
+                }}
+              />
+            </Stack>
+          </Collapse>
+        </Stack>
+      ) : null}
       <Group gap="md" pt="md" justify="space-evenly">
         {!disableAddingLinks ? (
           <Button variant="default" onClick={createLink}>
