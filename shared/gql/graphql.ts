@@ -497,7 +497,7 @@ export type AccessLogsQueryQuery = { accessLogs: Array<{ id: string, timestamp: 
 export type AppMeQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AppMeQueryQuery = { __typename?: 'Query', me?: { __typename?: 'User', id?: string | null, name?: string | null, folderId: string } | null, clientInfo?: { __typename?: 'ClientInfo', thumbnailVariants: Array<{ __typename?: 'ThumbnailVariant', token: string, width: number, format: string, mimeType: string, quality: number }> } | null };
+export type AppMeQueryQuery = { me: { id: string | null, name: string | null, folderId: string } | null, clientInfo: { thumbnailVariants: Array<{ token: string, width: number, format: string, mimeType: string, quality: number }> } | null };
 
 export type CommentHistoryQueryQueryVariables = Exact<{
   fileId?: string | number | null | undefined;
