@@ -5,6 +5,12 @@ The build process is in `.github/workflows/build.yml`.
 - Github will automatically run this on every push to `master`
 - You can run it locally with the following command: `npm run workflow`
 
+The beta React Native app has a separate compatibility workflow. It runs only
+when `app`, `shared` or app build configuration changes, and it is not part of
+the main backend/frontend artifact job. Run it locally with
+`npm run workflow:app`. Keep the app check advisory rather than making it a
+required branch-protection check.
+
 `npm run workflow` depends on the local `act` version supporting the Node.js
 runtime declared by the workflow actions. If `act` fails before running any
 PICR build steps with an error like `runs.using ... got node24`, update `act`
@@ -26,6 +32,14 @@ This will run the following commands in order. You can run any of these individu
 | `npm run test:e2e`             | 🧪 Run frontend smoke tests            | Playwright + Docker (`tests/e2e`)                             |
 | `npm run test`                 | 🧪 Run all tests                       | Runs `test:api` then `test:e2e`                               |
 | _build artifact_               | 🗜️ Do locally with `npm run workflow`  |                                                               |
+
+The app compatibility workflow installs the root, `shared` and `app`
+dependencies, then runs app lint, type checking, unit/component tests, the
+Hermes polyfill check, and both Expo exports. The root install is required
+because the app imports the repository ESLint config, whose plugins are owned by
+the root package. Expo Doctor is deliberately reserved for app release
+preflight: its dependency compatibility findings should not make routine
+shared-code CI noisy.
 
 ## Local DX helper commands
 

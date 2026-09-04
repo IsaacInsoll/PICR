@@ -1,0 +1,66 @@
+name: PICR App Compatibility
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - 'app/**'
+      - 'shared/**'
+      - 'eslint/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.nvmrc'
+      - 'tsconfig.base.json'
+      - 'scripts/release-app-export-ios.sh'
+      - '.github/workflows/app.yml'
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'shared/**'
+      - 'eslint/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.nvmrc'
+      - 'tsconfig.base.json'
+      - 'scripts/release-app-export-ios.sh'
+      - '.github/workflows/app.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: App compatibility (advisory)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Use Node.js from .nvmrc
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            shared/package-lock.json
+            app/package-lock.json
+      - name: '📦 [root] Install dependencies'
+        run: npm ci
+      - name: '🗃️ [shared] Install dependencies'
+        run: npm --prefix shared ci
+      - name: '📱 [app] Install dependencies'
+        run: npm --prefix app ci
+      - name: '📱 [app] Lint'
+        run: npm --prefix app run lint
+      - name: '📱 [app] Type check'
+        run: npm --prefix app run typecheck
+      - name: '📱 [app] Unit and component tests'
+        run: npm --prefix app test
+      - name: '📱 [app] Check Hermes polyfills'
+        run: npm --prefix app run check:polyfills
+      - name: '📱 [app] Build iOS bundle'
+        run: bash scripts/release-app-export-ios.sh
+      - name: '📱 [app] Build Android bundle'
+        run: cd app && npx expo export --platform android

@@ -79,7 +79,12 @@ Common faults include:
 
 ## When are tests run?
 
-- Tests are run in GitHub Actions on `push` and `pull_request` (except docs/lightroom/markdown-only changes) via `.github/workflows/on-push.yml`.
+- Main backend/frontend tests run in GitHub Actions on `push` and
+  `pull_request` (except app/docs/lightroom/markdown-only changes) via
+  `.github/workflows/on-push.yml`.
+- App compatibility checks run separately for app/shared changes via
+  `.github/workflows/app.yml`. They are advisory and do not block the main
+  artifact workflow.
 - Tests are also run for release workflows before Docker images are pushed.
 - Tests are not run before each local commit by default.
 - You can manually run `npm run test` before commit to verify locally\*
@@ -92,5 +97,15 @@ or build records to the local artifact-cache server. A failure like
 after `RUN ... npm run build` completed is an `act`/artifact-cache failure, not
 evidence that the image build itself failed. Re-run the workflow; if it repeats,
 validate the same Docker build without the GHA cache before debugging app code.
+
+`npm run workflow:app` runs the path-filtered app compatibility workflow
+directly through its `workflow_dispatch` event, so local testing does not depend
+on `act` reproducing GitHub's changed-path detection.
+
+With local `act` 0.2.89, `--dryrun` can fail before any job step with
+`listen tcp: lookup <nil>: no such host` while starting its internal services.
+Use `npm run workflow:app -- --list` for a parse/selection check, or run the
+workflow normally for full validation; the dry-run failure is not an app build
+result.
 
 \* I didn't want to force this on you as it's a bit of time "wasted" doing builds/tests if just commiting a small change.

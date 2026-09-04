@@ -309,7 +309,8 @@ cd app && npx expo export --platform android  # or --platform ios on macOS
 npm --prefix docs run build  # Astro/Starlight documentation site
 
 # Testing
-npm run workflow             # Full CI workflow (user runs this manually)
+npm run workflow             # Main backend/frontend CI workflow via act (user runs this manually)
+npm run workflow:app         # Advisory app compatibility workflow via act (user runs this manually)
 npm run test:api             # Backend Vitest integration suite (AI may run locally)
 npm run test:e2e             # Playwright smoke tests (AI may run locally)
 npm run test:e2e:fresh       # Rebuild dist artifacts, then run Playwright smoke tests
@@ -346,6 +347,8 @@ npm run install-all              # Preferred install flow for all subsystems
 # `frontend` and `app` both depend on `shared`, but installs are now explicit.
 # If installing subsystems manually, install `shared` first, then `frontend` / `app`.
 # Do not run `npm install` for `shared`, `frontend`, and `app` in parallel.
+# App lint imports `eslint/picr-eslint.mjs`, whose plugins resolve from the root
+# package. Isolated app CI must install root dependencies before running app lint.
 # `npm run i18n:check` imports shared runtime modules for its catalog contract
 # test, so install both root and `shared` dependencies before running it.
 

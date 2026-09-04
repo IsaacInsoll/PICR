@@ -111,43 +111,6 @@ jobs:
       - name: '💄 [frontend] Build (vite)'
         run: cd frontend && npm run build -- --logLevel error
 
-      # APP
-      # Not needed for artifact, just checking that it didn't break something
-      # Hermes won't compile on arm so skip it
-      - name: '📱 [app] Install Dependencies'
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
-        run: cd app && npm ci
-      - name: '📱 [app] Lint'
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
-        run: cd app && npm run lint
-      - name: '📱 [app] Type check'
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
-        run: cd app && npm run typecheck
-      - name: '📱 [app] Unit and component tests'
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
-        run: cd app && npm test
-      - name: '📱 [app] Check Hermes polyfills'
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
-        run: cd app && npm run check:polyfills
-      - name: '📱 [app] Expo Doctor'
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
-        run: cd app && npx expo-doctor
-      - name: '📱 [app] Build iOS bundle (expo export)'
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd app
-          npx expo export --platform ios 2>&1 | awk '
-            /^› (Assets|ios bundles|android bundles|web bundles|Files) \(/ { skip=1; next }
-            skip && NF==0 { skip=0; next }
-            skip { next }
-            { print }
-          '
-      - name: '📱 [app] Build Android bundle (expo export)'
-        if: ${{ matrix.os == 'ubuntu-24.04' }}
-        run: cd app && npx expo export --platform android
-
       # TESTS
       - name: '🧪 [tests/api] run backend tests (vitest)'
         run: npm run test:api

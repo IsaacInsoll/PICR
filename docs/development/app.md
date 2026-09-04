@@ -126,9 +126,9 @@ cd app
 npm test
 ```
 
-The suite uses the Expo SDK 55 `jest-expo` preset and React Native Testing
+The suite uses the Expo SDK 57 `jest-expo` preset and React Native Testing
 Library. It is also part of the root `npm run check`, app release preflight and
-CI build.
+the advisory app compatibility workflow.
 
 The critical native photographer flow is scaffolded in
 `app/.maestro/`. It uses the local development variant, so it does not consume

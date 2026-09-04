@@ -5,12 +5,14 @@ on:
     branches:
       - master
     paths-ignore:
+      - 'app/**'
       - 'lightroom/**'
       - 'docs/**'
       - '.github/workflows/docs.yml'
       - '*.md'
   pull_request:
     paths-ignore:
+      - 'app/**'
       - 'lightroom/**'
       - 'docs/**'
       - '.github/workflows/docs.yml'
