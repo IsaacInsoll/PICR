@@ -52,6 +52,8 @@ jobs:
         run: npm --prefix shared ci
       - name: '📱 [app] Install dependencies'
         run: npm --prefix app ci
+      - name: '📱 [app] Check shared runtime dependencies'
+        run: npm --prefix app run check:shared-dependencies
       - name: '📱 [app] Lint'
         run: npm --prefix app run lint
       - name: '📱 [app] Type check'

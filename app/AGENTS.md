@@ -155,10 +155,17 @@ The app must not import from `frontend`, `backend`, or any other non-shared
 subsystem. Move code needed by multiple consumers into `shared/` and import it
 with `@shared/*`.
 
-The app directly provides `graphql` because `@shared/urql/urqlClient` imports
-GraphQL runtime values. Metro resolving a transitive copy from
-`shared/node_modules` is not a dependency contract and can break after an npm
-hoisting change.
+The app directly provides the runtime packages imported by shared source that
+it bundles. This includes shared's metadata dependencies and URQL client peer
+dependencies, such as `readable-fractions`, `format-duration`, `graphql`,
+`@urql/exchange-retry` and `wonka`. Metro resolving these from
+`shared/node_modules` or through another package's transitive dependencies is
+not a dependency contract and breaks in EAS, where only the app's dependency
+tree is installed. Keep these app dependencies aligned with the dependency and
+peer ranges in `shared/package.json`. `npm run check:shared-dependencies`
+enforces the direct declarations and runs in app compatibility CI and release
+preflight; keep that check in both paths because a normal monorepo export can
+still see `shared/node_modules`.
 
 ## Known Issues / Tech Debt
 
@@ -592,6 +599,7 @@ Run these after app changes:
 cd app && npm run lint
 cd app && npx tsc --noEmit
 cd app && npm test
+cd app && npm run check:shared-dependencies
 cd app && npx expo export --platform android
 ```
 

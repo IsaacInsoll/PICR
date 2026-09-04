@@ -49,7 +49,7 @@
     "release:app:doctor": "cd app && npx expo-doctor",
     "release:app:export:ios": "bash scripts/release-app-export-ios.sh",
     "release:app:export:android": "cd app && npx expo export --platform android",
-    "release:app:preflight": "npm run release:app:auth && npm run release:app:install && npm run release:app:lint && npm run release:app:tsc && npm run release:app:test && npm run release:app:polyfills && npm run release:app:doctor && npm run release:app:export:ios && npm run release:app:export:android",
+    "release:app:preflight": "npm run release:app:auth && npm run release:app:install && npm --prefix app run check:shared-dependencies && npm run release:app:lint && npm run release:app:tsc && npm run release:app:test && npm run release:app:polyfills && npm run release:app:doctor && npm run release:app:export:ios && npm run release:app:export:android",
     "release:app:dry": "npm run release:app:preflight",
     "release:app:version": "npm --prefix app run release:version",
     "release:app:eas:ios": "cd app && npx eas build --platform ios --profile production --auto-submit --non-interactive --wait",
