@@ -3,9 +3,7 @@ import { ZOOM_TYPE, Zoomable } from '@likashefqet/react-native-image-zoom';
 import { memo, useEffect, useRef, useState } from 'react';
 import { CacheManager } from '@georstat/react-native-image-cache';
 import type { File, Image } from '@shared/gql/graphql';
-import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { Image as ExpoImage } from 'expo-image';
-import { imageURL } from '@/src/components/AppImage';
 import type { ViewStyle } from 'react-native';
 import {
   PixelRatio,
@@ -20,6 +18,7 @@ import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 import { useThumbnailVariants } from '@/src/hooks/useMe';
 import { thumbnailRouteSizeForWidth } from '@/src/helpers/thumbnailRouteSize';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 const PBigImageComponent = ({
   file,
@@ -100,36 +99,36 @@ export const useLocalImageUrl = (
   // their blurhash placeholder rather than requesting a fabricated token.
   size: AllSize | ThumbnailVariantToken | undefined,
 ) => {
-  const [uri, setUri] = useState<string | undefined>(undefined);
-  const loginDetails = useLoginDetails();
-  const baseUrl = loginDetails?.server;
+  const [cachedImage, setCachedImage] = useState<{
+    source: string;
+    uri: string | null;
+  } | null>(null);
+  const origin = useAuthenticatedServerOrigin();
+  const source = size ? origin.mediaUrl(file, size) : null;
 
   useEffect(() => {
-    let cancelled = false;
-    if (!baseUrl || !size) {
-      setUri(undefined);
-      return () => {
-        cancelled = true;
-      };
-    }
+    if (!source) return;
 
-    const source = baseUrl + imageURL(file, size);
+    let cancelled = false;
     CacheManager.get(source, undefined)
       .getPath()
       .then((path) => {
-        if (!cancelled) setUri(path);
+        if (!cancelled) setCachedImage({ source, uri: path ?? null });
       })
       .catch(() => {
-        if (!cancelled) setUri(undefined);
+        if (!cancelled) setCachedImage({ source, uri: null });
       });
 
     return () => {
       cancelled = true;
     };
-  }, [baseUrl, file, file.fileHash, file.id, file.name, size]);
+  }, [source]);
 
-  if (!uri) return null;
-  return Platform.OS === 'android' ? `file://${uri}` : uri;
+  if (!source || cachedImage?.source !== source || !cachedImage.uri)
+    return null;
+  return Platform.OS === 'android'
+    ? `file://${cachedImage.uri}`
+    : cachedImage.uri;
 };
 
 const styles = StyleSheet.create({

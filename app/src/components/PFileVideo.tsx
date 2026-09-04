@@ -14,10 +14,11 @@ type VideoThumbnailFile = Pick<
 // Basically an Video Thumbnail
 const PFileVideoComponent = ({
   file,
+  targetWidth,
   ...props
-}: { file: VideoThumbnailFile } & ImageProps) => {
+}: { file: VideoThumbnailFile; targetWidth: number } & ImageProps) => {
   const thumbnailVariants = useThumbnailVariants();
-  const sourceSize = thumbnailRouteSizeForWidth(thumbnailVariants, 500);
+  const sourceSize = thumbnailRouteSizeForWidth(thumbnailVariants, targetWidth);
   const uri = useLocalImageUrl(
     {
       id: file.id,

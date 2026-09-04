@@ -174,26 +174,39 @@ export const formatRelativeTime = (
     return invalidLabel;
   }
 
+  // Hermes does not currently provide RelativeTimeFormat. The app installs a
+  // polyfill, but shared consumers should still degrade to an absolute date
+  // instead of crashing if their runtime omits the API.
+  if (typeof Intl.RelativeTimeFormat !== 'function') {
+    return formatDate(date, locale, defaultDateTimeFormatOptions, invalidLabel);
+  }
+
   const deltaSeconds = (date.getTime() - currentDate.getTime()) / 1000;
   // Relative-time output is prose (for example, "2 hours ago"), so it must
   // follow the translated catalog rather than an unsupported regional locale.
   const resolvedLocale = resolveLanguage(locale).catalogLanguage;
-  if (Math.abs(deltaSeconds) < 1) {
-    return new Intl.RelativeTimeFormat(resolvedLocale, {
-      numeric: 'auto',
-    }).format(0, 'second');
-  }
-
   const threshold = relativeTimeThresholds.find(
     ({ limitSeconds }) => Math.abs(deltaSeconds) < limitSeconds,
   );
   if (!threshold) return invalidLabel;
 
-  return new Intl.RelativeTimeFormat(resolvedLocale, {
-    numeric: 'always',
-  }).format(
-    Math.sign(deltaSeconds) *
-      Math.round(Math.abs(deltaSeconds) / threshold.unitSeconds),
-    threshold.unit,
-  );
+  try {
+    if (Math.abs(deltaSeconds) < 1) {
+      return new Intl.RelativeTimeFormat(resolvedLocale, {
+        numeric: 'auto',
+      }).format(0, 'second');
+    }
+
+    return new Intl.RelativeTimeFormat(resolvedLocale, {
+      numeric: 'always',
+    }).format(
+      Math.sign(deltaSeconds) *
+        Math.round(Math.abs(deltaSeconds) / threshold.unitSeconds),
+      threshold.unit,
+    );
+  } catch {
+    // A partially loaded polyfill can expose the constructor before its locale
+    // data is ready. Formatting must remain non-fatal in that state too.
+    return formatDate(date, locale, defaultDateTimeFormatOptions, invalidLabel);
+  }
 };

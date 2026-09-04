@@ -24,12 +24,12 @@ import {
 } from '@/src/components/FolderView/FolderViewShared';
 import { FolderListHeader } from '@/src/components/FolderView/FolderListHeader';
 import { FolderBrandingProvider } from '@/src/components/FolderBrandingProvider';
-import { useHostname } from '@/src/hooks/useHostname';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 export default function FolderMasterView() {
   const me = useMe();
   const theme = useAppTheme();
-  const hostname = useHostname();
+  const origin = useAuthenticatedServerOrigin();
   const params = useLocalSearchParams<{ folderId?: string | string[] }>();
   const folderId = Array.isArray(params.folderId)
     ? params.folderId[0]
@@ -42,7 +42,10 @@ export default function FolderMasterView() {
       <Redirect
         href={{
           pathname: '/[loggedin]/admin/f/[folderId]',
-          params: { loggedin: hostname ?? '', folderId: me?.folderId ?? '1' },
+          params: {
+            loggedin: origin.routeKey,
+            folderId: me?.folderId ?? '1',
+          },
         }}
       />
     );
@@ -56,6 +59,7 @@ export default function FolderMasterView() {
         }}
       />
       <View
+        testID="folder-screen"
         style={{
           ...folderViewStyles.main,
           backgroundColor: theme.backgroundColor,

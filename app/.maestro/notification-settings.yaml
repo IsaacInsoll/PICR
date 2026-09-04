@@ -1,0 +1,49 @@
+appId: ${MAESTRO_APP_ID || "com.isaacinsoll.picr.dev"}
+name: Photographer notification settings
+tags:
+  - local
+  - mutating-server
+---
+- runFlow: subflows/login.yaml
+- tapOn:
+    id: settings-link
+- assertVisible:
+    id: settings-screen
+- extendedWaitUntil:
+    visible:
+      id: notification-toggle-settled
+    timeout: 30000
+- runFlow:
+    when:
+      visible:
+        id: ^notification-toggle$
+    commands:
+      - tapOn:
+          id: ^notification-toggle$
+      - extendedWaitUntil:
+          visible:
+            id: notification-toggle-saved
+          timeout: 20000
+- runFlow:
+    when:
+      visible:
+        id: notification-toggle-permission-required
+    commands:
+      - tapOn:
+          id: notification-toggle-permission-required
+      - runFlow:
+          when:
+            visible: Allow
+          commands:
+            - tapOn: Allow
+      - extendedWaitUntil:
+          visible:
+            id: ^notification-toggle$
+          timeout: 20000
+- runFlow:
+    when:
+      visible:
+        id: notification-toggle-unavailable
+    commands:
+      - assertVisible:
+          id: notification-toggle-unavailable

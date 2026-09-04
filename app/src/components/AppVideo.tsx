@@ -1,7 +1,6 @@
 import type { PicrFile } from '@shared/types/picr';
-import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { imageURL } from '@/src/components/AppImage';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 type AppVideoFile = Pick<
   PicrFile,
@@ -17,10 +16,10 @@ export const AppVideo = ({
 }) => {
   //todo: lots of overlap with PBigVideo, refactor?
 
-  const baseUrl = useLoginDetails()?.server ?? '';
+  const origin = useAuthenticatedServerOrigin();
   const safeWidth = width ?? 0;
   const safeRatio = file.imageRatio ?? 1;
-  const videoSource = baseUrl + imageURL(file, 'raw');
+  const videoSource = origin.mediaUrl(file, 'raw');
   const player = useVideoPlayer(videoSource, (player) => {
     player.loop = false;
   });

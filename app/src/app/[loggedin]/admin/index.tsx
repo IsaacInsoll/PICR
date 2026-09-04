@@ -15,7 +15,7 @@ import { PTitle } from '@/src/components/PTitle';
 import { Link, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { AppFolderLink } from '@/src/components/AppFolderLink';
-import { HeaderButton } from '@react-navigation/elements';
+import { HeaderButton } from 'expo-router/react-navigation';
 import { readAllFoldersQuery } from '@shared/urql/queries/readAllFoldersQuery';
 import type {
   ReadAllFoldersQueryQuery,
@@ -23,7 +23,6 @@ import type {
 } from '@shared/gql/graphql';
 import { FoldersSortType } from '@shared/gql/graphql';
 import type { AllFoldersRow } from '@shared/types/queryRows';
-import { useHostname } from '@/src/hooks/useHostname';
 import { navBarIconProps } from '@/src/constants';
 import { AppFileListItem } from '@/src/components/FolderContents/AppFolderFileList';
 import { Suspense } from 'react';
@@ -35,14 +34,19 @@ import {
   AppHeaderPadding,
 } from '@/src/components/AppHeaderPadding';
 import { SearchHeaderButton } from '@/src/components/SearchHeaderButton';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 const HomeFolderButton = () => {
   const me = useMe();
   const theme = useAppTheme();
-  if (!me) return null; //hit this issue when making public user access
+  if (!me) return null;
   return (
     <HeaderButton>
-      <AppFolderLink folder={{ id: me.folderId, name: 'Home' }} asChild={true}>
+      <AppFolderLink
+        folder={{ id: me.folderId, name: 'Home' }}
+        asChild={true}
+        testID="home-folder-link"
+      >
         <Ionicons
           name="folder-outline"
           size={25}
@@ -55,14 +59,19 @@ const HomeFolderButton = () => {
 };
 const SettingsButton = () => {
   const theme = useAppTheme();
-  const hostname = useHostname();
+  const origin = useAuthenticatedServerOrigin();
   const href = {
     pathname: '/[loggedin]/admin/settings' as const,
-    params: { loggedin: hostname ?? '' },
+    params: { loggedin: origin.routeKey },
   };
   return (
     <HeaderButton>
-      <Link href={href} asChild={true}>
+      <Link
+        accessibilityLabel="Settings"
+        testID="settings-link"
+        href={href}
+        asChild={true}
+      >
         <Ionicons
           name="settings"
           size={25}
@@ -130,6 +139,7 @@ const DashboardBody = () => {
 
   return (
     <ScrollView
+      testID="dashboard-screen"
       style={{
         backgroundColor: theme.backgroundColor,
       }}

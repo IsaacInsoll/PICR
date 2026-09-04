@@ -1,6 +1,4 @@
-import type { ColorValue } from 'react-native';
-import type { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
-import type { TextStyle } from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import type { ColorValue, StyleProp, TextStyle } from 'react-native';
 
 export const picrColors: ColorValue[] = [
   '#4c669f',

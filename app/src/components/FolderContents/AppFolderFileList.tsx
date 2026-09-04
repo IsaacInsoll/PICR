@@ -15,6 +15,7 @@ import type {
   ViewFolderSubFolder,
 } from '@shared/files/folderContentsViewModel';
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
+import { folderContentsRowTestId } from '@/src/helpers/nativeTestIds';
 import type { AllFoldersRow } from '@shared/types/queryRows';
 
 type AppFileListItemValue = FolderContentsItem | AllFoldersRow;
@@ -49,7 +50,7 @@ export const AppFileListItem = ({
 }) => {
   const isFolder = !isFolderContentsFile(item);
   return (
-    <AppLink item={item} asChild={true}>
+    <AppLink item={item} asChild={true} testID={folderContentsRowTestId(item)}>
       <TouchableOpacity>
         <View
           style={{

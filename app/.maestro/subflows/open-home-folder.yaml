@@ -1,0 +1,9 @@
+appId: ${MAESTRO_APP_ID || "com.isaacinsoll.picr.dev"}
+---
+- runFlow: login.yaml
+- tapOn:
+    id: home-folder-link
+- extendedWaitUntil:
+    visible:
+      id: folder-screen
+    timeout: 20000

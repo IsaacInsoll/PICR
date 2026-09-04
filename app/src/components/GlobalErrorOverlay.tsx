@@ -1,4 +1,4 @@
-import { clearGlobalError, globalErrorAtom } from '@shared/globalErrorAtom';
+import { clearGlobalError, globalErrorAtom } from '@/src/atoms/globalErrorAtom';
 import { stripUrqlErrorPrefixes } from '@shared/urql/stripUrqlErrorPrefixes';
 import { PText } from '@/src/components/PText';
 import { useAppTheme } from '@/src/hooks/useAppTheme';

@@ -68,6 +68,7 @@ export const FileInfoBottomSheet = ({
       }}
     >
       <BottomSheetView
+        testID="file-info-sheet"
         style={{
           zIndex: 10000000,
           flex: 1,

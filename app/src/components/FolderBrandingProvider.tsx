@@ -17,19 +17,34 @@ export const FolderBrandingProvider = ({
   fontKey: FontKey;
   children: ReactNode;
 }) => {
-  // If the font was loaded in a previous visit, use it immediately to avoid flash
-  const [activeFontKey, setActiveFontKey] = useState<FontKey>(
-    isHeadingFontLoaded(fontKey) ? fontKey : 'default',
-  );
+  const [fontLoad, setFontLoad] = useState<{
+    fontKey: FontKey;
+    successful: boolean;
+  } | null>(null);
+  const activeFontKey =
+    fontKey === 'default' ||
+    isHeadingFontLoaded(fontKey) ||
+    (fontLoad?.fontKey === fontKey && fontLoad.successful)
+      ? fontKey
+      : 'default';
 
   useEffect(() => {
     if (fontKey === 'default' || isHeadingFontLoaded(fontKey)) {
-      setActiveFontKey(fontKey);
       return;
     }
+
+    let cancelled = false;
     loadHeadingFont(fontKey)
-      .then(() => setActiveFontKey(fontKey))
-      .catch(() => setActiveFontKey('default'));
+      .then(() => {
+        if (!cancelled) setFontLoad({ fontKey, successful: true });
+      })
+      .catch(() => {
+        if (!cancelled) setFontLoad({ fontKey, successful: false });
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [fontKey]);
 
   return (

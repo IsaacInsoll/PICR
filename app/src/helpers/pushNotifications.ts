@@ -4,29 +4,39 @@ import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import type { NotificationChannelInput } from 'expo-notifications';
 
-// Get expo push notification token and ask user for permissions (if required)
-export async function registerForPushNotificationsAsync() {
+export type PushNotificationRegistration =
+  | { status: 'registered'; token: string }
+  | {
+      status:
+        'permission-required' | 'permission-denied' | 'unavailable' | 'error';
+    };
+
+const resolvePushNotificationRegistration = async (
+  requestPermission: boolean,
+): Promise<PushNotificationRegistration> => {
   if (!Device.isDevice) {
     // console.log('[pushNotifications] skipping because not real device');
-    return;
-  }
-  let token;
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('PICR', androidChannel);
-  }
-
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-  if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
-  if (finalStatus !== 'granted') {
-    alert('Failed to get push token for push notification!');
-    return;
+    return { status: 'unavailable' };
   }
 
   try {
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('PICR', androidChannel);
+    }
+
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      if (!requestPermission) return { status: 'permission-required' };
+
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      return { status: 'permission-denied' };
+    }
+
     const easConfig = Constants.expoConfig?.extra?.['eas'];
     const projectId =
       easConfig && typeof easConfig === 'object'
@@ -35,13 +45,19 @@ export async function registerForPushNotificationsAsync() {
     if (typeof projectId !== 'string' || projectId === '') {
       throw new Error('Project ID not found');
     }
-    token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-    // console.log(token);
-  } catch (e) {
-    token = e instanceof Error ? e.message : String(e);
+    const token = (await Notifications.getExpoPushTokenAsync({ projectId }))
+      .data;
+    return { status: 'registered', token };
+  } catch {
+    return { status: 'error' };
   }
-  return token;
-}
+};
+
+export const checkPushNotificationRegistrationAsync = () =>
+  resolvePushNotificationRegistration(false);
+
+export const registerForPushNotificationsAsync = () =>
+  resolvePushNotificationRegistration(true);
 
 const androidChannel: NotificationChannelInput = {
   name: 'PICR',

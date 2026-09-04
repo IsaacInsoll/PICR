@@ -10,7 +10,7 @@ import { PText } from '@/src/components/PText';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { commentHistoryQuery } from '@shared/urql/queries/commentHistoryQuery';
 import { useMutation, useQuery } from 'urql';
-import type { TextStyle } from 'react-native';
+import type { StyleProp, TextStyle } from 'react-native';
 import {
   Keyboard,
   StyleSheet,
@@ -21,7 +21,6 @@ import {
 import { AppAvatar } from '@/src/components/AppAvatar';
 import { prettyDate } from '@shared/prettyDate';
 import { Rating } from '@kolking/react-native-rating';
-import type { StyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
 import { Ionicons } from '@expo/vector-icons';
 import { AppIconButton } from '@/src/components/AppIcons';
 import { addCommentMutation } from '@shared/urql/mutations/addCommentMutation';
@@ -45,8 +44,10 @@ export const FileCommentsBottomSheet = ({
 
   const [addComment, setAddComment] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const [commentSubmitted, setCommentSubmitted] = useState(false);
   // console.log({ commentText }, commentText.length);
   const onShowAddComment = () => {
+    setCommentSubmitted(false);
     setAddComment(true);
     setTimeout(() => textInputRef.current?.focus(), 100);
     bottomSheetRef.current?.expand();
@@ -62,6 +63,7 @@ export const FileCommentsBottomSheet = ({
     if (result.data && !result.error) {
       setAddComment(false);
       setCommentText('');
+      setCommentSubmitted(true);
     }
   };
   const handleSubmitComment = () => {
@@ -82,6 +84,7 @@ export const FileCommentsBottomSheet = ({
 
   const handleClose = () => {
     Keyboard.dismiss();
+    setCommentSubmitted(false);
     onClose();
   };
 
@@ -104,6 +107,7 @@ export const FileCommentsBottomSheet = ({
       }}
     >
       <BottomSheetView
+        testID="file-comments-sheet"
         style={{
           zIndex: 10000000,
           flex: 1,
@@ -139,6 +143,8 @@ export const FileCommentsBottomSheet = ({
               </TouchableOpacity>
             ) : (
               <Ionicons.Button
+                accessibilityLabel="Add comment"
+                testID="file-comment-add-button"
                 backgroundColor={theme.brandColor}
                 name="chatbubble-ellipses-outline"
                 size={16}
@@ -150,6 +156,8 @@ export const FileCommentsBottomSheet = ({
           </View>
         </View>
         <TextInput
+          accessibilityLabel="Comment"
+          testID="file-comment-input"
           placeholder="Your comment..."
           multiline={true}
           value={commentText}
@@ -173,6 +181,8 @@ export const FileCommentsBottomSheet = ({
             }}
           >
             <AppIconButton
+              accessibilityLabel="Submit comment"
+              testID="file-comment-submit-button"
               name="chatbubble-ellipses-outline"
               disabled={commentText.length === 0}
               onPress={handleSubmitComment}
@@ -180,6 +190,11 @@ export const FileCommentsBottomSheet = ({
               Add Comment
             </AppIconButton>
           </View>
+        ) : null}
+        {commentSubmitted ? (
+          <PText testID="file-comment-submit-succeeded" variant="dimmed">
+            Comment added
+          </PText>
         ) : null}
         <Suspense fallback={<AppLoadingIndicator />}>
           <FileCommentsBody id={file.id} />

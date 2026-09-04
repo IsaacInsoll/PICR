@@ -1,0 +1,27 @@
+appId: ${MAESTRO_APP_ID || "com.isaacinsoll.picr.dev"}
+name: Photographer login and image navigation
+tags:
+  - local
+  - smoke
+---
+- runFlow: subflows/open-home-folder.yaml
+- scrollUntilVisible:
+    element:
+      id: image-row-.*
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 50
+- tapOn:
+    id: image-row-.*
+    index: 0
+- assertVisible:
+    id: file-screen
+- assertVisible:
+    id: file-download-button
+- assertVisible:
+    id: file-comments-button
+- assertVisible:
+    id: file-info-button
+- back
+- assertVisible:
+    id: folder-screen

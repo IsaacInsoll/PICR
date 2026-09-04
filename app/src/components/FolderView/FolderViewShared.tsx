@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import { HeaderButton } from '@react-navigation/elements';
+import { HeaderButton } from 'expo-router/react-navigation';
 import { Ionicons } from '@expo/vector-icons';
 import { useSetAtom } from 'jotai';
 import { useAppTheme } from '@/src/hooks/useAppTheme';

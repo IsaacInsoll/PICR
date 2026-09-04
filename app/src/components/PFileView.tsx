@@ -35,9 +35,8 @@ const PFileViewComponent = ({
       : { ...props };
 
   const isFolder = isThumbnailFolder(file);
-  //     const uri = useLocalImageUrl(isFolder ? file.heroImage : file, size);
   if (file?.__typename === 'Video') {
-    return <PFileVideo {...p} file={file} />;
+    return <PFileVideo {...p} file={file} targetWidth={targetWidth} />;
   }
   if (file?.__typename === 'Image') {
     return <PFileImage targetWidth={targetWidth} {...p} file={file} />;
@@ -56,6 +55,7 @@ const PFileViewComponent = ({
     return (
       <PFileVideo
         {...p}
+        targetWidth={targetWidth}
         file={{ ...file.heroImage, name: file.heroImage.name ?? undefined }}
       />
     );

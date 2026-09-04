@@ -1,0 +1,24 @@
+appId: ${MAESTRO_APP_ID || "com.isaacinsoll.picr.dev"}
+name: Photographer image download
+tags:
+  - local
+  - media
+---
+- runFlow: subflows/open-home-folder.yaml
+- scrollUntilVisible:
+    element:
+      id: image-row-.*
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 50
+- tapOn:
+    id: image-row-.*
+    index: 0
+- assertVisible:
+    id: file-screen
+- tapOn:
+    id: file-download-button
+- extendedWaitUntil:
+    visible:
+      id: file-download-succeeded
+    timeout: 20000

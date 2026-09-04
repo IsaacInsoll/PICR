@@ -1,46 +1,27 @@
 import {
-  ActivityIndicator,
-  Alert,
-  Button,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { PicrLogo } from '@/src/components/PicrLogo';
-import { useRouter } from 'expo-router';
-import type { FieldError } from 'react-hook-form';
-import { useForm } from 'react-hook-form';
-import { CTextInput } from '@/src/components/CTextInput';
 import { picrColors, picrManualURL } from '@/src/constants';
 import * as WebBrowser from 'expo-web-browser';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useKeyboardVisible } from '@/src/hooks/useKeyboardVisible';
-import { z } from 'zod';
-import { useState } from 'react';
-import type { LoginDetails } from '@/src/hooks/useLoginDetails';
-import { useSetLoginDetails } from '@/src/hooks/useLoginDetails';
 import { AppBrandedBackground } from '@/src/components/AppBrandedBackground';
 import { PTitle } from '@/src/components/PTitle';
-import { appLogin } from '@/src/helpers/appLogin';
-
-const loginFormSchema = z.object({
-  server: z.string().url(),
-  username: z.string().email(),
-  password: z.string().min(8),
-});
-type LoginFormValues = z.infer<typeof loginFormSchema>;
+import { LoginForm } from '@/src/components/LoginForm';
 
 export default function Index() {
   const keyboardVisible = useKeyboardVisible();
 
   return (
     <AppBrandedBackground>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }} testID="login-screen">
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
@@ -67,123 +48,6 @@ export default function Index() {
   );
 }
 
-const LoginForm = () => {
-  const setLogin = useSetLoginDetails();
-  const router = useRouter();
-  const [step, setStep] = useState<
-    'ready' | 'loading' | 'success' | 'networkError' | 'authError'
-  >('ready');
-
-  const {
-    control,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginFormSchema),
-  });
-
-  const onSubmit = async (data: LoginFormValues) => {
-    setStep('loading');
-    const { token, error } = await appLogin(data);
-    if (token) {
-      setStep('success');
-      // console.log('[login/index.tsx] redirecting to dashboard??');
-      void router.replace('/');
-      void setLogin({ ...(data as LoginDetails), token });
-    } else {
-      setStep(
-        error === 'Incorrect username or password'
-          ? 'authError'
-          : 'networkError',
-      );
-      {
-        Alert.alert('Login Failed', error, [
-          {
-            text: 'Cancel',
-            onPress: () => setStep('ready'),
-            style: 'cancel',
-          },
-        ]);
-      }
-    }
-  };
-  const handleFormSubmit = handleSubmit((data) => {
-    void onSubmit(data);
-  });
-  const handlePressSubmit = () => {
-    void handleFormSubmit();
-  };
-
-  return (
-    <>
-      <Text style={styles.fieldLabel}>Server</Text>
-      <CTextInput
-        autoCapitalize="none"
-        autoCorrect={false}
-        clearButtonMode="while-editing"
-        inputMode="url"
-        keyboardType="url"
-        control={control}
-        onBlur={() => {
-          let s = watch('server').trim();
-          if (!s.startsWith('http')) s = 'https://' + s;
-          if (!s.endsWith('/')) s = s + '/';
-          if (s !== watch('server')) {
-            setValue('server', s);
-          }
-        }}
-        name="server"
-        placeholder="https://mysite.com/"
-        autoComplete="url"
-        style={styles.textInput}
-      />
-      <ErrorMessage error={errors.server} />
-      <Text style={styles.fieldLabel}>Username</Text>
-      <CTextInput
-        autoCapitalize="none"
-        control={control}
-        name="username"
-        placeholder="me@mysite.com"
-        autoComplete="email"
-        style={styles.textInput}
-      />
-      <ErrorMessage error={errors.username} />
-      <Text style={styles.fieldLabel}>Password</Text>
-      <CTextInput
-        control={control}
-        name="password"
-        secureTextEntry={true}
-        style={styles.textInput}
-        autoCapitalize={'none'}
-        autoCorrect={false}
-        autoComplete="password"
-        returnKeyType="go"
-        onSubmitEditing={handlePressSubmit}
-      />
-      <ErrorMessage error={errors.password} />
-      <View style={{ marginTop: 16 }}>
-        {step === 'loading' ? (
-          <ActivityIndicator size="large" />
-        ) : (
-          <Button
-            title="Login"
-            onPress={handlePressSubmit}
-            color={Platform.OS === 'ios' ? '#ffffff' : picrColors[0]}
-          />
-        )}
-      </View>
-    </>
-  );
-};
-
-const ErrorMessage = ({ error }: { error: FieldError | undefined }) => {
-  if (!error) return null;
-  // console.log(error);
-  return <Text style={{ color: 'red' }}>{error.message}</Text>;
-};
-
 const styles = StyleSheet.create({
   headerText: { color: picrColors[2] },
   safeArea: {
@@ -192,12 +56,4 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 8,
   },
-  textInput: {
-    backgroundColor: '#fff',
-    color: '#000',
-    width: 250,
-    padding: 12,
-    borderRadius: 8,
-  },
-  fieldLabel: { width: 250, marginTop: 8, opacity: 0.5, color: '#fff' },
 });

@@ -1,9 +1,7 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from 'expo-router';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
 import { Platform } from 'react-native';
 import { getHeadingFontFamilyForLevel } from '@/src/helpers/headingFont';
-
-// We have two root navigator stacks: for logged-in users and public users, so consolidate layout to here
 
 export const useNavigationScreenOptions = (): NativeStackNavigationOptions => {
   const theme = useAppTheme();

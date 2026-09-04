@@ -3,10 +3,9 @@ import { View, StyleSheet } from 'react-native';
 import type { Video } from '@shared/gql/graphql';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEvent } from 'expo';
-import { imageURL } from '@/src/components/AppImage';
-import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { useEffect } from 'react';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 export const PBigVideo = ({
   file,
@@ -21,8 +20,8 @@ export const PBigVideo = ({
 }) => {
   const theme = useAppTheme();
 
-  const baseUrl = useLoginDetails()?.server;
-  const videoSource = baseUrl + imageURL(file, 'raw');
+  const origin = useAuthenticatedServerOrigin();
+  const videoSource = origin.mediaUrl(file, 'raw');
   // console.log('videoSource', file.imageRatio, videoSource);
   const player = useVideoPlayer(videoSource, (player) => {
     player.loop = false;
@@ -40,6 +39,8 @@ export const PBigVideo = ({
 
   return (
     <View
+      accessibilityLabel="Video player"
+      testID={isPlaying ? 'video-player-playing' : 'video-player-paused'}
       style={[styles.contentContainer, { backgroundColor: theme.tabColor }]}
     >
       <VideoView

@@ -1,17 +1,14 @@
-import { CachedImage } from '@georstat/react-native-image-cache';
-import type { AllSize } from '@shared/thumbnailSize';
-import type { ThumbnailVariantToken } from '@shared/thumbnailVariants';
 import type { PicrFile } from '@shared/types/picr';
-import type { ImageUrlFileInput } from '@shared/types/ui';
-import { useLoginDetails } from '@/src/hooks/useLoginDetails';
 import { PixelRatio, View } from 'react-native';
 import { useState } from 'react';
+import { Image as ExpoImage } from 'expo-image';
 import { useThumbnailVariants } from '@/src/hooks/useMe';
 import { thumbnailRouteSizeForWidth } from '@/src/helpers/thumbnailRouteSize';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 type AppImageFile = Pick<
   PicrFile,
-  'id' | 'fileHash' | 'name' | 'type' | 'imageRatio'
+  'id' | 'fileHash' | 'name' | 'type' | 'imageRatio' | 'blurHash'
 >;
 
 // Show an image but cache it to device
@@ -23,7 +20,7 @@ export const AppImage = ({
   file: AppImageFile;
   width?: number;
 }) => {
-  const baseUrl = useLoginDetails()?.server;
+  const origin = useAuthenticatedServerOrigin();
   const thumbnailVariants = useThumbnailVariants();
 
   const [viewWidth, setViewWidth] = useState(0);
@@ -34,15 +31,9 @@ export const AppImage = ({
     thumbnailVariants,
     PixelRatio.getPixelSizeForLayoutSize(w),
   );
-  const thumbnailSourceSize = thumbnailRouteSizeForWidth(
-    thumbnailVariants,
-    250,
-  );
 
   const source =
-    w === 0 || !baseUrl || !sourceSize
-      ? undefined
-      : baseUrl + imageURL(file, sourceSize);
+    w === 0 || !sourceSize ? undefined : origin.mediaUrl(file, sourceSize);
 
   // console.log(width, viewWidth, height, file.fileHash);
 
@@ -55,36 +46,18 @@ export const AppImage = ({
       }}
       style={{ height }}
     >
-      {/*TODO: this is only instance of CachedImage in entire codebase, refactor to be Expo Image powered by the cache like we are doing elsewhere? */}
-      <CachedImage
-        source={source ?? ''}
+      <ExpoImage
+        cachePolicy="memory-disk"
+        contentFit="contain"
+        placeholder={file.blurHash ?? undefined}
+        placeholderContentFit="contain"
+        source={source ? { uri: source } : undefined}
         style={{ width: w, height }}
-        thumbnailSource={
-          baseUrl && thumbnailSourceSize
-            ? baseUrl + imageURL(file, thumbnailSourceSize)
-            : ''
-        }
+        transition={200}
         onError={() => {
           // console.log('Error getting image: ' + source);
         }}
       />
     </View>
   );
-};
-
-// copied from imageURL in frontend because we were having import issues
-// but then I had to add the base URL anyway so whatever
-export const imageURL = (
-  file: ImageUrlFileInput,
-  size: AllSize | ThumbnailVariantToken,
-  extension?: string,
-) => {
-  const { id, fileHash, name, type } = file;
-  const path = `image/${id}/${size}/${fileHash}/`;
-  if (type === 'Video' && size !== 'raw') {
-    return path + 'poster.jpg';
-  }
-
-  const filename = extension ? name + extension : name;
-  return path + encodeURIComponent(String(filename));
 };

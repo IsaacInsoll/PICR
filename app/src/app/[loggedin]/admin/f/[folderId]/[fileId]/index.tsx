@@ -1,11 +1,10 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useAppTheme } from '@/src/hooks/useAppTheme';
-import { Alert, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { addToFileCache, fileCache } from '@/src/helpers/folderCache';
 import { useQuery } from 'urql';
-import { PBigImage, useLocalImageUrl } from '@/src/components/PBigImage';
-import { atom, useAtom, useSetAtom } from 'jotai';
-import * as MediaLibrary from 'expo-media-library';
+import { PBigImage } from '@/src/components/PBigImage';
+import { atom, useAtom } from 'jotai';
 import type { SharedValue } from 'react-native-reanimated';
 import Animated, {
   Easing,
@@ -18,9 +17,6 @@ import Animated, {
 import Carousel from 'react-native-reanimated-carousel';
 import { useCallback, useState } from 'react';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
-import { HeaderButton } from '@react-navigation/elements';
-import { Ionicons } from '@expo/vector-icons';
-import { navBarIconProps } from '@/src/constants';
 import { fileViewFullscreenAtom } from '@/src/atoms/atoms';
 import {
   getHeadingFontFamilyForLevel,
@@ -34,6 +30,7 @@ import { PBigVideo } from '@/src/components/PBigVideo';
 import { useNavigationScreenOptions } from '@/src/hooks/useNavigationScreenOptions';
 import { FileInfoBottomSheet } from '@/src/components/FileInfoBottomSheet';
 import type { ViewFolderFile } from '@shared/files/sortFiles';
+import { FileHeaderActions } from '@/src/components/FileHeaderActions';
 
 interface ItemProps {
   index: number;
@@ -85,9 +82,9 @@ export default function AppFileView() {
     (value: number) => {
       'worklet';
 
-      const zIndex = Math.round(interpolate(value, [-1, 0, 1], [10, 20, 30]));
+      const zIndex = Math.round(interpolate(value, [-1, 0, 1], [10, 20, 10]));
       const translateX = Math.round(
-        interpolate(value, [-2, 0, 1], [-width, 0, width]),
+        interpolate(value, [-1, 0, 1], [-width, 0, width]),
       );
 
       return {
@@ -107,33 +104,28 @@ export default function AppFileView() {
 
   return (
     <FolderBrandingProvider fontKey={fontKey}>
-      <View style={{ backgroundColor: theme.tabColor }}>
+      <View testID="file-screen" style={{ backgroundColor: theme.tabColor }}>
         <Stack.Screen
           options={{
             ...headerOptions,
             headerTransparent: true, //overriding the 'false on android' so when we toggle it on and off there is no layout shift
             headerTitle: skeleton.name,
             headerTitleStyle,
-            headerRight: () => (
-              <View style={{ flexDirection: 'row' }}>
-                {file ? (
-                  <>
-                    <AppDownloadFileButton
-                      file={file}
-                      onPress={() => {
-                        flash.value = 0.8;
-                        flash.value = withTiming(0, {
-                          duration: 300,
-                          easing: Easing.out(Easing.circle),
-                        });
-                      }}
-                    />
-                    <AppFileCommentsButton file={file} />
-                    <AppFileInfoButton file={file} />
-                  </>
-                ) : null}
-              </View>
-            ),
+            headerRight: () =>
+              file ? (
+                <FileHeaderActions
+                  file={file}
+                  onDownload={() => {
+                    flash.value = 0.8;
+                    flash.value = withTiming(0, {
+                      duration: 300,
+                      easing: Easing.out(Easing.circle),
+                    });
+                  }}
+                  onComments={() => setShowComments((current) => !current)}
+                  onInfo={() => setShowInfo((current) => !current)}
+                />
+              ) : null,
             headerShown: !fullScreen, //toggling this causes ugly image jump behaviour
           }}
         />
@@ -238,86 +230,5 @@ const CustomItem = ({
         style={[StyleSheet.absoluteFill, maskStyle]}
       />
     </View>
-  );
-};
-
-const AppDownloadFileButton = ({
-  file,
-  onPress,
-}: {
-  file: ViewFolderFile;
-  onPress?: () => void;
-}) => {
-  const theme = useAppTheme();
-  const uri = useLocalImageUrl(file, 'raw');
-  const onClick = async () => {
-    if (onPress) onPress();
-    if (!uri) return;
-    try {
-      //saveToLibraryAsync was stripping metadata? The following line is untested (so far!)
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permission required',
-          'Media library access is needed to perform this action.',
-        );
-      } else {
-        await MediaLibrary.createAssetAsync(uri);
-        // console.log('Saved!!');
-      }
-      // MediaLibrary.saveToLibraryAsync(uri).then(() => console.log('Saved!!'));
-    } catch {
-      // console.log('error saving file');
-      // console.log(e);
-    }
-  };
-  const handlePress = () => {
-    void onClick();
-  };
-  return (
-    <HeaderButton onPress={handlePress}>
-      <Ionicons
-        name="download"
-        size={25}
-        color={theme.brandColor}
-        style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
-      />
-    </HeaderButton>
-  );
-};
-
-const AppFileCommentsButton = ({ file }: { file: ViewFolderFile }) => {
-  const setShowComments = useSetAtom(showCommentsAtom);
-  const { totalComments } = file;
-  const theme = useAppTheme();
-  return (
-    <HeaderButton onPress={() => setShowComments((c) => !c)}>
-      <Ionicons
-        name={
-          totalComments && totalComments > 0
-            ? 'chatbox-ellipses-outline'
-            : 'chatbox-outline'
-        }
-        size={25}
-        color={theme.brandColor}
-        style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
-      />
-    </HeaderButton>
-  );
-};
-
-const AppFileInfoButton = ({ file }: { file: ViewFolderFile }) => {
-  const setShowInfo = useSetAtom(showFileInfoAtom);
-  // const { totalComments } = file;
-  const theme = useAppTheme();
-  return (
-    <HeaderButton onPress={() => setShowInfo((c) => !c)}>
-      <Ionicons
-        name="information-circle-outline"
-        size={25}
-        color={theme.brandColor}
-        style={navBarIconProps} // we need this for Android otherwise it gets cropped to 1px wide :/
-      />
-    </HeaderButton>
   );
 };

@@ -1,0 +1,34 @@
+appId: ${MAESTRO_APP_ID || "com.isaacinsoll.picr.dev"}
+name: Photographer comment creation
+tags:
+  - local
+  - mutating-server
+---
+- runFlow: subflows/open-home-folder.yaml
+- scrollUntilVisible:
+    element:
+      id: image-row-.*
+    direction: DOWN
+    timeout: 20000
+    visibilityPercentage: 50
+- tapOn:
+    id: image-row-.*
+    index: 0
+- assertVisible:
+    id: file-screen
+- tapOn:
+    id: file-comments-button
+- assertVisible:
+    id: file-comments-sheet
+- tapOn:
+    id: file-comment-add-button
+- tapOn:
+    id: file-comment-input
+- inputText: ${MAESTRO_COMMENT || "Maestro smoke comment"}
+- hideKeyboard
+- tapOn:
+    id: file-comment-submit-button
+- extendedWaitUntil:
+    visible:
+      id: file-comment-submit-succeeded
+    timeout: 20000

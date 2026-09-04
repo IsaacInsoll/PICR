@@ -1,6 +1,6 @@
 import { Button, StyleSheet, View } from 'react-native';
 import { PicrLogo } from '@/src/components/PicrLogo';
-import { useLoginDetails, useSetLoggedOut } from '@/src/hooks/useLoginDetails';
+import { useSetLoggedOut } from '@/src/hooks/useLoginDetails';
 import { serverInfoQuery } from '@shared/urql/queries/serverInfoQuery';
 import { useQuery } from 'urql';
 import { useMe } from '@/src/hooks/useMe';
@@ -15,6 +15,7 @@ import * as Application from 'expo-application';
 import { AppLoadingIndicator } from '@/src/components/AppLoadingIndicator';
 import { NotificationSettings } from '@/src/components/NotificationSettings';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuthenticatedServerOrigin } from '@/src/components/AuthenticatedServerOriginProvider';
 
 export default function Settings() {
   const logout = useSetLoggedOut();
@@ -30,7 +31,7 @@ export default function Settings() {
     void logout();
   };
   return (
-    <AppView style={{ flex: 1 }}>
+    <AppView testID="settings-screen" style={{ flex: 1 }}>
       <SafeAreaView style={{}}>
         <ServerDetails />
         <AppDetails />
@@ -38,8 +39,16 @@ export default function Settings() {
           <Suspense fallback={<AppLoadingIndicator size="small" />}>
             <NotificationSettings />
           </Suspense>
-          <Button onPress={handleClearCache} title="Clear image cache" />
-          <Button onPress={handleLogout} title="Log out" />
+          <Button
+            testID="clear-image-cache-button"
+            onPress={handleClearCache}
+            title="Clear image cache"
+          />
+          <Button
+            testID="logout-button"
+            onPress={handleLogout}
+            title="Log out"
+          />
         </View>
       </SafeAreaView>
     </AppView>
@@ -48,14 +57,14 @@ export default function Settings() {
 
 const ServerDetails = () => {
   const [result] = useQuery({ query: serverInfoQuery });
-  const login = useLoginDetails();
+  const origin = useAuthenticatedServerOrigin();
   const me = useMe();
   const details = result.data?.serverInfo;
   return (
     <View style={styles.settingsView}>
       <PicrLogo />
       <PTitle level={3}>Server</PTitle>
-      <PText>{login?.server}</PText>
+      <PText>{origin.baseUrl}</PText>
       <PText>{me?.name}</PText>
       <PText>
         Server Version {details?.version} (Latest is {details?.latest})

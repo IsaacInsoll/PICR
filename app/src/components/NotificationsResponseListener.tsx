@@ -1,23 +1,32 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import * as Notifications from 'expo-notifications';
-import type { Href, Router } from 'expo-router';
 import { useRouter } from 'expo-router';
+import { followNotificationTarget } from '@/src/helpers/followNotificationTarget';
+import type { NotificationRouter } from '@/src/helpers/followNotificationTarget';
+import { useLoginDetails } from '@/src/hooks/useLoginDetails';
+import { createServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
+import type { ServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
 
 export const NotificationsResponseListener = () => {
   const router = useRouter();
+  const login = useLoginDetails();
+  const origin = useMemo(
+    () => (login ? createServerOrigin(login.server) : null),
+    [login],
+  );
   useEffect(() => {
     const receivedSubscription =
       Notifications.addNotificationReceivedListener(notificationReceived);
     const responseSubscription =
       Notifications.addNotificationResponseReceivedListener((response) =>
-        notificationResponseReceived(response, router),
+        notificationResponseReceived(response, router, origin ?? undefined),
       );
 
     return () => {
       receivedSubscription.remove();
       responseSubscription.remove();
     };
-  }, [router]);
+  }, [origin, router]);
   return <></>;
 };
 
@@ -27,14 +36,11 @@ const notificationReceived = (event: Notifications.Notification) => {
 
 const notificationResponseReceived = (
   event: Notifications.NotificationResponse,
-  router: Router,
+  router: NotificationRouter,
+  origin?: Pick<ServerOrigin, 'basePath' | 'routeKey'>,
 ) => {
   const data = event.notification.request.content.data;
-  const url = data?.['url'];
-  if (typeof url === 'string') {
-    // console.log('navigate to ' + url);
-    router.push(url as Href);
-  }
+  void followNotificationTarget(data, router, origin);
   // console.log('[notification response]');
   // console.log(data);
 };

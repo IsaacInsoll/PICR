@@ -1,4 +1,4 @@
-import type { Href } from 'expo-router';
+import '@/src/polyfills';
 import { Slot, useRouter } from 'expo-router';
 import { ThemeProvider } from '@/src/components/themeProvider';
 
@@ -12,8 +12,11 @@ import { AppErrorBoundary } from '@/src/components/AppErrorBoundary';
 import * as Notifications from 'expo-notifications';
 import { NotificationsResponseListener } from '@/src/components/NotificationsResponseListener';
 import { useLastNotificationResponse } from 'expo-notifications';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { GlobalErrorOverlay } from '@/src/components/GlobalErrorOverlay';
+import { followNotificationTarget } from '@/src/helpers/followNotificationTarget';
+import { useLoginDetails } from '@/src/hooks/useLoginDetails';
+import { createServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
 
 CacheManager.config = {
   baseDir: `${Dirs.CacheDir}/images_cache/`,
@@ -39,18 +42,24 @@ export default function AppLayout() {
   // console.log('PICR App Booting');
   const lastNotification = useLastNotificationResponse();
   const router = useRouter();
+  const login = useLoginDetails();
+  const origin = useMemo(
+    () => (login ? createServerOrigin(login.server) : null),
+    [login],
+  );
   useEffect(() => {
-    // if (lastNotification);
-    const url = lastNotification?.notification.request.content.data?.['url'];
-
-    if (typeof url === 'string') {
+    const data = lastNotification?.notification.request.content.data;
+    if (data) {
       // console.log([
       //   'AppLayout',
       //   'redirecting because of cold boot URL: ' + url,
       // ]);
-      setTimeout(() => router.push(url as Href), 300);
+      setTimeout(
+        () => void followNotificationTarget(data, router, origin ?? undefined),
+        300,
+      );
     }
-  }, [lastNotification, router]);
+  }, [lastNotification, origin, router]);
 
   return (
     <AppErrorBoundary>
