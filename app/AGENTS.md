@@ -13,6 +13,13 @@ repository; React Native already supplies Android precompiled artifacts. Do not
 reintroduce that repository dependency without a measured build-time benefit
 and current React Native compatibility evidence.
 
+`zeego` and its native menu peers (`react-native-ios-context-menu`,
+`react-native-ios-utilities`, `@react-native-menu/menu`) were removed after the
+SDK 57 upgrade. SDK 55 and later run only on React Native's New Architecture,
+while the Zeego release used by PICR still declared exact peers for older native
+menu packages. Keep sort/menu UI app-owned or migrate to an SDK-compatible menu
+library with current New Architecture evidence before adding those pods back.
+
 After the SDK 57 upgrade and safe `npm audit fix`, `npm audit --omit=dev`
 retains 14 moderate transitive advisories. They come from Expo Router's
 `query-string` → `decode-uri-component` path and Expo's build/configuration
@@ -326,12 +333,12 @@ Push notifications include URLs that deep link into the app:
 
 ### iOS vs Android
 
-| Feature       | iOS                             | Android                   |
-| ------------- | ------------------------------- | ------------------------- |
-| Header        | Transparent + blur              | Solid background          |
-| Context menus | `react-native-ios-context-menu` | `@react-native-menu/menu` |
-| Safe area     | Different nav bar handling      | Edge-to-edge UI           |
-| Status bar    | Adapts to content               | Fixed style               |
+| Feature    | iOS                        | Android          |
+| ---------- | -------------------------- | ---------------- |
+| Header     | Transparent + blur         | Solid background |
+| Sort menu  | App-owned modal            | App-owned modal  |
+| Safe area  | Different nav bar handling | Edge-to-edge UI  |
+| Status bar | Adapts to content          | Fixed style      |
 
 ### Platform-Specific Code
 

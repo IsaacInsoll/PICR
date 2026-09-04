@@ -31,7 +31,6 @@
     "@kolking/react-native-avatar": "^2.1.5",
     "@kolking/react-native-rating": "^1.4.2",
     "@likashefqet/react-native-image-zoom": "^4.3.0",
-    "@react-native-menu/menu": "2.0.0",
     "@shopify/flash-list": "2.0.2",
     "@urql/exchange-graphcache": "^9.0.1",
     "@urql/exchange-retry": "^2.0.0",
@@ -54,7 +53,6 @@
     "expo-secure-store": "~57.0.3",
     "expo-splash-screen": "~57.0.8",
     "expo-status-bar": "~57.0.1",
-    "expo-symbols": "~57.0.2",
     "expo-system-ui": "~57.0.3",
     "expo-video": "~57.0.3",
     "expo-web-browser": "~57.0.2",
@@ -69,8 +67,6 @@
     "react-native-edge-to-edge": "^1.7.0",
     "react-native-file-access": "^3.1.1",
     "react-native-gesture-handler": "~2.32.0",
-    "react-native-ios-context-menu": "3.2",
-    "react-native-ios-utilities": "5.2",
     "react-native-reanimated": "4.5.1",
     "react-native-reanimated-carousel": "^4.0.2",
     "react-native-safe-area-context": "~5.7.0",
@@ -82,7 +78,6 @@
     "readable-fractions": "^0.1.1",
     "urql": "^5.0.3",
     "wonka": "^6.3.6",
-    "zeego": "^3.0.6",
     "zod": "^4.0.17"
   },
   "devDependencies": {
@@ -100,13 +95,6 @@
     "prettier": "3.5.3",
     "test-renderer": "^1.2.0",
     "typescript": "^6.0.2"
-  },
-  "overrides": {
-    "zeego": {
-      "@react-native-menu/menu": "2.0.0",
-      "react-native-ios-context-menu": "3.2",
-      "react-native-ios-utilities": "5.2"
-    }
   },
   "release-it": {
     "npm": {
