@@ -8,7 +8,6 @@ import {
 } from '../media/generateImageThumbnail.js';
 import { existsSync } from 'node:fs';
 import {
-  awaitVideoThumbnailGeneration,
   generateVideoThumbnail,
   generateVideoThumbnailVariant,
 } from '../media/generateVideoThumbnail.js';
@@ -81,14 +80,7 @@ export const imageRequest = async (
     }
     const fp = videoScrubPath(file);
     const videoStatus = await ensureVideoArtifact(file, 'md', fp, 'scrub');
-    if (videoStatus === 'failed') {
-      res.sendStatus(500);
-      return;
-    }
-    if (videoStatus === 'missing') {
-      res.sendStatus(404);
-      return;
-    }
+    if (respondToArtifactStatus(res, videoStatus, 404)) return;
     sendCachedFile(res, fp, routeSize.kind);
     return;
   }
@@ -116,20 +108,14 @@ export const imageRequest = async (
           routeSize.variant,
           fp,
         );
-        if (videoStatus === 'failed') {
-          res.sendStatus(500);
-          return;
-        }
-        if (videoStatus === 'missing') {
-          res.sendStatus(404);
-          return;
-        }
+        if (respondToArtifactStatus(res, videoStatus, 404)) return;
       } else {
-        await generateThumbnailVariant(file, routeSize.variant);
-        if (!existsSync(fp)) {
-          res.sendStatus(500);
-          return;
-        }
+        const status = await ensureImageVariantArtifact(
+          file,
+          routeSize.variant,
+          fp,
+        );
+        if (respondToArtifactStatus(res, status, 500)) return;
       }
     }
 
@@ -159,20 +145,14 @@ export const imageRequest = async (
         variant,
         variantPath,
       );
-      if (videoStatus === 'failed') {
-        res.sendStatus(500);
-        return;
-      }
-      if (videoStatus === 'missing') {
-        res.sendStatus(404);
-        return;
-      }
+      if (respondToArtifactStatus(res, videoStatus, 404)) return;
     } else if (!existsSync(variantPath)) {
-      await generateThumbnailVariant(file, variant);
-      if (!existsSync(variantPath)) {
-        res.sendStatus(500);
-        return;
-      }
+      const status = await ensureImageVariantArtifact(
+        file,
+        variant,
+        variantPath,
+      );
+      if (respondToArtifactStatus(res, status, 500)) return;
     }
     sendCachedFile(res, variantPath, routeSize.kind);
     return;
@@ -181,17 +161,58 @@ export const imageRequest = async (
   sendCachedFile(res, fullPathFor(file, routeSize.size), 'raw');
 };
 
-type VideoArtifactStatus = 'ok' | 'failed' | 'missing';
+type ArtifactStatus = 'ok' | 'failed' | 'missing';
 
-const ensureVideoArtifact = async (
+// Every generation branch routes its status through here so a new status can
+// never be added to `ArtifactStatus` and silently fall through to
+// `sendCachedFile` with a path that was never produced. Returns true when the
+// request has been answered and the caller must stop.
+//
+// `missingStatus` differs by media type and is deliberately preserved: a video
+// artifact that generation legitimately cannot produce is a 404, while a missing
+// image thumbnail after a successful generate means something went wrong.
+export const respondToArtifactStatus = (
+  res: Response,
+  status: ArtifactStatus,
+  missingStatus: 404 | 500,
+): boolean => {
+  if (status === 'ok') return false;
+  res.sendStatus(status === 'missing' ? missingStatus : 500);
+  return true;
+};
+
+const ensureImageVariantArtifact = async (
+  file: FileFields,
+  variant: ThumbnailVariant,
+  path: string,
+): Promise<ArtifactStatus> => {
+  try {
+    await generateThumbnailVariant(file, variant, 'interactive');
+  } catch (error) {
+    log(
+      'error',
+      `Failed generating thumbnail variant ${variant.token} for ${file.name}: ${String(error)}`,
+    );
+    return 'failed';
+  }
+
+  return existsSync(path) ? 'ok' : 'missing';
+};
+
+export const ensureVideoArtifact = async (
   file: FileFields,
   size: ThumbnailSize,
   path: string,
   artifact: 'poster' | 'scrub',
-): Promise<VideoArtifactStatus> => {
+): Promise<ArtifactStatus> => {
+  // Video artifacts are written atomically, so a file that exists is complete.
+  // Waiting on generation from here would block a warm cache hit behind an
+  // unrelated background job for the same video, and fail the request outright
+  // if that job errored - for a file that was ready the whole time.
+  if (existsSync(path)) return 'ok';
+
   try {
-    if (!existsSync(path)) await generateVideoThumbnail(file, size);
-    await awaitVideoThumbnailGeneration(file, size);
+    await generateVideoThumbnail(file, size, 'interactive');
   } catch (error) {
     log(
       'error',
@@ -212,9 +233,10 @@ const ensureVideoVariantArtifact = async (
   file: FileFields,
   variant: ThumbnailVariant,
   path: string,
-): Promise<VideoArtifactStatus> => {
+): Promise<ArtifactStatus> => {
   try {
-    if (!existsSync(path)) await generateVideoThumbnailVariant(file, variant);
+    if (!existsSync(path))
+      await generateVideoThumbnailVariant(file, variant, 'interactive');
   } catch (error) {
     log(
       'error',
@@ -268,7 +290,7 @@ const warnLegacyThumbnailRoute = (size: ThumbnailSize): void => {
   );
 };
 
-const sendCachedFile = (
+export const sendCachedFile = (
   res: Response,
   path: string,
   kind: ResolvedImageRouteSize['kind'],
@@ -277,7 +299,16 @@ const sendCachedFile = (
   // become sticky in browser/proxy caches, especially for token thumbnails where
   // the success path intentionally has a longer TTL.
   res.set('Cache-Control', cacheControlFor(kind));
-  res.sendFile(path);
+  // Express types the callback as always receiving an Error, but it is invoked
+  // with nothing on success, so the parameter is widened to match runtime.
+  res.sendFile(path, (error?: Error) => {
+    // Without a callback Express forwards the error to the default handler,
+    // which answers 500 while the success Cache-Control header set above is
+    // still attached — caching a failure for as long as a day.
+    if (!error || res.headersSent) return;
+    res.removeHeader('Cache-Control');
+    res.sendStatus(404);
+  });
 };
 
 const cacheControlFor = (kind: ResolvedImageRouteSize['kind']): string => {

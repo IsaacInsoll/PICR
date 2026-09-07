@@ -9,7 +9,7 @@ import type {
 import path from 'path';
 import { envSchema } from './envSchema.js';
 import { buildCanWriteWarning, probeWriteAccess } from './mediaWriteAccess.js';
-import { availableParallelism, totalmem } from 'node:os';
+import { availableCpuCount, availableMemoryBytes } from './containerLimits.js';
 
 const thumbnailWorkerMemoryBudgetBytes = 512 * 1024 * 1024;
 const maxDefaultThumbnailWorkers = 8;
@@ -137,15 +137,23 @@ export const resolvePollingSeconds = (
   pollingInterval: number | undefined,
 ): number => pollingSeconds ?? (pollingInterval ? pollingInterval / 10 : 20);
 
-export const defaultThumbnailWorkerCount = (): number =>
+export const thumbnailWorkerCountFor = (
+  cpuCount: number,
+  memoryBytes: number,
+): number =>
   Math.max(
     1,
     Math.min(
       maxDefaultThumbnailWorkers,
-      availableParallelism(),
-      Math.floor(totalmem() / thumbnailWorkerMemoryBudgetBytes),
+      cpuCount,
+      Math.floor(memoryBytes / thumbnailWorkerMemoryBudgetBytes),
     ),
   );
+
+// Sized from the cgroup where one exists: a 1GB container on a 64GB host would
+// otherwise budget for the host's RAM and run eight workers into an OOM kill.
+export const defaultThumbnailWorkerCount = (): number =>
+  thumbnailWorkerCountFor(availableCpuCount(), availableMemoryBytes());
 
 export const legacyConfigAdvisory = (
   rawEnv: NodeJS.ProcessEnv,

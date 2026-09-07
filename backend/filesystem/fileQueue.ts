@@ -156,6 +156,9 @@ const dequeueItem = (): QueueItem | undefined => {
   return item;
 };
 
+// Batching is what gives the queue its parallelism; the hard limit lives in
+// `withThumbnailSlot`, which request-time cache misses share. Both read the same
+// worker count, so a full batch simply holds every slot until one frees.
 const runThumbnailBatch = async (firstItem: QueueItem): Promise<void> => {
   const batch = [firstItem];
   const workerCount = Math.max(1, Math.floor(picrConfig.thumbnailWorkerCount));

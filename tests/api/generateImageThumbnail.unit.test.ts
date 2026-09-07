@@ -28,14 +28,19 @@ const deferred = () => {
 const loadGenerateImageThumbnail = async ({
   encodeImageThumbnailVariantsImpl,
   existingThumbnails = [],
+  thumbnailWorkerCount = 1,
 }: {
   encodeImageThumbnailVariantsImpl?: (
     input: string,
     variants: readonly { token: string }[],
   ) => Promise<Map<string, unknown[] | null>>;
   existingThumbnails?: string[];
+  thumbnailWorkerCount?: number;
 } = {}) => {
   vi.resetModules();
+  vi.doMock('../../backend/config/picrConfig.js', () => ({
+    picrConfig: { thumbnailWorkerCount },
+  }));
 
   const encodeImageThumbnailVariants = vi.fn(
     encodeImageThumbnailVariantsImpl ??
@@ -214,4 +219,40 @@ test('computes missing image thumbnail variants before decoding', async () => {
     ]),
     expect.any(Function),
   );
+});
+
+test('request-time generation is bounded by the worker count', async () => {
+  // The regression this guards: /image/... cache misses used to bypass the
+  // queue's limit entirely, so a browser opening a cold folder started one
+  // full-resolution decode per visible image.
+  const gate = deferred();
+  let active = 0;
+  let peak = 0;
+
+  const { module } = await loadGenerateImageThumbnail({
+    thumbnailWorkerCount: 2,
+    encodeImageThumbnailVariantsImpl: async (_input, variants) => {
+      active++;
+      peak = Math.max(peak, active);
+      await gate.promise;
+      active--;
+      return new Map(variants.map(({ token }) => [token, [{ width: 1000 }]]));
+    },
+  });
+
+  // Distinct files, so the in-flight dedupe cannot be what bounds this.
+  const requests = Array.from({ length: 6 }, (_unused, index) =>
+    module.generateThumbnailVariant(
+      file({ id: index + 1, fileHash: `hash-${index}` }),
+      variant,
+      'interactive',
+    ),
+  );
+
+  for (let i = 0; i < 20; i++) await Promise.resolve();
+  expect(peak).toBe(2);
+
+  gate.resolve();
+  await Promise.all(requests);
+  expect(peak).toBe(2);
 });

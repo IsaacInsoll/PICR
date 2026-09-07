@@ -13,6 +13,10 @@ import type {
   ThumbnailVariantToken,
 } from '@shared/thumbnailVariants.js';
 import { thumbnailVariantLadderForSettings } from '@shared/thumbnailVariants.js';
+import {
+  withThumbnailSlot,
+  type ThumbnailPriority,
+} from './thumbnailConcurrency.js';
 
 type ImageThumbnailGeneration =
   Awaited<ReturnType<typeof encodeImageThumbnailVariants>> extends Map<
@@ -28,20 +32,23 @@ const inFlightImageThumbnails = new Map<
 >();
 
 // Checks if thumbnail file exists and skips if it does so use `deleteAllThumbs` if you are wanting to update a file
-export const generateAllThumbs = async (file: FileFields) => {
+export const generateAllThumbs = async (
+  file: FileFields,
+  priority: ThumbnailPriority = 'background',
+) => {
   if (file.type === 'Image') {
     const settings = await getServerMediaSettings();
     const missing = thumbnailVariantLadderForSettings(settings).filter(
       (variant) => !existsSync(thumbnailVariantPath(file, variant)),
     );
     if (missing.length > 0) {
-      await generateThumbnailVariants(file, missing);
+      await generateThumbnailVariants(file, missing, priority);
     }
   }
 
   if (file.type === 'Video') {
     try {
-      await generateVideoThumbnail(file, 'md');
+      await generateVideoThumbnail(file, 'md', priority);
     } catch (e) {
       log(
         'error',
@@ -54,14 +61,16 @@ export const generateAllThumbs = async (file: FileFields) => {
 export const generateThumbnailVariant = async (
   file: FileFields,
   variant: ThumbnailVariant,
+  priority: ThumbnailPriority = 'background',
 ): Promise<ImageThumbnailGeneration> => {
-  const [result] = await generateThumbnailVariants(file, [variant]);
+  const [result] = await generateThumbnailVariants(file, [variant], priority);
   return result ?? null;
 };
 
 const generateThumbnailVariants = async (
   file: FileFields,
   variants: readonly ThumbnailVariant[],
+  priority: ThumbnailPriority,
 ): Promise<ImageThumbnailGeneration[]> => {
   const promises: Promise<ImageThumbnailGeneration>[] = [];
   const missingVariants: ThumbnailVariant[] = [];
@@ -78,7 +87,11 @@ const generateThumbnailVariants = async (
   }
 
   if (missingVariants.length > 0) {
-    const setPromise = generateThumbnailVariantsUnlocked(file, missingVariants);
+    const setPromise = generateThumbnailVariantsUnlocked(
+      file,
+      missingVariants,
+      priority,
+    );
     for (const variant of missingVariants) {
       const inFlightKey = imageThumbnailGenerationKey(file, variant.token);
       const promise = setPromise
@@ -97,23 +110,29 @@ const generateThumbnailVariants = async (
 const generateThumbnailVariantsUnlocked = async (
   file: FileFields,
   variants: readonly ThumbnailVariant[],
-): Promise<Map<ThumbnailVariantToken, ImageThumbnailGeneration>> => {
-  for (const variant of variants) {
-    log('info', `🖼️ Generating ${variant.token} thumbnail for ${file.name}`);
-  }
-  try {
-    const sourcePath = await ensureDecodedImage(file);
-    return await encodeImageThumbnailVariants(sourcePath, variants, (variant) =>
-      thumbnailVariantPath(file, variant),
-    );
-  } catch (e) {
-    log(
-      'error',
-      `Error generating ${variants.map(({ token }) => token).join(', ')} thumbnail${variants.length === 1 ? '' : 's'} for ${file.name}: ${String(e)}`,
-    );
-  }
-  return new Map(variants.map((variant) => [variant.token, null]));
-};
+  priority: ThumbnailPriority,
+): Promise<Map<ThumbnailVariantToken, ImageThumbnailGeneration>> =>
+  withThumbnailSlot(priority, async () => {
+    // Logged after the slot is held so the log reflects work actually starting
+    // rather than work merely queued.
+    for (const variant of variants) {
+      log('info', `🖼️ Generating ${variant.token} thumbnail for ${file.name}`);
+    }
+    try {
+      const sourcePath = await ensureDecodedImage(file);
+      return await encodeImageThumbnailVariants(
+        sourcePath,
+        variants,
+        (variant) => thumbnailVariantPath(file, variant),
+      );
+    } catch (e) {
+      log(
+        'error',
+        `Error generating ${variants.map(({ token }) => token).join(', ')} thumbnail${variants.length === 1 ? '' : 's'} for ${file.name}: ${String(e)}`,
+      );
+    }
+    return new Map(variants.map((variant) => [variant.token, null]));
+  });
 
 const imageThumbnailGenerationKey = (
   file: Pick<FileFields, 'fileHash' | 'id'>,

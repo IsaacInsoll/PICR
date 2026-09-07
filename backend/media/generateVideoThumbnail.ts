@@ -22,6 +22,10 @@ import {
 } from '@shared/thumbnailVariants.js';
 import { encodeImageThumbnailVariants } from './encodeImageThumbnails.js';
 import { generateVideoThumbnailArtifacts } from './videoThumbnailPipeline.js';
+import {
+  withThumbnailSlot,
+  type ThumbnailPriority,
+} from './thumbnailConcurrency.js';
 
 // This operation takes some time, and might be requested multiple times before it completes
 // so lets queue it up
@@ -124,12 +128,19 @@ const persistVideoBlurHash = async (
 export const generateVideoThumbnail = async (
   file: FileFields,
   size: ThumbnailSize,
+  priority: ThumbnailPriority = 'background',
 ): Promise<void> => {
   const pr = awaitVideoThumbnailGeneration(file, size);
   if (pr) return pr;
 
   const key = videoThumbnailQueueKey(file);
-  const p = processVideoThumbnail(file, size).finally(() => {
+  // `videoThumbnailQueue` only deduplicates repeat requests for the *same*
+  // video. Bounding how many different videos ffmpeg processes at once needs
+  // the shared slot, and ffmpeg's memory lives outside the Node heap so this
+  // is the only thing holding it back.
+  const p = withThumbnailSlot(priority, () =>
+    processVideoThumbnail(file, size),
+  ).finally(() => {
     delete videoThumbnailQueue[key];
   });
   videoThumbnailQueue[key] = p;
@@ -139,6 +150,7 @@ export const generateVideoThumbnail = async (
 export const generateVideoThumbnailVariant = async (
   file: FileFields,
   variant: ThumbnailVariant,
+  priority: ThumbnailPriority = 'background',
 ): Promise<void> => {
   const currentQuality =
     (await getServerMediaSettings()).thumbnailJpegQuality === variant.quality;
@@ -147,7 +159,7 @@ export const generateVideoThumbnailVariant = async (
       `Cannot generate stale video thumbnail variant ${variant.token}`,
     );
   }
-  return generateVideoThumbnail(file, 'md');
+  return generateVideoThumbnail(file, 'md', priority);
 };
 
 export const awaitVideoThumbnailGeneration = (

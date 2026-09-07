@@ -41,6 +41,7 @@ const startupBanner = (config: IPicrConfiguration) => {
   return banner(logo, [
     bannerRow('■', 'Version', versionLabel(config)),
     bannerRow('■', 'URL', config.baseUrl),
+    bannerRow('■', 'Thumbnails', thumbnailWorkerLabel(config)),
     ...(config.pingToken
       ? [bannerRow('■', 'PICR Ping', 'enabled, awaiting contact')]
       : []),
@@ -51,6 +52,14 @@ const startupBanner = (config: IPicrConfiguration) => {
       ? [bannerRow('■', 'Unsupported', unsupported.join(' · '))]
       : []),
   ]);
+};
+
+// Surfaced at boot because it is resolved from the cgroup where one exists, so
+// it is the only way to tell from a support log what a container actually sized
+// itself to.
+const thumbnailWorkerLabel = (config: IPicrConfiguration) => {
+  const count = config.thumbnailWorkerCount;
+  return `${count} worker${count === 1 ? '' : 's'}`;
 };
 
 const versionLabel = (config: IPicrConfiguration) => {
