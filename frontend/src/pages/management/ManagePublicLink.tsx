@@ -1,10 +1,12 @@
 import type { PicrFolder } from '@shared/types/picr';
 import { normalizeDisplayName } from '@shared/displayName';
 import { randomString } from '../../helpers/randomString';
-import { useState } from 'react';
-import { useMutation } from 'urql';
+import { useMemo, useState } from 'react';
+import { useMutation, useQuery } from 'urql';
 import { editUserMutation } from '@shared/urql/mutations/editUserMutation';
 import { deleteUserMutation } from '@shared/urql/mutations/deleteUserMutation';
+import { generateThumbnailsMutation } from '@shared/urql/mutations/generateThumbnailsMutation';
+import { generateThumbnailsQuery } from '@shared/urql/queries/generateThumbnailsQuery';
 import type { MutationEditUserArgs } from '@shared/gql/graphql';
 import {
   ActionIcon,
@@ -13,6 +15,7 @@ import {
   Code,
   Divider,
   Group,
+  Loader,
   Modal,
   PasswordInput,
   SimpleGrid,
@@ -63,6 +66,7 @@ export const ManagePublicLink = ({
   const [user, exists] = useViewUser(id);
   const [, mutate] = useMutation(editUserMutation);
   const [, deleteUser] = useMutation(deleteUserMutation);
+  const [, generateThumbnails] = useMutation(generateThumbnailsMutation);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const baseUrl = useBaseUrl();
 
@@ -93,6 +97,23 @@ export const ManagePublicLink = ({
   const f = user?.folder ?? folder;
   const folderName = formatFolderName(f);
 
+  // Sharing a folder is the clearest signal that clients are about to look at
+  // it, so offer to warm it here rather than leaving the first viewer to wait.
+  // Counting missing thumbnails walks the whole subtree, so this stays lazy and
+  // never blocks the form: the option simply appears once the count is known.
+  const thumbnailQueryContext = useMemo(() => ({ suspense: false }), []);
+  const [thumbnailStats] = useQuery({
+    query: generateThumbnailsQuery,
+    variables: { folderId: f?.id ?? '' },
+    pause: !f?.id,
+    requestPolicy: 'cache-and-network',
+    context: thumbnailQueryContext,
+  });
+  const thumbnailCompletion = thumbnailStats.data?.folder.thumbnailCompletion;
+  const incompleteFiles = thumbnailCompletion?.incompleteFiles ?? 0;
+  const checkingThumbnails = thumbnailStats.fetching && !thumbnailCompletion;
+  const [generateThumbs, setGenerateThumbs] = useState(true);
+
   const onSave = () => {
     if (!f?.id) return;
     setError('');
@@ -108,12 +129,18 @@ export const ManagePublicLink = ({
       galleryPasscode,
       expiresAt: expiresAt?.toISOString() ?? null,
     };
+    const folderId = f.id;
     void mutate(data).then(({ error }) => {
       if (error) {
         setError(error.toString());
-      } else {
-        onClose();
+        return;
       }
+      // Deliberately not awaited: the link is saved either way, generation is a
+      // background queue, and the admin can retrigger it from the folder.
+      if (generateThumbs && incompleteFiles > 0) {
+        void generateThumbnails({ folderId });
+      }
+      onClose();
     });
   };
 
@@ -281,6 +308,35 @@ export const ManagePublicLink = ({
         </SimpleGrid>
 
         {/* Advanced section reserved for future lower-priority link options. */}
+
+        {f?.id ? (
+          <Box>
+            {checkingThumbnails ? (
+              <Group gap="xs">
+                <Loader size="xs" />
+                <Text size="sm">{t('folder.thumbnails.checking')}</Text>
+              </Group>
+            ) : thumbnailStats.error ? (
+              <ErrorAlert message={thumbnailStats.error.message} />
+            ) : incompleteFiles > 0 ? (
+              <Switch
+                checked={generateThumbs}
+                withThumbIndicator={true}
+                size="md"
+                label={t('folder.thumbnails.generateMissing', {
+                  count: incompleteFiles,
+                })}
+                onChange={(event) =>
+                  setGenerateThumbs(event.currentTarget.checked)
+                }
+              />
+            ) : thumbnailCompletion ? (
+              <Text size="sm" c="dimmed">
+                {t('folder.thumbnails.completeDescription')}
+              </Text>
+            ) : null}
+          </Box>
+        ) : null}
 
         <ErrorAlert message={error} />
 
