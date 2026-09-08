@@ -237,6 +237,110 @@ guard compare regenerated output against the candidate content in the index.
 a codegen output. The schema URQL actually uses for cache validation is
 `shared/urql/graphql.schema.json`.
 
+## Thumbnails and Media Readiness
+
+This is a cross-cutting concern affecting backend generation, frontend loading
+states, and deployment guidance.
+
+### Workload Shape
+
+PICR is run by individual photographers sharing galleries with their own
+clients. A busy moment is one client opening one gallery, not sustained
+multi-tenant traffic. Design for that: correctness and predictable resource use
+on modest self-hosted hardware matter more than throughput under load.
+
+### Generate Ahead of the Client
+
+The intended flow is that thumbnails are generated as media arrives, so that by
+the time a client opens a gallery everything is already on disk. Request-time
+generation is a fallback for gaps - a folder that was never scanned, a cleared
+cache, a cache-key change between versions - and not the normal path.
+
+Prefer work that makes eager generation more complete or more reliable over work
+that makes the on-demand path faster.
+
+### Never Trade Quality for Latency
+
+When a thumbnail is not ready, make the viewer wait for the correct image. Do
+not substitute a smaller variant, a different quality setting, or the original
+file as a stand-in, and do not add degradation or fallback-to-lower-quality
+paths.
+
+PICR's product is the photographer's image quality, and a client seeing a soft
+or wrongly sized image reflects on the photographer. "Wait a moment because
+someone forgot to generate thumbnails" is an acceptable outcome; "here is a
+worse version of the photo" is not.
+
+The blurhash placeholder is the loading state, so a brief wait that resolves is
+the intended experience. The corollary is that loading states must actually
+resolve: anything that displays a thumbnail needs to recover on its own when
+generation was not instant, rather than sitting on a placeholder forever.
+
+### Cache Space Loses to Client Experience
+
+Do not waste cache space - generating variants no client will ever request is
+just waste, and the ladder should stay honest about what is actually served. But
+where cache size genuinely conflicts with the client's experience, the client
+wins, every time and without hesitation.
+
+The trade PICR exists to make is that a photographer's own disk is far cheaper
+per gigabyte than the hosted service they are choosing between. A library of
+thousands of photos generating a large cache is still comfortably ahead of
+Google Drive or a paid proofing service, and it buys their client a fast,
+full-quality gallery. Spending disk to get that is the point, not a regression.
+
+So: measure cache cost, report it honestly, and give operators the controls to
+manage it - clearing the cache, quality settings, knowing what to expect. Never
+buy space back by giving the client something worse.
+
+### Concurrency Limits Protect the Server, Not the Client
+
+Thumbnail generation is bounded so that a small VPS or NAS is not OOM-killed by
+a burst of requests. That limit exists to keep the server alive, not to shed
+load. Prefer making a request wait over failing it, and keep any "busy" response
+retryable and uncacheable.
+
+### Generation Is Deliberately Not Retroactive
+
+The boot scan indexes files but does **not** generate thumbnails for them
+(`generateThumbs: initComplete` in `backend/filesystem/fileWatcher.ts`). This is
+load-bearing, not an oversight. A photographer's root folder is routinely their
+entire career - tens of thousands of files, most untouched for years - and
+regenerating that on every boot would keep a server busy for days building
+thumbnails nobody is going to open.
+
+| Path                            | Generates thumbnails?                                   |
+| ------------------------------- | ------------------------------------------------------- |
+| Boot scan                       | No - indexes only                                       |
+| Watcher, once the scan finishes | Yes - an export lands ready before the client arrives   |
+| Creating or editing a link      | Yes - offered in the editor, on by default              |
+| **Generate Thumbnails** action  | Yes - explicit, operator-chosen, scoped to one folder   |
+| Request-time cache miss         | Yes - the fallback for anything the above did not cover |
+
+Sharing a folder is the clearest signal that clients are about to look at it, so
+the public link editor offers to generate whatever is missing and has that on by
+default. It stays an offer rather than a side effect: the count is shown, so an
+operator sharing something enormous can see what they are asking for and decline.
+Keep it that way - a link mutation that silently enqueues tens of thousands of
+files is the kind of hidden coupling that is impossible to reason about later.
+
+Do not "fix" the boot scan by making it generate thumbnails, and treat any
+change that eagerly walks the whole library with the same suspicion.
+
+Already-generated variants are skipped rather than rebuilt, so nothing ever
+redoes completed work. An interrupted **Generate Thumbnails** run does not
+resume on its own, because the queue is in memory - the operator triggers it
+again, or the remainder is built on demand.
+
+### One-Off Regeneration Is Expected
+
+A release that changes the thumbnail cache key makes every existing thumbnail
+unreachable, so an upgraded install effectively starts with a cold cache.
+Because boot deliberately regenerates nothing, that load lands on the
+request-time path as clients browse, which is precisely why that path has to
+stay bounded. Optimise it for bounded memory rather than peak throughput, and
+call the regeneration out in release notes.
+
 ## User Model & Access Control
 
 This is a cross-cutting concern affecting backend auth, frontend routing, and app access.

@@ -64,6 +64,8 @@ PICR reads metadata; it does not write edits back into original media.
 
 Generated previews live in the mounted cache directory, not beside the originals. The cache includes multiple JPEG widths so browsers can request an appropriate size for the layout and screen.
 
+Expect the cache to grow to a meaningful fraction of your library. PICR deliberately trades disk space for the client's experience: keeping several ready-made sizes is what lets a gallery open quickly at the right resolution on a phone, a laptop, and a large monitor. Storage on your own server is considerably cheaper per gigabyte than a hosted proofing service, so this is usually the trade you want. Plan for cache growth on the volume you mount rather than trying to minimise it.
+
 :::tip[The cache is regenerable]
 
 - It does not need to be part of normal backups.
@@ -99,7 +101,7 @@ Changing thumbnail quality changes the generated variant identity. New requests 
 
 ## Thumbnail workers
 
-PICR chooses a thumbnail-worker count based on CPU and memory, capped at eight by default. On a small NAS, reduce concurrency when imports compete with other services:
+PICR chooses a thumbnail-worker count based on available CPU and memory, capped at eight by default. In a container it reads the cgroup limits rather than the host's totals, so a memory-limited container on a large machine is sized for the limit it actually has. On a small NAS, reduce concurrency when imports compete with other services:
 
 ```yaml title="compose.yml — reduce thumbnail concurrency"
 environment:
@@ -107,6 +109,10 @@ environment:
 ```
 
 The Docker image sets `UV_THREADPOOL_SIZE=8`. Raising worker count above the native threadpool usually adds memory pressure without improving throughput; benchmark changes on your own server.
+
+The worker count covers every thumbnail that PICR generates: background imports, the **Generate Thumbnails** action, and thumbnails built on demand when a browser requests one that is not cached yet. A viewer waiting on a visible thumbnail is served ahead of background work.
+
+When a folder is opened before its thumbnails exist, more requests can arrive than there are workers. Those requests wait their turn and are served the full-quality image rather than a substitute, so a cold gallery fills in progressively instead of failing. Seeing that after an upgrade is normal while the cache rebuilds; it is a signal to leave PICR running, or to pre-generate the folder, rather than to raise the worker count, which increases memory use.
 
 ## Hardware video acceleration
 

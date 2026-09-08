@@ -49,7 +49,7 @@ See [Scan your media library](/PICR/operations/scanning/) before combining modes
 | `FFPROBE_PATH`       | `ffprobe` from `PATH`       | Override FFprobe executable                       |
 | `EXIFTOOL_PATH`      | `exiftool` from `PATH`      | Override RAW preview/metadata helper              |
 | `MAGICK_PATH`        | `magick` from `PATH`        | Override PSD, PSB, HEIC, and HEIF decoder         |
-| `THUMBNAIL_WORKERS`  | CPU/memory-aware, maximum 8 | Parallel thumbnail worker count                   |
+| `THUMBNAIL_WORKERS`  | Cgroup/CPU-aware, maximum 8 | Parallel thumbnail worker count                   |
 | `UV_THREADPOOL_SIZE` | `8` in Docker image         | Native async worker pool used by image processing |
 
 The official Docker image supplies the media tools. Overrides are mainly for custom installations or troubleshooting.
