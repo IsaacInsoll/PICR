@@ -67,7 +67,7 @@ shared/
 | GraphQL operations | Queries, mutations, fragments | Plain strings + types |
 | Generated types    | `File`, `Folder`, `User`      | Pure TypeScript       |
 | Pure functions     | `prettyBytes`, `sortFiles`    | No React dependencies |
-| Jotai atoms        | `filterAtom`                  | Framework-agnostic    |
+| Jotai atoms        | `filterOptions`               | Framework-agnostic    |
 | Constants          | `thumbnailDimensions`         | Plain values          |
 | Format helpers     | `imageFormats`                | Pure extension checks |
 | Validation         | `validateFolderName`          | Pure functions        |
@@ -413,7 +413,6 @@ const error = validateRelativePath('Parent/Child/Folder'); // null if valid
 // shared/filterAtom.ts
 import { atom } from 'jotai';
 
-export const filterAtom = atom(false);
 export const filterOptions = atom<FilterOptions>(defaultFilterOptions);
 export const totalFilterOptionsSelected = atom((get) => {
   const options = get(filterOptions);
@@ -426,9 +425,9 @@ Usage in consumers:
 
 ```typescript
 import { useAtom } from 'jotai';
-import { filterAtom } from '@shared/filterAtom';
+import { filterOptions } from '@shared/filterAtom';
 
-const [isFiltering, setIsFiltering] = useAtom(filterAtom);
+const [filters, setFilters] = useAtom(filterOptions);
 ```
 
 ## Adding a New Query

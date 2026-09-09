@@ -21,6 +21,7 @@ import {
   SimpleGrid,
   Stack,
   Switch,
+  Tabs,
   Text,
   TextInput,
   Tooltip,
@@ -31,8 +32,10 @@ import { LinkModeSelector } from '../../components/LinkModeSelector';
 import { DateTimePicker } from '@mantine/dates';
 import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
 import {
+  AccessLogsIcon,
   DeleteIcon,
   EmailIcon,
+  EditIcon,
   LabelIcon,
   PasswordIcon,
   PublicLinkIcon,
@@ -50,6 +53,7 @@ import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 import { useLanguage } from '../../i18n/useLanguage';
 import { dateTimePickerFormatFor } from '../../i18n/mantineDates';
 import dayjs from 'dayjs';
+import { AccessLogs } from './AccessLogs/AccessLogs';
 
 export const ManagePublicLink = ({
   id,
@@ -68,6 +72,7 @@ export const ManagePublicLink = ({
   const [, deleteUser] = useMutation(deleteUserMutation);
   const [, generateThumbnails] = useMutation(generateThumbnailsMutation);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [activeTab, setActiveTab] = useState('edit');
   const baseUrl = useBaseUrl();
 
   const [name, setName] = useState(user?.name ?? '');
@@ -176,167 +181,222 @@ export const ManagePublicLink = ({
       centered
       opened={true}
       size="xl"
+      closeButtonProps={{ 'aria-label': t('common.close') }}
     >
       <Stack gap="md">
-        <Stack gap="xs">
-          <Divider label={t('links.editor.publicUrl')} labelPosition="left" />
-          <Group gap="xs" align="flex-end" wrap="nowrap">
-            <TextInput
-              flex={1}
-              miw={0}
-              leftSection={<PublicLinkIcon />}
-              placeholder={t('links.editor.idPlaceholder')}
-              value={link}
-              label={t('links.editor.publicLink')}
-              description={t('links.editor.publicLinkDescription')}
-              onChange={(e) => setLink(e.currentTarget.value)}
-              error={
-                badLink.length > 0 ? (
-                  <Group gap="xs">
-                    <Text size="xs">{t('links.editor.cannotUse')}</Text>
-                    {badLink.map((l) => (
-                      <Code key={l}>
-                        {l === ' ' ? t('links.editor.space') : l}
-                      </Code>
-                    ))}
-                  </Group>
-                ) : link.length < 6 ? (
-                  t('links.editor.minimumLength')
-                ) : undefined
-              }
-            />
-            <ActionIcon.Group>
-              <Tooltip label={t('links.editor.generatePretty')}>
-                <ActionIcon
-                  size="lg"
-                  variant="default"
-                  onClick={() => {
-                    const pretty =
-                      normalizeDisplayName(folder?.name)?.replaceAll(' ', '-') +
-                      '-' +
-                      randomString().substring(0, 4);
-                    setLink(pretty);
-                  }}
-                >
-                  <LabelIcon />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label={t('links.editor.generateRandom')}>
-                <ActionIcon
-                  size="lg"
-                  variant="default"
-                  onClick={() => setLink(randomString())}
-                >
-                  <RefreshIcon />
-                </ActionIcon>
-              </Tooltip>
-            </ActionIcon.Group>
-          </Group>
-          {publicUrl ? (
-            <Text size="xs" c="dimmed" style={{ wordBreak: 'break-all' }}>
-              {t('links.editor.fullLink')} <Code>{publicUrl}</Code>
-            </Text>
+        <Tabs
+          value={activeTab}
+          onChange={(value) => value && setActiveTab(value)}
+          keepMounted={false}
+        >
+          {exists ? (
+            <Tabs.List>
+              <Tabs.Tab value="edit" leftSection={<EditIcon />}>
+                {t('links.editor.tabs.edit')}
+              </Tabs.Tab>
+              <Tabs.Tab value="accessLogs" leftSection={<AccessLogsIcon />}>
+                {t('links.editor.tabs.accessLogs')}
+              </Tabs.Tab>
+            </Tabs.List>
           ) : null}
-        </Stack>
 
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg" verticalSpacing="md">
-          <Stack gap="md">
-            <Divider label={t('links.editor.recipient')} labelPosition="left" />
-            <TextInput
-              leftSection={<UsersGroupIcon />}
-              placeholder={t('users.editor.namePlaceholder')}
-              value={name}
-              label={t('users.editor.name')}
-              onChange={(e) => setName(e.currentTarget.value)}
-              error={
-                name.length === 0 ? t('links.editor.nameRequired') : undefined
-              }
-            />
-            <TextInput
-              leftSection={<EmailIcon />}
-              label={t('links.editor.email')}
-              value={username}
-              description={t('links.editor.optional')}
-              autoComplete="off"
-              onChange={(e) => setUsername(e.currentTarget.value)}
-            />
-            <PasswordInput
-              leftSection={<PasswordIcon />}
-              label={t('links.editor.passcode')}
-              value={galleryPasscode}
-              description={t('links.editor.optional')}
-              autoComplete="new-password"
-              onChange={(e) => setGalleryPasscode(e.currentTarget.value)}
-            />
-            <DateTimePicker
-              value={expiresAt}
-              onChange={(date) => {
-                if (!date) {
-                  setExpiresAt(null);
-                  return;
-                }
-                const nextExpiration = dayjs(date);
-                if (nextExpiration.isValid()) {
-                  setExpiresAt(nextExpiration.toDate());
-                }
-              }}
-              label={t('links.editor.expiration')}
-              description={t('links.editor.expirationDescription')}
-              defaultTimeValue="23:59"
-              minDate={earliestExpiration}
-              valueFormat={dateTimePickerFormatFor(formattingLocale)}
-              clearable
-            />
-          </Stack>
+          <Tabs.Panel value="edit" pt={exists ? 'md' : 0}>
+            <Stack gap="md">
+              <Stack gap="xs">
+                <Divider
+                  label={t('links.editor.publicUrl')}
+                  labelPosition="left"
+                />
+                <Group gap="xs" align="flex-end" wrap="nowrap">
+                  <TextInput
+                    flex={1}
+                    miw={0}
+                    leftSection={<PublicLinkIcon />}
+                    placeholder={t('links.editor.idPlaceholder')}
+                    value={link}
+                    label={t('links.editor.publicLink')}
+                    description={t('links.editor.publicLinkDescription')}
+                    onChange={(e) => setLink(e.currentTarget.value)}
+                    error={
+                      badLink.length > 0 ? (
+                        <Group gap="xs">
+                          <Text size="xs">{t('links.editor.cannotUse')}</Text>
+                          {badLink.map((l) => (
+                            <Code key={l}>
+                              {l === ' ' ? t('links.editor.space') : l}
+                            </Code>
+                          ))}
+                        </Group>
+                      ) : link.length < 6 ? (
+                        t('links.editor.minimumLength')
+                      ) : undefined
+                    }
+                  />
+                  <ActionIcon.Group>
+                    <Tooltip label={t('links.editor.generatePretty')}>
+                      <ActionIcon
+                        size="lg"
+                        variant="default"
+                        onClick={() => {
+                          const pretty =
+                            normalizeDisplayName(folder?.name)?.replaceAll(
+                              ' ',
+                              '-',
+                            ) +
+                            '-' +
+                            randomString().substring(0, 4);
+                          setLink(pretty);
+                        }}
+                      >
+                        <LabelIcon />
+                      </ActionIcon>
+                    </Tooltip>
+                    <Tooltip label={t('links.editor.generateRandom')}>
+                      <ActionIcon
+                        size="lg"
+                        variant="default"
+                        onClick={() => setLink(randomString())}
+                      >
+                        <RefreshIcon />
+                      </ActionIcon>
+                    </Tooltip>
+                  </ActionIcon.Group>
+                </Group>
+                {publicUrl ? (
+                  <Text size="xs" c="dimmed" style={{ wordBreak: 'break-all' }}>
+                    {t('links.editor.fullLink')} <Code>{publicUrl}</Code>
+                  </Text>
+                ) : null}
+              </Stack>
 
-          <Stack gap="md">
-            <Divider label={t('users.editor.access')} labelPosition="left" />
-            <Switch
-              checked={enabled}
-              withThumbIndicator={true}
-              size="md"
-              label={t('links.editor.publicLinkEnabled')}
-              description={t('links.editor.enabledDescription')}
-              onChange={(event) => setEnabled(event.currentTarget.checked)}
-            />
-            <LinkModeSelector value={linkMode} onChange={setLinkMode} />
-            <CommentPermissionsSelector
-              value={commentPermissions}
-              onChange={setCommentPermissions}
-            />
-          </Stack>
-        </SimpleGrid>
+              <SimpleGrid
+                cols={{ base: 1, sm: 2 }}
+                spacing="lg"
+                verticalSpacing="md"
+              >
+                <Stack gap="md">
+                  <Divider
+                    label={t('links.editor.recipient')}
+                    labelPosition="left"
+                  />
+                  <TextInput
+                    leftSection={<UsersGroupIcon />}
+                    placeholder={t('users.editor.namePlaceholder')}
+                    value={name}
+                    label={t('users.editor.name')}
+                    onChange={(e) => setName(e.currentTarget.value)}
+                    error={
+                      name.length === 0
+                        ? t('links.editor.nameRequired')
+                        : undefined
+                    }
+                  />
+                  <TextInput
+                    leftSection={<EmailIcon />}
+                    label={t('links.editor.email')}
+                    value={username}
+                    description={t('links.editor.optional')}
+                    autoComplete="off"
+                    onChange={(e) => setUsername(e.currentTarget.value)}
+                  />
+                  <PasswordInput
+                    leftSection={<PasswordIcon />}
+                    label={t('links.editor.passcode')}
+                    value={galleryPasscode}
+                    description={t('links.editor.optional')}
+                    autoComplete="new-password"
+                    onChange={(e) => setGalleryPasscode(e.currentTarget.value)}
+                  />
+                  <DateTimePicker
+                    value={expiresAt}
+                    onChange={(date) => {
+                      if (!date) {
+                        setExpiresAt(null);
+                        return;
+                      }
+                      const nextExpiration = dayjs(date);
+                      if (nextExpiration.isValid()) {
+                        setExpiresAt(nextExpiration.toDate());
+                      }
+                    }}
+                    label={t('links.editor.expiration')}
+                    description={t('links.editor.expirationDescription')}
+                    defaultTimeValue="23:59"
+                    minDate={earliestExpiration}
+                    valueFormat={dateTimePickerFormatFor(formattingLocale)}
+                    clearable
+                  />
+                </Stack>
 
-        {/* Advanced section reserved for future lower-priority link options. */}
+                <Stack gap="md">
+                  <Divider
+                    label={t('users.editor.access')}
+                    labelPosition="left"
+                  />
+                  <Switch
+                    checked={enabled}
+                    withThumbIndicator={true}
+                    size="md"
+                    label={t('links.editor.publicLinkEnabled')}
+                    description={t('links.editor.enabledDescription')}
+                    onChange={(event) =>
+                      setEnabled(event.currentTarget.checked)
+                    }
+                  />
+                  <LinkModeSelector value={linkMode} onChange={setLinkMode} />
+                  <CommentPermissionsSelector
+                    value={commentPermissions}
+                    onChange={setCommentPermissions}
+                  />
+                </Stack>
+              </SimpleGrid>
 
-        {f?.id ? (
-          <Box>
-            {checkingThumbnails ? (
-              <Group gap="xs">
-                <Loader size="xs" />
-                <Text size="sm">{t('folder.thumbnails.checking')}</Text>
-              </Group>
-            ) : thumbnailStats.error ? (
-              <ErrorAlert message={thumbnailStats.error.message} />
-            ) : incompleteFiles > 0 ? (
-              <Switch
-                checked={generateThumbs}
-                withThumbIndicator={true}
-                size="md"
-                label={t('folder.thumbnails.generateMissing', {
-                  count: incompleteFiles,
-                })}
-                onChange={(event) =>
-                  setGenerateThumbs(event.currentTarget.checked)
-                }
-              />
-            ) : thumbnailCompletion ? (
-              <Text size="sm" c="dimmed">
-                {t('folder.thumbnails.completeDescription')}
-              </Text>
-            ) : null}
-          </Box>
-        ) : null}
+              {/* Advanced section reserved for future lower-priority link options. */}
+
+              {f?.id ? (
+                <Box>
+                  {checkingThumbnails ? (
+                    <Group gap="xs">
+                      <Loader size="xs" />
+                      <Text size="sm">{t('folder.thumbnails.checking')}</Text>
+                    </Group>
+                  ) : thumbnailStats.error ? (
+                    <ErrorAlert message={thumbnailStats.error.message} />
+                  ) : incompleteFiles > 0 ? (
+                    <Switch
+                      checked={generateThumbs}
+                      withThumbIndicator={true}
+                      size="md"
+                      label={t('folder.thumbnails.generateMissing', {
+                        count: incompleteFiles,
+                      })}
+                      onChange={(event) =>
+                        setGenerateThumbs(event.currentTarget.checked)
+                      }
+                    />
+                  ) : thumbnailCompletion ? (
+                    <Text size="sm" c="dimmed">
+                      {t('folder.thumbnails.completeDescription')}
+                    </Text>
+                  ) : null}
+                </Box>
+              ) : null}
+            </Stack>
+          </Tabs.Panel>
+
+          {exists ? (
+            <Tabs.Panel value="accessLogs" pt="md">
+              {activeTab === 'accessLogs' && f?.id && id ? (
+                <AccessLogs
+                  folderId={f.id}
+                  fixedUserId={id}
+                  includeChildren
+                  variant="list"
+                />
+              ) : null}
+            </Tabs.Panel>
+          ) : null}
+        </Tabs>
 
         <ErrorAlert message={error} />
 

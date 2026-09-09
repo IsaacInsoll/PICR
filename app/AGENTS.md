@@ -491,6 +491,10 @@ so it survives regeneration.
 ```bash
 cd app
 
+# Physical-device development variant (installs beside production)
+APP_VARIANT=development npx expo prebuild --clean --platform ios
+APP_VARIANT=development npx expo run:ios --device
+
 # Development build (requires native build first)
 npx expo start
 
@@ -500,6 +504,14 @@ npx expo start --ios
 # Android emulator
 npx expo start --android
 ```
+
+The `APP_VARIANT=development` value in `eas.json` applies only to the EAS
+development profile; `npx expo run:ios` does not read that profile. Pass the
+variable to local prebuild/run commands explicitly. Because an existing native
+project is not fully refreshed by `run:ios`, use a clean prebuild when changing
+variants. Verify that the generated development target uses
+`com.isaacinsoll.picr.dev` before signing it; an unqualified local build uses
+the production `com.isaacinsoll.picr` identifier.
 
 ### Building for Production
 

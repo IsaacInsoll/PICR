@@ -4,13 +4,11 @@ import { lazy, Suspense, useCallback, useEffect, type MouseEvent } from 'react';
 import { GridGallery } from './GridGallery';
 import { ImageFeed } from './ImageFeed';
 import {
-  filterAtom,
   filterOptions,
   resetFilterOptions,
+  totalFilterOptionsSelected,
 } from '@shared/filterAtom';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { FilteringOptions } from './Filtering/FilteringOptions';
-import { Transition } from '@mantine/core';
 import { useParams } from 'react-router';
 import { useSelectedFileId } from '../../hooks/useSelectedFileId';
 import { FileListView } from './FileListView';
@@ -38,6 +36,7 @@ import {
 import { useCanDownload, useMe } from '../../hooks/useMe';
 import { loadPicrVideoPlayer } from '../LazyPicrVideoPlayer';
 import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
+import { FolderContentsToolbar } from './FolderContentsToolbar';
 
 const loadMoveRenameFolderModal = () =>
   import('./MoveRenameFolderModal').then((module) => ({
@@ -121,8 +120,8 @@ export const FolderContentsView = ({
     setView,
   ]);
 
-  const filtering = useAtomValue(filterAtom);
   const filters = useAtomValue(filterOptions);
+  const totalFilters = useAtomValue(totalFilterOptionsSelected);
   const resetFilters = useSetAtom(resetFilterOptions);
   const [sort] = useFileSort();
   const moveFolder = useAtomValue(moveRenameFolderAtom);
@@ -173,7 +172,7 @@ export const FolderContentsView = ({
   // don't memo files because it breaks graphicache (IE: file changing rating won't reflect)
   const sortedItems = folderContentsItems(folder, {
     sort: effectiveSort,
-    filtering,
+    filtering: totalFilters > 0,
     filters,
     foldersFirst: effectiveSort.foldersFirst,
   });
@@ -222,20 +221,13 @@ export const FolderContentsView = ({
           />
         </Suspense>
       ) : null}
-      <Transition
-        mounted={filtering}
-        transition="scale-y"
-        duration={400}
-        timingFunction="ease"
-      >
-        {(style) => (
-          <FilteringOptions
-            files={files}
-            style={style}
-            totalFiltered={props.files.length}
-          />
-        )}
-      </Transition>
+      {me?.isUser ? (
+        <FolderContentsToolbar
+          folder={folder}
+          hasCaptureDates={hasCaptureDates}
+          totalFiltered={props.files.length}
+        />
+      ) : null}
       {fileId ? ( // SelectedFileView react lightbox 'blocks' fileinfo so we can't have them on at the same time
         <Suspense fallback={null}>
           <SelectedFileView

@@ -206,6 +206,10 @@
       "expiration": "Date d'expiration",
       "expirationDescription": "Facultatif — la galerie ne sera plus accessible après cette heure.",
       "enabledDescription": "Ce lien peut-il être utilisé ?",
+      "tabs": {
+        "edit": "Modifier",
+        "accessLogs": "Journaux d’accès"
+      },
       "nameRequired": "Saisissez un nom pour ce lien",
       "deleteTitle": "Supprimer le lien public",
       "deleteConfirmation": "Voulez-vous vraiment supprimer ce lien public ? Il cessera immédiatement de fonctionner."

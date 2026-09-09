@@ -164,7 +164,8 @@
     "scrollToGallery": "Faire défiler jusqu'à la galerie",
     "unnamed": "(Dossier sans nom)",
     "view": "Afficher le dossier",
-    "viewActivity": "Afficher l'activité"
+    "viewActivity": "Afficher l'activité",
+    "viewsRestricted": "Vues accessibles aux utilisateurs du lien : {{views}}"
   },
   "lightbox": {
     "carousel": "Carrousel",
@@ -240,7 +241,6 @@
     "dateTaken": "Date de prise de vue",
     "filename": "Nom du fichier",
     "foldersFirst": "Dossiers en premier",
-    "foldersMixed": "Dossiers mélangés aux fichiers",
     "modified": "Modification",
     "rating": "Note"
   },

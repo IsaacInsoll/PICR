@@ -29,10 +29,8 @@ import {
 } from '../../PicrIcons';
 import { atom, useSetAtom, useAtom } from 'jotai';
 import { authKeyAtom } from '../../atoms/authAtom';
-import type { PicrFolder } from '@shared/types/picr';
 import type { FolderNavigationTarget } from '@shared/types/ui';
 import { useIsMobile } from '../../hooks/useIsMobile';
-import { ManageFolderButton } from '../ManageFolderButton';
 import { PicrMenuItem } from '../PicrLink';
 import { UAParser as parseUserAgent } from 'ua-parser-js';
 import { appStoreLinks } from '@shared/consts';
@@ -44,12 +42,8 @@ import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 type MeUser = NonNullable<ReturnType<typeof useMe>>;
 
 export const LoggedInHeader = ({
-  folder,
-  managing,
   flushBottom = false,
 }: {
-  folder?: PicrFolder;
-  managing?: boolean;
   flushBottom?: boolean;
 }) => {
   const me = useMe();
@@ -62,17 +56,17 @@ export const LoggedInHeader = ({
       <Page>
         {me?.isUser ? (
           <Group>
-            <LeftSide me={me} folder={folder} managing={managing} />
+            <LeftSide me={me} />
             <RightSide me={me} />
           </Group>
         ) : null}
-        {me?.isLink ? <PublicUser me={me} folder={folder} /> : null}
+        {me?.isLink ? <PublicUser me={me} /> : null}
       </Page>
     </header>
   );
 };
 
-const PublicUser = ({ me }: { me: MeUser; folder?: PicrFolder }) => {
+const PublicUser = ({ me }: { me: MeUser }) => {
   return (
     <Group>
       <Box style={{ flexGrow: 1 }}></Box>
@@ -86,15 +80,7 @@ const PublicUser = ({ me }: { me: MeUser; folder?: PicrFolder }) => {
   );
 };
 
-const LeftSide = ({
-  me,
-  folder,
-  managing,
-}: {
-  me: MeUser;
-  folder?: PicrFolder;
-  managing?: boolean;
-}) => {
+const LeftSide = ({ me }: { me: MeUser }) => {
   const { t: tCommon } = useTranslation('common');
   const formatFolderName = useFolderNameFormatter();
   const isMobile = useIsMobile();
@@ -107,21 +93,16 @@ const LeftSide = ({
   return (
     <Box style={{ flexGrow: 1 }}>
       <Group gap="md">
-        {folder ? (
-          <ManageFolderButton folder={folder} managing={managing ?? false} />
-        ) : null}
-        {!folder || !isMobile ? (
-          <Button
-            component={Link}
-            to="/admin"
-            leftSection={<PicrLogo style={{ width: 16 }} />}
-            variant="subtle"
-            color="gray"
-            size="xs"
-          >
-            PICR
-          </Button>
-        ) : null}
+        <Button
+          component={Link}
+          to="/admin"
+          leftSection={<PicrLogo style={{ width: 16 }} />}
+          variant="subtle"
+          color="gray"
+          size="xs"
+        >
+          PICR
+        </Button>
         {!isMobile ? (
           <>
             <ActionIcon

@@ -206,6 +206,10 @@
       "expiration": "Fecha de expiración",
       "expirationDescription": "Opcional: la galería dejará de estar disponible después de este tiempo.",
       "enabledDescription": "¿Se puede utilizar este enlace?",
+      "tabs": {
+        "edit": "Editar",
+        "accessLogs": "Registros de acceso"
+      },
       "nameRequired": "Introduzca un nombre para este enlace",
       "deleteTitle": "Eliminar enlace público",
       "deleteConfirmation": "¿Está seguro de que desea eliminar este enlace público? Dejará de funcionar inmediatamente."

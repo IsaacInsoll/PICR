@@ -3,8 +3,6 @@ import type { MetadataOptionsForFiltering } from './files/metadataForFiltering';
 import type { FileFlag } from './gql/graphql.js';
 import { DefaultFilterOptions } from './files/filterFiles';
 
-export const filterAtom = atom<boolean>(false); // is filtering enabled?
-
 export type AspectFilterOptions = 'any' | 'landscape' | 'square' | 'portrait';
 
 export type RatingsComparisonOptions = 'equal' | 'lessThan' | 'greaterThan';

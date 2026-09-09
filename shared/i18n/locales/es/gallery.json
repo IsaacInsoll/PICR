@@ -164,7 +164,8 @@
     "scrollToGallery": "Desplazarse a la galería",
     "unnamed": "(Carpeta sin nombre)",
     "view": "Ver carpeta",
-    "viewActivity": "Ver actividad"
+    "viewActivity": "Ver actividad",
+    "viewsRestricted": "Los usuarios del enlace están limitados a: {{views}}"
   },
   "lightbox": {
     "carousel": "Carrusel",
@@ -240,7 +241,6 @@
     "dateTaken": "Fecha tomada",
     "filename": "Nombre del archivo",
     "foldersFirst": "Carpetas primero",
-    "foldersMixed": "Carpetas mezcladas con archivos.",
     "modified": "Modificado",
     "rating": "Clasificación"
   },

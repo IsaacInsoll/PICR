@@ -88,7 +88,7 @@ export const PlaceholderFolderHeader = ({
   const hasBanner = Boolean(fullFolder?.bannerImage) && !activity;
   return (
     <>
-      <LoggedInHeader folder={folder ?? undefined} flushBottom={hasBanner} />
+      <LoggedInHeader flushBottom={hasBanner} />
       {hasBanner && fullFolder ? (
         <FolderBannerView folder={fullFolder} />
       ) : null}

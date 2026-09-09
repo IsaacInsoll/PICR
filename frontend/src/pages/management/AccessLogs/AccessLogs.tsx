@@ -30,6 +30,7 @@ export const AccessLogs = ({
   variant = 'table',
   selectedUserId,
   onSelectUserId,
+  fixedUserId,
 }: {
   folderId: string;
   users?: PicrUser[];
@@ -37,20 +38,23 @@ export const AccessLogs = ({
   variant?: 'table' | 'list';
   selectedUserId?: string;
   onSelectUserId?: (userId?: string) => void;
+  fixedUserId?: string;
 }) => {
   const { t } = useTranslation('admin');
   const [localUserId, setLocalUserId] = useState<string | undefined>(undefined);
-  const userId = onSelectUserId ? selectedUserId : localUserId;
+  const userId = fixedUserId ?? (onSelectUserId ? selectedUserId : localUserId);
   const setUserId = onSelectUserId ?? setLocalUserId;
 
   return (
     <Stack>
-      <AccessLogsUsersSelector
-        folderId={folderId}
-        userId={userId}
-        setUserId={setUserId}
-        includeChildren={includeChildren}
-      />
+      {fixedUserId ? null : (
+        <AccessLogsUsersSelector
+          folderId={folderId}
+          userId={userId}
+          setUserId={setUserId}
+          includeChildren={includeChildren}
+        />
+      )}
       <Suspense fallback={<LoadingIndicator />}>
         <Body
           folderId={folderId}

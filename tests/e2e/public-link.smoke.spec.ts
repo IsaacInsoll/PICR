@@ -72,6 +72,7 @@ test('public link and login routes load with no browser/runtime errors', async (
         thumbnailSize: 150,
         thumbnailSpacing: 12,
         thumbnailBorderRadius: 16,
+        availableViews: ['gallery'],
       },
       authHeader,
     );
@@ -135,6 +136,13 @@ test('public link and login routes load with no browser/runtime errors', async (
     await expect(
       gallery.locator('[data-testid="grid-gallery-item_viewport"]').first(),
     ).toHaveCSS('border-radius', '16px');
+    await expect(
+      page.locator('[data-testid="folder-contents-toolbar"]'),
+    ).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Sort' })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Filter Files' }),
+    ).toBeVisible();
     expectNoBrowserFailures(failures);
 
     let signalExpiryRefresh!: () => void;

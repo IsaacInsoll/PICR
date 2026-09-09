@@ -164,7 +164,8 @@
     "scrollToGallery": "Scroll to gallery",
     "unnamed": "(Unnamed Folder)",
     "view": "View Folder",
-    "viewActivity": "View Activity"
+    "viewActivity": "View Activity",
+    "viewsRestricted": "Link users restricted to: {{views}}"
   },
   "lightbox": {
     "carousel": "Carousel",
@@ -240,7 +241,6 @@
     "dateTaken": "Date taken",
     "filename": "Filename",
     "foldersFirst": "Folders first",
-    "foldersMixed": "Folders mixed with files",
     "modified": "Modified",
     "rating": "Rating"
   },

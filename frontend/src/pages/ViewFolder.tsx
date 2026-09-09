@@ -13,24 +13,22 @@ import QueryFeedback from '../components/QueryFeedback';
 import { TaskSummary } from '../components/TaskSummary';
 import {
   ActionIcon,
-  Box,
   Button,
   Center,
   Group,
   Menu,
   Modal,
+  Skeleton,
   Stack,
   Text,
   Title,
   Tooltip,
-  useMantineTheme,
 } from '@mantine/core';
-import { useDisclosure, useMediaQuery } from '@mantine/hooks';
-import { useSetFolder } from '../hooks/useSetFolder';
+import { useDisclosure } from '@mantine/hooks';
+import { useFolderLink, useSetFolder } from '../hooks/useSetFolder';
 import { useCanDownload, useMe } from '../hooks/useMe';
 import { useCommentPermissions } from '../hooks/useCommentPermissions';
 import { useAtom, useSetAtom } from 'jotai';
-import { useSelectedView, viewOptions } from '../hooks/useSelectedView';
 import {
   assignBrandingToFolderAtom,
   editBrandingAtom,
@@ -38,27 +36,30 @@ import {
 import { Page } from '../components/Page';
 import { QuickFind } from '../components/QuickFind/QuickFind';
 import { useRequery } from '@shared/hooks/useRequery';
-import {
-  FileSortMenuItems,
-  FileSortSelector,
-} from '../components/FileListView/FileSortSelector';
 import type { PicrFolder } from '@shared/types/picr';
-import { DotsIcon, FolderIcon } from '../PicrIcons';
+import { CommentIcon, DotsIcon, FolderIcon } from '../PicrIcons';
 import { setFolderBrandingMutation } from '@shared/urql/mutations/setFolderBrandingMutation';
 import { recordFolderVisitMutation } from '@shared/urql/mutations/recordFolderVisitMutation';
 import { defaultBranding } from '../helpers/defaultBranding';
 import type { SocialLink } from '@shared/branding/socialLinkTypes';
-import { filterAtom } from '@shared/filterAtom';
 import { LoadingIndicator } from '../components/LoadingIndicator';
+import { ModalLoadingIndicator } from '../components/ModalLoadingIndicator';
 import { applyBrandingDefaults, themeModeAtom } from '../atoms/themeModeAtom';
 import { FolderMenuItems } from '../components/FileListView/FolderMenu';
 import { FolderBanner } from '../components/FolderBanner';
 import { GalleryFooter } from '../components/GalleryFooter';
 import { DownloadZipButton } from '../components/DownloadZipButton';
+import { ManageFolderButton } from '../components/ManageFolderButton';
+import { FolderPublicLinks } from '../components/FolderPublicLinks';
+import { FolderContentsControls } from '../components/FileListView/FolderContentsToolbar';
 import { viewFolderModeFromFileId } from '../helpers/viewFolderMode';
 import { getUUID } from '../helpers/getUUID';
 import { Trans, useTranslation } from 'react-i18next';
 import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
+import {
+  newPublicLinkId,
+  usePublicLinkEditorRoute,
+} from '../hooks/usePublicLinkEditorRoute';
 // Language switcher soft-disabled (#84) — restore alongside the action below.
 // import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
@@ -85,6 +86,11 @@ const FolderCsvExportModal = lazy(loadFolderCsvExportModal);
 const ManageFolderDrawer = lazy(() =>
   import('../components/ManageFolderDrawer').then((module) => ({
     default: module.ManageFolderDrawer,
+  })),
+);
+const ManagePublicLink = lazy(() =>
+  import('./management/ManagePublicLink').then((module) => ({
+    default: module.ManagePublicLink,
   })),
 );
 
@@ -122,12 +128,12 @@ const ViewFolderBody = () => {
   const { t } = useTranslation('gallery');
   const { folderId, fileId, tab } = useParams();
   const navigate = useNavigate();
+  const {
+    selectedLinkId: selectedPublicLinkId,
+    closeEditor: closePublicLinkEditor,
+  } = usePublicLinkEditorRoute({ returnToPreviousLocationOnClose: true });
   const setFolder = useSetFolder();
   const setThemeMode = useSetAtom(themeModeAtom);
-  const mantineTheme = useMantineTheme();
-  const sortMenuInOverflow = useMediaQuery(
-    `(max-width: ${mantineTheme.breakpoints.md})`,
-  );
   const [editBranding, setEditBranding] = useAtom(editBrandingAtom);
   const [csvExportOpen, setCsvExportOpen] = useState(false);
   const [assignBrandingToFolderId, setAssignBrandingToFolderId] = useAtom(
@@ -186,6 +192,8 @@ const ViewFolderBody = () => {
   }, [setThemeMode, theme]);
 
   const me = useMe();
+  const directPublicLinkId =
+    !managing && me?.isUser ? selectedPublicLinkId : null;
   const canDownload = useCanDownload();
   const { canView } = useCommentPermissions();
   const folder = data.data?.folder;
@@ -227,11 +235,6 @@ const ViewFolderBody = () => {
   ]);
 
   const hasFiles = folder && folder.files.length > 0;
-  // Sorting applies to subfolders too (see sortFolderContents), so the sort UI
-  // should show whenever the folder has anything in it - not only when it has
-  // direct files. This is what lets a folders-only home folder be re-sorted.
-  const hasFolders = folder && folder.subFolders.length > 0;
-  const hasContent = hasFiles || hasFolders;
   // Only expose the "Date taken" sort when at least one file carries an EXIF
   // capture date - a folder of videos/documents wouldn't benefit from it.
   const hasCaptureDates =
@@ -281,13 +284,7 @@ const ViewFolderBody = () => {
   // Language switcher soft-disabled (#84).
   // if (me?.isLink)
   //   actions.push(<LanguageSwitcher compact key="LanguageSwitcher" />);
-  const hasOverflowActions =
-    !!folder && (!!me?.isUser || canView || canDownload || !!hasFiles);
-  // The sort menu lives in overflow only below the md breakpoint. On desktop the
-  // standalone sort button is already visible, so don't show an otherwise-empty
-  // dots menu for folders-only public galleries.
-  const hasSortOverflowAction = !!folder && !!hasContent && sortMenuInOverflow;
-  const showOverflow = hasOverflowActions || hasSortOverflowAction;
+  const showOverflow = !!folder && !!me?.isUser;
 
   useEffect(() => {
     if (!hasFiles || !showOverflow) return;
@@ -298,17 +295,35 @@ const ViewFolderBody = () => {
   }, [hasFiles, showOverflow]);
 
   if (mode !== 'activity') {
-    if (folder)
-      actions.push(<ViewSelectorButton folder={folder} key="ViewSelector" />);
-    if (hasContent)
+    if (folder && me?.isUser) {
       actions.push(
-        <Box visibleFrom="md" key="FileSortSelector">
-          <FileSortSelector
-            hasMetadata={hasCaptureDates}
-            hasFiles={!!hasFiles}
-            hasFolders={!!hasFolders}
-          />
-        </Box>,
+        <Suspense
+          fallback={<Skeleton circle height={40} />}
+          key="FolderPublicLinks"
+        >
+          <FolderPublicLinks folderId={folder.id} />
+        </Suspense>,
+      );
+      actions.push(
+        <ManageFolderButton
+          folder={folder}
+          managing={managing}
+          key="ManageFolderButton"
+        />,
+      );
+    }
+    if (folder && me?.isLink) {
+      actions.push(
+        <FolderContentsControls
+          folder={folder}
+          hasCaptureDates={hasCaptureDates}
+          key="FolderContentsControls"
+        />,
+      );
+    }
+    if (folder && canView && me?.isLink)
+      actions.push(
+        <FolderActivityButton folder={folder} key="FolderActivityButton" />,
       );
     if (hasFiles && canDownload && me?.isLink)
       actions.push(<DownloadZipButton folder={folder} key="downloadbutton" />);
@@ -318,11 +333,6 @@ const ViewFolderBody = () => {
           folder={folder}
           key="Overflow"
           onCsvExport={() => setCsvExportOpen(true)}
-          hasFiles={!!hasFiles}
-          hasFolders={!!hasFolders}
-          hasContent={!!hasContent}
-          sortMenuInOverflow={!!sortMenuInOverflow}
-          hasCaptureDates={hasCaptureDates}
         />,
       );
   } else {
@@ -345,8 +355,6 @@ const ViewFolderBody = () => {
       {me?.isUser ? (
         <Suspense fallback={null}>
           <LoggedInHeader
-            folder={folder}
-            managing={managing}
             flushBottom={Boolean(folder?.bannerImage) && !activity}
           />
         </Suspense>
@@ -371,7 +379,7 @@ const ViewFolderBody = () => {
             folder={folder}
             customSubtitle={folder.subtitle ?? undefined}
             subtitle={folderSubtitle(folder, t)}
-            actions={<Group>{actions}</Group>}
+            actions={<Group gap="xs">{actions}</Group>}
             hideTitleAndCustomSubtitle={Boolean(folder.bannerImage)}
             hideBreadcrumbs={!activity && Boolean(folder.bannerImage)}
             hasBannerLayout={!activity && Boolean(folder.bannerImage)}
@@ -382,6 +390,20 @@ const ViewFolderBody = () => {
               <ManageFolderDrawer
                 folder={folder}
                 onClose={() => setFolder(folder)}
+              />
+            </Suspense>
+          ) : null}
+          {directPublicLinkId !== null ? (
+            <Suspense fallback={<ModalLoadingIndicator />}>
+              <ManagePublicLink
+                key={directPublicLinkId}
+                id={
+                  directPublicLinkId === newPublicLinkId
+                    ? ''
+                    : directPublicLinkId
+                }
+                folder={folder}
+                onClose={closePublicLinkEditor}
               />
             </Suspense>
           ) : null}
@@ -425,43 +447,21 @@ const ViewFolderBody = () => {
   );
 };
 
-const ViewSelectorButton = ({ folder }: { folder: PicrFolder }) => {
+const FolderActivityButton = ({ folder }: { folder: PicrFolder }) => {
   const { t } = useTranslation('gallery');
-  const [view, setView] = useSelectedView();
-  const me = useMe();
-  const restricted = folder.branding?.availableViews;
-  const shownOptions =
-    me?.isLink && restricted?.length
-      ? viewOptions.filter((v) => restricted.includes(v.key))
-      : viewOptions;
-
-  if (shownOptions.length <= 1) return null;
-
-  const restrictedLabel =
-    me?.isUser && restricted?.length
-      ? `Link users restricted to: ${restricted
-          .map((name) => {
-            const option = viewOptions.find((v) => v.key === name);
-            return option ? t(option.labelKey) : name;
-          })
-          .join(', ')}`
-      : null;
+  const activityLink = useFolderLink(folder, 'activity');
+  const label = t('folder.viewActivity');
 
   return (
-    <Tooltip label={restrictedLabel} disabled={!restrictedLabel} withArrow>
-      <Button.Group>
-        {shownOptions.map((v) => (
-          <Button
-            key={v.key}
-            variant={view === v.key ? 'filled' : 'default'}
-            onClick={() => setView(v.key)}
-            title={t(v.labelKey)}
-            px="xs"
-          >
-            {v.icon}
-          </Button>
-        ))}
-      </Button.Group>
+    <Tooltip label={label} withArrow>
+      <ActionIcon
+        {...activityLink}
+        variant="default"
+        size="lg"
+        aria-label={label}
+      >
+        <CommentIcon />
+      </ActionIcon>
     </Tooltip>
   );
 };
@@ -469,25 +469,14 @@ const ViewSelectorButton = ({ folder }: { folder: PicrFolder }) => {
 const FolderOverflowMenu = ({
   folder,
   onCsvExport,
-  hasFiles,
-  hasFolders,
-  hasContent,
-  sortMenuInOverflow,
-  hasCaptureDates,
 }: {
   folder: PicrFolder;
   onCsvExport: () => void;
-  hasFiles: boolean;
-  hasFolders: boolean;
-  hasContent: boolean;
-  sortMenuInOverflow: boolean;
-  hasCaptureDates: boolean;
 }) => {
   const { t } = useTranslation(['gallery', 'admin']);
   const formatFolderName = useFolderNameFormatter();
   const rawFolderName = normalizeDisplayName(folder.name);
   const localizedFolderName = formatFolderName(folder);
-  const setFiltering = useSetAtom(filterAtom);
   const setEditBranding = useSetAtom(editBrandingAtom);
   const setAssignBrandingToFolder = useSetAtom(assignBrandingToFolderAtom);
   const [
@@ -537,19 +526,14 @@ const FolderOverflowMenu = ({
 
   return (
     <>
-      <Menu
-        shadow="md"
-        width={200}
-        openDelay={0}
-        trigger="hover"
-        position="bottom-end"
-      >
+      <Menu shadow="md" width={200} position="bottom-end">
         <Menu.Target>
           <ActionIcon
             variant="default"
             color="gray"
             size="lg"
             aria-label={t('folder.actions')}
+            title={t('folder.actions')}
           >
             <DotsIcon />
           </ActionIcon>
@@ -560,20 +544,10 @@ const FolderOverflowMenu = ({
           <FolderMenuItems
             folder={folder}
             showOpenItem={false}
-            onFilterFiles={hasFiles ? () => setFiltering(true) : undefined}
+            showManageItem={false}
             onCsvExport={onCsvExport}
             onBranding={handleBranding}
           />
-          {/* Gated on the same JS media query that decides whether the sort
-              belongs in overflow, so this can never disagree with the standalone
-              desktop button (a CSS hiddenFrom would differ at the md boundary). */}
-          {hasContent && sortMenuInOverflow ? (
-            <FileSortMenuItems
-              hasMetadata={hasCaptureDates}
-              hasFiles={hasFiles}
-              hasFolders={hasFolders}
-            />
-          ) : null}
         </Menu.Dropdown>
       </Menu>
 

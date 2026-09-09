@@ -164,7 +164,8 @@
     "scrollToGallery": "Scrollen Sie zur Galerie",
     "unnamed": "(Unbenannter Ordner)",
     "view": "Ordner anzeigen",
-    "viewActivity": "Aktivität anzeigen"
+    "viewActivity": "Aktivität anzeigen",
+    "viewsRestricted": "Link-Benutzer sind beschränkt auf: {{views}}"
   },
   "lightbox": {
     "carousel": "Karussell",
@@ -240,7 +241,6 @@
     "dateTaken": "Aufnahmedatum",
     "filename": "Dateiname",
     "foldersFirst": "Ordner zuerst",
-    "foldersMixed": "Ordner gemischt mit Dateien",
     "modified": "Geändert",
     "rating": "Bewertung"
   },

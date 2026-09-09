@@ -18,10 +18,9 @@ export const ManageFolderButton = ({
   return (
     <Button
       component={NavLink}
-      to={baseUrl + folder.id + (managing ? '' : '/manage/links')}
-      variant="outline"
+      to={baseUrl + folder.id + (managing ? '' : '/manage/folder')}
+      variant={managing ? 'default' : 'filled'}
       leftSection={icon}
-      size="xs"
     >
       {managing ? t('folder.view') : t('folder.manage')}
     </Button>
@@ -41,7 +40,7 @@ export const ManageFolderIconButton = ({
   return (
     <ActionIcon
       component={NavLink}
-      to={baseUrl + folder.id + '/manage/links'}
+      to={baseUrl + folder.id + '/manage/folder'}
       variant={variant}
       color={color}
       // size="xs"

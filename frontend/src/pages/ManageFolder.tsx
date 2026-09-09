@@ -39,12 +39,21 @@ import type { BrandingInput } from './management/BrandingForm';
 import type { SocialLink } from '@shared/branding/socialLinkTypes';
 import { useTranslation } from 'react-i18next';
 import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
+import {
+  newPublicLinkId,
+  usePublicLinkEditorRoute,
+} from '../hooks/usePublicLinkEditorRoute';
 
 export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
   const { t } = useTranslation('admin');
   const formatFolderName = useFolderNameFormatter();
   const { folderId, tab } = useParams();
   const navigate = useNavigate();
+  const {
+    selectedLinkId: selectedPublicLinkId,
+    setSelectedLinkId: setSelectedPublicLink,
+    closeEditor: closePublicLinkEditor,
+  } = usePublicLinkEditorRoute();
   const [, mutate] = useMutation(editFolderMutation);
   const [title, setTitle] = useState(folder.title ?? '');
   const [subtitle, setSubtitle] = useState(folder.subtitle ?? '');
@@ -135,10 +144,20 @@ export const ManageFolder = ({ folder }: { folder: PicrFolder }) => {
         </Stack>
       </Tabs.Panel>
       <Tabs.Panel value="links">
-        <ManagePublicLinks folder={folder} relations="options" variant="list" />
+        <ManagePublicLinks
+          folder={folder}
+          relations="options"
+          variant="list"
+          selectedLinkId={selectedPublicLinkId}
+          onSelectLink={setSelectedPublicLink}
+          onCreateLink={() => setSelectedPublicLink(newPublicLinkId)}
+          onCloseLink={closePublicLinkEditor}
+        />
       </Tabs.Panel>
       <Tabs.Panel value="logs">
-        <AccessLogs folderId={folder.id} variant="list" />
+        {tab === 'logs' ? (
+          <AccessLogs folderId={folder.id} variant="list" />
+        ) : null}
       </Tabs.Panel>
     </Tabs>
   );

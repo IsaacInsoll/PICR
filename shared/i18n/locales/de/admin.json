@@ -206,6 +206,10 @@
       "expiration": "Verfallsdatum",
       "expirationDescription": "Optional – die Galerie ist nach dieser Zeit nicht mehr verfügbar.",
       "enabledDescription": "Kann dieser Link verwendet werden?",
+      "tabs": {
+        "edit": "Bearbeiten",
+        "accessLogs": "Zugriffsprotokolle"
+      },
       "nameRequired": "Geben Sie einen Namen für diesen Link ein",
       "deleteTitle": "Öffentlichen Link löschen",
       "deleteConfirmation": "Sind Sie sicher, dass Sie diesen öffentlichen Link löschen möchten? Es wird sofort nicht mehr funktionieren."

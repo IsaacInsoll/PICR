@@ -25,6 +25,7 @@ type FolderMenuItemsProps = {
   onFilterFiles?: () => void;
   onCsvExport?: () => void;
   onBranding?: () => void;
+  showManageItem?: boolean;
 };
 
 export const FolderMenuItems = ({
@@ -33,13 +34,14 @@ export const FolderMenuItems = ({
   onFilterFiles,
   onCsvExport,
   onBranding,
+  showManageItem = true,
 }: FolderMenuItemsProps) => {
   const { t } = useTranslation(['gallery', 'admin']);
   const formatFolderName = useFolderNameFormatter();
   const folderName = formatFolderName(folder);
   const openLink = useFolderLink(folder);
   const activityLink = useFolderLink(folder, 'activity');
-  const manageLink = useFolderLink(folder, 'manage/links');
+  const manageLink = useFolderLink(folder, 'manage/folder');
   const generateZip = useGenerateZip(folder);
   const me = useMe();
   const openMoveModal = useOpenMoveRenameFolderModal();
@@ -47,6 +49,8 @@ export const FolderMenuItems = ({
   const handleGenerateZip = () => {
     void generateZip?.();
   };
+  const hasItemsBeforeAdmin =
+    showOpenItem || !!onFilterFiles || !!generateZip || canView;
 
   return (
     <>
@@ -83,18 +87,20 @@ export const FolderMenuItems = ({
       ) : null}
       {me?.isUser ? (
         <>
-          <Menu.Divider />
+          {hasItemsBeforeAdmin ? <Menu.Divider /> : null}
           <Menu.Label>{t('folder.admin', { ns: 'admin' })}</Menu.Label>
-          <PicrMenuItem
-            leftSection={<ManageFolderIcon size="20" />}
-            key="manage"
-            to={manageLink.to}
-          >
-            {t('folder.manageNamed', {
-              ns: 'admin',
-              folder: folderName,
-            })}
-          </PicrMenuItem>
+          {showManageItem ? (
+            <PicrMenuItem
+              leftSection={<ManageFolderIcon size="20" />}
+              key="manage"
+              to={manageLink.to}
+            >
+              {t('folder.manageNamed', {
+                ns: 'admin',
+                folder: folderName,
+              })}
+            </PicrMenuItem>
+          ) : null}
           {me.isAdmin && me.clientInfo.canWrite ? (
             <Menu.Item
               leftSection={<MoveFolderIcon size="20" />}

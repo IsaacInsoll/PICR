@@ -25,9 +25,56 @@ client, not administrator login credentials. Keep their autocomplete hints set
 to `off` and `new-password`, respectively, so password managers do not fill the
 administrator's saved PICR credentials into the link editor.
 
+Mantine modal and drawer close icons do not provide a useful accessible name by
+default in this project. Set a translated `closeButtonProps` `aria-label` on
+always-open modal/drawer wrappers so tests and assistive technology can identify
+the close action.
+
 The public-links relationship switches use the concise translated labels at
 all viewport widths and keep the full translations as accessible labels. This
 prevents longer translations from wrapping in the compact switch row.
+
+Gallery presentation controls belong in the dedicated contents toolbar rather
+than the folder-level overflow menu. Keep View as an icon group, Sort as a
+compact menu, and Filter as a responsive drawer (right-side on tablet/desktop,
+bottom sheet on small screens). Closing the drawer must not disable applied
+filters; show the active-filter count on the toolbar action until filters are
+cleared.
+
+Folder-header actions are role-aware. Public-link users see Download and
+Activity directly whenever permitted; do not create a one-item overflow menu or
+duplicate a visible action inside it. Administrators see the primary Manage
+action after exact-folder public-link avatars and a same-sized create-link
+avatar. Keep Activity with the secondary export, move/rename, and branding
+actions in the click-triggered overflow menu. Active public-link avatars are
+unadorned; expired or disabled links use a red status dot whose tooltip names
+the state. Header avatar and create-link shortcuts open the public-link editor
+directly over the gallery, using its `link` search parameter, without mounting
+the Manage drawer underneath. Links selected from within the Sharing drawer
+remain nested in that drawer. Build and close these URLs through
+`usePublicLinkEditorRoute`: an editor opened from an in-app shortcut returns to
+its previous history entry, while a directly loaded editor URL removes the
+query parameter in place. Keep a `+N` avatar only when the visible stack omits
+links rather than displaying a separate always-present count button. Below the
+`sm` breakpoint, replace the link stack and create shortcut with one Links
+avatar whose badge shows the exact-folder link count and whose action opens the
+Links list.
+
+Public-link avatar tooltips include the link's status and last access time. The
+existing-link editor keeps Edit and Access Logs in tabs, with its persistent
+copy/save/delete actions outside the tabs. Mount the fixed-user access-log view
+only after its tab is selected, and include child folders so visits made through
+the link's accessible subtree are not omitted. New-link editors have no access
+history, so they remain on the untabbed edit form. Keep folder-management tab
+state mounted while switching tabs, but mount the folder-wide Access Logs view
+only while its route tab is active; otherwise that hidden panel preloads access
+logs before the editor's Access Logs tab is opened.
+
+Public-link galleries integrate View, Sort, and Filter into the folder-header
+action group alongside icon-only Activity and the primary Download action. Do
+not render the separate bordered contents toolbar for link users: when branding
+restricts the gallery to one view, the view selector correctly disappears and
+the remaining controls must not be left in a mostly empty second row.
 
 Prefer logical CSS properties in new UI (`margin-inline`, `padding-block`,
 `inset-inline-start`, and so on) so future RTL support does not require new

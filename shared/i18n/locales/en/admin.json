@@ -206,6 +206,10 @@
       "expiration": "Expiration date",
       "expirationDescription": "Optional — the gallery will stop being available after this time.",
       "enabledDescription": "Can this link be used?",
+      "tabs": {
+        "edit": "Edit",
+        "accessLogs": "Access Logs"
+      },
       "nameRequired": "Enter a name for this link",
       "deleteTitle": "Delete Public Link",
       "deleteConfirmation": "Are you sure you want to delete this public link? It will stop working immediately."

@@ -61,6 +61,7 @@ type Documents = {
     "\n  query FolderFiles($folderId: ID!, $includeSubfolders: Boolean, $limit: Int) {\n    folderFiles(\n      folderId: $folderId\n      includeSubfolders: $includeSubfolders\n      limit: $limit\n    ) {\n      totalAvailable\n      totalReturned\n      truncated\n      files {\n        relativePath\n        file {\n          ...FileFragment\n        }\n      }\n    }\n  }\n": typeof types.FolderFilesDocument,
     "\n  query FolderPlaceholderIdentity($folderId: ID!) {\n    folder(id: $folderId) {\n      ...FolderPlaceholderIdentityFragment\n    }\n  }\n": typeof types.FolderPlaceholderIdentityDocument,
     "\n  query FolderPlaceholder($folderId: ID!) {\n    folder(id: $folderId) {\n      ...MinimumFolderFragment\n    }\n  }\n": typeof types.FolderPlaceholderDocument,
+    "\n  query FolderPublicLinks($folderId: ID!) {\n    users(folderId: $folderId) {\n      id\n      name\n      enabled\n      expiresAt\n      lastAccess\n      gravatar\n    }\n  }\n": typeof types.FolderPublicLinksDocument,
     "\n    query generateThumbnailsStats($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n            thumbnailCompletion {\n                totalFiles\n                incompleteFiles\n                missingArtifacts\n            }\n        }\n    }\n": typeof types.GenerateThumbnailsStatsDocument,
     "\n    query ManageFolderQuery($folderId: ID!, $includeParents: Boolean!, $includeChildren: Boolean!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n        }\n        users(folderId:$folderId, includeParents: $includeParents, includeChildren: $includeChildren) {\n           ...UserFragment\n           folderId\n            folder {\n                ...FolderFragment\n            }\n        }\n    }\n": typeof types.ManageFolderQueryDocument,
     "\n  query MeGalleryPasscodeQuery {\n    me {\n      id\n      galleryPasscode\n    }\n  }\n": typeof types.MeGalleryPasscodeQueryDocument,
@@ -127,6 +128,7 @@ const documents: Documents = {
     "\n  query FolderFiles($folderId: ID!, $includeSubfolders: Boolean, $limit: Int) {\n    folderFiles(\n      folderId: $folderId\n      includeSubfolders: $includeSubfolders\n      limit: $limit\n    ) {\n      totalAvailable\n      totalReturned\n      truncated\n      files {\n        relativePath\n        file {\n          ...FileFragment\n        }\n      }\n    }\n  }\n": types.FolderFilesDocument,
     "\n  query FolderPlaceholderIdentity($folderId: ID!) {\n    folder(id: $folderId) {\n      ...FolderPlaceholderIdentityFragment\n    }\n  }\n": types.FolderPlaceholderIdentityDocument,
     "\n  query FolderPlaceholder($folderId: ID!) {\n    folder(id: $folderId) {\n      ...MinimumFolderFragment\n    }\n  }\n": types.FolderPlaceholderDocument,
+    "\n  query FolderPublicLinks($folderId: ID!) {\n    users(folderId: $folderId) {\n      id\n      name\n      enabled\n      expiresAt\n      lastAccess\n      gravatar\n    }\n  }\n": types.FolderPublicLinksDocument,
     "\n    query generateThumbnailsStats($folderId: ID!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n            thumbnailCompletion {\n                totalFiles\n                incompleteFiles\n                missingArtifacts\n            }\n        }\n    }\n": types.GenerateThumbnailsStatsDocument,
     "\n    query ManageFolderQuery($folderId: ID!, $includeParents: Boolean!, $includeChildren: Boolean!) {\n        folder(id: $folderId) {\n            ...FolderFragment\n        }\n        users(folderId:$folderId, includeParents: $includeParents, includeChildren: $includeChildren) {\n           ...UserFragment\n           folderId\n            folder {\n                ...FolderFragment\n            }\n        }\n    }\n": types.ManageFolderQueryDocument,
     "\n  query MeGalleryPasscodeQuery {\n    me {\n      id\n      galleryPasscode\n    }\n  }\n": types.MeGalleryPasscodeQueryDocument,
@@ -348,6 +350,10 @@ export function graphql(source: "\n  query FolderPlaceholderIdentity($folderId: 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query FolderPlaceholder($folderId: ID!) {\n    folder(id: $folderId) {\n      ...MinimumFolderFragment\n    }\n  }\n"): (typeof documents)["\n  query FolderPlaceholder($folderId: ID!) {\n    folder(id: $folderId) {\n      ...MinimumFolderFragment\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query FolderPublicLinks($folderId: ID!) {\n    users(folderId: $folderId) {\n      id\n      name\n      enabled\n      expiresAt\n      lastAccess\n      gravatar\n    }\n  }\n"): (typeof documents)["\n  query FolderPublicLinks($folderId: ID!) {\n    users(folderId: $folderId) {\n      id\n      name\n      enabled\n      expiresAt\n      lastAccess\n      gravatar\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

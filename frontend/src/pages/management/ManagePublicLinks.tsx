@@ -35,6 +35,7 @@ import { PublicLinkListItem } from '../../components/PublicLinkListItem';
 import { useTranslation } from 'react-i18next';
 import { useNow } from '../../hooks/useNow';
 import { publicLinkStatus } from '@shared/publicLinkExpiration';
+import { newPublicLinkId } from '../../hooks/usePublicLinkEditorRoute';
 
 const publicLinkStatusRefreshMs = 60_000;
 
@@ -76,7 +77,7 @@ export const ManagePublicLinks = ({
     onCreateLink != null ||
     onCloseLink != null;
   const linkId = isControlled ? (selectedLinkId ?? null) : localLinkId;
-  const manageLinkId = linkId === NEW_ITEM_SLUG ? '' : linkId;
+  const manageLinkId = linkId === newPublicLinkId ? '' : linkId;
 
   const selectLink = (id: string) => {
     if (onSelectLink) {
@@ -110,7 +111,7 @@ export const ManagePublicLinks = ({
       {linkId !== null ? (
         <Suspense fallback={<ModalLoadingIndicator />}>
           <ManagePublicLink
-            key={manageLinkId ?? NEW_ITEM_SLUG}
+            key={manageLinkId ?? newPublicLinkId}
             onClose={closeLink}
             id={manageLinkId ?? ''}
             folder={folder}
@@ -236,8 +237,6 @@ const Body = ({
     </>
   );
 };
-
-const NEW_ITEM_SLUG = 'new';
 
 const PublicLinksView = ({
   links,

@@ -1,16 +1,6 @@
 import { useFileSort } from '../../hooks/useFileSort';
-import type { SelectProps } from '@mantine/core';
-import {
-  Avatar,
-  Box,
-  Button,
-  Group,
-  Menu,
-  Select,
-  Tooltip,
-} from '@mantine/core';
+import { ActionIcon, Menu } from '@mantine/core';
 import type { ReactNode } from 'react';
-import { useDisclosure } from '@mantine/hooks';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import {
   CalendarIcon,
@@ -36,7 +26,7 @@ import {
 } from '@shared/files/sortFiles';
 import { useTranslation } from 'react-i18next';
 
-export const FileSortSelector = ({
+export const FileSortMenuButton = ({
   hasMetadata = false,
   hasFiles = true,
   hasFolders = false,
@@ -46,107 +36,32 @@ export const FileSortSelector = ({
   hasFolders?: boolean;
 }) => {
   const { t } = useTranslation('gallery');
-  const { canView } = useCommentPermissions();
-  const [sort, setSort] = useFileSort();
-  const [dropdownOpened, { toggle, close }] = useDisclosure();
-  const { direction } = sort;
-  // Same effective sort the gallery uses (FolderContentsView), so the displayed
-  // option always matches the actual order.
-  const { type } = resolveEffectiveSort(sort, hasMetadata, hasFiles);
-  const sortIcon = sortIcons[direction];
-  const selectedSortOption =
-    sortOptions.find((s) => s.value === type) ?? sortOptions[0];
-  const { icon } = selectedSortOption;
-
-  const options = availableSortOptions(canView, hasMetadata, hasFiles).map(
-    (option) => ({ ...option, label: t(option.labelKey) }),
-  );
-
-  const renderSelectOption: SelectProps['renderOption'] = ({
-    option,
-    checked,
-  }) => {
-    const optionIcon = sortOptions.find((s) => s.value === option.value)?.icon;
-    return (
-      <Group flex="1" gap="xs">
-        <Box>{optionIcon}</Box>
-        <Box style={{ flexGrow: 1 }}>{option.label}</Box>
-        <Box>
-          {checked ? (
-            <Avatar radius="xs" size="xs" p="0">
-              {sortIcon.chevron}
-            </Avatar>
-          ) : null}
-        </Box>
-        {/*sortIcon.chevron <TbArrowsDownUp />*/}
-      </Group>
-    );
-  };
-
-  const handleClick = (v: string | null) => {
-    const selectedOption = sortOptions.find((s) => s.value === v);
-    if (selectedOption && selectedOption.value !== type) {
-      setSort(nextSortForType(sort, selectedOption.value));
-    } else {
-      setSort(toggledDirectionSort(sort, type));
-    }
-    close();
-  };
-
-  // Folders-first only means something when files and folders coexist.
-  const showFoldersFirst = hasFiles && hasFolders;
-  const foldersFirst = sort.foldersFirst !== false;
+  const [sort] = useFileSort();
 
   return (
-    <Group gap="xs" wrap="nowrap">
-      {!dropdownOpened ? (
-        <Button onClick={toggle} variant="default">
-          <Group gap={2}>
-            {icon}
-            {sortIcon.chevron}
-            <Box pl={2}>{t('sort.button')}</Box>
-          </Group>
-        </Button>
-      ) : (
-        <Select
-          style={{ width: 150 }}
-          comboboxProps={{ width: 200, position: 'bottom-start' }}
-          dropdownOpened={dropdownOpened}
-          checkIconPosition="right"
-          data={options}
-          value={type}
-          onChange={handleClick}
-          renderOption={renderSelectOption}
-          onDropdownClose={close}
-          leftSectionWidth={64}
-          leftSection={
-            <Group gap={2} style={{ minWidth: 32 }}>
-              {icon}
-              {sortIcon.chevron}
-            </Group>
-          }
-        />
-      )}
-      {showFoldersFirst ? (
-        <Tooltip
-          label={foldersFirst ? t('sort.foldersFirst') : t('sort.foldersMixed')}
+    <Menu shadow="md" width={220} position="bottom-end">
+      <Menu.Target>
+        <ActionIcon
+          variant="default"
+          size="lg"
+          aria-label={t('sort.button')}
+          title={t('sort.button')}
         >
-          <Button
-            variant={foldersFirst ? 'light' : 'default'}
-            px="xs"
-            aria-label={t('sort.foldersFirst')}
-            aria-pressed={foldersFirst}
-            onClick={() => setSort({ ...sort, foldersFirst: !foldersFirst })}
-          >
-            <FoldersIcon />
-          </Button>
-        </Tooltip>
-      ) : null}
-    </Group>
+          {sortIcons[sort.direction].icon}
+        </ActionIcon>
+      </Menu.Target>
+      <Menu.Dropdown>
+        <FileSortMenuItems
+          hasMetadata={hasMetadata}
+          hasFiles={hasFiles}
+          hasFolders={hasFolders}
+        />
+      </Menu.Dropdown>
+    </Menu>
   );
 };
 
-export const FileSortMenuItems = ({
+const FileSortMenuItems = ({
   hasMetadata = false,
   hasFiles = true,
   hasFolders = false,
@@ -175,7 +90,6 @@ export const FileSortMenuItems = ({
 
   return (
     <>
-      <Menu.Divider />
       <Menu.Label>{t('sort.by')}</Menu.Label>
       {options.map((option) => {
         const isActive = option.value === type;
