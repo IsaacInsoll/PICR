@@ -24,6 +24,13 @@ Testing is split into two suites under `tests/`:
   the expected path state. Completion of the host filesystem call does not
   guarantee that a CI bind mount is already presenting that state to the
   sibling container.
+- The Ping lifecycle integration test must wait for the coordinator's
+  `foldersScanned` count to advance and its state to return to `idle` before it
+  asserts GraphQL file state. A `202` response only acknowledges queueing, while
+  polling file state alone hides degraded coordinator errors. If that
+  completion-aware test continues to flake in native CI, remove only the
+  mutable-filesystem lifecycle case; retain the stable endpoint integration and
+  Ping/backend unit coverage rather than adding more arbitrary sleeps.
 - Exception: pure backend or shared-primitive unit tests that guard load-bearing
   invariants (e.g. file queue ordering/coalescing or shared i18n catalog
   contracts) are allowed in `tests/api`. They mock their dependencies and need
