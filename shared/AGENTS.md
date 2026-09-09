@@ -116,6 +116,14 @@ selection belongs in the frontend wrapper. Images and videos both publish
 `imageWidth`/`imageHeight`, so a caller supplies source dimensions the same way
 for either type.
 
+## Intl Formatting Helpers
+
+Shared formatters run in browsers, Node and React Native's Hermes runtime.
+Hermes can provide `Intl.NumberFormat` without `formatToParts`, including on iOS,
+so formatting helpers must feature-detect optional Intl methods and retain a
+non-crashing fallback. Keep the resulting display string locale-aware through
+the base `format()` API.
+
 ## Auth Error Contract
 
 Auth error metadata is shared across backend, frontend, and app:

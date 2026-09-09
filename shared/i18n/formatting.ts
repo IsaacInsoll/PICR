@@ -88,6 +88,18 @@ const numericBytes = (bytes: number | bigint | string): number => {
   return Number.isFinite(parsed) ? parsed : 0;
 };
 
+const decimalFractionDigits = (value: number): number => {
+  const [coefficient, exponentText = '0'] = Math.abs(value)
+    .toString()
+    .split('e');
+  const decimalIndex = coefficient.indexOf('.');
+  const coefficientFractionDigits =
+    decimalIndex === -1 ? 0 : coefficient.length - decimalIndex - 1;
+  const exponent = Number(exponentText);
+
+  return Math.max(0, coefficientFractionDigits - exponent);
+};
+
 export const formatBytes = (
   bytes: number | bigint | string,
   locale: string = defaultLanguage,
@@ -119,10 +131,12 @@ export const formatBytes = (
     resolveLanguage(locale).formattingLocale,
     { maximumSignificantDigits },
   );
-  const parts = formatter.formatToParts(value);
-  const formattedValue = parts.map(({ value: part }) => part).join('');
+  const formattedValue = formatter.format(value);
   const fractionDigits =
-    parts.find(({ type }) => type === 'fraction')?.value.length ?? 0;
+    typeof formatter.formatToParts === 'function'
+      ? (formatter.formatToParts(value).find(({ type }) => type === 'fraction')
+          ?.value.length ?? 0)
+      : decimalFractionDigits(value);
   const unit = units[unitIndex] ?? (options.bits ? 'b' : 'B');
 
   return {
