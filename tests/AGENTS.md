@@ -122,8 +122,11 @@ tests/
   layout. An intentional thumbnail width, quality, or source-selection change
   can therefore produce sparse content-only diffs even when the explicit row
   geometry assertions pass. Inspect the actual and diff images, explain the
-  encoder/source change, and regenerate only the affected baselines; do not
-  hide this kind of change by loosening the screenshot tolerance.
+  encoder/source change, and regenerate only the affected baselines. The base
+  justified-image scenarios have a narrowly measured 0.15% mismatch allowance
+  for Linux image-resampling drift, paired with an exact fixture-to-variant-token
+  assertion. Do not broaden that allowance or remove the token assertion to
+  make a thumbnail change pass.
 - Visual baselines are Linux PNGs under
   `tests/e2e/gallery.visual.spec.ts-snapshots/` and are committed. They are
   generated on a developer machine but also compared on the Ubuntu CI runner,

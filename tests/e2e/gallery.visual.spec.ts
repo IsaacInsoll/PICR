@@ -27,6 +27,24 @@ const viewportSelector = '[data-testid="grid-gallery-item_viewport"]';
 // the row assertions are expressed relative to both.
 const defaultRowHeight = 210;
 const defaultMargin = 4;
+const imageRasterizationTolerance = 0.0015;
+
+// The responsive source selected for the committed fixtures at the first,
+// wide layout. Keep this assertion separate from the screenshot tolerance so
+// a thumbnail-ladder/source-selection change remains visible even when Linux
+// image resampling differs by a small number of edge pixels.
+const expectedImageThumbnailTokens = {
+  'XH2A2139.jpg': 'v1-250j80',
+  'XH2A2143.jpg': 'v1-250j80',
+  'XH2A2179.jpg': 'v1-250j80',
+  'XH2A8246.jpg': 'v1-500j80',
+  'XH2A8265.jpg': 'v1-500j80',
+  'XH2A8309.jpg': 'v1-250j80',
+  'XH2A8337.jpg': 'v1-250j80',
+  'XH2A8343.jpg': 'v1-250j80',
+  'XH2A8360.jpg': 'v1-250j80',
+  'XT4B2260.jpg': 'v1-500j80',
+};
 
 type GalleryScenario = {
   name: string;
@@ -85,10 +103,14 @@ test('image tiles keep their inherited justified row layout', async ({
       rowHeight: defaultRowHeight,
       margin: defaultMargin,
     });
+    if (scenario.name === 'desktop-wide') {
+      await expectImageThumbnailTokens(gallery);
+    }
     await expect(gallery).toHaveScreenshot(`${scenario.name}.png`, {
       animations: 'disabled',
       caret: 'hide',
       scale: 'css',
+      maxDiffPixelRatio: imageRasterizationTolerance,
     });
   }
 
@@ -422,6 +444,28 @@ async function waitForGalleryImages(
   await page.evaluate(async () => {
     await document.fonts.ready;
   });
+}
+
+async function expectImageThumbnailTokens(gallery: Locator) {
+  const selectedTokens = await gallery.locator('img').evaluateAll((elements) =>
+    Object.fromEntries(
+      elements.map((element) => {
+        if (!(element instanceof HTMLImageElement)) {
+          throw new Error('Gallery image locator matched a non-image element');
+        }
+        const token = new URL(element.currentSrc).pathname.match(
+          /\/image\/\d+\/([^/]+)\//,
+        )?.[1];
+        if (!token) {
+          throw new Error(
+            `Could not read a thumbnail token from ${element.currentSrc}`,
+          );
+        }
+        return [element.alt, token];
+      }),
+    ),
+  );
+  expect(selectedTokens).toEqual(expectedImageThumbnailTokens);
 }
 
 async function setGalleryWidth(
