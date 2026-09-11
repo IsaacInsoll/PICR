@@ -83,7 +83,7 @@ const imageScenarios: GalleryScenario[] = [
 test('image tiles keep their inherited justified row layout', async ({
   context,
   page,
-}) => {
+}, testInfo) => {
   const failures = trackBrowserFailures(page);
   await useGalleryView(page);
   await login(page);
@@ -98,20 +98,35 @@ test('image tiles keep their inherited justified row layout', async ({
   for (const scenario of imageScenarios) {
     await page.setViewportSize(scenario.viewport);
     await setGalleryWidth(page, gallery, scenario.containerWidth);
+    await waitForGalleryImages(page, gallery, 10);
     await expectGalleryRows(gallery, scenario.containerWidth, {
       underfilledFinalRow: scenario.underfilledFinalRow,
       rowHeight: defaultRowHeight,
       margin: defaultMargin,
     });
-    if (scenario.name === 'desktop-wide') {
-      await expectImageThumbnailTokens(gallery);
-    }
-    await expect(gallery).toHaveScreenshot(`${scenario.name}.png`, {
-      animations: 'disabled',
-      caret: 'hide',
-      scale: 'css',
-      maxDiffPixelRatio: imageRasterizationTolerance,
+    const thumbnailSources = await imageThumbnailSources(gallery);
+    await testInfo.attach(`${scenario.name}-thumbnail-sources`, {
+      body: JSON.stringify(thumbnailSources, null, 2),
+      contentType: 'application/json',
     });
+    expect(
+      Object.fromEntries(
+        thumbnailSources.map(({ alt, token }) => [alt, token]),
+      ),
+    ).toEqual(expectedImageThumbnailTokens);
+
+    const responsiveAttributes = await freezeGalleryImageSources(gallery);
+    try {
+      await waitForGalleryImages(page, gallery, 10);
+      await expect(gallery).toHaveScreenshot(`${scenario.name}.png`, {
+        animations: 'disabled',
+        caret: 'hide',
+        scale: 'css',
+        maxDiffPixelRatio: imageRasterizationTolerance,
+      });
+    } finally {
+      await restoreGalleryImageSources(gallery, responsiveAttributes);
+    }
   }
 
   // Behaviour: every image tile is a real link, a modified click opens a new
@@ -429,43 +444,125 @@ async function waitForGalleryImages(
 ) {
   const images = gallery.locator('img');
   await expect(images).toHaveCount(count);
+  let previousSources: string[] | undefined;
   await expect
-    .poll(() =>
-      images.evaluateAll((elements) =>
-        elements.every(
+    .poll(async () => {
+      const state = await images.evaluateAll((elements) => ({
+        ready: elements.every(
           (element) =>
             element instanceof HTMLImageElement &&
             element.complete &&
             element.naturalWidth > 0,
         ),
-      ),
-    )
+        sources: elements.map((element) =>
+          element instanceof HTMLImageElement ? element.currentSrc : '',
+        ),
+      }));
+      const sourcesStable =
+        previousSources !== undefined &&
+        state.sources.every(
+          (source, index) => source === previousSources?.[index],
+        );
+      previousSources = state.sources;
+      return state.ready && sourcesStable;
+    })
     .toBe(true);
   await page.evaluate(async () => {
     await document.fonts.ready;
   });
 }
 
-async function expectImageThumbnailTokens(gallery: Locator) {
-  const selectedTokens = await gallery.locator('img').evaluateAll((elements) =>
-    Object.fromEntries(
-      elements.map((element) => {
-        if (!(element instanceof HTMLImageElement)) {
-          throw new Error('Gallery image locator matched a non-image element');
-        }
-        const token = new URL(element.currentSrc).pathname.match(
-          /\/image\/\d+\/([^/]+)\//,
-        )?.[1];
-        if (!token) {
-          throw new Error(
-            `Could not read a thumbnail token from ${element.currentSrc}`,
-          );
-        }
-        return [element.alt, token];
-      }),
-    ),
+async function imageThumbnailSources(gallery: Locator) {
+  return gallery.locator('img').evaluateAll((elements) =>
+    elements.map((element) => {
+      if (!(element instanceof HTMLImageElement)) {
+        throw new Error('Gallery image locator matched a non-image element');
+      }
+      const token = new URL(element.currentSrc).pathname.match(
+        /\/image\/\d+\/([^/]+)\//,
+      )?.[1];
+      if (!token) {
+        throw new Error(
+          `Could not read a thumbnail token from ${element.currentSrc}`,
+        );
+      }
+      return {
+        alt: element.alt,
+        token,
+        currentSrc: element.currentSrc,
+        sizes: element.sizes,
+        naturalWidth: element.naturalWidth,
+        renderedWidth: element.getBoundingClientRect().width,
+      };
+    }),
   );
-  expect(selectedTokens).toEqual(expectedImageThumbnailTokens);
+}
+
+type ResponsiveImageAttributes = {
+  imageSrc: string | null;
+  imageSrcSet: string | null;
+  imageSizes: string | null;
+  sourceSrcSet: string | null;
+  sourceSizes: string | null;
+};
+
+async function freezeGalleryImageSources(
+  gallery: Locator,
+): Promise<ResponsiveImageAttributes[]> {
+  return gallery.locator('img').evaluateAll((elements) =>
+    elements.map((element) => {
+      if (!(element instanceof HTMLImageElement)) {
+        throw new Error('Gallery image locator matched a non-image element');
+      }
+      const source = element.parentElement?.querySelector('source') ?? null;
+      const attributes = {
+        imageSrc: element.getAttribute('src'),
+        imageSrcSet: element.getAttribute('srcset'),
+        imageSizes: element.getAttribute('sizes'),
+        sourceSrcSet: source?.getAttribute('srcset') ?? null,
+        sourceSizes: source?.getAttribute('sizes') ?? null,
+      };
+      const currentSrc = element.currentSrc;
+      source?.removeAttribute('srcset');
+      source?.removeAttribute('sizes');
+      element.removeAttribute('srcset');
+      element.removeAttribute('sizes');
+      element.src = currentSrc;
+      return attributes;
+    }),
+  );
+}
+
+async function restoreGalleryImageSources(
+  gallery: Locator,
+  attributes: ResponsiveImageAttributes[],
+) {
+  await gallery.locator('img').evaluateAll((elements, savedAttributes) => {
+    const restoreAttribute = (
+      element: Element,
+      name: string,
+      value: string | null,
+    ) => {
+      if (value === null) element.removeAttribute(name);
+      else element.setAttribute(name, value);
+    };
+
+    elements.forEach((element, index) => {
+      if (!(element instanceof HTMLImageElement)) {
+        throw new Error('Gallery image locator matched a non-image element');
+      }
+      const saved = savedAttributes[index];
+      if (!saved) throw new Error('Missing saved responsive image attributes');
+      const source = element.parentElement?.querySelector('source') ?? null;
+      restoreAttribute(element, 'src', saved.imageSrc);
+      restoreAttribute(element, 'srcset', saved.imageSrcSet);
+      restoreAttribute(element, 'sizes', saved.imageSizes);
+      if (source) {
+        restoreAttribute(source, 'srcset', saved.sourceSrcSet);
+        restoreAttribute(source, 'sizes', saved.sourceSizes);
+      }
+    });
+  }, attributes);
 }
 
 async function setGalleryWidth(

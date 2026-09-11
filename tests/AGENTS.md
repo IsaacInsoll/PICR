@@ -124,9 +124,15 @@ tests/
   geometry assertions pass. Inspect the actual and diff images, explain the
   encoder/source change, and regenerate only the affected baselines. The base
   justified-image scenarios have a narrowly measured 0.15% mismatch allowance
-  for Linux image-resampling drift, paired with an exact fixture-to-variant-token
-  assertion. Do not broaden that allowance or remove the token assertion to
-  make a thumbnail change pass.
+  for Linux image-resampling drift. Before each screenshot they wait for a
+  stable responsive source, attach the selected-source details to the report,
+  assert the exact fixture-to-variant-token mapping, and temporarily pin each
+  image to that verified URL. Do not broaden the allowance or remove the token
+  assertion/source pinning to make a thumbnail change pass.
+- GitHub CI uploads `test-results/` and `playwright-report/` as a
+  `playwright-failure-*` artifact when the E2E step fails. Use that artifact to
+  inspect actual/diff images and the per-scenario thumbnail-source JSON; local
+  artifact paths printed by CI disappear with the hosted runner.
 - Visual baselines are Linux PNGs under
   `tests/e2e/gallery.visual.spec.ts-snapshots/` and are committed. They are
   generated on a developer machine but also compared on the Ubuntu CI runner,

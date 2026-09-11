@@ -128,6 +128,16 @@ jobs:
           fi
       - name: '🧪 [tests/e2e] run frontend smoke tests'
         run: npm run test:e2e
+      - name: '🧪 [tests/e2e] Upload Playwright failure artifacts'
+        if: ${{ failure() && !env.ACT }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-failure-${{ github.sha }}-${{ matrix.os }}
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
+          retention-days: 14
 
       # ARTIFACT
       - uses: actions/upload-artifact@v7
