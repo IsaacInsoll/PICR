@@ -195,6 +195,17 @@ const file = await dbFileForId(fileId); // throws if not found
 const user = await dbUserForId(userId); // throws if not found
 ```
 
+### Folder Subtree Path Matching
+
+Match descendants of a folder with `descendantPathPattern(relativePath)` from
+`backend/helpers/descendantPathPattern.ts`, never `relativePath + '/%'`.
+PostgreSQL `LIKE` treats `_` and `%` as wildcards, and both are common in folder
+names: an unescaped `Smith_Wedding/%` also matches `Smith-Wedding/...`. Because
+`allSubfolders()` expands an already-authorized root into its subtree, an
+unescaped pattern widened public-link scope to sibling folders. The permission
+check itself (`folderIsUnderFolder`) compares paths with `startsWith` and is not
+affected. `tests/api/13-folder-subtree-scope.test.ts` covers the link boundary.
+
 ### Adding/Modifying Tables
 
 1. Create or edit model in `db/models/`

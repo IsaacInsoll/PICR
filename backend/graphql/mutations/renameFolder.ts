@@ -13,6 +13,7 @@ import { folderList, pathSplit } from '../../filesystem/fileManager.js';
 import { moveThumbnailFolder } from '../../media/moveThumbnailFolder.js';
 import { validateRelativePath } from '@shared/validation/folderPath.js';
 import { folderIsUnderFolder } from '../../helpers/folderIsUnderFolderId.js';
+import { descendantPathPattern } from '../../helpers/descendantPathPattern.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 import { log } from '../../logger.js';
 
@@ -135,7 +136,7 @@ const resolver: PicrResolver<object, MutationRenameFolderArgs> = async (
         and(
           or(
             eq(dbFolder.relativePath, oldPath),
-            like(dbFolder.relativePath, oldPath + '/%'),
+            like(dbFolder.relativePath, descendantPathPattern(oldPath)),
           ),
           eq(dbFolder.exists, true),
         ),
@@ -155,7 +156,7 @@ const resolver: PicrResolver<object, MutationRenameFolderArgs> = async (
         and(
           or(
             eq(dbFile.relativePath, oldPath),
-            like(dbFile.relativePath, oldPath + '/%'),
+            like(dbFile.relativePath, descendantPathPattern(oldPath)),
           ),
           eq(dbFile.exists, true),
         ),
@@ -172,7 +173,7 @@ const resolver: PicrResolver<object, MutationRenameFolderArgs> = async (
         and(
           or(
             eq(dbFile.relativePath, newPath),
-            like(dbFile.relativePath, newPath + '/%'),
+            like(dbFile.relativePath, descendantPathPattern(newPath)),
           ),
           eq(dbFile.exists, true),
         ),

@@ -6,6 +6,7 @@ import { and, eq, like, or, sql } from 'drizzle-orm';
 import { dbFile, dbFolder } from '../../db/models/index.js';
 import { moveThumbnailFolder } from '../../media/moveThumbnailFolder.js';
 import type { PicrFileStats } from '../fileStats.js';
+import { descendantPathPattern } from '../../helpers/descendantPathPattern.js';
 
 export const renameFolder = async (
   oldPath: string,
@@ -55,7 +56,7 @@ export const renameFolder = async (
     })
     .where(
       and(
-        like(dbFolder.relativePath, oldRelative + '/%'),
+        like(dbFolder.relativePath, descendantPathPattern(oldRelative)),
         eq(dbFolder.exists, true),
       ),
     );
@@ -69,7 +70,7 @@ export const renameFolder = async (
       and(
         or(
           eq(dbFile.relativePath, oldRelative),
-          like(dbFile.relativePath, oldRelative + '/%'),
+          like(dbFile.relativePath, descendantPathPattern(oldRelative)),
         ),
         eq(dbFile.exists, true),
       ),
@@ -84,7 +85,7 @@ export const renameFolder = async (
       and(
         or(
           eq(dbFile.relativePath, newRelative),
-          like(dbFile.relativePath, newRelative + '/%'),
+          like(dbFile.relativePath, descendantPathPattern(newRelative)),
         ),
         eq(dbFile.exists, true),
       ),

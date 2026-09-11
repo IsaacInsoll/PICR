@@ -3,6 +3,7 @@ import { db, dbFolderForId } from '../db/picrDb.js';
 import { dbFolder } from '../db/models/index.js';
 import { and, asc, desc, eq, like, or } from 'drizzle-orm';
 import { FoldersSortType } from '@shared/gql/graphql.js';
+import { descendantPathPattern } from './descendantPathPattern.js';
 
 // Recursively find all subfolders
 // NOTE: no permissions done here, if you can see parent you can see the children
@@ -31,7 +32,7 @@ export const allSubfolders = async (
       eq(dbFolder.exists, true),
       or(
         eq(dbFolder.relativePath, f.relativePath),
-        like(dbFolder.relativePath, f.relativePath + '/%'),
+        like(dbFolder.relativePath, descendantPathPattern(f.relativePath)),
       ),
     ),
     orderBy,
