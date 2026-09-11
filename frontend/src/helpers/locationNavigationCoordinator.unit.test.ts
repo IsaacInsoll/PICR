@@ -1,11 +1,11 @@
 import { describe, expect, test } from 'vitest';
 import { withFileModalState } from './fileModalHash';
-import { createHashNavigationCoordinator } from './hashNavigationCoordinator';
+import { createLocationNavigationCoordinator } from './locationNavigationCoordinator';
 import { withHashParam } from './hashParams';
 
-describe('hash navigation coordinator', () => {
+describe('location navigation coordinator', () => {
   test('composes consecutive hash writes before the Router location updates', () => {
-    const coordinator = createHashNavigationCoordinator({
+    const coordinator = createLocationNavigationCoordinator({
       pathname: '/admin/f/5',
       search: '',
       hash: '',
@@ -43,10 +43,47 @@ describe('hash navigation coordinator', () => {
     });
   });
 
-  test('resynchronizes after Router navigation such as Back', () => {
-    const coordinator = createHashNavigationCoordinator({
+  test('composes same-tick query and hash writes', () => {
+    const coordinator = createLocationNavigationCoordinator({
       pathname: '/admin/f/5',
-      search: '',
+      search: '?link=12',
+      hash: '#v=g',
+      state: null,
+    });
+
+    coordinator.update((location) => {
+      const search = new URLSearchParams(location.search);
+      search.set('media', 'video');
+      return {
+        search: `?${search.toString()}`,
+        replace: true,
+        state: location.state,
+      };
+    });
+    const pending = coordinator.update((location) => ({
+      hash: withFileModalState(location.hash, {
+        mode: 'info',
+        fileId: '42',
+      }),
+      replace: false,
+      state: { fileModalOpened: true },
+    }));
+
+    expect(pending).toEqual({
+      to: {
+        pathname: '/admin/f/5',
+        search: '?link=12&media=video',
+        hash: '#v=g&m=info-42',
+      },
+      replace: false,
+      state: { fileModalOpened: true },
+    });
+  });
+
+  test('resynchronizes after Router navigation such as Back', () => {
+    const coordinator = createLocationNavigationCoordinator({
+      pathname: '/admin/f/5',
+      search: '?link=12',
       hash: '#m=info-42',
       state: { fileModalOpened: true },
     });

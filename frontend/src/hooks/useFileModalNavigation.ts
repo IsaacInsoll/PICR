@@ -9,24 +9,24 @@ import {
   withFileModalState,
   type FileModalState,
 } from '../helpers/fileModalHash';
-import { useHashNavigation } from './useHashNavigation';
+import { useLocationNavigation } from './useLocationNavigation';
 
 export const useFileModalState = () => parseFileModalHash(useLocation().hash);
 
 export const useOpenFileModal = () => {
-  const { navigateHash } = useHashNavigation();
+  const { navigateLocation } = useLocationNavigation();
 
   return useCallback(
     (modal: FileModalState) => {
-      navigateHash((current) => buildFileModalNavigation(current, modal));
+      navigateLocation((current) => buildFileModalNavigation(current, modal));
     },
-    [navigateHash],
+    [navigateLocation],
   );
 };
 
 export const useCloseFileModal = () => {
   const navigate = useNavigate();
-  const { getCurrentLocation, navigateHash } = useHashNavigation();
+  const { getCurrentLocation, navigateLocation } = useLocationNavigation();
   const lightboxControllerRef = useAtomValue(lightboxControllerRefAtom);
 
   return useCallback(() => {
@@ -36,12 +36,12 @@ export const useCloseFileModal = () => {
       return;
     }
 
-    navigateHash((current) => ({
+    navigateLocation((current) => ({
       hash: withFileModalState(current.hash),
       replace: true,
       state: current.state,
     }));
-  }, [getCurrentLocation, lightboxControllerRef, navigate, navigateHash]);
+  }, [getCurrentLocation, lightboxControllerRef, navigate, navigateLocation]);
 };
 
 export const useOpenCommentsModal = () => {

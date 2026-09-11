@@ -1,9 +1,7 @@
 import { ActionIcon, Group } from '@mantine/core';
 import { useAtom } from 'jotai';
-import type {
-  FilterOptionsInterface,
-  RatingsComparisonOptions,
-} from '@shared/filterAtom';
+import type { FilterOptionsInterface } from '@shared/filterAtom';
+import type { RatingComparison } from '@shared/files/mediaCriteria';
 import { filterOptions } from '@shared/filterAtom';
 import type { ReactNode } from 'react';
 import {
@@ -21,7 +19,7 @@ export const RatingFilterBox = () => {
     <Group gap="sm">
       <RatingComparisonSelector
         value={options.ratingComparison}
-        onChange={(ratingComparison: RatingsComparisonOptions | null) =>
+        onChange={(ratingComparison: RatingComparison | null) =>
           setOptions((o: FilterOptionsInterface) => ({
             ...o,
             ratingComparison,
@@ -47,8 +45,8 @@ const RatingComparisonSelector = ({
   value,
   onChange,
 }: {
-  value: RatingsComparisonOptions | null;
-  onChange: (v: RatingsComparisonOptions | null) => void;
+  value: RatingComparison | null;
+  onChange: (v: RatingComparison | null) => void;
 }) => {
   const { t } = useTranslation('gallery');
   return (
@@ -72,16 +70,16 @@ const RatingComparisonSelector = ({
 };
 
 const options: {
-  value: RatingsComparisonOptions;
+  value: RatingComparison;
   labelKey:
-    | 'filter.ratingComparison.lessThan'
+    | 'filter.ratingComparison.atMost'
     | 'filter.ratingComparison.equal'
-    | 'filter.ratingComparison.greaterThan';
+    | 'filter.ratingComparison.atLeast';
   icon: ReactNode;
 }[] = [
   {
-    value: 'lessThan',
-    labelKey: 'filter.ratingComparison.lessThan',
+    value: 'atMost',
+    labelKey: 'filter.ratingComparison.atMost',
     icon: <LessThanEqualIcon />,
   },
   {
@@ -90,8 +88,8 @@ const options: {
     icon: <EqualIcon />,
   },
   {
-    value: 'greaterThan',
-    labelKey: 'filter.ratingComparison.greaterThan',
+    value: 'atLeast',
+    labelKey: 'filter.ratingComparison.atLeast',
     icon: <GreaterThanEqualIcon />,
   },
 ];

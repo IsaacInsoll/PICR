@@ -137,15 +137,19 @@
     "filename": "Nombre del archivo",
     "flag": "Bandera",
     "imageOptions": "Opciones de imagen",
+    "mediaType": "Tipo de contenido",
+    "mediaTypeAll": "Todo el contenido",
+    "mediaTypeImages": "Fotos",
+    "mediaTypeVideos": "Vídeos",
     "metadata": "Metadatos",
     "metadataFiltering": "Filtrado de metadatos",
     "metadataUnavailableEmpty": "No disponible porque estas imágenes no incluyen estos metadatos",
     "metadataUnavailable": "No disponible porque todas las imágenes son {{value}}",
     "rating": "Clasificación",
     "ratingComparison": {
-      "equal": "igual a",
-      "greaterThan": "Al menos",
-      "lessThan": "A lo sumo"
+      "atLeast": "Al menos",
+      "atMost": "A lo sumo",
+      "equal": "igual a"
     },
     "search": "Buscar",
     "showingAll": "Mostrando todos los archivos",

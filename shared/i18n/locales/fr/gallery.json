@@ -137,15 +137,19 @@
     "filename": "Nom du fichier",
     "flag": "Marqueur",
     "imageOptions": "Options d'image",
+    "mediaType": "Type de média",
+    "mediaTypeAll": "Tous les médias",
+    "mediaTypeImages": "Photos",
+    "mediaTypeVideos": "Vidéos",
     "metadata": "Métadonnées",
     "metadataFiltering": "Filtrage par métadonnées",
     "metadataUnavailableEmpty": "Indisponible car ces images ne contiennent pas cette métadonnée",
     "metadataUnavailable": "Indisponible car toutes les images ont la valeur {{value}}",
     "rating": "Note",
     "ratingComparison": {
-      "equal": "Égale à",
-      "greaterThan": "Au moins",
-      "lessThan": "Au plus"
+      "atLeast": "Au moins",
+      "atMost": "Au plus",
+      "equal": "Égale à"
     },
     "search": "Rechercher",
     "showingAll": "Tous les fichiers sont affichés",

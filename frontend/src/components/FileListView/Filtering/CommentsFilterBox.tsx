@@ -1,9 +1,7 @@
 import { Button } from '@mantine/core';
 import { useAtom } from 'jotai';
-import type {
-  CommentsFilterOptions,
-  FilterOptionsInterface,
-} from '@shared/filterAtom';
+import type { FilterOptionsInterface } from '@shared/filterAtom';
+import type { CommentPresence } from '@shared/files/mediaCriteria';
 import { filterOptions } from '@shared/filterAtom';
 import type { ReactNode } from 'react';
 import { CommentIcon, CommentsIcon } from '../../../PicrIcons';
@@ -44,7 +42,7 @@ export const CommentsFilterBox = () => {
 };
 
 const commentOptions: {
-  value: CommentsFilterOptions;
+  value: CommentPresence;
   labelKey: 'filter.commentsNone' | 'filter.commentsHas';
   icon: ReactNode;
 }[] = [

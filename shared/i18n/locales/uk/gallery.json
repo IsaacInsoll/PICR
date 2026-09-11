@@ -147,15 +147,19 @@
     "filename": "Ім'я файлу",
     "flag": "Позначка",
     "imageOptions": "Параметри зображення",
+    "mediaType": "Тип медіа",
+    "mediaTypeAll": "Усі медіафайли",
+    "mediaTypeImages": "Фото",
+    "mediaTypeVideos": "Відео",
     "metadata": "Метадані",
     "metadataFiltering": "Фільтрація метаданих",
     "metadataUnavailableEmpty": "Недоступно, оскільки ці зображення не містять цих метаданих",
     "metadataUnavailable": "Недоступно, оскільки всі зображення мають {{value}}",
     "rating": "Рейтинг",
     "ratingComparison": {
-      "equal": "Дорівнює",
-      "greaterThan": "Щонайменше",
-      "lessThan": "Щонайбільше"
+      "atLeast": "Щонайменше",
+      "atMost": "Щонайбільше",
+      "equal": "Дорівнює"
     },
     "search": "Пошук",
     "showingAll": "Показано всі файли",

@@ -1,8 +1,6 @@
 import { useAtom } from 'jotai';
-import type {
-  AspectFilterOptions,
-  FilterOptionsInterface,
-} from '@shared/filterAtom';
+import type { FilterOptionsInterface } from '@shared/filterAtom';
+import type { AspectFilter } from '@shared/files/mediaCriteria';
 import { filterOptions } from '@shared/filterAtom';
 import {
   AspectAnyIcon,
@@ -18,15 +16,14 @@ import { useTranslation } from 'react-i18next';
 export const AspectSelector = () => {
   const { t } = useTranslation('gallery');
   const [options, setOptions] = useAtom(filterOptions);
-  const onChange = (a: AspectFilterOptions) =>
-    setOptions((o: FilterOptionsInterface) => ({ ...o, ratio: a }));
+  const onChange = (aspect: AspectFilter) =>
+    setOptions((o: FilterOptionsInterface) => ({ ...o, aspect }));
   return (
     <Select
       style={{ width: '150px' }}
-      // label={options.ratio}
-      value={options.ratio}
-      onChange={(v) => v && onChange(v as AspectFilterOptions)}
-      leftSection={aspectRatioIcon[options.ratio]}
+      value={options.aspect}
+      onChange={(v) => v && onChange(v as AspectFilter)}
+      leftSection={aspectRatioIcon[options.aspect]}
       data={aspectRatioOptions.map(({ value, labelKey }) => ({
         value,
         label: t(labelKey),
@@ -37,7 +34,7 @@ export const AspectSelector = () => {
 };
 
 const renderOption: SelectProps['renderOption'] = ({ option }) => {
-  const value = option.value as AspectFilterOptions;
+  const value = option.value as AspectFilter;
   return (
     <Group flex={1} gap="sm">
       <div>{aspectRatioIcon[value]}</div>
@@ -47,7 +44,7 @@ const renderOption: SelectProps['renderOption'] = ({ option }) => {
 };
 
 const aspectRatioOptions: Array<{
-  value: AspectFilterOptions;
+  value: AspectFilter;
   labelKey:
     | 'filter.aspect.any'
     | 'filter.aspect.landscape'
@@ -60,7 +57,7 @@ const aspectRatioOptions: Array<{
   { value: 'portrait', labelKey: 'filter.aspect.portrait' },
 ];
 
-const aspectRatioIcon: Record<AspectFilterOptions, ReactNode> = {
+const aspectRatioIcon: Record<AspectFilter, ReactNode> = {
   any: <AspectAnyIcon />,
   square: <AspectSquareIcon />,
   landscape: <AspectLandscapeIcon />,

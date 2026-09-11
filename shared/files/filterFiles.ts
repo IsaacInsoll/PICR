@@ -1,23 +1,19 @@
-import type {
-  AspectFilterOptions,
-  FilterOptionsInterface,
-} from '@shared/filterAtom';
+import type { FilterOptionsInterface } from '@shared/filterAtom';
 import type { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
 import type { FileFlag } from '@shared/gql/graphql';
 import type { PicrMetadataMap } from '@shared/types/metadata';
+import {
+  defaultGalleryFilterCriteria,
+  normalizeSearchText,
+  type AspectFilter,
+  type MediaTypeFilterValue,
+} from './mediaCriteria';
 
-export const DefaultFilterOptions: FilterOptionsInterface = {
-  ratio: 'any',
-  searchText: '',
-  metadata: {},
-  flag: null,
-  ratingComparison: null,
-  rating: 0,
-  comments: null,
-};
+export const DefaultFilterOptions = defaultGalleryFilterCriteria;
 
 type FilterableFile = {
   __typename: string;
+  type?: string | null;
   name?: string | null;
   imageRatio?: number | null;
   metadata?: PicrMetadataMap | null;
@@ -30,10 +26,11 @@ export const filterFiles = <T extends FilterableFile>(
   files: T[],
   filters: FilterOptionsInterface,
 ): T[] => {
-  const { ratio, searchText, metadata } = filters;
+  const { mediaType, aspect, searchText, metadata } = filters;
   return files.filter((file: T) => {
     return (
-      ratioFilter(file, ratio) &&
+      mediaTypeFilter(file, mediaType) &&
+      aspectFilter(file, aspect) &&
       textFilter(file, searchText) &&
       metadataFilter(file, metadata) &&
       commentsFilter(file, filters)
@@ -41,25 +38,27 @@ export const filterFiles = <T extends FilterableFile>(
   });
 };
 
-const normalizeSearchText = (value: string): string =>
-  value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
-
 const textFilter = (file: FilterableFile, text: string): boolean =>
   !!file.name &&
   normalizeSearchText(file.name).includes(normalizeSearchText(text));
 
-const ratioFilter = (
+const mediaTypeFilter = (
   file: FilterableFile,
-  ratio: AspectFilterOptions,
-): boolean => {
+  mediaType: MediaTypeFilterValue,
+): boolean =>
+  mediaType === 'All' || (file.type ?? file.__typename) === mediaType;
+
+const aspectFilter = (file: FilterableFile, aspect: AspectFilter): boolean => {
   const ar = file.imageRatio ?? null;
-  if (!ar) return ratio === 'any';
+  if (typeof ar !== 'number' || !Number.isFinite(ar) || ar <= 0) {
+    return aspect === 'any';
+  }
 
   return (
-    ratio === 'any' ||
-    (ratio === 'square' && ar > 0.9 && ar < 1.1) ||
-    (ratio === 'landscape' && ar > 0.9) ||
-    (ratio === 'portrait' && ar < 1.1)
+    aspect === 'any' ||
+    (aspect === 'square' && ar >= 0.9 && ar <= 1.1) ||
+    (aspect === 'landscape' && ar > 1.1) ||
+    (aspect === 'portrait' && ar < 0.9)
   );
 };
 
@@ -95,10 +94,10 @@ const commentsFilter = (
       case 'equal':
         if (r !== rating) return false;
         break;
-      case 'greaterThan':
+      case 'atLeast':
         if (!(r >= rating)) return false;
         break;
-      case 'lessThan':
+      case 'atMost':
         if (!(r <= rating)) return false;
         break;
     }

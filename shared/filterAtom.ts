@@ -1,41 +1,23 @@
 import { atom } from 'jotai';
-import type { MetadataOptionsForFiltering } from './files/metadataForFiltering';
-import type { FileFlag } from './gql/graphql.js';
-import { DefaultFilterOptions } from './files/filterFiles';
+import {
+  countGalleryFilterCriteria,
+  defaultGalleryFilterCriteria,
+  type GalleryFilterCriteria,
+} from './files/mediaCriteria';
 
-export type AspectFilterOptions = 'any' | 'landscape' | 'square' | 'portrait';
+export type FilterOptionsInterface = GalleryFilterCriteria;
 
-export type RatingsComparisonOptions = 'equal' | 'lessThan' | 'greaterThan';
-export type CommentsFilterOptions = 'none' | 'some';
-
-export interface FilterOptionsInterface {
-  ratio: AspectFilterOptions;
-  searchText: string;
-  metadata: MetadataOptionsForFiltering;
-  flag: FileFlag | null;
-  ratingComparison: RatingsComparisonOptions | null;
-  rating: number;
-  comments: CommentsFilterOptions | null;
-}
-
-export const filterOptions = atom<FilterOptionsInterface>(DefaultFilterOptions);
+export const filterOptions = atom<GalleryFilterCriteria>(
+  defaultGalleryFilterCriteria,
+);
 
 export const resetFilterOptions = atom(null, (_get, set) => {
-  set(filterOptions, DefaultFilterOptions);
+  set(filterOptions, defaultGalleryFilterCriteria);
 });
 
-export const totalFilterOptionsSelected = atom((get) => {
-  const { ratio, searchText, ratingComparison, flag, comments } =
-    get(filterOptions);
-  const totalMeta = get(totalMetadataFilterOptionsSelected);
-  let total = totalMeta;
-  if (ratio !== 'any') total++;
-  if (searchText && searchText !== '') total++;
-  if (ratingComparison) total++;
-  if (flag) total++;
-  if (comments) total++;
-  return total;
-});
+export const totalFilterOptionsSelected = atom((get) =>
+  countGalleryFilterCriteria(get(filterOptions)),
+);
 
 export const totalMetadataFilterOptionsSelected = atom((get) => {
   const { metadata } = get(filterOptions);

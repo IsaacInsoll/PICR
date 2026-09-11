@@ -409,6 +409,17 @@ const error = validateRelativePath('Parent/Child/Folder'); // null if valid
 
 ## Jotai Atoms
 
+Gallery filtering's framework-free contract lives in
+`shared/files/mediaCriteria.ts`. Keep normalization, active-filter counting,
+stable fingerprints, and shared criterion names there so the local JavaScript
+filter and recursive SQL selection can be checked against the same semantics.
+The temporary `GalleryFilterCriteria.searchText` compatibility field supports
+the existing filename filter until gallery Find replaces it; recursive media
+criteria must not consume that field. Media type values deliberately align with
+the existing GraphQL `MediaTypeFilter` (`All`, `Image`, `Video`) through a
+type-only import. Do not add a generated runtime import to this module: it must
+remain consumable by both Metro and the Node backend.
+
 ```typescript
 // shared/filterAtom.ts
 import { atom } from 'jotai';

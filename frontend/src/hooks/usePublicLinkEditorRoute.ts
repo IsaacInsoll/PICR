@@ -1,10 +1,6 @@
 import { useCallback } from 'react';
-import {
-  useLocation,
-  useNavigate,
-  useSearchParams,
-  type LinkProps,
-} from 'react-router';
+import { useLocation, useNavigate, type LinkProps } from 'react-router';
+import { useLocationNavigation } from './useLocationNavigation';
 
 export const publicLinkEditorSearchParam = 'link';
 export const newPublicLinkId = 'new';
@@ -32,26 +28,30 @@ export const usePublicLinkEditorRoute = ({
 } = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { getCurrentLocation, navigateLocation } = useLocationNavigation();
+  const searchParams = new URLSearchParams(location.search);
   const selectedLinkId = searchParams.get(publicLinkEditorSearchParam);
 
   const setSelectedLinkId = useCallback(
     (id: string | null) => {
-      setSearchParams(
-        (current) => {
-          const next = new URLSearchParams(current);
-          if (id) next.set(publicLinkEditorSearchParam, id);
-          else next.delete(publicLinkEditorSearchParam);
-          return next;
-        },
-        { replace: true },
-      );
+      navigateLocation((current) => {
+        const next = new URLSearchParams(current.search);
+        if (id) next.set(publicLinkEditorSearchParam, id);
+        else next.delete(publicLinkEditorSearchParam);
+        const encoded = next.toString();
+        return {
+          search: encoded ? `?${encoded}` : '',
+          replace: true,
+          state: current.state,
+        };
+      });
     },
-    [setSearchParams],
+    [navigateLocation],
   );
 
   const closeEditor = useCallback(() => {
-    const state = location.state as PublicLinkEditorLocationState | null;
+    const state = getCurrentLocation()
+      .state as PublicLinkEditorLocationState | null;
     if (
       returnToPreviousLocationOnClose &&
       selectedLinkId &&
@@ -63,7 +63,7 @@ export const usePublicLinkEditorRoute = ({
 
     setSelectedLinkId(null);
   }, [
-    location.state,
+    getCurrentLocation,
     navigate,
     returnToPreviousLocationOnClose,
     selectedLinkId,

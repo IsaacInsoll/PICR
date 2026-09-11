@@ -304,23 +304,35 @@ the modal layer. The host resolves the canonical file by ID, while
 `FileModalFileContext` derives whether location actions are useful by comparing
 the current route folder with the file's owning folder.
 
-React Router is the sole owner of URL hash and history state, including modal
-(`m`), sort (`s`) and view (`v`) parameters. Use `useHashParam` for preference
-parameters; do not write the hash with `window.history`, `window.location`, or a
-second URL-state library. Raw History API writes do not notify React Router, so
-its `useLocation().hash` becomes stale and the next Router navigation can
-silently drop another owner's parameters.
-Imperative hash writes must also go through the `HashNavigationProvider`
-coordinator via `useHashNavigation`. It advances a shared pending location
-before calling Router, so consecutive modal/sort/view writes compose even when
-React has not rerendered between them. Building each write from a hook's own
-rendered `useLocation()` reintroduces a same-tick lost-update race.
+React Router is the sole owner of URL query, hash and history state, including
+public-link editor (`link`), modal (`m`), sort (`s`) and view (`v`) parameters.
+Use `useHashParam` for hash-backed preferences; do not write either query or hash
+state with `window.history`, `window.location`, or a second URL-state library.
+Raw History API writes do not notify React Router, so its `useLocation()` becomes
+stale and the next Router navigation can silently drop another owner's
+parameters.
+Imperative query/hash writes must also go through the
+`LocationNavigationProvider` coordinator via `useLocationNavigation`. It owns an
+optimistic snapshot of `pathname`, `search`, `hash` and history state before
+calling Router, so consecutive editor/filter/modal/sort/view writes compose even
+when React has not rerendered between them. Building each write from a hook's
+own rendered `useLocation()` reintroduces a same-tick lost-update race.
 Links and history traversal (`navigate(-1)`) bypass the optimistic update because
 their destination is browser/Router-owned; the provider resynchronizes from
 `useLocation()` after commit. The coordinator assumes declarative
 `BrowserRouter` navigation is not blocked. If navigation blockers or a data
 router are introduced, reconcile rejected/interrupted navigations before
 retaining the optimistic sequencing model.
+Bootstrap-only language detection and stale-chunk reload recovery run outside
+the mounted Router provider and remain the narrow exceptions to this rule.
+
+`useFolderUrl` currently preserves the location hash but intentionally omits
+the query string. Before gallery filter criteria become query-backed, replace
+that implicit behavior with explicit carry/clear rules: opening a file and
+moving through its lightbox must retain the active criteria, while navigation
+that deliberately leaves the filtered task may clear them. Do not wire a
+query-backed gallery controller until folder-card and file open/close paths use
+those rules consistently.
 
 Initial modal opens push an entry so Back closes the modal; switching an
 already-open modal replaces it. Closing pops only an entry marked as opened in

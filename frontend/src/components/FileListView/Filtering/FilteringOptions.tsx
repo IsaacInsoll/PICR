@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { metadataForFiltering } from '@shared/files/metadataForFiltering';
 import { AspectSelector } from './AspectSelector';
 import { SearchBox } from './SearchBox';
+import { MediaTypeSelector } from './MediaTypeSelector';
 import { MetadataBox } from './MetadataBox';
 import {
   Alert,
@@ -20,6 +21,7 @@ import { FlagFilterBox } from './FlagFilterBox';
 import { RatingFilterBox } from './RatingFilterBox';
 import { CommentsFilterBox } from './CommentsFilterBox';
 import {
+  filterOptions,
   resetFilterOptions,
   totalFilterOptionsSelected,
 } from '@shared/filterAtom';
@@ -42,13 +44,23 @@ export const FilteringOptions = ({
     () => metadataForFiltering(files.filter((f) => f.type === 'Image')),
     [files],
   );
+  const filters = useAtomValue(filterOptions);
   const totalFilters = useAtomValue(totalFilterOptionsSelected);
   const resetFilters = useSetAtom(resetFilterOptions);
+  const hasMultipleMediaTypes = useMemo(
+    () => new Set(files.map((file) => file.type)).size > 1,
+    [files],
+  );
   return (
     <Stack gap={0}>
       <Row label={t('filter.filename')}>
         <SearchBox />
       </Row>
+      {hasMultipleMediaTypes || filters.mediaType !== 'All' ? (
+        <Row label={t('filter.mediaType')}>
+          <MediaTypeSelector />
+        </Row>
+      ) : null}
       <Row label={t('filter.imageOptions')}>
         <Group justify="space-between">
           <AspectSelector />

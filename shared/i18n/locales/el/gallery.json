@@ -137,15 +137,19 @@
     "filename": "Όνομα αρχείου",
     "flag": "Σήμανση",
     "imageOptions": "Επιλογές εικόνας",
+    "mediaType": "Τύπος πολυμέσων",
+    "mediaTypeAll": "Όλα τα πολυμέσα",
+    "mediaTypeImages": "Φωτογραφίες",
+    "mediaTypeVideos": "Βίντεο",
     "metadata": "Μεταδεδομένα",
     "metadataFiltering": "Φιλτράρισμα μεταδεδομένων",
     "metadataUnavailableEmpty": "Δεν είναι διαθέσιμο, επειδή αυτές οι εικόνες δεν περιλαμβάνουν αυτά τα μεταδεδομένα",
     "metadataUnavailable": "Δεν είναι διαθέσιμο, καθώς όλες οι εικόνες είναι {{value}}",
     "rating": "Αξιολόγηση",
     "ratingComparison": {
-      "equal": "Ίση με",
-      "greaterThan": "Τουλάχιστον",
-      "lessThan": "Το πολύ"
+      "atLeast": "Τουλάχιστον",
+      "atMost": "Το πολύ",
+      "equal": "Ίση με"
     },
     "search": "Αναζήτηση",
     "showingAll": "Εμφανίζονται όλα τα αρχεία",

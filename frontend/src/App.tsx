@@ -1,7 +1,7 @@
 import { createClient } from './urqlClient';
 import { Provider as URQLProvider } from 'urql';
 import { BrowserRouter } from 'react-router';
-import { HashNavigationProvider } from './hooks/useHashNavigation';
+import { LocationNavigationProvider } from './hooks/useLocationNavigation';
 import { authKeyAtom, useSessionKey } from './atoms/authAtom';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { themeModeAtom } from './atoms/themeModeAtom';
@@ -85,7 +85,7 @@ const App = () => {
   return (
     <URQLProvider value={client}>
       <BrowserRouter basename={basePathname || undefined}>
-        <HashNavigationProvider>
+        <LocationNavigationProvider>
           <MantineProvider
             theme={mantineTheme}
             cssVariablesResolver={v8CssVariablesResolver}
@@ -108,7 +108,7 @@ const App = () => {
               <VersionWatcher />
             </DatesProvider>
           </MantineProvider>
-        </HashNavigationProvider>
+        </LocationNavigationProvider>
       </BrowserRouter>
     </URQLProvider>
   );
