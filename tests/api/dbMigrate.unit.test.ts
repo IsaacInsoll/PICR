@@ -5,6 +5,7 @@ import type { IPicrConfiguration } from '../../backend/config/IPicrConfiguration
 const fileRow = (props: Pick<FileFields, 'exists' | 'id'>) =>
   ({
     blurHash: null,
+    capturedAt: null,
     createdAt: new Date('2026-08-10T00:00:00.000Z'),
     duration: null,
     existsRescan: true,
@@ -20,6 +21,10 @@ const fileRow = (props: Pick<FileFields, 'exists' | 'id'>) =>
     latestComment: null,
     metadata: '{}',
     name: 'image.jpg',
+    normalizedName: null,
+    normalizedNameSource: null,
+    normalizedRelativePath: null,
+    normalizedRelativePathSource: null,
     rating: 0,
     relativePath: 'folder',
     stIno: null,

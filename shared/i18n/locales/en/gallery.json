@@ -315,6 +315,7 @@
   },
   "task": {
     "imageDimensionBackfill": "Updating image dimensions",
+    "searchPreparation": "Preparing media search",
     "mediaImport": "Import Files and Generate Thumbnails",
     "mediaScan": "Checking for new media…"
   },

@@ -235,11 +235,14 @@ const ViewFolderBody = () => {
   ]);
 
   const hasFiles = folder && folder.files.length > 0;
-  // Only expose the "Date taken" sort when at least one file carries an EXIF
-  // capture date - a folder of videos/documents wouldn't benefit from it.
+  // Only expose the "Date taken" sort when at least one file carries a capture
+  // date - a folder of videos/documents wouldn't benefit from it. The metadata
+  // fallback keeps this correct while post-boot derived-field repair is active.
   const hasCaptureDates =
     folder?.files.some(
-      (f) => f.__typename === 'Image' && !!f.metadata?.DateTimeOriginal,
+      (f) =>
+        !!f.capturedAt ||
+        (f.__typename === 'Image' && !!f.metadata?.DateTimeOriginal),
     ) ?? false;
 
   // redirect to 'no file selected' if you are in a valid folder but the file isn't found

@@ -1,5 +1,5 @@
-import type { ImageMetadataSummary } from '@shared/gql/graphql';
-import type { PicrMetadataMap } from '@shared/types/metadata';
+import type { ImageMetadataSummary } from '@shared/gql/graphql.js';
+import type { PicrMetadataMap } from '@shared/types/metadata.js';
 
 export type MetadataOptionsForFiltering = Partial<
   Record<keyof ImageMetadataSummary, (string | number)[]>

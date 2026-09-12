@@ -46,6 +46,11 @@ erDiagram
         varchar blurHash "nullable - image placeholder"
         varchar relativePath
         text metadata "nullable - JSON EXIF data"
+        timestamp capturedAt "nullable - derived capture time"
+        text normalizedName "nullable - derived search value"
+        varchar normalizedNameSource "nullable - derivation freshness"
+        text normalizedRelativePath "nullable - derived search value"
+        varchar normalizedRelativePathSource "nullable - derivation freshness"
         integer rating "0-5"
         double imageRatio "nullable - width/height"
         double duration "nullable - video seconds"

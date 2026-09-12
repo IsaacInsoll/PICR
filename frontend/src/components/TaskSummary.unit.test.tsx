@@ -44,5 +44,8 @@ test('known backend task IDs select translated labels', () => {
   );
   expect(mediaTaskTranslationKey('media-scan')).toBe('task.mediaScan');
   expect(mediaTaskTranslationKey('media-import')).toBe('task.mediaImport');
+  expect(mediaTaskTranslationKey('file-derived-fields-backfill')).toBe(
+    'task.searchPreparation',
+  );
   expect(mediaTaskTranslationKey('zip-task')).toBeNull();
 });

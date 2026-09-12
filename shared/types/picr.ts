@@ -46,6 +46,7 @@ export type PicrFile = {
   fileSize?: GqlFile['fileSize'] | null;
   fileCreated?: string | null;
   fileLastModified?: string | null;
+  capturedAt?: string | null;
   latestComment?: string | null;
   flag?: GqlFile['flag'];
   rating?: number | null;

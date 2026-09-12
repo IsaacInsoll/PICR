@@ -315,6 +315,7 @@
   },
   "task": {
     "imageDimensionBackfill": "Mise à jour des dimensions des images",
+    "searchPreparation": "Préparation de la recherche de médias",
     "mediaImport": "Importation des fichiers et génération des miniatures",
     "mediaScan": "Recherche de nouveaux médias…"
   },

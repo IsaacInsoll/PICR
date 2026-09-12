@@ -4,6 +4,7 @@ import type { FileFields } from '../../backend/db/picrDb.js';
 const file = (): FileFields =>
   ({
     blurHash: null,
+    capturedAt: null,
     createdAt: new Date('2026-08-10T00:00:00.000Z'),
     duration: 12,
     exists: true,
@@ -21,6 +22,10 @@ const file = (): FileFields =>
     latestComment: null,
     metadata: JSON.stringify({ Duration: 12 }),
     name: 'clip.mp4',
+    normalizedName: null,
+    normalizedNameSource: null,
+    normalizedRelativePath: null,
+    normalizedRelativePathSource: null,
     rating: 0,
     relativePath: 'videos',
     stIno: null,

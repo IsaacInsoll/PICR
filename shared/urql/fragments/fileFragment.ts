@@ -10,6 +10,7 @@ export const fileFragment = gql(/* GraphQL */ `
     fileSize
     fileCreated
     fileLastModified
+    capturedAt
     flag
     rating
     totalComments

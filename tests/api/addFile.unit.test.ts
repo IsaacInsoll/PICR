@@ -11,6 +11,7 @@ interface MockFileRow {
   fileSize: number;
   fileCreated: Date;
   fileLastModified: Date;
+  capturedAt?: Date | null;
   exists: boolean;
   existsRescan: boolean;
   totalComments: number;
@@ -26,6 +27,10 @@ interface MockFileRow {
   stIno?: bigint | null;
   flag?: 'approved' | 'none' | 'rejected' | null;
   latestComment?: Date | null;
+  normalizedName?: string | null;
+  normalizedNameSource?: string | null;
+  normalizedRelativePath?: string | null;
+  normalizedRelativePathSource?: string | null;
 }
 
 const mediaRoot = '/media';
@@ -179,7 +184,12 @@ const loadAddFile = async ({
     getImageMetadataAndDimensions: vi.fn(async () => ({
       dimensions: { width: 3000, height: 2000 },
       imageRatio: 1.5,
-      metadata: { Camera: 'mock camera', Width: 3000, Height: 2000 },
+      metadata: {
+        Camera: 'mock camera',
+        DateTimeOriginal: '2025-04-03T12:01:00+10:00',
+        Width: 3000,
+        Height: 2000,
+      },
     })),
   }));
   vi.doMock('../../backend/media/getVideoMetadata.js', () => ({
@@ -309,6 +319,11 @@ test('queues thumbnail generation only after persisting a new image row', async 
       imageHeight: 2000,
       imageRatio: 1.5,
       blurHash: 'mock-blurhash',
+      capturedAt: new Date('2025-04-03T02:01:00.000Z'),
+      normalizedName: 'img_0001.jpg',
+      normalizedNameSource: 'IMG_0001.jpg',
+      normalizedRelativePath: 'exports',
+      normalizedRelativePathSource: 'exports',
       type: 'Image',
     });
   });
@@ -482,7 +497,8 @@ test('does not queue thumbnail generation for a metadata-only image refresh', as
     imageWidth: 3000,
     imageHeight: 2000,
     imageRatio: 1.5,
-    metadata: '{"Camera":"mock camera","Width":3000,"Height":2000}',
+    metadata:
+      '{"Camera":"mock camera","DateTimeOriginal":"2025-04-03T12:01:00+10:00","Width":3000,"Height":2000}',
     type: 'Image',
   });
   expect(addToQueue).not.toHaveBeenCalled();
@@ -538,7 +554,8 @@ test('queues thumbnail generation after persisting a changed image hash', async 
       imageWidth: 3000,
       imageHeight: 2000,
       imageRatio: 1.5,
-      metadata: '{"Camera":"mock camera","Width":3000,"Height":2000}',
+      metadata:
+        '{"Camera":"mock camera","DateTimeOriginal":"2025-04-03T12:01:00+10:00","Width":3000,"Height":2000}',
       type: 'Image',
     });
   });

@@ -14,6 +14,7 @@ import {
 import { Page } from './Page';
 import { taskQuery } from '@shared/urql/queries/taskQuery';
 import {
+  FILE_DERIVED_FIELDS_BACKFILL_TASK_ID,
   IMAGE_DIMENSION_BACKFILL_TASK_ID,
   MEDIA_IMPORT_TASK_ID,
   MEDIA_SCAN_TASK_ID,
@@ -29,13 +30,18 @@ interface TaskProgressProps {
 }
 
 type MediaTaskTranslationKey =
-  'task.imageDimensionBackfill' | 'task.mediaImport' | 'task.mediaScan';
+  | 'task.imageDimensionBackfill'
+  | 'task.mediaImport'
+  | 'task.mediaScan'
+  | 'task.searchPreparation';
 
 export const mediaTaskTranslationKey = (
   id: string | null | undefined,
 ): MediaTaskTranslationKey | null => {
   if (id === IMAGE_DIMENSION_BACKFILL_TASK_ID)
     return 'task.imageDimensionBackfill';
+  if (id === FILE_DERIVED_FIELDS_BACKFILL_TASK_ID)
+    return 'task.searchPreparation';
   if (id === MEDIA_IMPORT_TASK_ID) return 'task.mediaImport';
   if (id === MEDIA_SCAN_TASK_ID) return 'task.mediaScan';
   return null;
@@ -126,6 +132,7 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
     'task.imageDimensionBackfill': t('task.imageDimensionBackfill'),
     'task.mediaImport': t('task.mediaImport'),
     'task.mediaScan': t('task.mediaScan'),
+    'task.searchPreparation': t('task.searchPreparation'),
   };
 
   return (

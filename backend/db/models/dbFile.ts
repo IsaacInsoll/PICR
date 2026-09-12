@@ -24,6 +24,8 @@ import { relations } from 'drizzle-orm';
  * - `duration`: length in seconds (videos only)
  * - `blurHash`: nullable tiny placeholder hash for progressive loading (images and video posters)
  * - `metadata`: JSON string with EXIF/media metadata
+ * - `capturedAt`: indexed-friendly capture timestamp derived from image metadata
+ * - `normalized*`: accent-insensitive search values plus freshness sources
  * - `flag`: approval status for proofing workflows (approved/rejected/none)
  * - `exists`: set false at boot, then true when found - detects deleted files
  * - `totalComments`/`latestComment`: denormalized for performance
@@ -37,6 +39,13 @@ export const dbFile = pgTable(
     blurHash: varchar('blurHash', { length: 255 }), // nullable "micro thumbnail" for images and video posters https://www.npmjs.com/package/blurhash
     relativePath: varchar('relativePath', { length: 255 }).notNull(),
     metadata: text('metadata'),
+    capturedAt: timestamp('capturedAt', { withTimezone: true }),
+    normalizedName: text('normalizedName'),
+    normalizedNameSource: varchar('normalizedNameSource', { length: 255 }),
+    normalizedRelativePath: text('normalizedRelativePath'),
+    normalizedRelativePathSource: varchar('normalizedRelativePathSource', {
+      length: 255,
+    }),
     rating: integer('rating').notNull(), // 0-5
     imageWidth: integer('imageWidth'),
     imageHeight: integer('imageHeight'),

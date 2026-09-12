@@ -146,6 +146,26 @@ property — do not gate the backfill on a booted-version comparison. Videos use
 rewriting their summary also repairs videos scanned before rotated stream
 dimensions were corrected in 1.3.0.
 
+`Files.capturedAt`, `normalizedName`, and `normalizedRelativePath` are additive
+derived fields used for gallery result ordering and accent-insensitive search.
+Keep their derivation centralized in `helpers/fileDerivedFields.ts` wherever
+metadata or file identity is written. Derive `capturedAt` from the stored
+metadata summary without normalizing, rejecting, or otherwise changing the
+summary's source date strings; existing UI still exposes those values directly.
+The normalized fields have matching
+`*Source` columns because null-only repair is not downgrade-safe: an older build
+can rename a file or folder while leaving a non-null normalized value stale.
+Post-boot repair must select both missing values and source mismatches. Folder
+rename paths may transform a proven-current normalized prefix in bulk, but must
+leave an unproven derived value null/stale-discoverable rather than updating its
+source marker and hiding the inconsistency. Apply folder and file path rewrites
+with the same literal-prefix `SUBSTRING` expression; regex-pattern escaping is
+not valid replacement-string escaping. Keep every database statement for one
+folder rename in a transaction so folder paths, file paths, and file `folderId`
+values cannot partially diverge. Derived-field backfills must batch writes and
+guard them with the source name/path/metadata read for that batch because
+post-boot maintenance runs after Express begins accepting on-view scans.
+
 Folder rows can be `exists=false` while `existsRescan=true` after a watcher
 delete, because `removeFolder()` archives the row without clearing
 `existsRescan`. `addFolder()` must reactivate rows when either flag is false;
@@ -241,7 +261,9 @@ that boot/watch/scheduled scanner work. Express is already accepting traffic at
 this point, so request-triggered work such as on-view scans may still overlap.
 Deferred maintenance must catch/log its own top-level failures and continue
 startup so stale derived data does not take the server down after it is already
-listening. Maintenance tasks that actually do work should leave a concise
+listening. Run cheap database-only repairs before media-decoding maintenance,
+and isolate each task's top-level failure so one repair cannot prevent later
+independent work. Maintenance tasks that actually do work should leave a concise
 info-level stdout trail for production operators: start, completion with elapsed
 time and affected row/file counts where applicable, and failure summaries that
 explain what was left stale. Keep no-op maintenance quiet so routine boots do

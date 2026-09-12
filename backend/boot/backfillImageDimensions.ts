@@ -10,6 +10,7 @@ import { getVideoMetadata } from '../media/getVideoMetadata.js';
 import { log } from '../logger.js';
 import { IMAGE_DIMENSION_BACKFILL_TASK_ID } from '@shared/tasks/mediaTaskIds.js';
 import { withPostBootMaintenanceTask } from './postBootMaintenanceStatus.js';
+import { serializedMetadataFields } from '../helpers/fileDerivedFields.js';
 
 const IMAGE_DIMENSION_BACKFILL_BATCH_SIZE = 250;
 
@@ -34,6 +35,7 @@ interface BackfillDimensionUpdate {
   imageHeight: number;
   imageRatio: number;
   metadata: string;
+  capturedAt: Date | null;
   duration?: number | null;
 }
 
@@ -137,7 +139,7 @@ const imageDimensionUpdate = async (
     imageWidth: dimensions.width,
     imageHeight: dimensions.height,
     imageRatio,
-    metadata: JSON.stringify(metadata),
+    ...serializedMetadataFields(metadata),
   };
 };
 
@@ -155,7 +157,7 @@ const videoDimensionUpdate = async (
     imageWidth: Width,
     imageHeight: Height,
     imageRatio: Width / Height,
-    metadata: JSON.stringify(metadata),
+    ...serializedMetadataFields(metadata),
     duration: metadata.Duration ?? null,
   };
 };

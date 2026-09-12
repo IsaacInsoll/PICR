@@ -7,6 +7,10 @@ import { dbFile, dbFolder } from '../../db/models/index.js';
 import { moveThumbnailFolder } from '../../media/moveThumbnailFolder.js';
 import type { PicrFileStats } from '../fileStats.js';
 import { descendantPathPattern } from '../../helpers/descendantPathPattern.js';
+import {
+  folderRenameFileUpdates,
+  folderRenamePathUpdate,
+} from '../folderRenameFileUpdates.js';
 
 export const renameFolder = async (
   oldPath: string,
@@ -35,61 +39,67 @@ export const renameFolder = async (
   const parentPath = dirname(newPath);
   const parentId = await addFolder(parentPath);
 
-  await db
-    .update(dbFolder)
-    .set({
-      name: newName,
-      parentId: parentId,
-      relativePath: newRelative,
-      exists: true,
-      existsRescan: true,
-      ...(stIno ? { stIno } : {}),
-      folderLastModified: stats?.mtime ?? folder.folderLastModified,
-      updatedAt: new Date(),
-    })
-    .where(eq(dbFolder.id, folder.id));
+  await db.transaction(async (transaction) => {
+    await transaction
+      .update(dbFolder)
+      .set({
+        name: newName,
+        parentId: parentId,
+        exists: true,
+        existsRescan: true,
+        ...(stIno ? { stIno } : {}),
+        folderLastModified: stats?.mtime ?? folder.folderLastModified,
+        updatedAt: new Date(),
+      })
+      .where(eq(dbFolder.id, folder.id));
 
-  await db
-    .update(dbFolder)
-    .set({
-      relativePath: sql`REGEXP_REPLACE(${dbFolder.relativePath}, ${'^' + escapeRegExp(oldRelative)}, ${escapeRegExp(newRelative)})`,
-    })
-    .where(
-      and(
-        like(dbFolder.relativePath, descendantPathPattern(oldRelative)),
-        eq(dbFolder.exists, true),
-      ),
-    );
-
-  await db
-    .update(dbFile)
-    .set({
-      relativePath: sql`REGEXP_REPLACE(${dbFile.relativePath}, ${'^' + escapeRegExp(oldRelative)}, ${escapeRegExp(newRelative)})`,
-    })
-    .where(
-      and(
-        or(
-          eq(dbFile.relativePath, oldRelative),
-          like(dbFile.relativePath, descendantPathPattern(oldRelative)),
+    await transaction
+      .update(dbFolder)
+      .set({
+        relativePath: folderRenamePathUpdate(
+          dbFolder.relativePath,
+          oldRelative,
+          newRelative,
         ),
-        eq(dbFile.exists, true),
-      ),
-    );
-
-  await db
-    .update(dbFile)
-    .set({
-      folderId: sql`(SELECT ${dbFolder.id} FROM ${dbFolder} WHERE ${dbFolder.relativePath} = ${dbFile.relativePath} AND ${dbFolder.exists} = true LIMIT 1)`,
-    })
-    .where(
-      and(
-        or(
-          eq(dbFile.relativePath, newRelative),
-          like(dbFile.relativePath, descendantPathPattern(newRelative)),
+      })
+      .where(
+        and(
+          or(
+            eq(dbFolder.relativePath, oldRelative),
+            like(dbFolder.relativePath, descendantPathPattern(oldRelative)),
+          ),
+          eq(dbFolder.exists, true),
         ),
-        eq(dbFile.exists, true),
-      ),
-    );
+      );
+
+    await transaction
+      .update(dbFile)
+      .set(folderRenameFileUpdates(oldRelative, newRelative))
+      .where(
+        and(
+          or(
+            eq(dbFile.relativePath, oldRelative),
+            like(dbFile.relativePath, descendantPathPattern(oldRelative)),
+          ),
+          eq(dbFile.exists, true),
+        ),
+      );
+
+    await transaction
+      .update(dbFile)
+      .set({
+        folderId: sql`(SELECT ${dbFolder.id} FROM ${dbFolder} WHERE ${dbFolder.relativePath} = ${dbFile.relativePath} AND ${dbFolder.exists} = true LIMIT 1)`,
+      })
+      .where(
+        and(
+          or(
+            eq(dbFile.relativePath, newRelative),
+            like(dbFile.relativePath, descendantPathPattern(newRelative)),
+          ),
+          eq(dbFile.exists, true),
+        ),
+      );
+  });
 
   updateFolderListPaths(oldRelative, newRelative);
   await moveThumbnailFolder(oldRelative, newRelative);
@@ -111,8 +121,4 @@ const updateFolderListPaths = (oldPath: string, newPath: string) => {
   updates.forEach(([, newKey, id]) => {
     folderList[newKey] = id;
   });
-};
-
-const escapeRegExp = (input: string): string => {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };

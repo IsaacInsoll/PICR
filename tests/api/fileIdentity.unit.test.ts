@@ -18,6 +18,7 @@ interface MockFolderRow {
 const fileRow = (props: Partial<FileFields> & Pick<FileFields, 'id'>) =>
   ({
     blurHash: null,
+    capturedAt: null,
     createdAt: new Date('2026-08-10T00:00:00.000Z'),
     duration: null,
     exists: true,
@@ -35,6 +36,10 @@ const fileRow = (props: Partial<FileFields> & Pick<FileFields, 'id'>) =>
     latestComment: null,
     metadata: '{}',
     name: 'image.jpg',
+    normalizedName: null,
+    normalizedNameSource: null,
+    normalizedRelativePath: null,
+    normalizedRelativePathSource: null,
     rating: 0,
     relativePath: 'folder',
     stIno: null,

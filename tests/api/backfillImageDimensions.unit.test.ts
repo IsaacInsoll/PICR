@@ -28,6 +28,7 @@ const keysetCursor = (node: unknown, idColumn: string): number | undefined => {
 const baseFile = (overrides: Partial<FileFields> = {}): FileFields =>
   ({
     blurHash: 'blurhash',
+    capturedAt: null,
     createdAt: new Date('2026-08-10T00:00:00.000Z'),
     duration: null,
     exists: true,
@@ -45,6 +46,10 @@ const baseFile = (overrides: Partial<FileFields> = {}): FileFields =>
     latestComment: null,
     metadata: '{}',
     name: 'image.jpg',
+    normalizedName: null,
+    normalizedNameSource: null,
+    normalizedRelativePath: null,
+    normalizedRelativePathSource: null,
     rating: 0,
     relativePath: 'folder',
     stIno: null,

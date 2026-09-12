@@ -114,6 +114,7 @@ type SortableItem = {
   __typename?: string;
   name?: string | null;
   fileLastModified?: string | null;
+  capturedAt?: string | null;
   folderLastModified?: string | null;
   latestComment?: string | null;
   rating?: number | null;
@@ -158,6 +159,7 @@ const lastModifiedFor = (item: SortableItem) =>
 // EXIF capture time, gracefully falling back to file-modified for videos,
 // text notes and EXIF-less images.
 const dateTakenFor = (item: SortableItem) =>
+  item.capturedAt ??
   item.metadata?.DateTimeOriginal ??
   item.fileLastModified ??
   item.folderLastModified ??

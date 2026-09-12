@@ -143,6 +143,7 @@ export type EditServerSettingsInput = {
 
 export type File = FileInterface & {
   __typename?: 'File';
+  capturedAt?: Maybe<Scalars['DateTime']['output']>;
   fileCreated: Scalars['DateTime']['output'];
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
@@ -165,6 +166,7 @@ export enum FileFlag {
 }
 
 export type FileInterface = {
+  capturedAt?: Maybe<Scalars['DateTime']['output']>;
   fileCreated: Scalars['DateTime']['output'];
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
@@ -282,6 +284,7 @@ export enum HeadingFontKey {
 export type Image = FileInterface & {
   __typename?: 'Image';
   blurHash?: Maybe<Scalars['String']['output']>;
+  capturedAt?: Maybe<Scalars['DateTime']['output']>;
   fileCreated: Scalars['DateTime']['output'];
   fileHash: Scalars['String']['output'];
   fileLastModified: Scalars['DateTime']['output'];
@@ -850,6 +853,7 @@ export enum UserType {
 export type Video = FileInterface & {
   __typename?: 'Video';
   blurHash?: Maybe<Scalars['String']['output']>;
+  capturedAt?: Maybe<Scalars['DateTime']['output']>;
   duration?: Maybe<Scalars['Float']['output']>;
   fileCreated: Scalars['DateTime']['output'];
   fileHash: Scalars['String']['output'];

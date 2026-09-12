@@ -16,6 +16,10 @@ import { folderIsUnderFolder } from '../../helpers/folderIsUnderFolderId.js';
 import { descendantPathPattern } from '../../helpers/descendantPathPattern.js';
 import { doAuthError } from '../../auth/doAuthError.js';
 import { log } from '../../logger.js';
+import {
+  folderRenameFileUpdates,
+  folderRenamePathUpdate,
+} from '../../filesystem/folderRenameFileUpdates.js';
 
 const resolver: PicrResolver<object, MutationRenameFolderArgs> = async (
   _,
@@ -117,69 +121,62 @@ const resolver: PicrResolver<object, MutationRenameFolderArgs> = async (
   }
 
   try {
-    await db
-      .update(dbFolder)
-      .set({
-        name: shortName,
-        parentId: newParentFolder.id,
-      })
-      .where(eq(dbFolder.id, folder.id));
+    await db.transaction(async (transaction) => {
+      await transaction
+        .update(dbFolder)
+        .set({
+          name: shortName,
+          parentId: newParentFolder.id,
+        })
+        .where(eq(dbFolder.id, folder.id));
 
-    // console.log(thisFolder);
-
-    await db
-      .update(dbFolder)
-      .set({
-        relativePath: sql`REGEXP_REPLACE(${dbFolder.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)})`,
-      })
-      .where(
-        and(
-          or(
-            eq(dbFolder.relativePath, oldPath),
-            like(dbFolder.relativePath, descendantPathPattern(oldPath)),
+      await transaction
+        .update(dbFolder)
+        .set({
+          relativePath: folderRenamePathUpdate(
+            dbFolder.relativePath,
+            oldPath,
+            newPath,
           ),
-          eq(dbFolder.exists, true),
-        ),
-      );
-
-    // console.log(folders);
-    // console.log(
-    //   `REGEXP_REPLACE(${dbFile.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)}`,
-    // );
-
-    await db
-      .update(dbFile)
-      .set({
-        relativePath: sql`REGEXP_REPLACE(${dbFile.relativePath}, ${'^' + escapeRegExp(oldPath)}, ${escapeRegExp(newPath)})`,
-      })
-      .where(
-        and(
-          or(
-            eq(dbFile.relativePath, oldPath),
-            like(dbFile.relativePath, descendantPathPattern(oldPath)),
+        })
+        .where(
+          and(
+            or(
+              eq(dbFolder.relativePath, oldPath),
+              like(dbFolder.relativePath, descendantPathPattern(oldPath)),
+            ),
+            eq(dbFolder.exists, true),
           ),
-          eq(dbFile.exists, true),
-        ),
-      );
+        );
 
-    // console.log(files);
-
-    await db
-      .update(dbFile)
-      .set({
-        folderId: sql`(SELECT ${dbFolder.id} FROM ${dbFolder} WHERE ${dbFolder.relativePath} = ${dbFile.relativePath} AND ${dbFolder.exists} = true LIMIT 1)`,
-      })
-      .where(
-        and(
-          or(
-            eq(dbFile.relativePath, newPath),
-            like(dbFile.relativePath, descendantPathPattern(newPath)),
+      await transaction
+        .update(dbFile)
+        .set(folderRenameFileUpdates(oldPath, newPath))
+        .where(
+          and(
+            or(
+              eq(dbFile.relativePath, oldPath),
+              like(dbFile.relativePath, descendantPathPattern(oldPath)),
+            ),
+            eq(dbFile.exists, true),
           ),
-          eq(dbFile.exists, true),
-        ),
-      );
+        );
 
-    // console.log(filesFolderIds);
+      await transaction
+        .update(dbFile)
+        .set({
+          folderId: sql`(SELECT ${dbFolder.id} FROM ${dbFolder} WHERE ${dbFolder.relativePath} = ${dbFile.relativePath} AND ${dbFolder.exists} = true LIMIT 1)`,
+        })
+        .where(
+          and(
+            or(
+              eq(dbFile.relativePath, newPath),
+              like(dbFile.relativePath, descendantPathPattern(newPath)),
+            ),
+            eq(dbFile.exists, true),
+          ),
+        );
+    });
   } catch (err) {
     try {
       renameSync(fullNew, fullOld);
@@ -223,10 +220,6 @@ const updateFolderListPaths = (oldPath: string, newPath: string) => {
     folderList[newKey] = id;
   });
 };
-function escapeRegExp(string: string): string {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
-
 const assertWriteAccess = () => {
   if (!picrConfig.canWrite) {
     throw new GraphQLError('No Write Access');

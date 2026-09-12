@@ -70,6 +70,32 @@ For pure unit tests that mock their dependencies, use the Docker-free lane inste
 - In `tests/e2e` Playwright tests, avoid importing enums from generated GraphQL type files (for example `shared/gql/graphql`) because Playwright TS loading can fail on enums.
 - For GraphQL enum inputs in Playwright tests, pass the enum literal string value (for example `'Read'`) instead.
 
+## Direct Database Access In API Tests
+
+Prefer GraphQL for setup and assertions. Connect to the test database directly
+only for states GraphQL cannot produce, such as a derived column left stale by
+an older PICR version during a downgrade window
+(`14-folder-rename-derived-paths.test.ts`).
+
+- Set `process.env.DATABASE_URL` to `testDatabaseUrl` from `testVariables.ts`
+  and call `initDb()` in `beforeAll`. The URL must match the `test-db` port
+  mapping and credentials in `tests/api/compose.yml`.
+- Use Drizzle queries (`db.update(...).where(eq(...))`, `db.delete(...)`), not
+  interpolated raw SQL strings.
+- `drizzle-orm` is a backend dependency, so import its operators from
+  `../../backend/node_modules/drizzle-orm/index.js`. That is the same file the
+  imported backend modules load, so test code shares their Drizzle instance.
+  Do not add `drizzle-orm` to the root package, and do not alias the bare
+  specifier in `vitest.aliases.mts`: that makes `vi.doMock('drizzle-orm')`
+  start intercepting, which breaks unit tests written around it not doing so
+  (see `backfillImageDimensions.unit.test.ts`).
+- Delete or restore every row the test writes, in `finally`, so later numbered
+  tests do not see it.
+- The API container mounts media read-only, so write mutations such as
+  `renameFolder` return `No Write Access`. To exercise rename SQL, rename the
+  directory on the host and rescan: the scan matches the moved folder by inode
+  and runs the watcher-side `renameFolder` event.
+
 ## Directory Layout
 
 ```text

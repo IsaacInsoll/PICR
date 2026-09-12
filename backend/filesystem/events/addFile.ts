@@ -27,6 +27,10 @@ import {
   isSharpReadableFormat,
 } from '@shared/imageFormats.js';
 import { addToQueue } from '../fileQueue.js';
+import {
+  fileSearchFields,
+  serializedMetadataFields,
+} from '../../helpers/fileDerivedFields.js';
 
 const inFlightPathImports = new Map<string, Promise<void>>();
 
@@ -131,6 +135,7 @@ const addFileUnlocked = async (
       .insert(dbFile)
       .values({
         ...props,
+        ...fileSearchFields(props),
         type: type,
         fileSize: stats.size,
         stIno: stIno ?? null,
@@ -199,7 +204,7 @@ const addFileUnlocked = async (
         file.imageWidth = dimensions.width;
         file.imageHeight = dimensions.height;
         file.imageRatio = imageRatio;
-        file.metadata = JSON.stringify(metadata);
+        Object.assign(file, serializedMetadataFields(metadata));
         file.blurHash = await encodeImageToBlurhash(src);
         shouldGenerateThumbs = generateThumbs;
       } catch (error) {
@@ -213,6 +218,7 @@ const addFileUnlocked = async (
         file.imageHeight = null;
         file.imageRatio = 0;
         file.metadata = null;
+        file.capturedAt = null;
         file.blurHash = null;
       }
     }
@@ -233,7 +239,7 @@ const addFileUnlocked = async (
           file.imageWidth = dimensions.width;
           file.imageHeight = dimensions.height;
           file.imageRatio = imageRatio;
-          file.metadata = JSON.stringify(metadata);
+          Object.assign(file, serializedMetadataFields(metadata));
         } catch (error) {
           const message =
             error instanceof Error ? error.message : String(error);
@@ -246,6 +252,7 @@ const addFileUnlocked = async (
           file.imageHeight = null;
           file.imageRatio = 0;
           file.metadata = null;
+          file.capturedAt = null;
           file.blurHash = null;
         }
         break;
@@ -256,6 +263,7 @@ const addFileUnlocked = async (
         break;
     }
   }
+  Object.assign(file, fileSearchFields(file));
   file.exists = true;
   file.existsRescan = true;
   await db
@@ -280,7 +288,7 @@ const applyVideoMetadata = (
   file: FileFields,
   meta: PicrVideoMetadata,
 ): void => {
-  file.metadata = JSON.stringify(meta);
+  Object.assign(file, serializedMetadataFields(meta));
   file.duration = meta.Duration ?? null;
 
   const { Width, Height } = meta;
