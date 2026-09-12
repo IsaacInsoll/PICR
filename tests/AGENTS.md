@@ -75,7 +75,11 @@ For pure unit tests that mock their dependencies, use the Docker-free lane inste
 Prefer GraphQL for setup and assertions. Connect to the test database directly
 only for states GraphQL cannot produce, such as a derived column left stale by
 an older PICR version during a downgrade window
-(`14-folder-rename-derived-paths.test.ts`).
+(`14-folder-rename-derived-paths.test.ts`), or for isolated synthetic media
+fixtures whose exact combinations of capture dates, orientation, review state,
+and paths would be slow or flaky to construct through filesystem scanning
+(`15-media-results.test.ts`). Keep those fixtures minimal and exercise their
+user-facing behavior through shared GraphQL operations.
 
 - Set `process.env.DATABASE_URL` to `testDatabaseUrl` from `testVariables.ts`
   and call `initDb()` in `beforeAll`. The URL must match the `test-db` port
@@ -91,6 +95,11 @@ an older PICR version during a downgrade window
   (see `backfillImageDimensions.unit.test.ts`).
 - Delete or restore every row the test writes, in `finally`, so later numbered
   tests do not see it.
+- Synthetic folder/media fixtures may acquire `heroImageId` or `bannerImageId`
+  relationships while GraphQL fields are resolved. Before deleting their file
+  rows, clear those relationships on the synthetic folders; otherwise cleanup
+  can fail on the folder-to-file foreign key and leak root folders into later
+  tests.
 - The API container mounts media read-only, so write mutations such as
   `renameFolder` return `No Write Access`. To exercise rename SQL, rename the
   directory on the host and rescan: the scan matches the moved folder by inode

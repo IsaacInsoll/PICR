@@ -12,7 +12,7 @@ import {
 import { baseColumns } from '../column.helpers.js';
 import { dbFolder } from './dbFolder.js';
 import { fileFlagEnum, fileTypeEnum } from './enums.js';
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 
 /**
  * Media files (images, videos, other files) with metadata extracted during scanning.
@@ -69,7 +69,12 @@ export const dbFile = pgTable(
     flag: fileFlagEnum(),
     type: fileTypeEnum(),
   },
-  (table) => [index('Files_stIno_idx').on(table.stIno)],
+  (table) => [
+    index('Files_stIno_idx').on(table.stIno),
+    index('Files_relativePath_exists_idx')
+      .on(table.relativePath.asc().op('varchar_pattern_ops'))
+      .where(sql`${table.exists} = true`),
+  ],
 );
 
 export const dbFileRelations = relations(dbFile, ({ one }) => ({

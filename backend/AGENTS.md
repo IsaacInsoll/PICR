@@ -226,6 +226,65 @@ unescaped pattern widened public-link scope to sibling folders. The permission
 check itself (`folderIsUnderFolder`) compares paths with `startsWith` and is not
 affected. `tests/api/13-folder-subtree-scope.test.ts` covers the link boundary.
 
+### Recursive Media Results
+
+`mediaResults/mediaResultsSelection.ts` is the canonical authorized selection
+boundary for recursive gallery Results. Keep its predicates shared by the
+GraphQL connection and summary counts; filtered ZIP and CSV must consume the
+same selection service when they are added rather than rebuilding filters.
+Authorize the route folder first, scope files by exact/escaped `relativePath`
+prefix, and validate every Folder-facet ID beneath that already-authorized
+root.
+
+Filename and descendant-folder matching use the downgrade-safe normalized
+columns when their source markers are current. A null or stale marker must fall
+back to lowercase matching against the raw value so post-boot repair never
+makes a row temporarily disappear. Remove the scope root from the searchable
+folder-path portion so the root's own name cannot match every result.
+
+Folder facets are cumulative branches and deliberately calculate their counts
+without applying the Folder facet's current selection. Fetch only the direct
+children of the requested in-scope parent through the bounded facet page; do
+not load or return the scope's entire descendant folder tree. This lets the UI
+drill through the hierarchy, show alternative branch counts, and retain a
+selected zero-count branch without making Home-scale payloads unbounded.
+When a derived grouping expression contains Drizzle bind parameters, project it
+once into a subquery and group the outer query by that projected column. Writing
+the expression independently in `SELECT` and `GROUP BY` creates different
+PostgreSQL parameter positions, so PostgreSQL does not consider the selected
+expression grouped even when the source template text is identical.
+Review criteria are normalized away when `commentPermissions` is `none` so
+inaccessible controls carried in a URL cannot silently change the visible
+result set. This is UI consistency, not a confidentiality boundary: the
+existing File GraphQL fields expose review values independently.
+
+Results pagination uses sort-bound opaque keyset cursors. The public selection
+fingerprint identifies only scope, query, and filters so summary, Results,
+ZIP, and CSV can agree regardless of presentation order; bind cursors to that
+fingerprint plus sort. Every ordering uses the C collation and ends with current
+normalized folder path, current normalized filename, raw filename, and file ID.
+The shared local sorter mirrors that normalized Unicode code-point order.
+Nullable sorts keep nulls last in both directions. Current timestamp writers
+store millisecond-precision JavaScript Dates, matching cursor serialization; a
+future SQL-microsecond writer must preserve that extra precision in cursors.
+Do not switch this to offset pagination or accept arbitrary file IDs as the
+selection contract.
+
+The partial `Files_relativePath_exists_idx` uses `varchar_pattern_ops` because
+the canonical scope predicate combines exact paths with escaped prefix `LIKE`.
+On a synthetic 100,000-row scope it reduced a 1,000-row branch page from about
+12.9 ms to 1.2 ms and its count from about 20.7 ms to 9.8 ms. This branch result
+does not by itself establish Home/root performance, where the scope predicate
+becomes true. A separate warm, end-to-end GraphQL benchmark at Home with 100
+direct child folders and 1,000 files each measured five runs of every field in
+isolation. The median unfiltered times were about 42.8 ms for a 100-edge Date
+Taken page, 22.6 ms for totals, 21.6 ms for the bounded 100-child facet page,
+and 16.2 ms for the summary. With a Rating-at-least-3 filter matching 50,000
+rows, the corresponding medians were about 31.8, 21.6, 19.2, and 19.1 ms. Keep
+future benchmarks field-isolated and warm so a combined GraphQL request does
+not disguise which resolver regressed. Use `EXPLAIN ANALYZE` before adding any
+computed-sort or substring-search index.
+
 ### Adding/Modifying Tables
 
 1. Create or edit model in `db/models/`

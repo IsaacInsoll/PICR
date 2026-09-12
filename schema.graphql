@@ -311,11 +311,115 @@ enum LinkMode {
   proof_no_downloads
 }
 
+enum MediaAspectFilter {
+  Any
+  Landscape
+  Portrait
+  Square
+}
+
 type MediaCapsInfo {
   heic: Boolean!
   psb: Boolean!
   psd: Boolean!
   raw: Boolean!
+}
+
+enum MediaCommentsFilter {
+  None
+  Some
+}
+
+type MediaFolderFacet {
+  count: Int!
+  folder: Folder!
+  relativePath: String!
+}
+
+type MediaFolderFacetsPage {
+  facets: [MediaFolderFacet!]!
+  pageInfo: MediaResultsPageInfo!
+}
+
+enum MediaMatchSource {
+  Filename
+  FolderPath
+}
+
+type MediaMatchSummary {
+  directCount: Int!
+  selectionFingerprint: String!
+  treeCount: Int!
+}
+
+type MediaResultEdge {
+  cursor: String!
+  file: FileInterface!
+  folder: Folder!
+  matchSource: MediaMatchSource
+  relativePath: String!
+}
+
+enum MediaResultSortDirection {
+  Asc
+  Desc
+}
+
+enum MediaResultSortType {
+  DateTaken
+  Filename
+  LastModified
+  Rating
+  RecentlyCommented
+}
+
+type MediaResultsConnection {
+  edges: [MediaResultEdge!]!
+  folderCount: Int!
+  folderFacets(after: String, first: Int! = 100, parentFolderId: ID): MediaFolderFacetsPage!
+  pageInfo: MediaResultsPageInfo!
+  selectedFolders: [Folder!]!
+  selectionFingerprint: String!
+  totalCount: Int!
+}
+
+input MediaResultsFilterInput {
+  aspect: MediaAspectFilter
+  comments: MediaCommentsFilter
+  flag: FileFlag
+  folderIds: [ID!]
+  mediaType: MediaTypeFilter
+  rating: MediaResultsRatingInput
+}
+
+input MediaResultsInput {
+  after: String
+  filters: MediaResultsFilterInput
+  first: Int! = 100
+  folderId: ID!
+  query: String
+  sort: MediaResultsSortInput!
+}
+
+type MediaResultsPageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+input MediaResultsRatingInput {
+  comparison: RatingComparison!
+  value: Int!
+}
+
+input MediaResultsSelectionInput {
+  filters: MediaResultsFilterInput
+  folderId: ID!
+  query: String
+}
+
+input MediaResultsSortInput {
+  direction: MediaResultSortDirection!
+  type: MediaResultSortType!
 }
 
 type MediaScanningInfo {
@@ -447,6 +551,8 @@ type Query {
   folder(id: ID!): Folder!
   folderFiles(folderId: ID!, includeSubfolders: Boolean, limit: Int): FolderFilesResult!
   me: User
+  mediaMatchSummary(input: MediaResultsSelectionInput!): MediaMatchSummary!
+  mediaResults(input: MediaResultsInput!): MediaResultsConnection!
   publicLinkInfo(uuid: String!): PublicLinkInfo!
   searchFiles(folderId: ID, query: String!): [File!]!
   searchFolders(folderId: ID, query: String!): [Folder!]!
@@ -455,6 +561,12 @@ type Query {
   user(id: ID!): User!
   userDevices(notificationToken: String, userId: ID): [UserDevice!]!
   users(folderId: ID!, includeChildren: Boolean, includeParents: Boolean, sortByRecent: Boolean): [User!]!
+}
+
+enum RatingComparison {
+  AtLeast
+  AtMost
+  Equal
 }
 
 type ScheduledScanResultInfo {

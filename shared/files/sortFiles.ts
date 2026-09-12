@@ -1,6 +1,10 @@
 import type { FilterOptionsInterface } from '@shared/filterAtom';
 import type { ViewFolderQuery } from '@shared/gql/graphql';
 import { DefaultFilterOptions, filterFiles } from './filterFiles';
+import {
+  compareNormalizedSearchText,
+  compareTextCodePoints,
+} from './mediaCriteria';
 
 export type FileSortType =
   'Filename' | 'LastModified' | 'DateTaken' | 'RecentlyCommented' | 'Rating';
@@ -111,6 +115,7 @@ export const resolveEffectiveSort = (
 };
 
 type SortableItem = {
+  id?: string | number | null;
   __typename?: string;
   name?: string | null;
   fileLastModified?: string | null;
@@ -127,16 +132,25 @@ type SortableItem = {
 };
 
 const compareNames = (
-  aName: string | null | undefined,
-  bName: string | null | undefined,
+  aItem: SortableItem,
+  bItem: SortableItem,
   direction: FileSortDirection,
 ) => {
   const positive = direction === 'Asc' ? 1 : -1;
-  const a = aName ?? '';
-  const b = bName ?? '';
-  if (a < b) return -positive;
-  if (a > b) return positive;
-  return 0;
+  const aName = aItem.name ?? '';
+  const bName = bItem.name ?? '';
+  const normalized = compareNormalizedSearchText(aName, bName);
+  if (normalized !== 0) return normalized * positive;
+
+  // The normalized key intentionally folds case and accents. Use the raw name,
+  // then numeric database ID, as stable ascending tie-breakers just as Results
+  // does. Keeping tie-breakers ascending avoids reshuffling equal primary sort
+  // values when the selected direction changes.
+  const raw = compareTextCodePoints(aName, bName);
+  if (raw !== 0) return raw;
+  const aId = Number(aItem.id);
+  const bId = Number(bItem.id);
+  return Number.isFinite(aId) && Number.isFinite(bId) ? aId - bId : 0;
 };
 
 const compareDates = (
@@ -172,21 +186,27 @@ export const sortFiles = <T extends SortableItem>(
   const { type, direction } = sort;
   const positive = direction === 'Asc' ? 1 : -1;
   if (type === 'Filename') {
-    return [...items].sort((a, b) => compareNames(a.name, b.name, direction));
+    return [...items].sort((a, b) => compareNames(a, b, direction));
   }
   if (type === 'LastModified') {
-    return [...items].sort((a, b) =>
-      compareDates(lastModifiedFor(a), lastModifiedFor(b), direction),
+    return [...items].sort(
+      (a, b) =>
+        compareDates(lastModifiedFor(a), lastModifiedFor(b), direction) ||
+        compareNames(a, b, 'Asc'),
     );
   }
   if (type === 'DateTaken') {
-    return [...items].sort((a, b) =>
-      compareDates(dateTakenFor(a), dateTakenFor(b), direction),
+    return [...items].sort(
+      (a, b) =>
+        compareDates(dateTakenFor(a), dateTakenFor(b), direction) ||
+        compareNames(a, b, 'Asc'),
     );
   }
   if (type === 'RecentlyCommented') {
-    return [...items].sort((a, b) =>
-      compareDates(a.latestComment, b.latestComment, direction),
+    return [...items].sort(
+      (a, b) =>
+        compareDates(a.latestComment, b.latestComment, direction) ||
+        compareNames(a, b, 'Asc'),
     );
   }
   return [...items].sort((a, b) => {
@@ -194,7 +214,7 @@ export const sortFiles = <T extends SortableItem>(
     const br = b.rating ?? 0;
     if (ar < br) return -positive;
     if (ar > br) return positive;
-    return 0;
+    return compareNames(a, b, 'Asc');
   });
 };
 

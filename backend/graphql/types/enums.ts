@@ -39,6 +39,54 @@ export const mediaTypeFilterEnum = new GraphQLEnumType({
     Video: { value: 'Video' },
   },
 });
+export const mediaAspectFilterEnum = new GraphQLEnumType({
+  name: 'MediaAspectFilter',
+  values: {
+    Any: { value: 'any' },
+    Landscape: { value: 'landscape' },
+    Square: { value: 'square' },
+    Portrait: { value: 'portrait' },
+  },
+});
+export const ratingComparisonEnum = new GraphQLEnumType({
+  name: 'RatingComparison',
+  values: {
+    Equal: { value: 'equal' },
+    AtLeast: { value: 'atLeast' },
+    AtMost: { value: 'atMost' },
+  },
+});
+export const mediaCommentsFilterEnum = new GraphQLEnumType({
+  name: 'MediaCommentsFilter',
+  values: {
+    None: { value: 'none' },
+    Some: { value: 'some' },
+  },
+});
+export const mediaResultSortTypeEnum = new GraphQLEnumType({
+  name: 'MediaResultSortType',
+  values: {
+    Filename: { value: 'Filename' },
+    LastModified: { value: 'LastModified' },
+    DateTaken: { value: 'DateTaken' },
+    RecentlyCommented: { value: 'RecentlyCommented' },
+    Rating: { value: 'Rating' },
+  },
+});
+export const mediaResultSortDirectionEnum = new GraphQLEnumType({
+  name: 'MediaResultSortDirection',
+  values: {
+    Asc: { value: 'Asc' },
+    Desc: { value: 'Desc' },
+  },
+});
+export const mediaMatchSourceEnum = new GraphQLEnumType({
+  name: 'MediaMatchSource',
+  values: {
+    Filename: { value: 'Filename' },
+    FolderPath: { value: 'FolderPath' },
+  },
+});
 export const userTypeEnum = new GraphQLEnumType(
   enumToGQL('UserType', userTypeOptions),
 );

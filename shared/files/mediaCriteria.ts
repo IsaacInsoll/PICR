@@ -160,6 +160,29 @@ export const normalizeGalleryFilterCriteria = (
 export const normalizeSearchText = (value: string): string =>
   value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 
+// PostgreSQL's C collation compares valid UTF-8 strings by Unicode code point.
+// JavaScript's relational operators compare UTF-16 code units instead, which
+// differs for characters outside the BMP. Keep filename ordering deterministic
+// across the local gallery and server-side Results by comparing code points.
+export const compareTextCodePoints = (left: string, right: string): number => {
+  const leftPoints = Array.from(left, (character) => character.codePointAt(0));
+  const rightPoints = Array.from(right, (character) =>
+    character.codePointAt(0),
+  );
+  const sharedLength = Math.min(leftPoints.length, rightPoints.length);
+  for (let index = 0; index < sharedLength; index++) {
+    const difference = (leftPoints[index] ?? -1) - (rightPoints[index] ?? -1);
+    if (difference !== 0) return difference;
+  }
+  return leftPoints.length - rightPoints.length;
+};
+
+export const compareNormalizedSearchText = (
+  left: string,
+  right: string,
+): number =>
+  compareTextCodePoints(normalizeSearchText(left), normalizeSearchText(right));
+
 export const countMediaFilterCriteria = (
   criteria: MediaFilterCriteria,
 ): number => {

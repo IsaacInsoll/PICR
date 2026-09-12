@@ -28,3 +28,42 @@ describe('Date Taken sorting', () => {
     ).toEqual(['derived.jpg', 'legacy.jpg', 'video.mp4']);
   });
 });
+
+describe('deterministic filename ordering', () => {
+  test('uses normalized Unicode code-point order', () => {
+    const files = [
+      { id: '6', name: '😀.jpg' },
+      { id: '5', name: '𐐀.jpg' },
+      { id: '4', name: 'Éclair.jpg' },
+      { id: '3', name: 'eclair.jpg' },
+      { id: '2', name: 'apple.jpg' },
+      { id: '1', name: 'Zebra.jpg' },
+    ];
+
+    expect(
+      sortFiles(files, { type: 'Filename', direction: 'Asc' }).map(
+        ({ name }) => name,
+      ),
+    ).toEqual([
+      'apple.jpg',
+      'eclair.jpg',
+      'Éclair.jpg',
+      'Zebra.jpg',
+      '𐐀.jpg',
+      '😀.jpg',
+    ]);
+  });
+
+  test('uses the canonical filename order to break equal primary values', () => {
+    const files = [
+      { id: '2', name: 'Zulu.jpg', rating: 5 },
+      { id: '1', name: 'alpha.jpg', rating: 5 },
+    ];
+
+    expect(
+      sortFiles(files, { type: 'Rating', direction: 'Desc' }).map(
+        ({ name }) => name,
+      ),
+    ).toEqual(['alpha.jpg', 'Zulu.jpg']);
+  });
+});

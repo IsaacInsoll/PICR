@@ -72,6 +72,11 @@ import {
   serverSettingsType,
   thumbnailVariantType,
 } from './types/serverSettingsType.js';
+import { mediaMatchSummary, mediaResults } from './queries/mediaResults.js';
+import {
+  mediaMatchSummaryType,
+  mediaResultsConnectionType,
+} from './types/mediaResultsType.js';
 
 const queries = new GraphQLObjectType({
   fields: () => ({
@@ -85,6 +90,8 @@ const queries = new GraphQLObjectType({
     dashboardUpdateInfo,
     file,
     folderFiles,
+    mediaMatchSummary,
+    mediaResults,
     /* Admin Only */
     accessLogs,
     folder,
@@ -142,6 +149,8 @@ const types = [
   folderPermissionsType,
   imageFileType,
   imageMetadataSummaryType,
+  mediaMatchSummaryType,
+  mediaResultsConnectionType,
   publicLinkBrandingPreviewType,
   publicLinkAccessStatusType,
   publicLinkInfoType,

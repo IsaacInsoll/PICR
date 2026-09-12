@@ -134,6 +134,12 @@ describe('file modal Graphcache resolution', () => {
     expect(urqlCacheConfig.keys.ServerSettings()).toBeNull();
     expect(urqlCacheConfig.keys.BenchmarkResult()).toBeNull();
     expect(urqlCacheConfig.keys.NamedBenchmarkStep()).toBeNull();
+    expect(urqlCacheConfig.keys.MediaFolderFacet()).toBeNull();
+    expect(urqlCacheConfig.keys.MediaFolderFacetsPage()).toBeNull();
+    expect(urqlCacheConfig.keys.MediaMatchSummary()).toBeNull();
+    expect(urqlCacheConfig.keys.MediaResultEdge()).toBeNull();
+    expect(urqlCacheConfig.keys.MediaResultsConnection()).toBeNull();
+    expect(urqlCacheConfig.keys.MediaResultsPageInfo()).toBeNull();
   });
 
   test('reuses a complete image normalized by the dashboard comment query', async () => {

@@ -330,12 +330,129 @@ export enum LinkMode {
   ProofNoDownloads = 'proof_no_downloads'
 }
 
+export enum MediaAspectFilter {
+  Any = 'Any',
+  Landscape = 'Landscape',
+  Portrait = 'Portrait',
+  Square = 'Square'
+}
+
 export type MediaCapsInfo = {
   __typename?: 'MediaCapsInfo';
   heic: Scalars['Boolean']['output'];
   psb: Scalars['Boolean']['output'];
   psd: Scalars['Boolean']['output'];
   raw: Scalars['Boolean']['output'];
+};
+
+export enum MediaCommentsFilter {
+  None = 'None',
+  Some = 'Some'
+}
+
+export type MediaFolderFacet = {
+  __typename?: 'MediaFolderFacet';
+  count: Scalars['Int']['output'];
+  folder: Folder;
+  relativePath: Scalars['String']['output'];
+};
+
+export type MediaFolderFacetsPage = {
+  __typename?: 'MediaFolderFacetsPage';
+  facets: Array<MediaFolderFacet>;
+  pageInfo: MediaResultsPageInfo;
+};
+
+export enum MediaMatchSource {
+  Filename = 'Filename',
+  FolderPath = 'FolderPath'
+}
+
+export type MediaMatchSummary = {
+  __typename?: 'MediaMatchSummary';
+  directCount: Scalars['Int']['output'];
+  selectionFingerprint: Scalars['String']['output'];
+  treeCount: Scalars['Int']['output'];
+};
+
+export type MediaResultEdge = {
+  __typename?: 'MediaResultEdge';
+  cursor: Scalars['String']['output'];
+  file: FileInterface;
+  folder: Folder;
+  matchSource?: Maybe<MediaMatchSource>;
+  relativePath: Scalars['String']['output'];
+};
+
+export enum MediaResultSortDirection {
+  Asc = 'Asc',
+  Desc = 'Desc'
+}
+
+export enum MediaResultSortType {
+  DateTaken = 'DateTaken',
+  Filename = 'Filename',
+  LastModified = 'LastModified',
+  Rating = 'Rating',
+  RecentlyCommented = 'RecentlyCommented'
+}
+
+export type MediaResultsConnection = {
+  __typename?: 'MediaResultsConnection';
+  edges: Array<MediaResultEdge>;
+  folderCount: Scalars['Int']['output'];
+  folderFacets: MediaFolderFacetsPage;
+  pageInfo: MediaResultsPageInfo;
+  selectedFolders: Array<Folder>;
+  selectionFingerprint: Scalars['String']['output'];
+  totalCount: Scalars['Int']['output'];
+};
+
+
+export type MediaResultsConnectionFolderFacetsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: Scalars['Int']['input'];
+  parentFolderId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type MediaResultsFilterInput = {
+  aspect?: InputMaybe<MediaAspectFilter>;
+  comments?: InputMaybe<MediaCommentsFilter>;
+  flag?: InputMaybe<FileFlag>;
+  folderIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  mediaType?: InputMaybe<MediaTypeFilter>;
+  rating?: InputMaybe<MediaResultsRatingInput>;
+};
+
+export type MediaResultsInput = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<MediaResultsFilterInput>;
+  first?: Scalars['Int']['input'];
+  folderId: Scalars['ID']['input'];
+  query?: InputMaybe<Scalars['String']['input']>;
+  sort: MediaResultsSortInput;
+};
+
+export type MediaResultsPageInfo = {
+  __typename?: 'MediaResultsPageInfo';
+  endCursor?: Maybe<Scalars['String']['output']>;
+  hasNextPage: Scalars['Boolean']['output'];
+};
+
+export type MediaResultsRatingInput = {
+  comparison: RatingComparison;
+  value: Scalars['Int']['input'];
+};
+
+export type MediaResultsSelectionInput = {
+  filters?: InputMaybe<MediaResultsFilterInput>;
+  folderId: Scalars['ID']['input'];
+  query?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MediaResultsSortInput = {
+  direction: MediaResultSortDirection;
+  type: MediaResultSortType;
 };
 
 export type MediaScanningInfo = {
@@ -614,6 +731,8 @@ export type Query = {
   folder: Folder;
   folderFiles: FolderFilesResult;
   me?: Maybe<User>;
+  mediaMatchSummary: MediaMatchSummary;
+  mediaResults: MediaResultsConnection;
   publicLinkInfo: PublicLinkInfo;
   searchFiles: Array<File>;
   searchFolders: Array<Folder>;
@@ -670,6 +789,16 @@ export type QueryFolderFilesArgs = {
 };
 
 
+export type QueryMediaMatchSummaryArgs = {
+  input: MediaResultsSelectionInput;
+};
+
+
+export type QueryMediaResultsArgs = {
+  input: MediaResultsInput;
+};
+
+
 export type QueryPublicLinkInfoArgs = {
   uuid: Scalars['String']['input'];
 };
@@ -709,6 +838,12 @@ export type QueryUsersArgs = {
   includeParents?: InputMaybe<Scalars['Boolean']['input']>;
   sortByRecent?: InputMaybe<Scalars['Boolean']['input']>;
 };
+
+export enum RatingComparison {
+  AtLeast = 'AtLeast',
+  AtMost = 'AtMost',
+  Equal = 'Equal'
+}
 
 export type ScheduledScanResultInfo = {
   __typename?: 'ScheduledScanResultInfo';

@@ -1,0 +1,1 @@
+CREATE INDEX "Files_relativePath_exists_idx" ON "Files" USING btree ("relativePath" varchar_pattern_ops) WHERE "Files"."exists" = true;
