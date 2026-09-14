@@ -20,6 +20,9 @@ test('local gallery filters promote to recursive Results without losing lightbox
   await page.goto('/admin/f/1', { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: 'Filter Files' }).click();
   const filterDrawer = page.getByRole('dialog', { name: 'Filter Files' });
+  await expect(filterDrawer.getByText('Filename', { exact: true })).toHaveCount(
+    0,
+  );
   await filterDrawer.getByText('Photos', { exact: true }).click();
   await filterDrawer.getByRole('button', { name: 'Close' }).click();
   await expect(page).toHaveURL(/\/admin\/f\/1\?media=image$/);
@@ -48,5 +51,36 @@ test('local gallery filters promote to recursive Results without losing lightbox
   await page.getByRole('button', { name: 'Back to Home' }).click();
   await expect(page).toHaveURL(/\/admin\/f\/1\?media=image$/);
   await expect(page.getByText('0 of 0 shown here')).toBeVisible();
+
+  const find = page.getByRole('searchbox', {
+    name: 'Search filenames and folders within Home',
+  });
+  await find.pressSequentially('vertical');
+  await expect(find).toHaveValue('vertical');
+  await expect(page).toHaveURL(/\/admin\/f\/1\?find=1&q=vertical&media=image$/);
+  await page.getByRole('button', { name: 'Back to Home' }).click();
+  await expect(page).toHaveURL(/\/admin\/f\/1\?media=image$/);
+  await page.goForward();
+  await expect(page).toHaveURL(/\/admin\/f\/1\?find=1&q=vertical&media=image$/);
+  await expect(find).toHaveValue('vertical');
+
+  await page.goto('/admin/f/1?camera=Canon', {
+    waitUntil: 'domcontentloaded',
+  });
+  const metadataFind = page.getByRole('searchbox', {
+    name: 'Search filenames and folders within Home',
+  });
+  await metadataFind.click();
+  await expect(page).toHaveURL(/\/admin\/f\/1\?camera=Canon$/);
+  await metadataFind.pressSequentially('vertical');
+  await expect(metadataFind).toHaveValue('vertical');
+  await expect(page).toHaveURL(
+    /\/admin\/f\/1\?find=1&q=vertical&camera=Canon$/,
+  );
+  await expect(
+    page.getByText(
+      'Camera, lens, and exposure filters are paused while searching. Back to Home restores them.',
+    ),
+  ).toBeVisible();
   expectNoBrowserFailures(failures);
 });

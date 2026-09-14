@@ -120,7 +120,6 @@
   },
   "filter": {
     "active": {
-      "filename": "Filename: “{{value}}”",
       "metadata": "{{name}}: {{value}}",
       "rating": "{{comparison}} {{value}} stars"
     },
@@ -139,7 +138,6 @@
     "comments": "Comments",
     "commentsHas": "Has Comments",
     "commentsNone": "No Comments",
-    "filename": "Filename",
     "flag": "Flag",
     "imageOptions": "Image Options",
     "mediaType": "Media Type",
@@ -157,15 +155,21 @@
       "equal": "Equal to"
     },
     "remove": "Remove {{filter}} filter",
-    "search": "Search",
     "summary": {
       "localOnly": "This folder only",
-      "localOnlyHelp": "Filename and camera metadata filters only apply to files in this folder.",
+      "localOnlyHelp": "Camera metadata filters only apply to files in this folder.",
       "showAll": "{{more}} more elsewhere · Show all {{total}}",
       "shownHere": "{{visible}} of {{total}} shown here"
     },
     "showingAll": "Showing all files",
     "showingCount": "Showing {{visible}} of {{total}} files"
+  },
+  "find": {
+    "action": "Find",
+    "description": "Search filenames and folders within {{folder}}",
+    "placeholder": "Search {{folder}}…",
+    "title": "Find within {{folder}}",
+    "viewAll": "View all within {{folder}}"
   },
   "folder": {
     "actions": "Folder actions",
@@ -255,7 +259,7 @@
     "changed": "The results changed. Please try loading more again.",
     "empty": "Nothing in this gallery matches these filters.",
     "loadMore": "Load more",
-    "localFiltersPaused": "Filename and camera metadata filters are paused in Results and will return when you go back."
+    "localFiltersPaused": "Camera, lens, and exposure filters are paused while searching. Back to {{folder}} restores them."
   },
   "sort": {
     "button": "Sort",

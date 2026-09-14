@@ -7,7 +7,6 @@ import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { metadataForFiltering } from '@shared/files/metadataForFiltering';
 import { AspectSelector } from './AspectSelector';
-import { SearchBox } from './SearchBox';
 import { MediaTypeSelector } from './MediaTypeSelector';
 import { MetadataBox } from './MetadataBox';
 import {
@@ -34,7 +33,6 @@ export const FilteringOptions = ({
   onChange,
   onReset,
   onClose,
-  showFilename = true,
   showMetadata = true,
   showCountSummary = true,
   showMediaTypeAlways = false,
@@ -46,7 +44,6 @@ export const FilteringOptions = ({
   onChange: (filters: GalleryFilterCriteria) => void;
   onReset: () => void;
   onClose: () => void;
-  showFilename?: boolean;
   showMetadata?: boolean;
   showCountSummary?: boolean;
   showMediaTypeAlways?: boolean;
@@ -65,11 +62,6 @@ export const FilteringOptions = ({
   );
   return (
     <Stack gap={0}>
-      {showFilename ? (
-        <Row label={t('filter.filename')}>
-          <SearchBox filters={filters} onChange={onChange} />
-        </Row>
-      ) : null}
       {showMediaTypeAlways ||
       hasMultipleMediaTypes ||
       filters.mediaType !== 'All' ? (

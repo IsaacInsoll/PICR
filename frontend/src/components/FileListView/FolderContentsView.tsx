@@ -125,7 +125,7 @@ export const FolderContentsView = ({
     setFilters,
     resetFilters,
     enterResults,
-  } = useGalleryCriteria(folderId);
+  } = useGalleryCriteria();
   const totalFilters = countGalleryFilterCriteria(filters);
   const [sort] = useFileSort();
   const moveFolder = useAtomValue(moveRenameFolderAtom);

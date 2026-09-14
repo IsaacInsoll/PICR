@@ -25,6 +25,7 @@ import { FileSortMenuButton } from './FileSortSelector';
 import { FilteringOptions } from './Filtering/FilteringOptions';
 import { useGalleryCriteria } from '../../hooks/useGalleryCriteria';
 import { countRecursiveGalleryFilters } from '../../helpers/mediaResultsInput';
+import { GalleryFindControl } from './GalleryFindControl';
 
 export const FolderContentsToolbar = ({
   folder,
@@ -71,9 +72,16 @@ export const FolderContentsControls = ({
   const isSmallScreen = useIsSmallScreen();
   const [filtersOpened, { open: openFilters, close: closeFilters }] =
     useDisclosure(false);
-  const { mode, filters, setFilters, resetFilters } = useGalleryCriteria(
-    folder.id,
-  );
+  const {
+    mode,
+    query,
+    filters,
+    setFilters,
+    resetFilters,
+    enterResults,
+    setResultsQuery,
+    getCurrentCriteria,
+  } = useGalleryCriteria();
   const totalFilters =
     mode === 'results'
       ? countRecursiveGalleryFilters(filters)
@@ -111,6 +119,17 @@ export const FolderContentsControls = ({
       >
         <ViewSelector folder={folder} />
         <Group gap="xs" wrap="nowrap" ml={fullWidth ? 'auto' : undefined}>
+          {hasFiles || hasFolders ? (
+            <GalleryFindControl
+              folder={folder}
+              mode={mode}
+              query={query}
+              fullWidth={fullWidth}
+              getCurrentQuery={() => getCurrentCriteria().query}
+              onOpen={() => enterResults()}
+              onQueryChange={setResultsQuery}
+            />
+          ) : null}
           {hasFiles || hasFolders ? (
             <FileSortMenuButton
               hasMetadata={hasCaptureDates}
@@ -159,7 +178,6 @@ export const FolderContentsControls = ({
             onChange={setFilters}
             onReset={resetVisibleFilters}
             onClose={closeFilters}
-            showFilename={mode === 'gallery'}
             showMetadata={mode === 'gallery'}
             showCountSummary={mode === 'gallery'}
             showMediaTypeAlways={hasFolders || mode === 'results'}

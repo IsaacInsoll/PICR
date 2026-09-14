@@ -46,13 +46,6 @@ export const GalleryFilterSummary = ({
   if (!totalFilters) return null;
 
   const chips: FilterChip[] = [];
-  if (filters.searchText) {
-    chips.push({
-      key: 'filename',
-      label: t('filter.active.filename', { value: filters.searchText }),
-      remove: () => onChange({ ...filters, searchText: '' }),
-    });
-  }
   if (filters.mediaType !== 'All') {
     chips.push({
       key: 'mediaType',

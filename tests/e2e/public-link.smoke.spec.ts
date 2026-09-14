@@ -143,6 +143,43 @@ test('public link and login routes load with no browser/runtime errors', async (
     await expect(
       page.getByRole('button', { name: 'Filter Files' }),
     ).toBeVisible();
+    const galleryFindLabel = 'Search filenames and folders within Dog Photos';
+    await expect(
+      page.getByRole('searchbox', { name: galleryFindLabel }),
+    ).toBeVisible();
+
+    await page.setViewportSize({ width: 820, height: 1180 });
+    await expect(
+      page.getByRole('searchbox', { name: galleryFindLabel }),
+    ).toHaveCount(0);
+    await page.getByRole('button', { name: galleryFindLabel }).click();
+    await expect(page).toHaveURL(new RegExp(`/s/${uuid}/${folderId}$`));
+    const findDrawer = page.getByRole('dialog', {
+      name: 'Find within Dog Photos',
+    });
+    await expect(
+      findDrawer.getByRole('searchbox', { name: galleryFindLabel }),
+    ).toBeVisible();
+    await findDrawer
+      .getByRole('button', { name: 'View all within Dog Photos' })
+      .click();
+    await expect(page).toHaveURL(new RegExp(`/s/${uuid}/${folderId}\\?find=1`));
+    await page.getByRole('button', { name: 'Back to Dog Photos' }).click();
+    await expect(page).toHaveURL(new RegExp(`/s/${uuid}/${folderId}$`));
+
+    await page.getByRole('button', { name: galleryFindLabel }).click();
+    const compactFindInput = findDrawer.getByRole('searchbox', {
+      name: galleryFindLabel,
+    });
+    await compactFindInput.pressSequentially('vertical');
+    await compactFindInput.press('Enter');
+    await expect(findDrawer).not.toBeVisible();
+    await expect(page).toHaveURL(
+      new RegExp(`/s/${uuid}/${folderId}\\?find=1&q=vertical`),
+    );
+    await page.getByRole('button', { name: 'Back to Dog Photos' }).click();
+    await expect(page).toHaveURL(new RegExp(`/s/${uuid}/${folderId}$`));
+
     await page.keyboard.press('Control+f');
     await expect(
       page.getByPlaceholder('Search photos and folders'),

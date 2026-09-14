@@ -120,7 +120,6 @@
   },
   "filter": {
     "active": {
-      "filename": "Dateiname: „{{value}}“",
       "metadata": "{{name}}: {{value}}",
       "rating": "{{comparison}} {{value}} Sterne"
     },
@@ -139,7 +138,6 @@
     "comments": "Kommentare",
     "commentsHas": "Hat Kommentare",
     "commentsNone": "Keine Kommentare",
-    "filename": "Dateiname",
     "flag": "Flagge",
     "imageOptions": "Bildoptionen",
     "mediaType": "Medientyp",
@@ -157,15 +155,21 @@
       "equal": "Gleich"
     },
     "remove": "Filter {{filter}} entfernen",
-    "search": "Suchen",
     "summary": {
       "localOnly": "Nur dieser Ordner",
-      "localOnlyHelp": "Dateinamen- und Kamera-Metadatenfilter gelten nur für Dateien in diesem Ordner.",
+      "localOnlyHelp": "Kamera-Metadatenfilter gelten nur für Dateien in diesem Ordner.",
       "showAll": "{{more}} weitere an anderer Stelle · Alle {{total}} anzeigen",
       "shownHere": "{{visible}} von {{total}} hier angezeigt"
     },
     "showingAll": "Alle Dateien werden angezeigt",
     "showingCount": "Zeigt {{visible}} von {{total}}-Dateien an"
+  },
+  "find": {
+    "action": "Suchen",
+    "description": "Dateinamen und Ordner in {{folder}} durchsuchen",
+    "placeholder": "In {{folder}} suchen …",
+    "title": "In {{folder}} suchen",
+    "viewAll": "Alles in {{folder}} anzeigen"
   },
   "folder": {
     "actions": "Ordneraktionen",
@@ -255,7 +259,7 @@
     "changed": "Die Ergebnisse haben sich geändert. Bitte versuche erneut, weitere zu laden.",
     "empty": "Nichts in dieser Galerie entspricht diesen Filtern.",
     "loadMore": "Mehr laden",
-    "localFiltersPaused": "Dateinamen- und Kamerametadatenfilter sind in den Ergebnissen pausiert und werden bei der Rückkehr wiederhergestellt."
+    "localFiltersPaused": "Kamera-, Objektiv- und Belichtungsfilter sind während der Suche pausiert. Zurück zu {{folder}} stellt sie wieder her."
   },
   "sort": {
     "button": "Sortieren",

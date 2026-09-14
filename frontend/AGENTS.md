@@ -49,6 +49,18 @@ ordinary folder navigation clears it, and gallery folder tiles explicitly use
 Results query or folder facet. This also keeps query updates coordinated with
 same-tick lightbox/hash changes.
 
+Gallery free-text search belongs to Find, not Filters. Typing or pressing Enter
+in Find enters recursive Results rooted at the current route folder; merely
+focusing the field does not leave Gallery mode. The Filter drawer continues
+narrowing only the collection already on screen and must not grow a second
+filename field. The full-width administrator contents toolbar may show the Find
+field from `sm` upward, while the busier public-link header keeps it as an icon
+until `lg`. Compact Find opens its own responsive drawer without changing mode;
+its explicit View all action enters Results without a query, while Enter/Search
+submits typed text and closes the drawer so the results are visible. Preserve
+local-only camera/lens/exposure filters for the return to Gallery, and explain in
+Results that they are paused instead of interrupting Find with confirmation.
+
 Folder-header actions are role-aware. Public-link users see Download and
 Activity directly whenever permitted; do not create a one-item overflow menu or
 duplicate a visible action inside it. Administrators see the primary Manage

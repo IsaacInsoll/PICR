@@ -120,7 +120,6 @@
   },
   "filter": {
     "active": {
-      "filename": "Nom du fichier : « {{value}} »",
       "metadata": "{{name}} : {{value}}",
       "rating": "{{comparison}} {{value}} étoiles"
     },
@@ -139,7 +138,6 @@
     "comments": "Commentaires",
     "commentsHas": "Avec commentaires",
     "commentsNone": "Sans commentaire",
-    "filename": "Nom du fichier",
     "flag": "Marqueur",
     "imageOptions": "Options d'image",
     "mediaType": "Type de média",
@@ -157,15 +155,21 @@
       "equal": "Égale à"
     },
     "remove": "Supprimer le filtre {{filter}}",
-    "search": "Rechercher",
     "summary": {
       "localOnly": "Ce dossier uniquement",
-      "localOnlyHelp": "Les filtres de nom de fichier et de métadonnées d’appareil s’appliquent uniquement aux fichiers de ce dossier.",
+      "localOnlyHelp": "Les filtres de métadonnées d’appareil s’appliquent uniquement aux fichiers de ce dossier.",
       "showAll": "{{more}} autres ailleurs · Afficher les {{total}}",
       "shownHere": "{{visible}} sur {{total}} affichés ici"
     },
     "showingAll": "Tous les fichiers sont affichés",
     "showingCount": "{{visible}} fichiers affichés sur {{total}}"
+  },
+  "find": {
+    "action": "Rechercher",
+    "description": "Rechercher des noms de fichiers et des dossiers dans {{folder}}",
+    "placeholder": "Rechercher dans {{folder}}…",
+    "title": "Rechercher dans {{folder}}",
+    "viewAll": "Tout afficher dans {{folder}}"
   },
   "folder": {
     "actions": "Actions du dossier",
@@ -255,7 +259,7 @@
     "changed": "Les résultats ont changé. Essayez à nouveau d’en charger davantage.",
     "empty": "Aucun élément de cette galerie ne correspond à ces filtres.",
     "loadMore": "Charger plus",
-    "localFiltersPaused": "Les filtres de nom de fichier et de métadonnées de l’appareil sont suspendus dans les résultats et seront rétablis à votre retour."
+    "localFiltersPaused": "Les filtres d’appareil, d’objectif et d’exposition sont suspendus pendant la recherche. Retourner dans {{folder}} les rétablit."
   },
   "sort": {
     "button": "Trier",

@@ -6,7 +6,7 @@ import {
 } from '@shared/files/mediaCriteria';
 import { filterOptions } from '@shared/filterAtom';
 import { useAtom } from 'jotai';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import {
   decodeGalleryLocationCriteria,
@@ -40,38 +40,35 @@ export const wasGalleryResultsOpenedInCurrentDocument = (state: unknown) => {
   );
 };
 
-export const useGalleryCriteria = (folderId: string) => {
+export const useGalleryCriteria = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { canView } = useCommentPermissions();
   const capabilities = useMemo(() => ({ canViewReview: canView }), [canView]);
   const { getCurrentLocation, navigateLocation } = useLocationNavigation();
-  const [legacyFilters, setLegacyFilters] = useAtom(filterOptions);
+  const [, setLegacyFilters] = useAtom(filterOptions);
   const decoded = useMemo(
     () => decodeGalleryLocationCriteria(location.search, capabilities),
     [capabilities, location.search],
   );
   const filters = useMemo<GalleryFilterCriteria>(
-    () => ({ ...decoded.filters, searchText: legacyFilters.searchText }),
-    [decoded.filters, legacyFilters.searchText],
+    () => ({ ...decoded.filters, searchText: '' }),
+    [decoded.filters],
   );
-  const previousFolderId = useRef(folderId);
 
   // The URL is authoritative for structured filters. Keep the legacy atom as a
-  // compatibility mirror until the CSV flow and temporary filename filter are
-  // migrated, without making Back/Forward wait for an effect before rendering.
+  // compatibility mirror until the CSV flow is migrated, without making
+  // Back/Forward wait for an effect before rendering. Free text belongs only to
+  // recursive Results and is never mirrored into the local Gallery filter.
   useEffect(() => {
     setLegacyFilters((current) => {
-      const searchText =
-        previousFolderId.current === folderId ? current.searchText : '';
-      const next = { ...decoded.filters, searchText };
-      previousFolderId.current = folderId;
+      const next = { ...decoded.filters, searchText: '' };
       return mediaCriteriaEqual(current, next) &&
         current.searchText === next.searchText
         ? current
         : next;
     });
-  }, [decoded.filters, folderId, setLegacyFilters]);
+  }, [decoded.filters, setLegacyFilters]);
 
   // Remove malformed or permission-inaccessible criteria from the visible URL
   // in place. This also leaves unrelated owners such as `link` untouched.
@@ -91,7 +88,10 @@ export const useGalleryCriteria = (folderId: string) => {
 
   const setFilters = useCallback(
     (nextValue: GalleryFilterCriteria) => {
-      const next = normalizeGalleryFilterCriteria(nextValue, capabilities);
+      const next = {
+        ...normalizeGalleryFilterCriteria(nextValue, capabilities),
+        searchText: '',
+      };
       setLegacyFilters(next);
       navigateLocation((current) => {
         const currentCriteria = decodeGalleryLocationCriteria(
@@ -117,13 +117,20 @@ export const useGalleryCriteria = (folderId: string) => {
     [setFilters],
   );
 
-  const enterResults = useCallback(
-    ({ query = '' }: { query?: string } = {}) => {
+  const getCurrentCriteria = useCallback(
+    () =>
+      decodeGalleryLocationCriteria(getCurrentLocation().search, capabilities),
+    [capabilities, getCurrentLocation],
+  );
+
+  const setResultsQuery = useCallback(
+    (query: string) => {
       navigateLocation((current) => {
         const currentCriteria = decodeGalleryLocationCriteria(
           current.search,
           capabilities,
         );
+        const enteringResults = currentCriteria.mode !== 'results';
         return {
           search: withGalleryLocationCriteria(
             current.search,
@@ -134,16 +141,22 @@ export const useGalleryCriteria = (folderId: string) => {
               // returning to the gallery restores them. Results deliberately
               // omits them from its server request and filter drawer.
               filters: currentCriteria.filters,
-              folderIds: [],
+              folderIds: enteringResults ? [] : currentCriteria.folderIds,
             },
             capabilities,
           ),
-          replace: false,
-          state: galleryResultsHistoryState(current.state),
+          replace: !enteringResults,
+          state: enteringResults
+            ? galleryResultsHistoryState(current.state)
+            : current.state,
         };
       });
     },
     [capabilities, navigateLocation],
+  );
+  const enterResults = useCallback(
+    ({ query = '' }: { query?: string } = {}) => setResultsQuery(query),
+    [setResultsQuery],
   );
 
   const exitResults = useCallback(() => {
@@ -180,7 +193,9 @@ export const useGalleryCriteria = (folderId: string) => {
     setFilters,
     resetFilters,
     enterResults,
+    setResultsQuery,
     exitResults,
+    getCurrentCriteria,
     getCurrentLocation,
   };
 };

@@ -20,6 +20,7 @@ import {
   mediaResultsNextPageQuery,
   mediaResultsQuery,
 } from '@shared/urql/queries/mediaResultsQuery';
+import { useDebouncedValue } from '@mantine/hooks';
 import { lazy, Suspense, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClient, useQuery } from 'urql';
@@ -72,13 +73,12 @@ export const GalleryResultsView = ({
   const formatFolderName = useFolderNameFormatter();
   const client = useClient();
   const [sort] = useFileSort();
-  const { query, folderIds, filters, exitResults } = useGalleryCriteria(
-    folder.id,
-  );
+  const { query, folderIds, filters, exitResults } = useGalleryCriteria();
+  const [debouncedQuery] = useDebouncedValue(query, 250);
   const input = useMemo<MediaResultsInput>(
     () => ({
       folderId: folder.id,
-      query: query || undefined,
+      query: debouncedQuery || undefined,
       filters: {
         ...mediaResultsFilterInput(filters),
         folderIds: folderIds.length ? folderIds : undefined,
@@ -86,7 +86,7 @@ export const GalleryResultsView = ({
       sort: mediaResultsSortInput(sort),
       first: 100,
     }),
-    [filters, folder.id, folderIds, query, sort],
+    [debouncedQuery, filters, folder.id, folderIds, sort],
   );
   const [result, retryResults] = useQuery({
     query: mediaResultsQuery,
@@ -180,7 +180,9 @@ export const GalleryResultsView = ({
           </Group>
           {hasLocalOnlyGalleryFilters(filters) ? (
             <Alert variant="light" mt="xs" py="xs">
-              {t('results.localFiltersPaused')}
+              {t('results.localFiltersPaused', {
+                folder: formatFolderName(folder),
+              })}
             </Alert>
           ) : null}
         </Paper>

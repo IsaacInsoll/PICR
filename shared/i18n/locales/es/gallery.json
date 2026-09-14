@@ -120,7 +120,6 @@
   },
   "filter": {
     "active": {
-      "filename": "Nombre de archivo: «{{value}}»",
       "metadata": "{{name}}: {{value}}",
       "rating": "{{comparison}} {{value}} estrellas"
     },
@@ -139,7 +138,6 @@
     "comments": "Comentarios",
     "commentsHas": "Tiene comentarios",
     "commentsNone": "Sin comentarios",
-    "filename": "Nombre del archivo",
     "flag": "Bandera",
     "imageOptions": "Opciones de imagen",
     "mediaType": "Tipo de contenido",
@@ -157,15 +155,21 @@
       "equal": "igual a"
     },
     "remove": "Quitar el filtro {{filter}}",
-    "search": "Buscar",
     "summary": {
       "localOnly": "Solo esta carpeta",
-      "localOnlyHelp": "Los filtros de nombre de archivo y metadatos de cámara solo se aplican a los archivos de esta carpeta.",
+      "localOnlyHelp": "Los filtros de metadatos de cámara solo se aplican a los archivos de esta carpeta.",
       "showAll": "{{more}} más en otras carpetas · Mostrar los {{total}}",
       "shownHere": "{{visible}} de {{total}} mostrados aquí"
     },
     "showingAll": "Mostrando todos los archivos",
     "showingCount": "Mostrando {{visible}} de archivos {{total}}"
+  },
+  "find": {
+    "action": "Buscar",
+    "description": "Buscar nombres de archivos y carpetas en {{folder}}",
+    "placeholder": "Buscar en {{folder}}…",
+    "title": "Buscar en {{folder}}",
+    "viewAll": "Ver todo en {{folder}}"
   },
   "folder": {
     "actions": "Acciones de carpeta",
@@ -255,7 +259,7 @@
     "changed": "Los resultados han cambiado. Intenta cargar más de nuevo.",
     "empty": "Nada de esta galería coincide con estos filtros.",
     "loadMore": "Cargar más",
-    "localFiltersPaused": "Los filtros de nombre de archivo y metadatos de cámara están pausados en Resultados y volverán cuando regreses."
+    "localFiltersPaused": "Los filtros de cámara, objetivo y exposición se pausan durante la búsqueda. Volver a {{folder}} los restaura."
   },
   "sort": {
     "button": "Clasificar",
