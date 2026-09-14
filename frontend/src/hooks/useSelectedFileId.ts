@@ -43,7 +43,10 @@ export const useSelectedFileId = (folderId: string) => {
     } else if (wasOpenedFromFolder(location.state)) {
       void navigate(-1);
     } else {
-      setFolder({ id: folderId }, undefined, { replace: true });
+      setFolder({ id: folderId }, undefined, {
+        replace: true,
+        galleryCriteria: 'preserve',
+      });
     }
   };
 };

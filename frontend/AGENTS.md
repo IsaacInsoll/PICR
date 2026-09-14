@@ -73,6 +73,23 @@ cursors remain valid while it changes. Keep relative folder provenance on Grid
 and Feed items when the result set spans folders; List always retains its Folder
 column so a flat global sort does not erase where media came from.
 
+Treat a loaded Results collection as a materialized proofing session. Review
+mutations update the loaded file fields, but must not client-refilter or reorder
+the session underneath the reviewer. Keep every loaded cursor page subscribed
+to URQL rather than storing a one-shot query result: normalized File entities
+then stay current regardless of which mutation surface edited them. Snapshot
+review fields when each file first enters the session and compare that baseline
+with the live entities to surface Refresh when membership or active ordering
+became stale. This makes cache-update work proportional to the number of loaded
+pages; measure real editing performance before replacing the simple subscription
+model with per-page lifecycle bookkeeping. A direct Results lightbox URL may resolve its selected file through
+the anchor query without loading every preceding page; in that anchor-only state
+do not show a misleading global slide position. Closing any directly loaded,
+filtered file must preserve its query string even though there is no prior in-app
+history entry to pop. The source-folder action uses
+`carry-gallery`, preserving structured filters while clearing Results-only text
+and folder refinement.
+
 Folder-header actions are role-aware. Public-link users see Download and
 Activity directly whenever permitted; do not create a one-item overflow menu or
 duplicate a visible action inside it. Administrators see the primary Manage

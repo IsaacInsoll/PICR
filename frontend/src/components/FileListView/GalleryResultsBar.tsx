@@ -14,6 +14,7 @@ import { countRecursiveGalleryFilters } from '../../helpers/mediaResultsInput';
 import { CloseIcon, PreviousIcon, SearchIcon } from '../../PicrIcons';
 import { GalleryFilterChips } from './Filtering/GalleryFilterChips';
 import { ResultsFolderFilter } from './ResultsFolderFilter';
+import type { ResultsReviewStatus } from '../../helpers/resultsReviewStatus';
 
 type ResultsSummary = Pick<
   MediaResultsQuery['mediaResults'],
@@ -32,11 +33,14 @@ export const GalleryResultsBar = ({
   input,
   results,
   localFiltersPaused,
+  reviewStatus,
+  refreshingSession,
   onQueryChange,
   onFiltersChange,
   onFolderIdsChange,
   onClear,
   onBack,
+  onRefresh,
 }: {
   folderName: string;
   query: string;
@@ -45,11 +49,14 @@ export const GalleryResultsBar = ({
   input: MediaResultsInput;
   results?: ResultsSummary;
   localFiltersPaused: boolean;
+  reviewStatus: ResultsReviewStatus;
+  refreshingSession: boolean;
   onQueryChange: (query: string) => void;
   onFiltersChange: (filters: GalleryFilterCriteria) => void;
   onFolderIdsChange: (folderIds: string[]) => void;
   onClear: () => void;
   onBack: () => void;
+  onRefresh: () => void;
 }) => {
   const { t } = useTranslation('gallery');
   const hasCriteria =
@@ -131,6 +138,30 @@ export const GalleryResultsBar = ({
           {localFiltersPaused ? (
             <Alert variant="light" py="xs">
               {t('results.localFiltersPaused', { folder: folderName })}
+            </Alert>
+          ) : null}
+          {reviewStatus.noLongerMatch > 0 || reviewStatus.sortChanged > 0 ? (
+            <Alert variant="light" color="yellow" py="xs">
+              <Group justify="space-between" gap="xs">
+                <Text size="sm" aria-live="polite">
+                  {reviewStatus.noLongerMatch > 0
+                    ? t('results.noLongerMatch', {
+                        count: reviewStatus.noLongerMatch,
+                      })
+                    : t('results.reviewChanges', {
+                        count: reviewStatus.sortChanged,
+                      })}
+                </Text>
+                <Button
+                  variant="subtle"
+                  color="yellow"
+                  size="compact-sm"
+                  loading={refreshingSession}
+                  onClick={onRefresh}
+                >
+                  {t('results.refresh')}
+                </Button>
+              </Group>
             </Alert>
           ) : null}
         </Stack>

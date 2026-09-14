@@ -1,19 +1,25 @@
 import { gql } from '../gql.js';
 
+export const mediaResultEdgeFragment = gql(/* GraphQL */ `
+  fragment MediaResultEdgeFragment on MediaResultEdge {
+    cursor
+    file {
+      ...FileFragment
+    }
+    folder {
+      id
+      name
+      parentId
+    }
+    relativePath
+    matchSource
+  }
+`);
+
 export const mediaResultsPageFragment = gql(/* GraphQL */ `
   fragment MediaResultsPageFragment on MediaResultsConnection {
     edges {
-      cursor
-      file {
-        ...FileFragment
-      }
-      folder {
-        id
-        name
-        parentId
-      }
-      relativePath
-      matchSource
+      ...MediaResultEdgeFragment
     }
     pageInfo {
       hasNextPage
@@ -58,6 +64,17 @@ export const mediaResultsNextPageQuery = gql(/* GraphQL */ `
     mediaResults(input: $input) {
       ...MediaResultsPageFragment
       selectionFingerprint
+    }
+  }
+`);
+
+export const mediaResultAnchorQuery = gql(/* GraphQL */ `
+  query MediaResultAnchor($input: MediaResultsInput!, $fileId: ID!) {
+    mediaResults(input: $input) {
+      selectionFingerprint
+      anchor(fileId: $fileId) {
+        ...MediaResultEdgeFragment
+      }
     }
   }
 `);

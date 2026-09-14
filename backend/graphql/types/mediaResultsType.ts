@@ -112,6 +112,10 @@ const mediaFolderFacetType = new GraphQLObjectType({
 export class MediaResultsConnectionValue {
   private pagePromise?: Promise<MediaResultsPageValue>;
   private totalsPromise?: ReturnType<AuthorizedMediaResultsSelection['totals']>;
+  private readonly anchorPromises = new Map<
+    string,
+    ReturnType<AuthorizedMediaResultsSelection['anchor']>
+  >();
   private readonly folderFacetsPromises = new Map<
     string,
     ReturnType<AuthorizedMediaResultsSelection['folderFacets']>
@@ -134,6 +138,14 @@ export class MediaResultsConnectionValue {
   totals() {
     this.totalsPromise ??= this.selection.totals();
     return this.totalsPromise;
+  }
+
+  anchor(fileId: string) {
+    const existing = this.anchorPromises.get(fileId);
+    if (existing) return existing;
+    const pending = this.selection.anchor(fileId);
+    this.anchorPromises.set(fileId, pending);
+    return pending;
   }
 
   folderFacets(args: {
@@ -191,6 +203,14 @@ export const mediaResultsConnectionType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
       resolve: (source: MediaResultsConnectionValue) =>
         source.selection.selectionFingerprint,
+    },
+    anchor: {
+      type: mediaResultEdgeType,
+      args: { fileId: { type: new GraphQLNonNull(GraphQLID) } },
+      resolve: (
+        source: MediaResultsConnectionValue,
+        { fileId }: { fileId: string },
+      ) => source.anchor(fileId),
     },
     selectedFolders: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(folderType))),

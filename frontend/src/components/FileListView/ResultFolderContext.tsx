@@ -12,6 +12,8 @@ import { FolderIcon } from '../../PicrIcons';
 import styles from './ResultFolderContext.module.css';
 
 export interface ResultFileContext {
+  folderId: string;
+  folderName: string;
   relativePath: string;
   matchSource: MediaMatchSource | null;
 }

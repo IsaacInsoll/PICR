@@ -21,6 +21,7 @@ import { editUserMutation } from '../../shared/urql/mutations/editUserMutation.j
 import {
   mediaFolderFacetsQuery,
   mediaMatchSummaryQuery,
+  mediaResultAnchorQuery,
   mediaResultsNextPageQuery,
   mediaResultsQuery,
 } from '../../shared/urql/queries/mediaResultsQuery.js';
@@ -330,6 +331,70 @@ test('matches filename and descendant folder paths without matching the scope na
   expect((await results({ query: 'résults' })).totalCount).toBe(0);
   expect((await results({ query: '%' })).totalCount).toBe(0);
   expect((await results({ query: '_' })).totalCount).toBe(0);
+});
+
+test('resolves a matching result directly without walking preceding pages', async () => {
+  const posterId = fileIdsByName.get('Poster Crème.jpg');
+  const landscapeId = fileIdsByName.get('Landscape.jpg');
+  expect(posterId).toBeDefined();
+  expect(landscapeId).toBeDefined();
+  if (!posterId || !landscapeId) return;
+
+  const input: MediaResultsInput = {
+    folderId: String(scopeId),
+    query: 'social',
+    sort: defaultSort,
+    first: 1,
+  };
+  const firstPage = await results(input);
+  expect(firstPage.edges.map(({ file }) => file.name)).toEqual(['launch.mp4']);
+
+  const matching = await adminClient
+    .query(mediaResultAnchorQuery, {
+      input,
+      fileId: String(posterId),
+    })
+    .toPromise();
+  expect(matching.error).toBeUndefined();
+  expect(matching.data?.mediaResults.anchor).toMatchObject({
+    file: { name: 'Poster Crème.jpg' },
+    relativePath: 'Social Campaign/Vertical',
+    matchSource: MediaMatchSource.FolderPath,
+  });
+  expect(matching.data?.mediaResults.selectionFingerprint).toBe(
+    firstPage.selectionFingerprint,
+  );
+
+  const notMatching = await adminClient
+    .query(mediaResultAnchorQuery, {
+      input,
+      fileId: String(landscapeId),
+    })
+    .toPromise();
+  expect(notMatching.error).toBeUndefined();
+  expect(notMatching.data?.mediaResults.anchor).toBeNull();
+
+  const fullSelectionInput: MediaResultsInput = {
+    folderId: String(scopeId),
+    sort: defaultSort,
+    first: 1,
+  };
+  const landscapeAnchor = await adminClient
+    .query(mediaResultAnchorQuery, {
+      input: fullSelectionInput,
+      fileId: String(landscapeId),
+    })
+    .toPromise();
+  const landscapeCursor = landscapeAnchor.data?.mediaResults.anchor?.cursor;
+  expect(landscapeCursor).toBeDefined();
+  if (!landscapeCursor) return;
+  const followingPage = await nextPageResults({
+    ...fullSelectionInput,
+    after: landscapeCursor,
+  });
+  expect(followingPage.edges.map(({ file }) => file.name)).toEqual([
+    'launch.mp4',
+  ]);
 });
 
 test('keeps accent search complete while derived fields are stale', async () => {
@@ -735,6 +800,18 @@ test('public links stay scoped and review filters are ignored without permission
   expect(outsideFacetParent.error?.graphQLErrors[0]?.extensions['code']).toBe(
     'BAD_USER_INPUT',
   );
+
+  const siblingFileId = fileIdsByName.get('leak-social.mp4');
+  expect(siblingFileId).toBeDefined();
+  if (!siblingFileId) return;
+  const outsideAnchor = await linkClient
+    .query(mediaResultAnchorQuery, {
+      input: { folderId: String(scopeId), sort: defaultSort },
+      fileId: String(siblingFileId),
+    })
+    .toPromise();
+  expect(outsideAnchor.error).toBeUndefined();
+  expect(outsideAnchor.data?.mediaResults.anchor).toBeNull();
 });
 
 test('rejects malformed pagination input', async () => {

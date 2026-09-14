@@ -272,8 +272,15 @@
     "localFiltersPaused": "Τα φίλτρα κάμερας, φακού και έκθεσης παύουν κατά την αναζήτηση. Η επιστροφή στο {{folder}} τα επαναφέρει.",
     "matchedFolderPath": "Αντιστοιχία φακέλου: {{folder}}",
     "narrowByFolder": "Περιορισμός κατά φάκελο",
+    "noLongerMatch_one": "1 αποτέλεσμα δεν αντιστοιχεί πλέον",
+    "noLongerMatch_other": "{{count}} αποτελέσματα δεν αντιστοιχούν πλέον",
     "noNarrowerFolders": "Δεν υπάρχουν άλλοι φάκελοι",
-    "queryChip": "«{{query}}»"
+    "queryChip": "«{{query}}»",
+    "refresh": "Ανανέωση",
+    "returnToResults": "Επιστροφή στα αποτελέσματα",
+    "reviewChanges_one": "1 αποτέλεσμα άλλαξε σειρά",
+    "reviewChanges_other": "{{count}} αποτελέσματα άλλαξαν σειρά",
+    "selectedFileNoLongerMatches": "Αυτό το αρχείο δεν αντιστοιχεί πλέον στην τρέχουσα αναζήτηση και τα φίλτρα."
   },
   "sort": {
     "button": "Ταξινόμηση",

@@ -399,6 +399,7 @@ export enum MediaResultSortType {
 
 export type MediaResultsConnection = {
   __typename?: 'MediaResultsConnection';
+  anchor?: Maybe<MediaResultEdge>;
   edges: Array<MediaResultEdge>;
   folderCount: Scalars['Int']['output'];
   folderFacets: MediaFolderFacetsPage;
@@ -406,6 +407,11 @@ export type MediaResultsConnection = {
   selectedFolders: Array<Folder>;
   selectionFingerprint: Scalars['String']['output'];
   totalCount: Scalars['Int']['output'];
+};
+
+
+export type MediaResultsConnectionAnchorArgs = {
+  fileId: Scalars['ID']['input'];
 };
 
 

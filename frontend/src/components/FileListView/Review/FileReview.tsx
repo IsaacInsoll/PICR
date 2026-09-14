@@ -44,8 +44,8 @@ export const FileReview = ({
   if (isNone) return null;
 
   const { id, flag, rating, totalComments } = file;
-  const handleFlagChange = (flag: FileFlag) => {
-    void mutate({ id, flag });
+  const handleFlagChange = async (flag: FileFlag) => {
+    await mutate({ id, flag });
   };
   const handleRatingChange = (rating: number) => {
     void mutate({ id, rating });

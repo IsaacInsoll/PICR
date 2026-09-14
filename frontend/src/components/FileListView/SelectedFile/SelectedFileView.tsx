@@ -16,10 +16,10 @@ import 'yet-another-react-lightbox/plugins/thumbnails.css';
 import './SelectedFileView.css';
 import type { ViewFolderFileWithHero } from '@shared/files/sortFiles';
 import { theme } from '../../../theme';
-import { useSetFolder } from '../../../hooks/useSetFolder';
+import { useFolderUrl, useSetFolder } from '../../../hooks/useSetFolder';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { RefObject } from 'react';
-import { useLocation, useParams } from 'react-router';
+import { NavLink, useLocation, useParams } from 'react-router';
 import { LightboxFileRating } from './LightboxFileRating';
 import { LightboxBlurUp } from './LightboxBlurUp';
 import { filesForLightbox, isPicrVideoSlide } from './filesForLightbox';
@@ -43,6 +43,7 @@ import {
   FullscreenIcon,
   NextIcon,
   PreviousIcon,
+  FolderOpenIcon,
   ZoomInIcon,
   ZoomOutIcon,
 } from '../../../PicrIcons';
@@ -53,17 +54,26 @@ import { useLightboxShortcuts } from './useLightboxShortcuts';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { useTranslation } from 'react-i18next';
 import { lightboxLabels } from '../../../i18n/galleryThirdPartyTranslations';
+import type { ResultFileContext } from '../ResultFolderContext';
 
 export const SelectedFileView = ({
   files,
   selectedFileId,
   setSelectedFileId,
   folderId,
+  resultFileContexts,
+  totalFiles,
+  showCounter = true,
+  onApproachingEnd,
 }: {
   files: ViewFolderFileWithHero[];
   selectedFileId?: string;
   setSelectedFileId: (id: string | undefined) => void;
   folderId: string;
+  resultFileContexts?: ReadonlyMap<string, ResultFileContext>;
+  totalFiles?: number;
+  showCounter?: boolean;
+  onApproachingEnd?: () => void;
 }) => {
   const { t } = useTranslation('gallery');
   // findIndex misses when the file was deleted, is filtered out of the current
@@ -77,6 +87,7 @@ export const SelectedFileView = ({
   const ref = useRef<ControllerRef | null>(null);
   const { fileId } = useParams();
   const location = useLocation();
+  const folderUrl = useFolderUrl();
   const portal = useAtomValue(lightboxRefAtom);
   const thumbnails = useLightboxThumbnails();
 
@@ -100,6 +111,12 @@ export const SelectedFileView = ({
   const autoPlayVideo =
     wasOpenedFromFolderInCurrentDocument(location.state) || autoplayBlessed;
   const isSelectedVideo = selectedImage?.type === 'Video';
+  const selectedResultContext = selectedFileId
+    ? resultFileContexts?.get(selectedFileId)
+    : undefined;
+  const selectedResultFolderLabel = selectedResultContext
+    ? selectedResultContext.relativePath || selectedResultContext.folderName
+    : undefined;
   const isMobile = !!useIsMobile();
   const { focus, toggleFocus } = useLightboxFocus();
 
@@ -148,6 +165,13 @@ export const SelectedFileView = ({
   const railsReservedHeight = focus ? 0 : RAIL_HEIGHT * 2;
   // Navigation and the counter are meaningless in a single-file folder.
   const hasMultipleFiles = files.length > 1;
+  const displayedTotal = Math.max(files.length, totalFiles ?? 0);
+
+  useEffect(() => {
+    if (isOpen && onApproachingEnd && selectedImageIndex >= files.length - 3) {
+      onApproachingEnd();
+    }
+  }, [files.length, isOpen, onApproachingEnd, selectedImageIndex]);
 
   // Rail contents. The toolbar is not rendered here — YARL positions it
   // absolutely at top-right, and the top rail reserves exactly that band of
@@ -157,8 +181,25 @@ export const SelectedFileView = ({
   // top-right stack; navigation + counter bottom-left, review controls
   // bottom-right so each corner pairs with the one above it.
   const railsTop = (
-    <span className="picr-rail-label">
-      {typeof selectedImage?.name === 'string' ? selectedImage.name : ''}
+    <span className="picr-rail-file-context">
+      <span className="picr-rail-label">
+        {typeof selectedImage?.name === 'string' ? selectedImage.name : ''}
+      </span>
+      {selectedResultContext && selectedResultFolderLabel ? (
+        <NavLink
+          className="picr-rail-folder-link"
+          to={folderUrl(
+            { id: selectedResultContext.folderId },
+            undefined,
+            'carry-gallery',
+          )}
+          aria-label={`${t('comments.openFolder')}: ${selectedResultFolderLabel}`}
+          title={t('comments.openFolder')}
+        >
+          <FolderOpenIcon size="14" />
+          <span>{selectedResultFolderLabel}</span>
+        </NavLink>
+      ) : null}
     </span>
   );
 
@@ -168,7 +209,9 @@ export const SelectedFileView = ({
         {!isMobile && hasMultipleFiles ? (
           <LightboxNavButtons total={files.length} controllerRef={ref} />
         ) : null}
-        {hasMultipleFiles ? <LightboxCounter total={files.length} /> : null}
+        {showCounter && displayedTotal > 1 ? (
+          <LightboxCounter total={displayedTotal} />
+        ) : null}
       </span>
       <LightboxFileRating files={files} />
     </>
@@ -313,7 +356,8 @@ export const SelectedFileView = ({
       on={{
         entered: unInert,
         view: ({ index }) => {
-          const f = files[index];
+          const f = files.at(index);
+          if (!f) return;
           // don't change URL if we are already on that URL (IE: first opening gallery)
           if (f.id !== fileId) {
             // carry the current entry's state across: it marks whether this lightbox

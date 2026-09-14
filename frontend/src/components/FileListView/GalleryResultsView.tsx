@@ -12,11 +12,14 @@ import type {
   ViewFolderFileWithHero,
 } from '@shared/files/sortFiles';
 import type {
+  MediaResultEdgeFragmentFragment,
   MediaResultsInput,
   MediaResultsPageFragmentFragment,
+  MediaResultsQuery,
 } from '@shared/gql/graphql';
 import type { SelectedView } from '@shared/types/ui';
 import {
+  mediaResultAnchorQuery,
   mediaResultsNextPageQuery,
   mediaResultsQuery,
 } from '@shared/urql/queries/mediaResultsQuery';
@@ -40,6 +43,9 @@ import type { FileListViewStyleComponentProps } from './FolderContentsView';
 import { GridGallery } from './GridGallery';
 import { ImageFeed } from './ImageFeed';
 import { GalleryResultsBar } from './GalleryResultsBar';
+import { resultsReviewStatus } from '../../helpers/resultsReviewStatus';
+import { useSubscribedMediaResultPages } from '../../hooks/useSubscribedMediaResultPages';
+import { useResultsReviewBaseline } from '../../hooks/useResultsReviewBaseline';
 
 const loadSelectedFileView = () =>
   import('./SelectedFile/SelectedFileView').then((module) => ({
@@ -49,12 +55,22 @@ const loadSelectedFileView = () =>
 const SelectedFileView = lazy(loadSelectedFileView);
 
 type ResultsPage = MediaResultsPageFragmentFragment;
+type ResultsConnection = MediaResultsQuery['mediaResults'];
 
-interface LoadedNextPages {
+interface ResultsAnchorState {
   requestKey: string;
-  selectionFingerprint: string;
-  edges: ResultsPage['edges'];
-  pageInfo: ResultsPage['pageInfo'];
+  edge: MediaResultEdgeFragmentFragment;
+}
+
+interface ResultsRefreshSnapshot {
+  requestKey: string;
+  initial: ResultsConnection;
+  pages: ResultsPage[];
+}
+
+interface ResultsRefreshError {
+  requestKey: string;
+  message: string;
 }
 
 export const GalleryResultsView = ({
@@ -103,81 +119,274 @@ export const GalleryResultsView = ({
     variables: { input },
   });
   const requestKey = useMemo(() => JSON.stringify(input), [input]);
-  const [nextPages, setNextPages] = useState<LoadedNextPages | null>(null);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
+  const [sessionRevision, setSessionRevision] = useState(0);
+  const [refreshingSessionKey, setRefreshingSessionKey] = useState<
+    string | null
+  >(null);
+  const [refreshSnapshot, setRefreshSnapshot] =
+    useState<ResultsRefreshSnapshot | null>(null);
+  const [refreshErrorState, setRefreshErrorState] =
+    useState<ResultsRefreshError | null>(null);
+  const [anchorState, setAnchorState] = useState<ResultsAnchorState | null>(
+    null,
+  );
   const initial = result.data?.mediaResults;
-  const matchingNextPages =
-    initial && nextPages?.requestKey === requestKey ? nextPages : null;
-  const edges = useMemo(() => {
+  const nextPages = useSubscribedMediaResultPages({
+    client,
+    input,
+    requestKey,
+    selectionFingerprint: initial?.selectionFingerprint,
+    changedMessage: t('results.changed'),
+  });
+  const activeRefreshSnapshot =
+    refreshSnapshot?.requestKey === requestKey ? refreshSnapshot : undefined;
+  const displayedInitial = activeRefreshSnapshot?.initial ?? initial;
+  const displayedNextPages = activeRefreshSnapshot?.pages ?? nextPages.pages;
+  const refreshError =
+    refreshErrorState?.requestKey === requestKey
+      ? refreshErrorState.message
+      : null;
+  const materializedEdges = useMemo(() => {
     const seen = new Set<string>();
     return [
-      ...(initial?.edges ?? []),
-      ...(matchingNextPages?.edges ?? []),
+      ...(displayedInitial?.edges ?? []),
+      ...displayedNextPages.flatMap(({ edges }) => edges),
     ].filter((edge) => {
       if (seen.has(edge.file.id)) return false;
       seen.add(edge.file.id);
       return true;
     });
-  }, [initial?.edges, matchingNextPages?.edges]);
-  const files: ViewFolderFileWithHero[] = edges.map((edge) => edge.file);
+  }, [displayedInitial?.edges, displayedNextPages]);
+  const files = useMemo<ViewFolderFileWithHero[]>(
+    () => materializedEdges.map((edge) => edge.file),
+    [materializedEdges],
+  );
   const fileContexts = useMemo(
     () =>
       new Map(
-        edges.map((edge) => [
+        materializedEdges.map((edge) => [
           edge.file.id,
           {
+            folderId: edge.folder.id,
+            folderName: edge.folder.name,
             relativePath: edge.relativePath,
             matchSource: edge.matchSource,
           },
         ]),
       ),
-    [edges],
+    [materializedEdges],
   );
-  const pageInfo = matchingNextPages?.pageInfo ?? initial?.pageInfo;
+  const pageInfo =
+    displayedNextPages.at(-1)?.pageInfo ?? displayedInitial?.pageInfo;
+  const loadMoreError = [...nextPages.errors.values()].at(-1) ?? null;
+  const loadMore = useCallback(() => {
+    if (loadMoreError) {
+      nextPages.retry();
+      return;
+    }
+    if (!pageInfo?.hasNextPage || !pageInfo.endCursor) return;
+    nextPages.requestPage(pageInfo.endCursor);
+  }, [loadMoreError, nextPages, pageInfo]);
 
-  const loadMore = useCallback(async () => {
-    if (
-      loadingMore ||
+  const currentAnchor =
+    anchorState?.requestKey === requestKey ? anchorState.edge : undefined;
+  const anchorPages = useSubscribedMediaResultPages({
+    client,
+    input,
+    requestKey: currentAnchor
+      ? `${requestKey}:anchor:${currentAnchor.cursor}`
+      : `${requestKey}:anchor`,
+    selectionFingerprint: currentAnchor
+      ? initial?.selectionFingerprint
+      : undefined,
+    initialCursor: currentAnchor?.cursor,
+    changedMessage: t('results.changed'),
+  });
+  const anchorEdges = useMemo(
+    () =>
+      currentAnchor
+        ? [currentAnchor, ...anchorPages.pages.flatMap(({ edges }) => edges)]
+        : [],
+    [anchorPages.pages, currentAnchor],
+  );
+  const selectedFileIsInResults = selectedFileId
+    ? materializedEdges.some(({ file }) => file.id === selectedFileId)
+    : false;
+  const selectedFileIsInAnchorSequence = selectedFileId
+    ? anchorEdges.some(({ file }) => file.id === selectedFileId)
+    : false;
+  const [anchorResult] = useQuery({
+    query: mediaResultAnchorQuery,
+    variables: { input, fileId: selectedFileId ?? '' },
+    pause:
       !initial ||
-      !pageInfo?.hasNextPage ||
-      !pageInfo.endCursor
-    ) {
+      !selectedFileId ||
+      selectedFileIsInResults ||
+      selectedFileIsInAnchorSequence,
+    requestPolicy: 'cache-and-network',
+  });
+  const anchorConnection = anchorResult.data?.mediaResults;
+  const anchorResponseFileId = anchorResult.operation?.variables.fileId;
+  const anchorResponseIsCurrent = anchorResponseFileId === selectedFileId;
+  const queriedAnchor =
+    initial &&
+    anchorResponseIsCurrent &&
+    anchorConnection?.selectionFingerprint === initial.selectionFingerprint
+      ? anchorConnection.anchor
+      : undefined;
+  if (
+    queriedAnchor &&
+    (anchorState?.requestKey !== requestKey ||
+      anchorState.edge.cursor !== queriedAnchor.cursor)
+  ) {
+    setAnchorState({ requestKey, edge: queriedAnchor });
+  }
+
+  const useAnchorSequence =
+    !selectedFileIsInResults && selectedFileIsInAnchorSequence;
+  const lightboxEdges = useAnchorSequence ? anchorEdges : materializedEdges;
+  const lightboxFiles = useMemo<ViewFolderFileWithHero[]>(
+    () => lightboxEdges.map(({ file }) => file),
+    [lightboxEdges],
+  );
+  const lightboxContexts = useMemo(
+    () =>
+      useAnchorSequence
+        ? new Map(
+            lightboxEdges.map((edge) => [
+              edge.file.id,
+              {
+                folderId: edge.folder.id,
+                folderName: edge.folder.name,
+                relativePath: edge.relativePath,
+                matchSource: edge.matchSource,
+              },
+            ]),
+          )
+        : fileContexts,
+    [fileContexts, lightboxEdges, useAnchorSequence],
+  );
+  const anchorPageInfo = anchorPages.pages.at(-1)?.pageInfo;
+  const loadMoreAnchorResults = useCallback(() => {
+    const error = [...anchorPages.errors.values()].at(-1);
+    if (error) {
+      anchorPages.retry();
       return;
     }
-    setLoadingMore(true);
-    setLoadMoreError(null);
+    if (!anchorPageInfo?.hasNextPage || !anchorPageInfo.endCursor) return;
+    anchorPages.requestPage(anchorPageInfo.endCursor);
+  }, [anchorPageInfo, anchorPages]);
+
+  const reviewFiles = useMemo(() => {
+    const byId = new Map(files.map((file) => [file.id, file]));
+    for (const file of lightboxFiles) byId.set(file.id, file);
+    return [...byId.values()];
+  }, [files, lightboxFiles]);
+  const baseline = useResultsReviewBaseline(
+    `${requestKey}:${sessionRevision}`,
+    reviewFiles,
+  );
+  const reviewStatus = useMemo(
+    () => resultsReviewStatus(reviewFiles, baseline, filters, sort),
+    [baseline, filters, reviewFiles, sort],
+  );
+  const refreshSession = useCallback(async () => {
+    if (!initial) return;
+    setRefreshingSessionKey(requestKey);
+    setRefreshErrorState(null);
+    setRefreshSnapshot({ requestKey, initial, pages: nextPages.pages });
+    const scrollY = window.scrollY;
+    const requestedAdditionalPages = nextPages.cursors.length;
+    const finishRefresh = () => {
+      setRefreshingSessionKey((current) =>
+        current === requestKey ? null : current,
+      );
+      setRefreshSnapshot((current) =>
+        current?.requestKey === requestKey ? null : current,
+      );
+      window.requestAnimationFrame(() => window.scrollTo({ top: scrollY }));
+    };
+    const fallBackToFirstPage = (
+      refreshedInitial: ResultsConnection,
+      message: string,
+    ) => {
+      nextPages.replacePages([]);
+      setAnchorState(null);
+      setSessionRevision((current) => current + 1);
+      setRefreshErrorState({ requestKey, message });
+      finishRefresh();
+      if (
+        refreshedInitial.pageInfo.hasNextPage &&
+        refreshedInitial.pageInfo.endCursor
+      ) {
+        nextPages.requestPage(refreshedInitial.pageInfo.endCursor);
+      }
+    };
     const response = await client
-      .query(
-        mediaResultsNextPageQuery,
-        { input: { ...input, after: pageInfo.endCursor } },
-        { requestPolicy: 'network-only' },
-      )
+      .query(mediaResultsQuery, { input }, { requestPolicy: 'network-only' })
       .toPromise();
-    setLoadingMore(false);
     if (response.error) {
-      setLoadMoreError(response.error.message);
+      setRefreshErrorState({ requestKey, message: response.error.message });
+      finishRefresh();
       return;
     }
-    const next = response.data?.mediaResults;
-    if (next?.selectionFingerprint !== initial.selectionFingerprint) {
-      setLoadMoreError(t('results.changed'));
+    const refreshedInitial = response.data?.mediaResults;
+    if (!refreshedInitial) {
+      setRefreshErrorState({ requestKey, message: t('results.changed') });
+      finishRefresh();
       return;
     }
-    setNextPages((current) => ({
-      requestKey,
-      selectionFingerprint: next.selectionFingerprint,
-      edges: [
-        ...(current?.requestKey === requestKey ? current.edges : []),
-        ...next.edges,
-      ],
-      pageInfo: next.pageInfo,
-    }));
-  }, [client, initial, input, loadingMore, pageInfo, requestKey, t]);
+
+    const refreshedPages: Array<{ after: string; page: ResultsPage }> = [];
+    let refreshedPageInfo = refreshedInitial.pageInfo;
+    for (
+      let pageIndex = 0;
+      pageIndex < requestedAdditionalPages &&
+      refreshedPageInfo.hasNextPage &&
+      refreshedPageInfo.endCursor;
+      pageIndex += 1
+    ) {
+      const after = refreshedPageInfo.endCursor;
+      const nextResponse = await client
+        .query(
+          mediaResultsNextPageQuery,
+          { input: { ...input, after } },
+          { requestPolicy: 'network-only' },
+        )
+        .toPromise();
+      if (nextResponse.error || !nextResponse.data?.mediaResults) {
+        fallBackToFirstPage(
+          refreshedInitial,
+          nextResponse.error?.message ?? t('results.changed'),
+        );
+        return;
+      }
+      const page = nextResponse.data.mediaResults;
+      if (page.selectionFingerprint !== refreshedInitial.selectionFingerprint) {
+        fallBackToFirstPage(refreshedInitial, t('results.changed'));
+        return;
+      }
+      refreshedPages.push({ after, page });
+      refreshedPageInfo = page.pageInfo;
+    }
+    nextPages.replacePages(refreshedPages);
+    setAnchorState(null);
+    setSessionRevision((current) => current + 1);
+    finishRefresh();
+  }, [client, initial, input, nextPages, requestKey, t]);
+  const selectedFileNoLongerMatches =
+    !!selectedFileId &&
+    !selectedFileIsInResults &&
+    !selectedFileIsInAnchorSequence &&
+    anchorResponseIsCurrent &&
+    !anchorResult.fetching &&
+    !anchorResult.error &&
+    !!anchorConnection &&
+    anchorConnection.anchor === null;
   const { ref: loadMoreRef } = useInView({
     rootMargin: '800px 0px',
     onChange: (inView) => {
-      if (inView && !loadMoreError) void loadMore();
+      if (inView && !loadMoreError) loadMore();
     },
   });
 
@@ -200,7 +409,9 @@ export const GalleryResultsView = ({
   const visualCollectionProps: FileListViewStyleComponentProps = {
     ...galleryProps,
     resultFileContexts:
-      initial && initial.folderCount > 1 ? fileContexts : undefined,
+      displayedInitial && displayedInitial.folderCount > 1
+        ? fileContexts
+        : undefined,
     resultRootFolderName: folderName,
   };
 
@@ -212,14 +423,35 @@ export const GalleryResultsView = ({
         filters={filters}
         folderIds={folderIds}
         input={input}
-        results={initial}
+        results={displayedInitial}
         localFiltersPaused={hasLocalOnlyGalleryFilters(filters)}
+        reviewStatus={reviewStatus}
+        refreshingSession={refreshingSessionKey === requestKey}
         onQueryChange={setResultsQuery}
         onFiltersChange={setFilters}
         onFolderIdsChange={setResultFolderIds}
         onClear={clearResultsCriteria}
         onBack={exitResults}
+        onRefresh={() => void refreshSession()}
       />
+
+      {selectedFileNoLongerMatches ? (
+        <Page>
+          <Alert variant="light" color="yellow">
+            <Stack gap="xs" align="flex-start">
+              <Text>{t('results.selectedFileNoLongerMatches')}</Text>
+              <Button
+                variant="subtle"
+                color="yellow"
+                size="compact-sm"
+                onClick={() => setSelectedFileId(undefined)}
+              >
+                {t('results.returnToResults')}
+              </Button>
+            </Stack>
+          </Alert>
+        </Page>
+      ) : null}
 
       {result.fetching && !initial ? (
         <ResultsLoadingCollection view={view} />
@@ -258,7 +490,7 @@ export const GalleryResultsView = ({
           </Alert>
         </Page>
       ) : null}
-      {initial?.totalCount === 0 ? (
+      {displayedInitial?.totalCount === 0 ? (
         <Center py="xl">
           <Stack align="center" gap="xs">
             <Text c="dimmed">
@@ -271,13 +503,22 @@ export const GalleryResultsView = ({
         </Center>
       ) : null}
 
-      {selectedFileId ? (
+      {selectedFileId &&
+      (selectedFileIsInResults || selectedFileIsInAnchorSequence) ? (
         <Suspense fallback={null}>
           <SelectedFileView
-            files={files}
+            files={lightboxFiles}
             setSelectedFileId={setSelectedFileId}
             selectedFileId={selectedFileId}
             folderId={folder.id}
+            resultFileContexts={lightboxContexts}
+            totalFiles={
+              useAnchorSequence ? undefined : displayedInitial?.totalCount
+            }
+            showCounter={!useAnchorSequence}
+            onApproachingEnd={
+              useAnchorSequence ? loadMoreAnchorResults : loadMore
+            }
           />
         </Suspense>
       ) : null}
@@ -285,16 +526,16 @@ export const GalleryResultsView = ({
       {view === 'gallery' && <GridGallery {...visualCollectionProps} />}
       {view === 'feed' && <ImageFeed {...visualCollectionProps} />}
 
-      {loadMoreError ? (
+      {refreshError || loadMoreError ? (
         <Page>
           <Alert variant="filled" color="red">
-            {loadMoreError}
+            {refreshError ?? loadMoreError}
           </Alert>
         </Page>
       ) : null}
       {pageInfo?.hasNextPage ? (
         <Center ref={loadMoreRef} pb="xl" mih={80}>
-          <Button loading={loadingMore} onClick={() => void loadMore()}>
+          <Button loading={nextPages.loading} onClick={loadMore}>
             {t('results.loadMore')}
           </Button>
         </Center>

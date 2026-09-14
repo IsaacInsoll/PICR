@@ -577,6 +577,31 @@ export class AuthorizedMediaResultsSelection {
     );
   }
 
+  private edgeForRow(row: SelectedFileRow): MediaResultEdgeValue {
+    return {
+      cursor: encodeOpaqueCursor({
+        version: 1,
+        fingerprint: this.cursorFingerprint,
+        primary: scalarCursorValue(row.primary),
+        path: row.sortPath,
+        name: row.sortName,
+        rawName: row.sortRawName,
+        id: row.file.id,
+      }),
+      file: fileToJSON(row.file),
+      folder: row.folder,
+      relativePath: relativeFolderPath(
+        row.folder.relativePath,
+        this.rootFolder.relativePath,
+      ),
+      matchSource: matchSourceFor(
+        row.file,
+        this.tokens,
+        this.rootFolder.relativePath,
+      ),
+    };
+  }
+
   async summary(): Promise<MediaMatchSummaryValue> {
     const [row] = await db
       .select({
@@ -657,31 +682,7 @@ export class AuthorizedMediaResultsSelection {
       .limit(pageSize + 1);
     const hasNextPage = rows.length > pageSize;
     const pageRows = rows.slice(0, pageSize) as SelectedFileRow[];
-    const edges = pageRows.map((row) => {
-      const cursorValue = encodeOpaqueCursor({
-        version: 1,
-        fingerprint: this.cursorFingerprint,
-        primary: scalarCursorValue(row.primary),
-        path: row.sortPath,
-        name: row.sortName,
-        rawName: row.sortRawName,
-        id: row.file.id,
-      });
-      return {
-        cursor: cursorValue,
-        file: fileToJSON(row.file),
-        folder: row.folder,
-        relativePath: relativeFolderPath(
-          row.folder.relativePath,
-          this.rootFolder.relativePath,
-        ),
-        matchSource: matchSourceFor(
-          row.file,
-          this.tokens,
-          this.rootFolder.relativePath,
-        ),
-      };
-    });
+    const edges = pageRows.map((row) => this.edgeForRow(row));
     return {
       edges,
       pageInfo: {
@@ -689,6 +690,28 @@ export class AuthorizedMediaResultsSelection {
         endCursor: edges.at(-1)?.cursor ?? null,
       },
     };
+  }
+
+  async anchor(
+    requestedFileId: number | string,
+  ): Promise<MediaResultEdgeValue | null> {
+    const fileId = parseNumericId(requestedFileId, 'media result file ID');
+    const primary = primarySortExpression(this.sort.type);
+    const rows = await db
+      .select({
+        file: dbFile,
+        folder: dbFolder,
+        primary,
+        sortPath: currentNormalizedPath,
+        sortName: currentNormalizedName,
+        sortRawName: currentRawName,
+      })
+      .from(dbFile)
+      .innerJoin(dbFolder, eq(dbFolder.id, dbFile.folderId))
+      .where(and(this.where(), eq(dbFile.id, fileId)))
+      .limit(1);
+    const row = rows.at(0);
+    return row ? this.edgeForRow(row as SelectedFileRow) : null;
   }
 
   private async folderFacetParent(

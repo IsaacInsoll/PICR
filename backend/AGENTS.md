@@ -276,6 +276,12 @@ future SQL-microsecond writer must preserve that extra precision in cursors.
 Do not switch this to offset pagination or accept arbitrary file IDs as the
 selection contract.
 
+The Results anchor lookup exists only to resolve a selected deep-linked file
+without walking every preceding page. It must reuse the authorized selection's
+exact `where()` predicate and edge projection; looking up a requested file ID
+outside that predicate would leak an out-of-scope or non-matching file through a
+valid Results route.
+
 The partial `Files_relativePath_exists_idx` uses `varchar_pattern_ops` because
 the canonical scope predicate combines exact paths with escaped prefix `LIKE`.
 On a synthetic 100,000-row scope it reduced a 1,000-row branch page from about

@@ -374,6 +374,7 @@ enum MediaResultSortType {
 }
 
 type MediaResultsConnection {
+  anchor(fileId: ID!): MediaResultEdge
   edges: [MediaResultEdge!]!
   folderCount: Int!
   folderFacets(after: String, first: Int! = 100, parentFolderId: ID): MediaFolderFacetsPage!

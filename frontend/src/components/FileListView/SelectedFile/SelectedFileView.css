@@ -48,6 +48,43 @@
   border-color: light-dark(rgba(0, 0, 0, 0.18), rgba(255, 255, 255, 0.22));
 }
 
+.lightbox-portal .picr-rail-file-context {
+  align-items: center;
+  display: flex;
+  gap: var(--mantine-spacing-xs);
+  min-width: 0;
+}
+
+.lightbox-portal .picr-rail-file-context > .picr-rail-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lightbox-portal .picr-rail-folder-link {
+  align-items: center;
+  color: var(--yarl__color_button, currentColor);
+  display: flex;
+  flex-shrink: 1;
+  gap: 4px;
+  min-width: 0;
+  opacity: 0.72;
+  text-decoration: none;
+}
+
+.lightbox-portal .picr-rail-folder-link:hover,
+.lightbox-portal .picr-rail-folder-link:focus-visible {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.lightbox-portal .picr-rail-folder-link > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /*
  * Review buttons in their `subtle` (inactive) state take the same colour as the
  * rest of the chrome. Active buttons keep their green/red/violet fill — this

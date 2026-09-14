@@ -95,6 +95,19 @@ test('local gallery filters promote to recursive Results without losing lightbox
   await expect(page).toHaveURL(/\/admin\/f\/1\?find=1&q=vertical&media=image$/);
   await expect(find).toHaveValue('vertical');
 
+  await page.goto('/admin/f/3?media=image', {
+    waitUntil: 'domcontentloaded',
+  });
+  const filteredGalleryTiles = page.locator(
+    '[data-testid="grid-gallery-item"]',
+  );
+  await expect(filteredGalleryTiles).toHaveCount(10);
+  await filteredGalleryTiles.locator('a').first().click();
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(page).toHaveURL(/\/admin\/f\/3\?media=image$/);
+  await expect(filteredGalleryTiles).toHaveCount(10);
+
   await page.goto('/admin/f/1?camera=Canon', {
     waitUntil: 'domcontentloaded',
   });
@@ -120,5 +133,62 @@ test('local gallery filters promote to recursive Results without losing lightbox
       'Camera, lens, and exposure filters are paused while searching. Back to Home restores them.',
     ),
   ).toBeVisible();
+  expectNoBrowserFailures(failures);
+});
+
+test('reviewing recursive Results keeps the materialized sequence stable', async ({
+  page,
+}) => {
+  const failures = trackBrowserFailures(page);
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.getByLabel('Username').fill(defaultCredentials.username);
+  await page
+    .getByRole('textbox', { name: 'Password' })
+    .fill(defaultCredentials.password);
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.waitForURL('**/admin');
+
+  await page.goto('/admin/f/1?find=1&media=image&flag=none', {
+    waitUntil: 'domcontentloaded',
+  });
+  const resultTiles = page.locator('[data-testid="grid-gallery-item"]');
+  await expect(resultTiles).toHaveCount(10);
+  await resultTiles.locator('a').first().click();
+
+  const firstFileUrl = page.url();
+  const sourceFolder = page.getByRole('link', {
+    name: 'Open Folder: Dog Photos',
+  });
+  await expect(sourceFolder).toBeVisible();
+  await page.getByRole('button', { name: 'Approve' }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  await expect(page).not.toHaveURL(firstFileUrl);
+  await page.getByRole('button', { name: 'Close' }).click();
+
+  await expect(resultTiles).toHaveCount(10);
+  await expect(page.getByText('1 result no longer matches')).toBeVisible();
+  await page.getByRole('button', { name: 'Refresh' }).click();
+  await expect(resultTiles).toHaveCount(9);
+  await expect(page.getByText('1 result no longer matches')).toHaveCount(0);
+
+  await page.goto(firstFileUrl, { waitUntil: 'domcontentloaded' });
+  await expect(
+    page.getByText(
+      'This file no longer matches the current search and filters.',
+    ),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Return to results' }).click();
+  await expect(resultTiles).toHaveCount(9);
+
+  // Restore the fixture so subsequent smoke tests see the original review
+  // state through a Results URL that does not exclude the approved file.
+  const restoreUrl = new URL(firstFileUrl);
+  restoreUrl.search = '?find=1&media=image';
+  await page.goto(restoreUrl.toString(), { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: 'Approve' }).click();
+  await page.getByRole('button', { name: 'Close' }).click();
+  await expect(page.locator('[data-testid="grid-gallery-item"]')).toHaveCount(
+    10,
+  );
   expectNoBrowserFailures(failures);
 });

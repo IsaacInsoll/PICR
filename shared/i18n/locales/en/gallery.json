@@ -272,8 +272,15 @@
     "localFiltersPaused": "Camera, lens, and exposure filters are paused while searching. Back to {{folder}} restores them.",
     "matchedFolderPath": "Matched folder: {{folder}}",
     "narrowByFolder": "Narrow by folder",
+    "noLongerMatch_one": "1 result no longer matches",
+    "noLongerMatch_other": "{{count}} results no longer match",
     "noNarrowerFolders": "No further folders",
-    "queryChip": "“{{query}}”"
+    "queryChip": "“{{query}}”",
+    "refresh": "Refresh",
+    "returnToResults": "Return to results",
+    "reviewChanges_one": "1 result changed order",
+    "reviewChanges_other": "{{count}} results changed order",
+    "selectedFileNoLongerMatches": "This file no longer matches the current search and filters."
   },
   "sort": {
     "button": "Sort",

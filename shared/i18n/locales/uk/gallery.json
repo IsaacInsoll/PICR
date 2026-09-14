@@ -282,8 +282,19 @@
     "localFiltersPaused": "Фільтри камери, об’єктива й експозиції призупинено під час пошуку. Повернення до {{folder}} відновить їх.",
     "matchedFolderPath": "Збіг із папкою: {{folder}}",
     "narrowByFolder": "Звузити за папкою",
+    "noLongerMatch_one": "1 результат більше не відповідає умовам",
+    "noLongerMatch_few": "{{count}} результати більше не відповідають умовам",
+    "noLongerMatch_many": "{{count}} результатів більше не відповідають умовам",
+    "noLongerMatch_other": "{{count}} результату більше не відповідають умовам",
     "noNarrowerFolders": "Немає вкладених папок",
-    "queryChip": "«{{query}}»"
+    "queryChip": "«{{query}}»",
+    "refresh": "Оновити",
+    "returnToResults": "Повернутися до результатів",
+    "reviewChanges_one": "1 результат змінив порядок",
+    "reviewChanges_few": "{{count}} результати змінили порядок",
+    "reviewChanges_many": "{{count}} результатів змінили порядок",
+    "reviewChanges_other": "{{count}} результату змінили порядок",
+    "selectedFileNoLongerMatches": "Цей файл більше не відповідає поточному пошуку та фільтрам."
   },
   "sort": {
     "button": "Сортувати",

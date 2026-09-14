@@ -16,7 +16,7 @@ export const FileFlagButtons = ({
   variant = 'default',
 }: {
   flag: FileFlag;
-  onChange: (flag: FileFlag) => void;
+  onChange: (flag: FileFlag) => void | Promise<void>;
   variant?: ReviewButtonVariant;
 }) => {
   const { t } = useTranslation('gallery');
@@ -39,8 +39,11 @@ export const FileFlagButtons = ({
   const setFlag = async (next: FileFlag) => {
     if (next === FileFlag.Approved) reward();
     setLoading(true);
-    await onChange(next);
-    setLoading(false);
+    try {
+      await onChange(next);
+    } finally {
+      setLoading(false);
+    }
   };
   const handleApproveClick = () => {
     void setFlag(isApproved ? FileFlag.None : FileFlag.Approved);

@@ -272,8 +272,15 @@
     "localFiltersPaused": "Les filtres d’appareil, d’objectif et d’exposition sont suspendus pendant la recherche. Retourner dans {{folder}} les rétablit.",
     "matchedFolderPath": "Correspondance dans le dossier : {{folder}}",
     "narrowByFolder": "Affiner par dossier",
+    "noLongerMatch_one": "1 résultat ne correspond plus",
+    "noLongerMatch_other": "{{count}} résultats ne correspondent plus",
     "noNarrowerFolders": "Aucun autre dossier",
-    "queryChip": "« {{query}} »"
+    "queryChip": "« {{query}} »",
+    "refresh": "Actualiser",
+    "returnToResults": "Retourner aux résultats",
+    "reviewChanges_one": "1 résultat a changé de position",
+    "reviewChanges_other": "{{count}} résultats ont changé de position",
+    "selectedFileNoLongerMatches": "Ce fichier ne correspond plus à la recherche et aux filtres actuels."
   },
   "sort": {
     "button": "Trier",

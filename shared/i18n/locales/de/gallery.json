@@ -272,8 +272,15 @@
     "localFiltersPaused": "Kamera-, Objektiv- und Belichtungsfilter sind während der Suche pausiert. Zurück zu {{folder}} stellt sie wieder her.",
     "matchedFolderPath": "Treffer im Ordner: {{folder}}",
     "narrowByFolder": "Nach Ordner eingrenzen",
+    "noLongerMatch_one": "1 Ergebnis stimmt nicht mehr überein",
+    "noLongerMatch_other": "{{count}} Ergebnisse stimmen nicht mehr überein",
     "noNarrowerFolders": "Keine weiteren Ordner",
-    "queryChip": "„{{query}}“"
+    "queryChip": "„{{query}}“",
+    "refresh": "Aktualisieren",
+    "returnToResults": "Zurück zu den Ergebnissen",
+    "reviewChanges_one": "1 Ergebnis hat seine Position geändert",
+    "reviewChanges_other": "{{count}} Ergebnisse haben ihre Position geändert",
+    "selectedFileNoLongerMatches": "Diese Datei entspricht nicht mehr der aktuellen Suche und den Filtern."
   },
   "sort": {
     "button": "Sortieren",
