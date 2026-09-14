@@ -362,7 +362,7 @@ const ViewFolderBody = () => {
           />
         </Suspense>
       ) : null}
-      <QuickFind folder={folder} />
+      {me?.isUser ? <QuickFind folder={folder} /> : null}
       {folder && csvExportOpen ? (
         <Suspense fallback={null}>
           <FolderCsvExportModal

@@ -4,7 +4,7 @@ import { folderType } from '../types/folderType.js';
 import { allSubfolderIds } from '../../helpers/allSubfolders.js';
 import { and, eq, ilike, inArray } from 'drizzle-orm';
 import { db } from '../../db/picrDb.js';
-import { dbFile, dbFolder } from '../../db/models/index.js';
+import { dbFolder } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { QuerySearchFoldersArgs } from '@shared/gql/graphql.js';
 
@@ -27,7 +27,7 @@ const resolver: PicrResolver<object, QuerySearchFoldersArgs> = async (
     where: and(
       inArray(dbFolder.parentId, folderIds),
       eq(dbFolder.exists, true),
-      ...lower.map((l) => ilike(dbFile.name, `%${l}%`)),
+      ...lower.map((l) => ilike(dbFolder.name, `%${l}%`)),
     ),
     limit: 100,
   });

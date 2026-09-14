@@ -143,6 +143,10 @@ test('public link and login routes load with no browser/runtime errors', async (
     await expect(
       page.getByRole('button', { name: 'Filter Files' }),
     ).toBeVisible();
+    await page.keyboard.press('Control+f');
+    await expect(
+      page.getByPlaceholder('Search photos and folders'),
+    ).toHaveCount(0);
     expectNoBrowserFailures(failures);
 
     let signalExpiryRefresh!: () => void;
