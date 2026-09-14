@@ -6,7 +6,7 @@ import {
   PlaceholderFolderHeader,
 } from '../components/FolderHeader/FolderHeader';
 import { folderSubtitle } from '../helpers/folderSubtitle';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { viewFolderQuery } from '@shared/urql/queries/viewFolderQuery';
 import { FolderContentsView } from '../components/FileListView/FolderContentsView';
 import QueryFeedback from '../components/QueryFeedback';
@@ -60,6 +60,7 @@ import {
   newPublicLinkId,
   usePublicLinkEditorRoute,
 } from '../hooks/usePublicLinkEditorRoute';
+import { decodeGalleryLocationCriteria } from '../helpers/galleryCriteriaSearchParams';
 // Language switcher soft-disabled (#84) — restore alongside the action below.
 // import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
@@ -126,6 +127,7 @@ export const ViewFolder = () => {
 
 const ViewFolderBody = () => {
   const { t } = useTranslation('gallery');
+  const location = useLocation();
   const { folderId, fileId, tab } = useParams();
   const navigate = useNavigate();
   const {
@@ -246,15 +248,23 @@ const ViewFolderBody = () => {
     ) ?? false;
 
   // redirect to 'no file selected' if you are in a valid folder but the file isn't found
+  const showingResults =
+    decodeGalleryLocationCriteria(location.search).mode === 'results';
   useEffect(() => {
     const fileIds = folder?.files.map((f) => f.id) ?? [];
-    if (fileId && fileIds.length > 0 && !managing && !activity) {
+    if (
+      fileId &&
+      fileIds.length > 0 &&
+      !managing &&
+      !activity &&
+      !showingResults
+    ) {
       if (!fileIds.includes(fileId)) {
         if (folder) void setFolder(folder);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally omitting folder/setFolder to avoid spurious redirects on query refresh
-  }, [activity, fileId, managing]);
+  }, [activity, fileId, managing, showingResults]);
 
   // redirect if someone navigates directly to manage/branding without the atom being set
   useEffect(() => {

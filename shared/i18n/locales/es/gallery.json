@@ -119,6 +119,11 @@
     "view": "Ver {{name}}"
   },
   "filter": {
+    "active": {
+      "filename": "Nombre de archivo: «{{value}}»",
+      "metadata": "{{name}}: {{value}}",
+      "rating": "{{comparison}} {{value}} estrellas"
+    },
     "apply": "Aplicar filtros",
     "aspect": {
       "any": "Cualquier proporción",
@@ -151,7 +156,14 @@
       "atMost": "A lo sumo",
       "equal": "igual a"
     },
+    "remove": "Quitar el filtro {{filter}}",
     "search": "Buscar",
+    "summary": {
+      "localOnly": "Solo esta carpeta",
+      "localOnlyHelp": "Los filtros de nombre de archivo y metadatos de cámara solo se aplican a los archivos de esta carpeta.",
+      "showAll": "{{more}} más en otras carpetas · Mostrar los {{total}}",
+      "shownHere": "{{visible}} de {{total}} mostrados aquí"
+    },
     "showingAll": "Mostrando todos los archivos",
     "showingCount": "Mostrando {{visible}} de archivos {{total}}"
   },
@@ -237,6 +249,13 @@
     "rejectTooltip": "Rechazar (pulgar hacia abajo)",
     "rejected": "Rechazado",
     "rejectionCleared": "Rechazo borrado"
+  },
+  "results": {
+    "backTo": "Volver a {{folder}}",
+    "changed": "Los resultados han cambiado. Intenta cargar más de nuevo.",
+    "empty": "Nada de esta galería coincide con estos filtros.",
+    "loadMore": "Cargar más",
+    "localFiltersPaused": "Los filtros de nombre de archivo y metadatos de cámara están pausados en Resultados y volverán cuando regreses."
   },
   "sort": {
     "button": "Clasificar",

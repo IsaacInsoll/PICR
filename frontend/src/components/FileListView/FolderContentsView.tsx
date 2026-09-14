@@ -3,11 +3,7 @@ import { useSelectedView } from '../../hooks/useSelectedView';
 import { lazy, Suspense, useCallback, useEffect, type MouseEvent } from 'react';
 import { GridGallery } from './GridGallery';
 import { ImageFeed } from './ImageFeed';
-import {
-  filterOptions,
-  resetFilterOptions,
-  totalFilterOptionsSelected,
-} from '@shared/filterAtom';
+import { countGalleryFilterCriteria } from '@shared/files/mediaCriteria';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useParams } from 'react-router';
 import { useSelectedFileId } from '../../hooks/useSelectedFileId';
@@ -37,6 +33,9 @@ import { useCanDownload, useMe } from '../../hooks/useMe';
 import { loadPicrVideoPlayer } from '../LazyPicrVideoPlayer';
 import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
 import { FolderContentsToolbar } from './FolderContentsToolbar';
+import { useGalleryCriteria } from '../../hooks/useGalleryCriteria';
+import { GalleryFilterSummary } from './Filtering/GalleryFilterSummary';
+import { GalleryResultsView } from './GalleryResultsView';
 
 const loadMoveRenameFolderModal = () =>
   import('./MoveRenameFolderModal').then((module) => ({
@@ -120,9 +119,14 @@ export const FolderContentsView = ({
     setView,
   ]);
 
-  const filters = useAtomValue(filterOptions);
-  const totalFilters = useAtomValue(totalFilterOptionsSelected);
-  const resetFilters = useSetAtom(resetFilterOptions);
+  const {
+    mode: criteriaMode,
+    filters,
+    setFilters,
+    resetFilters,
+    enterResults,
+  } = useGalleryCriteria(folderId);
+  const totalFilters = countGalleryFilterCriteria(filters);
   const [sort] = useFileSort();
   const moveFolder = useAtomValue(moveRenameFolderAtom);
   const closeMoveFolderModal = useCloseMoveRenameFolderModal();
@@ -150,8 +154,6 @@ export const FolderContentsView = ({
   const canDownload = useCanDownload();
 
   const setSelectedFileId = useSelectedFileId(folderId);
-
-  useEffect(() => resetFilters(), [resetFilters, folderId]);
 
   const handleContextMenu = useCallback(
     (event: MouseEvent<HTMLElement>) => {
@@ -195,6 +197,41 @@ export const FolderContentsView = ({
     width,
   };
 
+  const content =
+    criteriaMode === 'results' ? (
+      <GalleryResultsView
+        folder={folder}
+        selectedFileId={fileId}
+        setSelectedFileId={setSelectedFileId}
+        view={view}
+        width={width}
+      />
+    ) : (
+      <>
+        <GalleryFilterSummary
+          folder={folder}
+          filters={filters}
+          totalFiltered={props.files.length}
+          onChange={setFilters}
+          onReset={resetFilters}
+          onShowAll={enterResults}
+        />
+        {fileId ? (
+          <Suspense fallback={null}>
+            <SelectedFileView
+              files={props.files}
+              setSelectedFileId={setSelectedFileId}
+              selectedFileId={fileId}
+              folderId={folderId}
+            />
+          </Suspense>
+        ) : null}
+        {view === 'list' && <FileListView {...props} />}
+        {view === 'gallery' && <GridGallery {...props} />}
+        {view === 'feed' && <ImageFeed {...props} />}
+      </>
+    );
+
   // console.log('FCV render');
   return (
     <div onContextMenu={handleContextMenu} ref={containerRef}>
@@ -228,19 +265,7 @@ export const FolderContentsView = ({
           totalFiltered={props.files.length}
         />
       ) : null}
-      {fileId ? ( // SelectedFileView react lightbox 'blocks' fileinfo so we can't have them on at the same time
-        <Suspense fallback={null}>
-          <SelectedFileView
-            files={props.files}
-            setSelectedFileId={setSelectedFileId}
-            selectedFileId={fileId}
-            folderId={folderId}
-          />
-        </Suspense>
-      ) : null}
-      {view === 'list' && <FileListView {...props} />}
-      {view === 'gallery' && <GridGallery {...props} />}
-      {view === 'feed' && <ImageFeed {...props} />}
+      {content}
     </div>
   );
 };

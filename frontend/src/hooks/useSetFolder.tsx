@@ -7,22 +7,59 @@ import type {
 } from '@shared/types/ui';
 
 import { useBaseViewFolderURL } from './useBaseViewFolderURL';
+import {
+  decodeGalleryLocationCriteria,
+  withGalleryLocationCriteria,
+} from '../helpers/galleryCriteriaSearchParams';
 
-// Returns a builder for the folder/file URL, preserving the current hash (which
-// carries #s= sort and #m= modal state). Exported for surfaces that need the URL
-// string directly rather than as link props - e.g. a folder tile inside a
-// third-party gallery that renders its own anchor. Stable across renders (unless
-// base URL or hash change) so callers can safely use it in useMemo deps.
+export type GalleryCriteriaNavigationPolicy =
+  'clear' | 'carry-gallery' | 'preserve';
+
+interface SetFolderOptions extends NavigateOptions {
+  galleryCriteria?: GalleryCriteriaNavigationPolicy;
+}
+
+export const searchForFolderNavigation = (
+  currentSearch: string,
+  policy: GalleryCriteriaNavigationPolicy,
+) => {
+  if (policy === 'preserve') return currentSearch;
+  if (policy === 'clear') return '';
+
+  return withGalleryLocationCriteria(currentSearch, {
+    ...decodeGalleryLocationCriteria(currentSearch),
+    mode: 'gallery',
+    query: '',
+    folderIds: [],
+  });
+};
+
+// Returns a builder for the folder/file URL. Files preserve the full search and
+// hash state; folder navigation clears criteria unless its caller deliberately
+// carries gallery filters. Exported for surfaces that need the URL string
+// directly rather than link props. Stable across renders (unless base URL or
+// location state changes) so callers can safely use it in useMemo deps.
 export const useFolderUrl = () => {
   const baseUrl = useBaseViewFolderURL();
   const location = useLocation();
 
   return useCallback(
-    (folder: FolderNavigationTarget, file?: FileNavigationTarget) => {
+    (
+      folder: FolderNavigationTarget,
+      file?: FileNavigationTarget,
+      policy: GalleryCriteriaNavigationPolicy = file ? 'preserve' : 'clear',
+    ) => {
       const fileId = typeof file === 'string' ? file : file?.id;
-      return baseUrl + folder.id + (fileId ? `/${fileId}` : '') + location.hash;
+      const search = searchForFolderNavigation(location.search, policy);
+      return (
+        baseUrl +
+        folder.id +
+        (fileId ? `/${fileId}` : '') +
+        search +
+        location.hash
+      );
     },
-    [baseUrl, location.hash],
+    [baseUrl, location.hash, location.search],
   );
 };
 
@@ -34,9 +71,10 @@ export const useSetFolder = () => {
   return (
     folder: FolderNavigationTarget,
     file?: FileNavigationTarget,
-    options?: NavigateOptions,
+    options?: SetFolderOptions,
   ) => {
-    void navigate(folderUrl(folder, file), options);
+    const { galleryCriteria, ...navigateOptions } = options ?? {};
+    void navigate(folderUrl(folder, file, galleryCriteria), navigateOptions);
   };
 };
 
@@ -47,7 +85,11 @@ export const useSetFolder = () => {
 export const useFolderLink = (
   folder: FolderNavigationTarget,
   file?: FileNavigationTarget,
+  galleryCriteria?: GalleryCriteriaNavigationPolicy,
 ) => {
   const folderUrl = useFolderUrl();
-  return { to: folderUrl(folder, file), component: NavLink };
+  return {
+    to: folderUrl(folder, file, galleryCriteria),
+    component: NavLink,
+  };
 };

@@ -119,6 +119,11 @@
     "view": "Afficher {{name}}"
   },
   "filter": {
+    "active": {
+      "filename": "Nom du fichier : « {{value}} »",
+      "metadata": "{{name}} : {{value}}",
+      "rating": "{{comparison}} {{value}} étoiles"
+    },
     "apply": "Appliquer les filtres",
     "aspect": {
       "any": "Tous les formats",
@@ -151,7 +156,14 @@
       "atMost": "Au plus",
       "equal": "Égale à"
     },
+    "remove": "Supprimer le filtre {{filter}}",
     "search": "Rechercher",
+    "summary": {
+      "localOnly": "Ce dossier uniquement",
+      "localOnlyHelp": "Les filtres de nom de fichier et de métadonnées d’appareil s’appliquent uniquement aux fichiers de ce dossier.",
+      "showAll": "{{more}} autres ailleurs · Afficher les {{total}}",
+      "shownHere": "{{visible}} sur {{total}} affichés ici"
+    },
     "showingAll": "Tous les fichiers sont affichés",
     "showingCount": "{{visible}} fichiers affichés sur {{total}}"
   },
@@ -237,6 +249,13 @@
     "rejectTooltip": "Rejeter (pouce baissé)",
     "rejected": "Rejeté",
     "rejectionCleared": "Rejet retiré"
+  },
+  "results": {
+    "backTo": "Retour à {{folder}}",
+    "changed": "Les résultats ont changé. Essayez à nouveau d’en charger davantage.",
+    "empty": "Aucun élément de cette galerie ne correspond à ces filtres.",
+    "loadMore": "Charger plus",
+    "localFiltersPaused": "Les filtres de nom de fichier et de métadonnées de l’appareil sont suspendus dans les résultats et seront rétablis à votre retour."
   },
   "sort": {
     "button": "Trier",

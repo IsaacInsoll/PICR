@@ -9,9 +9,11 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import type { ViewFolder } from '@shared/files/sortFiles';
-import { filterOptions, totalFilterOptionsSelected } from '@shared/filterAtom';
+import {
+  countGalleryFilterCriteria,
+  defaultGalleryFilterCriteria,
+} from '@shared/files/mediaCriteria';
 import { filterFiles } from '@shared/files/filterFiles';
-import { useAtomValue } from 'jotai';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelectedView, viewOptions } from '../../hooks/useSelectedView';
@@ -21,6 +23,8 @@ import { FilterIcon } from '../../PicrIcons';
 import { Page } from '../Page';
 import { FileSortMenuButton } from './FileSortSelector';
 import { FilteringOptions } from './Filtering/FilteringOptions';
+import { useGalleryCriteria } from '../../hooks/useGalleryCriteria';
+import { countRecursiveGalleryFilters } from '../../helpers/mediaResultsInput';
 
 export const FolderContentsToolbar = ({
   folder,
@@ -67,8 +71,13 @@ export const FolderContentsControls = ({
   const isSmallScreen = useIsSmallScreen();
   const [filtersOpened, { open: openFilters, close: closeFilters }] =
     useDisclosure(false);
-  const filters = useAtomValue(filterOptions);
-  const totalFilters = useAtomValue(totalFilterOptionsSelected);
+  const { mode, filters, setFilters, resetFilters } = useGalleryCriteria(
+    folder.id,
+  );
+  const totalFilters =
+    mode === 'results'
+      ? countRecursiveGalleryFilters(filters)
+      : countGalleryFilterCriteria(filters);
   const hasFiles = folder.files.length > 0;
   const hasFolders = folder.subFolders.length > 0;
   const resolvedTotalFiltered = useMemo(
@@ -79,6 +88,17 @@ export const FolderContentsControls = ({
         : folder.files.length),
     [filters, folder.files, totalFiltered, totalFilters],
   );
+  const resetVisibleFilters = () => {
+    if (mode === 'gallery') {
+      resetFilters();
+      return;
+    }
+    setFilters({
+      ...defaultGalleryFilterCriteria,
+      searchText: filters.searchText,
+      metadata: filters.metadata,
+    });
+  };
 
   return (
     <>
@@ -98,7 +118,7 @@ export const FolderContentsControls = ({
               hasFolders={hasFolders}
             />
           ) : null}
-          {hasFiles ? (
+          {hasFiles || hasFolders ? (
             <Tooltip label={t('folder.filterFiles')} withArrow>
               <Indicator
                 inline
@@ -123,7 +143,7 @@ export const FolderContentsControls = ({
         </Group>
       </Group>
 
-      {hasFiles ? (
+      {hasFiles || hasFolders ? (
         <Drawer
           opened={filtersOpened}
           onClose={closeFilters}
@@ -135,7 +155,15 @@ export const FolderContentsControls = ({
           <FilteringOptions
             files={folder.files}
             totalFiltered={resolvedTotalFiltered}
+            filters={filters}
+            onChange={setFilters}
+            onReset={resetVisibleFilters}
             onClose={closeFilters}
+            showFilename={mode === 'gallery'}
+            showMetadata={mode === 'gallery'}
+            showCountSummary={mode === 'gallery'}
+            showMediaTypeAlways={hasFolders || mode === 'results'}
+            activeFilterCount={totalFilters}
           />
         </Drawer>
       ) : null}

@@ -1,10 +1,6 @@
 import type { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
+import type { GalleryFilterCriteria } from '@shared/files/mediaCriteria';
 import { MetadataIcon } from '../../../PicrIcons';
-import { useAtomValue, useSetAtom } from 'jotai';
-import {
-  resetFilterOptions,
-  totalMetadataFilterOptionsSelected,
-} from '@shared/filterAtom';
 import { Button, Group, Indicator, Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { MetadataSelect } from './MetadataSelect';
@@ -13,15 +9,20 @@ import { useTranslation } from 'react-i18next';
 
 export const MetadataBox = ({
   metadata,
+  filters,
+  onChange,
+  onReset,
 }: {
   metadata: MetadataOptionsForFiltering;
+  filters: GalleryFilterCriteria;
+  onChange: (filters: GalleryFilterCriteria) => void;
+  onReset: () => void;
 }) => {
   const { t } = useTranslation('gallery');
   const [opened, { open, close }] = useDisclosure(false);
-  const totalMetadataSelected = useAtomValue(
-    totalMetadataFilterOptionsSelected,
-  );
-  const resetFilters = useSetAtom(resetFilterOptions);
+  const totalMetadataSelected = Object.values(filters.metadata).filter(
+    (values) => values.length,
+  ).length;
 
   return (
     <>
@@ -37,6 +38,8 @@ export const MetadataBox = ({
               key={title}
               title={title as AnyMetadataKey}
               options={options}
+              filters={filters}
+              onChange={onChange}
             />
           );
         })}
@@ -44,7 +47,7 @@ export const MetadataBox = ({
           <Button
             variant="default"
             onClick={() => {
-              resetFilters();
+              onReset();
               close();
             }}
           >

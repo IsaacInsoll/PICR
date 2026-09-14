@@ -38,6 +38,7 @@ type GalleryItem = GridImage & {
 };
 
 export const GridGallery = ({
+  folderId,
   files,
   folders,
   items,
@@ -84,7 +85,7 @@ export const GridGallery = ({
       if (isFolderContentsFile(item)) {
         setSelectedFileId(item.id);
       } else {
-        setFolder(item);
+        setFolder(item, undefined, { galleryCriteria: 'carry-gallery' });
       }
     },
     [orderedItems, setFolder, setSelectedFileId],
@@ -110,7 +111,7 @@ export const GridGallery = ({
             // Images are real links; videos/other files keep their plain click.
             href:
               item.type === 'Image'
-                ? folderUrl({ id: item.folderId }, item.id)
+                ? folderUrl({ id: folderId }, item.id)
                 : undefined,
           };
         }
@@ -120,10 +121,10 @@ export const GridGallery = ({
           width: thumbnailSize * 2,
           height: thumbnailSize,
           folder: item,
-          href: folderUrl(item),
+          href: folderUrl(item, undefined, 'carry-gallery'),
         };
       }),
-    [orderedItems, thumbnailSize, folderUrl, thumbnailVariants],
+    [folderId, orderedItems, thumbnailSize, folderUrl, thumbnailVariants],
   );
   const tileViewportStyle = useCallback(
     (context: { item: ImageExtended<GalleryItem> }) => ({

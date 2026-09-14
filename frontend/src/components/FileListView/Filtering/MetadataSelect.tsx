@@ -1,6 +1,4 @@
-import { useAtom } from 'jotai';
-import type { FilterOptionsInterface } from '@shared/filterAtom';
-import { filterOptions } from '@shared/filterAtom';
+import type { GalleryFilterCriteria } from '@shared/files/mediaCriteria';
 import { formatMetadataValues } from '../../../metadata/formatMetadataValues';
 import { MultiSelect } from '@mantine/core';
 import { metadataIcons } from '../metadataIcons';
@@ -14,14 +12,17 @@ import { useDateFormatters } from '../../../i18n/useDateFormatters';
 export const MetadataSelect = ({
   title,
   options,
+  filters,
+  onChange,
 }: {
   title: AnyMetadataKey;
   options: (string | number)[];
+  filters: GalleryFilterCriteria;
+  onChange: (filters: GalleryFilterCriteria) => void;
 }) => {
   const { t } = useTranslation('gallery');
   const { formattingLocale, invalidDateLabel } = useDateFormatters();
-  const [fo, setFo] = useAtom(filterOptions);
-  const metadata = fo.metadata as Record<string, (string | number)[]>;
+  const metadata = filters.metadata as Record<string, (string | number)[]>;
   const value = options.length === 1 ? options : (metadata[title] ?? []);
   const data = formatMetadataValues(
     title,
@@ -57,13 +58,13 @@ export const MetadataSelect = ({
         const newVals = data
           .filter((x) => strs.includes(x.value))
           .map((x) => x.raw);
-        setFo((e: FilterOptionsInterface) => ({
-          ...e,
+        onChange({
+          ...filters,
           metadata: {
-            ...e.metadata,
+            ...filters.metadata,
             [title]: newVals,
           },
-        }));
+        });
       }}
     />
   );

@@ -1,7 +1,7 @@
-import { useAtom } from 'jotai';
-import type { FilterOptionsInterface } from '@shared/filterAtom';
-import type { AspectFilter } from '@shared/files/mediaCriteria';
-import { filterOptions } from '@shared/filterAtom';
+import type {
+  AspectFilter,
+  GalleryFilterCriteria,
+} from '@shared/files/mediaCriteria';
 import {
   AspectAnyIcon,
   AspectLandscapeIcon,
@@ -13,17 +13,22 @@ import { Group, Select } from '@mantine/core';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export const AspectSelector = () => {
+export const AspectSelector = ({
+  filters,
+  onChange,
+}: {
+  filters: GalleryFilterCriteria;
+  onChange: (filters: GalleryFilterCriteria) => void;
+}) => {
   const { t } = useTranslation('gallery');
-  const [options, setOptions] = useAtom(filterOptions);
-  const onChange = (aspect: AspectFilter) =>
-    setOptions((o: FilterOptionsInterface) => ({ ...o, aspect }));
   return (
     <Select
       style={{ width: '150px' }}
-      value={options.aspect}
-      onChange={(v) => v && onChange(v as AspectFilter)}
-      leftSection={aspectRatioIcon[options.aspect]}
+      value={filters.aspect}
+      onChange={(value) =>
+        value && onChange({ ...filters, aspect: value as AspectFilter })
+      }
+      leftSection={aspectRatioIcon[filters.aspect]}
       data={aspectRatioOptions.map(({ value, labelKey }) => ({
         value,
         label: t(labelKey),

@@ -1,17 +1,22 @@
 import { Button } from '@mantine/core';
-import { useAtom } from 'jotai';
-import type { FilterOptionsInterface } from '@shared/filterAtom';
-import type { CommentPresence } from '@shared/files/mediaCriteria';
-import { filterOptions } from '@shared/filterAtom';
+import type {
+  CommentPresence,
+  GalleryFilterCriteria,
+} from '@shared/files/mediaCriteria';
 import type { ReactNode } from 'react';
 import { CommentIcon, CommentsIcon } from '../../../PicrIcons';
 import { useTranslation } from 'react-i18next';
 
-export const CommentsFilterBox = () => {
+export const CommentsFilterBox = ({
+  filters,
+  onChange,
+}: {
+  filters: GalleryFilterCriteria;
+  onChange: (filters: GalleryFilterCriteria) => void;
+}) => {
   const { t } = useTranslation('gallery');
-  const [options, setOptions] = useAtom(filterOptions);
 
-  const value = options.comments;
+  const value = filters.comments;
 
   return (
     <Button.Group>
@@ -24,10 +29,10 @@ export const CommentsFilterBox = () => {
             title={label}
             variant={isSelected ? 'filled' : 'default'}
             onClick={() =>
-              setOptions((o: FilterOptionsInterface) => ({
-                ...o,
+              onChange({
+                ...filters,
                 comments: isSelected ? null : optionValue,
-              }))
+              })
             }
             key={optionValue}
             size="xs"

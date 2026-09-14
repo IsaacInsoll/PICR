@@ -1,8 +1,7 @@
 import { SegmentedControl } from '@mantine/core';
-import { useAtom } from 'jotai';
-import { filterOptions, type FilterOptionsInterface } from '@shared/filterAtom';
 import {
   mediaTypeFilterValues,
+  type GalleryFilterCriteria,
   type MediaTypeFilterValue,
 } from '@shared/files/mediaCriteria';
 import { useTranslation } from 'react-i18next';
@@ -16,22 +15,27 @@ const labelKeys: Record<
   Video: 'filter.mediaTypeVideos',
 };
 
-export const MediaTypeSelector = () => {
+export const MediaTypeSelector = ({
+  filters,
+  onChange,
+}: {
+  filters: GalleryFilterCriteria;
+  onChange: (filters: GalleryFilterCriteria) => void;
+}) => {
   const { t } = useTranslation('gallery');
-  const [options, setOptions] = useAtom(filterOptions);
 
   return (
     <SegmentedControl
-      value={options.mediaType}
+      value={filters.mediaType}
       onChange={(mediaType) => {
         const nextMediaType = mediaTypeFilterValues.find(
           (value) => value === mediaType,
         );
         if (!nextMediaType) return;
-        setOptions((current: FilterOptionsInterface) => ({
-          ...current,
+        onChange({
+          ...filters,
           mediaType: nextMediaType,
-        }));
+        });
       }}
       data={mediaTypeFilterValues.map((value) => ({
         value,

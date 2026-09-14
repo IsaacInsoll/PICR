@@ -72,6 +72,13 @@ shared/
 | Format helpers     | `imageFormats`                | Pure extension checks |
 | Validation         | `validateFolderName`          | Pure functions        |
 
+`sortFiles` keeps local Filename ordering identical to recursive Results:
+accent-folded/case-folded name first, then raw name and numeric ID, using
+Unicode code-point order. Treat that ordering as a cursor/API contract. Cache
+each item's normalized name once per sort and keep the code-point comparator
+allocation-free; normalizing or expanding strings inside the comparator makes
+large galleries visibly slow because sorting runs during gallery renders.
+
 ### NOT Safe to Share
 
 | Type                   | Why Not                     | Workaround            |

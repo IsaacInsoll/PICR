@@ -41,6 +41,14 @@ bottom sheet on small screens). Closing the drawer must not disable applied
 filters; show the active-filter count on the toolbar action until filters are
 cleared.
 
+Gallery criteria live in the query string while sort, view and modal state live
+in the hash. Build folder and file destinations through `useFolderUrl` rather
+than concatenating routes: opening a file preserves the full Results selection,
+ordinary folder navigation clears it, and gallery folder tiles explicitly use
+`carry-gallery` so visible local filters follow the user without carrying a
+Results query or folder facet. This also keeps query updates coordinated with
+same-tick lightbox/hash changes.
+
 Folder-header actions are role-aware. Public-link users see Download and
 Activity directly whenever permitted; do not create a one-item overflow menu or
 duplicate a visible action inside it. Administrators see the primary Manage

@@ -1,17 +1,20 @@
 import { Button } from '@mantine/core';
 import { fileFlags } from '../Review/fileFlagStyles';
-import { useAtom } from 'jotai';
-import type { FilterOptionsInterface } from '@shared/filterAtom';
-import { filterOptions } from '@shared/filterAtom';
+import type { GalleryFilterCriteria } from '@shared/files/mediaCriteria';
 import { useTranslation } from 'react-i18next';
 
-export const FlagFilterBox = () => {
+export const FlagFilterBox = ({
+  filters,
+  onChange,
+}: {
+  filters: GalleryFilterCriteria;
+  onChange: (filters: GalleryFilterCriteria) => void;
+}) => {
   const { t } = useTranslation('gallery');
-  const [options, setOptions] = useAtom(filterOptions);
 
-  const selected = options.flag;
-  const onChange = (flag: typeof selected) => {
-    setOptions((o: FilterOptionsInterface) => ({ ...o, flag }));
+  const selected = filters.flag;
+  const onFlagChange = (flag: typeof selected) => {
+    onChange({ ...filters, flag });
   };
 
   return (
@@ -24,7 +27,7 @@ export const FlagFilterBox = () => {
             title={value}
             color={color}
             variant={isSelected ? 'filled' : 'default'}
-            onClick={() => onChange(isSelected ? null : value)}
+            onClick={() => onFlagChange(isSelected ? null : value)}
             key={value}
             size="xs"
             leftSection={icon}

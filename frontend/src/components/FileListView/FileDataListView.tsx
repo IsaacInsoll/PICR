@@ -31,19 +31,29 @@ const folderContentsColumn = createPicrColumns<FolderContentsItem>();
 // the folder, image files to the lightbox URL. Videos and other files stay plain
 // text (their row click still opens the lightbox). The row onClick bails on a
 // link's plain click via event.defaultPrevented, so the two don't both fire.
-const NameCell = ({ item }: { item: FolderContentsItem }) => {
+const NameCell = ({
+  item,
+  navigationFolderId,
+}: {
+  item: FolderContentsItem;
+  navigationFolderId: string;
+}) => {
   const folderUrl = useFolderUrl();
   const name = normalizeDisplayName(item.name);
   if (!isFolderContentsFile(item)) {
     return (
-      <PicrLink to={folderUrl(item)} underline="never" c="inherit">
+      <PicrLink
+        to={folderUrl(item, undefined, 'carry-gallery')}
+        underline="never"
+        c="inherit"
+      >
         {name}
       </PicrLink>
     );
   }
   if (item.type === 'Image') {
     return (
-      <FileLink folderId={item.folderId} fileId={item.id} c="inherit">
+      <FileLink folderId={navigationFolderId} fileId={item.id} c="inherit">
         {name}
       </FileLink>
     );
@@ -57,6 +67,7 @@ const FileSizeCell = ({ value }: { value: string | null }) => {
 };
 
 export const FileDataListView = ({
+  folderId,
   files,
   setSelectedFileId,
   folders,
@@ -69,7 +80,7 @@ export const FileDataListView = ({
   const isMobile = useIsMobile();
   const isSmall = useIsSmallScreen();
 
-  const columns = useMemo(() => buildColumns(t), [t]);
+  const columns = useMemo(() => buildColumns(t, folderId), [folderId, t]);
   const cols = columns
     .filter(({ isComment }) => canView || !isComment)
     .filter(
@@ -101,7 +112,7 @@ export const FileDataListView = ({
           if (isFolderContentsFile(row)) {
             setSelectedFileId(row.id);
           } else {
-            setFolder(row);
+            setFolder(row, undefined, { galleryCriteria: 'carry-gallery' });
           }
         }}
         menuItems={({ row }) =>
@@ -118,6 +129,7 @@ export const FileDataListView = ({
 
 const buildColumns = (
   t: GalleryT,
+  navigationFolderId: string,
 ): (PicrColumns<FolderContentsItem> & {
   isComment: boolean;
   visibleFor: MantineSize;
@@ -126,7 +138,9 @@ const buildColumns = (
     ...folderContentsColumn.accessor('name', {
       header: t('file.name'),
       widthPercent: 10,
-      cell: ({ row }) => <NameCell item={row.original} />,
+      cell: ({ row }) => (
+        <NameCell item={row.original} navigationFolderId={navigationFolderId} />
+      ),
     }),
     visibleFor: 'xs',
     isComment: false,

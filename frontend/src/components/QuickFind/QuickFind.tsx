@@ -167,7 +167,7 @@ const Results = ({
     if (file && folder?.id && targetFolder.id === folder.id) {
       setSelectedFileId(file.id);
     } else {
-      setFolder(targetFolder, file);
+      setFolder(targetFolder, file, { galleryCriteria: 'clear' });
     }
   };
 

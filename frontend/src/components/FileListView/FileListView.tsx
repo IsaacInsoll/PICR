@@ -39,6 +39,7 @@ import { fileTypeLabel } from '../../i18n/galleryLabels';
 import { useDateFormatters } from '../../i18n/useDateFormatters';
 
 export const FileListView = ({
+  folderId,
   files,
   setSelectedFileId,
   folders,
@@ -57,6 +58,7 @@ export const FileListView = ({
           {loadedFiles.map((f, i) => (
             <Row
               file={f}
+              navigationFolderId={folderId}
               key={f.id}
               sortType={sortType}
               setSelectedFileId={setSelectedFileId}
@@ -74,11 +76,13 @@ const Row = ({
   file,
   sortType,
   onBecomeVisible,
+  navigationFolderId,
 }: {
   setSelectedFileId: (id: string | undefined) => void;
   file: FolderContentsItem;
   sortType: FileSort['type'];
   onBecomeVisible: () => void;
+  navigationFolderId: string;
 }) => {
   const { canView } = useCommentPermissions();
   const setFolder = useSetFolder();
@@ -142,7 +146,7 @@ const Row = ({
       return;
     }
     if (isFolder) {
-      setFolder(file);
+      setFolder(file, undefined, { galleryCriteria: 'carry-gallery' });
     } else {
       setSelectedFileId(file.id);
     }
@@ -166,7 +170,7 @@ const Row = ({
           <div>
             {isFolder ? (
               <PicrLink
-                to={folderUrl(file)}
+                to={folderUrl(file, undefined, 'carry-gallery')}
                 underline="never"
                 c="inherit"
                 fz="md"
@@ -177,7 +181,7 @@ const Row = ({
               </PicrLink>
             ) : file.type === 'Image' ? (
               <FileLink
-                folderId={file.folderId}
+                folderId={navigationFolderId}
                 fileId={file.id}
                 underline="never"
                 c="inherit"

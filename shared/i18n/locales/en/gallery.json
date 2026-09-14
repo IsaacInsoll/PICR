@@ -119,6 +119,11 @@
     "view": "View {{name}}"
   },
   "filter": {
+    "active": {
+      "filename": "Filename: “{{value}}”",
+      "metadata": "{{name}}: {{value}}",
+      "rating": "{{comparison}} {{value}} stars"
+    },
     "apply": "Apply Filters",
     "aspect": {
       "any": "Any Ratio",
@@ -151,7 +156,14 @@
       "atMost": "At most",
       "equal": "Equal to"
     },
+    "remove": "Remove {{filter}} filter",
     "search": "Search",
+    "summary": {
+      "localOnly": "This folder only",
+      "localOnlyHelp": "Filename and camera metadata filters only apply to files in this folder.",
+      "showAll": "{{more}} more elsewhere · Show all {{total}}",
+      "shownHere": "{{visible}} of {{total}} shown here"
+    },
     "showingAll": "Showing all files",
     "showingCount": "Showing {{visible}} of {{total}} files"
   },
@@ -237,6 +249,13 @@
     "rejectTooltip": "Reject (Thumbs Down)",
     "rejected": "Rejected",
     "rejectionCleared": "Rejection cleared"
+  },
+  "results": {
+    "backTo": "Back to {{folder}}",
+    "changed": "The results changed. Please try loading more again.",
+    "empty": "Nothing in this gallery matches these filters.",
+    "loadMore": "Load more",
+    "localFiltersPaused": "Filename and camera metadata filters are paused in Results and will return when you go back."
   },
   "sort": {
     "button": "Sort",

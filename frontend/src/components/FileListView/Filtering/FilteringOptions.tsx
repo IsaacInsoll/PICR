@@ -1,4 +1,8 @@
 import type { PicrFile } from '@shared/types/picr';
+import {
+  countGalleryFilterCriteria,
+  type GalleryFilterCriteria,
+} from '@shared/files/mediaCriteria';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { metadataForFiltering } from '@shared/files/metadataForFiltering';
@@ -20,23 +24,33 @@ import { useCommentPermissions } from '../../../hooks/useCommentPermissions';
 import { FlagFilterBox } from './FlagFilterBox';
 import { RatingFilterBox } from './RatingFilterBox';
 import { CommentsFilterBox } from './CommentsFilterBox';
-import {
-  filterOptions,
-  resetFilterOptions,
-  totalFilterOptionsSelected,
-} from '@shared/filterAtom';
-import { useAtomValue, useSetAtom } from 'jotai';
 import { InfoIcon } from '../../../PicrIcons';
 import { useTranslation } from 'react-i18next';
 
 export const FilteringOptions = ({
   files,
   totalFiltered,
+  filters,
+  onChange,
+  onReset,
   onClose,
+  showFilename = true,
+  showMetadata = true,
+  showCountSummary = true,
+  showMediaTypeAlways = false,
+  activeFilterCount,
 }: {
   files: PicrFile[];
   totalFiltered: number;
+  filters: GalleryFilterCriteria;
+  onChange: (filters: GalleryFilterCriteria) => void;
+  onReset: () => void;
   onClose: () => void;
+  showFilename?: boolean;
+  showMetadata?: boolean;
+  showCountSummary?: boolean;
+  showMediaTypeAlways?: boolean;
+  activeFilterCount?: number;
 }) => {
   const { t } = useTranslation('gallery');
   const { canView } = useCommentPermissions();
@@ -44,47 +58,56 @@ export const FilteringOptions = ({
     () => metadataForFiltering(files.filter((f) => f.type === 'Image')),
     [files],
   );
-  const filters = useAtomValue(filterOptions);
-  const totalFilters = useAtomValue(totalFilterOptionsSelected);
-  const resetFilters = useSetAtom(resetFilterOptions);
+  const totalFilters = activeFilterCount ?? countGalleryFilterCriteria(filters);
   const hasMultipleMediaTypes = useMemo(
     () => new Set(files.map((file) => file.type)).size > 1,
     [files],
   );
   return (
     <Stack gap={0}>
-      <Row label={t('filter.filename')}>
-        <SearchBox />
-      </Row>
-      {hasMultipleMediaTypes || filters.mediaType !== 'All' ? (
+      {showFilename ? (
+        <Row label={t('filter.filename')}>
+          <SearchBox filters={filters} onChange={onChange} />
+        </Row>
+      ) : null}
+      {showMediaTypeAlways ||
+      hasMultipleMediaTypes ||
+      filters.mediaType !== 'All' ? (
         <Row label={t('filter.mediaType')}>
-          <MediaTypeSelector />
+          <MediaTypeSelector filters={filters} onChange={onChange} />
         </Row>
       ) : null}
       <Row label={t('filter.imageOptions')}>
         <Group justify="space-between">
-          <AspectSelector />
-          <Box>
-            <MetadataBox metadata={meta} />
-          </Box>
+          <AspectSelector filters={filters} onChange={onChange} />
+          {showMetadata ? (
+            <Box>
+              <MetadataBox
+                metadata={meta}
+                filters={filters}
+                onChange={onChange}
+                onReset={onReset}
+              />
+            </Box>
+          ) : null}
         </Group>
       </Row>
       {canView ? (
         <>
           <Row label={t('filter.flag')}>
-            <FlagFilterBox />
+            <FlagFilterBox filters={filters} onChange={onChange} />
           </Row>
           <Row label={t('filter.rating')}>
-            <RatingFilterBox />
+            <RatingFilterBox filters={filters} onChange={onChange} />
           </Row>
           <Row label={t('filter.comments')}>
-            <CommentsFilterBox />
+            <CommentsFilterBox filters={filters} onChange={onChange} />
           </Row>
         </>
       ) : null}
       <Group pt="md" align="flex-end">
         <Box flex={1} miw={180}>
-          {totalFilters > 0 ? (
+          {showCountSummary && totalFilters > 0 ? (
             <Alert variant="light" icon={<InfoIcon />} p={8}>
               {totalFiltered === files.length
                 ? t('filter.showingAll')
@@ -99,7 +122,7 @@ export const FilteringOptions = ({
           variant="outline"
           size="sm"
           disabled={totalFilters === 0}
-          onClick={() => resetFilters()}
+          onClick={onReset}
         >
           {totalFilters > 0
             ? t('filter.clear', { count: totalFilters })

@@ -48,6 +48,7 @@ import { thumbnailUrlForWidth } from '../../helpers/thumbnailVariantImages';
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 
 export const ImageFeed = ({
+  folderId,
   files,
   folders,
   items,
@@ -67,6 +68,7 @@ export const ImageFeed = ({
         isFolderContentsFile(item) ? (
           <FeedItem
             file={item}
+            navigationFolderId={folderId}
             key={item.id}
             width={effectiveWidth}
             onBecomeVisible={() => onBecomeVisible(i)}
@@ -88,10 +90,12 @@ const FeedItem = ({
   file,
   width,
   onBecomeVisible,
+  navigationFolderId,
 }: {
   file: ViewFolderFileWithHero;
   width: number;
   onBecomeVisible?: () => void;
+  navigationFolderId: string;
 }) => {
   const { isNone } = useCommentPermissions();
   const canDownload = useCanDownload();
@@ -139,7 +143,7 @@ const FeedItem = ({
         {/*<Link to={`./${file.id}`}>*/}
         {type === 'Image' ? (
           <FileLink
-            folderId={file.folderId}
+            folderId={navigationFolderId}
             fileId={file.id}
             style={{ display: 'block' }}
           >
@@ -202,7 +206,7 @@ const FeedFolderItem = ({
   onBecomeVisible?: () => void;
 }) => {
   const { ref, inView } = useInView({ threshold: 0 });
-  const { to } = useFolderLink(folder);
+  const { to } = useFolderLink(folder, undefined, 'carry-gallery');
   useEffect(() => {
     if (inView && onBecomeVisible) {
       onBecomeVisible();

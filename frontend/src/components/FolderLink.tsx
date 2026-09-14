@@ -10,7 +10,7 @@ export const FolderLink = ({
   folder: PicrFolder;
   color?: string;
 }) => {
-  const { to } = useFolderLink(folder);
+  const { to } = useFolderLink(folder, undefined, 'carry-gallery');
   const formatFolderName = useFolderNameFormatter();
 
   return (
