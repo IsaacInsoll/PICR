@@ -36,6 +36,7 @@ import { FolderContentsToolbar } from './FolderContentsToolbar';
 import { useGalleryCriteria } from '../../hooks/useGalleryCriteria';
 import { GalleryFilterSummary } from './Filtering/GalleryFilterSummary';
 import { GalleryResultsView } from './GalleryResultsView';
+import type { ResultFileContext } from './ResultFolderContext';
 
 const loadMoveRenameFolderModal = () =>
   import('./MoveRenameFolderModal').then((module) => ({
@@ -62,6 +63,8 @@ export interface FileListViewStyleComponentProps {
   setSelectedFileId: (id: string | undefined) => void;
   folderId: string;
   width: number;
+  resultFileContexts?: ReadonlyMap<string, ResultFileContext>;
+  resultRootFolderName?: string;
 }
 
 export const FolderContentsView = ({

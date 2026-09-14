@@ -265,11 +265,25 @@
     "rejectionCleared": "Позначку «Відхилено» знято"
   },
   "results": {
+    "allFolders": "Усі папки",
     "backTo": "Назад до {{folder}}",
+    "browseFolder": "Переглянути вміст {{folder}}",
     "changed": "Результати змінилися. Спробуйте завантажити ще раз.",
-    "empty": "Нічого в цій галереї не відповідає цим фільтрам.",
+    "clearQuery": "Видалити пошук {{query}}",
+    "clearSearchAndFilters": "Очистити пошук і фільтри",
+    "emptyWithin": "У {{folder}} немає нічого, що відповідає пошуку та фільтрам.",
+    "folderBack": "Назад до батьківської папки",
+    "folderLoadError": "Не вдалося завантажити папки.",
+    "folders": "Папки",
+    "heading": "Результати",
+    "includeFolder": "Включити результати з {{folder}}",
     "loadMore": "Завантажити ще",
-    "localFiltersPaused": "Фільтри камери, об’єктива й експозиції призупинено під час пошуку. Повернення до {{folder}} відновить їх."
+    "loadMoreFolders": "Завантажити більше папок",
+    "localFiltersPaused": "Фільтри камери, об’єктива й експозиції призупинено під час пошуку. Повернення до {{folder}} відновить їх.",
+    "matchedFolderPath": "Збіг із папкою: {{folder}}",
+    "narrowByFolder": "Звузити за папкою",
+    "noNarrowerFolders": "Немає вкладених папок",
+    "queryChip": "«{{query}}»"
   },
   "sort": {
     "button": "Сортувати",

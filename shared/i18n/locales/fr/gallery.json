@@ -255,11 +255,25 @@
     "rejectionCleared": "Rejet retiré"
   },
   "results": {
+    "allFolders": "Tous les dossiers",
     "backTo": "Retour à {{folder}}",
+    "browseFolder": "Parcourir dans {{folder}}",
     "changed": "Les résultats ont changé. Essayez à nouveau d’en charger davantage.",
-    "empty": "Aucun élément de cette galerie ne correspond à ces filtres.",
+    "clearQuery": "Supprimer la recherche de {{query}}",
+    "clearSearchAndFilters": "Effacer la recherche et les filtres",
+    "emptyWithin": "Aucun élément dans {{folder}} ne correspond à votre recherche et vos filtres.",
+    "folderBack": "Retour au dossier parent",
+    "folderLoadError": "Impossible de charger les dossiers.",
+    "folders": "Dossiers",
+    "heading": "Résultats",
+    "includeFolder": "Inclure les résultats de {{folder}}",
     "loadMore": "Charger plus",
-    "localFiltersPaused": "Les filtres d’appareil, d’objectif et d’exposition sont suspendus pendant la recherche. Retourner dans {{folder}} les rétablit."
+    "loadMoreFolders": "Charger plus de dossiers",
+    "localFiltersPaused": "Les filtres d’appareil, d’objectif et d’exposition sont suspendus pendant la recherche. Retourner dans {{folder}} les rétablit.",
+    "matchedFolderPath": "Correspondance dans le dossier : {{folder}}",
+    "narrowByFolder": "Affiner par dossier",
+    "noNarrowerFolders": "Aucun autre dossier",
+    "queryChip": "« {{query}} »"
   },
   "sort": {
     "button": "Trier",

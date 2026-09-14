@@ -35,18 +35,49 @@ test('local gallery filters promote to recursive Results without losing lightbox
   await showAll.click();
   await expect(page).toHaveURL(/\/admin\/f\/1\?find=1&media=image$/);
   await expect(page.getByText('10 Files · 1 Folder')).toBeVisible();
+  const resultsBar = page.getByTestId('gallery-results-bar');
+  await expect(resultsBar).toBeVisible();
+  // Repeating the same folder on every tile adds noise when the result set only
+  // comes from one folder. List view retains its explicit Folder column.
+  await expect(page.getByTestId('result-folder-context')).toHaveCount(0);
+
+  await resultsBar.getByRole('button', { name: 'All folders' }).click();
+  await page.getByRole('button', { name: 'Browse within Dog Photos' }).click();
+  await expect(page.getByText('No further folders')).toBeVisible();
+  await page.getByRole('button', { name: 'Back to parent folder' }).click();
+  await page
+    .getByRole('checkbox', { name: 'Include results from Dog Photos' })
+    .click();
+  await expect(page).toHaveURL(/\/admin\/f\/1\?find=1&folder=\d+&media=image$/);
+  await expect(
+    resultsBar.getByRole('button', { name: 'Folders' }),
+  ).toBeVisible();
+
+  for (const viewport of [
+    { width: 820, height: 1180 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect(resultsBar).toBeVisible();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(viewport.width);
+  }
+  await page.setViewportSize({ width: 1280, height: 720 });
 
   const resultTiles = page.locator('[data-testid="grid-gallery-item"]');
   await expect(resultTiles).toHaveCount(10);
   const firstResultLink = resultTiles.locator('a').first();
   await expect(firstResultLink).toHaveAttribute(
     'href',
-    /\/admin\/f\/1\/\d+\?find=1&media=image/,
+    /\/admin\/f\/1\/\d+\?find=1&folder=\d+&media=image/,
   );
   await firstResultLink.click();
-  await expect(page).toHaveURL(/\/admin\/f\/1\/\d+\?find=1&media=image/);
+  await expect(page).toHaveURL(
+    /\/admin\/f\/1\/\d+\?find=1&folder=\d+&media=image/,
+  );
   await page.getByRole('button', { name: 'Close' }).click();
-  await expect(page).toHaveURL(/\/admin\/f\/1\?find=1&media=image$/);
+  await expect(page).toHaveURL(/\/admin\/f\/1\?find=1&folder=\d+&media=image$/);
 
   await page.getByRole('button', { name: 'Back to Home' }).click();
   await expect(page).toHaveURL(/\/admin\/f\/1\?media=image$/);
@@ -72,6 +103,13 @@ test('local gallery filters promote to recursive Results without losing lightbox
   });
   await metadataFind.click();
   await expect(page).toHaveURL(/\/admin\/f\/1\?camera=Canon$/);
+  await metadataFind.press('Enter');
+  await expect(page).toHaveURL(/\/admin\/f\/1\?find=1&camera=Canon$/);
+  await expect(
+    page
+      .getByTestId('gallery-results-bar')
+      .getByRole('button', { name: 'Clear Filters' }),
+  ).toHaveCount(0);
   await metadataFind.pressSequentially('vertical');
   await expect(metadataFind).toHaveValue('vertical');
   await expect(page).toHaveURL(

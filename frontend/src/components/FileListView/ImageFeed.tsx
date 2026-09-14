@@ -44,6 +44,10 @@ import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 import { LazyPicrVideoPlayer } from '../LazyPicrVideoPlayer';
 import { useTranslation } from 'react-i18next';
 import { thumbnailUrlForWidth } from '../../helpers/thumbnailVariantImages';
+import {
+  ResultFolderContext,
+  type ResultFileContext,
+} from './ResultFolderContext';
 
 //from https://codesandbox.io/p/sandbox/o7wjvrj3wy?file=%2Fcomponents%2Frestaurant-card.js%3A174%2C7-182%2C13
 
@@ -53,6 +57,8 @@ export const ImageFeed = ({
   folders,
   items,
   width,
+  resultFileContexts,
+  resultRootFolderName,
 }: FileListViewStyleComponentProps) => {
   const [ref, bounds] = useMeasure();
   const orderedItems: FolderContentsItem[] = items ?? [...folders, ...files];
@@ -72,6 +78,8 @@ export const ImageFeed = ({
             key={item.id}
             width={effectiveWidth}
             onBecomeVisible={() => onBecomeVisible(i)}
+            resultContext={resultFileContexts?.get(item.id)}
+            resultRootFolderName={resultRootFolderName}
           />
         ) : (
           <FeedFolderItem
@@ -91,11 +99,15 @@ const FeedItem = ({
   width,
   onBecomeVisible,
   navigationFolderId,
+  resultContext,
+  resultRootFolderName,
 }: {
   file: ViewFolderFileWithHero;
   width: number;
   onBecomeVisible?: () => void;
   navigationFolderId: string;
+  resultContext?: ResultFileContext;
+  resultRootFolderName?: string;
 }) => {
   const { isNone } = useCommentPermissions();
   const canDownload = useCanDownload();
@@ -183,9 +195,15 @@ const FeedItem = ({
         style={{ flexDirection: isMobile && !isNone ? 'column' : 'row' }}
         gap={4}
       >
-        <Title order={5} flex={1}>
-          {fileName}
-        </Title>
+        <Box flex={1} miw={0}>
+          {resultContext && resultRootFolderName ? (
+            <ResultFolderContext
+              context={resultContext}
+              rootFolderName={resultRootFolderName}
+            />
+          ) : null}
+          <Title order={5}>{fileName}</Title>
+        </Box>
         <Group gap="xs">
           <FileReview file={file} />
           {!isNone ? <Divider orientation="vertical" /> : null}

@@ -112,6 +112,12 @@ request-derived metadata such as User-Agent, session IDs, and forwarded IP
 headers as untrusted/variable length; database length errors here can block
 gallery access, not just analytics.
 
+Recursive media Results use one selection fingerprint for the exact file set,
+including folder refinements, and a separate folder-facet cursor fingerprint
+that excludes those refinements. Facet counts deliberately describe the
+unrefined matching tree, so already-loaded facet pages and their cursors must
+remain valid when a user checks or unchecks a folder.
+
 `createAccessLog()` is short-circuited at the top when `DISABLE_ACCESS_LOGS=true`,
 which suppresses view/download access-log rows. Existing rows are not deleted by
 the flag — set it only via env, not via any UI mutation. Public-link view

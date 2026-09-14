@@ -1,0 +1,5 @@
+.overlay {
+  border-radius: var(--mantine-radius-sm);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}

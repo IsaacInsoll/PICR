@@ -458,11 +458,11 @@ const selectedChildPaths = (
 };
 
 const folderFacetFingerprint = (
-  selectionFingerprint: string,
+  facetSelectionFingerprint: string,
   parentFolderId: number,
 ): string =>
   createHash('sha256')
-    .update(JSON.stringify({ selectionFingerprint, parentFolderId }))
+    .update(JSON.stringify({ facetSelectionFingerprint, parentFolderId }))
     .digest('base64url');
 
 const decodeFolderFacetCursor = (
@@ -519,6 +519,7 @@ export class AuthorizedMediaResultsSelection {
   readonly selectionFingerprint: string;
   private readonly tokens: SearchToken[];
   private readonly cursorFingerprint: string;
+  private readonly facetSelectionFingerprint: string;
 
   constructor({
     rootFolder,
@@ -539,15 +540,21 @@ export class AuthorizedMediaResultsSelection {
     this.query = query;
     this.sort = sort;
     this.tokens = searchTokensFor(query);
+    const fingerprintCriteria = {
+      folderId: rootFolder.id,
+      query: this.tokens,
+      filters: mediaCriteriaFingerprint(filters),
+    };
     this.selectionFingerprint = createHash('sha256')
       .update(
         JSON.stringify({
-          folderId: rootFolder.id,
-          query: this.tokens,
-          filters: mediaCriteriaFingerprint(filters),
+          ...fingerprintCriteria,
           folderIds: selectedFolders.map(({ id }) => id).sort((a, b) => a - b),
         }),
       )
+      .digest('base64url');
+    this.facetSelectionFingerprint = createHash('sha256')
+      .update(JSON.stringify(fingerprintCriteria))
       .digest('base64url');
     this.cursorFingerprint = createHash('sha256')
       .update(JSON.stringify({ selection: this.selectionFingerprint, sort }))
@@ -758,7 +765,7 @@ export class AuthorizedMediaResultsSelection {
         : undefined,
     );
     const fingerprint = folderFacetFingerprint(
-      this.selectionFingerprint,
+      this.facetSelectionFingerprint,
       parent.id,
     );
     const cursor = after

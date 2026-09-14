@@ -2,8 +2,8 @@ import {
   Alert,
   Button,
   Center,
-  Group,
-  Paper,
+  SimpleGrid,
+  Skeleton,
   Stack,
   Text,
 } from '@mantine/core';
@@ -21,9 +21,10 @@ import {
   mediaResultsQuery,
 } from '@shared/urql/queries/mediaResultsQuery';
 import { useDebouncedValue } from '@mantine/hooks';
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClient, useQuery } from 'urql';
+import { useInView } from 'react-intersection-observer';
 import { stripUrqlErrorPrefixes } from '@shared/urql/stripUrqlErrorPrefixes';
 import {
   hasLocalOnlyGalleryFilters,
@@ -33,13 +34,12 @@ import {
 import { useFileSort } from '../../hooks/useFileSort';
 import { useGalleryCriteria } from '../../hooks/useGalleryCriteria';
 import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
-import { LoadingIndicator } from '../LoadingIndicator';
 import { Page } from '../Page';
-import { PreviousIcon } from '../../PicrIcons';
 import { FileListView } from './FileListView';
 import type { FileListViewStyleComponentProps } from './FolderContentsView';
 import { GridGallery } from './GridGallery';
 import { ImageFeed } from './ImageFeed';
+import { GalleryResultsBar } from './GalleryResultsBar';
 
 const loadSelectedFileView = () =>
   import('./SelectedFile/SelectedFileView').then((module) => ({
@@ -51,6 +51,7 @@ const SelectedFileView = lazy(loadSelectedFileView);
 type ResultsPage = MediaResultsPageFragmentFragment;
 
 interface LoadedNextPages {
+  requestKey: string;
   selectionFingerprint: string;
   edges: ResultsPage['edges'];
   pageInfo: ResultsPage['pageInfo'];
@@ -73,7 +74,16 @@ export const GalleryResultsView = ({
   const formatFolderName = useFolderNameFormatter();
   const client = useClient();
   const [sort] = useFileSort();
-  const { query, folderIds, filters, exitResults } = useGalleryCriteria();
+  const {
+    query,
+    folderIds,
+    filters,
+    setFilters,
+    setResultsQuery,
+    setResultFolderIds,
+    clearResultsCriteria,
+    exitResults,
+  } = useGalleryCriteria();
   const [debouncedQuery] = useDebouncedValue(query, 250);
   const input = useMemo<MediaResultsInput>(
     () => ({
@@ -92,14 +102,13 @@ export const GalleryResultsView = ({
     query: mediaResultsQuery,
     variables: { input },
   });
+  const requestKey = useMemo(() => JSON.stringify(input), [input]);
   const [nextPages, setNextPages] = useState<LoadedNextPages | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
   const initial = result.data?.mediaResults;
   const matchingNextPages =
-    initial && nextPages?.selectionFingerprint === initial.selectionFingerprint
-      ? nextPages
-      : null;
+    initial && nextPages?.requestKey === requestKey ? nextPages : null;
   const edges = useMemo(() => {
     const seen = new Set<string>();
     return [
@@ -112,10 +121,30 @@ export const GalleryResultsView = ({
     });
   }, [initial?.edges, matchingNextPages?.edges]);
   const files: ViewFolderFileWithHero[] = edges.map((edge) => edge.file);
+  const fileContexts = useMemo(
+    () =>
+      new Map(
+        edges.map((edge) => [
+          edge.file.id,
+          {
+            relativePath: edge.relativePath,
+            matchSource: edge.matchSource,
+          },
+        ]),
+      ),
+    [edges],
+  );
   const pageInfo = matchingNextPages?.pageInfo ?? initial?.pageInfo;
 
-  const loadMore = async () => {
-    if (!initial || !pageInfo?.hasNextPage || !pageInfo.endCursor) return;
+  const loadMore = useCallback(async () => {
+    if (
+      loadingMore ||
+      !initial ||
+      !pageInfo?.hasNextPage ||
+      !pageInfo.endCursor
+    ) {
+      return;
+    }
     setLoadingMore(true);
     setLoadMoreError(null);
     const response = await client
@@ -136,16 +165,21 @@ export const GalleryResultsView = ({
       return;
     }
     setNextPages((current) => ({
+      requestKey,
       selectionFingerprint: next.selectionFingerprint,
       edges: [
-        ...(current?.selectionFingerprint === next.selectionFingerprint
-          ? current.edges
-          : []),
+        ...(current?.requestKey === requestKey ? current.edges : []),
         ...next.edges,
       ],
       pageInfo: next.pageInfo,
     }));
-  };
+  }, [client, initial, input, loadingMore, pageInfo, requestKey, t]);
+  const { ref: loadMoreRef } = useInView({
+    rootMargin: '800px 0px',
+    onChange: (inView) => {
+      if (inView && !loadMoreError) void loadMore();
+    },
+  });
 
   const galleryProps: FileListViewStyleComponentProps = {
     folderId: folder.id,
@@ -157,41 +191,38 @@ export const GalleryResultsView = ({
     width,
   };
 
+  const folderName = formatFolderName(folder) ?? folder.name;
+  const listProps: FileListViewStyleComponentProps = {
+    ...galleryProps,
+    resultFileContexts: fileContexts,
+    resultRootFolderName: folderName,
+  };
+  const visualCollectionProps: FileListViewStyleComponentProps = {
+    ...galleryProps,
+    resultFileContexts:
+      initial && initial.folderCount > 1 ? fileContexts : undefined,
+    resultRootFolderName: folderName,
+  };
+
   return (
     <Stack gap="md">
-      <Page>
-        <Paper withBorder radius="md" px="sm" py="xs">
-          <Group justify="space-between" gap="xs" wrap="wrap">
-            <Button
-              variant="subtle"
-              size="compact-sm"
-              leftSection={<PreviousIcon size={16} />}
-              onClick={exitResults}
-            >
-              {t('results.backTo', { folder: formatFolderName(folder) })}
-            </Button>
-            {initial ? (
-              <Text size="sm" c="dimmed" aria-live="polite">
-                {t('count.file', { count: initial.totalCount })}
-                {' · '}
-                {t('count.folder', { count: initial.folderCount })}
-              </Text>
-            ) : null}
-          </Group>
-          {hasLocalOnlyGalleryFilters(filters) ? (
-            <Alert variant="light" mt="xs" py="xs">
-              {t('results.localFiltersPaused', {
-                folder: formatFolderName(folder),
-              })}
-            </Alert>
-          ) : null}
-        </Paper>
-      </Page>
+      <GalleryResultsBar
+        folderName={folderName}
+        query={query}
+        filters={filters}
+        folderIds={folderIds}
+        input={input}
+        results={initial}
+        localFiltersPaused={hasLocalOnlyGalleryFilters(filters)}
+        onQueryChange={setResultsQuery}
+        onFiltersChange={setFilters}
+        onFolderIdsChange={setResultFolderIds}
+        onClear={clearResultsCriteria}
+        onBack={exitResults}
+      />
 
       {result.fetching && !initial ? (
-        <Center py="xl">
-          <LoadingIndicator size="large" />
-        </Center>
+        <ResultsLoadingCollection view={view} />
       ) : null}
       {result.error && !initial ? (
         <Page>
@@ -210,9 +241,33 @@ export const GalleryResultsView = ({
           </Alert>
         </Page>
       ) : null}
+      {result.error && initial ? (
+        <Page>
+          <Alert variant="light" color="red">
+            <Stack gap="xs" align="flex-start">
+              <Text>{stripUrqlErrorPrefixes(result.error.message)}</Text>
+              <Button
+                variant="subtle"
+                color="red"
+                size="compact-sm"
+                onClick={() => retryResults({ requestPolicy: 'network-only' })}
+              >
+                {t('error.retry')}
+              </Button>
+            </Stack>
+          </Alert>
+        </Page>
+      ) : null}
       {initial?.totalCount === 0 ? (
         <Center py="xl">
-          <Text c="dimmed">{t('results.empty')}</Text>
+          <Stack align="center" gap="xs">
+            <Text c="dimmed">
+              {t('results.emptyWithin', { folder: folderName })}
+            </Text>
+            <Button variant="light" onClick={clearResultsCriteria}>
+              {t('results.clearSearchAndFilters')}
+            </Button>
+          </Stack>
         </Center>
       ) : null}
 
@@ -226,9 +281,9 @@ export const GalleryResultsView = ({
           />
         </Suspense>
       ) : null}
-      {view === 'list' && <FileListView {...galleryProps} />}
-      {view === 'gallery' && <GridGallery {...galleryProps} />}
-      {view === 'feed' && <ImageFeed {...galleryProps} />}
+      {view === 'list' && <FileListView {...listProps} />}
+      {view === 'gallery' && <GridGallery {...visualCollectionProps} />}
+      {view === 'feed' && <ImageFeed {...visualCollectionProps} />}
 
       {loadMoreError ? (
         <Page>
@@ -238,12 +293,48 @@ export const GalleryResultsView = ({
         </Page>
       ) : null}
       {pageInfo?.hasNextPage ? (
-        <Center pb="xl">
+        <Center ref={loadMoreRef} pb="xl" mih={80}>
           <Button loading={loadingMore} onClick={() => void loadMore()}>
             {t('results.loadMore')}
           </Button>
         </Center>
       ) : null}
     </Stack>
+  );
+};
+
+const ResultsLoadingCollection = ({ view }: { view: SelectedView }) => {
+  if (view === 'feed') {
+    return (
+      <Page>
+        <Stack gap="xl">
+          {[0, 1].map((key) => (
+            <Skeleton key={key} height={360} radius="md" />
+          ))}
+        </Stack>
+      </Page>
+    );
+  }
+
+  if (view === 'list') {
+    return (
+      <Page>
+        <Stack gap="xs">
+          {[0, 1, 2, 3, 4, 5].map((key) => (
+            <Skeleton key={key} height={64} radius="sm" />
+          ))}
+        </Stack>
+      </Page>
+    );
+  }
+
+  return (
+    <Page>
+      <SimpleGrid cols={{ base: 2, sm: 3, lg: 5 }} spacing="sm">
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((key) => (
+          <Skeleton key={key} height={180} radius="md" />
+        ))}
+      </SimpleGrid>
+    </Page>
   );
 };

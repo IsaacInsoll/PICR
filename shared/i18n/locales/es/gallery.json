@@ -255,11 +255,25 @@
     "rejectionCleared": "Rechazo borrado"
   },
   "results": {
+    "allFolders": "Todas las carpetas",
     "backTo": "Volver a {{folder}}",
+    "browseFolder": "Explorar dentro de {{folder}}",
     "changed": "Los resultados han cambiado. Intenta cargar más de nuevo.",
-    "empty": "Nada de esta galería coincide con estos filtros.",
+    "clearQuery": "Quitar la búsqueda de {{query}}",
+    "clearSearchAndFilters": "Borrar búsqueda y filtros",
+    "emptyWithin": "Nada en {{folder}} coincide con tu búsqueda y filtros.",
+    "folderBack": "Volver a la carpeta superior",
+    "folderLoadError": "No se pudieron cargar las carpetas.",
+    "folders": "Carpetas",
+    "heading": "Resultados",
+    "includeFolder": "Incluir resultados de {{folder}}",
     "loadMore": "Cargar más",
-    "localFiltersPaused": "Los filtros de cámara, objetivo y exposición se pausan durante la búsqueda. Volver a {{folder}} los restaura."
+    "loadMoreFolders": "Cargar más carpetas",
+    "localFiltersPaused": "Los filtros de cámara, objetivo y exposición se pausan durante la búsqueda. Volver a {{folder}} los restaura.",
+    "matchedFolderPath": "Coincidencia en la carpeta: {{folder}}",
+    "narrowByFolder": "Filtrar por carpeta",
+    "noNarrowerFolders": "No hay más carpetas",
+    "queryChip": "«{{query}}»"
   },
   "sort": {
     "button": "Clasificar",

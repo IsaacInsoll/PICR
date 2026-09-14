@@ -255,11 +255,25 @@
     "rejectionCleared": "Ablehnung gelöscht"
   },
   "results": {
+    "allFolders": "Alle Ordner",
     "backTo": "Zurück zu {{folder}}",
+    "browseFolder": "In {{folder}} weitersuchen",
     "changed": "Die Ergebnisse haben sich geändert. Bitte versuche erneut, weitere zu laden.",
-    "empty": "Nichts in dieser Galerie entspricht diesen Filtern.",
+    "clearQuery": "Suche nach {{query}} entfernen",
+    "clearSearchAndFilters": "Suche und Filter löschen",
+    "emptyWithin": "Nichts in {{folder}} entspricht deiner Suche und den Filtern.",
+    "folderBack": "Zurück zum übergeordneten Ordner",
+    "folderLoadError": "Ordner konnten nicht geladen werden.",
+    "folders": "Ordner",
+    "heading": "Ergebnisse",
+    "includeFolder": "Ergebnisse aus {{folder}} einbeziehen",
     "loadMore": "Mehr laden",
-    "localFiltersPaused": "Kamera-, Objektiv- und Belichtungsfilter sind während der Suche pausiert. Zurück zu {{folder}} stellt sie wieder her."
+    "loadMoreFolders": "Weitere Ordner laden",
+    "localFiltersPaused": "Kamera-, Objektiv- und Belichtungsfilter sind während der Suche pausiert. Zurück zu {{folder}} stellt sie wieder her.",
+    "matchedFolderPath": "Treffer im Ordner: {{folder}}",
+    "narrowByFolder": "Nach Ordner eingrenzen",
+    "noNarrowerFolders": "Keine weiteren Ordner",
+    "queryChip": "„{{query}}“"
   },
   "sort": {
     "button": "Sortieren",

@@ -255,11 +255,25 @@
     "rejectionCleared": "Rejection cleared"
   },
   "results": {
+    "allFolders": "All folders",
     "backTo": "Back to {{folder}}",
+    "browseFolder": "Browse within {{folder}}",
     "changed": "The results changed. Please try loading more again.",
-    "empty": "Nothing in this gallery matches these filters.",
+    "clearQuery": "Remove search for {{query}}",
+    "clearSearchAndFilters": "Clear search and filters",
+    "emptyWithin": "Nothing within {{folder}} matches your search and filters.",
+    "folderBack": "Back to parent folder",
+    "folderLoadError": "Folders could not be loaded.",
+    "folders": "Folders",
+    "heading": "Results",
+    "includeFolder": "Include results from {{folder}}",
     "loadMore": "Load more",
-    "localFiltersPaused": "Camera, lens, and exposure filters are paused while searching. Back to {{folder}} restores them."
+    "loadMoreFolders": "Load more folders",
+    "localFiltersPaused": "Camera, lens, and exposure filters are paused while searching. Back to {{folder}} restores them.",
+    "matchedFolderPath": "Matched folder: {{folder}}",
+    "narrowByFolder": "Narrow by folder",
+    "noNarrowerFolders": "No further folders",
+    "queryChip": "“{{query}}”"
   },
   "sort": {
     "button": "Sort",

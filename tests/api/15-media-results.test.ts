@@ -461,6 +461,34 @@ test('folder facet pages are bounded and cursors are parent-bound', async () => 
     false,
   );
 
+  const afterFolderSelectionChanged = await adminClient
+    .query(mediaFolderFacetsQuery, {
+      input: {
+        ...input,
+        filters: { folderIds: [String(socialId)] },
+      },
+      first: 1,
+      after: first.data?.mediaResults.folderFacets.pageInfo.endCursor,
+    })
+    .toPromise();
+  expect(afterFolderSelectionChanged.error).toBeUndefined();
+  expect(
+    afterFolderSelectionChanged.data?.mediaResults.folderFacets.facets.map(
+      ({ folder }) => folder.name,
+    ),
+  ).toEqual(['Social Campaign']);
+
+  const afterSearchChanged = await adminClient
+    .query(mediaFolderFacetsQuery, {
+      input: { ...input, query: 'social' },
+      first: 1,
+      after: first.data?.mediaResults.folderFacets.pageInfo.endCursor,
+    })
+    .toPromise();
+  expect(afterSearchChanged.error?.graphQLErrors[0]?.extensions['code']).toBe(
+    'BAD_USER_INPUT',
+  );
+
   const wrongParent = await adminClient
     .query(mediaFolderFacetsQuery, {
       input,

@@ -159,6 +159,56 @@ export const useGalleryCriteria = () => {
     [setResultsQuery],
   );
 
+  const setResultFolderIds = useCallback(
+    (folderIds: string[]) => {
+      navigateLocation((current) => {
+        const currentCriteria = decodeGalleryLocationCriteria(
+          current.search,
+          capabilities,
+        );
+        return {
+          search: withGalleryLocationCriteria(
+            current.search,
+            {
+              ...currentCriteria,
+              mode: 'results',
+              folderIds,
+            },
+            capabilities,
+          ),
+          replace: true,
+          state: current.state,
+        };
+      });
+    },
+    [capabilities, navigateLocation],
+  );
+
+  const clearResultsCriteria = useCallback(() => {
+    const currentCriteria = getCurrentCriteria();
+    const filters = {
+      ...defaultGalleryFilterCriteria,
+      metadata: currentCriteria.filters.metadata,
+    };
+    setLegacyFilters(filters);
+    navigateLocation((current) => {
+      return {
+        search: withGalleryLocationCriteria(
+          current.search,
+          {
+            mode: 'results',
+            query: '',
+            filters,
+            folderIds: [],
+          },
+          capabilities,
+        ),
+        replace: true,
+        state: current.state,
+      };
+    });
+  }, [capabilities, getCurrentCriteria, navigateLocation, setLegacyFilters]);
+
   const exitResults = useCallback(() => {
     if (wasGalleryResultsOpenedInCurrentDocument(location.state)) {
       void navigate(-1);
@@ -194,6 +244,8 @@ export const useGalleryCriteria = () => {
     resetFilters,
     enterResults,
     setResultsQuery,
+    setResultFolderIds,
+    clearResultsCriteria,
     exitResults,
     getCurrentCriteria,
     getCurrentLocation,

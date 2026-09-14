@@ -37,6 +37,10 @@ import type { PicrUser } from '@shared/types/picr';
 import { useTranslation } from 'react-i18next';
 import { fileTypeLabel } from '../../i18n/galleryLabels';
 import { useDateFormatters } from '../../i18n/useDateFormatters';
+import {
+  ResultFolderContext,
+  type ResultFileContext,
+} from './ResultFolderContext';
 
 export const FileListView = ({
   folderId,
@@ -44,6 +48,8 @@ export const FileListView = ({
   setSelectedFileId,
   folders,
   items,
+  resultFileContexts,
+  resultRootFolderName,
 }: FileListViewStyleComponentProps) => {
   const orderedItems = items ?? [...folders, ...files];
   const [{ type: sortType }] = useFileSort();
@@ -63,6 +69,8 @@ export const FileListView = ({
               sortType={sortType}
               setSelectedFileId={setSelectedFileId}
               onBecomeVisible={() => onBecomeVisible(i)}
+              resultContext={resultFileContexts?.get(f.id)}
+              resultRootFolderName={resultRootFolderName}
             />
           ))}
         </Table.Tbody>
@@ -77,12 +85,16 @@ const Row = ({
   sortType,
   onBecomeVisible,
   navigationFolderId,
+  resultContext,
+  resultRootFolderName,
 }: {
   setSelectedFileId: (id: string | undefined) => void;
   file: FolderContentsItem;
   sortType: FileSort['type'];
   onBecomeVisible: () => void;
   navigationFolderId: string;
+  resultContext?: ResultFileContext;
+  resultRootFolderName?: string;
 }) => {
   const { canView } = useCommentPermissions();
   const setFolder = useSetFolder();
@@ -231,9 +243,23 @@ const Row = ({
                 )}
               </Group>
             ) : null}
+            {isMobile && resultContext && resultRootFolderName ? (
+              <ResultFolderContext
+                context={resultContext}
+                rootFolderName={resultRootFolderName}
+              />
+            ) : null}
           </div>
         </Group>
       </Table.Td>
+      {!isMobile && resultContext && resultRootFolderName ? (
+        <Table.Td onClick={onClick} maw={240}>
+          <ResultFolderContext
+            context={resultContext}
+            rootFolderName={resultRootFolderName}
+          />
+        </Table.Td>
+      ) : null}
       {canView && !isMobile ? (
         <Table.Td onClick={onClick}>
           <Stack align="end">

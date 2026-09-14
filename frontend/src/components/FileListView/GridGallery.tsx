@@ -31,10 +31,16 @@ import type {
 import { isFolderContentsFile } from '@shared/files/folderContentsViewModel';
 import { useThumbnailVariants } from '../../hooks/useMe';
 import { thumbnailUrlForWidth } from '../../helpers/thumbnailVariantImages';
+import {
+  ResultFolderContext,
+  type ResultFileContext,
+} from './ResultFolderContext';
 
 type GalleryItem = GridImage & {
   file?: ViewFolderFileWithHero;
   folder?: FolderContentsItem;
+  resultContext?: ResultFileContext;
+  resultRootFolderName?: string;
 };
 
 export const GridGallery = ({
@@ -44,6 +50,8 @@ export const GridGallery = ({
   items,
   setSelectedFileId,
   width,
+  resultFileContexts,
+  resultRootFolderName,
 }: FileListViewStyleComponentProps) => {
   const setFolder = useSetFolder();
   const folderUrl = useFolderUrl();
@@ -108,6 +116,8 @@ export const GridGallery = ({
             width: thumbnailSize,
             height: thumbnailSize / imageRatio,
             file: item,
+            resultContext: resultFileContexts?.get(item.id),
+            resultRootFolderName,
             // Images are real links; videos/other files keep their plain click.
             href:
               item.type === 'Image'
@@ -124,7 +134,15 @@ export const GridGallery = ({
           href: folderUrl(item, undefined, 'carry-gallery'),
         };
       }),
-    [folderId, orderedItems, thumbnailSize, folderUrl, thumbnailVariants],
+    [
+      folderId,
+      orderedItems,
+      thumbnailSize,
+      folderUrl,
+      thumbnailVariants,
+      resultFileContexts,
+      resultRootFolderName,
+    ],
   );
   const tileViewportStyle = useCallback(
     (context: { item: ImageExtended<GalleryItem> }) => ({
@@ -173,7 +191,25 @@ const GalleryThumbnailImage = (
   }
 
   if (file?.type === 'File') {
-    return <PicrGenericFile file={file} title={title} />;
+    return (
+      <Box h="100%" pos="relative">
+        <PicrGenericFile file={file} title={title} />
+        {item.resultContext && item.resultRootFolderName ? (
+          <Box
+            pos="absolute"
+            bottom={8}
+            maw="100%"
+            style={{ insetInlineStart: 8 }}
+          >
+            <ResultFolderContext
+              context={item.resultContext}
+              rootFolderName={item.resultRootFolderName}
+              overlay
+            />
+          </Box>
+        ) : null}
+      </Box>
+    );
   }
 
   return <GalleryImage {...props} />;
@@ -181,11 +217,33 @@ const GalleryThumbnailImage = (
 
 type GalleryImageProps = {
   imageProps: ThumbnailImageComponentImageProps;
-  item: { file?: ViewFolderFileWithHero };
+  item: {
+    file?: ViewFolderFileWithHero;
+    resultContext?: ResultFileContext;
+    resultRootFolderName?: string;
+  };
 };
 
 const GalleryImage = ({ imageProps, item }: GalleryImageProps) => {
   if (!item.file) return null;
   const file: ViewFolderFileWithHero = item.file;
-  return <FilePreview file={file} imageProps={imageProps} />;
+  return (
+    <Box h="100%" pos="relative">
+      <FilePreview file={file} imageProps={imageProps} />
+      {item.resultContext && item.resultRootFolderName ? (
+        <Box
+          pos="absolute"
+          bottom={8}
+          maw="100%"
+          style={{ insetInlineStart: 8 }}
+        >
+          <ResultFolderContext
+            context={item.resultContext}
+            rootFolderName={item.resultRootFolderName}
+            overlay
+          />
+        </Box>
+      ) : null}
+    </Box>
+  );
 };

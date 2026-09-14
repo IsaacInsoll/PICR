@@ -61,6 +61,18 @@ submits typed text and closes the drawer so the results are visible. Preserve
 local-only camera/lens/exposure filters for the return to Gallery, and explain in
 Results that they are paused instead of interrupting Find with confirmation.
 
+Recursive Results use the server's selection fingerprint for counts, facets,
+and export identity, but that fingerprint deliberately excludes sort. Key any
+materialized/appended browser pages by the complete request criteria **and**
+sort; otherwise changing sort can retain later pages in their previous order.
+Folder refinement consumes the bounded, direct-child facet connection and
+drills one level at a time instead of loading an unbounded folder tree. Keep
+additional facet pages keyed by criteria that exclude the current folder
+refinement: facet counts deliberately ignore that refinement and their backend
+cursors remain valid while it changes. Keep relative folder provenance on Grid
+and Feed items when the result set spans folders; List always retains its Folder
+column so a flat global sort does not erase where media came from.
+
 Folder-header actions are role-aware. Public-link users see Download and
 Activity directly whenever permitted; do not create a one-item overflow menu or
 duplicate a visible action inside it. Administrators see the primary Manage
