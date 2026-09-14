@@ -165,16 +165,24 @@ export const normalizeSearchText = (value: string): string =>
 // differs for characters outside the BMP. Keep filename ordering deterministic
 // across the local gallery and server-side Results by comparing code points.
 export const compareTextCodePoints = (left: string, right: string): number => {
-  const leftPoints = Array.from(left, (character) => character.codePointAt(0));
-  const rightPoints = Array.from(right, (character) =>
-    character.codePointAt(0),
-  );
-  const sharedLength = Math.min(leftPoints.length, rightPoints.length);
-  for (let index = 0; index < sharedLength; index++) {
-    const difference = (leftPoints[index] ?? -1) - (rightPoints[index] ?? -1);
+  let leftIndex = 0;
+  let rightIndex = 0;
+
+  while (leftIndex < left.length && rightIndex < right.length) {
+    const leftPoint = left.codePointAt(leftIndex);
+    const rightPoint = right.codePointAt(rightIndex);
+    // The loop bounds make these values defined. Keep the guard explicit so
+    // this shared helper does not rely on non-null assertions.
+    if (leftPoint === undefined || rightPoint === undefined) break;
+
+    const difference = leftPoint - rightPoint;
     if (difference !== 0) return difference;
+
+    leftIndex += leftPoint > 0xffff ? 2 : 1;
+    rightIndex += rightPoint > 0xffff ? 2 : 1;
   }
-  return leftPoints.length - rightPoints.length;
+
+  return left.length - leftIndex - (right.length - rightIndex);
 };
 
 export const compareNormalizedSearchText = (

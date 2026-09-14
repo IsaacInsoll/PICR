@@ -1,10 +1,7 @@
 import type { FilterOptionsInterface } from '@shared/filterAtom';
 import type { ViewFolderQuery } from '@shared/gql/graphql';
 import { DefaultFilterOptions, filterFiles } from './filterFiles';
-import {
-  compareNormalizedSearchText,
-  compareTextCodePoints,
-} from './mediaCriteria';
+import { compareTextCodePoints, normalizeSearchText } from './mediaCriteria';
 
 export type FileSortType =
   'Filename' | 'LastModified' | 'DateTaken' | 'RecentlyCommented' | 'Rating';
@@ -131,26 +128,41 @@ type SortableItem = {
   } | null;
 };
 
+interface NameSortKeys {
+  id: number | null;
+  normalizedName: string;
+  rawName: string;
+}
+
+const nameSortKeysFor = (item: SortableItem): NameSortKeys => {
+  const rawName = item.name ?? '';
+  const numericId = Number(item.id);
+  return {
+    id: Number.isFinite(numericId) ? numericId : null,
+    normalizedName: normalizeSearchText(rawName),
+    rawName,
+  };
+};
+
 const compareNames = (
-  aItem: SortableItem,
-  bItem: SortableItem,
+  aKeys: NameSortKeys,
+  bKeys: NameSortKeys,
   direction: FileSortDirection,
 ) => {
   const positive = direction === 'Asc' ? 1 : -1;
-  const aName = aItem.name ?? '';
-  const bName = bItem.name ?? '';
-  const normalized = compareNormalizedSearchText(aName, bName);
+  const normalized = compareTextCodePoints(
+    aKeys.normalizedName,
+    bKeys.normalizedName,
+  );
   if (normalized !== 0) return normalized * positive;
 
   // The normalized key intentionally folds case and accents. Use the raw name,
   // then numeric database ID, as stable ascending tie-breakers just as Results
   // does. Keeping tie-breakers ascending avoids reshuffling equal primary sort
   // values when the selected direction changes.
-  const raw = compareTextCodePoints(aName, bName);
+  const raw = compareTextCodePoints(aKeys.rawName, bKeys.rawName);
   if (raw !== 0) return raw;
-  const aId = Number(aItem.id);
-  const bId = Number(bItem.id);
-  return Number.isFinite(aId) && Number.isFinite(bId) ? aId - bId : 0;
+  return aKeys.id !== null && bKeys.id !== null ? aKeys.id - bKeys.id : 0;
 };
 
 const compareDates = (
@@ -185,28 +197,39 @@ export const sortFiles = <T extends SortableItem>(
 ): T[] => {
   const { type, direction } = sort;
   const positive = direction === 'Asc' ? 1 : -1;
+  const nameSortKeys = new Map<T, NameSortKeys>();
+  const keysFor = (item: T): NameSortKeys => {
+    const existing = nameSortKeys.get(item);
+    if (existing) return existing;
+    const keys = nameSortKeysFor(item);
+    nameSortKeys.set(item, keys);
+    return keys;
+  };
+  const compareItemNames = (a: T, b: T, nameDirection: FileSortDirection) =>
+    compareNames(keysFor(a), keysFor(b), nameDirection);
+
   if (type === 'Filename') {
-    return [...items].sort((a, b) => compareNames(a, b, direction));
+    return [...items].sort((a, b) => compareItemNames(a, b, direction));
   }
   if (type === 'LastModified') {
     return [...items].sort(
       (a, b) =>
         compareDates(lastModifiedFor(a), lastModifiedFor(b), direction) ||
-        compareNames(a, b, 'Asc'),
+        compareItemNames(a, b, 'Asc'),
     );
   }
   if (type === 'DateTaken') {
     return [...items].sort(
       (a, b) =>
         compareDates(dateTakenFor(a), dateTakenFor(b), direction) ||
-        compareNames(a, b, 'Asc'),
+        compareItemNames(a, b, 'Asc'),
     );
   }
   if (type === 'RecentlyCommented') {
     return [...items].sort(
       (a, b) =>
         compareDates(a.latestComment, b.latestComment, direction) ||
-        compareNames(a, b, 'Asc'),
+        compareItemNames(a, b, 'Asc'),
     );
   }
   return [...items].sort((a, b) => {
@@ -214,7 +237,7 @@ export const sortFiles = <T extends SortableItem>(
     const br = b.rating ?? 0;
     if (ar < br) return -positive;
     if (ar > br) return positive;
-    return compareNames(a, b, 'Asc');
+    return compareItemNames(a, b, 'Asc');
   });
 };
 

@@ -54,6 +54,21 @@ describe('deterministic filename ordering', () => {
     ]);
   });
 
+  test('compares non-BMP names without allocating code-point arrays', () => {
+    const files = [
+      { id: '4', name: '😀-later.jpg' },
+      { id: '3', name: '😀.jpg' },
+      { id: '2', name: '𐐀-later.jpg' },
+      { id: '1', name: '𐐀.jpg' },
+    ];
+
+    expect(
+      sortFiles(files, { type: 'Filename', direction: 'Asc' }).map(
+        ({ name }) => name,
+      ),
+    ).toEqual(['𐐀-later.jpg', '𐐀.jpg', '😀-later.jpg', '😀.jpg']);
+  });
+
   test('uses the canonical filename order to break equal primary values', () => {
     const files = [
       { id: '2', name: 'Zulu.jpg', rating: 5 },
