@@ -249,6 +249,12 @@ tiles are not covered either — no fixture produces one.
 - Do not run `npm run build:local` and `npm run test:api` in parallel. The API
   suite builds/runs the Docker image from `dist`, and `build:local` rewrites
   that tree while it runs.
+- Every run rebuilds and re-tags the test image, leaving the previous build
+  dangling. Setup prunes those after `up` with
+  `docker image prune --filter dangling=true --filter label=com.docker.compose.project=picr-test`,
+  which only matches this suite's untagged images. Keep the label in sync with
+  `name:` in `tests/api/compose.yml`, and keep the prune best-effort: it must
+  never fail the suite.
 
 ## CI Expectations
 

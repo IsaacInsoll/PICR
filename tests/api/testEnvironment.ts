@@ -24,6 +24,7 @@ export async function setupTestEnvironment() {
   console.log('\t🐋 Docker Starting');
   await runDockerCompose(['build', services[0]]);
   await runDockerCompose(['up', '-d', ...services]);
+  await pruneSupersededTestImages();
   console.log('\t🐋 Docker Startup Complete');
   await waitForSeedMedia();
   console.log('🧪 Test Setup Complete');
@@ -57,6 +58,29 @@ const runDockerCompose = async (args: string[]) => {
     throw new Error(`docker compose ${args.join(' ')} failed:\n${details}`, {
       cause: error,
     });
+  }
+};
+
+// Each build re-tags the test image and leaves the previous build dangling,
+// which accumulated to 160+ images on one developer machine. Runs after `up` so
+// the previous test container (which pins its image) has been replaced. The
+// label is Compose's project name from tests/api/compose.yml, so only this
+// suite's untagged images are removed. Housekeeping must never fail a test run.
+const pruneSupersededTestImages = async () => {
+  try {
+    await execFileAsync('docker', [
+      'image',
+      'prune',
+      '--force',
+      '--filter',
+      'dangling=true',
+      '--filter',
+      'label=com.docker.compose.project=picr-test',
+    ]);
+  } catch (error) {
+    console.warn(
+      `\t⚠️ Could not prune superseded test images: ${String(error)}`,
+    );
   }
 };
 
