@@ -61,6 +61,13 @@ import {
   usePublicLinkEditorRoute,
 } from '../hooks/usePublicLinkEditorRoute';
 import { decodeGalleryLocationCriteria } from '../helpers/galleryCriteriaSearchParams';
+import {
+  hasLocalOnlyGalleryFilters,
+  mediaResultsSelectionInput,
+} from '../helpers/mediaResultsInput';
+import { countGalleryFilterCriteria } from '@shared/files/mediaCriteria';
+import { filterFiles } from '@shared/files/filterFiles';
+import type { MediaResultsSelectionInput } from '@shared/gql/graphql';
 // Language switcher soft-disabled (#84) — restore alongside the action below.
 // import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
@@ -250,6 +257,30 @@ const ViewFolderBody = () => {
   // redirect to 'no file selected' if you are in a valid folder but the file isn't found
   const showingResults =
     decodeGalleryLocationCriteria(location.search).mode === 'results';
+  const galleryCriteria = decodeGalleryLocationCriteria(location.search, {
+    canViewReview: canView,
+  });
+  const galleryFilters = {
+    ...galleryCriteria.filters,
+    searchText: '',
+  };
+  const galleryFilterCount = countGalleryFilterCriteria(galleryFilters);
+  const galleryFilteredCount = folder
+    ? filterFiles(folder.files, galleryFilters).length
+    : 0;
+  const gallerySelectionUnavailable =
+    hasLocalOnlyGalleryFilters(galleryFilters);
+  const galleryDownloadSelection =
+    folder &&
+    galleryCriteria.mode === 'gallery' &&
+    galleryFilterCount > 0 &&
+    !gallerySelectionUnavailable
+      ? mediaResultsSelectionInput({
+          folderId: folder.id,
+          filters: galleryFilters,
+          directOnly: true,
+        })
+      : undefined;
   useEffect(() => {
     const fileIds = folder?.files.map((f) => f.id) ?? [];
     if (
@@ -338,14 +369,45 @@ const ViewFolderBody = () => {
       actions.push(
         <FolderActivityButton folder={folder} key="FolderActivityButton" />,
       );
-    if (hasFiles && canDownload && me?.isLink)
-      actions.push(<DownloadZipButton folder={folder} key="downloadbutton" />);
+    if (
+      folder &&
+      (hasFiles || folder.subFolders.length > 0) &&
+      canDownload &&
+      me?.isLink &&
+      !showingResults
+    )
+      actions.push(
+        <DownloadZipButton
+          folder={folder}
+          key="downloadbutton"
+          selection={galleryDownloadSelection}
+          selectionCount={
+            galleryFilterCount > 0 ? galleryFilteredCount : undefined
+          }
+          selectionUnavailableReason={
+            gallerySelectionUnavailable
+              ? t('download.localMetadataUnavailable')
+              : undefined
+          }
+        />,
+      );
     if (showOverflow)
       actions.push(
         <FolderOverflowMenu
           folder={folder}
           key="Overflow"
           onCsvExport={() => setCsvExportOpen(true)}
+          showDownloadItem={!showingResults}
+          showCsvExport={!showingResults}
+          downloadSelection={galleryDownloadSelection}
+          downloadSelectionCount={
+            galleryFilterCount > 0 ? galleryFilteredCount : undefined
+          }
+          downloadSelectionUnavailableReason={
+            gallerySelectionUnavailable
+              ? t('download.localMetadataUnavailable')
+              : undefined
+          }
         />,
       );
   } else {
@@ -450,6 +512,7 @@ const ViewFolderBody = () => {
               <FolderContentsView
                 folder={folder}
                 hasCaptureDates={hasCaptureDates}
+                onCsvExport={() => setCsvExportOpen(true)}
               />
               <GalleryFooter />
             </>
@@ -482,9 +545,19 @@ const FolderActivityButton = ({ folder }: { folder: PicrFolder }) => {
 const FolderOverflowMenu = ({
   folder,
   onCsvExport,
+  showDownloadItem,
+  showCsvExport,
+  downloadSelection,
+  downloadSelectionCount,
+  downloadSelectionUnavailableReason,
 }: {
   folder: PicrFolder;
   onCsvExport: () => void;
+  showDownloadItem: boolean;
+  showCsvExport: boolean;
+  downloadSelection?: MediaResultsSelectionInput;
+  downloadSelectionCount?: number;
+  downloadSelectionUnavailableReason?: string;
 }) => {
   const { t } = useTranslation(['gallery', 'admin']);
   const formatFolderName = useFolderNameFormatter();
@@ -558,7 +631,13 @@ const FolderOverflowMenu = ({
             folder={folder}
             showOpenItem={false}
             showManageItem={false}
-            onCsvExport={onCsvExport}
+            showDownloadItem={showDownloadItem}
+            downloadSelection={downloadSelection}
+            downloadSelectionCount={downloadSelectionCount}
+            downloadSelectionUnavailableReason={
+              downloadSelectionUnavailableReason
+            }
+            onCsvExport={showCsvExport ? onCsvExport : undefined}
             onBranding={handleBranding}
           />
         </Menu.Dropdown>

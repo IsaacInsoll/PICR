@@ -33,6 +33,7 @@
       "title": "Der Download läuft bereits"
     },
     "button": "Herunterladen",
+    "chooseTarget": "Download auswählen",
     "downloading": "Herunterladen",
     "downloadingFile": "Datei wird heruntergeladen",
     "hours": "{{value}}h",
@@ -43,17 +44,29 @@
       "title": "Fallback herunterladen"
     },
     "failed": "Der Download ist fehlgeschlagen",
+    "entireFolder": "Gesamter Ordner {{folder}}",
     "file": "Laden Sie {{name}} herunter",
     "keepOpen": "Lassen Sie diese Seite geöffnet, während die Datei heruntergeladen wird, oder schließen Sie dieses Fenster, um den Vorgang abzubrechen.",
     "lessThanOneSecondLeft": "Weniger als 1 Sekunde übrig",
     "minutes": "{{value}}m",
+    "localMetadataUnavailable": "Kamera-, Objektiv- und Belichtungsfilter können nur die aktuelle Galerie herunterladen. Entfernen Sie diese Filter, um diese Auswahl herunterzuladen.",
     "preparing": "{{name}} wird vorbereitet",
     "ready": "Bereit zum Speichern",
     "readyDescription": "Die Datei ist fertig. Tippen Sie auf „In Fotos speichern“, um das iOS-Freigabeblatt zu öffnen.",
     "saveToFiles": "In Dateien speichern",
     "saveToPhotos": "Unter Fotos speichern",
     "saving": "Sparen…",
+    "selectionChanged": {
+      "message_one": "Der Download enthält {{count}} Datei, da sich die Treffer nach dem Laden dieser Seite geändert haben.",
+      "message_other": "Der Download enthält {{count}} Dateien, da sich die Treffer nach dem Laden dieser Seite geändert haben.",
+      "title": "Auswahl aktualisiert"
+    },
+    "refreshRequired": "Aktualisieren Sie diese geänderten Ergebnisse, bevor Sie die genaue Auswahl herunterladen.",
+    "results_one": "{{count}} Ergebnis",
+    "results_other": "{{count}} Ergebnisse",
     "seconds": "{{value}}s",
+    "shown_one": "{{count}} angezeigt",
+    "shown_other": "{{count}} angezeigt",
     "timeLeft": "{{time}} übrig",
     "title": "Laden Sie alle Dateien herunter"
   },

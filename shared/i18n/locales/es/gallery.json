@@ -33,6 +33,7 @@
       "title": "Descarga ya en ejecución"
     },
     "button": "Descargar",
+    "chooseTarget": "Elegir qué descargar",
     "downloading": "Descargando",
     "downloadingFile": "Descargando archivo",
     "hours": "{{value}}h",
@@ -43,17 +44,29 @@
       "title": "Descargar respaldo"
     },
     "failed": "Descarga fallida",
+    "entireFolder": "Carpeta {{folder}} completa",
     "file": "Descargar {{name}}",
     "keepOpen": "Mantenga esta página abierta mientras se descarga el archivo o cierre esta ventana para cancelar.",
     "lessThanOneSecondLeft": "queda menos de 1 segundo",
     "minutes": "{{value}}m",
+    "localMetadataUnavailable": "Los filtros de cámara, objetivo y exposición solo pueden descargar la galería actual. Quite esos filtros para descargar esta selección.",
     "preparing": "Preparando {{name}}",
     "ready": "Listo para guardar",
     "readyDescription": "El archivo está listo. Toque Guardar en fotos para abrir la hoja para compartir de iOS.",
     "saveToFiles": "Guardar en archivos",
     "saveToPhotos": "Guardar en Fotos",
     "saving": "Ahorro…",
+    "selectionChanged": {
+      "message_one": "La descarga contiene {{count}} archivo porque los resultados cambiaron después de cargar esta página.",
+      "message_other": "La descarga contiene {{count}} archivos porque los resultados cambiaron después de cargar esta página.",
+      "title": "Selección actualizada"
+    },
+    "refreshRequired": "Actualice estos resultados modificados antes de descargar la selección exacta.",
+    "results_one": "{{count}} resultado",
+    "results_other": "{{count}} resultados",
     "seconds": "{{value}}",
+    "shown_one": "{{count}} mostrado",
+    "shown_other": "{{count}} mostrados",
     "timeLeft": "{{time}} izquierda",
     "title": "Descargar todos los archivos"
   },

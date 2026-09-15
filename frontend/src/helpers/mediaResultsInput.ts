@@ -13,6 +13,7 @@ import {
   MediaTypeFilter,
   RatingComparison,
   type MediaResultsFilterInput,
+  type MediaResultsSelectionInput,
   type MediaResultsSortInput,
 } from '@shared/gql/graphql';
 import type { FileSort } from '@shared/files/sortFiles';
@@ -69,6 +70,28 @@ export const mediaResultsFilterInput = (
       : filters.comments === 'none'
         ? MediaCommentsFilter.None
         : undefined,
+});
+
+export const mediaResultsSelectionInput = ({
+  folderId,
+  query,
+  filters,
+  folderIds = [],
+  directOnly = false,
+}: {
+  folderId: string;
+  query?: string;
+  filters: GalleryFilterCriteria;
+  folderIds?: string[];
+  directOnly?: boolean;
+}): MediaResultsSelectionInput => ({
+  folderId,
+  query: query || undefined,
+  filters: {
+    ...mediaResultsFilterInput(filters),
+    folderIds: folderIds.length ? folderIds : undefined,
+  },
+  directOnly: directOnly || undefined,
 });
 
 const sortTypes: Record<FileSort['type'], MediaResultSortType> = {

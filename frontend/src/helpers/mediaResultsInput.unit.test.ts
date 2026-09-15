@@ -12,6 +12,7 @@ import {
   countRecursiveGalleryFilters,
   hasLocalOnlyGalleryFilters,
   mediaResultsFilterInput,
+  mediaResultsSelectionInput,
   mediaResultsSortInput,
 } from './mediaResultsInput';
 
@@ -47,6 +48,33 @@ describe('media Results input', () => {
     ).toEqual({
       type: MediaResultSortType.DateTaken,
       direction: MediaResultSortDirection.Desc,
+    });
+  });
+
+  test('builds server-owned direct and recursive export selections', () => {
+    expect(
+      mediaResultsSelectionInput({
+        folderId: '7',
+        query: 'social',
+        filters: {
+          ...defaultGalleryFilterCriteria,
+          mediaType: 'Video',
+        },
+        folderIds: ['8'],
+        directOnly: true,
+      }),
+    ).toEqual({
+      folderId: '7',
+      query: 'social',
+      filters: {
+        mediaType: MediaTypeFilter.Video,
+        aspect: undefined,
+        flag: undefined,
+        rating: undefined,
+        comments: undefined,
+        folderIds: ['8'],
+      },
+      directOnly: true,
     });
   });
 

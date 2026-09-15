@@ -8,6 +8,8 @@ import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { editUserMutation } from '../../shared/urql/mutations/editUserMutation';
 import { deleteUserMutation } from '../../shared/urql/mutations/deleteUserMutation';
 import { generateZipMutation } from '../../shared/urql/mutations/generateZipMutation';
+import { generateMediaResultsZipMutation } from '../../shared/urql/mutations/generateMediaResultsZipMutation';
+import { generateMediaTextExportMutation } from '../../shared/urql/mutations/generateMediaTextExportMutation';
 import { commentHistoryQuery } from '../../shared/urql/queries/commentHistoryQuery';
 import { addCommentMutation } from '../../shared/urql/mutations/addCommentMutation';
 import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
@@ -32,7 +34,11 @@ import { editUserDeviceMutation } from '../../shared/urql/mutations/editUserDevi
 import { viewFileQuery } from '../../shared/urql/queries/viewFileQuery';
 import { searchQuery } from '../../shared/urql/queries/searchQuery';
 import { photoFolderId, videoFolderId } from './testVariables';
-import { CommentPermissions, LinkMode } from '../../shared/gql/graphql';
+import {
+  CommentPermissions,
+  LinkMode,
+  MediaTextExportFormat,
+} from '../../shared/gql/graphql';
 
 const expectGraphqlError = (result: { error?: unknown }) => {
   expect(result.error).toBeDefined();
@@ -88,6 +94,13 @@ test('Public link with proof_no_downloads cannot generate zip', async () => {
     .toPromise();
 
   expectGraphqlError(result);
+
+  const filteredResult = await linkClient
+    .mutation(generateMediaResultsZipMutation, {
+      input: { folderId: photoFolderId, query: 'dog' },
+    })
+    .toPromise();
+  expectGraphqlError(filteredResult);
 
   const adminHeaders = await getUserHeader(defaultCredentials);
   const adminClient = await createTestGraphqlClient(adminHeaders);
@@ -179,6 +192,18 @@ test('Admin-only queries are blocked for public links', async () => {
 
   const linkHeaders = await getLinkHeader(user.uuid);
   const linkClient = await createTestGraphqlClient(linkHeaders);
+
+  expectAuthCode(
+    await linkClient
+      .mutation(generateMediaTextExportMutation, {
+        input: { folderId: photoFolderId },
+        format: MediaTextExportFormat.Picr,
+        excludeExtensions: false,
+      })
+      .toPromise(),
+    'FORBIDDEN',
+    'ACCESS_DENIED',
+  );
 
   expectAuthCode(
     await linkClient

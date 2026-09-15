@@ -78,6 +78,16 @@ export const mediaResultsSelectionInputType = new GraphQLInputObjectType({
     folderId: { type: new GraphQLNonNull(GraphQLID) },
     query: { type: GraphQLString },
     filters: { type: mediaResultsFilterInputType },
+    directOnly: { type: GraphQLBoolean },
+  },
+});
+
+export const mediaExportArtifactType = new GraphQLObjectType({
+  name: 'MediaExportArtifact',
+  fields: {
+    token: { type: new GraphQLNonNull(GraphQLString) },
+    count: { type: new GraphQLNonNull(GraphQLInt) },
+    filename: { type: new GraphQLNonNull(GraphQLString) },
   },
 });
 

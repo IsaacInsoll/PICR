@@ -350,6 +350,13 @@ export enum MediaCommentsFilter {
   Some = 'Some'
 }
 
+export type MediaExportArtifact = {
+  __typename?: 'MediaExportArtifact';
+  count: Scalars['Int']['output'];
+  filename: Scalars['String']['output'];
+  token: Scalars['String']['output'];
+};
+
 export type MediaFolderFacet = {
   __typename?: 'MediaFolderFacet';
   count: Scalars['Int']['output'];
@@ -451,6 +458,7 @@ export type MediaResultsRatingInput = {
 };
 
 export type MediaResultsSelectionInput = {
+  directOnly?: InputMaybe<Scalars['Boolean']['input']>;
   filters?: InputMaybe<MediaResultsFilterInput>;
   folderId: Scalars['ID']['input'];
   query?: InputMaybe<Scalars['String']['input']>;
@@ -470,6 +478,12 @@ export type MediaScanningInfo = {
   scheduledScanHours: Scalars['Int']['output'];
 };
 
+export enum MediaTextExportFormat {
+  Comma = 'Comma',
+  Picr = 'Picr',
+  Space = 'Space'
+}
+
 export enum MediaTypeFilter {
   All = 'All',
   Image = 'Image',
@@ -488,6 +502,8 @@ export type Mutation = {
   editServerSettings: ServerSettings;
   editUser: User;
   editUserDevice: UserDevice;
+  generateMediaResultsZip: MediaExportArtifact;
+  generateMediaTextExport: MediaExportArtifact;
   generateThumbnails: Scalars['Boolean']['output'];
   generateZip: Scalars['String']['output'];
   recordFolderVisit: Scalars['Boolean']['output'];
@@ -594,6 +610,18 @@ export type MutationEditUserDeviceArgs = {
   name?: InputMaybe<Scalars['String']['input']>;
   notificationToken: Scalars['String']['input'];
   userId: Scalars['ID']['input'];
+};
+
+
+export type MutationGenerateMediaResultsZipArgs = {
+  input: MediaResultsSelectionInput;
+};
+
+
+export type MutationGenerateMediaTextExportArgs = {
+  excludeExtensions?: Scalars['Boolean']['input'];
+  format: MediaTextExportFormat;
+  input: MediaResultsSelectionInput;
 };
 
 

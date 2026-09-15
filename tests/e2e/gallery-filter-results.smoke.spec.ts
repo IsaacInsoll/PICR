@@ -37,6 +37,14 @@ test('local gallery filters promote to recursive Results without losing lightbox
   await expect(page.getByText('10 Files · 1 Folder')).toBeVisible();
   const resultsBar = page.getByTestId('gallery-results-bar');
   await expect(resultsBar).toBeVisible();
+  await resultsBar.getByRole('button', { name: 'Download' }).click();
+  await expect(
+    page.getByRole('menuitem', { name: '10 results' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('menuitem', { name: 'Entire Home folder' }),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
   // Repeating the same folder on every tile adds noise when the result set only
   // comes from one folder. List view retains its explicit Folder column.
   await expect(page.getByTestId('result-folder-context')).toHaveCount(0);
@@ -167,6 +175,19 @@ test('reviewing recursive Results keeps the materialized sequence stable', async
 
   await expect(resultTiles).toHaveCount(10);
   await expect(page.getByText('1 result no longer matches')).toBeVisible();
+  await page
+    .getByTestId('gallery-results-bar')
+    .getByRole('button', { name: 'Download' })
+    .click();
+  await expect(
+    page.getByRole('menuitem', { name: '10 results' }),
+  ).toBeDisabled();
+  await expect(
+    page.getByText(
+      'Refresh these changed results before downloading the exact selection.',
+    ),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Refresh' }).click();
   await expect(resultTiles).toHaveCount(9);
   await expect(page.getByText('1 result no longer matches')).toHaveCount(0);

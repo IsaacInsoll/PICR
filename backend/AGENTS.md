@@ -242,6 +242,34 @@ Authorize the route folder first, scope files by exact/escaped `relativePath`
 prefix, and validate every Folder-facet ID beneath that already-authorized
 root.
 
+ZIP and filename exports also consume this selection boundary. `directOnly`
+exists for a filtered Gallery's current-folder export; recursive Results leave
+it false and never send client-selected file IDs. Materialize export files once
+at request time and carry that exact snapshot into ZIP hashing and generation,
+so the archive cannot be assembled from a different selection than the count
+and cache identity. ZIP identity includes the selection fingerprint plus file
+IDs, hashes, source paths, names, and relative archive paths. Server-generated
+CSV/text artifacts use an HMAC capability token derived from the server token
+secret and immutable content identity; `/export` serves only a valid existing
+token path and must remain privately cached. Publish those artifacts through a
+unique partial file and atomic rename too: concurrent identical requests and a
+crash during `writeFile` must never expose or preserve truncated content. Admin text export is deliberately
+not capped at 10,000 files. Keep its errors visible through GraphQL/HTTP, and
+keep asynchronous ZIP failures logged and represented by an `Error` queue task
+instead of allowing an unhandled rejection.
+
+`addToZipQueue` and `/zip` treat any existing final ZIP path as complete and
+immutable, so `zipFolder` writes to `<hash>.zip.partial` and renames it into
+place only after every entry has been flushed; on failure it deletes the
+partial file. Await `archive.finalize()` and the output stream's completion
+together with `Promise.all`: awaiting them in sequence leaves the other
+rejection unhandled, and the process-level `unhandledRejection` handler treats
+that as fatal. Treat archive warnings as failures because a vanished or
+unreadable selected file must not be silently omitted. An `Error` queue entry
+is terminal for that attempt but must not block a later retry. Export queries select only the columns ZIP and text generation
+read (`MediaSelectionExportFile`); never select whole file rows, including
+metadata JSON, for an uncapped selection.
+
 Filename and descendant-folder matching use the downgrade-safe normalized
 columns when their source markers are current. A null or stale marker must fall
 back to lowercase matching against the raw value so post-boot repair never

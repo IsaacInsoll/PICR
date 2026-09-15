@@ -33,6 +33,7 @@
       "title": "Download already running"
     },
     "button": "Download",
+    "chooseTarget": "Choose what to download",
     "downloading": "Downloading",
     "downloadingFile": "Downloading file",
     "hours": "{{value}}h",
@@ -43,17 +44,29 @@
       "title": "Download fallback"
     },
     "failed": "Download failed",
+    "entireFolder": "Entire {{folder}} folder",
     "file": "Download {{name}}",
     "keepOpen": "Keep this page open while the file downloads, or close this window to cancel.",
     "lessThanOneSecondLeft": "less than 1s left",
     "minutes": "{{value}}m",
+    "localMetadataUnavailable": "Camera, lens, and exposure filters can only download the current gallery. Clear those filters to download this selection.",
     "preparing": "Preparing {{name}}",
     "ready": "Ready to save",
     "readyDescription": "The file is ready. Tap Save to Photos to open the iOS share sheet.",
     "saveToFiles": "Save to Files",
     "saveToPhotos": "Save to Photos",
     "saving": "Saving…",
+    "selectionChanged": {
+      "message_one": "The download contains {{count}} file because the matches changed after this page loaded.",
+      "message_other": "The download contains {{count}} files because the matches changed after this page loaded.",
+      "title": "Selection updated"
+    },
+    "refreshRequired": "Refresh these changed results before downloading the exact selection.",
+    "results_one": "{{count}} result",
+    "results_other": "{{count}} results",
     "seconds": "{{value}}s",
+    "shown_one": "{{count}} shown",
+    "shown_other": "{{count}} shown",
     "timeLeft": "{{time}} left",
     "title": "Download All Files"
   },

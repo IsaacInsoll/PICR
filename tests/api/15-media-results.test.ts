@@ -7,6 +7,7 @@ import {
   MediaMatchSource,
   MediaResultSortDirection,
   MediaResultSortType,
+  MediaTextExportFormat,
   MediaTypeFilter,
   RatingComparison,
   type MediaResultsFilterInput,
@@ -18,6 +19,7 @@ import { dbFile, dbFolder, dbUser } from '../../backend/db/models/index.js';
 import { fileSearchFields } from '../../backend/helpers/fileDerivedFields.js';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials.js';
 import { editUserMutation } from '../../shared/urql/mutations/editUserMutation.js';
+import { generateMediaTextExportMutation } from '../../shared/urql/mutations/generateMediaTextExportMutation.js';
 import {
   mediaFolderFacetsQuery,
   mediaMatchSummaryQuery,
@@ -30,7 +32,7 @@ import {
   getLinkHeader,
   getUserHeader,
 } from './testGraphqlClient.js';
-import { testDatabaseUrl } from './testVariables.js';
+import { testDatabaseUrl, testUrl } from './testVariables.js';
 
 const suffix = Math.random().toString(36).slice(2, 8);
 const scopeName = `Résults_Scope%_${suffix}`;
@@ -310,6 +312,48 @@ test('returns exact direct/tree totals and cumulative folder facets', async () =
     { name: 'Social Campaign', count: 2, relativePath: 'Social Campaign' },
   ]);
   expect(await summary()).toMatchObject({ directCount: 3, treeCount: 5 });
+});
+
+test('supports direct-only canonical selections', async () => {
+  const response = await adminClient
+    .query(mediaMatchSummaryQuery, {
+      input: { folderId: String(scopeId), directOnly: true },
+    })
+    .toPromise();
+  expect(response.error).toBeUndefined();
+  expect(response.data?.mediaMatchSummary).toMatchObject({
+    directCount: 3,
+    treeCount: 3,
+  });
+});
+
+test('generates an uncapped server artifact from the canonical selection', async () => {
+  const generated = await adminClient
+    .mutation(generateMediaTextExportMutation, {
+      input: { folderId: String(scopeId), query: 'social' },
+      format: MediaTextExportFormat.Picr,
+      excludeExtensions: false,
+    })
+    .toPromise();
+  expect(generated.error).toBeUndefined();
+  expect(generated.data?.generateMediaTextExport.count).toBe(2);
+  const artifact = generated.data?.generateMediaTextExport;
+  expect(artifact).toBeDefined();
+  if (!artifact) return;
+
+  const response = await fetch(
+    `${testUrl}export/${scopeId}/${artifact.token}/${artifact.filename}`,
+  );
+  expect(response.status).toBe(200);
+  expect(response.headers.get('content-disposition')).toContain(
+    artifact.filename,
+  );
+  expect(await response.text()).toBe(
+    [
+      'Social Campaign/launch.mp4,4,',
+      'Social Campaign/Vertical/Poster Crème.jpg,5,rejected',
+    ].join('\n'),
+  );
 });
 
 test('matches filename and descendant folder paths without matching the scope name', async () => {

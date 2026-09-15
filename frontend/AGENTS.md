@@ -109,6 +109,20 @@ links rather than displaying a separate always-present count button. Below the
 avatar whose badge shows the exact-folder link count and whose action opens the
 Links list.
 
+Download labels must state their scope whenever Gallery filters or recursive
+Results make the visible collection differ from the folder tree. Use one menu
+with the exact shown/results count and the entire-folder alternative; do not add
+a second competing Download button. A dirty materialized Results session must
+be refreshed before its selected download or admin filename export is enabled.
+The backend returns the resolved selection count, and a mismatch with the
+displayed count must be surfaced rather than silently labelling the archive
+with a stale number. Local camera/lens/exposure criteria cannot be sent to the
+recursive SQL selection: keep current-folder filename export local, and disable
+recursive export with a clear explanation while those criteria are active.
+Recursive filename export uses the server artifact route and has no 10,000-file
+client-fetch cap. Keep `/export` beside `/image` and `/zip` in every Vite backend
+proxy configuration.
+
 Public-link avatar tooltips include the link's status and last access time. The
 existing-link editor keeps Edit and Access Logs in tabs, with its persistent
 copy/save/delete actions outside the tabs. Mount the fixed-user access-log view

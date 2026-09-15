@@ -70,9 +70,11 @@ export interface FileListViewStyleComponentProps {
 export const FolderContentsView = ({
   folder,
   hasCaptureDates,
+  onCsvExport,
 }: {
   folder: ViewFolder;
   hasCaptureDates: boolean;
+  onCsvExport: () => void;
 }) => {
   const files = folder.files;
   const folderId = folder.id;
@@ -208,6 +210,7 @@ export const FolderContentsView = ({
         setSelectedFileId={setSelectedFileId}
         view={view}
         width={width}
+        onCsvExport={onCsvExport}
       />
     ) : (
       <>

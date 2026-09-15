@@ -41,7 +41,9 @@ export const addToZipQueue = (folderHash: FolderHash) => {
       status: 'Queued',
       folder: folderHash.folder,
     };
-    void zipFolder(folderHash);
+    void zipFolder(folderHash).catch(() => {
+      // zipFolder records the queue failure and logs the underlying error.
+    });
   }
 };
 
@@ -88,7 +90,7 @@ export const zipInProgress = (
     //   `zipInProgress item hash=${String(q.hash)} targetHash=${folderHash.hash} folder=${q.folder.id} targetFolder=${folderHash.folder.id} status=${q.status}`,
     // );
     if (q.hash === folderHash.hash && q.folder.id === folderHash.folder.id) {
-      if (q.status !== 'Complete') {
+      if (q.status === 'Queued' || q.status === 'In Progress') {
         // Developer debugging:
         // log('debug', `ZIP currently in progress for folder ${q.folder.id}`);
         inProgress = true;

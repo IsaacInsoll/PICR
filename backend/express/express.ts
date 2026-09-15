@@ -3,6 +3,7 @@ import compression from 'compression';
 import { gqlServer } from '../graphql/gqlServer.js';
 import { imageRequest } from './imageRequest.js';
 import { zipRequest } from './zipRequest.js';
+import { mediaExportRequest } from './mediaExportRequest.js';
 import { picrTemplate } from './picrTemplate.js';
 import { getBasePrefix } from './basePath.js';
 import { resolvePublicDir } from './resolvePublicDir.js';
@@ -33,6 +34,7 @@ export const expressServer = () => {
   router.use(express.static(publicDir, { index: false }));
   router.get('/image/:id/:size/:hash/:filename', imageRequest); //filename is ignored but nice for users to see a 'nice' name
   router.get('/zip/:folderId/:hash/:filename', zipRequest); //filename is ignored but nice for users to see a 'nice' name
+  router.get('/export/:folderId/:token/:filename', mediaExportRequest);
   router.use('/api', (_req, res) =>
     res.status(404).json({ error: 'Not found' }),
   );

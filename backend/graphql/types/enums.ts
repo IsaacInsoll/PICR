@@ -87,6 +87,14 @@ export const mediaMatchSourceEnum = new GraphQLEnumType({
     FolderPath: { value: 'FolderPath' },
   },
 });
+export const mediaTextExportFormatEnum = new GraphQLEnumType({
+  name: 'MediaTextExportFormat',
+  values: {
+    Picr: { value: 'picr' },
+    Comma: { value: 'comma' },
+    Space: { value: 'space' },
+  },
+});
 export const userTypeEnum = new GraphQLEnumType(
   enumToGQL('UserType', userTypeOptions),
 );

@@ -4,6 +4,8 @@ import { editUser } from './mutations/editUser.js';
 import { editAdminUser } from './mutations/editAdminUser.js';
 import { generateThumbnails } from './mutations/generateThumbnails.js';
 import { generateZip } from './mutations/generateZip.js';
+import { generateMediaResultsZip } from './mutations/generateMediaResultsZip.js';
+import { generateMediaTextExport } from './mutations/generateMediaTextExport.js';
 import { recordFolderVisit } from './mutations/recordFolderVisit.js';
 import { folder } from './queries/folder.js';
 import { file } from './queries/file.js';
@@ -52,7 +54,11 @@ import { accessLogs } from './queries/accessLogs.js';
 import { accessLogType } from './types/accessLogType.js';
 import { clientInfo } from './queries/clientInfoQuery.js';
 import { clientInfoType } from './types/clientInfoType.js';
-import { accessTypeEnum, userTypeEnum } from './types/enums.js';
+import {
+  accessTypeEnum,
+  mediaTextExportFormatEnum,
+  userTypeEnum,
+} from './types/enums.js';
 import { userDeviceType } from './types/userDeviceType.js';
 import { editUserDevice } from './mutations/editUserDevice.js';
 import { userDevices } from './queries/userDevices.js';
@@ -75,6 +81,7 @@ import {
 import { mediaMatchSummary, mediaResults } from './queries/mediaResults.js';
 import {
   mediaMatchSummaryType,
+  mediaExportArtifactType,
   mediaResultsConnectionType,
 } from './types/mediaResultsType.js';
 
@@ -117,6 +124,8 @@ const mutations = new GraphQLObjectType({
     editAdminUser,
     editUser,
     generateThumbnails,
+    generateMediaResultsZip,
+    generateMediaTextExport,
     generateZip,
     recordFolderVisit,
     editFolder,
@@ -150,7 +159,9 @@ const types = [
   imageFileType,
   imageMetadataSummaryType,
   mediaMatchSummaryType,
+  mediaExportArtifactType,
   mediaResultsConnectionType,
+  mediaTextExportFormatEnum,
   publicLinkBrandingPreviewType,
   publicLinkAccessStatusType,
   publicLinkInfoType,

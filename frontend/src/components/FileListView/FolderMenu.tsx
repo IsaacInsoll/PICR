@@ -18,6 +18,7 @@ import { useOpenMoveRenameFolderModal } from '../../atoms/modalAtom';
 import { useCommentPermissions } from '../../hooks/useCommentPermissions';
 import { useTranslation } from 'react-i18next';
 import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
+import type { MediaResultsSelectionInput } from '@shared/gql/graphql';
 
 type FolderMenuItemsProps = {
   folder: PicrFolder;
@@ -26,6 +27,10 @@ type FolderMenuItemsProps = {
   onCsvExport?: () => void;
   onBranding?: () => void;
   showManageItem?: boolean;
+  showDownloadItem?: boolean;
+  downloadSelection?: MediaResultsSelectionInput;
+  downloadSelectionCount?: number;
+  downloadSelectionUnavailableReason?: string;
 };
 
 export const FolderMenuItems = ({
@@ -35,6 +40,10 @@ export const FolderMenuItems = ({
   onCsvExport,
   onBranding,
   showManageItem = true,
+  showDownloadItem = true,
+  downloadSelection,
+  downloadSelectionCount,
+  downloadSelectionUnavailableReason,
 }: FolderMenuItemsProps) => {
   const { t } = useTranslation(['gallery', 'admin']);
   const formatFolderName = useFolderNameFormatter();
@@ -43,11 +52,20 @@ export const FolderMenuItems = ({
   const activityLink = useFolderLink(folder, 'activity');
   const manageLink = useFolderLink(folder, 'manage/folder');
   const generateZip = useGenerateZip(folder);
+  const generateSelectionZip = useGenerateZip(
+    folder,
+    undefined,
+    downloadSelection,
+    downloadSelectionCount,
+  );
   const me = useMe();
   const openMoveModal = useOpenMoveRenameFolderModal();
   const { canView } = useCommentPermissions();
   const handleGenerateZip = () => {
     void generateZip?.();
+  };
+  const handleGenerateSelectionZip = () => {
+    void generateSelectionZip?.();
   };
   const hasItemsBeforeAdmin =
     showOpenItem || !!onFilterFiles || !!generateZip || canView;
@@ -68,14 +86,39 @@ export const FolderMenuItems = ({
           {t('folder.filterFiles')}
         </Menu.Item>
       ) : null}
-      {generateZip ? (
-        <Menu.Item
-          leftSection={<DownloadIcon />}
-          key="download"
-          onClick={handleGenerateZip}
-        >
-          {t('folder.downloadZip')}
-        </Menu.Item>
+      {generateZip && showDownloadItem ? (
+        downloadSelectionCount === undefined ? (
+          <Menu.Item
+            leftSection={<DownloadIcon />}
+            key="download"
+            onClick={handleGenerateZip}
+          >
+            {t('folder.downloadZip')}
+          </Menu.Item>
+        ) : (
+          <>
+            <Menu.Item
+              leftSection={<DownloadIcon />}
+              key="download-selection"
+              onClick={handleGenerateSelectionZip}
+              disabled={!downloadSelection || downloadSelectionCount === 0}
+            >
+              {t('download.shown', { count: downloadSelectionCount })}
+            </Menu.Item>
+            {downloadSelectionUnavailableReason ? (
+              <Menu.Label maw={280}>
+                {downloadSelectionUnavailableReason}
+              </Menu.Label>
+            ) : null}
+            <Menu.Item
+              leftSection={<FolderIcon />}
+              key="download-folder"
+              onClick={handleGenerateZip}
+            >
+              {t('download.entireFolder', { folder: folderName })}
+            </Menu.Item>
+          </>
+        )
       ) : null}
       {canView ? (
         <>

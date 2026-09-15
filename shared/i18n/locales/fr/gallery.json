@@ -33,6 +33,7 @@
       "title": "Téléchargement déjà en cours"
     },
     "button": "Télécharger",
+    "chooseTarget": "Choisir les éléments à télécharger",
     "downloading": "Téléchargement en cours",
     "downloadingFile": "Téléchargement du fichier",
     "hours": "{{value}} h",
@@ -43,17 +44,29 @@
       "title": "Solution de repli pour le téléchargement"
     },
     "failed": "Échec du téléchargement",
+    "entireFolder": "Dossier {{folder}} entier",
     "file": "Télécharger {{name}}",
     "keepOpen": "Gardez cette page ouverte pendant le téléchargement du fichier, ou fermez cette fenêtre pour annuler.",
     "lessThanOneSecondLeft": "moins d'une seconde restante",
     "minutes": "{{value}} min",
+    "localMetadataUnavailable": "Les filtres d’appareil, d’objectif et d’exposition ne peuvent télécharger que la galerie actuelle. Retirez-les pour télécharger cette sélection.",
     "preparing": "Préparation de {{name}}",
     "ready": "Prêt à enregistrer",
     "readyDescription": "Le fichier est prêt. Touchez Enregistrer dans Photos pour ouvrir la feuille de partage iOS.",
     "saveToFiles": "Enregistrer dans Fichiers",
     "saveToPhotos": "Enregistrer dans Photos",
     "saving": "Enregistrement…",
+    "selectionChanged": {
+      "message_one": "Le téléchargement contient {{count}} fichier, car les résultats ont changé après le chargement de cette page.",
+      "message_other": "Le téléchargement contient {{count}} fichiers, car les résultats ont changé après le chargement de cette page.",
+      "title": "Sélection actualisée"
+    },
+    "refreshRequired": "Actualisez ces résultats modifiés avant de télécharger la sélection exacte.",
+    "results_one": "{{count}} résultat",
+    "results_other": "{{count}} résultats",
     "seconds": "{{value}} s",
+    "shown_one": "{{count}} affiché",
+    "shown_other": "{{count}} affichés",
     "timeLeft": "Temps restant : {{time}}",
     "title": "Télécharger tous les fichiers"
   },

@@ -330,6 +330,12 @@ enum MediaCommentsFilter {
   Some
 }
 
+type MediaExportArtifact {
+  count: Int!
+  filename: String!
+  token: String!
+}
+
 type MediaFolderFacet {
   count: Int!
   folder: Folder!
@@ -413,6 +419,7 @@ input MediaResultsRatingInput {
 }
 
 input MediaResultsSelectionInput {
+  directOnly: Boolean
   filters: MediaResultsFilterInput
   folderId: ID!
   query: String
@@ -429,6 +436,12 @@ type MediaScanningInfo {
   ping: PingStatusInfo!
   scheduledScan: ScheduledScanStatusInfo!
   scheduledScanHours: Int!
+}
+
+enum MediaTextExportFormat {
+  Comma
+  Picr
+  Space
 }
 
 enum MediaTypeFilter {
@@ -448,6 +461,8 @@ type Mutation {
   editServerSettings(input: EditServerSettingsInput!): ServerSettings!
   editUser(commentPermissions: CommentPermissions, enabled: Boolean, expiresAt: DateTime, folderId: ID, galleryPasscode: String, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
   editUserDevice(enabled: Boolean!, name: String, notificationToken: String!, userId: ID!): UserDevice!
+  generateMediaResultsZip(input: MediaResultsSelectionInput!): MediaExportArtifact!
+  generateMediaTextExport(excludeExtensions: Boolean! = false, format: MediaTextExportFormat!, input: MediaResultsSelectionInput!): MediaExportArtifact!
   generateThumbnails(folderId: ID, mediaType: MediaTypeFilter = All): Boolean!
   generateZip(folderId: ID): String!
   recordFolderVisit(folderId: ID!): Boolean!

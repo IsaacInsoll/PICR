@@ -32,7 +32,12 @@ import {
   normalizeSearchText,
 } from '@shared/files/mediaCriteria.js';
 import { contextPermissions } from '../auth/contextPermissions.js';
-import { db, type FileFields, type FolderFields } from '../db/picrDb.js';
+import {
+  db,
+  type FileFields,
+  type FolderFields,
+  type UserFields,
+} from '../db/picrDb.js';
 import { dbFile, dbFolder } from '../db/models/index.js';
 import {
   descendantPathPattern,
@@ -78,6 +83,7 @@ export interface MediaResultsSelectionInput {
   folderId: number | string;
   query?: string | null;
   filters?: MediaResultsFilterInput | null;
+  directOnly?: boolean | null;
   sort?: MediaResultsSortInput | null;
 }
 
@@ -147,6 +153,19 @@ export interface MediaMatchSummaryValue {
   directCount: number;
   treeCount: number;
   selectionFingerprint: string;
+}
+
+// Exports resolve an uncapped selection in one query, so keep rows to the
+// columns ZIP and text exports read. Whole file rows carry the metadata JSON,
+// which makes Home-scale exports needlessly memory-heavy on small servers.
+export type MediaSelectionExportFile = Pick<
+  FileFields,
+  'id' | 'fileHash' | 'name' | 'relativePath' | 'rating' | 'flag'
+>;
+
+export interface MediaSelectionFileValue {
+  file: MediaSelectionExportFile;
+  relativePath: string;
 }
 
 const badInput = (message: string): never => {
@@ -512,10 +531,12 @@ const matchSourceFor = (
 
 export class AuthorizedMediaResultsSelection {
   readonly rootFolder: FolderFields;
+  readonly user: UserFields;
   readonly filters: MediaFilterCriteria;
   readonly selectedFolders: FolderFields[];
   readonly query: string;
   readonly sort: MediaResultsSortInput;
+  readonly directOnly: boolean;
   readonly selectionFingerprint: string;
   private readonly tokens: SearchToken[];
   private readonly cursorFingerprint: string;
@@ -523,25 +544,32 @@ export class AuthorizedMediaResultsSelection {
 
   constructor({
     rootFolder,
+    user,
     filters,
     selectedFolders,
     query,
     sort,
+    directOnly,
   }: {
     rootFolder: FolderFields;
+    user: UserFields;
     filters: MediaFilterCriteria;
     selectedFolders: FolderFields[];
     query: string;
     sort: MediaResultsSortInput;
+    directOnly: boolean;
   }) {
     this.rootFolder = rootFolder;
+    this.user = user;
     this.filters = filters;
     this.selectedFolders = selectedFolders;
     this.query = query;
     this.sort = sort;
+    this.directOnly = directOnly;
     this.tokens = searchTokensFor(query);
     const fingerprintCriteria = {
       folderId: rootFolder.id,
+      directOnly,
       query: this.tokens,
       filters: mediaCriteriaFingerprint(filters),
     };
@@ -569,6 +597,7 @@ export class AuthorizedMediaResultsSelection {
       eq(dbFile.exists, true),
       eq(dbFolder.exists, true),
       pathWithinFolder(dbFile.relativePath, this.rootFolder),
+      this.directOnly ? eq(dbFile.folderId, this.rootFolder.id) : undefined,
       ...filterPredicates(this.filters),
       ...this.tokens.map((token) =>
         tokenPredicate(token, this.rootFolder.relativePath ?? ''),
@@ -634,6 +663,36 @@ export class AuthorizedMediaResultsSelection {
       totalCount: row.totalCount,
       folderCount: row.folderCount,
     };
+  }
+
+  async filesForExport(): Promise<MediaSelectionFileValue[]> {
+    const rows = await db
+      .select({
+        file: {
+          id: dbFile.id,
+          fileHash: dbFile.fileHash,
+          name: dbFile.name,
+          relativePath: dbFile.relativePath,
+          rating: dbFile.rating,
+          flag: dbFile.flag,
+        },
+      })
+      .from(dbFile)
+      .innerJoin(dbFolder, eq(dbFolder.id, dbFile.folderId))
+      .where(this.where())
+      .orderBy(
+        asc(currentNormalizedPath),
+        asc(currentNormalizedName),
+        asc(currentRawName),
+        asc(dbFile.id),
+      );
+    return rows.map(({ file }) => ({
+      file,
+      relativePath: relativeFolderPath(
+        file.relativePath,
+        this.rootFolder.relativePath,
+      ),
+    }));
   }
 
   async page({
@@ -898,9 +957,11 @@ export const createAuthorizedMediaResultsSelection = async (
   );
   return new AuthorizedMediaResultsSelection({
     rootFolder,
+    user,
     filters,
     selectedFolders,
     query: canonicalQuery(input.query),
     sort: input.sort ?? { type: 'Filename', direction: 'Asc' },
+    directOnly: input.directOnly === true,
   });
 };

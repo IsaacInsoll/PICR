@@ -102,8 +102,8 @@ const backendProxy = (
   includeGraphql: boolean,
 ) => {
   const routes = includeGraphql
-    ? ['/graphql', '/image', '/zip']
-    : ['/image', '/zip'];
+    ? ['/graphql', '/image', '/zip', '/export']
+    : ['/image', '/zip', '/export'];
   const proxy: Record<string, ProxyOptions> = Object.fromEntries(
     routes.map((route) => [route, backendProxyEntry(backendUrl, '')]),
   );

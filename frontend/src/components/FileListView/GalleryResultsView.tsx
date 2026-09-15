@@ -79,12 +79,14 @@ export const GalleryResultsView = ({
   setSelectedFileId,
   view,
   width,
+  onCsvExport,
 }: {
   folder: ViewFolder;
   selectedFileId?: string;
   setSelectedFileId: (id: string | undefined) => void;
   view: SelectedView;
   width: number;
+  onCsvExport: () => void;
 }) => {
   const { t } = useTranslation('gallery');
   const formatFolderName = useFolderNameFormatter();
@@ -419,6 +421,7 @@ export const GalleryResultsView = ({
     <Stack gap="md">
       <GalleryResultsBar
         folderName={folderName}
+        folder={folder}
         query={query}
         filters={filters}
         folderIds={folderIds}
@@ -433,6 +436,7 @@ export const GalleryResultsView = ({
         onClear={clearResultsCriteria}
         onBack={exitResults}
         onRefresh={() => void refreshSession()}
+        onCsvExport={onCsvExport}
       />
 
       {selectedFileNoLongerMatches ? (

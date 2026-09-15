@@ -6,15 +6,27 @@ import {
   Paper,
   Stack,
   Text,
+  Tooltip,
 } from '@mantine/core';
 import { type GalleryFilterCriteria } from '@shared/files/mediaCriteria';
 import type { MediaResultsInput, MediaResultsQuery } from '@shared/gql/graphql';
+import type { ViewFolder } from '@shared/files/sortFiles';
 import { useTranslation } from 'react-i18next';
-import { countRecursiveGalleryFilters } from '../../helpers/mediaResultsInput';
-import { CloseIcon, PreviousIcon, SearchIcon } from '../../PicrIcons';
+import {
+  countRecursiveGalleryFilters,
+  mediaResultsSelectionInput,
+} from '../../helpers/mediaResultsInput';
+import {
+  CloseIcon,
+  CsvExportIcon,
+  PreviousIcon,
+  SearchIcon,
+} from '../../PicrIcons';
 import { GalleryFilterChips } from './Filtering/GalleryFilterChips';
 import { ResultsFolderFilter } from './ResultsFolderFilter';
 import type { ResultsReviewStatus } from '../../helpers/resultsReviewStatus';
+import { DownloadZipButton } from '../DownloadZipButton';
+import { useMe } from '../../hooks/useMe';
 
 type ResultsSummary = Pick<
   MediaResultsQuery['mediaResults'],
@@ -27,6 +39,7 @@ type ResultsSummary = Pick<
 
 export const GalleryResultsBar = ({
   folderName,
+  folder,
   query,
   filters,
   folderIds,
@@ -41,8 +54,10 @@ export const GalleryResultsBar = ({
   onClear,
   onBack,
   onRefresh,
+  onCsvExport,
 }: {
   folderName: string;
+  folder: ViewFolder;
   query: string;
   filters: GalleryFilterCriteria;
   folderIds: string[];
@@ -57,12 +72,22 @@ export const GalleryResultsBar = ({
   onClear: () => void;
   onBack: () => void;
   onRefresh: () => void;
+  onCsvExport: () => void;
 }) => {
   const { t } = useTranslation('gallery');
+  const me = useMe();
   const hasCriteria =
     !!query ||
     countRecursiveGalleryFilters(filters) > 0 ||
     folderIds.length > 0;
+  const downloadSelection = mediaResultsSelectionInput({
+    folderId: folder.id,
+    query,
+    filters,
+    folderIds,
+  });
+  const reviewChanged =
+    reviewStatus.noLongerMatch > 0 || reviewStatus.sortChanged > 0;
 
   return (
     <Container size="xl" w="100%">
@@ -88,13 +113,45 @@ export const GalleryResultsBar = ({
                 {t('results.heading')}
               </Text>
             </Group>
-            {results ? (
-              <Text size="sm" c="dimmed" aria-live="polite">
-                {t('count.file', { count: results.totalCount })}
-                {' · '}
-                {t('count.folder', { count: results.folderCount })}
-              </Text>
-            ) : null}
+            <Group gap="xs">
+              {results ? (
+                <Text size="sm" c="dimmed" aria-live="polite">
+                  {t('count.file', { count: results.totalCount })}
+                  {' · '}
+                  {t('count.folder', { count: results.folderCount })}
+                </Text>
+              ) : null}
+              {results ? (
+                <DownloadZipButton
+                  folder={folder}
+                  size="compact-sm"
+                  selection={downloadSelection}
+                  selectionCount={hasCriteria ? results.totalCount : undefined}
+                  selectionKind="results"
+                  selectionDisabled={reviewChanged}
+                  selectionUnavailableReason={
+                    reviewChanged ? t('download.refreshRequired') : undefined
+                  }
+                />
+              ) : null}
+              {results && me?.isUser ? (
+                <Tooltip
+                  label={t('download.refreshRequired')}
+                  disabled={!reviewChanged}
+                  withArrow
+                >
+                  <Button
+                    variant="default"
+                    size="compact-sm"
+                    leftSection={<CsvExportIcon size={16} />}
+                    disabled={reviewChanged}
+                    onClick={onCsvExport}
+                  >
+                    {t('folder.csv.action', { ns: 'admin' })}
+                  </Button>
+                </Tooltip>
+              ) : null}
+            </Group>
           </Group>
 
           <Group justify="space-between" gap="xs" align="flex-start">
@@ -140,7 +197,7 @@ export const GalleryResultsBar = ({
               {t('results.localFiltersPaused', { folder: folderName })}
             </Alert>
           ) : null}
-          {reviewStatus.noLongerMatch > 0 || reviewStatus.sortChanged > 0 ? (
+          {reviewChanged ? (
             <Alert variant="light" color="yellow" py="xs">
               <Group justify="space-between" gap="xs">
                 <Text size="sm" aria-live="polite">
