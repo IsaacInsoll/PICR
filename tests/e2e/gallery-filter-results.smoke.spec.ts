@@ -17,6 +17,17 @@ test('local gallery filters promote to recursive Results without losing lightbox
   await page.getByRole('button', { name: 'Login' }).click();
   await page.waitForURL('**/admin');
 
+  await page.goto('/admin/f/1#v=l', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: 'Open Quick Find' }).click();
+  const quickFind = page.getByPlaceholder('Search files and folders');
+  await expect(quickFind).toBeVisible();
+  await quickFind.pressSequentially('XH2A');
+  await page.getByRole('button', { name: 'Show all file results' }).click();
+  await expect(page).toHaveURL(/\/admin\/f\/1\?find=1&q=XH2A#v=l$/);
+  await expect(page.getByTestId('gallery-results-bar')).toBeVisible();
+  await page.getByRole('button', { name: 'Back to Home' }).click();
+  await expect(page).toHaveURL(/\/admin\/f\/1#v=l$/);
+
   await page.goto('/admin/f/1', { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: 'Filter Files' }).click();
   const filterDrawer = page.getByRole('dialog', { name: 'Filter Files' });

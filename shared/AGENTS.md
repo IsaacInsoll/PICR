@@ -67,7 +67,7 @@ shared/
 | GraphQL operations | Queries, mutations, fragments | Plain strings + types |
 | Generated types    | `File`, `Folder`, `User`      | Pure TypeScript       |
 | Pure functions     | `prettyBytes`, `sortFiles`    | No React dependencies |
-| Jotai atoms        | `filterOptions`               | Framework-agnostic    |
+| Jotai atoms        | `globalErrorAtom`             | Framework-agnostic    |
 | Constants          | `thumbnailDimensions`         | Plain values          |
 | Format helpers     | `imageFormats`                | Pure extension checks |
 | Validation         | `validateFolderName`          | Pure functions        |
@@ -414,39 +414,19 @@ const error = validateFolderName('New Folder'); // null if valid
 const error = validateRelativePath('Parent/Child/Folder'); // null if valid
 ```
 
-## Jotai Atoms
+## Gallery Criteria
 
 Gallery filtering's framework-free contract lives in
 `shared/files/mediaCriteria.ts`. Keep normalization, active-filter counting,
 stable fingerprints, and shared criterion names there so the local JavaScript
 filter and recursive SQL selection can be checked against the same semantics.
-The temporary `GalleryFilterCriteria.searchText` compatibility field supports
-the existing filename filter until gallery Find replaces it; recursive media
-criteria must not consume that field. Media type values deliberately align with
-the existing GraphQL `MediaTypeFilter` (`All`, `Image`, `Video`) through a
-type-only import. Do not add a generated runtime import to this module: it must
-remain consumable by both Metro and the Node backend.
-
-```typescript
-// shared/filterAtom.ts
-import { atom } from 'jotai';
-
-export const filterOptions = atom<FilterOptions>(defaultFilterOptions);
-export const totalFilterOptionsSelected = atom((get) => {
-  const options = get(filterOptions);
-  // Count active filters
-  return Object.values(options).filter(Boolean).length;
-});
-```
-
-Usage in consumers:
-
-```typescript
-import { useAtom } from 'jotai';
-import { filterOptions } from '@shared/filterAtom';
-
-const [filters, setFilters] = useAtom(filterOptions);
-```
+The browser URL is authoritative for gallery criteria; do not reintroduce a
+second atom-backed copy. Free-text Find queries are Results state rather than a
+gallery filter, while camera and exposure metadata remain local-gallery-only
+criteria. Media type values deliberately align with the existing GraphQL
+`MediaTypeFilter` (`All`, `Image`, `Video`) through a type-only import. Do not
+add a generated runtime import to this module: it must remain consumable by
+both Metro and the Node backend.
 
 ## Adding a New Query
 

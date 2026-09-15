@@ -78,7 +78,7 @@ describe('media Results input', () => {
     });
   });
 
-  test('identifies metadata and temporary filename criteria as local-only', () => {
+  test('identifies metadata criteria as local-only', () => {
     expect(hasLocalOnlyGalleryFilters(defaultGalleryFilterCriteria)).toBe(
       false,
     );
@@ -86,12 +86,6 @@ describe('media Results input', () => {
       hasLocalOnlyGalleryFilters({
         ...defaultGalleryFilterCriteria,
         metadata: { Camera: ['Canon EOS R5'] },
-      }),
-    ).toBe(true);
-    expect(
-      hasLocalOnlyGalleryFilters({
-        ...defaultGalleryFilterCriteria,
-        searchText: 'social',
       }),
     ).toBe(true);
   });

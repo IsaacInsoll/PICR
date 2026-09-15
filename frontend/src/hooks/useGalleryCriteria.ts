@@ -1,11 +1,8 @@
 import {
   defaultGalleryFilterCriteria,
-  mediaCriteriaEqual,
   normalizeGalleryFilterCriteria,
   type GalleryFilterCriteria,
 } from '@shared/files/mediaCriteria';
-import { filterOptions } from '@shared/filterAtom';
-import { useAtom } from 'jotai';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import {
@@ -46,29 +43,11 @@ export const useGalleryCriteria = () => {
   const { canView } = useCommentPermissions();
   const capabilities = useMemo(() => ({ canViewReview: canView }), [canView]);
   const { getCurrentLocation, navigateLocation } = useLocationNavigation();
-  const [, setLegacyFilters] = useAtom(filterOptions);
   const decoded = useMemo(
     () => decodeGalleryLocationCriteria(location.search, capabilities),
     [capabilities, location.search],
   );
-  const filters = useMemo<GalleryFilterCriteria>(
-    () => ({ ...decoded.filters, searchText: '' }),
-    [decoded.filters],
-  );
-
-  // The URL is authoritative for structured filters. Keep the legacy atom as a
-  // compatibility mirror until the CSV flow is migrated, without making
-  // Back/Forward wait for an effect before rendering. Free text belongs only to
-  // recursive Results and is never mirrored into the local Gallery filter.
-  useEffect(() => {
-    setLegacyFilters((current) => {
-      const next = { ...decoded.filters, searchText: '' };
-      return mediaCriteriaEqual(current, next) &&
-        current.searchText === next.searchText
-        ? current
-        : next;
-    });
-  }, [decoded.filters, setLegacyFilters]);
+  const filters: GalleryFilterCriteria = decoded.filters;
 
   // Remove malformed or permission-inaccessible criteria from the visible URL
   // in place. This also leaves unrelated owners such as `link` untouched.
@@ -88,11 +67,7 @@ export const useGalleryCriteria = () => {
 
   const setFilters = useCallback(
     (nextValue: GalleryFilterCriteria) => {
-      const next = {
-        ...normalizeGalleryFilterCriteria(nextValue, capabilities),
-        searchText: '',
-      };
-      setLegacyFilters(next);
+      const next = normalizeGalleryFilterCriteria(nextValue, capabilities);
       navigateLocation((current) => {
         const currentCriteria = decodeGalleryLocationCriteria(
           current.search,
@@ -109,7 +84,7 @@ export const useGalleryCriteria = () => {
         };
       });
     },
-    [capabilities, navigateLocation, setLegacyFilters],
+    [capabilities, navigateLocation],
   );
 
   const resetFilters = useCallback(
@@ -190,7 +165,6 @@ export const useGalleryCriteria = () => {
       ...defaultGalleryFilterCriteria,
       metadata: currentCriteria.filters.metadata,
     };
-    setLegacyFilters(filters);
     navigateLocation((current) => {
       return {
         search: withGalleryLocationCriteria(
@@ -207,7 +181,7 @@ export const useGalleryCriteria = () => {
         state: current.state,
       };
     });
-  }, [capabilities, getCurrentCriteria, navigateLocation, setLegacyFilters]);
+  }, [capabilities, getCurrentCriteria, navigateLocation]);
 
   const exitResults = useCallback(() => {
     if (wasGalleryResultsOpenedInCurrentDocument(location.state)) {

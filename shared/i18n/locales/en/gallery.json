@@ -68,7 +68,11 @@
     "shown_one": "{{count}} shown",
     "shown_other": "{{count}} shown",
     "timeLeft": "{{time}} left",
-    "title": "Download All Files"
+    "title": "Download All Files",
+    "zipFailed": {
+      "title": "Couldn't create the ZIP",
+      "message": "PICR couldn't create the ZIP for {{name}}. Try again. If files were recently moved or deleted, the folder may need to be rescanned."
+    }
   },
   "error": {
     "boundary": {

@@ -55,12 +55,14 @@
     }
   },
   "quickFind": {
-    "placeholder": "Durchsuchen Sie Fotos und Ordner",
+    "open": "Schnellsuche öffnen",
+    "placeholder": "Dateien und Ordner durchsuchen",
     "empty": "Nichts gefunden",
     "searchAllFolders": "Alle Ordner durchsuchen",
+    "showAllFileResults": "Alle Dateiergebnisse anzeigen",
     "limit": {
       "title": "Suchlimit erreicht",
-      "description": "Die Ergebnisse sind auf 100 Dateien und Ordner begrenzt. Verwenden Sie eine spezifischere Suche."
+      "description": "Die Schnellsuche zeigt bis zu 100 Dateien und 100 Ordner. Verfeinern Sie die Suche oder zeigen Sie alle Dateiergebnisse in der Galerie an."
     },
     "scope": {
       "current": "Dieser Ordner",

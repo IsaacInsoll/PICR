@@ -55,12 +55,14 @@
     }
   },
   "quickFind": {
-    "placeholder": "Search photos and folders",
+    "open": "Open Quick Find",
+    "placeholder": "Search files and folders",
     "empty": "Nothing found",
     "searchAllFolders": "Search all folders",
+    "showAllFileResults": "Show all file results",
     "limit": {
       "title": "Search Limit Reached",
-      "description": "Results are limited to 100 files and folders. Use a more specific search."
+      "description": "Quick Find shows up to 100 files and 100 folders. Refine your search, or show all file results in the gallery."
     },
     "scope": {
       "current": "This Folder",

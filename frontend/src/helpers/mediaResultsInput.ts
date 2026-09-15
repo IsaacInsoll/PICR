@@ -40,7 +40,6 @@ const ratingValues: Record<CriteriaRatingComparison, RatingComparison> = {
 export const hasLocalOnlyGalleryFilters = (
   filters: GalleryFilterCriteria,
 ): boolean =>
-  !!filters.searchText.trim() ||
   Object.values(filters.metadata).some((values) => values.length > 0);
 
 export const countRecursiveGalleryFilters = (

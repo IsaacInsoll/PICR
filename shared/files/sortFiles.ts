@@ -1,7 +1,10 @@
-import type { FilterOptionsInterface } from '@shared/filterAtom';
 import type { ViewFolderQuery } from '@shared/gql/graphql';
 import { DefaultFilterOptions, filterFiles } from './filterFiles';
-import { compareTextCodePoints, normalizeSearchText } from './mediaCriteria';
+import {
+  compareTextCodePoints,
+  normalizeSearchText,
+  type GalleryFilterCriteria,
+} from './mediaCriteria';
 
 export type FileSortType =
   'Filename' | 'LastModified' | 'DateTaken' | 'RecentlyCommented' | 'Rating';
@@ -252,7 +255,7 @@ export type ViewFolderFileWithHero = ViewFolderFile & {
 export interface SortFolderContentsOptions {
   sort: FileSort;
   filtering?: boolean;
-  filters?: FilterOptionsInterface;
+  filters?: GalleryFilterCriteria;
   heroImageId?: string | null;
   foldersFirst?: boolean;
 }

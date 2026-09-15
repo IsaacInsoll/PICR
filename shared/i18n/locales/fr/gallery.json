@@ -68,7 +68,11 @@
     "shown_one": "{{count}} affiché",
     "shown_other": "{{count}} affichés",
     "timeLeft": "Temps restant : {{time}}",
-    "title": "Télécharger tous les fichiers"
+    "title": "Télécharger tous les fichiers",
+    "zipFailed": {
+      "title": "Impossible de créer le ZIP",
+      "message": "PICR n'a pas pu créer le ZIP pour {{name}}. Réessayez. Si des fichiers ont été déplacés ou supprimés récemment, il peut être nécessaire de relancer l'analyse du dossier."
+    }
   },
   "error": {
     "boundary": {

@@ -1,7 +1,9 @@
 import { useQuery } from 'urql';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { linksToDownloadAtom } from './DownloadZipButton';
+import type { PendingZipDownload } from './DownloadZipButton';
 import { useAtom } from 'jotai';
+import { notifications } from '@mantine/notifications';
 import {
   Box,
   Group,
@@ -91,6 +93,32 @@ export const TaskProgress = ({ name, step, totalSteps }: TaskProgressProps) => {
   );
 };
 
+export type PendingZipOutcome = 'complete' | 'failed' | 'pending';
+
+// ZIP queue entries are shared by everyone viewing the folder and are never
+// removed, so a previous attempt's `Error` stays under the same key until the
+// ZIP is requested again. A retry's first render still holds that stale
+// status, so only trust a failure from a task request that started after this
+// ZIP request. A stale `Complete` is safe: it means the archive exists on disk.
+export const pendingZipOutcome = (
+  pending: Pick<PendingZipDownload, 'folder' | 'hash' | 'requestedAt'>,
+  tasks: readonly { id?: string | null; status?: string | null }[] | undefined,
+  latestCompletedRequestStartedAt: number | null,
+): PendingZipOutcome => {
+  const task = tasks?.find(
+    ({ id }) => id === `${pending.folder.id}${pending.hash}`,
+  );
+  if (task?.status === 'Complete') return 'complete';
+  if (
+    task?.status === 'Error' &&
+    latestCompletedRequestStartedAt !== null &&
+    latestCompletedRequestStartedAt > pending.requestedAt
+  ) {
+    return 'failed';
+  }
+  return 'pending';
+};
+
 export const TaskSummary = ({ folderId }: { folderId: string }) => {
   const { t } = useTranslation('gallery');
   const [result, requery] = useQuery({
@@ -103,21 +131,58 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
   useRequery(requery as Parameters<typeof useRequery>[0], 1000);
 
   const tasks = result.data?.tasks;
-  const complete = tasks?.filter((t) => t.status === 'Complete');
+  const activeRequestStartedAt = useRef<number | null>(null);
+  const latestCompletedRequestStartedAt = useRef<number | null>(null);
+
+  // Polling uses cache-and-network, which renders cached (stale) data before
+  // each server response. Record when a network request begins, then publish
+  // that timestamp only after it completes successfully. Arrival time is not
+  // sufficient: an old poll can start before a ZIP retry and finish afterward.
+  // This effect must stay above the pending-ZIP effect so both see the same
+  // update.
+  useEffect(() => {
+    if (result.stale || result.fetching) {
+      activeRequestStartedAt.current ??= Date.now();
+      return;
+    }
+    if (result.error) {
+      activeRequestStartedAt.current = null;
+      return;
+    }
+    if (tasks && activeRequestStartedAt.current !== null) {
+      latestCompletedRequestStartedAt.current = activeRequestStartedAt.current;
+      activeRequestStartedAt.current = null;
+    }
+  }, [tasks, result.error, result.stale, result.fetching]);
 
   useEffect(() => {
     zips.forEach((fh) => {
-      const task = complete?.find(({ id }) => id === fh.folder.id + fh.hash);
-      if (task) {
-        const url = withBasePath(
-          `/zip/${fh.folder.id}/${fh.hash}/${fh.folder.name}`,
+      const outcome = pendingZipOutcome(
+        fh,
+        tasks,
+        latestCompletedRequestStartedAt.current,
+      );
+      if (outcome === 'pending') return;
+      if (outcome === 'complete') {
+        triggerDownload(
+          withBasePath(`/zip/${fh.folder.id}/${fh.hash}/${fh.folder.name}`),
         );
-        triggerDownload(url);
-        setZips((list) => list.filter((zz) => zz !== fh));
+      } else {
+        notifications.show({
+          color: 'red',
+          title: t('download.zipFailed.title'),
+          message: t('download.zipFailed.message', { name: fh.folder.name }),
+        });
       }
+      setZips((list) => list.filter((zz) => zz !== fh));
     });
-  }, [zips, complete, setZips]);
-  const remaining = tasks?.filter((t) => t.status !== 'Complete');
+  }, [zips, tasks, result.stale, result.fetching, setZips, t]);
+
+  // Failed ZIPs are reported to the requester above. Never render them as
+  // progress: other viewers would otherwise see a permanent stuck row.
+  const remaining = tasks?.filter(
+    (task) => task.status !== 'Complete' && task.status !== 'Error',
+  );
 
   // //TODO: remove this testing line
   // remaining = [

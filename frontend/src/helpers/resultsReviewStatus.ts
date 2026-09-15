@@ -34,7 +34,7 @@ export const resultsReviewStatus = (
 ): ResultsReviewStatus => {
   let noLongerMatch = 0;
   let sortChanged = 0;
-  const recursiveFilters = { ...filters, metadata: {}, searchText: '' };
+  const recursiveFilters = { ...filters, metadata: {} };
 
   for (const file of files) {
     const original = baseline.get(file.id);

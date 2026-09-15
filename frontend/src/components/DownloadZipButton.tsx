@@ -13,6 +13,10 @@ import type { MediaResultsSelectionInput } from '@shared/gql/graphql';
 export type PendingZipDownload = {
   folder: PicrFolder;
   hash: string;
+  // When the generate mutation returned. TaskSummary only trusts a failure
+  // reported by task data that arrived after this, because the server keeps a
+  // previous attempt's Error status under the same ZIP key.
+  requestedAt: number;
 };
 
 export const linksToDownloadAtom = atom<PendingZipDownload[]>([]);

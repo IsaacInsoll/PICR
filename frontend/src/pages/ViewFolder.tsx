@@ -260,10 +260,7 @@ const ViewFolderBody = () => {
   const galleryCriteria = decodeGalleryLocationCriteria(location.search, {
     canViewReview: canView,
   });
-  const galleryFilters = {
-    ...galleryCriteria.filters,
-    searchText: '',
-  };
+  const galleryFilters = galleryCriteria.filters;
   const galleryFilterCount = countGalleryFilterCriteria(galleryFilters);
   const galleryFilteredCount = folder
     ? filterFiles(folder.files, galleryFilters).length

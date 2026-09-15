@@ -34,6 +34,12 @@ import {
 } from '@shared/search/searchResults';
 import { useTranslation } from 'react-i18next';
 import { useFolderNameFormatter } from '../../i18n/useFolderNameFormatter';
+import { useLocationNavigation } from '../../hooks/useLocationNavigation';
+import { useBaseViewFolderURL } from '../../hooks/useBaseViewFolderURL';
+import { galleryResultsHistoryState } from '../../hooks/useGalleryCriteria';
+import { withGalleryLocationCriteria } from '../../helpers/galleryCriteriaSearchParams';
+import { defaultMediaFilterCriteria } from '@shared/files/mediaCriteria';
+import { readHashParam, withHashParam } from '../../helpers/hashParams';
 
 type Scope = 'all' | 'current';
 const scopeAtom = atom<Scope>('current');
@@ -129,6 +135,8 @@ const Results = ({
   const type = useAtomValue(scopeTypeAtom);
   const folderId = scope === 'all' || !folder?.id ? me?.folderId : folder.id;
   const queryFolderId = folderId as string;
+  const baseViewFolderURL = useBaseViewFolderURL();
+  const { navigateLocation } = useLocationNavigation();
   const [debouncedQuery] = useDebouncedValue(query, 200);
   const [index, setIndex] = useState<number | null>(null);
 
@@ -147,6 +155,33 @@ const Results = ({
     files,
     folders,
   );
+
+  const showAllFileResults = () => {
+    close();
+    navigateLocation((current) => {
+      let presentationHash = '';
+      for (const key of ['v', 's'] as const) {
+        presentationHash = withHashParam(
+          presentationHash,
+          key,
+          readHashParam(current.hash, key),
+        );
+      }
+
+      return {
+        pathname: `${baseViewFolderURL}${queryFolderId}`,
+        search: withGalleryLocationCriteria('', {
+          mode: 'results',
+          query,
+          filters: defaultMediaFilterCriteria,
+          folderIds: [],
+        }),
+        hash: presentationHash,
+        replace: false,
+        state: galleryResultsHistoryState(current.state),
+      };
+    });
+  };
 
   const handleClick = (
     e: React.MouseEvent | KeyboardEvent | undefined,
@@ -242,6 +277,7 @@ const Results = ({
         totalFolders={totalFolders}
         moreResults={moreResults}
         inHomeFolder={scope === 'current' && folderId !== me?.folderId}
+        onShowAllFileResults={showAllFileResults}
       />
     </Stack>
   );
@@ -314,11 +350,13 @@ const QuickFindFooter = ({
   totalFiles,
   moreResults,
   inHomeFolder,
+  onShowAllFileResults,
 }: {
   totalFiles: number;
   totalFolders: number;
   moreResults: boolean;
   inHomeFolder: boolean;
+  onShowAllFileResults: () => void;
 }) => {
   const { t } = useTranslation('admin');
   const setSelectedScope = useSetAtom(scopeAtom);
@@ -326,6 +364,11 @@ const QuickFindFooter = ({
   return (
     <Stack p="lg">
       <Group gap="md">
+        {totalFiles > 0 ? (
+          <Button variant="filled" onClick={onShowAllFileResults} size="xs">
+            {t('quickFind.showAllFileResults')}
+          </Button>
+        ) : null}
         {total === 0 ? (
           <Alert
             variant="transparent"

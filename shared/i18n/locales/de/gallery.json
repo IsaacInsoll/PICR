@@ -68,7 +68,11 @@
     "shown_one": "{{count}} angezeigt",
     "shown_other": "{{count}} angezeigt",
     "timeLeft": "{{time}} übrig",
-    "title": "Laden Sie alle Dateien herunter"
+    "title": "Laden Sie alle Dateien herunter",
+    "zipFailed": {
+      "title": "ZIP konnte nicht erstellt werden",
+      "message": "PICR konnte die ZIP-Datei für {{name}} nicht erstellen. Versuchen Sie es erneut. Wenn kürzlich Dateien verschoben oder gelöscht wurden, muss der Ordner möglicherweise erneut gescannt werden."
+    }
   },
   "error": {
     "boundary": {

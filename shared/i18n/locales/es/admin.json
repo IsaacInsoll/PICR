@@ -55,12 +55,14 @@
     }
   },
   "quickFind": {
-    "placeholder": "Buscar fotos y carpetas",
+    "open": "Abrir búsqueda rápida",
+    "placeholder": "Buscar archivos y carpetas",
     "empty": "No se encontró nada",
     "searchAllFolders": "Buscar todas las carpetas",
+    "showAllFileResults": "Mostrar todos los archivos encontrados",
     "limit": {
       "title": "Límite de búsqueda alcanzado",
-      "description": "Los resultados están limitados a 100 archivos y carpetas. Utilice una búsqueda más específica."
+      "description": "Búsqueda rápida muestra hasta 100 archivos y 100 carpetas. Refine la búsqueda o muestre todos los archivos encontrados en la galería."
     },
     "scope": {
       "current": "Esta carpeta",

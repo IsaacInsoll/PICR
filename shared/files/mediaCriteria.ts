@@ -47,12 +47,7 @@ export interface MediaFilterCriteria {
   comments: CommentPresence | null;
 }
 
-// Filename search remains here temporarily so the current Filter drawer keeps
-// working until the visible Find replacement lands. It is deliberately not a
-// member of MediaFilterCriteria and will not enter recursive filter requests.
-export interface GalleryFilterCriteria extends MediaFilterCriteria {
-  searchText: string;
-}
+export type GalleryFilterCriteria = MediaFilterCriteria;
 
 export interface MediaCriteriaCapabilities {
   canViewReview: boolean;
@@ -70,7 +65,6 @@ export const defaultMediaFilterCriteria: MediaFilterCriteria = {
 
 export const defaultGalleryFilterCriteria: GalleryFilterCriteria = {
   ...defaultMediaFilterCriteria,
-  searchText: '',
 };
 
 const isIncluded = <T extends string>(
@@ -151,11 +145,8 @@ export const normalizeMediaFilterCriteria = (
 export const normalizeGalleryFilterCriteria = (
   criteria: Partial<GalleryFilterCriteria> | null | undefined,
   capabilities?: MediaCriteriaCapabilities,
-): GalleryFilterCriteria => ({
-  ...normalizeMediaFilterCriteria(criteria, capabilities),
-  searchText:
-    typeof criteria?.searchText === 'string' ? criteria.searchText : '',
-});
+): GalleryFilterCriteria =>
+  normalizeMediaFilterCriteria(criteria, capabilities);
 
 export const normalizeSearchText = (value: string): string =>
   value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
@@ -208,7 +199,7 @@ export const countMediaFilterCriteria = (
 
 export const countGalleryFilterCriteria = (
   criteria: GalleryFilterCriteria,
-): number => countMediaFilterCriteria(criteria) + (criteria.searchText ? 1 : 0);
+): number => countMediaFilterCriteria(criteria);
 
 export const mediaCriteriaFingerprint = (
   criteria: MediaFilterCriteria,

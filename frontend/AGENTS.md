@@ -61,6 +61,14 @@ submits typed text and closes the drawer so the results are visible. Preserve
 local-only camera/lens/exposure filters for the return to Gallery, and explain in
 Results that they are paused instead of interrupting Find with confirmation.
 
+Quick Find remains an administrator navigation tool. Its **Show all file
+results** handoff starts a fresh recursive Results selection rooted at Quick
+Find's chosen current/all-folder scope: carry the text, clear gallery filters
+and folder facets, and preserve only the `v`/`s` presentation hash parameters.
+Write that destination through `useLocationNavigation` and mark it with
+`galleryResultsHistoryState` so same-tick URL owners compose safely and Back
+returns to the page where Quick Find was opened.
+
 Recursive Results use the server's selection fingerprint for counts, facets,
 and export identity, but that fingerprint deliberately excludes sort. Key any
 materialized/appended browser pages by the complete request criteria **and**
@@ -122,6 +130,17 @@ recursive export with a clear explanation while those criteria are active.
 Recursive filename export uses the server artifact route and has no 10,000-file
 client-fetch cap. Keep `/export` beside `/image` and `/zip` in every Vite backend
 proxy configuration.
+
+ZIP generation status reaches the browser through the shared `tasks` query.
+Queue entries are visible to everyone viewing the folder and are never removed,
+so a failed attempt stays `Error` under the same key until someone requests that
+ZIP again. `TaskSummary` therefore never renders `Error` tasks as progress rows
+(other viewers would see a permanent stuck row). It reports a failure only to the
+browser holding the pending download, as a notification. It trusts that `Error`
+only when a successful task request started after the pending entry's
+`requestedAt`, because a retry's first render still holds the previous attempt's
+status. Compare the request's start time rather than response arrival: a cached
+result or older in-flight poll is not evidence about the new attempt.
 
 Public-link avatar tooltips include the link's status and last access time. The
 existing-link editor keeps Edit and Access Logs in tabs, with its persistent

@@ -325,6 +325,13 @@ future benchmarks field-isolated and warm so a combined GraphQL request does
 not disguise which resolver regressed. Use `EXPLAIN ANALYZE` before adding any
 computed-sort or substring-search index.
 
+An isolated local-Docker upgrade benchmark on 100,000 synthetic file rows took
+about 61 ms to build migration 0029's partial path index and 3.98 seconds to run
+the exact post-boot derived-field backfill (100,000 search rows and 50,000
+capture dates). These numbers are a development-machine baseline, not an
+operator guarantee; quote the workload and environment whenever using them in
+release notes.
+
 ### Adding/Modifying Tables
 
 1. Create or edit model in `db/models/`

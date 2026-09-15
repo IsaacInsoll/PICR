@@ -41,7 +41,11 @@ export const useGenerateZip = (
           }),
         });
       }
-      const fh: PendingZipDownload = { folder, hash: artifact.token };
+      const fh: PendingZipDownload = {
+        folder,
+        hash: artifact.token,
+        requestedAt: Date.now(),
+      };
       setLinks((l) => [...l, fh]);
       if (onComplete) onComplete();
       return artifact.count;
@@ -51,6 +55,7 @@ export const useGenerateZip = (
     const fh: PendingZipDownload = {
       folder,
       hash: response.data.generateZip,
+      requestedAt: Date.now(),
     };
     setLinks((l) => [...l, fh]);
     if (onComplete) onComplete();

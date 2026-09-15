@@ -5,10 +5,10 @@ description: Choose whether recipients can download files and understand the lim
 
 Each public link has a mode that matches one of two common stages in a photography workflow.
 
-| Mode               | Intended use                                                     | PICR download controls                            |
-| ------------------ | ---------------------------------------------------------------- | ------------------------------------------------- |
-| **Proofs only**    | Selection, comments, ratings, and approval before final delivery | Hidden; folder ZIP generation is rejected         |
-| **Final delivery** | Delivering files the recipient is allowed to save                | Individual and folder ZIP downloads are available |
+| Mode               | Intended use                                                     | PICR download controls                                              |
+| ------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------- |
+| **Proofs only**    | Selection, comments, ratings, and approval before final delivery | Hidden; folder ZIP generation is rejected                           |
+| **Final delivery** | Delivering files the recipient is allowed to save                | Individual, shown-selection, and folder ZIP downloads are available |
 
 Change the mode by editing the public link. Other links to the same folder keep their own mode.
 
@@ -27,9 +27,11 @@ Use proof-sized exports, watermarks, or other workflow controls when the consequ
 Final-delivery links can download:
 
 - An individual original from the file menu or full-screen viewer
-- The current folder as a ZIP from the folder menu
+- The filtered files shown in the current gallery
+- A recursive Find Results selection
+- The entire current folder tree
 
-ZIP creation runs in the background. PICR reuses a generated archive while the folder contents remain unchanged and creates a new one when necessary.
+When more than one scope is available, a single Download menu labels each choice with its exact file count. ZIP creation runs in the background, preserves relative subfolder paths, and reuses a generated archive while its selected contents remain unchanged. If review changes could make a loaded Results selection stale, refresh it before downloading the exact selection.
 
 On iPhone and iPad, PICR uses the native share sheet for supported photos and videos so the recipient can choose **Save Image**, **Save Video**, or another destination. ZIP and other generic downloads use the browser's normal file-saving flow.
 
@@ -59,7 +61,7 @@ Before sending a final link, test it in a private/incognito browser and confirm:
 
 - The link opens the intended folder and descendants only
 - The link is in **Final delivery** mode
-- Individual and ZIP downloads work
+- Individual, selected, and entire-folder downloads work
 - The folder contains only files intended for delivery
 - Passcode and expiration settings are correct
 - The public `BASE_URL` uses HTTPS and points to the expected host

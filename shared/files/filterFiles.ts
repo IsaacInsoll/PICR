@@ -1,11 +1,10 @@
-import type { FilterOptionsInterface } from '@shared/filterAtom';
 import type { MetadataOptionsForFiltering } from '@shared/files/metadataForFiltering';
 import type { FileFlag } from '@shared/gql/graphql';
 import type { PicrMetadataMap } from '@shared/types/metadata';
 import {
   defaultGalleryFilterCriteria,
-  normalizeSearchText,
   type AspectFilter,
+  type GalleryFilterCriteria,
   type MediaTypeFilterValue,
 } from './mediaCriteria';
 
@@ -24,23 +23,18 @@ type FilterableFile = {
 
 export const filterFiles = <T extends FilterableFile>(
   files: T[],
-  filters: FilterOptionsInterface,
+  filters: GalleryFilterCriteria,
 ): T[] => {
-  const { mediaType, aspect, searchText, metadata } = filters;
+  const { mediaType, aspect, metadata } = filters;
   return files.filter((file: T) => {
     return (
       mediaTypeFilter(file, mediaType) &&
       aspectFilter(file, aspect) &&
-      textFilter(file, searchText) &&
       metadataFilter(file, metadata) &&
       commentsFilter(file, filters)
     );
   });
 };
-
-const textFilter = (file: FilterableFile, text: string): boolean =>
-  !!file.name &&
-  normalizeSearchText(file.name).includes(normalizeSearchText(text));
 
 const mediaTypeFilter = (
   file: FilterableFile,
@@ -82,7 +76,7 @@ const metadataFilter = (
 
 const commentsFilter = (
   file: FilterableFile,
-  filters: FilterOptionsInterface,
+  filters: GalleryFilterCriteria,
 ): boolean => {
   const { flag, rating, ratingComparison, comments } = filters;
   const flagOk =

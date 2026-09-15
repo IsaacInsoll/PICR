@@ -103,7 +103,6 @@ export const FolderContentsControls = ({
     }
     setFilters({
       ...defaultGalleryFilterCriteria,
-      searchText: filters.searchText,
       metadata: filters.metadata,
     });
   };

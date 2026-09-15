@@ -812,6 +812,21 @@ test('public links stay scoped and review filters are ignored without permission
   );
   expect(sanitized.totalCount).toBe(5);
 
+  const businessSearch = await results(
+    {
+      query: 'social',
+      filters: { mediaType: MediaTypeFilter.Video },
+    },
+    linkClient,
+  );
+  expect(businessSearch.edges).toMatchObject([
+    {
+      file: { name: 'launch.mp4' },
+      matchSource: MediaMatchSource.FolderPath,
+      relativePath: 'Social Campaign',
+    },
+  ]);
+
   const outsideRoot = await linkClient
     .query(mediaResultsQuery, {
       input: {

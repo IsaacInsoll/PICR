@@ -81,6 +81,7 @@ const PublicUser = ({ me }: { me: MeUser }) => {
 };
 
 const LeftSide = ({ me }: { me: MeUser }) => {
+  const { t } = useTranslation('admin');
   const { t: tCommon } = useTranslation('common');
   const formatFolderName = useFolderNameFormatter();
   const isMobile = useIsMobile();
@@ -116,6 +117,7 @@ const LeftSide = ({ me }: { me: MeUser }) => {
             <ActionIcon
               variant="subtle"
               color="gray"
+              aria-label={t('quickFind.open')}
               onClick={() => {
                 setOpened(true);
               }}
