@@ -517,6 +517,7 @@ type SystemInfo {
 }
 
 type Task {
+  errorCode: String
   folder: Folder
   id: ID
   name: String!

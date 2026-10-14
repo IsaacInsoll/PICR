@@ -147,6 +147,11 @@ imports and include that source in both Ping TypeScript configs.
 
 ## Media Task Contract
 
+`urql/queries/taskQuery.ts` keeps the app's legacy `taskQuery` separate from the
+web-only `taskQueryWithErrors`. The web/backend ship together, but an app update
+can connect to an older server whose schema does not have `Task.errorCode`.
+Adding that field to the app's existing operation would fail its whole query.
+
 `shared/tasks/mediaTaskIds.ts` owns the stable media-maintenance task IDs used
 by backend producers and UI consumers. Do not duplicate these IDs as string
 literals across subsystems: an unnoticed mismatch makes the frontend silently

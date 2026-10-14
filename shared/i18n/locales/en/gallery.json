@@ -55,7 +55,13 @@
     "saving": "Saving…",
     "seconds": "{{value}}s",
     "timeLeft": "{{time}} left",
-    "title": "Download All Files"
+    "title": "Download All Files",
+    "zipError": {
+      "noSpace": "The server has insufficient cache space. Contact the photographer, then try Download again.",
+      "permissionDenied": "The server cannot read the source files or write the ZIP cache. Contact the photographer, then try Download again.",
+      "fileMissing": "A source file or storage location is unavailable. Contact the photographer, then try Download again.",
+      "generic": "The server could not create the ZIP. Contact the photographer to check the server logs, then try Download again."
+    }
   },
   "error": {
     "boundary": {

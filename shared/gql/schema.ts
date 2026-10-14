@@ -776,6 +776,7 @@ export type SystemInfo = {
 
 export type Task = {
   __typename?: 'Task';
+  errorCode?: Maybe<Scalars['String']['output']>;
   folder?: Maybe<Folder>;
   id?: Maybe<Scalars['ID']['output']>;
   name: Scalars['String']['output'];

@@ -5,6 +5,7 @@ import {
   determinateTaskProgress,
   mediaTaskTranslationKey,
   TaskProgress,
+  ZipTaskError,
 } from './TaskSummary.js';
 
 const renderProgress = (props: Parameters<typeof TaskProgress>[0]): string =>
@@ -45,4 +46,19 @@ test('known backend task IDs select translated labels', () => {
   expect(mediaTaskTranslationKey('media-scan')).toBe('task.mediaScan');
   expect(mediaTaskTranslationKey('media-import')).toBe('task.mediaImport');
   expect(mediaTaskTranslationKey('zip-task')).toBeNull();
+});
+
+test('failed ZIPs show a reason without a progress spinner, including unknown errors', () => {
+  const renderError = (errorCode: string) =>
+    renderToStaticMarkup(
+      <MantineProvider>
+        <ZipTaskError name="RAW Gallery" errorCode={errorCode} />
+      </MantineProvider>,
+    );
+  const full = renderError('NO_SPACE');
+  expect(full).toContain('RAW Gallery');
+  expect(full).toContain('download.zipError.noSpace');
+  expect(full).not.toContain('mantine-Loader-root');
+  expect(full).not.toContain('role="progressbar"');
+  expect(renderError('FUTURE_ERROR')).toContain('download.zipError.generic');
 });

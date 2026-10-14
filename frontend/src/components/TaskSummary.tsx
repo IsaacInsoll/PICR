@@ -4,6 +4,7 @@ import { linksToDownloadAtom } from './DownloadZipButton';
 import { useAtom } from 'jotai';
 import {
   Box,
+  Alert,
   Group,
   Loader,
   Paper,
@@ -12,7 +13,7 @@ import {
   Text,
 } from '@mantine/core';
 import { Page } from './Page';
-import { taskQuery } from '@shared/urql/queries/taskQuery';
+import { taskQueryWithErrors } from '@shared/urql/queries/taskQuery';
 import {
   IMAGE_DIMENSION_BACKFILL_TASK_ID,
   MEDIA_IMPORT_TASK_ID,
@@ -85,10 +86,33 @@ export const TaskProgress = ({ name, step, totalSteps }: TaskProgressProps) => {
   );
 };
 
+export const ZipTaskError = ({
+  name,
+  errorCode,
+}: {
+  name: string;
+  errorCode?: string | null;
+}) => {
+  const { t } = useTranslation('gallery');
+  const reasons: Record<string, string> = {
+    NO_SPACE: t('download.zipError.noSpace'),
+    PERMISSION_DENIED: t('download.zipError.permissionDenied'),
+    FILE_MISSING: t('download.zipError.fileMissing'),
+  };
+  return (
+    <Alert color="red" title={t('download.failed')}>
+      <Text size="sm">{name}</Text>
+      <Text size="sm">
+        {reasons[errorCode ?? ''] ?? t('download.zipError.generic')}
+      </Text>
+    </Alert>
+  );
+};
+
 export const TaskSummary = ({ folderId }: { folderId: string }) => {
   const { t } = useTranslation('gallery');
   const [result, requery] = useQuery({
-    query: taskQuery,
+    query: taskQueryWithErrors,
     variables: { folderId },
   });
 
@@ -104,7 +128,7 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
       const task = complete?.find(({ id }) => id === fh.folder.id + fh.hash);
       if (task) {
         const url = withBasePath(
-          `/zip/${fh.folder.id}/${fh.hash}/${fh.folder.name}`,
+          `/zip/${fh.folder.id}/${fh.hash}/${encodeURIComponent(String(fh.folder.name))}`,
         );
         triggerDownload(url);
         setZips((list) => list.filter((zz) => zz !== fh));
@@ -132,25 +156,40 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
     <Page>
       <Paper shadow="xs" withBorder p="xs" mb="md" mt="lg">
         <Stack gap="sm">
-          {remaining.map(({ id, name, step, totalSteps }) => {
-            const pendingZip = zips.find(
-              ({ folder, hash }) => id === folder.id + hash,
-            );
-            const mediaTaskKey = mediaTaskTranslationKey(id);
-            const displayName = pendingZip
-              ? t('download.preparing', { name: pendingZip.folder.name })
-              : (mediaTaskKey && mediaTaskLabels[mediaTaskKey]) || name;
-            return (
-              <Group gap="small" key={id}>
-                <Text>{displayName}</Text>
-                <TaskProgress
-                  name={displayName}
-                  step={step}
-                  totalSteps={totalSteps}
-                />
-              </Group>
-            );
-          })}
+          {remaining.map(
+            ({ id, name, step, totalSteps, status, errorCode }) => {
+              const pendingZip = zips.find(
+                ({ folder, hash }) => id === folder.id + hash,
+              );
+              const mediaTaskKey = mediaTaskTranslationKey(id);
+              if (status === 'Error') {
+                return (
+                  <ZipTaskError
+                    key={id}
+                    name={
+                      pendingZip
+                        ? t('download.file', { name: pendingZip.folder.name })
+                        : name
+                    }
+                    errorCode={errorCode}
+                  />
+                );
+              }
+              const displayName = pendingZip
+                ? t('download.preparing', { name: pendingZip.folder.name })
+                : (mediaTaskKey && mediaTaskLabels[mediaTaskKey]) || name;
+              return (
+                <Group gap="small" key={id}>
+                  <Text>{displayName}</Text>
+                  <TaskProgress
+                    name={displayName}
+                    step={step}
+                    totalSteps={totalSteps}
+                  />
+                </Group>
+              );
+            },
+          )}
         </Stack>
       </Paper>
     </Page>

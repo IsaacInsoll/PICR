@@ -87,6 +87,65 @@ rm -rf ./cache/*
 
 ---
 
+## Gallery ZIP or individual downloads fail
+
+A **Bad Gateway** error on `GenerateZip` means the request to start preparation
+failed. It does not establish that the archive itself exceeded a proxy timeout:
+ZIP creation runs in the background, and the browser downloads it after it is
+complete. Check the failing request and server logs before changing proxy limits.
+
+1. Record the PICR version from **Settings**, the exact failure time and timezone,
+   and whether you use a reverse proxy or tunnel. Try the same download through
+   PICR's direct address on your local network and compare the result.
+2. In browser developer tools, open **Network**, reproduce once, and inspect the
+   failed request. Record its URL path, HTTP status, response `Content-Type`, and
+   elapsed time. Note whether it is `/graphql` (`GenerateZip`), task polling,
+   `/zip/...`, or an individual `/image/.../raw/...` download.
+3. If a 50 MB original downloads as only a few KB, inspect that small file as
+   text. It may contain an HTML error page rather than RAW bytes; its size alone
+   does not identify the cause.
+4. Collect container status and recent logs. Replace `picr` below if your Compose
+   service has a different name:
+
+   ```bash title="Collect container status and recent logs"
+   docker compose ps
+   docker compose logs --since 15m --timestamps picr
+   docker compose exec picr tail -n 100 /home/node/app/cache/error.log
+   docker compose exec picr tail -n 100 /home/node/app/cache/info.log
+   ```
+
+   Look for ZIP failures, `ENOSPC`/quota errors, `EACCES`, `ENOENT`, RAW decode
+   failures, and signs of a container restart. PICR's operational logs are in
+   the cache files, so Docker logs alone may not contain the cause.
+
+5. Check free bytes and inodes on the cache filesystem:
+
+   ```bash title="Check available ZIP cache space"
+   docker compose exec picr df -h /home/node/app/cache
+   docker compose exec picr df -i /home/node/app/cache
+   ```
+
+   A gallery of 94 files at 50–60 MB each contains approximately 4.7–5.6 GB of
+   source data. Allow comparable additional cache space for the ZIP, plus a
+   margin and space already occupied by thumbnails and other archives. Compression
+   savings depend on the source files.
+
+6. Compare one individual download, a small test folder containing a few of the
+   same RAW files, and the full gallery. If previews are missing too, include the
+   RAW decode messages from `error.log`. Preview failure must not prevent an
+   original download in versions containing the ZIP delivery fix.
+
+Send these results with a bug report. Remove public-link UUIDs, passcodes,
+authorization headers, and private paths before sharing screenshots or logs.
+Capture evidence before restarting or clearing caches.
+
+After upgrading to the ZIP delivery fix, previously cached ZIPs are regenerated
+on the next download because older versions could leave incomplete archives.
+Legacy ZIPs remain on disk; the upgrade does not delete them or generate ZIPs
+for the whole library.
+
+---
+
 ## Can't connect to the Postgres database
 
 If PICR starts but immediately exits with a database connection error, the most common cause is another Postgres

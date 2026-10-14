@@ -59,7 +59,8 @@ export const imageRequest = async (
     res.sendStatus(404);
     return;
   }
-  if (file.type === 'File') {
+  // A RAW without a usable preview still has an original to deliver.
+  if (file.type === 'File' && size !== 'raw') {
     res.sendStatus(404);
     return;
   }

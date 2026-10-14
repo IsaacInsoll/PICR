@@ -17,5 +17,6 @@ export const taskType = new GraphQLObjectType({
     startTime: { type: GraphQLString },
     folder: { type: folderType },
     status: { type: GraphQLString }, // TODO: make it an enum
+    errorCode: { type: GraphQLString },
   }),
 });

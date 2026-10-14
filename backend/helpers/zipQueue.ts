@@ -8,15 +8,15 @@ import { log } from '../logger.js';
 interface ZipQueueItem {
   folder: FolderFields;
   status: 'Queued' | 'In Progress' | 'Complete' | 'Error';
-  hash?: string;
   //only relevant if status=inprogress
   filesDone?: number;
   filesTotal?: number;
-  bytesDone?: number;
-  bytesTotal?: number;
+  errorCode?: string;
 }
 
-const zipQueue: { [key: string]: ZipQueueItem } = {};
+const zipQueue = new Map<string, ZipQueueItem>();
+const pending: FolderHash[] = [];
+let running = false;
 
 export const addToZipQueue = (folderHash: FolderHash) => {
   // already in progress (maybe a double tap of download button?)
@@ -31,31 +31,68 @@ export const addToZipQueue = (folderHash: FolderHash) => {
       'info',
       `Returning existing ZIP file for folder ${folderHash.folder.id}`,
     );
-    zipQueue[folderHash.key] = {
+    zipQueue.set(folderHash.key, {
       status: 'Complete',
       folder: folderHash.folder,
-    };
+    });
   } else {
     log('info', `Queueing ZIP generation for folder ${folderHash.folder.id}`);
-    zipQueue[folderHash.key] = {
+    zipQueue.set(folderHash.key, {
       status: 'Queued',
       folder: folderHash.folder,
-    };
-    void zipFolder(folderHash);
+    });
+    pending.push(folderHash);
+    void drainZipQueue();
   }
+};
+
+// Serialize compression and disk writes on modest self-hosted hardware.
+const drainZipQueue = async () => {
+  if (running) return;
+  running = true;
+  try {
+    let folderHash: FolderHash | undefined;
+    while ((folderHash = pending.shift())) {
+      updateZipQueue(folderHash, { status: 'In Progress' });
+      try {
+        await zipFolder(folderHash);
+        updateZipQueue(folderHash, { status: 'Complete' });
+      } catch (error) {
+        const errorCode = zipErrorCode(error);
+        updateZipQueue(folderHash, { status: 'Error', errorCode });
+        log(
+          'error',
+          `🗜️ ZIP failed for folder ${folderHash.folder.id} (${folderHash.hash}) [${errorCode}]: ${String(error)}`,
+        );
+      }
+    }
+  } finally {
+    running = false;
+  }
+};
+
+export const zipErrorCode = (error: unknown): string => {
+  const code =
+    error instanceof Error && 'code' in error ? error.code : undefined;
+  if (code === 'ENOSPC' || code === 'EDQUOT') return 'NO_SPACE';
+  if (code === 'EACCES' || code === 'EPERM' || code === 'EROFS')
+    return 'PERMISSION_DENIED';
+  if (code === 'ENOENT') return 'FILE_MISSING';
+  return 'ZIP_FAILED';
 };
 
 export const updateZipQueue = (
   folderHash: FolderHash,
   item: Partial<ZipQueueItem>,
 ) => {
-  zipQueue[folderHash.key] = { ...zipQueue[folderHash.key], ...item };
+  const current = zipQueue.get(folderHash.key);
+  if (!current) throw new Error(`ZIP task ${folderHash.key} was not queued`);
+  zipQueue.set(folderHash.key, { ...current, ...item });
 };
 
 export const queueZipTaskStatus = (folderIds: number[] | null): Task[] => {
   const list: Task[] = [];
-  Object.keys(zipQueue).map((k) => {
-    const q = zipQueue[k];
+  zipQueue.forEach((q, k) => {
     // if (q.status === 'Complete') return; // don't show completed items
     if (folderIds && !folderIds.includes(q.folder.id)) return;
     list.push({
@@ -63,6 +100,7 @@ export const queueZipTaskStatus = (folderIds: number[] | null): Task[] => {
       step: q.filesDone,
       totalSteps: q.filesTotal,
       status: q.status,
+      errorCode: q.errorCode,
       id: k,
     });
   });
@@ -72,33 +110,6 @@ export const queueZipTaskStatus = (folderIds: number[] | null): Task[] => {
 export const zipInProgress = (
   folderHash: Pick<FolderHash, 'hash' | 'folder'>,
 ) => {
-  // we don't know key as this could be a previous download or something
-  // const q = zipQueue[folderHash.key];
-  // return !q || q.status === 'Complete';
-  // Developer debugging:
-  // log('debug', 'Starting zipInProgress check');
-
-  let inProgress = false;
-
-  Object.keys(zipQueue).forEach((k) => {
-    const q = zipQueue[k];
-    // Developer debugging:
-    // log(
-    //   'debug',
-    //   `zipInProgress item hash=${String(q.hash)} targetHash=${folderHash.hash} folder=${q.folder.id} targetFolder=${folderHash.folder.id} status=${q.status}`,
-    // );
-    if (q.hash === folderHash.hash && q.folder.id === folderHash.folder.id) {
-      if (q.status !== 'Complete') {
-        // Developer debugging:
-        // log('debug', `ZIP currently in progress for folder ${q.folder.id}`);
-        inProgress = true;
-      } else {
-        // Developer debugging:
-        // log('debug', `ZIP queue item already complete for folder ${q.folder.id}`);
-        // delete zipQueue[k];
-        inProgress = false;
-      }
-    }
-  });
-  return inProgress;
+  const status = zipQueue.get(folderHash.folder.id + folderHash.hash)?.status;
+  return status === 'Queued' || status === 'In Progress';
 };

@@ -942,9 +942,24 @@ and can keep long immutable caching.
 ### ZIP Generation
 
 1. GraphQL mutation triggers `addToZipQueue`
-2. Archives folder contents (compression level 9)
-3. Stores in `cache/zip/[name]/[hash].zip`
+2. Archives folder contents (compression level 9, ZIP64), one job at a time
+3. Writes a unique `.partial` file, closes the output, then atomically renames
+   it to `cache/zip/v2/[folderId]/[hash].zip`
 4. Client polls for completion, then downloads
+
+ZIP warnings (including a missing source file) fail delivery rather than silently
+omitting files. The queue catches background failures, logs the folder/hash and
+underlying error, exposes a safe `Task.errorCode`, and allows retrying the same
+gallery. Never mark a ZIP complete on Archiver's `finalize()` alone: its promise
+does not guarantee that the destination stream has finished writing. The v2 cache
+namespace deliberately avoids reusing legacy archives that may be truncated.
+The folder-content hash includes the ZIP cache version so browser/proxy caches
+also receive a new download URL after this change.
+Legacy archives and crash-left `.partial` files are not automatically removed.
+
+Original `/image/:id/raw/...` downloads also support generic `File` rows. RAW
+preview decode failures can downgrade an item to `File`; this must not prevent
+delivery of the original. Preview requests still reject generic files.
 
 ---
 

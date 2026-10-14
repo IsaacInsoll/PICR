@@ -17,7 +17,12 @@ export const useGenerateZip = (folder: PicrFolder, onComplete?: () => void) => {
     return mutate({ folderId: folder.id }).then((res) => {
       if (res.data) {
         const fh: PendingZipDownload = { folder, hash: res.data.generateZip };
-        setLinks((l) => [...l, fh]);
+        setLinks((list) => [
+          ...list.filter(
+            (item) => item.folder.id !== fh.folder.id || item.hash !== fh.hash,
+          ),
+          fh,
+        ]);
         if (onComplete) onComplete();
       }
     });

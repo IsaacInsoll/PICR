@@ -55,7 +55,13 @@
     "saving": "Enregistrement…",
     "seconds": "{{value}} s",
     "timeLeft": "Temps restant : {{time}}",
-    "title": "Télécharger tous les fichiers"
+    "title": "Télécharger tous les fichiers",
+    "zipError": {
+      "noSpace": "Le serveur ne dispose pas de suffisamment d’espace de cache. Contactez le photographe, puis réessayez Télécharger.",
+      "permissionDenied": "Le serveur ne peut pas lire les fichiers sources ou écrire dans le cache ZIP. Contactez le photographe, puis réessayez Télécharger.",
+      "fileMissing": "Un fichier source ou un emplacement de stockage est indisponible. Contactez le photographe, puis réessayez Télécharger.",
+      "generic": "Le serveur n’a pas pu créer le ZIP. Contactez le photographe pour vérifier les journaux du serveur, puis réessayez Télécharger."
+    }
   },
   "error": {
     "boundary": {

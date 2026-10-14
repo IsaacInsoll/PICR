@@ -55,7 +55,13 @@
     "saving": "Sparen…",
     "seconds": "{{value}}s",
     "timeLeft": "{{time}} übrig",
-    "title": "Laden Sie alle Dateien herunter"
+    "title": "Laden Sie alle Dateien herunter",
+    "zipError": {
+      "noSpace": "Der Server hat nicht genügend Cache-Speicherplatz. Kontaktiere den Fotografen und versuche anschließend erneut Herunterladen.",
+      "permissionDenied": "Der Server kann die Quelldateien nicht lesen oder den ZIP-Cache nicht schreiben. Kontaktiere den Fotografen und versuche anschließend erneut Herunterladen.",
+      "fileMissing": "Eine Quelldatei oder ein Speicherort ist nicht verfügbar. Kontaktiere den Fotografen und versuche anschließend erneut Herunterladen.",
+      "generic": "Der Server konnte die ZIP-Datei nicht erstellen. Bitte den Fotografen, die Serverprotokolle zu prüfen, und versuche anschließend erneut Herunterladen."
+    }
   },
   "error": {
     "boundary": {

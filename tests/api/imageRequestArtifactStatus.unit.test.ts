@@ -63,6 +63,54 @@ test('a failed generation is always a 500', async () => {
   expect(res.sendStatus).toHaveBeenLastCalledWith(500);
 });
 
+test('generic RAW originals download even when previews are unavailable', async () => {
+  vi.resetModules();
+  vi.doMock('../../backend/db/picrDb.js', () => ({
+    db: {
+      query: {
+        dbFile: {
+          findFirst: vi.fn(async () => ({
+            id: 7,
+            type: 'File',
+            name: 'photo.cr3',
+            relativePath: 'RAW',
+            fileHash: 'hash',
+          })),
+        },
+      },
+    },
+  }));
+  vi.doMock('../../backend/logger.js', () => ({ log: vi.fn() }));
+  vi.doMock('../../backend/media/generateImageThumbnail.js', () => ({
+    fullPathFor: () => '/media/RAW/photo.cr3',
+    generateThumbnailVariant: vi.fn(),
+  }));
+  const { imageRequest } =
+    await import('../../backend/express/imageRequest.js');
+  const { res } = mockResponse();
+  await imageRequest(
+    {
+      params: { id: 7, hash: 'hash', filename: 'photo.cr3', size: 'raw' },
+    } as never,
+    res,
+  );
+  expect(res.sendFile).toHaveBeenCalledWith(
+    '/media/RAW/photo.cr3',
+    expect.any(Function),
+  );
+  expect(res.sendStatus).not.toHaveBeenCalled();
+
+  const { res: preview } = mockResponse();
+  await imageRequest(
+    {
+      params: { id: 7, hash: 'hash', filename: 'photo.cr3', size: 'md' },
+    } as never,
+    preview,
+  );
+  expect(preview.sendStatus).toHaveBeenCalledWith(404);
+  expect(preview.sendFile).not.toHaveBeenCalled();
+});
+
 test('a failed send drops the success cache header before answering', async () => {
   const { sendCachedFile } = await loadImageRequest();
   const { headers, res } = mockResponse();

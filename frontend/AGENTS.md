@@ -764,6 +764,11 @@ function MyComponent() {
 
 ### Media Downloads (iOS share sheet)
 
+Folder ZIP failures are reported by `TaskSummary` using `Task.errorCode`, with
+localized safe reasons rather than raw server paths. Error tasks must not render
+an animated progress indicator. Retrying Download replaces an existing pending
+folder/hash entry so completion triggers only one browser download.
+
 - iOS Safari (and iPadOS) does not honor the HTML5 anchor `download` attribute for
   same-origin files — it opens the "Save to Files" picker instead of downloading, so
   photos/videos can't reach the Photos library. Android/desktop honor `download` and

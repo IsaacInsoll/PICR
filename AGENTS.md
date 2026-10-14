@@ -129,8 +129,11 @@ If plain `gh issue view <number> --comments` fails with a GraphQL error about
 context:
 
 ```bash
-gh issue view <number> --comments --json number,title,state,body,comments,labels
+gh issue view <number> --json number,title,state,body,comments,labels
 ```
+
+The JSON `comments` field includes the discussion. Do not combine `--comments`
+with `--json`: newer GitHub CLI versions reject that combination.
 
 ## Project Structure
 

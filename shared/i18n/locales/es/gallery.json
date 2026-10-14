@@ -55,7 +55,13 @@
     "saving": "Ahorro…",
     "seconds": "{{value}}",
     "timeLeft": "{{time}} izquierda",
-    "title": "Descargar todos los archivos"
+    "title": "Descargar todos los archivos",
+    "zipError": {
+      "noSpace": "El servidor no tiene suficiente espacio de caché. Contacta con el fotógrafo y vuelve a pulsar Descargar.",
+      "permissionDenied": "El servidor no puede leer los archivos de origen o escribir en la caché ZIP. Contacta con el fotógrafo y vuelve a pulsar Descargar.",
+      "fileMissing": "Un archivo de origen o una ubicación de almacenamiento no está disponible. Contacta con el fotógrafo y vuelve a pulsar Descargar.",
+      "generic": "El servidor no pudo crear el ZIP. Contacta con el fotógrafo para revisar los registros del servidor y vuelve a pulsar Descargar."
+    }
   },
   "error": {
     "boundary": {

@@ -31,6 +31,15 @@ Final-delivery links can download:
 
 ZIP creation runs in the background. PICR reuses a generated archive while the folder contents remain unchanged and creates a new one when necessary.
 
+PICR creates one ZIP at a time to limit CPU and disk pressure. Keep the gallery
+open while its archive is queued or being prepared. Failed jobs show a reason
+instead of a progress spinner; after resolving the server problem, choose
+**Download** again to retry. The archive is published only when every source
+file has been added and the cache write has finished.
+
+An original can still be downloaded when PICR cannot generate its preview,
+including camera RAW files displayed as generic files.
+
 On iPhone and iPad, PICR uses the native share sheet for supported photos and videos so the recipient can choose **Save Image**, **Save Video**, or another destination. ZIP and other generic downloads use the browser's normal file-saving flow.
 
 ## Deliver a reviewed selection
