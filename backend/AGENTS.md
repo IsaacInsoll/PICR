@@ -942,10 +942,19 @@ and can keep long immutable caching.
 ### ZIP Generation
 
 1. GraphQL mutation triggers `addToZipQueue`
-2. Archives folder contents (compression level 9, ZIP64), one job at a time
+2. Archives folder contents (STORE, no compression, ZIP64), one job at a time
 3. Writes a unique `.partial` file, closes the output, then atomically renames
    it to `cache/zip/v2/[folderId]/[hash].zip`
 4. Client polls for completion, then downloads
+
+Gallery ZIPs deliberately use `store: true`: PICR primarily delivers already
+compressed photo/video media, so ZIP assembly should not spend CPU on deflate.
+Keep originals byte-for-byte intact. Existing completed ZIPs remain reusable;
+changing compression does not require invalidating otherwise valid archives.
+Archiver 7 also processes entries within an archive sequentially (its entry
+queue concurrency is one). Allowing more CPU cores does not enable parallel
+deflate for a single gallery; keep CPU-affinity benchmark results distinct from
+tests of multiple concurrent archives or filesystem throughput.
 
 ZIP warnings (including a missing source file) fail delivery rather than silently
 omitting files. The queue catches background failures, logs the folder/hash and

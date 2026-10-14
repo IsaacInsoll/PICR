@@ -29,7 +29,7 @@ afterEach(async () => {
   );
 });
 
-test('publishes a readable ZIP64 archive with exact original bytes and no partial file', async () => {
+test('publishes a readable stored ZIP64 archive with exact original bytes and no partial file', async () => {
   const { directory, source, destination } = await fixture();
   const { writeZip } = await import('../../backend/helpers/writeZip.js');
   const progress = vi.fn();
@@ -41,6 +41,8 @@ test('publishes a readable ZIP64 archive with exact original bytes and no partia
   expect(await readdir(join(directory, 'cache'))).toEqual(['gallery.zip']);
   expect(progress).toHaveBeenLastCalledWith(1);
   const bytes = await readFile(destination);
+  expect(bytes.readUInt32LE(0)).toBe(0x04034b50); // Local file header.
+  expect(bytes.readUInt16LE(8)).toBe(0); // ZIP method 0 = STORE, no deflate.
   expect(bytes.includes(Buffer.from([0x50, 0x4b, 0x06, 0x06]))).toBe(true);
   const extracted = join(directory, 'extracted');
   await extractZip(destination, extracted);

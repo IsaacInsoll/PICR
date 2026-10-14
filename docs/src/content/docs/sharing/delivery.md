@@ -31,6 +31,10 @@ Final-delivery links can download:
 
 ZIP creation runs in the background. PICR reuses a generated archive while the folder contents remain unchanged and creates a new one when necessary.
 
+ZIPs bundle the originals without applying another compression pass. This avoids
+extra compression work for photo and video files that are already compressed;
+the files inside the ZIP are unchanged.
+
 PICR creates one ZIP at a time to limit CPU and disk pressure. Keep the gallery
 open while its archive is queued or being prepared. Failed jobs show a reason
 instead of a progress spinner; after resolving the server problem, choose

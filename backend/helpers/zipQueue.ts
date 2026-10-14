@@ -46,7 +46,7 @@ export const addToZipQueue = (folderHash: FolderHash) => {
   }
 };
 
-// Serialize compression and disk writes on modest self-hosted hardware.
+// Serialize ZIP assembly and disk writes on modest self-hosted hardware.
 const drainZipQueue = async () => {
   if (running) return;
   running = true;

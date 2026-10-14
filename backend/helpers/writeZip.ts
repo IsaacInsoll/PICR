@@ -21,7 +21,9 @@ export const writeZip = async (
   await mkdir(dirname(path), { recursive: true });
   const temporaryPath = `${path}.${randomUUID()}.partial`;
   const archive = archiver('zip', {
-    zlib: { level: 9 },
+    // Gallery media is already compressed. STORE avoids spending CPU on a
+    // second compression pass and preserves each original byte-for-byte.
+    store: true,
     forceZip64: true,
   });
   const output = createWriteStream(temporaryPath, { flags: 'wx' });
