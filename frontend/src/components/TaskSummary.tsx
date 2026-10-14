@@ -89,9 +89,11 @@ export const TaskProgress = ({ name, step, totalSteps }: TaskProgressProps) => {
 export const ZipTaskError = ({
   name,
   errorCode,
+  onDismiss,
 }: {
   name: string;
   errorCode?: string | null;
+  onDismiss?: () => void;
 }) => {
   const { t } = useTranslation('gallery');
   const reasons: Record<string, string> = {
@@ -100,7 +102,13 @@ export const ZipTaskError = ({
     FILE_MISSING: t('download.zipError.fileMissing'),
   };
   return (
-    <Alert color="red" title={t('download.failed')}>
+    <Alert
+      color="red"
+      title={t('download.failed')}
+      withCloseButton={!!onDismiss}
+      closeButtonLabel={t('error.closeWarning')}
+      onClose={onDismiss}
+    >
       <Text size="sm">{name}</Text>
       <Text size="sm">
         {reasons[errorCode ?? ''] ?? t('download.zipError.generic')}
@@ -135,7 +143,12 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
       }
     });
   }, [zips, complete, setZips]);
-  const remaining = tasks?.filter((t) => t.status !== 'Complete');
+  const remaining = tasks?.filter(
+    (task) =>
+      task.status !== 'Complete' &&
+      (task.status !== 'Error' ||
+        zips.some(({ folder, hash }) => task.id === folder.id + hash)),
+  );
 
   // //TODO: remove this testing line
   // remaining = [
@@ -172,6 +185,13 @@ export const TaskSummary = ({ folderId }: { folderId: string }) => {
                         : name
                     }
                     errorCode={errorCode}
+                    onDismiss={() =>
+                      setZips((list) =>
+                        list.filter(
+                          ({ folder, hash }) => id !== folder.id + hash,
+                        ),
+                      )
+                    }
                   />
                 );
               }

@@ -37,7 +37,8 @@ the files inside the ZIP are unchanged.
 
 PICR creates one ZIP at a time to limit CPU and disk pressure. Keep the gallery
 open while its archive is queued or being prepared. Failed jobs show a reason
-instead of a progress spinner; after resolving the server problem, choose
+instead of a progress spinner for the browser that requested the download. Close
+the alert to dismiss it; after resolving the server problem, choose
 **Download** again to retry. The archive is published only when every source
 file has been added and the cache write has finished.
 

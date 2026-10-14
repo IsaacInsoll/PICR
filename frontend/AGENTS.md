@@ -766,8 +766,17 @@ function MyComponent() {
 
 Folder ZIP failures are reported by `TaskSummary` using `Task.errorCode`, with
 localized safe reasons rather than raw server paths. Error tasks must not render
-an animated progress indicator. Retrying Download replaces an existing pending
+an animated progress indicator. The backend queue is global: show an error only
+when its folder/hash matches this browser's `linksToDownloadAtom`. Filter before
+rendering the panel so another viewer's errors do not leave an empty panel.
+Dismissal removes that pending download locally; it must not clear a global task
+that another requester is still watching. Retrying Download replaces an existing pending
 folder/hash entry so completion triggers only one browser download.
+
+Frontend Vitest resolution must mirror Vite's React/ReactDOM/Jotai deduplication.
+Rendering a component that reaches a shared hook otherwise loads shared's second
+React copy and fails with an invalid hook call, even though the production Vite
+bundle works. Give translation-dependent rendered tests an `I18nextProvider`.
 
 - iOS Safari (and iPadOS) does not honor the HTML5 anchor `download` attribute for
   same-origin files — it opens the "Save to Files" picker instead of downloading, so

@@ -704,6 +704,7 @@ Common gitmoji:
 
 ### Important Rules
 
+- **Commits**: Leave changes uncommitted unless the user explicitly requests a commit.
 - **Releases**: Must be done by human running `npm run release`, `npm run release:app`, or `npm run release:ping` - AI may only suggest these commands
 - **Migrations**: Call out DB migrations, GraphQL schema changes, or new env vars in PR descriptions
 - **Codegen**: Run `npm run gql` after schema changes and commit the generated files

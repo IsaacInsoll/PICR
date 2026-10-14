@@ -1,0 +1,541 @@
+{
+  "source": "https://dl.photoprism.app/samples/Formats/Raw/CR3/",
+  "processor": "AMD Ryzen 7 3700X",
+  "nodeVersion": "v24.13.0",
+  "affinity": "One logical CPU per physical core; SMT siblings excluded",
+  "uvThreadpoolSize": 4,
+  "method": "Single gallery, sequential entries; three rotated-order repetitions per level/core count. Source checksum pass warms filesystem cache; timing includes output completion but excludes verification and cleanup.",
+  "runs": [
+    {
+      "cores": 2,
+      "sourceBytes": 115150482,
+      "sampleNames": [
+        "IMG_0487.CR3",
+        "canon_eos_r_01.cr3",
+        "canon_eos_r_54.cr3",
+        "canon_eos_r_59.cr3"
+      ],
+      "results": [
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": "store",
+          "repetition": 1,
+          "ms": 335,
+          "cpuMs": 473,
+          "averageCPUs": 1.41,
+          "bytes": 115151080,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 1,
+          "repetition": 1,
+          "ms": 2712,
+          "cpuMs": 2937,
+          "averageCPUs": 1.08,
+          "bytes": 114418155,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 3,
+          "repetition": 1,
+          "ms": 2567,
+          "cpuMs": 2783,
+          "averageCPUs": 1.08,
+          "bytes": 114408931,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 6,
+          "repetition": 1,
+          "ms": 2715,
+          "cpuMs": 2883,
+          "averageCPUs": 1.06,
+          "bytes": 114395834,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 9,
+          "repetition": 1,
+          "ms": 2546,
+          "cpuMs": 2729,
+          "averageCPUs": 1.07,
+          "bytes": 114395321,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 1,
+          "repetition": 2,
+          "ms": 2639,
+          "cpuMs": 2750,
+          "averageCPUs": 1.04,
+          "bytes": 114418155,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": "store",
+          "repetition": 2,
+          "ms": 236,
+          "cpuMs": 324,
+          "averageCPUs": 1.38,
+          "bytes": 115151080,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 9,
+          "repetition": 2,
+          "ms": 2744,
+          "cpuMs": 2888,
+          "averageCPUs": 1.05,
+          "bytes": 114395321,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 6,
+          "repetition": 2,
+          "ms": 2655,
+          "cpuMs": 2818,
+          "averageCPUs": 1.06,
+          "bytes": 114395834,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 3,
+          "repetition": 2,
+          "ms": 2606,
+          "cpuMs": 2777,
+          "averageCPUs": 1.07,
+          "bytes": 114408931,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 9,
+          "repetition": 3,
+          "ms": 2905,
+          "cpuMs": 2935,
+          "averageCPUs": 1.01,
+          "bytes": 114395321,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": "store",
+          "repetition": 3,
+          "ms": 236,
+          "cpuMs": 277,
+          "averageCPUs": 1.17,
+          "bytes": 115151080,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 1,
+          "repetition": 3,
+          "ms": 2639,
+          "cpuMs": 2732,
+          "averageCPUs": 1.04,
+          "bytes": 114418155,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 3,
+          "repetition": 3,
+          "ms": 2752,
+          "cpuMs": 2840,
+          "averageCPUs": 1.03,
+          "bytes": 114408931,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 2,
+          "allowedCPUs": "0-1",
+          "mode": 6,
+          "repetition": 3,
+          "ms": 2761,
+          "cpuMs": 2820,
+          "averageCPUs": 1.02,
+          "bytes": 114395834,
+          "verifiedEntries": 4
+        }
+      ]
+    },
+    {
+      "cores": 4,
+      "sourceBytes": 115150482,
+      "sampleNames": [
+        "IMG_0487.CR3",
+        "canon_eos_r_01.cr3",
+        "canon_eos_r_54.cr3",
+        "canon_eos_r_59.cr3"
+      ],
+      "results": [
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": "store",
+          "repetition": 1,
+          "ms": 215,
+          "cpuMs": 406,
+          "averageCPUs": 1.89,
+          "bytes": 115151080,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 1,
+          "repetition": 1,
+          "ms": 2556,
+          "cpuMs": 2947,
+          "averageCPUs": 1.15,
+          "bytes": 114418155,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 3,
+          "repetition": 1,
+          "ms": 2413,
+          "cpuMs": 2706,
+          "averageCPUs": 1.12,
+          "bytes": 114408931,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 6,
+          "repetition": 1,
+          "ms": 2482,
+          "cpuMs": 2733,
+          "averageCPUs": 1.1,
+          "bytes": 114395834,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 9,
+          "repetition": 1,
+          "ms": 2504,
+          "cpuMs": 2743,
+          "averageCPUs": 1.1,
+          "bytes": 114395321,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 1,
+          "repetition": 2,
+          "ms": 2420,
+          "cpuMs": 2675,
+          "averageCPUs": 1.11,
+          "bytes": 114418155,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": "store",
+          "repetition": 2,
+          "ms": 168,
+          "cpuMs": 314,
+          "averageCPUs": 1.88,
+          "bytes": 115151080,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 9,
+          "repetition": 2,
+          "ms": 2511,
+          "cpuMs": 2776,
+          "averageCPUs": 1.11,
+          "bytes": 114395321,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 6,
+          "repetition": 2,
+          "ms": 2818,
+          "cpuMs": 3057,
+          "averageCPUs": 1.08,
+          "bytes": 114395834,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 3,
+          "repetition": 2,
+          "ms": 2562,
+          "cpuMs": 2801,
+          "averageCPUs": 1.09,
+          "bytes": 114408931,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 9,
+          "repetition": 3,
+          "ms": 2846,
+          "cpuMs": 3069,
+          "averageCPUs": 1.08,
+          "bytes": 114395321,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": "store",
+          "repetition": 3,
+          "ms": 180,
+          "cpuMs": 309,
+          "averageCPUs": 1.72,
+          "bytes": 115151080,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 1,
+          "repetition": 3,
+          "ms": 2651,
+          "cpuMs": 2871,
+          "averageCPUs": 1.08,
+          "bytes": 114418155,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 3,
+          "repetition": 3,
+          "ms": 2692,
+          "cpuMs": 2976,
+          "averageCPUs": 1.11,
+          "bytes": 114408931,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 4,
+          "allowedCPUs": "0-3",
+          "mode": 6,
+          "repetition": 3,
+          "ms": 2622,
+          "cpuMs": 2870,
+          "averageCPUs": 1.09,
+          "bytes": 114395834,
+          "verifiedEntries": 4
+        }
+      ]
+    },
+    {
+      "cores": 8,
+      "sourceBytes": 115150482,
+      "sampleNames": [
+        "IMG_0487.CR3",
+        "canon_eos_r_01.cr3",
+        "canon_eos_r_54.cr3",
+        "canon_eos_r_59.cr3"
+      ],
+      "results": [
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": "store",
+          "repetition": 1,
+          "ms": 201,
+          "cpuMs": 395,
+          "averageCPUs": 1.97,
+          "bytes": 115151080,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 1,
+          "repetition": 1,
+          "ms": 2613,
+          "cpuMs": 3060,
+          "averageCPUs": 1.17,
+          "bytes": 114418155,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 3,
+          "repetition": 1,
+          "ms": 2685,
+          "cpuMs": 3030,
+          "averageCPUs": 1.13,
+          "bytes": 114408931,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 6,
+          "repetition": 1,
+          "ms": 2573,
+          "cpuMs": 2847,
+          "averageCPUs": 1.11,
+          "bytes": 114395834,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 9,
+          "repetition": 1,
+          "ms": 2516,
+          "cpuMs": 2766,
+          "averageCPUs": 1.1,
+          "bytes": 114395321,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 1,
+          "repetition": 2,
+          "ms": 2495,
+          "cpuMs": 2775,
+          "averageCPUs": 1.11,
+          "bytes": 114418155,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": "store",
+          "repetition": 2,
+          "ms": 157,
+          "cpuMs": 322,
+          "averageCPUs": 2.05,
+          "bytes": 115151080,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 9,
+          "repetition": 2,
+          "ms": 2585,
+          "cpuMs": 2858,
+          "averageCPUs": 1.11,
+          "bytes": 114395321,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 6,
+          "repetition": 2,
+          "ms": 2680,
+          "cpuMs": 2998,
+          "averageCPUs": 1.12,
+          "bytes": 114395834,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 3,
+          "repetition": 2,
+          "ms": 2987,
+          "cpuMs": 3282,
+          "averageCPUs": 1.1,
+          "bytes": 114408931,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 9,
+          "repetition": 3,
+          "ms": 2856,
+          "cpuMs": 3192,
+          "averageCPUs": 1.12,
+          "bytes": 114395321,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": "store",
+          "repetition": 3,
+          "ms": 168,
+          "cpuMs": 344,
+          "averageCPUs": 2.05,
+          "bytes": 115151080,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 1,
+          "repetition": 3,
+          "ms": 2741,
+          "cpuMs": 3061,
+          "averageCPUs": 1.12,
+          "bytes": 114418155,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 3,
+          "repetition": 3,
+          "ms": 2429,
+          "cpuMs": 2689,
+          "averageCPUs": 1.11,
+          "bytes": 114408931,
+          "verifiedEntries": 4
+        },
+        {
+          "cores": 8,
+          "allowedCPUs": "0-7",
+          "mode": 6,
+          "repetition": 3,
+          "ms": 2458,
+          "cpuMs": 2694,
+          "averageCPUs": 1.1,
+          "bytes": 114395834,
+          "verifiedEntries": 4
+        }
+      ]
+    }
+  ]
+}

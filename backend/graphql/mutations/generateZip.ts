@@ -35,9 +35,6 @@ const resolver: PicrResolver<object, MutationGenerateZipArgs> = async (
     );
     if (logged) {
       await updateUserLastAccess(user.id);
-      stage = 'sending download notifications';
-      log('info', `ZIP request for folder ${folder.id}: ${stage}`);
-      await sendFolderViewedNotification(folder, user, AccessType.Download);
     }
 
     stage = 'hashing folder contents';
@@ -49,6 +46,20 @@ const resolver: PicrResolver<object, MutationGenerateZipArgs> = async (
       'info',
       `ZIP request accepted for folder ${folder.id} (${h.hash}) in ${Date.now() - started}ms`,
     );
+    if (logged) {
+      // Delivery must not wait for external notification services or their
+      // metadata lookups. Catch failures from the entire notification path.
+      void sendFolderViewedNotification(
+        folder,
+        user,
+        AccessType.Download,
+      ).catch((error: unknown) => {
+        log(
+          'error',
+          `ZIP download notification failed for folder ${folder.id}: ${String(error)}`,
+        );
+      });
+    }
     return h.hash;
   } catch (error) {
     log(

@@ -116,7 +116,10 @@ gallery access, not just analytics.
 which suppresses view/download access-log rows. Existing rows are not deleted by
 the flag — set it only via env, not via any UI mutation. Public-link view
 notifications are sent from `recordFolderVisit`, and download notifications are
-sent from `generateZip` after a download row is written.
+sent from `generateZip` after a download row is written and ZIP generation is
+queued. Notifications run independently with a catch/log handler for the entire
+notification path; a slow service or failed metadata lookup must not delay or
+fail the mutation response.
 
 Active `Image` rows are expected to have positive oriented `imageWidth` and
 `imageHeight` values. The columns are nullable because non-image rows do not use
@@ -955,6 +958,8 @@ Archiver 7 also processes entries within an archive sequentially (its entry
 queue concurrency is one). Allowing more CPU cores does not enable parallel
 deflate for a single gallery; keep CPU-affinity benchmark results distinct from
 tests of multiple concurrent archives or filesystem throughput.
+The real-CR3 compression/core benchmark and its full results are documented in
+[`docs/development/testing.md`](../docs/development/testing.md#zip-compression-benchmark).
 
 ZIP warnings (including a missing source file) fail delivery rather than silently
 omitting files. The queue catches background failures, logs the folder/hash and

@@ -58,6 +58,44 @@ Current testing is still integration-focused and intentionally lightweight:
 - Backend: broad GraphQL endpoint behavior checks, plus focused unit tests for backend primitives
 - Frontend: basic "page loads cleanly" smoke checks for public links
 
+## ZIP compression benchmark
+
+For issue [#134](https://github.com/IsaacInsoll/PICR/issues/134), PICR's ZIP writer
+was compared with deflate levels 1, 3, 6, and 9 using all four real CR3 files from
+[PhotoPrism's sample directory](https://dl.photoprism.app/samples/Formats/Raw/CR3/).
+The originals totalled 115,150,482 bytes (115.15 MB).
+
+STORE (no ZIP compression) was approximately **12–15 times faster than level 9**,
+with an archive **0.66% larger**. Deflate levels 1–9 saved only 0.64–0.66% compared
+with STORE. This is the measured reason gallery delivery uses `store: true`.
+
+| ZIP mode | Archive size (MB) | 2 cores (s) | 4 cores (s) | 8 cores (s) |
+| -------- | ----------------: | ----------: | ----------: | ----------: |
+| STORE    |           115.151 |       0.236 |       0.180 |       0.168 |
+| Level 1  |           114.418 |       2.639 |       2.556 |       2.613 |
+| Level 3  |           114.409 |       2.606 |       2.562 |       2.685 |
+| Level 6  |           114.396 |       2.715 |       2.622 |       2.573 |
+| Level 9  |           114.395 |       2.744 |       2.511 |       2.585 |
+
+Method and limits:
+
+- AMD Ryzen 7 3700X, Node 24.13.0, Archiver 7; one gallery with sequential entries.
+- CPU affinity allowed 2, 4, or 8 physical cores, using one logical CPU per core
+  and excluding SMT siblings. This was an affinity limit, not a Docker CPU quota.
+  The Node worker pool stayed at four threads.
+- Each configuration ran three times in rotated order. The table shows medians.
+  Source checksum reads warmed the filesystem cache. Timing includes destination
+  completion, but excludes checksum verification and temporary-file cleanup.
+- Every one of the 180 archived entries matched the original SHA-256. The
+  temporary media and archives were removed; [raw measurements](data/cr3-zip-compression.json)
+  retain all runs, CPU time, sample filenames, and methods.
+- Deflate averaged roughly one busy CPU core, and extra cores did not provide
+  meaningful compression scaling. Archiver's per-archive entry queue is serial.
+  STORE did benefit modestly from additional cores.
+- These results describe these four CR3 samples on this machine. They do not
+  establish savings for every RAW variant, JPEG, video, or other format, and they
+  do not predict absolute timings on the reporter's Beelink hardware.
+
 ## Troubleshooting 'ALL TESTS FAILING'
 
 If every test fails then it's probably because the `test-picr` container isn't booting up okay.
