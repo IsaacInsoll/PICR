@@ -15,6 +15,34 @@ Let `release-it` own the release commit, tag, push, and GitHub release creation
 so the GitHub release tag points at the commit containing the matching
 `package.json` version.
 
+### Recovering from a partial release push
+
+The default `release-it` push uses `--follow-tags`, which can include unpublished
+annotated app/plugin tags. One rejected tag can fail the
+release after GitHub had already accepted `master` and the release tag.
+`release-it` then deletes the remote release tag and rolls back the local
+commit/tag, but leaves the remote branch at the release commit. A workflow-scope
+rejection for an unrelated app tag is one possible trigger; GitHub's accompanying
+Dependabot vulnerability notice is not the rejection reason.
+
+Before retrying, compare `git status --short --branch` with
+`git ls-remote origin refs/heads/master refs/tags/<version>`. If the remote branch
+contains the release commit but its tag is absent, do not force-push or blindly
+repeat the version bump. Check that the remote release commit contains the
+expected root package version, then restore the local branch with a fast-forward.
+Resume the same version with `--no-increment` and override `git.pushArgs` to
+include only `master` and that version's tag, using `--atomic --no-follow-tags`.
+For example, when recovering version `1.6.3`:
+
+```bash
+npm run release -- --no-increment --git.pushArgs='--atomic --no-follow-tags origin HEAD:refs/heads/master refs/tags/1.6.3:refs/tags/1.6.3'
+```
+
+This lets `release-it` recreate the missing tag and GitHub release without another
+version bump or an unrelated app tag push. Its `pushArgs` values are literal
+arguments in the installed release-it version; `${tagName}` is not interpolated
+there, so use the actual version in this override.
+
 ### Versioning and upgrade policy
 
 PICR uses major versions as the intentional boundary for breaking changes.
