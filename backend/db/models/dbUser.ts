@@ -2,11 +2,17 @@ import {
   boolean,
   integer,
   pgTable,
+  text,
   timestamp,
   varchar,
 } from 'drizzle-orm/pg-core';
 import { baseColumns } from '../column.helpers.js';
-import { commentPermissionsEnum, linkModeEnum, userTypeEnum } from './enums.js';
+import {
+  commentPermissionsEnum,
+  linkModeEnum,
+  linkPublicationEnum,
+  userTypeEnum,
+} from './enums.js';
 import { relations } from 'drizzle-orm';
 import { dbFolder } from './dbFolder.js';
 
@@ -44,6 +50,9 @@ export const dbUser = pgTable('Users', {
   // IF PUBLIC LINK
   uuid: varchar('uuid', { length: 255 }),
   linkMode: linkModeEnum(),
+  publicationState: linkPublicationEnum(),
+  estimatedDeliveryAt: timestamp('estimatedDeliveryAt', { withTimezone: true }),
+  comingSoonMessage: text('comingSoonMessage'),
   galleryPasscode: varchar('galleryPasscode', { length: 255 }),
   expiresAt: timestamp('expiresAt', { withTimezone: true }),
 });

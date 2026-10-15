@@ -1,0 +1,120 @@
+.page {
+  position: relative;
+  display: grid;
+  min-height: 100dvh;
+  overflow: hidden;
+  place-items: center;
+  padding-block: 4rem;
+  background:
+    radial-gradient(
+      circle at 50% 18%,
+      var(--mantine-primary-color-light),
+      transparent 38%
+    ),
+    var(--mantine-color-body);
+}
+
+.preview {
+  min-height: calc(100dvh - 4rem);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.emblem {
+  display: grid;
+  width: 5.5rem;
+  height: 5.5rem;
+  place-items: center;
+  border: 1px solid var(--mantine-primary-color-light-color);
+  border-radius: 50%;
+  background: var(--mantine-color-body);
+  color: var(--mantine-primary-color-filled);
+  box-shadow: 0 1rem 3rem var(--mantine-primary-color-light);
+}
+
+.eyebrow,
+.estimateLabel {
+  color: var(--mantine-primary-color-filled);
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.title {
+  max-width: 18ch;
+  font-family: var(--picr-heading-font);
+  font-size: clamp(2.8rem, 8vw, 5.6rem);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.subtitle {
+  max-width: 35rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.estimate {
+  width: min(100%, 30rem);
+  margin-block: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--mantine-primary-color-light-color);
+  border-radius: var(--mantine-radius-lg);
+  background: var(--mantine-color-body);
+}
+
+.countdown {
+  display: flex;
+  justify-content: center;
+  gap: clamp(1.5rem, 7vw, 3rem);
+  margin-block-start: 0.75rem;
+}
+
+.timeUnit {
+  min-width: 3rem;
+}
+
+.timeValue {
+  font-family: var(--picr-heading-font);
+  font-size: clamp(2rem, 7vw, 3rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.timeLabel {
+  margin-block-start: 0.5rem;
+  color: var(--mantine-color-dimmed);
+  font-size: var(--mantine-font-size-xs);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .secondsValue {
+    animation: second-tick 250ms ease-out;
+  }
+}
+
+@keyframes second-tick {
+  from {
+    opacity: 0.6;
+    transform: translateY(0.15rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.checkBack {
+  color: var(--mantine-color-dimmed);
+}
+
+.checkButton {
+  margin-block-start: 0.5rem;
+}

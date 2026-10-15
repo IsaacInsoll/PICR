@@ -16,6 +16,8 @@ const unavailableInfo = {
   requiresPasscode: false,
   unlocked: false,
   galleryName: null,
+  estimatedDeliveryAt: null,
+  comingSoonMessage: null,
   branding: null,
 };
 
@@ -70,6 +72,20 @@ const resolver: PicrResolver<object, PublicLinkInfoArgs> = async (
     };
   }
 
+  if (outcome.status === 'coming_soon') {
+    return {
+      status: 'COMING_SOON',
+      expiresAt: outcome.user.expiresAt,
+      available: true,
+      requiresPasscode: !!outcome.user.galleryPasscode,
+      unlocked: true,
+      galleryName,
+      estimatedDeliveryAt: outcome.user.estimatedDeliveryAt,
+      comingSoonMessage: outcome.user.comingSoonMessage,
+      branding,
+    };
+  }
+
   return {
     status: 'PASSCODE_REQUIRED',
     expiresAt: null,
@@ -77,6 +93,8 @@ const resolver: PicrResolver<object, PublicLinkInfoArgs> = async (
     requiresPasscode: true,
     unlocked: false,
     galleryName,
+    estimatedDeliveryAt: null,
+    comingSoonMessage: null,
     branding,
   };
 };

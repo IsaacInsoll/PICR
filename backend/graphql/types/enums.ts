@@ -5,6 +5,7 @@ import {
   fileFlagOptions,
   fileTypeOptions,
   linkModeOptions,
+  linkPublicationOptions,
   primaryColorOptions,
   themeModeOptions,
   userTypeOptions,
@@ -45,6 +46,9 @@ export const userTypeEnum = new GraphQLEnumType(
 
 export const linkModeEnum = new GraphQLEnumType(
   enumToGQL('LinkMode', linkModeOptions),
+);
+export const linkPublicationEnum = new GraphQLEnumType(
+  enumToGQL('LinkPublicationState', linkPublicationOptions),
 );
 export const themeModeEnum = new GraphQLEnumType(
   enumToGQL('ThemeMode', themeModeOptions, true),

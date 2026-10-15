@@ -7,7 +7,12 @@ import {
 } from 'graphql';
 import { folderType } from './folderType.js';
 import { GraphQLDateTime } from 'graphql-scalars';
-import { commentPermissionsEnum, userTypeEnum, linkModeEnum } from './enums.js';
+import {
+  commentPermissionsEnum,
+  userTypeEnum,
+  linkModeEnum,
+  linkPublicationEnum,
+} from './enums.js';
 import { contextPermissions } from '../../auth/contextPermissions.js';
 import type { PicrRequestContext } from '../../types/PicrRequestContext.js';
 
@@ -37,6 +42,9 @@ export const userType = new GraphQLObjectType<
     lastAccess: { type: GraphQLDateTime },
     userType: { type: userTypeEnum },
     linkMode: { type: linkModeEnum },
+    publicationState: { type: linkPublicationEnum },
+    estimatedDeliveryAt: { type: GraphQLDateTime },
+    comingSoonMessage: { type: GraphQLString },
     hasGalleryPasscode: {
       type: new GraphQLNonNull(GraphQLBoolean),
       resolve: (user: { galleryPasscode?: string | null }) =>

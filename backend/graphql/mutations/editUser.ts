@@ -15,7 +15,11 @@ import { db, dbFolderForId, dbUserForId } from '../../db/picrDb.js';
 import { and, eq, ne } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { LinkMode, UserType } from '@shared/gql/graphql.js';
-import { commentPermissionsEnum, linkModeEnum } from '../types/enums.js';
+import {
+  commentPermissionsEnum,
+  linkModeEnum,
+  linkPublicationEnum,
+} from '../types/enums.js';
 import { userToJSON } from '../helpers/userToJSON.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationEditUserArgs } from '@shared/gql/graphql.js';
@@ -85,6 +89,13 @@ const resolver: PicrResolver<object, MutationEditUserArgs> = async (
     throw new GraphQLError('Public Link Address already used');
   }
 
+  const comingSoonMessage = params.comingSoonMessage?.trim() ?? null;
+  if (comingSoonMessage && comingSoonMessage.length > 2000) {
+    throw new GraphQLError(
+      'Coming Soon message must be 2000 characters or less',
+    );
+  }
+
   if (user) {
     user.folderId = params.folderId;
     user.name = params.name;
@@ -93,6 +104,16 @@ const resolver: PicrResolver<object, MutationEditUserArgs> = async (
     user.enabled = params.enabled;
     user.commentPermissions = params.commentPermissions;
     user.linkMode = params.linkMode ?? LinkMode.FinalDelivery;
+    user.publicationState =
+      params.publicationState ?? user.publicationState ?? 'published';
+    if (params.estimatedDeliveryAt !== undefined) {
+      user.estimatedDeliveryAt = params.estimatedDeliveryAt
+        ? new Date(params.estimatedDeliveryAt)
+        : null;
+    }
+    if (params.comingSoonMessage !== undefined) {
+      user.comingSoonMessage = comingSoonMessage;
+    }
     if (params.galleryPasscode !== undefined) {
       user.galleryPasscode = normalizeGalleryPasscode(params.galleryPasscode);
     }
@@ -114,6 +135,11 @@ const resolver: PicrResolver<object, MutationEditUserArgs> = async (
       enabled: params.enabled,
       commentPermissions: params.commentPermissions,
       linkMode: params.linkMode ?? LinkMode.FinalDelivery,
+      publicationState: params.publicationState ?? 'published',
+      estimatedDeliveryAt: params.estimatedDeliveryAt
+        ? new Date(params.estimatedDeliveryAt)
+        : null,
+      comingSoonMessage,
       galleryPasscode: normalizeGalleryPasscode(params.galleryPasscode),
       expiresAt: params.expiresAt ? new Date(params.expiresAt) : null,
       createdAt: new Date(),
@@ -138,6 +164,9 @@ export const editUser = {
     enabled: { type: GraphQLBoolean },
     commentPermissions: { type: commentPermissionsEnum },
     linkMode: { type: linkModeEnum },
+    publicationState: { type: linkPublicationEnum },
+    estimatedDeliveryAt: { type: GraphQLDateTime },
+    comingSoonMessage: { type: GraphQLString },
     galleryPasscode: { type: GraphQLString },
     expiresAt: { type: GraphQLDateTime },
   },

@@ -207,12 +207,23 @@
       "expirationDescription": "Optional – die Galerie ist nach dieser Zeit nicht mehr verfügbar.",
       "enabledDescription": "Kann dieser Link verwendet werden?",
       "tabs": {
-        "edit": "Bearbeiten",
+        "link": "Link",
         "accessLogs": "Zugriffsprotokolle"
       },
       "nameRequired": "Geben Sie einen Namen für diesen Link ein",
       "deleteTitle": "Öffentlichen Link löschen",
-      "deleteConfirmation": "Sind Sie sicher, dass Sie diesen öffentlichen Link löschen möchten? Es wird sofort nicht mehr funktionieren."
+      "deleteConfirmation": "Sind Sie sicher, dass Sie diesen öffentlichen Link löschen möchten? Es wird sofort nicht mehr funktionieren.",
+      "publication": "Veröffentlichung",
+      "published": "Veröffentlicht",
+      "comingSoon": "Demnächst",
+      "enableComingSoon": "Demnächst-Modus aktivieren",
+      "publishedDescription": "Empfänger können die Galerie öffnen.",
+      "comingSoonDescription": "Empfänger sehen eine Warteseite, bis du die Galerie veröffentlichst. Neue Dateien oder das Erreichen des geschätzten Termins veröffentlichen sie nicht.",
+      "estimatedDelivery": "Voraussichtliche Bereitstellung",
+      "estimatedDeliveryDescription": "Optional. Wird in der Ortszeit des Besuchers angezeigt und veröffentlicht die Galerie nicht.",
+      "comingSoonMessage": "Nachricht an Besucher",
+      "comingSoonMessageDescription": "Leer lassen, um die übersetzte Standardnachricht anzuzeigen. Maximal 2.000 Zeichen.",
+      "previewComingSoon": "Vorschau der Warteseite"
     }
   },
   "folder": {

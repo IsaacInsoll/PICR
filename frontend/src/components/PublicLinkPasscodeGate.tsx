@@ -8,8 +8,8 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { useClient, useQuery } from 'urql';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useQuery } from 'urql';
 import { publicLinkInfoQuery } from '@shared/urql/queries/publicLinkInfoQuery';
 import { getUUID } from '../helpers/getUUID';
 import { setPublicLinkPasscode } from '../helpers/publicLinkPasscode';
@@ -23,6 +23,7 @@ import {
   publicLinkAccessIncidentAtom,
 } from '../atoms/publicLinkAccessAtom';
 import { useDateFormatters } from '../i18n/useDateFormatters';
+import { ComingSoonPage } from './ComingSoonPage';
 // Language switcher soft-disabled (#84) — restore alongside the JSX below.
 // import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 
@@ -32,16 +33,18 @@ export const usePublicLinkPasscodeGate = (): {
 } => {
   const { t } = useTranslation('gallery');
   const uuid = getUUID();
-  const client = useClient();
   const { formatDate } = useDateFormatters();
   const setThemeMode = useSetAtom(themeModeAtom);
   const accessIncident = useAtomValue(publicLinkAccessIncidentAtom);
   const [passcode, setPasscode] = useState('');
   const [hasAttempted, setHasAttempted] = useState(false);
+  const incidentRefreshStarted = useRef<number | null>(null);
+  const queryContext = useMemo(() => ({ suspense: false }), []);
   const [result, reexecuteQuery] = useQuery({
     query: publicLinkInfoQuery,
     variables: { uuid: uuid ?? '' },
     pause: !uuid,
+    context: queryContext,
   });
 
   const info = result.data?.publicLinkInfo;
@@ -52,8 +55,9 @@ export const usePublicLinkPasscodeGate = (): {
   const isLocked = status === PublicLinkAccessStatus.PasscodeRequired;
   const expired = status === PublicLinkAccessStatus.Expired;
   const unavailable = status === PublicLinkAccessStatus.Unavailable;
+  const comingSoon = status === PublicLinkAccessStatus.ComingSoon;
   const isGateVisible =
-    !!uuid && !!info && (isLocked || expired || unavailable);
+    !!uuid && !!info && (isLocked || expired || unavailable || comingSoon);
   const gateTheme = useMemo(
     () =>
       applyBrandingDefaults(
@@ -79,36 +83,61 @@ export const usePublicLinkPasscodeGate = (): {
   }, [gateTheme, isGateVisible, setThemeMode]);
 
   useEffect(() => {
-    if (!incidentExpired || !uuid) return;
-    let cancelled = false;
+    if (!incidentExpired) return;
+    reexecuteQuery({ requestPolicy: 'network-only' });
+  }, [accessIncident?.id, incidentExpired, reexecuteQuery]);
 
-    // Keep the incident pinned until a fresh publicLinkInfo response arrives.
-    // Clearing on every successful status also handles an administrator
-    // extending the link between the rejected query and this refresh.
-    void client
-      .query(publicLinkInfoQuery, { uuid }, { requestPolicy: 'network-only' })
-      .toPromise()
-      .then((refreshResult) => {
-        if (!cancelled && refreshResult.data?.publicLinkInfo) {
-          clearPublicLinkAccessIncident(uuid);
-        }
-      })
-      .catch(() => {
-        // A rejected refresh must not pin the incident forever: fall back to
-        // whatever the gate's own query reports rather than stranding the
-        // visitor on the expired screen.
-        if (!cancelled) clearPublicLinkAccessIncident(uuid);
-      });
+  useEffect(() => {
+    if (!incidentExpired) {
+      incidentRefreshStarted.current = null;
+      return;
+    }
+    if (result.fetching) {
+      incidentRefreshStarted.current = accessIncident.id;
+      return;
+    }
+    if (incidentRefreshStarted.current === accessIncident.id) {
+      // The incident remains visible until a fresh query completes. An error
+      // falls back to the gate's own result rather than pinning it forever.
+      clearPublicLinkAccessIncident(uuid);
+    }
+  }, [accessIncident, incidentExpired, result.fetching, uuid]);
 
-    return () => {
-      cancelled = true;
+  useEffect(() => {
+    if (!comingSoon) return;
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        reexecuteQuery({ requestPolicy: 'network-only' });
+      }
+    }, 20_000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        reexecuteQuery({ requestPolicy: 'network-only' });
+      }
     };
-  }, [accessIncident?.id, client, incidentExpired, uuid]);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [comingSoon, reexecuteQuery]);
 
   const pauseMe =
-    !!uuid && (result.fetching || isLocked || expired || unavailable);
+    !!uuid &&
+    (result.fetching || isLocked || expired || unavailable || comingSoon);
 
   if (!uuid) return { pauseMe: false, element: null };
+
+  if (!info && result.fetching) {
+    return {
+      pauseMe,
+      element: (
+        <Center mih="100dvh">
+          <Loader />
+        </Center>
+      ),
+    };
+  }
 
   if (incidentExpired && !info) {
     return {
@@ -164,6 +193,21 @@ export const usePublicLinkPasscodeGate = (): {
             </Stack>
           </Paper>
         </Center>
+      ),
+    };
+  }
+
+  if (comingSoon) {
+    return {
+      pauseMe,
+      element: (
+        <ComingSoonPage
+          galleryName={info?.galleryName ?? undefined}
+          estimatedDeliveryAt={info?.estimatedDeliveryAt ?? undefined}
+          message={info?.comingSoonMessage ?? undefined}
+          onCheck={() => reexecuteQuery({ requestPolicy: 'network-only' })}
+          checking={result.fetching}
+        />
       ),
     };
   }

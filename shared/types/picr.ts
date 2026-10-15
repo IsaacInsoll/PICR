@@ -88,6 +88,9 @@ export type PicrUser = {
   lastAccess?: string | null;
   commentPermissions?: UserFragmentFragment['commentPermissions'];
   linkMode?: UserFragmentFragment['linkMode'];
+  publicationState?: UserFragmentFragment['publicationState'];
+  estimatedDeliveryAt?: UserFragmentFragment['estimatedDeliveryAt'];
+  comingSoonMessage?: UserFragmentFragment['comingSoonMessage'];
   hasGalleryPasscode?: UserFragmentFragment['hasGalleryPasscode'];
   galleryPasscode?: UserFragmentFragment['galleryPasscode'];
   expiresAt?: UserFragmentFragment['expiresAt'];

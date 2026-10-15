@@ -324,5 +324,18 @@
     "feed": "Füttern",
     "gallery": "Galerie",
     "list": "Liste"
+  },
+  "comingSoon": {
+    "defaultTitle": "Die Fotos sind bald da",
+    "eyebrow": "Demnächst",
+    "description": "Die Bilder werden vorbereitet. Schau bald wieder vorbei.",
+    "estimatedDelivery": "Voraussichtliche Bereitstellung",
+    "timeRemaining": "Verbleibende Zeit",
+    "days": "Tage",
+    "hours": "Stunden",
+    "minutes": "Minuten",
+    "seconds": "Sekunden",
+    "checkBack": "Der geschätzte Termin ist vorbei. Schau bald wieder vorbei.",
+    "checkNow": "Nach Fotos suchen"
   }
 }

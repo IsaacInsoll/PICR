@@ -597,6 +597,16 @@ but must not duplicate the normal header lookup.
 Only public-safe link states cross the GraphQL boundary. Missing, disabled,
 deleted, and wrong-user-type rows all map to `UNAVAILABLE`; `EXPIRED` is
 deliberately distinct so a link holder gets an actionable message.
+`COMING_SOON` is a preview outcome after any passcode check, but it must not
+create a public-link principal. The preview query may return the gallery name,
+safe branding, estimate, and message; folder, file, search, review, and download
+resolvers must continue to require an authenticated principal. An unset legacy
+publication state behaves as published, and the migration backfills existing
+links to `published`.
+Do not expose `heroImageForFolder` through the Coming Soon preview as an
+implicit teaser image. That helper automatically chooses and persists a hero
+from the folder or its subfolders when none is selected, so its result is not
+evidence that the photographer approved that photo for pre-publication display.
 Keep the status classifier in `auth/publicLinkAuth.ts` pure; database and folder
 lookup belong in `auth/publicLinkAttempt.ts`. This makes rejection precedence
 directly testable without mocking Drizzle or database modules.

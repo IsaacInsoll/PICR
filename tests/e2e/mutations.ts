@@ -14,6 +14,9 @@ export const editUserMutationText = /* GraphQL */ `
     $folderId: ID
     $commentPermissions: CommentPermissions
     $linkMode: LinkMode
+    $publicationState: LinkPublicationState
+    $estimatedDeliveryAt: DateTime
+    $comingSoonMessage: String
     $galleryPasscode: String
     $expiresAt: DateTime
   ) {
@@ -26,6 +29,9 @@ export const editUserMutationText = /* GraphQL */ `
       folderId: $folderId
       commentPermissions: $commentPermissions
       linkMode: $linkMode
+      publicationState: $publicationState
+      estimatedDeliveryAt: $estimatedDeliveryAt
+      comingSoonMessage: $comingSoonMessage
       galleryPasscode: $galleryPasscode
       expiresAt: $expiresAt
     ) {

@@ -22,6 +22,9 @@ const linkUser = {
   ntfyEmail: false,
   uuid: 'public-link-test',
   linkMode: 'final_delivery',
+  publicationState: 'published',
+  estimatedDeliveryAt: null,
+  comingSoonMessage: null,
   galleryPasscode: null,
   expiresAt: null,
 } satisfies UserFields;
@@ -96,6 +99,25 @@ describe('public-link authentication outcomes', () => {
       status: 'authenticated',
       requiresPasscode: true,
     });
+  });
+
+  test('requires a passcode before showing Coming Soon and never grants a principal', () => {
+    const waitingUser = {
+      ...linkUser,
+      publicationState: 'coming_soon' as const,
+      galleryPasscode: 'orchid',
+    };
+    expect(classify(waitingUser)).toMatchObject({
+      status: 'passcode_required',
+    });
+    const outcome = classify(waitingUser, 'orchid');
+    expect(outcome).toMatchObject({ status: 'coming_soon' });
+    expect(
+      requestAuthentication(undefined, {
+        uuid: waitingUser.uuid!,
+        outcome,
+      }).principal.kind,
+    ).toBe('anonymous');
   });
 
   test('a valid JWT principal wins while retaining the link outcome', () => {

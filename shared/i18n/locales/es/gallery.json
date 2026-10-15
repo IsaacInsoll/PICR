@@ -324,5 +324,18 @@
     "feed": "Alimentar",
     "gallery": "Galería",
     "list": "Lista"
+  },
+  "comingSoon": {
+    "defaultTitle": "Las fotos están en camino",
+    "eyebrow": "Próximamente",
+    "description": "Estamos preparando las fotos. Vuelve pronto.",
+    "estimatedDelivery": "Entrega estimada",
+    "timeRemaining": "Tiempo restante",
+    "days": "Días",
+    "hours": "Horas",
+    "minutes": "Minutos",
+    "seconds": "Segundos",
+    "checkBack": "La fecha estimada ya pasó. Vuelve pronto.",
+    "checkNow": "Comprobar fotos"
   }
 }

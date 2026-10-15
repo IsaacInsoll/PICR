@@ -9,6 +9,8 @@ export const publicLinkInfoQuery = gql(/* GraphQL */ `
       requiresPasscode
       unlocked
       galleryName
+      estimatedDeliveryAt
+      comingSoonMessage
       branding {
         mode
         primaryColor

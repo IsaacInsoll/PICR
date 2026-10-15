@@ -13,6 +13,7 @@ export const publicLinkAccessStatusType = new GraphQLEnumType({
   values: {
     AVAILABLE: {},
     PASSCODE_REQUIRED: {},
+    COMING_SOON: {},
     EXPIRED: {},
     UNAVAILABLE: {},
   },
@@ -40,6 +41,8 @@ export const publicLinkInfoType = new GraphQLObjectType({
       deprecationReason: 'Use status.',
     },
     galleryName: { type: GraphQLString },
+    estimatedDeliveryAt: { type: GraphQLDateTime },
+    comingSoonMessage: { type: GraphQLString },
     branding: { type: publicLinkBrandingPreviewType },
   }),
 });

@@ -327,6 +327,11 @@ export enum LinkMode {
   ProofNoDownloads = 'proof_no_downloads'
 }
 
+export enum LinkPublicationState {
+  ComingSoon = 'coming_soon',
+  Published = 'published'
+}
+
 export type MediaCapsInfo = {
   __typename?: 'MediaCapsInfo';
   heic: Scalars['Boolean']['output'];
@@ -450,14 +455,17 @@ export type MutationEditServerSettingsArgs = {
 
 
 export type MutationEditUserArgs = {
+  comingSoonMessage?: InputMaybe<Scalars['String']['input']>;
   commentPermissions?: InputMaybe<CommentPermissions>;
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  estimatedDeliveryAt?: InputMaybe<Scalars['DateTime']['input']>;
   expiresAt?: InputMaybe<Scalars['DateTime']['input']>;
   folderId?: InputMaybe<Scalars['ID']['input']>;
   galleryPasscode?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   linkMode?: InputMaybe<LinkMode>;
   name?: InputMaybe<Scalars['String']['input']>;
+  publicationState?: InputMaybe<LinkPublicationState>;
   username?: InputMaybe<Scalars['String']['input']>;
   uuid?: InputMaybe<Scalars['String']['input']>;
 };
@@ -568,6 +576,7 @@ export enum PrimaryColor {
 
 export enum PublicLinkAccessStatus {
   Available = 'AVAILABLE',
+  ComingSoon = 'COMING_SOON',
   Expired = 'EXPIRED',
   PasscodeRequired = 'PASSCODE_REQUIRED',
   Unavailable = 'UNAVAILABLE'
@@ -587,6 +596,8 @@ export type PublicLinkInfo = {
   /** @deprecated Use status. */
   available: Scalars['Boolean']['output'];
   branding?: Maybe<PublicLinkBrandingPreview>;
+  comingSoonMessage?: Maybe<Scalars['String']['output']>;
+  estimatedDeliveryAt?: Maybe<Scalars['DateTime']['output']>;
   /** Expiration timestamp for available and expired links. Available links carry it so a client holding a cached AVAILABLE result can still name the deadline the moment a request is rejected as expired; do not restrict this to EXPIRED. Hidden while a passcode is required and for unavailable links. */
   expiresAt?: Maybe<Scalars['DateTime']['output']>;
   galleryName?: Maybe<Scalars['String']['output']>;
@@ -812,9 +823,11 @@ export type ThumbnailVariant = {
 
 export type User = {
   __typename?: 'User';
+  comingSoonMessage?: Maybe<Scalars['String']['output']>;
   commentPermissions?: Maybe<CommentPermissions>;
   deleted?: Maybe<Scalars['Boolean']['output']>;
   enabled?: Maybe<Scalars['Boolean']['output']>;
+  estimatedDeliveryAt?: Maybe<Scalars['DateTime']['output']>;
   expiresAt?: Maybe<Scalars['DateTime']['output']>;
   folder?: Maybe<Folder>;
   folderId: Scalars['ID']['output'];
@@ -827,6 +840,7 @@ export type User = {
   name?: Maybe<Scalars['String']['output']>;
   ntfy?: Maybe<Scalars['String']['output']>;
   ntfyEmail?: Maybe<Scalars['Boolean']['output']>;
+  publicationState?: Maybe<LinkPublicationState>;
   userType?: Maybe<UserType>;
   username?: Maybe<Scalars['String']['output']>;
   uuid?: Maybe<Scalars['String']['output']>;

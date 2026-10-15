@@ -207,12 +207,23 @@
       "expirationDescription": "Facultatif — la galerie ne sera plus accessible après cette heure.",
       "enabledDescription": "Ce lien peut-il être utilisé ?",
       "tabs": {
-        "edit": "Modifier",
+        "link": "Lien",
         "accessLogs": "Journaux d’accès"
       },
       "nameRequired": "Saisissez un nom pour ce lien",
       "deleteTitle": "Supprimer le lien public",
-      "deleteConfirmation": "Voulez-vous vraiment supprimer ce lien public ? Il cessera immédiatement de fonctionner."
+      "deleteConfirmation": "Voulez-vous vraiment supprimer ce lien public ? Il cessera immédiatement de fonctionner.",
+      "publication": "Publication",
+      "published": "Publié",
+      "comingSoon": "Bientôt disponible",
+      "enableComingSoon": "Activer le mode Bientôt disponible",
+      "publishedDescription": "Les destinataires peuvent ouvrir la galerie.",
+      "comingSoonDescription": "Les destinataires voient une page d’attente jusqu’à la publication. Ajouter des fichiers ou atteindre la date estimée ne publie pas la galerie.",
+      "estimatedDelivery": "Livraison estimée",
+      "estimatedDeliveryDescription": "Facultatif. Affichée dans l’heure locale du visiteur ; ne publie pas la galerie.",
+      "comingSoonMessage": "Message aux visiteurs",
+      "comingSoonMessageDescription": "Laissez ce champ vide pour afficher le message par défaut traduit. 2 000 caractères maximum.",
+      "previewComingSoon": "Aperçu de la page d’attente"
     }
   },
   "folder": {
@@ -370,7 +381,11 @@
   "branding": {
     "appliedTo": "Appliquée à :",
     "outsideScope": "Ce dossier se trouve hors de votre périmètre d'accès",
-    "view": { "list": "Liste", "gallery": "Galerie", "feed": "Fil" },
+    "view": {
+      "list": "Liste",
+      "gallery": "Galerie",
+      "feed": "Fil"
+    },
     "mode": {
       "label": "Thème",
       "auto": "Auto",
@@ -378,8 +393,14 @@
       "dark": "Sombre",
       "description": "<code>Auto</code> signifie <emphasis>utiliser le réglage de l'appareil de l'utilisateur</emphasis>."
     },
-    "layout": { "justified": "Lignes fixes", "masonry": "Colonnes fixes" },
-    "headingAlignment": { "left": "À gauche", "center": "Centré" },
+    "layout": {
+      "justified": "Lignes fixes",
+      "masonry": "Colonnes fixes"
+    },
+    "headingAlignment": {
+      "left": "À gauche",
+      "center": "Centré"
+    },
     "sort": {
       "label": "Tri par défaut",
       "description": "Ordre de tri initial à l'ouverture de la galerie. Les visiteurs peuvent toujours le modifier.",
@@ -393,7 +414,10 @@
         "Rating": "Note",
         "RecentlyCommented": "Commentaires récents"
       },
-      "direction": { "Asc": "Croissant", "Desc": "Décroissant" }
+      "direction": {
+        "Asc": "Croissant",
+        "Desc": "Décroissant"
+      }
     },
     "list": {
       "search": "Rechercher une identité visuelle",

@@ -207,12 +207,23 @@
       "expirationDescription": "Optional — the gallery will stop being available after this time.",
       "enabledDescription": "Can this link be used?",
       "tabs": {
-        "edit": "Edit",
+        "link": "Link",
         "accessLogs": "Access Logs"
       },
       "nameRequired": "Enter a name for this link",
       "deleteTitle": "Delete Public Link",
-      "deleteConfirmation": "Are you sure you want to delete this public link? It will stop working immediately."
+      "deleteConfirmation": "Are you sure you want to delete this public link? It will stop working immediately.",
+      "publication": "Publication",
+      "published": "Published",
+      "comingSoon": "Coming Soon",
+      "enableComingSoon": "Enable Coming Soon mode",
+      "publishedDescription": "Recipients can open the gallery.",
+      "comingSoonDescription": "Recipients see a waiting page until you publish the gallery. Adding files or reaching the estimate will not publish it.",
+      "estimatedDelivery": "Estimated delivery",
+      "estimatedDeliveryDescription": "Optional. Shown in the visitor’s local time; this does not publish the gallery.",
+      "comingSoonMessage": "Message for visitors",
+      "comingSoonMessageDescription": "Leave blank to show the translated default message. Up to 2,000 characters.",
+      "previewComingSoon": "Preview waiting page"
     }
   },
   "folder": {
@@ -370,7 +381,11 @@
   "branding": {
     "appliedTo": "Applied to:",
     "outsideScope": "This folder is outside your access scope",
-    "view": { "list": "List", "gallery": "Gallery", "feed": "Feed" },
+    "view": {
+      "list": "List",
+      "gallery": "Gallery",
+      "feed": "Feed"
+    },
     "mode": {
       "label": "Theme",
       "auto": "Auto",
@@ -378,8 +393,14 @@
       "dark": "Dark",
       "description": "<code>Auto</code> means <emphasis>match the user's device setting</emphasis>."
     },
-    "layout": { "justified": "Fixed rows", "masonry": "Fixed columns" },
-    "headingAlignment": { "left": "Left", "center": "Center" },
+    "layout": {
+      "justified": "Fixed rows",
+      "masonry": "Fixed columns"
+    },
+    "headingAlignment": {
+      "left": "Left",
+      "center": "Center"
+    },
     "sort": {
       "label": "Default sort",
       "description": "Initial sort order when opening the gallery. Viewers can still change it.",
@@ -393,7 +414,10 @@
         "Rating": "Rating",
         "RecentlyCommented": "Commented"
       },
-      "direction": { "Asc": "Ascending", "Desc": "Descending" }
+      "direction": {
+        "Asc": "Ascending",
+        "Desc": "Descending"
+      }
     },
     "list": {
       "search": "Search branding",

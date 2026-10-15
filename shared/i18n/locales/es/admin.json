@@ -207,12 +207,23 @@
       "expirationDescription": "Opcional: la galería dejará de estar disponible después de este tiempo.",
       "enabledDescription": "¿Se puede utilizar este enlace?",
       "tabs": {
-        "edit": "Editar",
+        "link": "Enlace",
         "accessLogs": "Registros de acceso"
       },
       "nameRequired": "Introduzca un nombre para este enlace",
       "deleteTitle": "Eliminar enlace público",
-      "deleteConfirmation": "¿Está seguro de que desea eliminar este enlace público? Dejará de funcionar inmediatamente."
+      "deleteConfirmation": "¿Está seguro de que desea eliminar este enlace público? Dejará de funcionar inmediatamente.",
+      "publication": "Publicación",
+      "published": "Publicada",
+      "comingSoon": "Próximamente",
+      "enableComingSoon": "Activar el modo Próximamente",
+      "publishedDescription": "Los destinatarios pueden abrir la galería.",
+      "comingSoonDescription": "Los destinatarios verán una página de espera hasta que publiques la galería. Añadir archivos o llegar a la fecha estimada no la publica.",
+      "estimatedDelivery": "Entrega estimada",
+      "estimatedDeliveryDescription": "Opcional. Se muestra en la hora local del visitante; no publica la galería.",
+      "comingSoonMessage": "Mensaje para visitantes",
+      "comingSoonMessageDescription": "Déjalo en blanco para mostrar el mensaje predeterminado traducido. Máximo 2000 caracteres.",
+      "previewComingSoon": "Vista previa de la página de espera"
     }
   },
   "folder": {

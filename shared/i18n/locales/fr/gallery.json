@@ -324,5 +324,18 @@
     "feed": "Fil",
     "gallery": "Galerie",
     "list": "Liste"
+  },
+  "comingSoon": {
+    "defaultTitle": "Les photos arrivent",
+    "eyebrow": "Bientôt disponible",
+    "description": "Les photos sont en préparation. Revenez bientôt.",
+    "estimatedDelivery": "Livraison estimée",
+    "timeRemaining": "Temps restant",
+    "days": "Jours",
+    "hours": "Heures",
+    "minutes": "Minutes",
+    "seconds": "Secondes",
+    "checkBack": "La date estimée est passée. Revenez bientôt.",
+    "checkNow": "Vérifier les photos"
   }
 }

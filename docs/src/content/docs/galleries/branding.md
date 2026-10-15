@@ -12,7 +12,7 @@ Brandings are **named presets** that can be applied to any folder and will casca
 | Setting               | Description                                                                     |
 | --------------------- | ------------------------------------------------------------------------------- |
 | **Name**              | A name to identify this branding (e.g., "Wedding Style", "Corporate")           |
-| **Logo URL**          | A link to your logo image (displayed in the gallery header)                     |
+| **Logo URL**          | A stored link to your logo image (not currently displayed)                      |
 | **Theme Mode**        | Light, dark, or auto (matches client's device)                                  |
 | **Primary Color**     | The accent color used throughout the interface                                  |
 | **Heading Font**      | The font used for folder titles and section headers                             |

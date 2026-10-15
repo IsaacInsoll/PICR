@@ -6,6 +6,7 @@ export const folderPublicLinksQuery = gql(/* GraphQL */ `
       id
       name
       enabled
+      publicationState
       expiresAt
       lastAccess
       gravatar

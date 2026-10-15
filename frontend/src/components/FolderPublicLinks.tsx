@@ -13,6 +13,7 @@ import {
   newPublicLinkId,
   publicLinkEditorLink,
 } from '../hooks/usePublicLinkEditorRoute';
+import { LinkPublicationState } from '@shared/gql/graphql';
 
 const visibleAvatarCount = 3;
 const statusRefreshMs = 60_000;
@@ -54,7 +55,9 @@ export const FolderPublicLinks = ({ folderId }: { folderId: string }) => {
                 const status = publicLinkStatus(link, now);
                 const statusLabel =
                   status === 'active'
-                    ? t('common.enabled')
+                    ? link.publicationState === LinkPublicationState.ComingSoon
+                      ? t('links.editor.comingSoon')
+                      : t('common.enabled')
                     : status === 'expired'
                       ? t('links.expired')
                       : t('common.disabled');

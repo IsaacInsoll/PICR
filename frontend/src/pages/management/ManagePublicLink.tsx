@@ -10,6 +10,7 @@ import { generateThumbnailsQuery } from '@shared/urql/queries/generateThumbnails
 import type { MutationEditUserArgs } from '@shared/gql/graphql';
 import {
   ActionIcon,
+  Badge,
   Box,
   Button,
   Code,
@@ -24,13 +25,18 @@ import {
   Tabs,
   Text,
   TextInput,
+  Textarea,
   Tooltip,
 } from '@mantine/core';
 import { useViewUser } from './useViewUser';
 import { CommentPermissionsSelector } from '../../components/CommentPermissionsSelector';
 import { LinkModeSelector } from '../../components/LinkModeSelector';
 import { DateTimePicker } from '@mantine/dates';
-import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
+import {
+  CommentPermissions,
+  LinkMode,
+  LinkPublicationState,
+} from '@shared/gql/graphql';
 import {
   AccessLogsIcon,
   DeleteIcon,
@@ -54,6 +60,7 @@ import { useLanguage } from '../../i18n/useLanguage';
 import { dateTimePickerFormatFor } from '../../i18n/mantineDates';
 import dayjs from 'dayjs';
 import { AccessLogs } from './AccessLogs/AccessLogs';
+import { ComingSoonPage } from '../../components/ComingSoonPage';
 
 export const ManagePublicLink = ({
   id,
@@ -65,6 +72,7 @@ export const ManagePublicLink = ({
   onClose: () => void;
 }) => {
   const { t } = useTranslation('admin');
+  const { t: tGallery } = useTranslation('gallery');
   const { formattingLocale } = useLanguage();
   const formatFolderName = useFolderNameFormatter();
   const [user, exists] = useViewUser(id);
@@ -72,7 +80,8 @@ export const ManagePublicLink = ({
   const [, deleteUser] = useMutation(deleteUserMutation);
   const [, generateThumbnails] = useMutation(generateThumbnailsMutation);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [activeTab, setActiveTab] = useState('edit');
+  const [showComingSoonPreview, setShowComingSoonPreview] = useState(false);
+  const [activeTab, setActiveTab] = useState('link');
   const baseUrl = useBaseUrl();
 
   const [name, setName] = useState(user?.name ?? '');
@@ -85,6 +94,16 @@ export const ManagePublicLink = ({
     );
   const [linkMode, setLinkMode] = useState<LinkMode>(
     user?.linkMode ?? LinkMode.FinalDelivery,
+  );
+  const [publicationState, setPublicationState] =
+    useState<LinkPublicationState>(
+      user?.publicationState ?? LinkPublicationState.Published,
+    );
+  const [comingSoonMessage, setComingSoonMessage] = useState(
+    user?.comingSoonMessage ?? '',
+  );
+  const [estimatedDeliveryAt, setEstimatedDeliveryAt] = useState<Date | null>(
+    user?.estimatedDeliveryAt ? new Date(user.estimatedDeliveryAt) : null,
   );
   const [galleryPasscode, setGalleryPasscode] = useState(
     user?.galleryPasscode ?? '',
@@ -130,6 +149,9 @@ export const ManagePublicLink = ({
       folderId: f.id,
       commentPermissions,
       linkMode,
+      publicationState,
+      comingSoonMessage,
+      estimatedDeliveryAt: estimatedDeliveryAt?.toISOString() ?? null,
       username,
       galleryPasscode,
       expiresAt: expiresAt?.toISOString() ?? null,
@@ -150,7 +172,11 @@ export const ManagePublicLink = ({
   };
 
   const badLink = badChars(link);
-  const invalidLink = badLink.length > 0 || name === '' || link.length < 6;
+  const invalidLink =
+    badLink.length > 0 ||
+    name === '' ||
+    link.length < 6 ||
+    comingSoonMessage.length > 2000;
 
   // The field above is only the link ID. Show the URL that will actually be
   // handed to the recipient so it isn't mistaken for something pasteable.
@@ -189,18 +215,31 @@ export const ManagePublicLink = ({
           onChange={(value) => value && setActiveTab(value)}
           keepMounted={false}
         >
-          {exists ? (
-            <Tabs.List>
-              <Tabs.Tab value="edit" leftSection={<EditIcon />}>
-                {t('links.editor.tabs.edit')}
-              </Tabs.Tab>
+          <Tabs.List>
+            <Tabs.Tab
+              value="link"
+              leftSection={<EditIcon />}
+              rightSection={
+                publicationState === LinkPublicationState.ComingSoon ? (
+                  <Badge size="xs" variant="light">
+                    {t('links.editor.comingSoon')}
+                  </Badge>
+                ) : undefined
+              }
+            >
+              {t('links.editor.tabs.link')}
+            </Tabs.Tab>
+            <Tabs.Tab value="comingSoon">
+              {t('links.editor.comingSoon')}
+            </Tabs.Tab>
+            {exists ? (
               <Tabs.Tab value="accessLogs" leftSection={<AccessLogsIcon />}>
                 {t('links.editor.tabs.accessLogs')}
               </Tabs.Tab>
-            </Tabs.List>
-          ) : null}
+            ) : null}
+          </Tabs.List>
 
-          <Tabs.Panel value="edit" pt={exists ? 'md' : 0}>
+          <Tabs.Panel value="link" pt="md">
             <Stack gap="md">
               <Stack gap="xs">
                 <Divider
@@ -351,8 +390,6 @@ export const ManagePublicLink = ({
                 </Stack>
               </SimpleGrid>
 
-              {/* Advanced section reserved for future lower-priority link options. */}
-
               {f?.id ? (
                 <Box>
                   {checkingThumbnails ? (
@@ -380,6 +417,68 @@ export const ManagePublicLink = ({
                     </Text>
                   ) : null}
                 </Box>
+              ) : null}
+            </Stack>
+          </Tabs.Panel>
+
+          <Tabs.Panel value="comingSoon" pt="md">
+            <Stack gap="md">
+              <Switch
+                checked={publicationState === LinkPublicationState.ComingSoon}
+                withThumbIndicator
+                size="md"
+                label={t('links.editor.enableComingSoon')}
+                description={
+                  publicationState === LinkPublicationState.ComingSoon
+                    ? t('links.editor.comingSoonDescription')
+                    : t('links.editor.publishedDescription')
+                }
+                onChange={(event) =>
+                  setPublicationState(
+                    event.currentTarget.checked
+                      ? LinkPublicationState.ComingSoon
+                      : LinkPublicationState.Published,
+                  )
+                }
+              />
+              {publicationState === LinkPublicationState.ComingSoon ? (
+                <>
+                  <DateTimePicker
+                    value={estimatedDeliveryAt}
+                    onChange={(date) => {
+                      if (!date) {
+                        setEstimatedDeliveryAt(null);
+                        return;
+                      }
+                      const estimate = dayjs(date);
+                      if (estimate.isValid()) {
+                        setEstimatedDeliveryAt(estimate.toDate());
+                      }
+                    }}
+                    label={t('links.editor.estimatedDelivery')}
+                    description={t('links.editor.estimatedDeliveryDescription')}
+                    valueFormat={dateTimePickerFormatFor(formattingLocale)}
+                    clearable
+                  />
+                  <Textarea
+                    label={t('links.editor.comingSoonMessage')}
+                    description={t('links.editor.comingSoonMessageDescription')}
+                    placeholder={tGallery('comingSoon.description')}
+                    value={comingSoonMessage}
+                    onChange={(event) =>
+                      setComingSoonMessage(event.currentTarget.value)
+                    }
+                    maxLength={2000}
+                    minRows={3}
+                    autosize
+                  />
+                  <Button
+                    variant="default"
+                    onClick={() => setShowComingSoonPreview(true)}
+                  >
+                    {t('links.editor.previewComingSoon')}
+                  </Button>
+                </>
               ) : null}
             </Stack>
           </Tabs.Panel>
@@ -457,6 +556,20 @@ export const ManagePublicLink = ({
           </Stack>
         </Modal>
       ) : null}
+      <Modal
+        opened={showComingSoonPreview}
+        onClose={() => setShowComingSoonPreview(false)}
+        fullScreen
+        title={t('links.editor.previewComingSoon')}
+        closeButtonProps={{ 'aria-label': t('common.close') }}
+      >
+        <ComingSoonPage
+          galleryName={f?.title || folderName || undefined}
+          estimatedDeliveryAt={estimatedDeliveryAt?.toISOString()}
+          message={comingSoonMessage}
+          preview
+        />
+      </Modal>
     </Modal>
   );
 };

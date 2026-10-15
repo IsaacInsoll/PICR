@@ -80,7 +80,7 @@ export const picrTemplate = async (req: Request, res: Response) => {
     // through to generic metadata here.
     const pathFolderId = parseInt(sub[3], 10);
     const folderId = isNaN(pathFolderId) ? user?.folderId : pathFolderId;
-    if (folderId) {
+    if (folderId && publicLinkAttempt.outcome.status !== 'coming_soon') {
       const { permissions, folder } = await contextPermissions(
         { authentication, user, userHomeFolder, headers: {} },
         folderId,

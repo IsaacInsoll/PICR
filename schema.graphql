@@ -308,6 +308,11 @@ enum LinkMode {
   proof_no_downloads
 }
 
+enum LinkPublicationState {
+  coming_soon
+  published
+}
+
 type MediaCapsInfo {
   heic: Boolean!
   psb: Boolean!
@@ -338,7 +343,7 @@ type Mutation {
   editBranding(availableViews: [String!], defaultFileSort: String, defaultView: String, footerTitle: String, footerUrl: String, galleryLayout: GalleryLayout, headingAlignment: HeadingAlignment, headingFontKey: HeadingFontKey, headingFontSize: Int, id: ID, logoUrl: String, mode: ThemeMode, name: String, primaryColor: PrimaryColor, socialLinks: JSON, thumbnailBorderRadius: Int, thumbnailSize: Int, thumbnailSpacing: Int): Branding!
   editFolder(bannerImageId: ID, bannerSize: BannerSize, bannerTextHAlign: BannerTextHAlign, bannerTextVAlign: BannerTextVAlign, folderId: ID!, heroImageId: ID, subtitle: String, title: String): Folder!
   editServerSettings(input: EditServerSettingsInput!): ServerSettings!
-  editUser(commentPermissions: CommentPermissions, enabled: Boolean, expiresAt: DateTime, folderId: ID, galleryPasscode: String, id: ID, linkMode: LinkMode, name: String, username: String, uuid: String): User!
+  editUser(comingSoonMessage: String, commentPermissions: CommentPermissions, enabled: Boolean, estimatedDeliveryAt: DateTime, expiresAt: DateTime, folderId: ID, galleryPasscode: String, id: ID, linkMode: LinkMode, name: String, publicationState: LinkPublicationState, username: String, uuid: String): User!
   editUserDevice(enabled: Boolean!, name: String, notificationToken: String!, userId: ID!): UserDevice!
   generateThumbnails(folderId: ID, mediaType: MediaTypeFilter = All): Boolean!
   generateZip(folderId: ID): String!
@@ -404,6 +409,7 @@ enum PrimaryColor {
 
 enum PublicLinkAccessStatus {
   AVAILABLE
+  COMING_SOON
   EXPIRED
   PASSCODE_REQUIRED
   UNAVAILABLE
@@ -420,6 +426,8 @@ type PublicLinkBrandingPreview {
 type PublicLinkInfo {
   available: Boolean! @deprecated(reason: "Use status.")
   branding: PublicLinkBrandingPreview
+  comingSoonMessage: String
+  estimatedDeliveryAt: DateTime
 
   """
   Expiration timestamp for available and expired links. Available links carry it so a client holding a cached AVAILABLE result can still name the deadline the moment a request is rejected as expired; do not restrict this to EXPIRED. Hidden while a passcode is required and for unavailable links.
@@ -550,9 +558,11 @@ type ThumbnailVariant {
 }
 
 type User {
+  comingSoonMessage: String
   commentPermissions: CommentPermissions
   deleted: Boolean
   enabled: Boolean
+  estimatedDeliveryAt: DateTime
   expiresAt: DateTime
   folder: Folder
   folderId: ID!
@@ -565,6 +575,7 @@ type User {
   name: String
   ntfy: String
   ntfyEmail: Boolean
+  publicationState: LinkPublicationState
   userType: UserType
   username: String
   uuid: String

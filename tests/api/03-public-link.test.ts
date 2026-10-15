@@ -12,6 +12,7 @@ import { accessLogQuery } from '../../shared/urql/queries/accessLogQuery';
 
 import { photoFolderId, testUrl, videoFolderId } from './testVariables';
 import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
+import { folderFilesQuery } from '../../shared/urql/queries/folderFilesQuery';
 import { publicLinkInfoQuery } from '../../shared/urql/queries/publicLinkInfoQuery';
 import { meGalleryPasscodeQuery } from '../../shared/urql/queries/meGalleryPasscodeQuery';
 import { commentHistoryQuery } from '../../shared/urql/queries/commentHistoryQuery';
@@ -19,6 +20,7 @@ import { addCommentMutation } from '../../shared/urql/mutations/addCommentMutati
 import {
   CommentPermissions,
   LinkMode,
+  LinkPublicationState,
   PublicLinkAccessStatus,
 } from '../../shared/gql/graphql';
 import { thumbnailVariantForWidth } from '../../shared/thumbnailVariants';
@@ -59,6 +61,7 @@ test('Create Public Link', async () => {
   expect(user.commentPermissions).toBe(testPublicLink.commentPermissions);
   expect(user.enabled).toBe(testPublicLink.enabled);
   expect(user.linkMode).toBe(LinkMode.FinalDelivery);
+  expect(user.publicationState).toBe(LinkPublicationState.Published);
   expect(user.expiresAt).toBeNull();
   const gravatarHash = createHash('sha256')
     .update(testPublicLink.username.trim().toLowerCase())
@@ -115,6 +118,87 @@ test('Public Link can access folder', async () => {
 
   expect(folder.subFolders).toHaveLength(0);
   expect(folder.files.length).toBe(10);
+});
+
+test('Coming Soon exposes a safe preview but no folder files, then publishes manually', async () => {
+  const adminClient = await createTestGraphqlClient(
+    await getUserHeader(defaultCredentials),
+  );
+  const estimatedDeliveryAt = new Date(
+    Date.now() + 2 * 24 * 60 * 60 * 1000,
+  ).toISOString();
+  const waitingLink = {
+    ...testPublicLink,
+    uuid: `coming-soon-${testSuffix}`,
+  };
+  const waiting = await adminClient
+    .mutation(editUserMutation, {
+      ...waitingLink,
+      publicationState: LinkPublicationState.ComingSoon,
+      estimatedDeliveryAt,
+      comingSoonMessage: 'Please check back soon.',
+    })
+    .toPromise();
+  expect(waiting.error).toBeUndefined();
+  expect(waiting.data?.editUser.publicationState).toBe(
+    LinkPublicationState.ComingSoon,
+  );
+  const waitingLinkId = waiting.data?.editUser.id;
+  if (!waitingLinkId) throw new Error('Coming Soon link was not created');
+  const editedWithoutPublicationState = await adminClient
+    .mutation(editUserMutation, {
+      ...waitingLink,
+      id: waitingLinkId,
+    })
+    .toPromise();
+  expect(editedWithoutPublicationState.error).toBeUndefined();
+  expect(editedWithoutPublicationState.data?.editUser.publicationState).toBe(
+    LinkPublicationState.ComingSoon,
+  );
+
+  const linkClient = await createTestGraphqlClient(
+    await getLinkHeader(waitingLink.uuid),
+  );
+  const info = await linkClient
+    .query(publicLinkInfoQuery, { uuid: waitingLink.uuid })
+    .toPromise();
+  expect(info.error).toBeUndefined();
+  expect(info.data?.publicLinkInfo).toMatchObject({
+    status: PublicLinkAccessStatus.ComingSoon,
+    galleryName: 'Dog Photos',
+    estimatedDeliveryAt,
+    comingSoonMessage: 'Please check back soon.',
+  });
+  const folder = await linkClient
+    .query(viewFolderQuery, { folderId: photoFolderId })
+    .toPromise();
+  const files = await linkClient
+    .query(folderFilesQuery, { folderId: photoFolderId })
+    .toPromise();
+  expect(folder.data?.folder).toBeUndefined();
+  expect(folder.error).toBeDefined();
+  expect(files.data?.folderFiles).toBeUndefined();
+  expect(files.error).toBeDefined();
+
+  const published = await adminClient
+    .mutation(editUserMutation, {
+      ...waitingLink,
+      id: waitingLinkId,
+      publicationState: LinkPublicationState.Published,
+    })
+    .toPromise();
+  expect(published.error).toBeUndefined();
+  const releasedFolder = await (
+    await createTestGraphqlClient(await getLinkHeader(waitingLink.uuid))
+  )
+    .query(viewFolderQuery, { folderId: photoFolderId })
+    .toPromise();
+  expect(releasedFolder.error).toBeUndefined();
+  expect(releasedFolder.data?.folder.files).toHaveLength(10);
+  const deleted = await adminClient
+    .mutation(deleteUserMutation, { id: waitingLinkId })
+    .toPromise();
+  expect(deleted.error).toBeUndefined();
 });
 
 test('Public Link gallery passcode gates GraphQL access only', async () => {
@@ -209,6 +293,8 @@ test('Public Link gallery passcode gates GraphQL access only', async () => {
     requiresPasscode: false,
     unlocked: false,
     galleryName: null,
+    estimatedDeliveryAt: null,
+    comingSoonMessage: null,
     branding: null,
   });
 

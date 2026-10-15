@@ -3011,6 +3011,30 @@
         "possibleTypes": null
       },
       {
+        "kind": "ENUM",
+        "name": "LinkPublicationState",
+        "description": null,
+        "isOneOf": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "coming_soon",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "published",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "MediaCapsInfo",
         "description": null,
@@ -3931,6 +3955,18 @@
             "description": null,
             "args": [
               {
+                "name": "comingSoonMessage",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
                 "name": "commentPermissions",
                 "description": null,
                 "type": {
@@ -3948,6 +3984,18 @@
                 "type": {
                   "kind": "SCALAR",
                   "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "estimatedDeliveryAt",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "DateTime",
                   "ofType": null
                 },
                 "defaultValue": null,
@@ -4020,6 +4068,18 @@
                 "type": {
                   "kind": "SCALAR",
                   "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "publicationState",
+                "description": null,
+                "type": {
+                  "kind": "ENUM",
+                  "name": "LinkPublicationState",
                   "ofType": null
                 },
                 "defaultValue": null,
@@ -4941,6 +5001,12 @@
             "deprecationReason": null
           },
           {
+            "name": "COMING_SOON",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "EXPIRED",
             "description": null,
             "isDeprecated": false,
@@ -5062,6 +5128,30 @@
             "type": {
               "kind": "OBJECT",
               "name": "PublicLinkBrandingPreview",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "comingSoonMessage",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "estimatedDeliveryAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "DateTime",
               "ofType": null
             },
             "isDeprecated": false,
@@ -7079,6 +7169,18 @@
         "isOneOf": null,
         "fields": [
           {
+            "name": "comingSoonMessage",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "commentPermissions",
             "description": null,
             "args": [],
@@ -7109,6 +7211,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "estimatedDeliveryAt",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "DateTime",
               "ofType": null
             },
             "isDeprecated": false,
@@ -7261,6 +7375,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "publicationState",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "ENUM",
+              "name": "LinkPublicationState",
               "ofType": null
             },
             "isDeprecated": false,

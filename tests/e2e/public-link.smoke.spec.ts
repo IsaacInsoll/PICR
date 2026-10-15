@@ -21,6 +21,77 @@ type GqlResult<T> = {
 
 const testUrl = 'http://localhost:6901/';
 
+test('Coming Soon link remains private until published', async ({ page }) => {
+  const suffix = Math.random().toString(36).slice(2, 8);
+  const uuid = `coming-soon-${suffix}`;
+  const estimatedDeliveryAt = new Date(
+    Date.now() + 2 * 24 * 60 * 60 * 1000,
+  ).toISOString();
+  const login = await gqlRequest<{ auth?: string }>(
+    loginMutationText,
+    defaultCredentials,
+  );
+  const token = login.data?.auth;
+  expect(token).toBeTruthy();
+  const authHeader = { authorization: `Bearer ${token}` };
+  let linkId: string | undefined;
+  const failures = trackBrowserFailures(page);
+
+  try {
+    const created = await gqlRequest<{ editUser?: { id: string } }>(
+      editUserMutationText,
+      {
+        folderId: photoFolderId,
+        name: 'Coming Soon visitor',
+        uuid,
+        enabled: true,
+        commentPermissions: 'read',
+        publicationState: 'coming_soon',
+        estimatedDeliveryAt,
+        comingSoonMessage: 'We are preparing your photos.',
+      },
+      authHeader,
+    );
+    expect(created.errors).toBeUndefined();
+    linkId = created.data?.editUser?.id;
+    expect(linkId).toBeTruthy();
+
+    await page.goto(`/s/${uuid}`);
+    await expect(page.getByText('We are preparing your photos.')).toBeVisible();
+    await expect(
+      page.getByText('The moments are being prepared. Please check back soon.'),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole('button', { name: 'Check for photos' }),
+    ).toBeVisible();
+
+    const published = await gqlRequest(
+      editUserMutationText,
+      {
+        id: linkId,
+        folderId: photoFolderId,
+        name: 'Coming Soon visitor',
+        uuid,
+        enabled: true,
+        commentPermissions: 'read',
+        publicationState: 'published',
+      },
+      authHeader,
+    );
+    expect(published.errors).toBeUndefined();
+    await page.getByRole('button', { name: 'Check for photos' }).click();
+    await expect(
+      page.getByRole('button', { name: 'Check for photos' }),
+    ).toHaveCount(0);
+    await expect(page).toHaveURL(new RegExp(`/s/${uuid}/${photoFolderId}`));
+    expectNoBrowserFailures(failures);
+  } finally {
+    if (linkId) {
+      await gqlRequest(deleteUserMutationText, { id: linkId }, authHeader);
+    }
+  }
+});
+
 async function gqlRequest<T>(
   query: string,
   variables: Record<string, unknown>,

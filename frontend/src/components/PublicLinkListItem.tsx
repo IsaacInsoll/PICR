@@ -5,7 +5,11 @@ import { LinkModeChip } from './LinkModeChip';
 import { CopyPublicLinkButton } from '../pages/management/CopyPublicLinkButton';
 import { ViewFolderButton } from './ViewFolderButton';
 import { FolderIcon } from '../PicrIcons';
-import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
+import {
+  CommentPermissions,
+  LinkMode,
+  LinkPublicationState,
+} from '@shared/gql/graphql';
 import { useTranslation } from 'react-i18next';
 import { useFolderNameFormatter } from '../i18n/useFolderNameFormatter';
 import { PublicLinkExpiration } from './PublicLinkExpiration';
@@ -68,6 +72,11 @@ export const PublicLinkListItem = ({
             ) : null}
             <PublicLinkExpiration expiresAt={user.expiresAt} />
             <Group gap="xs" wrap="nowrap">
+              {user.publicationState === LinkPublicationState.ComingSoon ? (
+                <Badge size="sm" color="violet" variant="light">
+                  {t('links.editor.comingSoon')}
+                </Badge>
+              ) : null}
               <CommentChip
                 commentPermissions={
                   user.commentPermissions ?? CommentPermissions.Read

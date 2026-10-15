@@ -61,14 +61,25 @@ avatar whose badge shows the exact-folder link count and whose action opens the
 Links list.
 
 Public-link avatar tooltips include the link's status and last access time. The
-existing-link editor keeps Edit and Access Logs in tabs, with its persistent
-copy/save/delete actions outside the tabs. Mount the fixed-user access-log view
-only after its tab is selected, and include child folders so visits made through
-the link's accessible subtree are not omitted. New-link editors have no access
-history, so they remain on the untabbed edit form. Keep folder-management tab
+public-link editor has Link and Coming Soon tabs for both new and existing links;
+only existing links show Access Logs. The Coming Soon switch maps to the
+`publicationState` enum, and new links start as Published. Keep the shared
+copy/save/delete actions outside the tabs so unsaved changes from either form
+tab are saved together. Mount the fixed-user access-log view only after its tab
+is selected, and include child folders so visits made through the link's
+accessible subtree are not omitted. Keep folder-management tab
 state mounted while switching tabs, but mount the folder-wide Access Logs view
 only while its route tab is active; otherwise that hidden panel preloads access
 logs before the editor's Access Logs tab is opened.
+The Coming Soon message textarea uses the gallery catalog's translated default
+as its placeholder. A blank stored message renders that default on the waiting
+page; custom text replaces it. Do not save the default sentence as user content,
+because that would freeze its language and wording for the link.
+The `tcm` CSS module type generator emits a trailing blank line in each
+`*.module.css.d.ts` file. Keep its generated output so `css:types:check` passes;
+when reviewing a newly added type file, use
+`git -c core.whitespace=-blank-at-eof diff --cached --check` to check the rest
+of the staged diff without flagging that generator-owned line.
 
 Public-link galleries integrate View, Sort, and Filter into the folder-header
 action group alongside icon-only Activity and the primary Download action. Do
@@ -1058,6 +1069,13 @@ Public-link expiry discovered by a downstream GraphQL request must return to
 global error exchange publishes a typed public-link access incident; the gate
 pauses downstream queries, refreshes `publicLinkInfo`, and owns the initial-load
 and mid-session expired presentation consistently.
+The gate's `useQuery` uses `suspense: false` because it renders its own initial
+loader. An expiry incident reexecutes that mounted query with `network-only`
+and clears the incident only after its fetch completes. Do not replace that
+path with an independent `client.query(...).toPromise()` call: the public-link
+browser smoke test can remain on the expired screen without sending a refresh
+request. The test also holds the refresh while an admin extends the link, so
+the expired screen must remain visible until that response arrives.
 
 When adding a visual branding field, also add it to the hand-built `brandingKey`
 in `ViewFolder.tsx`. That key controls when `applyBrandingDefaults` is recomputed;
@@ -1073,6 +1091,11 @@ Branding `headingAlignment` is intentionally limited to `left` and `center` in t
 `headingAlignment` only takes effect from the tablet breakpoint up. On mobile the folder header always centers its title, subtitle, and actions because left/right alignment looks awkward at phone widths.
 
 The mobile app has no branding editor, so it does not use `themeModeAtom` and may read branding from GraphQL data directly.
+
+Branding presets store `logoUrl` and expose it through GraphQL, but the web
+gallery currently does not render it. The Branding form accepts a URL only;
+there is no logo upload flow. Check both the data path and a visual consumer
+before describing logo display as an existing feature.
 
 ### Context Gating
 

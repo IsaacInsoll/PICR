@@ -16,6 +16,10 @@ export type PublicLinkAuthOutcome =
       user: UserFields;
     }
   | {
+      status: 'coming_soon';
+      user: UserFields;
+    }
+  | {
       status: 'rejected';
       reason: PublicLinkRejectionReason;
       user?: UserFields;
@@ -42,6 +46,10 @@ export const classifyPublicLink = (
     normalizeGalleryPasscode(galleryPasscode) !== requiredPasscode
   ) {
     return { status: 'passcode_required', user };
+  }
+
+  if (user.publicationState === 'coming_soon') {
+    return { status: 'coming_soon', user };
   }
 
   return {

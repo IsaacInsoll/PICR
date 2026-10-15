@@ -98,8 +98,50 @@ test('admin login renders the dashboard and a folder view with no browser/runtim
   await expect(
     page.getByRole('dialog', { name: /Manage Folder:/ }),
   ).toHaveCount(0);
-  await expect(newLinkDialog.getByRole('tab')).toHaveCount(0);
+  await expect(newLinkDialog.getByRole('tab', { name: 'Link' })).toBeVisible();
+  await expect(
+    newLinkDialog.getByRole('tab', { name: 'Coming Soon', exact: true }),
+  ).toBeVisible();
+  await expect(
+    newLinkDialog.getByRole('tab', { name: 'Access Logs' }),
+  ).toHaveCount(0);
   await newLinkDialog.getByLabel('Name').fill('Toolbar Test Link');
+  await newLinkDialog
+    .getByRole('tab', { name: 'Coming Soon', exact: true })
+    .click();
+  const comingSoonSwitch = newLinkDialog.getByRole('switch', {
+    name: 'Enable Coming Soon mode',
+  });
+  await expect(comingSoonSwitch).not.toBeChecked();
+  await comingSoonSwitch.check();
+  const messageInput = newLinkDialog.getByLabel('Message for visitors');
+  const defaultMessage =
+    'The moments are being prepared. Please check back soon.';
+  await expect(messageInput).toHaveAttribute('placeholder', defaultMessage);
+  await newLinkDialog
+    .getByRole('button', { name: 'Preview waiting page' })
+    .click();
+  const waitingPreview = page.getByRole('dialog', {
+    name: 'Preview waiting page',
+  });
+  await expect(waitingPreview.getByText(defaultMessage)).toBeVisible();
+  await waitingPreview.getByRole('button', { name: 'Close' }).click();
+  await messageInput.fill('Your photos are coming shortly.');
+  await newLinkDialog
+    .getByRole('button', { name: 'Preview waiting page' })
+    .click();
+  await expect(
+    waitingPreview.getByText('Your photos are coming shortly.'),
+  ).toBeVisible();
+  await expect(waitingPreview.getByText(defaultMessage)).toHaveCount(0);
+  await waitingPreview.getByRole('button', { name: 'Close' }).click();
+  await messageInput.clear();
+  await newLinkDialog.getByRole('tab', { name: 'Link' }).click();
+  await newLinkDialog
+    .getByRole('tab', { name: 'Coming Soon', exact: true })
+    .click();
+  await expect(comingSoonSwitch).toBeChecked();
+  await comingSoonSwitch.uncheck();
   await newLinkDialog.getByRole('button', { name: 'Create Link' }).click();
   await expect(newLinkDialog).toHaveCount(0);
   await page.waitForURL(new RegExp(`/admin/f/${photoFolderId}$`));
@@ -127,7 +169,10 @@ test('admin login renders the dashboard and a folder view with no browser/runtim
   await page.waitForURL(new RegExp(`/admin/f/${photoFolderId}$`));
   await testLinkAvatar.click();
 
-  await expect(editLinkDialog.getByRole('tab', { name: 'Edit' })).toBeVisible();
+  await expect(editLinkDialog.getByRole('tab', { name: 'Link' })).toBeVisible();
+  await expect(
+    editLinkDialog.getByRole('tab', { name: 'Coming Soon', exact: true }),
+  ).toBeVisible();
   await expect(
     editLinkDialog.getByRole('tab', { name: 'Access Logs' }),
   ).toBeVisible();

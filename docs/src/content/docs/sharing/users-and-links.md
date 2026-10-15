@@ -55,9 +55,22 @@ Each link has:
 - **Passcode** — optional extra prompt before the gallery loads
 - **Expiration** — optional date and time after which PICR rejects the link
 - **Link mode** — final delivery or proofs only
+- **Coming Soon mode** — optional waiting page before publication
 - **Review permissions** — none, read, or edit
 
 The recipient name matters even when several links point to the same folder: it lets access logs and notifications identify which link was used.
+
+## Share a gallery before the photos are ready
+
+Create the gallery folder and a public link. Links are published by default, so open the link editor's **Coming Soon** tab and turn on **Enable Coming Soon mode** before sharing its URL or QR code. Save the link to apply the change. Visitors then see a branded waiting page instead of the folder contents. Leave the message field blank to show the translated default text, or write your own message in its place. You can also add an optional estimated delivery date and time. The estimate appears in each visitor's local time with a countdown; seconds appear during the final 24 hours.
+
+**Coming Soon stays on until you publish the link yourself.** Uploading photos and reaching the estimated time do not open the gallery. If the estimate passes, the page asks visitors to check back. Once the photos are ready, turn off **Enable Coming Soon mode** and save. An open waiting page checks periodically and can also be refreshed by its visitor.
+
+Publication is set per public link. Other links to the same folder can remain published. Coming Soon does not change the selected final-delivery or proofs-only mode, passcode, expiry, or review permissions. A passcode is requested before the waiting page shows the gallery's details. Disabled and expired links still show their usual unavailable or expired screens.
+
+:::caution[Previously shared media URLs]
+Coming Soon blocks gallery and file API access through that public link. It cannot retract an independent media URL that someone already obtained. Use an empty folder and set Coming Soon before sharing the link when photos must remain unseen until release.
+:::
 
 ## One link per recipient
 

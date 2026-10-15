@@ -11,6 +11,9 @@ export const userFragment = gql(/* GraphQL */ `
     lastAccess
     commentPermissions
     linkMode
+    publicationState
+    estimatedDeliveryAt
+    comingSoonMessage
     hasGalleryPasscode
     galleryPasscode
     expiresAt

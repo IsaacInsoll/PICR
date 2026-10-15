@@ -46,6 +46,12 @@ export const linkModeOptions = [
 ] as const;
 export const linkModeEnum = pgEnum('link_mode', linkModeOptions);
 
+export const linkPublicationOptions = ['coming_soon', 'published'] as const;
+export const linkPublicationEnum = pgEnum(
+  'link_publication',
+  linkPublicationOptions,
+);
+
 export const primaryColorOptions = [
   'blue',
   'cyan',

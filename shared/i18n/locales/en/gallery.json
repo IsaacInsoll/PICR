@@ -324,5 +324,18 @@
     "feed": "Feed",
     "gallery": "Gallery",
     "list": "List"
+  },
+  "comingSoon": {
+    "defaultTitle": "Photos are on their way",
+    "eyebrow": "Coming Soon",
+    "description": "The moments are being prepared. Please check back soon.",
+    "estimatedDelivery": "Estimated delivery",
+    "timeRemaining": "Time remaining",
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "checkBack": "The estimate has passed. Please check back soon.",
+    "checkNow": "Check for photos"
   }
 }

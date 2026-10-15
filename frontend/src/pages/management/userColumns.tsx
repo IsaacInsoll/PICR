@@ -11,7 +11,11 @@ import { Badge, Group, Stack, Text } from '@mantine/core';
 import { ViewFolderButton } from '../../components/ViewFolderButton';
 import { BooleanIcon } from './BooleanIcon';
 import { LinkModeChip } from '../../components/LinkModeChip';
-import { CommentPermissions, LinkMode } from '@shared/gql/graphql';
+import {
+  CommentPermissions,
+  LinkMode,
+  LinkPublicationState,
+} from '@shared/gql/graphql';
 import { PicrAvatar } from '../../components/PicrAvatar';
 import { DateDisplay } from '../../components/FileListView/Filtering/PrettyDate';
 import type { AdminT } from '../../i18n/adminLabels';
@@ -94,6 +98,21 @@ export const publicLinkColumns = (
       <LinkModeChip linkMode={value ?? LinkMode.FinalDelivery} />
     ),
   }),
+  userColumn.accessor('publicationState', {
+    header: t('links.editor.publication', { ns: 'admin' }),
+    minWidth: 115,
+    cell: ({ value }) => (
+      <Badge
+        size="sm"
+        color={value === LinkPublicationState.ComingSoon ? 'violet' : 'green'}
+        variant="light"
+      >
+        {value === LinkPublicationState.ComingSoon
+          ? t('links.editor.comingSoon', { ns: 'admin' })
+          : t('links.editor.published', { ns: 'admin' })}
+      </Badge>
+    ),
+  }),
   userColumn.accessor('hasGalleryPasscode', {
     header: t('links.columns.passcode', { ns: 'admin' }),
     maxWidth: 90,
@@ -136,6 +155,7 @@ export const userSearchText = (
     user.hasGalleryPasscode ? 'passcode password protected' : 'no passcode',
     user.commentPermissions,
     user.linkMode,
+    user.publicationState,
     status,
     translatedStatus,
     user.hasGalleryPasscode
