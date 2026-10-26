@@ -800,6 +800,14 @@ frontend `srcset` selection.
 - Existing decoded cache hits are trusted by existence, like generated
   thumbnails. New decoded intermediates must be validated before the atomic
   rename into the cache.
+- Decoder failures are memoized in `ensureDecodedImage.ts` by file ID, content
+  hash, and decoder for the lifetime of the process. Fixing a source file's
+  permissions can make a fresh ExifTool invocation succeed while PICR still
+  rejects the same decode key. Restart PICR to clear that failed-decode cache,
+  then rescan the affected folder for recovery. Do not diagnose this persistence
+  as proof that the permission repair failed. For NAS source-read problems,
+  compare effective reads as the container's normal user before/after a targeted
+  NAS permission/ACL repair; mode bits alone do not establish effective ACL access.
 - RAW embedded previews may omit the source file's EXIF Orientation tag. Copy
   only that tag from the RAW into the temporary JPEG, validate the preview, then
   promote it without modifying the original RAW. Preview extraction tries
