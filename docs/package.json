@@ -12,7 +12,7 @@
   "dependencies": {
     "@astrojs/starlight": "0.41.10",
     "@fontsource/signika": "5.3.0",
-    "astro": "7.2.10"
+    "astro": "7.4.4"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
