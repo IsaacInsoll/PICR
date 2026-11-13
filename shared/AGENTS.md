@@ -1,5 +1,10 @@
 # Shared Module Development Guide
 
+GraphQL Codegen's client preset emits `/* eslint-disable */` in generated files,
+including the barrel in `gql/index.ts`. The generated-directory ESLint override
+allows unused disable comments; keep that exception scoped to `gql/**/*.ts`
+and regenerate with `npm run gql` instead of stripping generated headers.
+
 Code shared between `frontend` (React web) and `app` (React Native). Contains GraphQL operations, utilities, and types.
 
 Originally everything was in `frontend`. Now that we have an `app` that is very similar (IE: client for the backend) we move stuff that is shared between both to `/shared`

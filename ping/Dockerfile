@@ -1,4 +1,4 @@
-FROM node:24.13.0-alpine AS build
+FROM node:24.22.3-alpine AS build
 
 WORKDIR /build
 
@@ -15,7 +15,9 @@ COPY ping/src ./ping/src
 
 RUN cd ping && npm run build
 
-FROM node:24.13.0-alpine
+FROM node:24.22.3-alpine
+
+RUN apk upgrade --no-cache
 
 LABEL org.opencontainers.image.source=https://github.com/isaacinsoll/picr
 ARG PICR_GIT_SHA
@@ -28,6 +30,9 @@ WORKDIR /home/node/app
 COPY ping/package.json ping/package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build --chown=node:node /build/ping/dist ./dist
+
+# npm is only needed to install dependencies, not to run the sidecar.
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 ENV NODE_ENV=production
 ENV PICR_PING_VERSION=$PICR_PING_VERSION

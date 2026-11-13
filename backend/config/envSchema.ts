@@ -62,8 +62,8 @@ const optionalOnViewScanMode = z.preprocess(
 export const envSchema = z.object({
   DATABASE_URL: z
     .string({
-      description: 'Postgres Database URL',
-      required_error: 'DATABASE_URL is required',
+      error: (issue) =>
+        issue.input === undefined ? 'DATABASE_URL is required' : undefined,
     })
     .url({ message: 'DATABASE_URL is not a URL' })
     .min(3),
@@ -71,18 +71,17 @@ export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
 
   PORT: z.coerce
-    .number({
-      description:
-        '.env files convert numbers to strings, therefoore we have to enforce them to be numbers',
-    })
+    .number()
     .positive()
     .max(65536, `options.port should be >= 0 and < 65536`)
     .default(6900),
 
   BASE_URL: z
     .string({
-      description: 'Base URL',
-      required_error: 'BASE_URL is required (EG: https://picr.mysite.com)',
+      error: (issue) =>
+        issue.input === undefined
+          ? 'BASE_URL is required (EG: https://picr.mysite.com)'
+          : undefined,
     })
     .url()
     .endsWith('/', { message: 'BASE_URL must end with trailing /' })
@@ -119,12 +118,7 @@ export const envSchema = z.object({
   POLLING_SECONDS: optionalPositiveNumber,
   POLLING_INTERVAL: optionalPositiveNumber,
 
-  TOKEN_SECRET: z
-    .string({
-      description: 'TOKEN_SECRET',
-    })
-    .min(64)
-    .optional(),
+  TOKEN_SECRET: z.string().min(64).optional(),
   PICR_PING_TOKEN: z.preprocess(
     (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),
     z

@@ -508,6 +508,33 @@ npm run release:ping -- patch # Ping preflight + version bump + commit; image pu
 
 ### Dependabot Configuration
 
+For a repository-wide security review, audit all seven tracked lockfiles: root,
+backend, frontend, shared, app, ping, and docs. Use
+`npm audit --package-lock-only --json --prefix <directory>` to inspect committed
+dependency resolutions without installing or changing them. Audit totals include
+affected parent packages and repeated dependencies across lockfiles; they are not
+counts of independent vulnerabilities or proof of production exploitability.
+Check lockfile development flags and actual call sites before assigning runtime
+impact. Review `fixAvailable` suggestions manually: npm can propose old major
+versions (including Expo, Jest, Drizzle Kit, and TypeScript ESLint downgrades)
+when a transitive fix cannot be resolved within the current dependency tree.
+Do not apply those suggestions blindly with `npm audit fix --force`.
+
+Security overrides are scoped to reviewed callers rather than applied globally:
+TypeScript ESLint and GraphQL Config use minimatch's public matching function,
+and readdir-glob uses `Minimatch.match`; these support minimatch 11. Do not force
+minimatch 11 into older Glob versions, which use removed regexp/parser APIs.
+Frontend typed-css-modules uses Glob's promise API and can use Glob 14. Root
+release tooling's get-uri uses basic-ftp's Client API; its v6 security default
+rejects separate FTP transfer hosts. Recheck these callers and remove overrides
+when their upstream packages adopt patched dependencies.
+
+Backend and Ping use Zod 4. Read validation errors from `.issues`, not `.errors`;
+use an `error` callback for missing-value messages instead of `required_error`.
+When changing schemas, test environment defaults/coercion and optional empty
+values as well as invalid requests, because Zod major updates change defaults
+and collection validation order.
+
 Dependabot's `cooldown` option is ecosystem-specific. GitHub currently rejects
 `cooldown.semver-major-days` for `package-ecosystem: github-actions`; keep
 cooldowns on the npm update entries rather than copying them into the Actions

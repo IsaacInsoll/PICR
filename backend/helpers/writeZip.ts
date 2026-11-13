@@ -1,4 +1,4 @@
-import archiver from 'archiver';
+import { ZipArchive } from 'archiver';
 import { randomUUID } from 'node:crypto';
 import { createWriteStream } from 'node:fs';
 import { mkdir, rename, rm } from 'node:fs/promises';
@@ -20,7 +20,7 @@ export const writeZip = async (
 ) => {
   await mkdir(dirname(path), { recursive: true });
   const temporaryPath = `${path}.${randomUUID()}.partial`;
-  const archive = archiver('zip', {
+  const archive = new ZipArchive({
     // Gallery media is already compressed. STORE avoids spending CPU on a
     // second compression pass and preserves each original byte-for-byte.
     store: true,

@@ -15,27 +15,27 @@
   "author": "Isaac Insoll",
   "license": "ISC",
   "dependencies": {
-    "archiver": "^7.0.1",
+    "archiver": "^8.0.0",
     "blurhash": "^2.0.5",
     "chokidar": "^5",
-    "compression": "^1.8.1",
+    "compression": "^1.8.2",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.45.2",
     "exif-reader": "^2.0.3",
     "expo-server-sdk": "^4.0.0",
     "express": "^5.2.1",
-    "fast-xml-parser": "^5.10.1",
+    "fast-xml-parser": "^5.12.0",
     "graphql": "^16.14.2",
     "graphql-http": "^1.23.0",
-    "graphql-scalars": "^1.25.0",
+    "graphql-scalars": "^2.0.1",
     "join-images": "^1.1.5",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.23",
     "semver": "^7.7.1",
-    "sharp": "^0.35.3",
+    "sharp": "^0.35.5",
     "winston": "^3.19",
     "yauzl": "^3.4.0",
-    "zod": "^3.24.3"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
@@ -45,7 +45,7 @@
     "@graphql-codegen/introspection": "^6.1.0",
     "@graphql-codegen/schema-ast": "^6.1.0",
     "@graphql-codegen/typescript": "^6.1.0",
-    "@types/archiver": "^6.0.4",
+    "@types/archiver": "^8.0.0",
     "@types/compression": "^1.8.1",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.5",
@@ -62,7 +62,16 @@
   },
   "overrides": {
     "join-images": {
-      "sharp": "^0.35"
+      "sharp": "^0.35.5"
+    },
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "^11.0.8"
+    },
+    "readdir-glob": {
+      "minimatch": "^11.0.8"
+    },
+    "graphql-config": {
+      "minimatch": "^11.0.8"
     }
   }
 }

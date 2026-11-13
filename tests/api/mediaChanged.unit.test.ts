@@ -5,6 +5,7 @@ import {
   authenticatePing,
   createMediaChangedHandler,
   normalisePingPath,
+  PICR_PING_MAX_DIRECTORIES,
   registerMediaChangedRoute,
 } from '../../backend/express/mediaChanged.js';
 import { resetPingAuthRateLimitForTests } from '../../backend/express/pingAuthRateLimit.js';
@@ -107,6 +108,22 @@ test.each(['../escape', '/absolute', 'bad\\path', 'bad\0path', 'a//b'])(
     expect(coordinator.enqueueDirectories).not.toHaveBeenCalled();
   },
 );
+
+test('oversized batches are rejected before validating individual paths', async () => {
+  const directories = new Array<string>(PICR_PING_MAX_DIRECTORIES + 1);
+  const readPath = vi.fn(() => 'Archive/Studio/valid');
+  Object.defineProperty(directories, 0, { get: readPath });
+  const { coordinator, response } = await runHandler({
+    ...basePayload(),
+    directories,
+    reconcile: false,
+  });
+
+  expect(response.statusCode).toBe(400);
+  expect(response.body).toMatchObject({ code: 'INVALID_PAYLOAD' });
+  expect(readPath).not.toHaveBeenCalled();
+  expect(coordinator.enqueueDirectories).not.toHaveBeenCalled();
+});
 
 test('accepts spaces and Unicode while counting ignored directories separately', async () => {
   const { coordinator, response } = await runHandler({

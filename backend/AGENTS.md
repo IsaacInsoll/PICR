@@ -321,6 +321,12 @@ extraction dependencies that are unrelated to calculating folder sizes.
 
 ### ZIP Extraction
 
+ZIP creation uses Archiver 8's named `ZipArchive` export with
+`new ZipArchive(options)`. The old default `archiver('zip', options)` factory is
+not available in v8. Preserve the atomic publication and failure cleanup in
+`helpers/writeZip.ts`; its unit tests cover STORE/ZIP64 output, missing sources,
+destination failures, and publication timing.
+
 The benchmark asset setup uses `backend/helpers/extractZip.ts`, a small ZIP-only
 extractor around `yauzl`, instead of broad archive extraction packages. Keep it
 policy-controlled: validate paths after any strip-components handling, stream

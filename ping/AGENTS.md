@@ -44,6 +44,11 @@ cd ping && npm test
 Run `npm run build` after runtime or packaging changes. Docker changes additionally require a local
 build-only `docker buildx build`.
 
+For a container smoke test, mount `tests/api/env/media` read-only at `/media`
+and set `DRY_RUN=true`. Do not use `/tmp` as the watch root: Node's compile
+cache can contain root-owned files there from the image build, causing an
+unrelated watcher EACCES failure under the runtime `node` user.
+
 The Docker build context must include `shared/package.json`. With `module: NodeNext`, TypeScript uses
 the nearest package's `type` field to choose ESM or CommonJS emission for imported shared sources.
 

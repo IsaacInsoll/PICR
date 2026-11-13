@@ -1,4 +1,4 @@
-FROM node:24.13.0-alpine
+FROM node:24.22.3-alpine
 LABEL org.opencontainers.image.source=https://github.com/isaacinsoll/picr
 ARG PICR_BUILD_CHANNEL=release
 ARG PICR_DEVELOPMENT_BUILD_SHA
@@ -14,7 +14,8 @@ LABEL org.opencontainers.image.revision=$PICR_GIT_SHA
 # libva-utils = vainfo for troubleshooting) are added on amd64 only: arm64
 # hosts rarely have a usable VAAPI GPU, so they stay byte-for-byte unchanged.
 # Acceleration is still opt-in at runtime (requires /dev/dri + VIDEO_ACCELERATION).
-RUN apk add --no-cache ffmpeg exiftool imagemagick imagemagick-heic && \
+RUN apk upgrade --no-cache && \
+    apk add --no-cache ffmpeg exiftool imagemagick imagemagick-heic && \
     if [ "$TARGETARCH" = "amd64" ]; then \
       apk add --no-cache mesa-va-gallium intel-media-driver libva-utils; \
     fi
@@ -25,10 +26,15 @@ WORKDIR /home/node/app
 # Install dependencies first so this layer caches independently of app code.
 # Only package*.json invalidates it, not every code change.
 COPY --chown=node:node ./dist/package.json ./dist/package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev && npm cache clean --force
 # Then copy the rest of the build. dist/node_modules is excluded via
 # .dockerignore so this COPY can't clobber the Alpine install above.
 COPY --chown=node:node ./dist ./
+
+# Runtime starts with node directly. Do not ship npm's separate dependency tree.
+USER root
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
+USER node
 
 ENV NODE_ENV=production
 ENV UV_THREADPOOL_SIZE=8

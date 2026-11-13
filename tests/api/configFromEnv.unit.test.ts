@@ -11,6 +11,44 @@ const requiredEnv = {
   DATABASE_URL: 'postgres://user:pass@localhost:5432/picr',
 };
 
+test('environment defaults preserve optional credentials and boolean settings', () => {
+  const parsed = envSchema.parse(requiredEnv);
+  expect(parsed).toMatchObject({
+    PORT: 6900,
+    NODE_ENV: 'production',
+    LOGIN_RATE_LIMIT_ENABLED: true,
+    CAN_WRITE: false,
+    DEBUG_SQL: false,
+  });
+  expect(parsed.ADMIN_PASSWORD).toBeUndefined();
+  expect(parsed.PICR_PING_TOKEN).toBeUndefined();
+  expect(parsed.THUMBNAIL_WORKERS).toBeUndefined();
+});
+
+test.each([
+  ['false', false],
+  ['0', false],
+  ['true', true],
+  ['1', true],
+  ['yes', true],
+])('boolean environment value %s retains its coercion', (value, expected) => {
+  expect(envSchema.parse({ ...requiredEnv, CAN_WRITE: value }).CAN_WRITE).toBe(
+    expected,
+  );
+});
+
+test('missing required environment variables retain actionable errors', () => {
+  const parsed = envSchema.safeParse({});
+  expect(parsed.success).toBe(false);
+  if (parsed.success) throw new Error('Missing configuration was accepted');
+  expect(parsed.error.issues.map((issue) => issue.message)).toEqual(
+    expect.arrayContaining([
+      'DATABASE_URL is required',
+      'BASE_URL is required (EG: https://picr.mysite.com)',
+    ]),
+  );
+});
+
 test('FILE_WATCHER overrides legacy USE_POLLING mode selection', () => {
   expect(resolveFileWatcherMode('off', true)).toBe('off');
   expect(resolveFileWatcherMode('native', true)).toBe('native');

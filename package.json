@@ -78,10 +78,13 @@
     "semver": "^7.8.5",
     "typescript": "^6.0.3",
     "urql": "^5.0.4",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.12"
   },
   "overrides": {
-    "lodash": "^4.18.1"
+    "lodash": "^4.18.1",
+    "get-uri": {
+      "basic-ftp": "^6.2.6"
+    }
   },
   "release-it": {
     "npm": {
@@ -105,6 +108,6 @@
   "author": "Isaac Insoll",
   "license": "ISC",
   "engines": {
-    "node": "24.13.0"
+    "node": "24.22.3"
   }
 }

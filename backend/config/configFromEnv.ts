@@ -19,7 +19,7 @@ export const configFromEnv = () => {
   const env = envSchema.safeParse(process.env);
   if (!env.success) {
     process.stderr.write('\n⚠️ Environment (ENV) Misconfiguration\n\n');
-    env.error.errors.forEach(({ message }) =>
+    env.error.issues.forEach(({ message }) =>
       process.stderr.write(`\t${message}\n\n`),
     );
     process.stderr.write(

@@ -46,6 +46,9 @@ export default tseslint.config(
   },
   {
     files: ['gql/**/*.ts'],
+    // The client preset emits blanket disable comments, including in barrels
+    // with no lint violations. Keep handwritten files strict.
+    linterOptions: { reportUnusedDisableDirectives: 'off' },
     rules: {
       'no-restricted-syntax': 'off',
     },

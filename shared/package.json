@@ -32,5 +32,10 @@
     "react": "^19",
     "urql": "^5.0.3",
     "wonka": "^6.3.6"
+  },
+  "overrides": {
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "^11.0.8"
+    }
   }
 }
