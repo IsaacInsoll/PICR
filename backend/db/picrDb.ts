@@ -24,10 +24,12 @@ export let db: NodePgDatabase<typeof schema>;
 export const initDb = () => {
   const url = process.env['DATABASE_URL'];
   if (!url) throw new Error('DATABASE_URL environment variable is required');
-  db = drizzle(url, {
+  const database = drizzle(url, {
     schema,
     logger: picrConfig.debugSql,
   });
+  db = database;
+  return database.$client;
   // console.log('🚀 Connected to Database');
 };
 
@@ -71,12 +73,16 @@ export const dbUserForId = async (
 
 // TODO: better organisation of these functions
 
-export const getServerOptions = async (): Promise<ServerOptionsFields> => {
-  const opts = await db.query.dbServerOptions.findFirst({
+export type ServerOptionsExecutor = Pick<typeof db, 'query' | 'insert'>;
+
+export const getServerOptions = async (
+  executor: ServerOptionsExecutor = db,
+): Promise<ServerOptionsFields> => {
+  const opts = await executor.query.dbServerOptions.findFirst({
     where: ({ id }, { eq }) => eq(id, 1),
   });
   if (!opts) {
-    return db
+    return executor
       .insert(dbServerOptions)
       .values({
         id: 1,

@@ -284,6 +284,12 @@ await SecureStore.setItemAsync('token', jwtToken);
 
 ### Auth Context (`PicrUserProvider`)
 
+`useLoginDetails.ts` currently persists the password alongside the token in
+SecureStore. On startup, `PicrUserProvider` calls `appLogin` with those stored
+credentials even if a token exists, and logs out if that login fails. Changes to
+admin authentication (including 2FA) must account for this startup login as well
+as the visible login form; changing only the form leaves startup incompatible.
+
 ```typescript
 // Wraps authenticated routes
 // Loads credentials from device

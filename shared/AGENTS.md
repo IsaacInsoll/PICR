@@ -142,6 +142,12 @@ Auth error metadata is shared across backend, frontend, and app:
   wrong-type links to a generic unavailable state. Expiry is the deliberate
   exception because it supports actionable client messaging.
 
+Admin session/TOTP endpoints use the separate HTTP contract in
+`shared/auth/adminAuth.ts`. Their typed error codes are local form feedback,
+not GraphQL global-overlay reasons. Keep browser refresh cookies and native
+SecureStore handling in their owning clients; public galleries do not consume
+these endpoints.
+
 ## PICR Ping Protocol Contract
 
 `shared/ping/protocol.ts` owns the stable wire limits and path primitives used

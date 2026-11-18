@@ -118,3 +118,9 @@ If an application upgrade fails:
 :::danger[Protect the only production copy]
 Never test a questionable downgrade against the only copy of production data.
 :::
+
+## Administrator 2FA encryption key
+
+If you enable administrator two-factor authentication, back up the value of `MFA_ENCRYPTION_KEY` or the file referenced by `MFA_ENCRYPTION_KEY_FILE` alongside the database. Preserve it across upgrades and container replacements. The database alone cannot restore authenticator verification without the same key. See [Account security](../account-security/).
+
+Downgrading to a version without administrator 2FA restores its password-only authentication behavior, even if 2FA was required in the newer version. PICR does not block that rollback. Update the companion app to use renewable sessions and 2FA; existing password-only app logins retain a 28-day lifetime.

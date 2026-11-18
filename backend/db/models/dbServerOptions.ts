@@ -15,6 +15,7 @@ export const dbServerOptions = pgTable('ServerOptions', {
   ...baseColumns,
   lastBootedVersion: varchar('lastBootedVersion', { length: 255 }),
   minimumPicrVersion: varchar('minimumPicrVersion', { length: 255 }),
+  requireAdminMfa: boolean('requireAdminMfa').notNull().default(false),
   tokenSecret: varchar('tokenSecret', { length: 255 }),
   // Legacy thumbnail columns retained for upgrade compatibility; AVIF behavior
   // is disabled at the application layer.

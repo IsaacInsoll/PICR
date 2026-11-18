@@ -1,3 +1,4 @@
+import { configureMfaEncryption } from '../auth/mfaCrypto.js';
 import { config } from 'dotenv';
 import { existsSync, readFileSync } from 'node:fs';
 import { addDevLogger, log } from '../logger.js';
@@ -118,6 +119,7 @@ export const configFromEnv = () => {
     addDevLogger();
   }
   Object.assign(picrConfig, c);
+  configureMfaEncryption(d.MFA_ENCRYPTION_KEY, d.MFA_ENCRYPTION_KEY_FILE);
 
   if (d.CAN_WRITE && !writeProbe.canWrite) {
     log('warn', buildCanWriteWarning(mediaPath, writeProbe), true);

@@ -83,6 +83,10 @@ export default defineConfig({
           label: 'Operations',
           items: [
             {
+              slug: 'operations/account-security',
+              label: 'Account security and 2FA',
+            },
+            {
               slug: 'operations/scanning',
               label: 'Scan your media library',
             },

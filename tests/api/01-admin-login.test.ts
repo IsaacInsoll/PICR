@@ -21,6 +21,12 @@ test('Login Mutation Works', async () => {
   const auth = result.data?.auth;
   expect(auth).not.toBe('');
   expect(auth?.startsWith('ey')).toBe(true); //valid JWT starts with `ey`
+  const claims = JSON.parse(
+    Buffer.from(auth?.split('.')[1] ?? '', 'base64url').toString('utf8'),
+  );
+  expect(claims.exp - claims.iat).toBeGreaterThanOrEqual(28 * 24 * 60 * 60 - 2);
+  expect(claims.exp - claims.iat).toBeLessThanOrEqual(28 * 24 * 60 * 60);
+  expect(claims.hashedPassword).toBeUndefined();
 });
 
 test('Incorrect Login Fails', async () => {

@@ -28,7 +28,8 @@ import {
   UserSettingsIcon,
 } from '../../PicrIcons';
 import { atom, useSetAtom, useAtom } from 'jotai';
-import { authKeyAtom } from '../../atoms/authAtom';
+import { logoutAdmin } from '../../helpers/adminSession';
+import { notifications } from '@mantine/notifications';
 import type { FolderNavigationTarget } from '@shared/types/ui';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { PicrMenuItem } from '../PicrLink';
@@ -193,10 +194,16 @@ const RightSide = ({ me }: { me: MeUser }) => {
 };
 
 const useLogout = () => {
-  const setAuthKey = useSetAtom(authKeyAtom);
+  const { t } = useTranslation('admin');
   return () => {
-    setAuthKey('');
-    window.location.reload();
+    void logoutAdmin()
+      .then(() => window.location.reload())
+      .catch(() =>
+        notifications.show({
+          color: 'red',
+          message: t('security.error.network_error'),
+        }),
+      );
   };
 };
 

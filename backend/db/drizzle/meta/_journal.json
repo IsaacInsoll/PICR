@@ -204,6 +204,13 @@
       "when": 1792063835244,
       "tag": "0028_link-publication",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1794979381355,
+      "tag": "0029_admin-two-factor-sessions",
+      "breakpoints": true
     }
   ]
 }

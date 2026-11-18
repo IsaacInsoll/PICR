@@ -38,7 +38,8 @@ export const DevBackendOverrideBanner = () => {
         </Text>
         <Code>{labelForUrl(devBackendOverrideUrl)}</Code>
         <Text c="dimmed" size="sm">
-          GraphQL mutations other than login are blocked by the dev proxy.
+          Security changes and GraphQL mutations other than login are blocked by
+          the dev proxy.
         </Text>
         <Anchor href={devBackendOverrideUrl} size="sm" target="_blank">
           Open

@@ -1,89 +1,224 @@
 import { useState } from 'react';
-import { useMutation } from 'urql';
-import { useSetAtom } from 'jotai';
-import { authKeyAtom } from '../atoms/authAtom';
-import { loginMutation } from '@shared/urql/mutations/loginMutation';
+import { useMediaQuery } from '@mantine/hooks';
 import type { MantineStyleProp } from '@mantine/core';
 import {
+  Alert,
+  Anchor,
   Button,
-  Center,
-  Container,
   Group,
   Image,
   Paper,
   PasswordInput,
+  PinInput,
   Stack,
   Text,
   TextInput,
+  ThemeIcon,
+  Title,
 } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-// Language switcher soft-disabled (#84) — restore alongside the JSX below.
-// import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
+import { MdLockOutline, MdVerifiedUser } from 'react-icons/md';
+import { acceptAdminSession, authRequest } from '../helpers/adminSession';
+import type { AdminAuthResult } from '@shared/auth/adminAuth';
+import { AuthenticatorEnrollment } from './management/AuthenticatorEnrollment';
+import { authErrorKey } from '../helpers/authErrorKey';
+import classes from './LoginForm.module.css';
 
 export const LoginForm = () => {
   const { t } = useTranslation('admin');
+  const compact = useMediaQuery('(max-width: 360px)');
   const [user, setUser] = useState('');
-  const [pass, setPass] = useState('');
-  const [fail, setFail] = useState(false);
-  const [, mutate] = useMutation(loginMutation);
-  const set = useSetAtom(authKeyAtom);
-
-  const doLogin = (e: React.FormEvent) => {
-    void mutate({ username: user, password: pass }).then((result) => {
-      const token = result.data?.auth ?? '';
-      set(token);
-      setFail(token === '');
-    });
-    e.preventDefault();
+  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const [recovery, setRecovery] = useState(false);
+  const [challenge, setChallenge] = useState<Extract<
+    AdminAuthResult,
+    { challenge: string }
+  > | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const submit = async () => {
+    if (busy) return;
+    setBusy(true);
+    setError('');
+    try {
+      const result = challenge
+        ? await authRequest<AdminAuthResult>('verify', {
+            challenge: challenge.challenge,
+            code,
+          })
+        : await authRequest<AdminAuthResult>('login', {
+            username: user,
+            password,
+          });
+      setPassword('');
+      if (result.status === 'authenticated') acceptAdminSession(result);
+      else setChallenge(result);
+    } catch (error) {
+      setError(t(authErrorKey(error)));
+      setCode('');
+    } finally {
+      setBusy(false);
+    }
   };
-
+  if (challenge?.status === 'enrollment_required')
+    return (
+      <div className={classes.screen}>
+        <Paper
+          p={{ base: 'lg', sm: 'xl' }}
+          radius="lg"
+          withBorder
+          className={classes.card}
+        >
+          <AuthenticatorEnrollment
+            challenge={challenge.challenge}
+            onCancel={() => setChallenge(null)}
+          />
+        </Paper>
+      </div>
+    );
   return (
-    <>
-      <Center style={{ height: '100vh' }}>
-        <Container size="md">
-          <Paper radius="md" p="xl" withBorder>
-            <Group justify="space-between" align="flex-start" mb="lg">
-              <Text size="lg" fw={500}>
-                {t('login.title')}
+    <div className={classes.screen}>
+      <Paper
+        p={{ base: 'lg', sm: 'xl' }}
+        radius="lg"
+        withBorder
+        className={classes.card}
+      >
+        <Stack gap="lg">
+          <Group justify="space-between">
+            <PicrLogo style={{ width: 36 }} />
+            <Text size="sm" c="dimmed">
+              {t('security.photographerAccess')}
+            </Text>
+          </Group>
+          <Stack gap="xs" align="center">
+            <ThemeIcon size={56} radius="xl" variant="light">
+              {challenge ? (
+                <MdVerifiedUser size={28} />
+              ) : (
+                <MdLockOutline size={28} />
+              )}
+            </ThemeIcon>
+            <Title order={2}>
+              {challenge ? t('security.verifyTitle') : t('login.title')}
+            </Title>
+            {challenge ? (
+              <Text c="dimmed" size="sm" ta="center">
+                {recovery
+                  ? t('security.recoveryDescription')
+                  : t('security.verifyDescription')}
               </Text>
-              <Stack align="flex-end" gap="xs">
-                <PicrLogo style={{ width: 32 }} />
-                {/* Language switcher soft-disabled (#84) — it cluttered the login screen. */}
-                {/* <LanguageSwitcher /> */}
-              </Stack>
-            </Group>
-            <form onSubmit={doLogin}>
-              <Stack>
-                <TextInput
-                  required
-                  label={t('login.username')}
-                  value={user}
-                  onChange={(event) => setUser(event.currentTarget.value)}
-                  radius="md"
-                />
-
-                <PasswordInput
-                  required
-                  label={t('login.password')}
-                  placeholder={t('login.passwordPlaceholder')}
-                  value={pass}
-                  onChange={(event) => {
-                    if (fail) setFail(false);
-                    setPass(event.currentTarget.value);
-                  }}
-                  error={fail ? t('login.failed') : undefined}
-                  radius="md"
-                />
-                <Button type="submit">{t('login.submit')}</Button>
-              </Stack>
-            </form>
-          </Paper>
-        </Container>
-      </Center>
-    </>
+            ) : null}
+          </Stack>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void submit();
+            }}
+          >
+            <Stack
+              gap="lg"
+              key={challenge ? String(recovery) : 'password'}
+              className={classes.step}
+            >
+              {challenge ? (
+                recovery ? (
+                  <TextInput
+                    autoFocus
+                    label={t('security.recoveryCode')}
+                    value={code}
+                    onChange={(event) => setCode(event.currentTarget.value)}
+                    autoComplete="off"
+                  />
+                ) : (
+                  <Stack align="center" gap="xs">
+                    <Text size="sm" fw={500}>
+                      {t('security.authenticatorCode')}
+                    </Text>
+                    <PinInput
+                      length={6}
+                      type="number"
+                      oneTimeCode
+                      autoFocus
+                      value={code}
+                      onChange={setCode}
+                      aria-label={t('security.authenticatorCode')}
+                      size={compact ? 'sm' : 'md'}
+                      gap={compact ? 4 : 8}
+                    />
+                  </Stack>
+                )
+              ) : (
+                <>
+                  <TextInput
+                    required
+                    label={t('login.username')}
+                    value={user}
+                    autoComplete="username"
+                    onChange={(event) => setUser(event.currentTarget.value)}
+                  />
+                  <PasswordInput
+                    required
+                    label={t('login.password')}
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(event) => setPassword(event.currentTarget.value)}
+                  />
+                </>
+              )}
+              {error ? (
+                <Alert color="red" role="alert">
+                  {error}
+                </Alert>
+              ) : null}
+              <Button
+                type="submit"
+                size="md"
+                radius="md"
+                loading={busy}
+                disabled={
+                  !!challenge && (recovery ? !code.trim() : code.length !== 6)
+                }
+              >
+                {challenge ? t('security.verify') : t('login.submit')}
+              </Button>
+              {challenge ? (
+                <>
+                  <Anchor
+                    component="button"
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                      setRecovery(!recovery);
+                      setCode('');
+                      setError('');
+                    }}
+                  >
+                    {recovery
+                      ? t('security.useAuthenticator')
+                      : t('security.useRecovery')}
+                  </Anchor>
+                  <Button
+                    variant="subtle"
+                    color="gray"
+                    onClick={() => {
+                      setChallenge(null);
+                      setCode('');
+                      setError('');
+                    }}
+                  >
+                    {t('security.backToLogin')}
+                  </Button>
+                </>
+              ) : null}
+            </Stack>
+          </form>
+        </Stack>
+      </Paper>
+    </div>
   );
 };
-
-export const PicrLogo = ({ style }: { style?: MantineStyleProp }) => {
-  return <Image src="logo192.png" alt="PICR" style={style} />;
-};
+export const PicrLogo = ({ style }: { style?: MantineStyleProp }) => (
+  <Image src="logo192.png" alt="PICR" style={style} />
+);

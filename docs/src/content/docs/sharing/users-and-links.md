@@ -10,6 +10,8 @@ PICR has two customer-facing access types:
 
 Create administrator accounts under **Settings → Admin Users**. Create public links from a folder's **Manage → Links** tab or under **Settings → Public Links**.
 
+Administrator accounts can enable authenticator-app two-factor authentication under **Settings → Security**. See [Account security](../../operations/account-security/) for enrollment, recovery codes, and server-wide requirements.
+
 ## Folder scope
 
 Every account and public link has a home folder. It can access that folder and its descendants, but not its parent or siblings.

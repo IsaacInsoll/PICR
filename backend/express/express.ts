@@ -1,4 +1,5 @@
 import express from 'express';
+import { registerAdminAuthRoutes } from './adminAuth.js';
 import compression from 'compression';
 import { gqlServer } from '../graphql/gqlServer.js';
 import { imageRequest } from './imageRequest.js';
@@ -26,6 +27,7 @@ export const expressServer = () => {
   router.get('/healthz', healthz);
   router.get('/readyz', readyz);
   registerMediaChangedRoute(router);
+  registerAdminAuthRoutes(router);
   router.all('/graphql', (req, res, next) => {
     res.on('finish', () => drainOnViewScanRequests(req));
     return gqlServer(req, res, next);

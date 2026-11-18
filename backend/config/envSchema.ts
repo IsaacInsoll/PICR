@@ -118,6 +118,8 @@ export const envSchema = z.object({
   POLLING_SECONDS: optionalPositiveNumber,
   POLLING_INTERVAL: optionalPositiveNumber,
 
+  MFA_ENCRYPTION_KEY: optionalNonEmptyString,
+  MFA_ENCRYPTION_KEY_FILE: optionalNonEmptyString,
   TOKEN_SECRET: z.string().min(64).optional(),
   PICR_PING_TOKEN: z.preprocess(
     (val) => (typeof val === 'string' && val.trim() === '' ? undefined : val),

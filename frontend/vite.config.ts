@@ -92,6 +92,15 @@ const backendProxyEntry = (
   return {
     target: proxyTargetFromUrl(backendUrl),
     changeOrigin: true,
+    cookiePathRewrite: {
+      [`${backendBasePrefix}/api/auth`]: `${localBasePrefix}/api/auth`,
+    },
+    configure: (proxy) => {
+      proxy.on('proxyReq', (request, incoming) => {
+        if (incoming.headers['origin'])
+          request.setHeader('origin', backendUrl.origin);
+      });
+    },
     rewrite: rewriteToBackendPath(localBasePrefix, backendBasePrefix),
   };
 };
@@ -102,8 +111,8 @@ const backendProxy = (
   includeGraphql: boolean,
 ) => {
   const routes = includeGraphql
-    ? ['/graphql', '/image', '/zip']
-    : ['/image', '/zip'];
+    ? ['/graphql', '/image', '/zip', '/api/auth']
+    : ['/image', '/zip', '/api/auth'];
   const proxy: Record<string, ProxyOptions> = Object.fromEntries(
     routes.map((route) => [route, backendProxyEntry(backendUrl, '')]),
   );
@@ -230,6 +239,24 @@ const createDevBackendOverridePlugin = (
     server.middlewares.use(async (req, res, next) => {
       const rawUrl = req.url ?? '';
       const parsedUrl = new URL(rawUrl, 'http://localhost');
+      const localPath = stripBasePrefix(parsedUrl.pathname, basePrefix);
+      if (localPath.startsWith('/api/auth')) {
+        const allowed = new Set([
+          '/api/auth/login',
+          '/api/auth/verify',
+          '/api/auth/refresh',
+          '/api/auth/logout',
+          '/api/auth/security',
+        ]);
+        if (req.method !== 'POST' || !allowed.has(localPath)) {
+          res.statusCode = 403;
+          res.setHeader('content-type', 'application/json');
+          res.end(JSON.stringify({ error: 'invalid_request' }));
+          return;
+        }
+        next();
+        return;
+      }
       if (!graphqlPaths.has(parsedUrl.pathname)) {
         next();
         return;

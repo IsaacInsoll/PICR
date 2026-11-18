@@ -1,3 +1,4 @@
+import { cleanupAdminAuth } from './auth/adminSessions.js';
 import pkg from './package.json' with { type: 'json' };
 import { fileWatcher } from './filesystem/fileWatcher.js';
 import { setupRootFolder } from './filesystem/events/addFolder.js';
@@ -29,6 +30,15 @@ export const server = async () => {
   if (!rootFolder) throw new Error('Root folder failed to initialize');
   detectInodeSupport();
   await envPassword();
+  const authCleanup = setInterval(
+    () => {
+      void cleanupAdminAuth().catch((error) =>
+        log('error', `Admin auth cleanup failed: ${String(error)}`),
+      );
+    },
+    60 * 60 * 1000,
+  );
+  authCleanup.unref();
   const appName = pkg.name;
   const express = expressServer();
   const httpServer = express.listen(picrConfig.port, () => {
@@ -38,6 +48,7 @@ export const server = async () => {
 
   const gracefulShutdown = (signal: string) => {
     log('info', `${signal} received, shutting down ${appName}...`, true);
+    clearInterval(authCleanup);
     scheduledScan.stop?.();
     pingScanCoordinator.stop();
     httpServer.close(() => {

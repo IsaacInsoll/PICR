@@ -9,3 +9,5 @@ export * from './dbUser.js';
 export * from './dbUserDevice.js';
 export * from './dbBranding.js';
 export { enumToGQL } from '../../graphql/helpers/enumToGQL.js';
+
+export * from './dbAdminAuth.js';

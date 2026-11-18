@@ -537,12 +537,19 @@ Jotai provides atomic state - small, independent pieces of state.
 ### Key Atoms
 
 ```typescript
-// atoms/authAtom.ts - Persisted auth token
-export const authKeyAtom = atomWithStorage('auth', '');
+// atoms/authAtom.ts - In-memory admin access token
+export const authKeyAtom = atom('');
 
 // atoms/themeModeAtom.ts - Current theme/branding
 export const themeModeAtom = atom<BrandingType>(defaultBranding);
 ```
+
+Admin refresh tokens stay in the HttpOnly `/api/auth` cookie. Use
+`helpers/adminSession.ts` for authenticated security requests, startup restore,
+and logout; never persist admin passwords or refresh tokens in localStorage.
+GraphQL fetches refresh expired access tokens before sending, while public-link
+requests bypass the admin session flow. Track foreground interaction separately
+from polling so background traffic does not extend the inactivity window.
 
 #### Sort preference resolution (`hooks/useFileSort.ts`)
 
@@ -1245,3 +1252,30 @@ For test validation, ask the user to run:
 ```bash
 npm run workflow
 ```
+
+The read-only backend override permits `/api/auth` login, verification, refresh,
+logout, and security-status reads, while blocking enrollment and security-policy
+writes. Keep this allowlist alongside the GraphQL mutation guard in Vite. Auth
+proxying must rewrite Origin and the refresh-cookie path for differing base paths.
+
+Security dialogs mount conditionally and unmount on close, matching the existing
+management editors. Finishing enrollment replaces the access token; destroy the old dialog and its secret state in the same completion path
+rather than leaving a closed security form mounted through that replacement.
+
+Key the admin URQL client by account identity, not the current JWT string.
+Graphcache constructs a new store for every new client even when the exchange
+factory is shared. Token rotation must preserve unfinished forms and cache.
+Authentication rejection recovery belongs before the global error exchange;
+retry once after refresh and never replay a partially successful mutation.
+
+Admin GraphQL refresh uses `@urql/exchange-auth` with the result adapter in
+`urql/adminAuthExchange.ts`. Keep the global error exchange above auth so it
+sees only final failures. The adapter turns bootstrap `me: null` into the shared
+NOT_LOGGED_IN error and prevents replay of partially successful mutations.
+It operates on parsed OperationResults; do not reintroduce raw-response cloning
+or parsing the outgoing query text. Public-link operations bypass admin auth.
+
+Record every newly issued web token through `setAdminAccessToken`: proactive
+refresh uses its issued lifetime (`exp - iat`) and `performance.now()` from
+receipt, not the browser's wall clock. The auth exchange queues GraphQL work;
+`refreshSession` still coordinates HTTP settings calls and browser tabs.

@@ -38,11 +38,10 @@ export const gqlServer = createHandler({
     void params;
     const request = req as GraphqlHttpContextRequest;
     const headers = request.headers;
-    const forwarded = firstHeader(headers['x-forwarded-for']);
-    const realIp = firstHeader(headers['x-real-ip']);
-
-    // `req.raw.ip` works fine unless we are behind a reverse proxy
-    const ipAddress = normalizedHeader(realIp ?? forwarded ?? request.raw?.ip);
+    // Express applies the same trust-proxy policy used by REST authentication.
+    const ipAddress = normalizedHeader(
+      request.raw?.ip ?? request.raw?.socket.remoteAddress,
+    );
 
     const h: PicrRequestContext['headers'] = {
       auth: normalizedHeader(firstHeader(headers.authorization)),

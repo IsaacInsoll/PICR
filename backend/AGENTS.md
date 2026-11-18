@@ -566,20 +566,32 @@ values are migrated.
 
 ## Authentication
 
+Admin web authentication uses `/api/auth/*` JSON POST endpoints (custom
+`x-picr-auth: 1` header, no CORS) for refresh cookies and TOTP enrollment. These
+routes are separate from public-link UUID/passcode authentication. The legacy
+GraphQL `auth` mutation issues short-lived sessions only for admins who do not
+need 2FA; it must never bypass enrollment or second-factor requirements. The compatibility
+mutation uses a 28-day access token tied to the same revocable database session;
+new HTTP clients use 15-minute access tokens and refresh.
+
+Auth mutations lock the admin's `Users` row before modifying factors or sessions.
+Create challenge rows through that same transaction: inserting a child row via
+another connection while holding `FOR UPDATE` on its referenced user can block
+on PostgreSQL's foreign-key lock. Failed challenge attempts are reserved outside
+the verification transaction so rolling back an invalid code retains the count.
+
+`initDb()` returns its underlying pool for short-lived CLI tools to close. The
+server owns its long-lived pool. MFA secrets use a separate environment/file key;
+the JWT signing secret in `ServerOptions` is not a database-leak encryption boundary.
+
 ### JWT Flow
 
-```typescript
-// Token generation (28-day expiry)
-const token = generateToken({
-  userId: user.id,
-  hashedPassword: user.hashedPassword,
-});
-
-// Token validation
-const payload = validateToken(token); // returns { userId, hashedPassword } or undefined
-
-// Validates password hasn't changed since token was issued
-```
+Access JWTs expire after 15 minutes and identify a database session plus an
+account authentication version. They never contain the password hash. The web
+refreshes through a rotating HttpOnly cookie, with 28-day inactivity expiry;
+password and factor changes invalidate previous sessions. Pre-upgrade JWTs require
+fresh login after upgrade. Legacy GraphQL login can then issue a 28-day token
+for existing app clients, still checked against the database session and policy. See `docs/development/admin-authentication.md`.
 
 ### Auth Methods
 
@@ -1131,7 +1143,17 @@ npm run dk -- migrate   # Same migration chain with verbose CLI output
 
 ### Auth errors in GraphQL
 
-1. Check JWT token hasn't expired (28 days)
-2. Check user's password hasn't changed (invalidates token)
+1. Check the 15-minute JWT and 28-day refresh session have not expired
+2. Check the account authentication version, session revocation, and 2FA policy
 3. For Link users, check UUID header is being sent
 4. Check user is enabled (`enabled: true`)
+
+For auth SQL queries that may return no rows, use `rows.at(0)` rather than array
+destructuring. This repo does not enable `noUncheckedIndexedAccess`, so `[row]`
+is inferred as always present and the type-aware linter incorrectly rejects the
+necessary missing-row guard. Keep the guard and fix the inferred type.
+
+Admin auth policy reads inside a transaction must use its executor: pass `tx`
+to `getServerOptions` and `sessionAllowed`. Acquiring another pooled connection
+while every concurrent transaction holds one can exhaust the pool. Used refresh
+hashes are retained for 28 days, independent of rolling session expiry.

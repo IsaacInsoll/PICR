@@ -25,6 +25,7 @@ export const dynamicCatalogPatterns = {
     ['view', 'list'],
   ],
   admin: [
+    ['security', 'error', '*'],
     ['branding', 'socialType', '*'],
     ['branding', 'socialPlaceholder', '*'],
     ['branding', 'view', '*'],

@@ -1,53 +1,28 @@
-import { hashPassword } from '../../helpers/hashPassword.js';
-import { generateAccessToken } from '../../auth/jwt-auth.js';
 import { GraphQLNonNull, GraphQLString } from 'graphql';
-import { db } from '../../db/picrDb.js';
-import { and, eq } from 'drizzle-orm';
-import { dbUser } from '../../db/models/index.js';
 import type { PicrResolver } from '../helpers/picrResolver.js';
 import type { MutationAuthArgs } from '@shared/gql/graphql.js';
-import {
-  isLoginBlocked,
-  recordFailedLoginAttempt,
-  recordSuccessfulLogin,
-} from '../../auth/loginRateLimit.js';
+import { passwordLogin } from '../../auth/adminFactors.js';
+import { AdminAuthError } from '../../auth/adminSessions.js';
 
+// Legacy clients can sign in without 2FA; enrolled/enforced accounts must use the challenge API.
 const resolver: PicrResolver<object, MutationAuthArgs> = async (
   _,
   params,
   context,
 ) => {
-  const p: string | undefined = params.password;
-  const identity = {
-    ipAddress: context.headers.ipAddress,
-    username: params.user,
-  };
-
-  if (isLoginBlocked(identity)) return '';
-  if (!p || p === '') return '';
-
-  const user = await db.query.dbUser.findFirst({
-    where: and(
-      eq(dbUser.username, params.user),
-      eq(dbUser.hashedPassword, hashPassword(p)),
-      eq(dbUser.enabled, true),
-    ),
-  });
-  if (!user) {
-    recordFailedLoginAttempt(identity);
-    return '';
+  try {
+    const result = await passwordLogin(
+      params.user,
+      params.password,
+      context.headers.ipAddress,
+      'legacy_app',
+    );
+    return result.status === 'authenticated' ? result.accessToken : '';
+  } catch (error) {
+    if (error instanceof AdminAuthError) return '';
+    throw error;
   }
-  if (!user.hashedPassword) {
-    recordFailedLoginAttempt(identity);
-    return '';
-  }
-  recordSuccessfulLogin(identity);
-  return generateAccessToken({
-    userId: user.id,
-    hashedPassword: user.hashedPassword,
-  });
 };
-
 export const auth = {
   type: new GraphQLNonNull(GraphQLString),
   resolve: resolver,

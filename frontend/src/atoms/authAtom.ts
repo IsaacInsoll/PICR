@@ -1,9 +1,6 @@
 import { atom, useAtomValue } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
 
-export const authKeyAtom = atomWithStorage('authKey', '', undefined, {
-  getOnInit: true,
-});
+export const authKeyAtom = atom('');
 
 const createFallbackSessionKey = () => {
   const browserCrypto: Partial<Crypto> = globalThis.crypto;

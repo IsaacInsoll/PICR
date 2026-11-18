@@ -1,3 +1,8 @@
+import {
+  adminSessionPrincipal,
+  markAdminActivity,
+  restoreAdminSession,
+} from './helpers/adminSession';
 import { createClient } from './urqlClient';
 import { Provider as URQLProvider } from 'urql';
 import { BrowserRouter } from 'react-router';
@@ -22,7 +27,7 @@ import { Notifications } from '@mantine/notifications';
 import { DatesProvider } from '@mantine/dates';
 import { theme } from './theme';
 import { UserProvider } from './components/UserProvider';
-import { Suspense, useEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { PicrErrorBoundary } from './components/PicrErrorBoundary';
 import { lightboxRefAtom } from './atoms/lightboxRefAtom';
 import { getBaseHrefPathname } from './helpers/baseHref';
@@ -37,11 +42,22 @@ import { useLanguage } from './i18n/useLanguage';
 import { datesProviderSettingsFor } from './i18n/mantineDates';
 
 const App = () => {
+  const [authReady, setAuthReady] = useState(false);
+  useEffect(() => {
+    void restoreAdminSession().finally(() => setAuthReady(true));
+    window.addEventListener('pointerdown', markAdminActivity);
+    window.addEventListener('keydown', markAdminActivity);
+    return () => {
+      window.removeEventListener('pointerdown', markAdminActivity);
+      window.removeEventListener('keydown', markAdminActivity);
+    };
+  }, []);
   const authKey = useAtomValue(authKeyAtom);
+  const principal = adminSessionPrincipal(authKey);
   const sessionKey = useSessionKey();
   const client = useMemo(
-    () => createClient(authKey, sessionKey),
-    [authKey, sessionKey],
+    () => createClient(principal, sessionKey),
+    [principal, sessionKey],
   );
   const customTheme = useAtomValue(themeModeAtom);
   const { catalogLanguage, formattingLocale } = useLanguage();
@@ -99,7 +115,7 @@ const App = () => {
               </Portal>
               <PicrErrorBoundary>
                 <Suspense fallback={<PicrLoadingOverlay />}>
-                  <UserProvider />
+                  {authReady ? <UserProvider /> : <PicrLoadingOverlay />}
                   <DownloadSharePromptHost />
                   <Notifications pauseResetOnHover="notification" />
                 </Suspense>

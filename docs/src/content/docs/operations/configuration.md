@@ -137,3 +137,7 @@ docker compose logs --tail=100 picr
 ```
 
 Open **Settings → Server Info** to confirm scanning modes, media capabilities, write access, Ping status, and other resolved runtime information.
+
+## Administrator two-factor authentication
+
+Set exactly one of `MFA_ENCRYPTION_KEY` (64 hexadecimal characters) or `MFA_ENCRYPTION_KEY_FILE` (a mounted secret-file path) to enable 2FA enrollment. Neither is required to upgrade or use password-only accounts. Startup logs print an inactive key suggestion when both are absent. Preserve and back up the configured key. See [Account security](../account-security/).

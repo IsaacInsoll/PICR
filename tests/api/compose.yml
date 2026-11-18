@@ -18,6 +18,7 @@ services:
       # an active watcher could import the fixture independently and false-pass.
       - FILE_WATCHER=off
       - BASE_URL=http://localhost:6901/
+      - MFA_ENCRYPTION_KEY=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
       - PICR_PING_TOKEN=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
       # Pin the first-boot admin credentials so the suite logs in deterministically
       # (matches defaultCredentials). Without this the auto-created admin would get

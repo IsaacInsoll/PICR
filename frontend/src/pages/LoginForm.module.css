@@ -1,0 +1,35 @@
+.screen {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--mantine-spacing-md);
+  background: radial-gradient(
+    ellipse at 15% 10%,
+    var(--mantine-primary-color-light),
+    transparent 65%
+  );
+}
+.card {
+  width: 100%;
+  max-width: 440px;
+  min-width: 0;
+  box-shadow: var(--mantine-shadow-lg);
+}
+.step {
+  animation: enter 220ms ease-out both;
+}
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .step {
+    animation: none;
+  }
+}

@@ -12,7 +12,7 @@ import { userType } from '../types/userType.js';
 import { folderIsUnderFolderId } from '../../helpers/folderIsUnderFolderId.js';
 import type { UserFields } from '../../db/picrDb.js';
 import { db, dbFolderForId, dbUserForId } from '../../db/picrDb.js';
-import { and, eq, ne } from 'drizzle-orm';
+import { and, eq, ne, sql } from 'drizzle-orm';
 import { dbUser } from '../../db/models/index.js';
 import { UserType } from '@shared/gql/graphql.js';
 import { commentPermissionsEnum } from '../types/enums.js';
@@ -79,6 +79,9 @@ const resolver: PicrResolver<object, MutationEditAdminUserArgs> = async (
   }
 
   if (adminUser) {
+    const invalidateSessions =
+      !!pass ||
+      (params.enabled != null && params.enabled !== adminUser.enabled);
     adminUser.folderId = params.folderId;
     adminUser.name = params.name;
     adminUser.username = params.username ?? null;
@@ -89,7 +92,15 @@ const resolver: PicrResolver<object, MutationEditAdminUserArgs> = async (
       params.commentPermissions ?? adminUser.commentPermissions;
     adminUser.updatedAt = new Date();
     if (pass) adminUser.hashedPassword = hashPassword(pass);
-    await db.update(dbUser).set(adminUser).where(eq(dbUser.id, adminUser.id));
+    await db
+      .update(dbUser)
+      .set({
+        ...adminUser,
+        authVersion: invalidateSessions
+          ? sql`${dbUser.authVersion} + 1`
+          : sql`${dbUser.authVersion}`,
+      })
+      .where(eq(dbUser.id, adminUser.id));
     return { ...adminUser, folder: dbFolderForId(adminUser.folderId) };
   }
 

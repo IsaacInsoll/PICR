@@ -31,6 +31,7 @@
     "@picr/react-grid-gallery": "1.1.0",
     "@rolldown/plugin-babel": "^0.2.3",
     "@tanstack/react-table": "^8.21.3",
+    "@urql/exchange-auth": "^3.0.0",
     "@urql/exchange-graphcache": "^9.0.1",
     "@urql/exchange-retry": "^2.0.0",
     "@vidstack/react": "1.15.6",

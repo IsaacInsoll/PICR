@@ -41,6 +41,8 @@ export const dbUser = pgTable('Users', {
   lastAccess: timestamp({ withTimezone: true }),
   userType: userTypeEnum().notNull(),
 
+  authVersion: integer('authVersion').notNull().default(0),
+
   // IF REAL USER
   hashedPassword: varchar('hashedPassword', { length: 255 }),
   username: varchar('username', { length: 255 }),
