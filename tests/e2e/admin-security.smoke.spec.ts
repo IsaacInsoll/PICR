@@ -105,12 +105,16 @@ test('authenticator setup, manual key, recovery-code login and session restorati
     await expect(dialog).toHaveCount(0);
     await page.reload();
     await expect(
-      page.getByRole('heading', { name: 'Account security' }),
+      page.getByRole('heading', {
+        name: 'Two-factor authentication for your account',
+      }),
     ).toBeVisible();
     const secondTab = await context.newPage();
     await secondTab.goto('/admin/settings/security');
     await expect(
-      secondTab.getByRole('heading', { name: 'Account security' }),
+      secondTab.getByRole('heading', {
+        name: 'Two-factor authentication for your account',
+      }),
     ).toBeVisible();
     await secondTab.close();
     // Server logout revokes the current refresh session, then an interactive login needs MFA.
@@ -147,7 +151,9 @@ test('authenticator setup, manual key, recovery-code login and session restorati
       .fill(recoveryCode);
     await page.getByRole('button', { name: 'Verify and sign in' }).click();
     await expect(
-      page.getByRole('heading', { name: 'Account security' }),
+      page.getByRole('heading', {
+        name: 'Two-factor authentication for your account',
+      }),
     ).toBeVisible();
     expectNoBrowserFailures(failures);
   } finally {

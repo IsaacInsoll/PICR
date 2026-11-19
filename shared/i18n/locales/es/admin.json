@@ -84,11 +84,10 @@
       "info": "Información",
       "media": "Medios de comunicación",
       "storage": "Almacenamiento",
-      "users": "Usuarios",
+      "users": "Usuarios y seguridad",
       "links": "Campo de golf",
       "branding": "Herrada",
-      "logs": "Registros",
-      "security": "Seguridad"
+      "logs": "Registros"
     }
   },
   "common": {
@@ -809,12 +808,10 @@
     "title": "Seguridad de la cuenta",
     "configurationTitle": "Se requiere configurar el servidor",
     "configurationDescription": "Define MFA_ENCRYPTION_KEY o MFA_ENCRYPTION_KEY_FILE en el entorno del servidor y reinicia PICR. Los registros de inicio contienen una clave sugerida e instrucciones.",
-    "authenticator": "Aplicación de autenticación",
+    "authenticator": "Autenticación de dos factores para tu cuenta",
     "enabled": "Activada",
     "disabled": "No activada",
     "accountDescription": "Protege tu cuenta con tu contraseña y un código de autenticación. Las galerías públicas no cambian.",
-    "remainingCodes_one": "Queda {{count}} código de recuperación",
-    "remainingCodes_other": "Quedan {{count}} códigos de recuperación",
     "regenerate": "Reemplazar códigos de recuperación",
     "disable": "Desactivar autenticación de dos factores",
     "policyTitle": "Requisito para todo el servidor",

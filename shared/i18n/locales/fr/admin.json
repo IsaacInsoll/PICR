@@ -84,11 +84,10 @@
       "info": "Informations",
       "media": "Médias",
       "storage": "Stockage",
-      "users": "Utilisateurs",
+      "users": "Utilisateurs et sécurité",
       "links": "Liens",
       "branding": "Identité visuelle",
-      "logs": "Journaux",
-      "security": "Sécurité"
+      "logs": "Journaux"
     }
   },
   "common": {
@@ -809,12 +808,10 @@
     "title": "Sécurité du compte",
     "configurationTitle": "Configuration du serveur requise",
     "configurationDescription": "Définissez MFA_ENCRYPTION_KEY ou MFA_ENCRYPTION_KEY_FILE dans l’environnement du serveur, puis redémarrez PICR. Les journaux de démarrage proposent une clé et des instructions.",
-    "authenticator": "Application d’authentification",
+    "authenticator": "Authentification à deux facteurs pour votre compte",
     "enabled": "Activée",
     "disabled": "Non activée",
     "accountDescription": "Protégez votre compte avec votre mot de passe et un code d’authentification. Les galeries publiques ne sont pas concernées.",
-    "remainingCodes_one": "{{count}} code de récupération restant",
-    "remainingCodes_other": "{{count}} codes de récupération restants",
     "regenerate": "Remplacer les codes de récupération",
     "disable": "Désactiver l’authentification à deux facteurs",
     "policyTitle": "Exigence pour tout le serveur",

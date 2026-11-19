@@ -84,11 +84,10 @@
       "info": "Info",
       "media": "Medien",
       "storage": "Lagerung",
-      "users": "Benutzer",
+      "users": "Benutzer & Sicherheit",
       "links": "Links",
       "branding": "Branding",
-      "logs": "Protokolle",
-      "security": "Sicherheit"
+      "logs": "Protokolle"
     }
   },
   "common": {
@@ -809,12 +808,10 @@
     "title": "Kontosicherheit",
     "configurationTitle": "Servereinrichtung erforderlich",
     "configurationDescription": "Setze MFA_ENCRYPTION_KEY oder MFA_ENCRYPTION_KEY_FILE in der Serverumgebung und starte PICR neu. Die Startprotokolle enthalten einen vorgeschlagenen Schlüssel und eine Anleitung.",
-    "authenticator": "Authenticator-App",
+    "authenticator": "Zwei-Faktor-Authentifizierung für dein Konto",
     "enabled": "Aktiviert",
     "disabled": "Nicht aktiviert",
     "accountDescription": "Schütze dein Konto mit Passwort und Authenticator-Code. Öffentliche Galerien bleiben unverändert.",
-    "remainingCodes_one": "{{count}} Wiederherstellungscode übrig",
-    "remainingCodes_other": "{{count}} Wiederherstellungscodes übrig",
     "regenerate": "Wiederherstellungscodes ersetzen",
     "disable": "Zwei-Faktor-Authentifizierung deaktivieren",
     "policyTitle": "Serverweite Anforderung",

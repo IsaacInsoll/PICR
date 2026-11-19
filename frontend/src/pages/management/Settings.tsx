@@ -1,6 +1,6 @@
 import { SecuritySettings } from './SecuritySettings';
 import { Tabs } from '@mantine/core';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router';
 import { Page } from '../../components/Page';
 import type { ReactNode } from 'react';
 import { lazy, Suspense } from 'react';
@@ -112,6 +112,10 @@ export const Settings = () => {
   const selectedBrandingSlug = selectedSlugFor('branding');
   const selectedLogUserSlug = selectedSlugFor('logs');
 
+  if (activeTab === 'security') {
+    return <Navigate to={settingsPath('users')} replace />;
+  }
+
   return (
     <>
       <LoggedInHeader />
@@ -127,10 +131,8 @@ export const Settings = () => {
               </Tabs.Tab>
             ))}
           </Tabs.List>
-          <Tabs.Panel value="security">
-            <SecuritySettings />
-          </Tabs.Panel>
           <Tabs.Panel value="users">
+            <SecuritySettings />
             <Tips type="Users" />
             <Suspense fallback={<LoadingIndicator />}>
               <PicrTitle title={[t('settings.tabs.users'), title]} />
@@ -243,7 +245,6 @@ const settingsPath = (tab: string, slug?: string) =>
 interface SettingsTab {
   icon: ReactNode;
   labelKey:
-    | 'settings.tabs.security'
     | 'settings.tabs.info'
     | 'settings.tabs.media'
     | 'settings.tabs.storage'
@@ -255,11 +256,6 @@ interface SettingsTab {
 }
 
 const tabList: SettingsTab[] = [
-  {
-    labelKey: 'settings.tabs.security',
-    slug: 'security',
-    icon: <UserSettingsIcon />,
-  },
   { labelKey: 'settings.tabs.info', slug: 'info', icon: <InfoIcon /> },
   {
     labelKey: 'settings.tabs.media',

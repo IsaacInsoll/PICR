@@ -45,7 +45,7 @@ Back up the configured key alongside your database and preserve it when replacin
 
 ## Enable 2FA on your account
 
-1. Open **Settings → Security** in the web interface.
+1. Open **Settings → Users & Security** in the web interface.
 2. Choose **Enable two-factor authentication** and confirm your password.
 3. Scan the QR code in your authenticator app. For a desktop authenticator, choose **View setup key**, then **Copy setup key**, and enter it manually.
 4. Enter the six-digit code from the app to confirm enrollment. Setup expires after five minutes; start again if needed.
@@ -59,11 +59,11 @@ At future sign-ins, enter your username and password, then an authenticator code
 
 Choose **Use a recovery code instead** at the login code screen if your authenticator is unavailable. Each recovery code works once and still requires your password.
 
-The Security page shows how many recovery codes remain. Replacing the codes requires your password and a fresh authenticator or recovery code, invalidates the previous set, and signs out other sessions. Disabling 2FA also requires both factors. Password changes do not remove 2FA.
+Use **Replace recovery codes** in **Settings → Users & Security** to generate a new set. Replacing the codes requires your password and a fresh authenticator or recovery code, invalidates the previous set, and signs out other sessions. Disabling 2FA also requires both factors. Password changes do not remove 2FA.
 
 ## Require 2FA for administrators
 
-An administrator whose home folder is the media root can enable **Require 2FA for all admins** under **Settings → Security**. Configure the encryption key and enroll that administrator first.
+An administrator whose home folder is the media root can enable **Require 2FA for all admins** under **Settings → Users & Security**. Configure the encryption key and enroll that administrator first.
 
 The confirmation shows the number of enabled administrators who have not enrolled. Enforcement takes effect immediately, including for existing sessions. Unenrolled administrators must sign in and finish a restricted enrollment flow before accessing normal administrator screens or data. Gallery recipients are unaffected.
 

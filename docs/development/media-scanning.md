@@ -200,6 +200,13 @@ Important invariants:
   require two-scan stability, guarding against partially-copied RAW/video over
   SMB. Small files can fast-path only when their mtime is older than
   `SCAN_SETTLE_SECONDS`.
+- Chokidar's `awaitWriteFinish: true` uses a 2-second unchanged-size window.
+  A direct network export can pause longer than that while the file is still
+  unreadable. If image decoding fails, `addFile()` stores it as a generic file
+  with the observed size/mtime hash. A later scan skips that row when the hash
+  still matches, and the decoder also remembers failures for that hash until
+  process restart. Diagnose the source-read failure before treating a manual
+  scan as a reliable repair for a failed RAW import.
 - Newly discovered folders can stay pending so a parent scan keeps descending
   until unsettled children settle or the pending-folder TTL expires.
 - A single unreadable entry does not abort the scan. Non-`ENOENT` filesystem

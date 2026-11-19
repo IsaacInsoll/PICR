@@ -84,11 +84,10 @@
       "info": "Info",
       "media": "Media",
       "storage": "Storage",
-      "users": "Users",
+      "users": "Users & Security",
       "links": "Links",
       "branding": "Branding",
-      "logs": "Logs",
-      "security": "Security"
+      "logs": "Logs"
     }
   },
   "common": {
@@ -809,12 +808,10 @@
     "title": "Account security",
     "configurationTitle": "Operator setup required",
     "configurationDescription": "Set MFA_ENCRYPTION_KEY or MFA_ENCRYPTION_KEY_FILE in the server environment and restart PICR. Startup logs contain a suggested key and instructions.",
-    "authenticator": "Authenticator app",
+    "authenticator": "Two-factor authentication for your account",
     "enabled": "Enabled",
     "disabled": "Not enabled",
     "accountDescription": "Protect your account with your password and an authenticator code. Public galleries are unaffected.",
-    "remainingCodes_one": "{{count}} recovery code remaining",
-    "remainingCodes_other": "{{count}} recovery codes remaining",
     "regenerate": "Replace recovery codes",
     "disable": "Disable two-factor authentication",
     "policyTitle": "Server-wide requirement",

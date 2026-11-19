@@ -7,6 +7,7 @@ import {
   Modal,
   Paper,
   PasswordInput,
+  SimpleGrid,
   Stack,
   Text,
   TextInput,
@@ -82,8 +83,7 @@ export const SecuritySettings = () => {
     }
   };
   return (
-    <Stack maw={720} mt="xl" gap="lg">
-      <Title order={2}>{t('security.title')}</Title>
+    <Stack my="md" gap="sm">
       {error && !action ? <Alert color="red">{error}</Alert> : null}
       {status ? (
         <>
@@ -92,28 +92,26 @@ export const SecuritySettings = () => {
               {t('security.configurationDescription')}
             </Alert>
           ) : null}
-          <Paper withBorder p="lg" radius="md">
-            <Stack>
-              <Group justify="space-between">
-                <Title order={3}>{t('security.authenticator')}</Title>
-                <Badge color={status.enabled ? 'green' : 'gray'}>
-                  {status.enabled
-                    ? t('security.enabled')
-                    : t('security.disabled')}
-                </Badge>
-              </Group>
-              <Text c="dimmed" size="sm">
-                {t('security.accountDescription')}
-              </Text>
-              {status.enabled ? (
-                <>
-                  <Text size="sm">
-                    {t('security.remainingCodes', {
-                      count: status.recoveryCodesRemaining,
-                    })}
-                  </Text>
-                  <Group>
+          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
+            <Paper withBorder p="sm" radius="md">
+              <Stack gap="xs" h="100%">
+                <Group justify="space-between">
+                  <Title order={2} size="sm">
+                    {t('security.authenticator')}
+                  </Title>
+                  <Badge color={status.enabled ? 'green' : 'gray'}>
+                    {status.enabled
+                      ? t('security.enabled')
+                      : t('security.disabled')}
+                  </Badge>
+                </Group>
+                <Text c="dimmed" size="sm">
+                  {t('security.accountDescription')}
+                </Text>
+                {status.enabled ? (
+                  <Group gap="xs" mt="auto">
                     <Button
+                      size="xs"
                       variant="light"
                       disabled={!status.available}
                       onClick={() => setAction('recovery')}
@@ -121,6 +119,7 @@ export const SecuritySettings = () => {
                       {t('security.regenerate')}
                     </Button>
                     <Button
+                      size="xs"
                       variant="subtle"
                       color="red"
                       disabled={status.required || !status.available}
@@ -129,49 +128,63 @@ export const SecuritySettings = () => {
                       {t('security.disable')}
                     </Button>
                   </Group>
-                </>
-              ) : (
-                <Button
-                  disabled={!status.available}
-                  onClick={() => setAction('enroll')}
-                >
-                  {t('security.enable')}
-                </Button>
-              )}
-            </Stack>
-          </Paper>
-          {status.canManagePolicy ? (
-            <Paper withBorder p="lg" radius="md">
-              <Stack>
-                <Group justify="space-between">
-                  <Title order={3}>{t('security.policyTitle')}</Title>
-                  <Badge>
-                    {status.required
-                      ? t('security.required')
-                      : t('security.optional')}
-                  </Badge>
-                </Group>
-                <Text size="sm" c="dimmed">
-                  {t('security.policyDescription')}
-                </Text>
-                <Text size="sm">
-                  {t('security.unenrolled', { count: status.unenrolledAdmins })}
-                </Text>
-                {!status.enabled ? (
-                  <Text size="sm">{t('security.enrollBeforeEnforcement')}</Text>
-                ) : null}
-                <Button
-                  variant="light"
-                  disabled={!status.available || !status.enabled}
-                  onClick={() => setAction('policy')}
-                >
-                  {status.required
-                    ? t('security.makeOptional')
-                    : t('security.requireAll')}
-                </Button>
+                ) : (
+                  <Button
+                    size="xs"
+                    mt="auto"
+                    style={{ alignSelf: 'flex-start' }}
+                    disabled={!status.available}
+                    onClick={() => setAction('enroll')}
+                  >
+                    {t('security.enable')}
+                  </Button>
+                )}
               </Stack>
             </Paper>
-          ) : null}
+            {status.canManagePolicy ? (
+              <Paper withBorder p="sm" radius="md">
+                <Stack gap="xs" h="100%">
+                  <Group justify="space-between">
+                    <Title order={2} size="sm">
+                      {t('security.policyTitle')}
+                    </Title>
+                    <Badge>
+                      {status.required
+                        ? t('security.required')
+                        : t('security.optional')}
+                    </Badge>
+                  </Group>
+                  <Text size="sm" c="dimmed">
+                    {t('security.policyDescription')}
+                  </Text>
+                  {status.unenrolledAdmins > 0 ? (
+                    <Text size="sm">
+                      {t('security.unenrolled', {
+                        count: status.unenrolledAdmins,
+                      })}
+                    </Text>
+                  ) : null}
+                  {!status.enabled ? (
+                    <Text size="sm">
+                      {t('security.enrollBeforeEnforcement')}
+                    </Text>
+                  ) : null}
+                  <Button
+                    size="xs"
+                    mt="auto"
+                    style={{ alignSelf: 'flex-start' }}
+                    variant="light"
+                    disabled={!status.available || !status.enabled}
+                    onClick={() => setAction('policy')}
+                  >
+                    {status.required
+                      ? t('security.makeOptional')
+                      : t('security.requireAll')}
+                  </Button>
+                </Stack>
+              </Paper>
+            ) : null}
+          </SimpleGrid>
         </>
       ) : (
         <Text c="dimmed">{t('security.loading')}</Text>

@@ -1279,3 +1279,8 @@ Record every newly issued web token through `setAdminAccessToken`: proactive
 refresh uses its issued lifetime (`exp - iat`) and `performance.now()` from
 receipt, not the browser's wall clock. The auth exchange queues GraphQL work;
 `refreshSession` still coordinates HTTP settings calls and browser tabs.
+
+Administrator authenticator and server-wide 2FA policy controls live in compact
+responsive cards above the users list in Settings → Users & Security. Keep the
+`users` route for this combined tab; the former `security` route redirects to it
+so saved URLs continue to work.
