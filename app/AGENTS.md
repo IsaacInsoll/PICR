@@ -513,6 +513,11 @@ Expo Doctor is advisory during release preflight: its output stays visible, but
 reported issues do not block release. Lint, TypeScript, tests, shared-dependency
 and polyfill checks, and both platform exports remain blocking checks.
 
+Keep the explicit branch/tag push hooks on `after:release`, not
+`after:git:release`. With `git.push: false`, release-it 21 returns false from
+the Git release lifecycle step and skips its plugin-specific after hook, even
+when it successfully created the release commit and tag.
+
 Release scripts invoke `npx --yes --package eas-cli eas` explicitly. The Expo
 CLI package is `eas-cli`; bare `npx eas` can resolve the unrelated `eas` npm
 package and fail with "could not determine executable to run" on machines
