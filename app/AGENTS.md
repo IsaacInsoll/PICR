@@ -2,8 +2,6 @@
 
 Expo/React Native mobile app for signed-in PICR users, providing gallery viewing and push notifications. Public-link recipients use the web gallery; public links are not a supported app login or access path. The app's primary customer value is notifying signed-in users when recipients open their links.
 
-The current login form validates the username as an email address. The default first-boot username `admin` must therefore be changed to an email-address username before that account can sign in through the app.
-
 Long-term app cleanup, upgrades, and monorepo work are tracked in
 [`modernization-roadmap.md`](./modernization-roadmap.md).
 
@@ -254,48 +252,33 @@ use case justifies their maintenance. HTTPS is the supported default.
 
 ## Authentication
 
-The backend accepts arbitrary non-empty admin usernames and its default
-username is `admin`. Do not validate the app login username as an email address.
+Keep the native login screen concise. Retain the “What is PICR?” link, but do
+not add migration, password-manager, browser-return or server-address explainer
+paragraphs around the form. Show errors and cancellation/expiry feedback when
+relevant.
 
-The current backend returns an empty auth token for invalid credentials and
-rate-limited attempts. `appLogin` converts that response into a typed local
-`authentication_rejected` result and classifies transport failures through
-URQL's `networkError`; `LoginForm` must not recover error state by comparing
-display strings. A future machine-readable login error contract is core PICR
-API work and requires explicit approval outside routine app modernization.
+App sign-in uses the server's `/app-sign-in` page through
+`expo-web-browser.openAuthSessionAsync`. Passwords and 2FA stay in the browser;
+use `expo-crypto` for PKCE and state. Exact callbacks are
+`picr://auth/callback` and `picrdev://auth/callback`; keep the native callback
+route, Expo schemes and backend allowlist aligned. The callback route exists
+only to let WebBrowser finish the handoff, not to authenticate URL parameters.
 
-### Secure Storage
+Choose the browser callback from `expo-application.applicationId`, the running
+binary's Android package/iOS bundle ID. `Constants.expoConfig.scheme` comes from
+Metro's manifest during development and can describe production while the Dev
+binary is running, sending a successful login into the wrong installed app.
 
-```typescript
-import * as SecureStore from 'expo-secure-store';
-
-// Credentials stored securely on device
-await SecureStore.setItemAsync('server', serverUrl);
-await SecureStore.setItemAsync('token', jwtToken);
-```
-
-### Login Flow
-
-1. User enters server URL, username, password
-2. App creates URQL client with server URL
-3. Executes login mutation
-4. Stores token in SecureStore
-5. Navigates to authenticated routes
-
-### Auth Context (`PicrUserProvider`)
-
-`useLoginDetails.ts` currently persists the password alongside the token in
-SecureStore. On startup, `PicrUserProvider` calls `appLogin` with those stored
-credentials even if a token exists, and logs out if that login fails. Changes to
-admin authentication (including 2FA) must account for this startup login as well
-as the visible login form; changing only the form leaves startup incompatible.
-
-```typescript
-// Wraps authenticated routes
-// Loads credentials from device
-// Creates URQL client with Bearer token
-// Redirects to /login if not authenticated
-```
+`useLoginDetails.ts` persists version-2 SecureStore sessions, never passwords.
+Migration removes prior passwords and retains the server/username for a fresh
+browser sign-in. `appSession.ts` serializes refresh. SecureStore mutations are
+ordered; refresh must recheck session identity before publishing to avoid
+restoring an account after logout. Keep the GraphQL client keyed by session ID,
+not token value. The app-owned URQL auth exchange queues refresh and never
+replays partially successful mutations. Network errors and non-JSON proxy errors preserve the session; only the typed
+`session_expired` HTTP 401 is a definitive refresh rejection.
+Foreground refresh extends the 28-day inactivity expiry; background work does
+not. See `docs/development/admin-authentication.md` for the handoff contract.
 
 ## Push Notifications
 
@@ -521,6 +504,11 @@ the production `com.isaacinsoll.picr` identifier.
 
 ### Building for Production
 
+For a release to both stores, run root `npm run release:app`: it performs
+preflight, bumps the app version once, then builds/submits iOS and Android.
+Running `release:app:ios` and `release:app:android` separately bumps the version
+twice. Use `npm run release:app:dry` for preflight without versioning/submission.
+
 ```bash
 # Android
 npx expo export --platform android
@@ -532,6 +520,24 @@ npx expo export --platform ios
 eas build --platform ios
 eas build --platform android
 ```
+
+When Android reports `[runtime not ready]` during React Native initialization,
+check the installed package's `versionName` and `lastUpdateTime` with
+`adb shell dumpsys package <applicationId>` before changing application code.
+`expo start` can serve current JavaScript to a months-old development binary;
+`expo export` does not update that binary. Also check generated Android
+`applicationId` and `versionName`: an old prebuild can retain a different variant
+and version. Regenerate the intended variant and rebuild/install it. Recheck
+startup logs afterwards; the mismatch alone does not prove every startup error
+has the same cause.
+
+A generated Android project can keep `com.isaacinsoll.picr.dev` even when the
+current `app.config.ts` resolves to production. In that state, `expo run:android`
+installs Dev while Metro's Android shortcut opens the old production package.
+Check both package timestamps and align prebuild and Metro's `APP_VARIANT`.
+When passing a device explicitly to `expo run:android --device`, use the emulator
+AVD name (from `adb -s <serial> emu avd name`), not the `emulator-5554` ADB serial;
+Expo SDK 57 resolves that string by device name.
 
 ### Debugging
 
@@ -557,6 +563,11 @@ sandboxed development environments can expose a Watchman binary whose state
 directory is read-only, causing tests to crash before discovery. Jest's Node
 filesystem crawler is sufficient for the app test suite and behaves the same in
 local checks and CI.
+
+For namespace-imported Jest mocks whose exported properties change per test,
+declare `__esModule: true` in the mock. Otherwise Babel can create separate
+interop wrappers, and `jest.replaceProperty` in the test does not update the
+value seen by the consumer.
 
 App unit and component tests live in `app/tests/`, never under `app/src/app/`:
 Expo Router treats every file below its route root as a route. The app uses

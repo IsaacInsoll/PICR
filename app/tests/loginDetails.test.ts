@@ -1,95 +1,90 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import * as SecureStore from 'expo-secure-store';
-import { getLoginDetailsFromLocalDevice } from '@/src/hooks/useLoginDetails';
-
+import { getDefaultStore } from 'jotai';
+import {
+  clearLoginDetails,
+  getLoginDetailsFromLocalDevice,
+  loginDetailsAtom,
+  saveLoginDetails,
+} from '@/src/hooks/useLoginDetails';
 jest.mock('expo-secure-store', () => ({
   deleteItemAsync: jest.fn(),
   getItemAsync: jest.fn(),
   setItemAsync: jest.fn(),
 }));
-
-describe('getLoginDetailsFromLocalDevice', () => {
+const login = {
+  server: 'https://photos.example/',
+  username: 'admin',
+  token: 'token',
+  refreshToken: 'refresh',
+};
+describe('secure session storage', () => {
   beforeEach(() => {
-    jest.mocked(SecureStore.getItemAsync).mockReset();
-    jest.mocked(SecureStore.setItemAsync).mockReset();
-    jest.mocked(SecureStore.deleteItemAsync).mockReset();
+    jest.resetAllMocks();
+    getDefaultStore().set(loginDetailsAtom, undefined);
   });
-
-  it('returns undefined when the device has no saved login', async () => {
-    jest.mocked(SecureStore.getItemAsync).mockResolvedValue(null);
-
-    await expect(getLoginDetailsFromLocalDevice()).resolves.toBeUndefined();
-    expect(SecureStore.getItemAsync).toHaveBeenCalledWith('login');
-  });
-
-  it('loads and migrates the existing unversioned login payload', async () => {
-    const login = {
-      server: 'https://picr.example.com/',
-      username: 'admin',
-      password: 'picr1234',
-      token: 'token',
-    };
+  it('loads version 2 without rewriting it', async () => {
     jest
       .mocked(SecureStore.getItemAsync)
-      .mockResolvedValue(JSON.stringify(login));
-
-    await expect(getLoginDetailsFromLocalDevice()).resolves.toEqual(login);
-    expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
-      'login',
-      JSON.stringify({ version: 1, login }),
-    );
-  });
-
-  it('loads the versioned login payload without rewriting it', async () => {
-    const login = {
-      server: 'https://picr.example.com/',
-      username: 'admin',
-      password: 'picr1234',
-      token: 'token',
-    };
-    jest
-      .mocked(SecureStore.getItemAsync)
-      .mockResolvedValue(JSON.stringify({ version: 1, login }));
-
+      .mockResolvedValue(JSON.stringify({ version: 2, login }));
     await expect(getLoginDetailsFromLocalDevice()).resolves.toEqual(login);
     expect(SecureStore.setItemAsync).not.toHaveBeenCalled();
   });
-
-  it('strips the obsolete derived hostname from a stored login', async () => {
-    const storedLogin = {
-      server: 'http://192.168.1.2:6900/picr/',
-      hostname: '192.168.1.2:6900/picr/',
-      username: 'admin',
-      password: 'picr1234',
-      token: 'token',
-    };
-    jest
-      .mocked(SecureStore.getItemAsync)
-      .mockResolvedValue(JSON.stringify({ version: 1, login: storedLogin }));
-
-    await expect(getLoginDetailsFromLocalDevice()).resolves.toEqual({
-      server: storedLogin.server,
-      username: storedLogin.username,
-      password: storedLogin.password,
-      token: storedLogin.token,
-    });
-  });
-
-  it('removes malformed persisted JSON instead of crashing app startup', async () => {
-    jest.mocked(SecureStore.getItemAsync).mockResolvedValue('{broken');
-
-    await expect(getLoginDetailsFromLocalDevice()).resolves.toBeUndefined();
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith('login');
-  });
-
-  it('removes a payload that does not match the login contract', async () => {
-    jest
-      .mocked(SecureStore.getItemAsync)
-      .mockResolvedValue(
-        JSON.stringify({ version: 1, login: { username: 'admin' } }),
+  it.each([false, true])(
+    'removes old passwords, retaining only server and username (wrapped=%s)',
+    async (wrapped) => {
+      const old = {
+        server: login.server,
+        username: login.username,
+        password: 'old-password',
+        token: 'legacy',
+      };
+      jest
+        .mocked(SecureStore.getItemAsync)
+        .mockResolvedValue(
+          JSON.stringify(wrapped ? { version: 1, login: old } : old),
+        );
+      await expect(getLoginDetailsFromLocalDevice()).resolves.toBeUndefined();
+      expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith('login');
+      expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
+        'login-server',
+        login.server,
       );
-
+      expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
+        'login-username',
+        login.username,
+      );
+      expect(
+        JSON.stringify(jest.mocked(SecureStore.setItemAsync).mock.calls),
+      ).not.toContain(old.password);
+    },
+  );
+  it('removes corrupt data without crashing startup', async () => {
+    jest.mocked(SecureStore.getItemAsync).mockResolvedValue('{broken');
     await expect(getLoginDetailsFromLocalDevice()).resolves.toBeUndefined();
     expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith('login');
+  });
+  it('does not restore a session when logout occurs during a secure write', async () => {
+    getDefaultStore().set(loginDetailsAtom, login);
+    let finish: () => void = () => {};
+    let started: () => void = () => {};
+    const writing = new Promise<void>((resolve) => {
+      started = resolve;
+    });
+    jest.mocked(SecureStore.setItemAsync).mockImplementation(async (key) => {
+      if (key === 'login') {
+        started();
+        await new Promise<void>((resolve) => {
+          finish = resolve;
+        });
+      }
+    });
+    const saving = saveLoginDetails({ ...login, token: 'new' }, login);
+    await writing;
+    const clearing = clearLoginDetails();
+    finish();
+    await Promise.all([saving, clearing]);
+    expect(getDefaultStore().get(loginDetailsAtom)).toBeUndefined();
+    expect(SecureStore.deleteItemAsync).toHaveBeenLastCalledWith('login');
   });
 });

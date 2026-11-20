@@ -13,6 +13,7 @@ import { pipe, tap } from 'wonka';
 const retry = retryExchange({ initialDelayMs: 500 });
 
 interface PicrUrqlClientOptions {
+  authExchanges?: Exchange[];
   onGlobalError?: (
     message: GlobalErrorMatch & {
       operationName?: string;
@@ -62,7 +63,13 @@ export const picrUrqlClient = (
   return new Client({
     url: url + 'graphql',
     suspense: true,
-    exchanges: [urqlCacheExchange, globalErrorExchange, retry, fetchExchange],
+    exchanges: [
+      urqlCacheExchange,
+      globalErrorExchange,
+      ...(options?.authExchanges ?? []),
+      retry,
+      fetchExchange,
+    ],
     fetchOptions: () => {
       return { headers };
     },

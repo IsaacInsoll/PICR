@@ -2,7 +2,7 @@
 
 The Maestro workspace exercises the photographer app without an EAS build.
 Every root flow clears app state, logs in through `subflows/login.yaml`, and can
-run independently.
+run independently. The login subflow now uses the system authentication browser and the web account-confirmation page. Use an English-language test account without 2FA for unattended runs; authenticator and enrollment paths need a separate interactive device check. The subflow switches accounts when the browser already has a session, so it always uses the configured test credentials. Fresh login returns directly to the app; only a reused browser session asks for account confirmation.
 
 ## Test data and side effects
 

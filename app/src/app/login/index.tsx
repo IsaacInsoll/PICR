@@ -1,6 +1,7 @@
 import {
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -26,11 +27,14 @@ export default function Index() {
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
         >
-          <View style={styles.safeArea}>
+          <ScrollView
+            contentContainerStyle={styles.safeArea}
+            keyboardShouldPersistTaps="handled"
+          >
             <PicrLogo />
-            <PTitle style={{ ...styles.headerText }}>Login to PICR</PTitle>
+            <PTitle style={{ ...styles.headerText }}>Welcome to PICR</PTitle>
             <LoginForm />
-          </View>
+          </ScrollView>
           {!keyboardVisible ? (
             <View style={{ alignItems: 'center', marginBottom: 32 }}>
               <TouchableOpacity
@@ -38,7 +42,9 @@ export default function Index() {
                   void WebBrowser.openBrowserAsync(picrManualURL);
                 }}
               >
-                <Text style={{ color: picrColors[0] }}>What is PICR?</Text>
+                <Text style={{ color: '#fff', opacity: 0.8 }}>
+                  What is PICR?
+                </Text>
               </TouchableOpacity>
             </View>
           ) : null}
@@ -53,7 +59,8 @@ const styles = StyleSheet.create({
   safeArea: {
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
+    flexGrow: 1,
+    paddingVertical: 24,
     gap: 8,
   },
 });

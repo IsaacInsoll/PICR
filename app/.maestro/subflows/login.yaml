@@ -12,15 +12,33 @@ appId: ${MAESTRO_APP_ID || "com.isaacinsoll.picr.dev"}
 - tapOn:
     id: login-server-input
 - inputText: ${MAESTRO_SERVER}
-- tapOn:
-    id: login-username-input
-- inputText: ${MAESTRO_USERNAME}
-- tapOn:
-    id: login-password-input
-- inputText: ${MAESTRO_PASSWORD}
 - hideKeyboard
 - tapOn:
     id: login-submit
+# The OS authentication browser can ask for permission on iOS.
+- runFlow:
+    when:
+      visible: Continue
+    commands:
+      - tapOn: Continue
+- extendedWaitUntil:
+    visible: 'Login to PICR|Connect PICR app'
+    timeout: 30000
+# Browser sessions survive clearState; always choose the configured test account.
+- runFlow:
+    when:
+      visible: Connect PICR app
+    commands:
+      - tapOn: Use a different account
+- extendedWaitUntil:
+    visible: Username
+    timeout: 30000
+- tapOn: Username
+- inputText: ${MAESTRO_USERNAME}
+- tapOn: Password
+- inputText: ${MAESTRO_PASSWORD}
+- hideKeyboard
+- tapOn: Login
 - extendedWaitUntil:
     visible:
       id: dashboard-screen

@@ -36,7 +36,7 @@ Administrators can manage galleries and create public links only within their fo
 
 Disabling an account stops it signing in without deleting its configuration. The original root administrator cannot be deleted.
 
-Use an email address as the username for anyone who will use the PICR mobile app; the current app login validates usernames as email addresses. Passwords must contain at least eight characters.
+Usernames do not need to be email addresses. The mobile app signs in through the same website as the web interface and supports authenticator and recovery codes. Passwords must contain at least eight characters.
 
 ## Public links
 

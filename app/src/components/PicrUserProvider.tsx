@@ -1,53 +1,55 @@
-import type { ReactNode } from 'react';
-import { useEffect, useMemo } from 'react';
-import {
-  getLoginDetailsFromLocalDevice,
-  useLoginDetails,
-  useSetLoggedOut,
-  useSetLoginDetails,
-} from '@/src/hooks/useLoginDetails';
+import { useLoginDetails, useSetLoggedOut } from '@/src/hooks/useLoginDetails';
 import { Redirect } from 'expo-router';
 import { Provider } from 'urql';
 import { PText } from '@/src/components/PText';
-import { atom, useAtom } from 'jotai';
-import { appLogin } from '@/src/helpers/appLogin';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { picrUrqlClient } from '@shared/urql/urqlClient';
 import * as Application from 'expo-application';
-import { Platform } from 'react-native';
+import { AppState, Button, Platform, View } from 'react-native';
 import { pushGlobalError } from '@/src/atoms/globalErrorAtom';
-import { clearAppAuth } from '@/src/helpers/clearAppAuth';
 import { createAuthenticatedServerOrigin } from '@/src/helpers/authenticatedServerOrigin';
 import { AuthenticatedServerOriginProvider } from '@/src/components/AuthenticatedServerOriginProvider';
-
-const initCompleteAtom = atom(false); // we only want this once system-wide, not per instance of this provider
+import {
+  appSessionIdentity,
+  expireAppSession,
+  refreshAppSession,
+  restoreAppSession,
+} from '@/src/helpers/appSession';
+import { createAppAuthExchanges } from '@/src/helpers/appAuthExchange';
+import { nativeAuthErrorMessage } from '@/src/helpers/nativeAuthRequest';
 
 export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
-  const [initComplete, setInitComplete] = useAtom(initCompleteAtom);
   const me = useLoginDetails();
-  const setLogin = useSetLoginDetails();
   const logout = useSetLoggedOut();
-
-  // console.log('PicrUserProvider: ' + me?.username + ' ' + pathName);
-
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState('');
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    if (initComplete) return;
-    // console.log('getting login details from local storage');
-    void getLoginDetailsFromLocalDevice().then((login) => {
-      if (login) {
-        void setLogin(login);
-        //this could be a super old token, so lets trigger a non-inline refresh just in case
-        void appLogin(login).then(({ token }) => {
-          if (token) {
-            // console.log('[PicrUserProvider] Updating token');
-            void setLogin({ ...login, token });
-          } else {
-            void logout();
-          }
-        });
+    let cancelled = false;
+    const restore = async () => {
+      try {
+        await restoreAppSession();
+        await refreshAppSession();
+        if (!cancelled) {
+          setReady(true);
+          setError('');
+        }
+      } catch (failure) {
+        if (!cancelled) {
+          setReady(true);
+          setError(nativeAuthErrorMessage(failure));
+        }
       }
-      setInitComplete(true);
+    };
+    void restore();
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') void restore();
     });
-  }, [initComplete, logout, setInitComplete, setLogin]);
+    return () => {
+      cancelled = true;
+      subscription.remove();
+    };
+  }, [attempt]);
   const origin = useMemo(
     () =>
       me
@@ -59,23 +61,61 @@ export const PicrUserProvider = ({ children }: { children: ReactNode }) => {
         : null,
     [me],
   );
-  const client = useMemo(() => {
-    if (!origin) return null;
-    // console.log('PicrUserProvider: _creating_ URQL client');
-    return picrUrqlClient(origin.baseUrl, origin.requestHeaders, {
-      onGlobalError: pushGlobalError,
-      onAuthExpired: clearAppAuth,
-    });
-  }, [origin]);
-
-  if (!initComplete) return <PText>Loading...</PText>;
-  if (!me) {
-    // console.log('PicrUserProvider: not logged in, redirecting');
-    return <Redirect href="/login" />;
-  }
-  if (!origin || !client) return <PText>Loading...</PText>;
-
-  // console.log('PicrUserProvider: returning URQL client');
+  const server = origin?.baseUrl;
+  const identity = me ? appSessionIdentity(me.token) : '';
+  // Session identity is stable through refresh, preserving Graphcache and open screens.
+  const client = useMemo(
+    () =>
+      server
+        ? picrUrqlClient(
+            server,
+            {
+              'user-agent': `${Application.applicationName} ${Platform.OS} ${Application.nativeApplicationVersion} (Build ${Application.nativeBuildVersion})`,
+            },
+            {
+              onGlobalError: pushGlobalError,
+              onAuthExpired: () => {
+                void expireAppSession(identity).catch((failure: unknown) =>
+                  setError(nativeAuthErrorMessage(failure)),
+                );
+              },
+              authExchanges: createAppAuthExchanges(identity),
+            },
+          )
+        : null,
+    [server, identity],
+  );
+  if (!ready) return <PText>Restoring your session…</PText>;
+  if (!me) return <Redirect href="/login" />;
+  if (error)
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 24,
+          gap: 16,
+        }}
+      >
+        <PText>{error}</PText>
+        <Button
+          title="Try again"
+          onPress={() => {
+            setReady(false);
+            setError('');
+            setAttempt(attempt + 1);
+          }}
+        />
+        <Button
+          title="Sign out"
+          onPress={() => {
+            void logout();
+          }}
+        />
+      </View>
+    );
+  if (!origin || !client) return <PText>Restoring your session…</PText>;
   return (
     <AuthenticatedServerOriginProvider origin={origin}>
       <Provider value={client}>{children}</Provider>

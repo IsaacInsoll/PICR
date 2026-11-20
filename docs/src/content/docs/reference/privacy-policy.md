@@ -13,8 +13,9 @@ To sign in and communicate with a chosen PICR server, the Application stores:
 
 - Server URL
 - PICR username
-- PICR password
-- Authentication token returned by that server
+- Access and refresh tokens returned by that server
+
+Sign-in opens your chosen server’s website in the system authentication browser. Passwords and two-factor codes are entered there; the Application does not save them. When upgrading from older versions, previously saved passwords are removed and a fresh browser sign-in is required.
 
 These values are stored locally using the operating system's secure credential storage through Expo SecureStore. Expo describes SecureStore as encrypted local key-value storage intended for values such as tokens and secrets. See the [Expo SecureStore documentation](https://docs.expo.dev/versions/latest/sdk/securestore/).
 

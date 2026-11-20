@@ -16,28 +16,22 @@ The app connects to your own PICR server; it is not a hosted PICR account.
 
 ## Prepare an account
 
-The app currently requires:
-
-- An enabled PICR administrator account
-- A username formatted as an email address
-- A password of at least eight characters
-- The full URL of a reachable PICR server
-
-:::caution[Change the default username before mobile sign-in]
-The first installation account defaults to the username `admin`, which the mobile login form does not accept as an email address. Change it to an email-address username under **Settings → Admin Users** before signing into the app.
-:::
+The app requires an enabled PICR administrator account and a reachable server running a version that supports browser-based app sign-in. Update the server and mobile app together; older app versions cannot sign in after the server upgrade. Usernames such as `admin` are supported; an email-address username is not required.
 
 The account's home folder controls which galleries and events it can access. Use a root-scoped account for the whole library or a narrower account for a particular photographer or business area.
 
 ## Sign in
 
-Enter:
+1. Enter your **PICR server** address, for example `https://clients.example.com/`, including any required path.
+2. Choose **Continue in browser**. Sign in on your server’s website with your usual username and password. You can use your browser’s password manager.
+3. If prompted, enter your authenticator code or a single-use recovery code. If the server requires 2FA and you have not enrolled, complete setup and save your recovery codes first.
+4. After signing in, you return to the app automatically. If your browser was already signed in, check the displayed account and choose **Continue as …**, or choose **Use a different account**. The server address appears above the continue button.
 
-- **Server** — for example `https://clients.example.com/`, including HTTPS and any required path
-- **Username** — the account's email-address username
-- **Password** — the same password used for the PICR web interface
+The app stores session tokens in the device’s secure credential storage. Your password is entered on the website and is not saved by the app. The app and browser have separate sessions, so signing out of one does not sign out the other.
 
-The app stores the server details and authentication credentials on the device so it can reconnect to that server.
+Using the app while connected to your server within each **28-day window** keeps its session renewable. After 28 days without active renewal, sign in again. Account security changes can also require a fresh sign-in. Temporary connection failures preserve your saved session and let you retry.
+
+After upgrading from an older app, sign in once using this flow. Your server address is retained and the previously saved password is removed. If you cancel browser sign-in, you can try again from the app.
 
 :::tip[Use a reachable HTTPS address]
 Use a publicly trusted HTTPS certificate. The device must be able to reach the server directly; a URL that only resolves inside another private network will not work while the phone is elsewhere.

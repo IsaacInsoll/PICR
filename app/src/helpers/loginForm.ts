@@ -4,12 +4,11 @@ import { normalizeServerBaseUrl } from '@/src/helpers/authenticatedServerOrigin'
 export const loginFormSchema = z.object({
   server: z
     .string()
-    .url()
+    .trim()
+    .min(1, 'Enter your PICR server address')
     .refine((value) => normalizeServerBaseUrl(value) !== null, {
-      message: 'Server URL must use HTTP or HTTPS',
+      message: 'Enter a valid HTTP or HTTPS server address',
     }),
-  username: z.string().trim().min(1, 'Username is required'),
-  password: z.string().min(8),
 });
 
 export type LoginFormValues = z.infer<typeof loginFormSchema>;

@@ -3,97 +3,91 @@ import {
   fireEvent,
   render,
   screen,
-  userEvent,
   waitFor,
 } from '@testing-library/react-native';
-import { Alert } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import { getDefaultStore } from 'jotai';
+import { sessionExpiredAtom } from '@/src/hooks/useLoginDetails';
 import { LoginForm } from '@/src/components/LoginForm';
 import { appLogin } from '@/src/helpers/appLogin';
-
+import { NativeAuthError } from '@/src/helpers/nativeAuthRequest';
 const mockReplace = jest.fn();
-const mockSetLogin = jest.fn<() => Promise<void>>();
-
 jest.mock('expo-router', () => ({
-  Stack: { Screen: () => null },
   useRouter: () => ({ replace: mockReplace }),
 }));
-
-jest.mock('@/src/helpers/appLogin', () => ({
-  appLogin: jest.fn(),
+jest.mock('@/src/helpers/appLogin', () => ({ appLogin: jest.fn() }));
+jest.mock('@/src/helpers/appSession', () => ({
+  restoreAppSession: jest.fn(async () => {}),
 }));
-
-jest.mock('@/src/hooks/useLoginDetails', () => ({
-  useSetLoginDetails: () => mockSetLogin,
-}));
-
-describe('LoginForm', () => {
+jest.mock('expo-secure-store', () => ({ getItemAsync: jest.fn() }));
+describe('server sign-in form', () => {
   beforeEach(() => {
-    jest.mocked(appLogin).mockReset();
-    mockReplace.mockReset();
-    mockSetLogin.mockReset();
+    jest.clearAllMocks();
+    getDefaultStore().set(sessionExpiredAtom, false);
+    jest.mocked(SecureStore.getItemAsync).mockResolvedValue(null);
   });
-
-  it('normalizes the server and logs in with a plain admin username', async () => {
-    jest.mocked(appLogin).mockResolvedValue({ token: 'token' });
-    mockSetLogin.mockResolvedValue(undefined);
-    const user = userEvent.setup();
+  const submit = async () => {
     await render(<LoginForm />);
-
-    await user.type(
-      screen.getByTestId('login-server-input'),
-      'picr.example.com',
+    await waitFor(() =>
+      expect(screen.getByTestId('login-server-input').props['editable']).toBe(
+        true,
+      ),
     );
-    await fireEvent(screen.getByTestId('login-server-input'), 'blur');
-    await user.type(screen.getByTestId('login-username-input'), 'admin');
-    await user.type(screen.getByTestId('login-password-input'), 'picr1234');
+    await fireEvent.changeText(
+      screen.getByTestId('login-server-input'),
+      'photos.example/picr',
+    );
     await fireEvent.press(screen.getByTestId('login-submit'));
-
-    await waitFor(() => {
-      expect(appLogin).toHaveBeenCalledWith({
-        server: 'https://picr.example.com/',
-        username: 'admin',
-        password: 'picr1234',
-      });
-    });
-    expect(mockSetLogin).toHaveBeenCalledWith({
-      server: 'https://picr.example.com/',
-      username: 'admin',
-      password: 'picr1234',
-      token: 'token',
-    });
+  };
+  it('normalizes the address and navigates only after sign-in completes', async () => {
+    jest.mocked(appLogin).mockResolvedValue(true);
+    await submit();
+    await waitFor(() =>
+      expect(appLogin).toHaveBeenCalledWith('https://photos.example/picr/'),
+    );
     expect(mockReplace).toHaveBeenCalledWith('/');
+    expect(screen.queryByTestId('login-password-input')).toBeNull();
   });
-
-  it('shows the message from a typed login failure', async () => {
-    jest.mocked(appLogin).mockResolvedValue({
-      error: {
-        type: 'authentication_rejected',
-        message: 'Incorrect username or password',
-      },
-    });
-    const alert = jest.spyOn(Alert, 'alert');
-    const user = userEvent.setup();
-    await render(<LoginForm />);
-
-    await user.type(
-      screen.getByTestId('login-server-input'),
-      'https://picr.example.com/',
+  it('keeps cancellation calm and allows another attempt', async () => {
+    jest.mocked(appLogin).mockResolvedValue(false);
+    await submit();
+    await waitFor(() =>
+      expect(screen.getByText(/Sign-in cancelled/)).toBeTruthy(),
     );
-    await user.type(screen.getByTestId('login-username-input'), 'admin');
-    await user.type(
-      screen.getByTestId('login-password-input'),
-      'incorrectPassword',
-    );
-    await fireEvent.press(screen.getByTestId('login-submit'));
-
-    await waitFor(() => {
-      expect(alert).toHaveBeenCalledWith(
-        'Login Failed',
-        'Incorrect username or password',
-        expect.any(Array),
-      );
-    });
-    expect(mockSetLogin).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
+  });
+  it('shows a connection error inline and preserves the server', async () => {
+    jest
+      .mocked(appLogin)
+      .mockRejectedValue(new NativeAuthError('network_error'));
+    await submit();
+    await waitFor(() =>
+      expect(screen.getByText(/Unable to reach your server/)).toBeTruthy(),
+    );
+    expect(screen.getByTestId('login-server-input').props['value']).toBe(
+      'photos.example/picr',
+    );
+    expect(mockReplace).not.toHaveBeenCalled();
+  });
+  it('explains why an expired session needs another sign-in', async () => {
+    getDefaultStore().set(sessionExpiredAtom, true);
+    await render(<LoginForm />);
+    expect(screen.getByText(/Your session has expired/)).toBeTruthy();
+  });
+  it('prefills the retained address without extra sign-in explanations', async () => {
+    jest
+      .mocked(SecureStore.getItemAsync)
+      .mockImplementation(async (key) =>
+        key === 'login-server' ? 'https://saved.example/' : '1',
+      );
+    await render(<LoginForm />);
+    await waitFor(() =>
+      expect(screen.getByTestId('login-server-input').props['value']).toBe(
+        'https://saved.example/',
+      ),
+    );
+    expect(screen.queryByText(/Sign in once to connect securely/)).toBeNull();
+    expect(screen.queryByText(/Sign in securely on your server/)).toBeNull();
+    expect(screen.queryByText(/Use the same address/)).toBeNull();
   });
 });

@@ -249,6 +249,12 @@ export const picrUrqlClient = (url: string, headers: HeadersInit) => {
 };
 ```
 
+The native client supplies app-owned `authExchanges` to `picrUrqlClient`.
+Keep those between the global error exchange and retry/fetch, so the global
+handler sees only the final auth result. The default remains unchanged for
+callers without renewable sessions. Token headers are injected dynamically by
+the auth exchange; do not capture a rotating token in a client keyed by session.
+
 ### Cache Exchange
 
 ```typescript
