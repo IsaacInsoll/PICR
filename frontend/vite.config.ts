@@ -170,22 +170,10 @@ const graphqlRequestPolicy = (
         (definition) => definition.name?.value === operationName,
       );
       if (!operation) return 'unknown';
-      if (operation.operation !== 'mutation') return 'allow';
-      return operation.selectionSet.selections.every(
-        (selection) =>
-          selection.kind === Kind.FIELD && selection.name.value === 'auth',
-      )
-        ? 'allow'
-        : 'block';
+      return operation.operation === 'mutation' ? 'block' : 'allow';
     }
 
-    return operations.some((operation) => {
-      if (operation.operation !== 'mutation') return false;
-      return !operation.selectionSet.selections.every(
-        (selection) =>
-          selection.kind === Kind.FIELD && selection.name.value === 'auth',
-      );
-    })
+    return operations.some((operation) => operation.operation === 'mutation')
       ? 'block'
       : 'allow';
   } catch {

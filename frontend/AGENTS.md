@@ -1224,8 +1224,8 @@ For UI-only development against a larger remote dataset, run the Vite frontend
 with `VITE_PICR_DEV_BACKEND_URL=https://your-picr.example/ npm run start`.
 This dev-only override proxies GraphQL queries, `/image`, and `/zip` requests
 to the configured backend while keeping the browser on the Vite origin. GraphQL
-mutations other than login are blocked by the dev proxy, and a banner is shown
-in the UI.
+mutations are blocked by the dev proxy; login uses the HTTP auth endpoints.
+A banner is shown in the UI.
 
 Only use this when local frontend GraphQL documents match the remote server's
 schema. Backend/API changes still require the normal local backend and codegen
@@ -1284,3 +1284,16 @@ Administrator authenticator and server-wide 2FA policy controls live in compact
 responsive cards above the users list in Settings → Users & Security. Keep the
 `users` route for this combined tab; the former `security` route redirects to it
 so saved URLs continue to work.
+
+The `/app-sign-in` route sits outside `UserProvider` and the gallery router.
+It reuses `LoginForm` (including enrollment/recovery). Only the explicit
+`onAuthenticated` callback from a completed login may immediately connect the
+app; enrollment calls it only after the user saves recovery codes and finishes.
+A session restored from a browser cookie requires an avatar/name confirmation
+with account switching and the server URL above the continue button. Never infer fresh login
+from a token change or URL parameter: refresh and cookie restoration also change
+tokens. Validate the native callback, S256 challenge and state before rendering
+login. Do not issue authorization codes automatically on page load or place
+tokens in return URLs. Use one centered PICR logo across login, 2FA, enrollment,
+connection and return screens rather than a corner logo and generic lock/phone
+icons. Keep browser and app sessions independent.

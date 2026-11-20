@@ -774,7 +774,6 @@
     }
   },
   "security": {
-    "photographerAccess": "Acceso para fotógrafos",
     "verifyTitle": "Un paso más",
     "verifyDescription": "Introduce el código de seis dígitos de tu aplicación de autenticación.",
     "recoveryDescription": "Introduce uno de tus códigos de recuperación. También necesitas tu contraseña.",
@@ -840,5 +839,18 @@
       "network_error": "No se puede contactar con PICR. Comprueba tu conexión e inténtalo de nuevo.",
       "server_error": "PICR no pudo completar la solicitud. Inténtalo de nuevo o contacta con el operador."
     }
+  },
+  "nativeAuth": {
+    "title": "Conectar la aplicación PICR",
+    "description": "Usa esta cuenta en la aplicación PICR.",
+    "switchAccount": "Usar otra cuenta",
+    "retry": "Intentar de nuevo",
+    "returnToApp": "Volver a PICR",
+    "readyTitle": "Tu aplicación está lista",
+    "readyDescription": "Vuelve a la aplicación PICR para terminar de iniciar sesión. Si no se abrió automáticamente, usa el botón de abajo.",
+    "invalidRequest": "Este enlace de inicio de sesión no es válido o está incompleto. Vuelve a la aplicación PICR y empieza de nuevo.",
+    "signInDescription": "Inicia sesión para conectar tu aplicación PICR.",
+    "continueAs": "Continuar como {{name}}",
+    "connectingTitle": "Conectando con PICR"
   }
 }

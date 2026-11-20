@@ -1,3 +1,4 @@
+import { getAdminAccessToken } from '../adminAuth';
 import { execFile } from 'node:child_process';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
 import path from 'node:path';
@@ -104,19 +105,8 @@ type SeedMediaResponse = {
   video?: { files: Array<{ __typename: string }> } | null;
 };
 
-const loginForReadinessCheck = async (): Promise<string> => {
-  const data = await graphqlForReadinessCheck<{ auth: string }>(
-    null,
-    `mutation Login($user: String!, $password: String!) {
-      auth(user: $user, password: $password)
-    }`,
-    {
-      user: defaultCredentials.username,
-      password: defaultCredentials.password,
-    },
-  );
-  return data.auth;
-};
+const loginForReadinessCheck = () =>
+  getAdminAccessToken(testUrl, defaultCredentials);
 
 const graphqlForReadinessCheck = async <T>(
   token: string | null,

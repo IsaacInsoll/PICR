@@ -1,9 +1,3 @@
-export const loginMutationText = /* GraphQL */ `
-  mutation login($username: String!, $password: String!) {
-    auth(user: $username, password: $password)
-  }
-`;
-
 export const editUserMutationText = /* GraphQL */ `
   mutation EditUserMutation(
     $id: ID

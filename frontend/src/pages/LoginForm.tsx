@@ -5,7 +5,6 @@ import {
   Alert,
   Anchor,
   Button,
-  Group,
   Image,
   Paper,
   PasswordInput,
@@ -13,21 +12,27 @@ import {
   Stack,
   Text,
   TextInput,
-  ThemeIcon,
   Title,
 } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { MdLockOutline, MdVerifiedUser } from 'react-icons/md';
 import { acceptAdminSession, authRequest } from '../helpers/adminSession';
 import type { AdminAuthResult } from '@shared/auth/adminAuth';
 import { AuthenticatorEnrollment } from './management/AuthenticatorEnrollment';
 import { authErrorKey } from '../helpers/authErrorKey';
 import classes from './LoginForm.module.css';
 
-export const LoginForm = () => {
+export const LoginForm = ({
+  initialUsername = '',
+  description,
+  onAuthenticated,
+}: {
+  initialUsername?: string;
+  description?: string;
+  onAuthenticated?: () => void;
+}) => {
   const { t } = useTranslation('admin');
   const compact = useMediaQuery('(max-width: 360px)');
-  const [user, setUser] = useState('');
+  const [user, setUser] = useState(initialUsername);
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [recovery, setRecovery] = useState(false);
@@ -52,8 +57,10 @@ export const LoginForm = () => {
             password,
           });
       setPassword('');
-      if (result.status === 'authenticated') acceptAdminSession(result);
-      else setChallenge(result);
+      if (result.status === 'authenticated') {
+        acceptAdminSession(result);
+        onAuthenticated?.();
+      } else setChallenge(result);
     } catch (error) {
       setError(t(authErrorKey(error)));
       setCode('');
@@ -70,10 +77,14 @@ export const LoginForm = () => {
           withBorder
           className={classes.card}
         >
-          <AuthenticatorEnrollment
-            challenge={challenge.challenge}
-            onCancel={() => setChallenge(null)}
-          />
+          <Stack gap="lg">
+            <PicrLogo style={{ width: 64, alignSelf: 'center' }} />
+            <AuthenticatorEnrollment
+              challenge={challenge.challenge}
+              onCancel={() => setChallenge(null)}
+              onComplete={onAuthenticated}
+            />
+          </Stack>
         </Paper>
       </div>
     );
@@ -86,23 +97,16 @@ export const LoginForm = () => {
         className={classes.card}
       >
         <Stack gap="lg">
-          <Group justify="space-between">
-            <PicrLogo style={{ width: 36 }} />
-            <Text size="sm" c="dimmed">
-              {t('security.photographerAccess')}
-            </Text>
-          </Group>
           <Stack gap="xs" align="center">
-            <ThemeIcon size={56} radius="xl" variant="light">
-              {challenge ? (
-                <MdVerifiedUser size={28} />
-              ) : (
-                <MdLockOutline size={28} />
-              )}
-            </ThemeIcon>
+            <PicrLogo style={{ width: 64 }} />
             <Title order={2}>
               {challenge ? t('security.verifyTitle') : t('login.title')}
             </Title>
+            {!challenge && description ? (
+              <Text c="dimmed" size="sm" ta="center">
+                {description}
+              </Text>
+            ) : null}
             {challenge ? (
               <Text c="dimmed" size="sm" ta="center">
                 {recovery
@@ -125,6 +129,7 @@ export const LoginForm = () => {
               {challenge ? (
                 recovery ? (
                   <TextInput
+                    name="recoveryCode"
                     autoFocus
                     label={t('security.recoveryCode')}
                     value={code}
@@ -153,12 +158,14 @@ export const LoginForm = () => {
                 <>
                   <TextInput
                     required
+                    name="username"
                     label={t('login.username')}
                     value={user}
                     autoComplete="username"
                     onChange={(event) => setUser(event.currentTarget.value)}
                   />
                   <PasswordInput
+                    name="password"
                     required
                     label={t('login.password')}
                     autoComplete="current-password"

@@ -774,7 +774,6 @@
     }
   },
   "security": {
-    "photographerAccess": "Anmeldung für Fotografen",
     "verifyTitle": "Noch ein Schritt",
     "verifyDescription": "Gib den sechsstelligen Code aus deiner Authenticator-App ein.",
     "recoveryDescription": "Gib einen gespeicherten Wiederherstellungscode ein. Dein Passwort wird weiterhin benötigt.",
@@ -840,5 +839,18 @@
       "network_error": "PICR ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
       "server_error": "PICR konnte die Anfrage nicht abschließen. Versuche es erneut oder kontaktiere den Serverbetreiber."
     }
+  },
+  "nativeAuth": {
+    "title": "PICR-App verbinden",
+    "description": "Verwende dieses Konto in der PICR-App.",
+    "switchAccount": "Anderes Konto verwenden",
+    "retry": "Erneut versuchen",
+    "returnToApp": "Zurück zu PICR",
+    "readyTitle": "Deine App ist bereit",
+    "readyDescription": "Kehre zur PICR-App zurück, um die Anmeldung abzuschließen. Falls sie nicht automatisch geöffnet wurde, nutze die Schaltfläche unten.",
+    "invalidRequest": "Dieser Anmeldelink ist ungültig oder unvollständig. Kehre zur PICR-App zurück und beginne erneut.",
+    "signInDescription": "Melde dich an, um deine PICR-App zu verbinden.",
+    "continueAs": "Als {{name}} fortfahren",
+    "connectingTitle": "Verbindung zu PICR"
   }
 }

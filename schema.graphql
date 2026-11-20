@@ -336,7 +336,6 @@ enum MediaTypeFilter {
 
 type Mutation {
   addComment(comment: String, flag: FileFlag, id: ID!, nickName: String, rating: Int): FileInterface!
-  auth(password: String!, user: String!): String!
   deleteBranding(id: ID!): Boolean!
   deleteUser(id: ID!): Boolean!
   editAdminUser(commentPermissions: CommentPermissions, enabled: Boolean, folderId: ID, id: ID, name: String, ntfy: String, ntfyEmail: Boolean, password: String, username: String): User!

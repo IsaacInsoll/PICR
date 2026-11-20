@@ -18,10 +18,10 @@ enrollment and security-setting writes.
 Access JWTs contain a session ID, user ID and authentication version, never a
 password hash or a TOTP secret. Authorization rechecks the account, session,
 authentication version, enrolled factor and server policy. Legacy JWTs are
-rejected. The GraphQL `auth` compatibility mutation cannot complete enrolled or
-required 2FA logins. It issues a 28-day access token for current mobile apps;
-normal web/native HTTP sign-in uses 15-minute access tokens. Both token paths
-recheck the same database session, authentication version, and 2FA policy.
+rejected. The GraphQL `auth` mutation has been removed. All administrator
+sign-in uses HTTP and 15-minute access tokens with rotating refresh tokens.
+Previously issued 28-day compatibility access tokens are rejected as well;
+server upgrades require the updated companion app.
 
 Refresh tokens are random opaque values stored as SHA256 hashes. Each rotation
 consumes the old token; used hashes remain for a bounded 28-day replay-detection
@@ -47,12 +47,11 @@ and changes the authentication version. The local reset tool is the explicit
 operator-controlled exception. It preserves server policy unless a root-scoped
 admin is explicitly recovered with `--disable-policy`.
 
-The first commit covers server/web only. The companion app must replace saved
-passwords with SecureStore sessions and explicitly implement the HTTP challenge
-contract. Native callers use `x-picr-client: native`; refresh tokens are returned
+The companion app uses browser authentication and replaces saved passwords
+with SecureStore sessions. Native callers use `x-picr-client: native`; refresh tokens are returned
 in responses and supplied in refresh/logout request bodies for SecureStore use.
-Existing apps retain their 28-day password-only login until the companion app
-implements refresh tokens and authenticator challenges.
+Older apps must be updated: their GraphQL password login and long-lived tokens
+are no longer supported. The current app uses the native browser handoff below.
 Future passkey support should add a credential type and challenge method without
 changing the session model.
 
@@ -65,7 +64,7 @@ error exchange runs above auth, so recoverable errors do not log the user out.
 Token freshness uses the issued lifetime (`exp - iat`) and a monotonic timer
 from receipt, avoiding repeated refreshes when a browser's wall clock is fast.
 Cookie rotation, cross-tab Web Locks and HTTP settings requests remain in
-`adminSession.ts`; native token storage will be implemented separately.
+`adminSession.ts`; native token storage lives in the app's `useLoginDetails.ts`.
 
 The web keys its GraphQL client by account identity, not access-token value.
 Normal token rotation preserves cache and component state; a different account
@@ -85,6 +84,36 @@ access is unchanged. Existing administrators will need to sign in again after
 upgrading. To enable 2FA, configure `MFA_ENCRYPTION_KEY` or
 `MFA_ENCRYPTION_KEY_FILE`; startup logs provide setup instructions when neither is
 set. Back up the key with the database. Update the companion app alongside this
-release to use renewable sessions and 2FA; existing password-only app logins retain
-their 28-day lifetime. Downgrading
+release to use renewable sessions and 2FA. The GraphQL password login mutation
+and existing long-lived mobile tokens are no longer accepted. Downgrading
 to a version without 2FA restores its password-only authentication behavior.
+
+## Native browser sign-in
+
+The companion app opens `/app-sign-in` in the system authentication browser.
+The page reuses the web login, TOTP/recovery and required-enrollment screens.
+After a fresh login it connects the app immediately; required enrollment waits
+until recovery codes have been saved and the user chooses Done. Only an explicit
+login-completion callback may skip confirmation. A restored browser session
+shows a compact avatar/name confirmation with account switching and the server
+URL above the continue button; token rotation or a query parameter must never trigger automatic
+authorization. The browser remains a
+separate session from the app. A native exchange must not set a refresh cookie.
+
+The app generates a random verifier and state, sends only the S256 challenge,
+and accepts only its exact callback and matching state. Backend callback URLs
+are allowlisted as `picr://auth/callback` and `picrdev://auth/callback`. The
+browser obtains a 60-second authorization code via authenticated JSON POST;
+the database stores its hash, source session, challenge and callback. Exchanging
+it verifies PKCE and the callback, rechecks the source session and current MFA
+policy under the account lock, consumes the code atomically and creates a new
+native session. Access tokens, refresh tokens and passwords are never placed in callback URLs.
+
+App storage version 2 contains the server, access token and rotating refresh
+token. Earlier saved passwords are removed, while the server and username are
+kept for one fresh browser login. Refresh is serialized, uses foreground
+activity for the 28-day inactivity window, and must preserve storage on network
+errors. Client identity is the session ID, so token rotation preserves cache.
+Logout and refresh storage writes must be ordered, with a final identity check
+before publishing a refreshed session, to prevent an in-flight refresh from
+restoring a signed-out account.

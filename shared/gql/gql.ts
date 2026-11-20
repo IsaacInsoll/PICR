@@ -45,7 +45,6 @@ type Documents = {
     "\n  mutation EditUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n    $linkMode: LinkMode\n    $publicationState: LinkPublicationState\n    $estimatedDeliveryAt: DateTime\n    $comingSoonMessage: String\n    $galleryPasscode: String\n    $expiresAt: DateTime\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      username: $username\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n      linkMode: $linkMode\n      publicationState: $publicationState\n      estimatedDeliveryAt: $estimatedDeliveryAt\n      comingSoonMessage: $comingSoonMessage\n      galleryPasscode: $galleryPasscode\n      expiresAt: $expiresAt\n    ) {\n      ...UserFragment\n    }\n  }\n": typeof types.EditUserMutationDocument,
     "\n    mutation generateThumbnailsQuery($folderId: ID!, $mediaType: MediaTypeFilter) {\n        generateThumbnails(folderId: $folderId, mediaType: $mediaType)\n    }": typeof types.GenerateThumbnailsQueryDocument,
     "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n": typeof types.GenerateZipDocument,
-    "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": typeof types.LoginDocument,
     "\n  mutation RecordFolderVisit($folderId: ID!) {\n    recordFolderVisit(folderId: $folderId)\n  }\n": typeof types.RecordFolderVisitDocument,
     "\n  mutation RenameFolder($folderId: ID!, $oldPath: String!, $newPath: String!) {\n    renameFolder(folderId: $folderId, oldPath: $oldPath, newPath: $newPath) {\n      ...FolderFragment\n    }\n  }\n": typeof types.RenameFolderDocument,
     "\n  mutation RescanFolder($folderId: ID!) {\n    rescanFolder(folderId: $folderId)\n  }\n": typeof types.RescanFolderDocument,
@@ -113,7 +112,6 @@ const documents: Documents = {
     "\n  mutation EditUserMutation(\n    $id: ID\n    $name: String\n    $username: String\n    $uuid: String\n    $enabled: Boolean\n    $folderId: ID\n    $commentPermissions: CommentPermissions\n    $linkMode: LinkMode\n    $publicationState: LinkPublicationState\n    $estimatedDeliveryAt: DateTime\n    $comingSoonMessage: String\n    $galleryPasscode: String\n    $expiresAt: DateTime\n  ) {\n    editUser(\n      id: $id\n      name: $name\n      username: $username\n      uuid: $uuid\n      enabled: $enabled\n      folderId: $folderId\n      commentPermissions: $commentPermissions\n      linkMode: $linkMode\n      publicationState: $publicationState\n      estimatedDeliveryAt: $estimatedDeliveryAt\n      comingSoonMessage: $comingSoonMessage\n      galleryPasscode: $galleryPasscode\n      expiresAt: $expiresAt\n    ) {\n      ...UserFragment\n    }\n  }\n": types.EditUserMutationDocument,
     "\n    mutation generateThumbnailsQuery($folderId: ID!, $mediaType: MediaTypeFilter) {\n        generateThumbnails(folderId: $folderId, mediaType: $mediaType)\n    }": types.GenerateThumbnailsQueryDocument,
     "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n": types.GenerateZipDocument,
-    "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n": types.LoginDocument,
     "\n  mutation RecordFolderVisit($folderId: ID!) {\n    recordFolderVisit(folderId: $folderId)\n  }\n": types.RecordFolderVisitDocument,
     "\n  mutation RenameFolder($folderId: ID!, $oldPath: String!, $newPath: String!) {\n    renameFolder(folderId: $folderId, oldPath: $oldPath, newPath: $newPath) {\n      ...FolderFragment\n    }\n  }\n": types.RenameFolderDocument,
     "\n  mutation RescanFolder($folderId: ID!) {\n    rescanFolder(folderId: $folderId)\n  }\n": types.RescanFolderDocument,
@@ -288,10 +286,6 @@ export function graphql(source: "\n    mutation generateThumbnailsQuery($folderI
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n"): (typeof documents)["\n  mutation GenerateZip($folderId: ID!) {\n    generateZip(folderId: $folderId)\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"): (typeof documents)["\n  mutation login($username: String!, $password: String!) {\n    auth(user: $username, password: $password)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

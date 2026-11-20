@@ -1,6 +1,6 @@
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { testUrl } from '../api/testVariables';
-import { loginMutationText } from './mutations';
+import { getAdminAccessToken } from '../adminAuth';
 
 // Minimal fetch-based GraphQL caller for Playwright specs that need to set up
 // server state before driving the browser. Operations stay local to tests/e2e/
@@ -27,15 +27,6 @@ export async function gqlRequest<T>(
 }
 
 export async function adminAuthHeader() {
-  const result = await gqlRequest<{ auth?: string }>(
-    loginMutationText,
-    defaultCredentials,
-  );
-  const token = result.data?.auth;
-  if (!token) {
-    throw new Error(
-      `Authentication failed: ${JSON.stringify(result.errors ?? [])}`,
-    );
-  }
+  const token = await getAdminAccessToken(testUrl, defaultCredentials);
   return { authorization: `Bearer ${token}` };
 }

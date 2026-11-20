@@ -34,6 +34,15 @@ import {
   recordSuccessfulLogin,
 } from '../auth/loginRateLimit.js';
 import type { AdminSecurityStatus } from '@shared/auth/adminAuth.js';
+import {
+  nativeRedirectUris,
+  type NativeAccount,
+} from '@shared/auth/nativeAuth.js';
+import { userToJSON } from '../graphql/helpers/userToJSON.js';
+import {
+  authorizeNativeApp,
+  exchangeNativeCode,
+} from '../auth/nativeAuthorization.js';
 
 const credentials = z.object({
   username: z.string().min(1).max(255),
@@ -69,7 +78,11 @@ function sendSession<T extends object>(
   result: T,
   req: Request,
 ): void {
-  if ('refreshToken' in result && typeof result.refreshToken === 'string')
+  if (
+    req.get('x-picr-client') !== 'native' &&
+    'refreshToken' in result &&
+    typeof result.refreshToken === 'string'
+  )
     res.cookie(cookieName, result.refreshToken, cookieOptions(req));
   // Native support uses SecureStore rather than browser cookies; no CORS is enabled.
   res.json(
@@ -152,6 +165,43 @@ export function registerAdminAuthRoutes(router: Router): void {
       req,
     );
   });
+  route('/native/config', async (_req, res) => {
+    res.json({ version: 1 });
+  });
+  route('/native/account', async (req, res) => {
+    const user = await currentAdmin(req);
+    const { name, username, gravatar } = userToJSON(user);
+    res.json({ name, username, gravatar } satisfies NativeAccount);
+  });
+  route('/native/authorize', async (req, res) => {
+    const input = z
+      .object({
+        redirectUri: z.enum(nativeRedirectUris),
+        codeChallenge: z.string().regex(/^[A-Za-z0-9_-]{43}$/),
+        state: z.string().regex(/^[A-Za-z0-9_-]{43,128}$/),
+      })
+      .parse(req.body);
+    res.json(await authorizeNativeApp(req.get('authorization'), input));
+  });
+  route('/native/token', async (req, res) => {
+    if (req.get('x-picr-client') !== 'native')
+      throw new AdminAuthError('invalid_request', 400);
+    const input = z
+      .object({
+        code: z.string().regex(/^[A-Za-z0-9_-]{43}$/),
+        codeVerifier: z.string().regex(/^[A-Za-z0-9._~-]{43,128}$/),
+        redirectUri: z.enum(nativeRedirectUris),
+      })
+      .parse(req.body);
+    // A native session must never replace the browser's refresh cookie.
+    res.json(
+      await exchangeNativeCode(
+        input.code,
+        input.codeVerifier,
+        input.redirectUri,
+      ),
+    );
+  });
   route('/verify', async (req, res) => {
     const input = factorInput.parse(req.body);
     sendSession(
@@ -186,7 +236,8 @@ export function registerAdminAuthRoutes(router: Router): void {
         ? input.refreshToken
         : refreshCookie(req);
     if (token) await revokeRefreshSession(token);
-    res.clearCookie(cookieName, cookieOptions(req));
+    if (req.get('x-picr-client') !== 'native')
+      res.clearCookie(cookieName, cookieOptions(req));
     res.json({ success: true });
   });
   route('/security', async (req, res) => {

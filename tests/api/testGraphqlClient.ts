@@ -1,4 +1,4 @@
-import { loginMutation } from '../../shared/urql/mutations/loginMutation';
+import { getAdminAccessToken } from '../adminAuth';
 import { Client, fetchExchange } from 'urql';
 import type { ICredentials } from '../../shared/types/credentials';
 
@@ -16,11 +16,8 @@ export const createTestGraphqlClient = async (headers: HeadersInit) => {
 };
 
 export const getUserHeader = async (credentials: ICredentials) => {
-  const client = await createTestGraphqlClient({});
-  const result = await client.mutation(loginMutation, credentials).toPromise();
-  if (result.error || !result.data?.auth || !result.data.auth.startsWith('ey'))
-    throw new Error('Authentication failed');
-  return { authorization: `Bearer ${result.data.auth}` };
+  const token = await getAdminAccessToken(testUrl, credentials);
+  return { authorization: `Bearer ${token}` };
 };
 
 export const getLinkHeader = async (uuid: string, galleryPasscode?: string) => {

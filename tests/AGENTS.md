@@ -63,6 +63,11 @@ For pure unit tests that mock their dependencies, use the Docker-free lane inste
 
 ## GraphQL Reuse Rules
 
+Administrator test authentication uses the shared HTTP helpers in
+`tests/adminAuth.ts`, including readiness probes and browser fixture setup.
+Do not restore GraphQL password-login fixtures. Inline introspection is allowed
+for schema-contract checks proving removed fields stay absent.
+
 - For `tests/api`, do not write inline GraphQL strings for app behavior.
 - In `tests/api`, import shared operations from `shared/urql/queries/*` and `shared/urql/mutations/*` so tests validate real client documents.
 - In `tests/e2e`, keep browser-smoke GraphQL operations local to `tests/e2e/` (for example `tests/e2e/mutations.ts`) to avoid Playwright TypeScript loader issues with generated GraphQL enum files.

@@ -2,12 +2,11 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { authenticatorCode as totp } from '../authenticator';
 import { expect, test } from 'vitest';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { getUserHeader, createTestGraphqlClient } from './testGraphqlClient';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { editAdminUserMutation } from '../../shared/urql/mutations/editAdminUserMutation';
 import { deleteUserMutation } from '../../shared/urql/mutations/deleteUserMutation';
-import { loginMutation } from '../../shared/urql/mutations/loginMutation';
 import { meQuery } from '../../shared/urql/queries/meQuery';
 import { testUrl } from './testVariables';
 import type {
@@ -66,13 +65,6 @@ test('admin TOTP enrollment, recovery, enforcement and rotating sessions', async
     );
     expect(claims.exp - claims.iat).toBe(900);
     expect(claims.hashedPassword).toBeUndefined();
-    const legacyBefore = await createTestGraphqlClient({});
-    const legacyToken = (
-      await legacyBefore
-        .mutation(loginMutation, { username, password })
-        .toPromise()
-    ).data?.auth;
-    expect(legacyToken).toBeTruthy();
     const oldCookie = cookieFrom(login);
     expect(login.headers.get('set-cookie')).toContain('HttpOnly');
     expect(login.headers.get('cache-control')).toBe('no-store');
@@ -102,18 +94,7 @@ test('admin TOTP enrollment, recovery, enforcement and rotating sessions', async
     expect(
       (await staleClient.query(meQuery, {}).toPromise()).data?.me,
     ).toBeNull();
-    const staleLegacy = await createTestGraphqlClient({
-      authorization: `Bearer ${legacyToken}`,
-    });
-    expect(
-      (await staleLegacy.query(meQuery, {}).toPromise()).data?.me,
-    ).toBeNull();
     accessToken = confirmed.accessToken;
-    const legacy = await createTestGraphqlClient({});
-    expect(
-      (await legacy.mutation(loginMutation, { username, password }).toPromise())
-        .data?.auth,
-    ).toBe('');
     const next: AdminAuthResult = await (
       await post('login', { username, password })
     ).json();
@@ -134,6 +115,48 @@ test('admin TOTP enrollment, recovery, enforcement and rotating sessions', async
       (await post('verify', { challenge: next.challenge, code: codes[0] }))
         .status,
     ).toBe(401);
+    // Only the completed second-factor session can authorize a native app.
+    const verifier = randomBytes(32).toString('base64url');
+    const nativeRequest = {
+      redirectUri: 'picr://auth/callback',
+      codeChallenge: createHash('sha256').update(verifier).digest('base64url'),
+      state: randomBytes(32).toString('base64url'),
+    };
+    expect(
+      (
+        await post(
+          'native/authorize',
+          nativeRequest,
+          `Bearer ${next.challenge}`,
+        )
+      ).status,
+    ).toBe(401);
+    const approved = await post(
+      'native/authorize',
+      nativeRequest,
+      `Bearer ${accessToken}`,
+    );
+    expect(approved.status).toBe(200);
+    const nativeCode: { code: string } = await approved.json();
+    const nativeResponse = await fetch(`${testUrl}api/auth/native/token`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-picr-auth': '1',
+        'x-picr-client': 'native',
+      },
+      body: JSON.stringify({
+        code: nativeCode.code,
+        codeVerifier: verifier,
+        redirectUri: nativeRequest.redirectUri,
+      }),
+    });
+    expect(nativeResponse.status).toBe(200);
+    const nativeSession: { accessToken: string } = await nativeResponse.json();
+    expect(
+      (await post('native/account', {}, `Bearer ${nativeSession.accessToken}`))
+        .status,
+    ).toBe(200);
     const refreshCookie = cookieFrom(verification);
     const refresh = await post('refresh', {}, undefined, refreshCookie);
     expect(refresh.status).toBe(200);
@@ -315,7 +338,7 @@ test('concurrent logins do not exhaust the connection pool while holding user lo
   );
 });
 
-test('REST and legacy GraphQL share the proxy-aware login rate-limit identity', async () => {
+test('HTTP login uses the proxy-aware rate-limit identity', async () => {
   const owner = await createTestGraphqlClient(
     await getUserHeader(defaultCredentials),
   );
@@ -335,13 +358,16 @@ test('REST and legacy GraphQL share the proxy-aware login rate-limit identity', 
   try {
     for (let i = 0; i < 5; i++)
       await post('login', { username, password: 'incorrect' });
-    const spoofed = await createTestGraphqlClient({
-      'x-real-ip': '198.51.100.123',
+    const spoofed = await fetch(`${testUrl}api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-picr-auth': '1',
+        'x-real-ip': '198.51.100.123',
+      },
+      body: JSON.stringify({ username, password }),
     });
-    const login = await spoofed
-      .mutation(loginMutation, { username, password })
-      .toPromise();
-    expect(login.data?.auth).toBe('');
+    expect(spoofed.status).toBe(429);
     expect((await post('login', { username, password })).status).toBe(429);
   } finally {
     if (id) await owner.mutation(deleteUserMutation, { id }).toPromise();

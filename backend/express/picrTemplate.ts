@@ -44,6 +44,10 @@ export const picrTemplate = async (req: Request, res: Response) => {
   const strippedBase = picrConfig.baseUrl.slice(0, -1);
   const basePrefix = getBasePrefix();
   const requestPath = stripBasePrefix(req.originalUrl);
+  if (requestPath.split('?')[0] === '/app-sign-in') {
+    res.set('Cache-Control', 'no-store');
+    res.set('Referrer-Policy', 'no-referrer');
+  }
   let fields: ITemplateFields = {
     ...fieldDefaults,
     url: strippedBase + requestPath,

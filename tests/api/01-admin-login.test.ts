@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest';
 import { createTestGraphqlClient, getUserHeader } from './testGraphqlClient';
-import { loginMutation } from '../../shared/urql/mutations/loginMutation';
+import { requestAdminLogin } from '../adminAuth';
+import type { AdminAuthResult } from '../../shared/auth/adminAuth';
 import { defaultCredentials } from '../../backend/auth/defaultCredentials';
 import { meQuery } from '../../shared/urql/queries/meQuery';
 import { serverInfoQuery } from '../../shared/urql/queries/serverInfoQuery';
@@ -11,66 +12,69 @@ import { viewFolderQuery } from '../../shared/urql/queries/viewFolderQuery';
 import { photoFolderId, testUrl } from './testVariables';
 import { thumbnailVariantForWidth } from '../../shared/thumbnailVariants';
 
-test('Login Mutation Works', async () => {
-  const client = await createTestGraphqlClient({});
-  const result = await client
-    .mutation(loginMutation, defaultCredentials)
-    .toPromise();
-  expect(result.error).toBeUndefined();
-  expect(result.data?.auth).toBeDefined();
-  const auth = result.data?.auth;
-  expect(auth).not.toBe('');
-  expect(auth?.startsWith('ey')).toBe(true); //valid JWT starts with `ey`
+test('HTTP login issues a short-lived access token', async () => {
+  const response = await requestAdminLogin(testUrl, defaultCredentials);
+  expect(response.status).toBe(200);
+  const result: AdminAuthResult = await response.json();
+  if (result.status !== 'authenticated')
+    throw new Error('Expected authenticated session');
   const claims = JSON.parse(
-    Buffer.from(auth?.split('.')[1] ?? '', 'base64url').toString('utf8'),
+    Buffer.from(result.accessToken.split('.')[1], 'base64url').toString('utf8'),
   );
-  expect(claims.exp - claims.iat).toBeGreaterThanOrEqual(28 * 24 * 60 * 60 - 2);
-  expect(claims.exp - claims.iat).toBeLessThanOrEqual(28 * 24 * 60 * 60);
+  expect(claims.exp - claims.iat).toBe(15 * 60);
   expect(claims.hashedPassword).toBeUndefined();
 });
 
-test('Incorrect Login Fails', async () => {
-  const badLogin = { ...defaultCredentials, password: 'incorrectPassword' };
-  const client = await createTestGraphqlClient({});
-  const result = await client.mutation(loginMutation, badLogin).toPromise();
+test('GraphQL no longer exposes password login', async () => {
+  // Schema introspection is a contract probe, not an application operation.
+  const response = await fetch(`${testUrl}graphql`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      query:
+        '{ __schema { mutationType { fields(includeDeprecated: true) { name } } } }',
+    }),
+  });
+  const result: {
+    data?: { __schema: { mutationType: { fields: Array<{ name: string }> } } };
+    errors?: unknown[];
+  } = await response.json();
+  expect(result.errors).toBeUndefined();
+  expect(
+    result.data?.__schema.mutationType.fields.map((field) => field.name),
+  ).not.toContain('auth');
+});
 
-  expect(result.error).toBeUndefined();
-  expect(result?.data?.auth).toBeDefined();
-  expect(result?.data?.auth).toBe('');
+test('Incorrect HTTP login fails with a typed error', async () => {
+  const response = await requestAdminLogin(testUrl, {
+    ...defaultCredentials,
+    password: 'incorrectPassword',
+  });
+  expect(response.status).toBe(401);
+  expect(await response.json()).toEqual({ error: 'invalid_credentials' });
 });
 
 test('Login is temporarily rate limited after repeated failures from same IP', async () => {
   const ipA = `203.0.113.${Math.floor(Math.random() * 200) + 1}`;
   const ipB = `203.0.114.${Math.floor(Math.random() * 200) + 1}`;
-  const badLogin = { ...defaultCredentials, password: 'incorrectPassword' };
-
-  const blockedClient = await createTestGraphqlClient({
+  for (let i = 0; i < 5; i++) {
+    const response = await requestAdminLogin(
+      testUrl,
+      { ...defaultCredentials, password: 'incorrectPassword' },
+      { 'x-forwarded-for': ipA },
+    );
+    expect(response.status).toBe(401);
+  }
+  const blocked = await requestAdminLogin(testUrl, defaultCredentials, {
     'x-forwarded-for': ipA,
   });
-
-  for (let i = 0; i < 5; i++) {
-    const failResult = await blockedClient
-      .mutation(loginMutation, badLogin)
-      .toPromise();
-    expect(failResult.error).toBeUndefined();
-    expect(failResult.data?.auth).toBe('');
-  }
-
-  const blockedValidResult = await blockedClient
-    .mutation(loginMutation, defaultCredentials)
-    .toPromise();
-  expect(blockedValidResult.error).toBeUndefined();
-  expect(blockedValidResult.data?.auth).toBe('');
-
-  const differentIpClient = await createTestGraphqlClient({
+  expect(blocked.status).toBe(429);
+  expect(await blocked.json()).toEqual({ error: 'rate_limited' });
+  const allowed = await requestAdminLogin(testUrl, defaultCredentials, {
     'x-forwarded-for': ipB,
   });
-  const allowedResult = await differentIpClient
-    .mutation(loginMutation, defaultCredentials)
-    .toPromise();
-  expect(allowedResult.error).toBeUndefined();
-  expect(allowedResult.data?.auth).toBeDefined();
-  expect(allowedResult.data?.auth.startsWith('ey')).toBe(true);
+  expect(allowed.status).toBe(200);
+  expect(await allowed.json()).toMatchObject({ status: 'authenticated' });
 });
 
 test('Admin has correct user config', async () => {

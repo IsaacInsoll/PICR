@@ -1,5 +1,4 @@
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
-import { auth } from './mutations/auth.js';
 import { editUser } from './mutations/editUser.js';
 import { editAdminUser } from './mutations/editAdminUser.js';
 import { generateThumbnails } from './mutations/generateThumbnails.js';
@@ -105,7 +104,6 @@ const mutations = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     addComment,
-    auth,
     deleteUser,
     editAdminUser,
     editUser,

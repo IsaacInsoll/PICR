@@ -5,7 +5,8 @@ import {
 } from './helpers/adminSession';
 import { createClient } from './urqlClient';
 import { Provider as URQLProvider } from 'urql';
-import { BrowserRouter } from 'react-router';
+import { BrowserRouter, Route, Routes } from 'react-router';
+import { NativeSignIn } from './pages/NativeSignIn';
 import { HashNavigationProvider } from './hooks/useHashNavigation';
 import { authKeyAtom, useSessionKey } from './atoms/authAtom';
 import { useAtomValue, useSetAtom } from 'jotai';
@@ -115,7 +116,14 @@ const App = () => {
               </Portal>
               <PicrErrorBoundary>
                 <Suspense fallback={<PicrLoadingOverlay />}>
-                  {authReady ? <UserProvider /> : <PicrLoadingOverlay />}
+                  {authReady ? (
+                    <Routes>
+                      <Route path="/app-sign-in" element={<NativeSignIn />} />
+                      <Route path="*" element={<UserProvider />} />
+                    </Routes>
+                  ) : (
+                    <PicrLoadingOverlay />
+                  )}
                   <DownloadSharePromptHost />
                   <Notifications pauseResetOnHover="notification" />
                 </Suspense>

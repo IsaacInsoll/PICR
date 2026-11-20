@@ -774,7 +774,6 @@
     }
   },
   "security": {
-    "photographerAccess": "Photographer sign-in",
     "verifyTitle": "One more step",
     "verifyDescription": "Enter the six-digit code from your authenticator app.",
     "recoveryDescription": "Enter one of your saved recovery codes. Your password is still required.",
@@ -840,5 +839,18 @@
       "network_error": "Unable to reach PICR. Check your connection and try again.",
       "server_error": "PICR could not complete this request. Try again or contact the server operator."
     }
+  },
+  "nativeAuth": {
+    "title": "Connect PICR app",
+    "description": "Use this account in the PICR app.",
+    "switchAccount": "Use a different account",
+    "retry": "Try again",
+    "returnToApp": "Return to PICR",
+    "readyTitle": "Your app is ready",
+    "readyDescription": "Return to the PICR app to finish signing in. If it did not open automatically, use the button below.",
+    "invalidRequest": "This sign-in link is invalid or incomplete. Return to the PICR app and start again.",
+    "signInDescription": "Sign in to connect your PICR app.",
+    "continueAs": "Continue as {{name}}",
+    "connectingTitle": "Connecting to PICR"
   }
 }

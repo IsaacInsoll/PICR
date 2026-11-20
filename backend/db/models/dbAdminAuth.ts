@@ -72,3 +72,17 @@ export const dbAuthChallenge = pgTable(
     index('auth_challenges_expiry_idx').on(table.expiresAt),
   ],
 );
+
+export const dbNativeAuthorization = pgTable(
+  'NativeAuthorizations',
+  {
+    hash: varchar('hash', { length: 64 }).primaryKey(),
+    sessionId: uuid('sessionId')
+      .notNull()
+      .references(() => dbAuthSession.id, { onDelete: 'cascade' }),
+    codeChallenge: varchar('codeChallenge', { length: 43 }).notNull(),
+    redirectUri: varchar('redirectUri', { length: 64 }).notNull(),
+    expiresAt: timestamp('expiresAt', { withTimezone: true }).notNull(),
+  },
+  (table) => [index('native_authorization_expiry_idx').on(table.expiresAt)],
+);

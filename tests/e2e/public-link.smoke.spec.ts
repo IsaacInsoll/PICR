@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { defaultCredentials } from '../../backend/auth/defaultCredentials';
+import { adminAuthHeader } from './graphqlClient';
 import { photoFolderId } from '../api/testVariables';
 import {
   expectNoBrowserFailures,
@@ -10,7 +10,6 @@ import {
   deleteUserMutationText,
   editBrandingMutationText,
   editUserMutationText,
-  loginMutationText,
   setFolderBrandingMutationText,
 } from './mutations';
 
@@ -27,13 +26,7 @@ test('Coming Soon link remains private until published', async ({ page }) => {
   const estimatedDeliveryAt = new Date(
     Date.now() + 2 * 24 * 60 * 60 * 1000,
   ).toISOString();
-  const login = await gqlRequest<{ auth?: string }>(
-    loginMutationText,
-    defaultCredentials,
-  );
-  const token = login.data?.auth;
-  expect(token).toBeTruthy();
-  const authHeader = { authorization: `Bearer ${token}` };
+  const authHeader = await adminAuthHeader();
   let linkId: string | undefined;
   const failures = trackBrowserFailures(page);
 
@@ -116,17 +109,7 @@ test('public link and login routes load with no browser/runtime errors', async (
   const folderId = photoFolderId;
   const username = `frontend-smoke-${suffix}@example.com`;
   const galleryPasscode = `smoke-${suffix}`;
-  const loginResult = await gqlRequest<{ auth?: string }>(
-    loginMutationText,
-    defaultCredentials,
-  );
-  const authToken = loginResult.data?.auth;
-  if (!authToken) {
-    throw new Error(
-      `Authentication failed: ${JSON.stringify(loginResult.errors ?? [])}`,
-    );
-  }
-  const authHeader = { authorization: `Bearer ${authToken}` };
+  const authHeader = await adminAuthHeader();
   let createdUserId: string | undefined;
   let brandingId: string | undefined;
 

@@ -111,4 +111,6 @@ Downgrading to an older PICR version without 2FA restores that version's passwor
 
 ## Mobile compatibility
 
-Existing mobile apps retain 28-day password-only sessions. Those sessions are still checked against account changes, revocation, and server-wide 2FA policy. Update the app to use renewable sessions and authenticator challenges. Accounts with 2FA enabled or required should use the web interface until the updated app is installed.
+The current mobile app signs in through your server’s website and supports authenticator codes, recovery codes, and required enrollment. It stores rotating refresh tokens securely on the device and renews its own session while actively used within each 28-day window. Browser and app sessions are independent.
+
+Update the server and app together. Older mobile versions cannot sign in to this server version; GraphQL password login and existing long-lived app tokens are no longer accepted. After upgrading the app, sign in once through the browser; previously saved app passwords are removed.

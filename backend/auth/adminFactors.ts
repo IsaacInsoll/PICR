@@ -49,7 +49,6 @@ export async function passwordLogin(
   username: string,
   password: string,
   ipAddress?: string,
-  client: 'web' | 'legacy_app' = 'web',
 ) {
   const identity = { username, ipAddress };
   if (isLoginBlocked(identity)) throw new AdminAuthError('rate_limited', 429);
@@ -91,12 +90,7 @@ export async function passwordLogin(
     recordSuccessfulLogin(identity);
     return {
       status: 'authenticated' as const,
-      ...(await createAdminSession(
-        tx,
-        user,
-        false,
-        client === 'legacy_app' ? 'session' : 'short',
-      )),
+      ...(await createAdminSession(tx, user, false)),
     };
   });
 }

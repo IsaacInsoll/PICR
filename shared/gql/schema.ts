@@ -358,7 +358,6 @@ export enum MediaTypeFilter {
 export type Mutation = {
   __typename?: 'Mutation';
   addComment: FileInterface;
-  auth: Scalars['String']['output'];
   deleteBranding: Scalars['Boolean']['output'];
   deleteUser: Scalars['Boolean']['output'];
   editAdminUser: User;
@@ -383,12 +382,6 @@ export type MutationAddCommentArgs = {
   id: Scalars['ID']['input'];
   nickName?: InputMaybe<Scalars['String']['input']>;
   rating?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type MutationAuthArgs = {
-  password: Scalars['String']['input'];
-  user: Scalars['String']['input'];
 };
 
 

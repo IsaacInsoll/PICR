@@ -568,11 +568,18 @@ values are migrated.
 
 Admin web authentication uses `/api/auth/*` JSON POST endpoints (custom
 `x-picr-auth: 1` header, no CORS) for refresh cookies and TOTP enrollment. These
-routes are separate from public-link UUID/passcode authentication. The legacy
-GraphQL `auth` mutation issues short-lived sessions only for admins who do not
-need 2FA; it must never bypass enrollment or second-factor requirements. The compatibility
-mutation uses a 28-day access token tied to the same revocable database session;
-new HTTP clients use 15-minute access tokens and refresh.
+routes are separate from public-link UUID/passcode authentication. The GraphQL
+`auth` mutation has been removed. All administrator clients use HTTP sign-in
+with 15-minute access tokens and rotating refresh tokens. JWT verification also
+rejects previously issued long-lived compatibility tokens, so upgrading the
+server requires upgrading older mobile apps.
+
+Native browser authorization uses `/app-sign-in` plus `/api/auth/native/*`.
+Codes are hashed, expire after 60 seconds, bind S256 PKCE and an exact callback,
+and are consumed transactionally under the source account lock. Exchange must
+recheck source-session revocation, auth version and current MFA policy before
+creating an independent app session. Native responses never set refresh cookies.
+See `docs/development/admin-authentication.md` for callback and storage contracts.
 
 Auth mutations lock the admin's `Users` row before modifying factors or sessions.
 Create challenge rows through that same transaction: inserting a child row via
@@ -590,8 +597,8 @@ Access JWTs expire after 15 minutes and identify a database session plus an
 account authentication version. They never contain the password hash. The web
 refreshes through a rotating HttpOnly cookie, with 28-day inactivity expiry;
 password and factor changes invalidate previous sessions. Pre-upgrade JWTs require
-fresh login after upgrade. Legacy GraphQL login can then issue a 28-day token
-for existing app clients, still checked against the database session and policy. See `docs/development/admin-authentication.md`.
+fresh login after upgrade. Older mobile apps must be updated because GraphQL
+password login and long-lived compatibility tokens are no longer accepted. See `docs/development/admin-authentication.md`.
 
 ### Auth Methods
 

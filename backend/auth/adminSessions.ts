@@ -15,6 +15,7 @@ import {
   dbAuthSession,
   dbRefreshToken,
   dbUser,
+  dbNativeAuthorization,
 } from '../db/models/index.js';
 import { picrConfig } from '../config/picrConfig.js';
 import { hashAuthToken, randomAuthToken } from './mfaCrypto.js';
@@ -33,12 +34,20 @@ export class AdminAuthError extends Error {
     super(code);
   }
 }
-const accessClaims = z.object({
-  kind: z.literal('admin_access'),
-  sessionId: z.uuid(),
-  userId: z.number().int(),
-  authVersion: z.number().int(),
-});
+const accessClaims = z
+  .object({
+    kind: z.literal('admin_access'),
+    sessionId: z.uuid(),
+    userId: z.number().int(),
+    authVersion: z.number().int(),
+    iat: z.number().int(),
+    exp: z.number().int(),
+  })
+  .refine(
+    (claims) =>
+      claims.exp > claims.iat &&
+      claims.exp - claims.iat <= accessLifetimeSeconds,
+  );
 export const validAdmin = (user: UserFields | undefined): user is UserFields =>
   !!user &&
   user.userType === 'Admin' &&
@@ -74,7 +83,6 @@ export async function createAdminSession(
   tx: AuthTransaction,
   user: UserFields,
   secondFactor: boolean,
-  tokenLifetime: 'short' | 'session' = 'short',
 ) {
   const session = {
     id: randomUUID(),
@@ -89,13 +97,10 @@ export async function createAdminSession(
   await tx
     .insert(dbRefreshToken)
     .values({ hash: hashAuthToken(refreshToken), sessionId: session.id });
-  return { accessToken: signSession(session, tokenLifetime), refreshToken };
+  return { accessToken: signSession(session), refreshToken };
 }
 
-function signSession(
-  session: typeof dbAuthSession.$inferSelect,
-  tokenLifetime: 'short' | 'session' = 'short',
-): string {
+function signSession(session: typeof dbAuthSession.$inferSelect): string {
   if (!picrConfig.tokenSecret) throw new Error('Token secret not initialized');
   return jwt.sign(
     {
@@ -107,13 +112,7 @@ function signSession(
     picrConfig.tokenSecret,
     {
       algorithm: 'HS256',
-      expiresIn:
-        tokenLifetime === 'session'
-          ? Math.max(
-              1,
-              Math.floor((session.expiresAt.getTime() - Date.now()) / 1000),
-            )
-          : accessLifetimeSeconds,
+      expiresIn: accessLifetimeSeconds,
     },
   );
 }
@@ -246,6 +245,9 @@ export async function revokeAdminSessions(
 
 // Replay detection covers the last 28 days. Older hashes are removed even for active sessions; unknown tokens still fail authentication.
 export async function cleanupAdminAuth(): Promise<void> {
+  await db
+    .delete(dbNativeAuthorization)
+    .where(lt(dbNativeAuthorization.expiresAt, new Date()));
   await db
     .delete(dbRefreshToken)
     .where(lt(dbRefreshToken.usedAt, new Date(Date.now() - refreshLifetimeMs)));
