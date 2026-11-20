@@ -509,6 +509,15 @@ preflight, bumps the app version once, then builds/submits iOS and Android.
 Running `release:app:ios` and `release:app:android` separately bumps the version
 twice. Use `npm run release:app:dry` for preflight without versioning/submission.
 
+Expo Doctor is advisory during release preflight: its output stays visible, but
+reported issues do not block release. Lint, TypeScript, tests, shared-dependency
+and polyfill checks, and both platform exports remain blocking checks.
+
+Release scripts invoke `npx --yes --package eas-cli eas` explicitly. The Expo
+CLI package is `eas-cli`; bare `npx eas` can resolve the unrelated `eas` npm
+package and fail with "could not determine executable to run" on machines
+without a locally installed EAS CLI.
+
 ```bash
 # Android
 npx expo export --platform android

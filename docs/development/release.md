@@ -106,7 +106,7 @@ This runs:
 2. Deterministic local install in `shared` and `app` using `npm ci`
 3. Lint + TypeScript checks in `shared` and `app`
 4. Hermes-shaped app polyfill bootstrap check
-5. `expo-doctor` (blocking)
+5. `expo-doctor` (advisory: issues are printed but do not block release)
 6. Local `expo export` for both iOS and Android
 7. App version bump in `app/package.json` using app-local `release-it` config
 8. EAS build + auto-submit for iOS and Android (`production` profile)
@@ -139,5 +139,5 @@ Each platform-specific command runs full preflight + version bump, then builds/s
 ## Troubleshooting
 
 - Ensure `GITHUB_TOKEN` is set in `.env` for GitHub release/tag operations.
-- Ensure you are logged into EAS (`cd app && npx eas login`) before `release:app*` commands.
+- Ensure you are logged into EAS (`cd app && npx --yes --package eas-cli eas login`) before `release:app*` commands.
 - If `git push` fails in WSL, see [this guide](https://dev.to/equiman/sharing-git-credentials-between-windows-and-wsl-5a2a).
