@@ -87,6 +87,7 @@ const supportedCapabilities = (config: IPicrConfiguration) => {
     caps.psd ? 'PSD' : undefined,
     caps.psb ? 'PSB' : undefined,
     caps.heic ? 'HEIC' : undefined,
+    caps.jxl ? 'JXL' : undefined,
     config.videoAccelerationMode === 'vaapi' ? 'Video VAAPI' : 'Video CPU',
     config.canWrite ? 'media write' : undefined,
     config.inodeSupport === 'enabled' ? 'Inode tracking' : undefined,
@@ -100,6 +101,7 @@ const unsupportedCapabilities = (config: IPicrConfiguration) => {
     caps.psd ? undefined : 'PSD',
     caps.psb ? undefined : 'PSB',
     caps.heic ? undefined : 'HEIC',
+    caps.jxl ? undefined : 'JXL',
     config.videoAcceleration === 'auto' &&
     config.videoAccelerationMode !== 'vaapi'
       ? 'VAAPI'

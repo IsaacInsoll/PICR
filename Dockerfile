@@ -15,7 +15,7 @@ LABEL org.opencontainers.image.revision=$PICR_GIT_SHA
 # hosts rarely have a usable VAAPI GPU, so they stay byte-for-byte unchanged.
 # Acceleration is still opt-in at runtime (requires /dev/dri + VIDEO_ACCELERATION).
 RUN apk upgrade --no-cache && \
-    apk add --no-cache ffmpeg exiftool imagemagick imagemagick-heic && \
+    apk add --no-cache ffmpeg exiftool imagemagick imagemagick-heic imagemagick-jxl && \
     if [ "$TARGETARCH" = "amd64" ]; then \
       apk add --no-cache mesa-va-gallium intel-media-driver libva-utils; \
     fi

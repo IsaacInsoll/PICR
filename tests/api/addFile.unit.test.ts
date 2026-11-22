@@ -104,6 +104,7 @@ const loadAddFile = async ({
   }));
   vi.doMock('@shared/imageFormats.js', () => ({
     isHeicFormat: vi.fn(() => false),
+    isJxlFormat: vi.fn(() => false),
     isPsbFormat: vi.fn(() => false),
     isPsdFormat: vi.fn(() => false),
     isRawFormat: vi.fn(() => false),
@@ -114,6 +115,7 @@ const loadAddFile = async ({
     picrConfig: {
       mediaCaps: {
         heic: false,
+        jxl: false,
         psb: false,
         psd: false,
         raw: false,

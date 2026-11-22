@@ -17,6 +17,7 @@ export interface IPicrConfiguration {
     psd: boolean;
     psb: boolean;
     heic: boolean;
+    jxl: boolean;
   };
   // Video acceleration config (from env) + resolved runtime status (set at
   // boot by detectVideoAcceleration). Mode/reason always populated; driver and

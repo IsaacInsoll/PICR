@@ -315,6 +315,7 @@ enum LinkPublicationState {
 
 type MediaCapsInfo {
   heic: Boolean!
+  jxl: Boolean!
   psb: Boolean!
   psd: Boolean!
   raw: Boolean!

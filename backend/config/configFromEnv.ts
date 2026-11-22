@@ -69,6 +69,7 @@ export const configFromEnv = () => {
       psd: false,
       psb: false,
       heic: false,
+      jxl: false,
     },
     videoAcceleration: d.VIDEO_ACCELERATION,
     videoAccelerationDevice: d.VIDEO_ACCELERATION_DEVICE,

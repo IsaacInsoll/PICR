@@ -13,6 +13,7 @@ export const picrConfig: IPicrConfiguration = {
     psd: false,
     psb: false,
     heic: false,
+    jxl: false,
   },
   videoAcceleration: 'auto',
   videoAccelerationDevice: '/dev/dri/renderD128',

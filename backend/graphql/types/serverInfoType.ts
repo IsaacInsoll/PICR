@@ -33,6 +33,7 @@ export const mediaCapsInfoType = new GraphQLObjectType({
     psd: { type: new GraphQLNonNull(GraphQLBoolean) },
     psb: { type: new GraphQLNonNull(GraphQLBoolean) },
     heic: { type: new GraphQLNonNull(GraphQLBoolean) },
+    jxl: { type: new GraphQLNonNull(GraphQLBoolean) },
   }),
 });
 

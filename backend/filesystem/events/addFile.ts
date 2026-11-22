@@ -21,6 +21,7 @@ import type { PicrFileStats } from '../fileStats.js';
 import { findBestFileMatch, mergeDuplicateFileRows } from '../fileIdentity.js';
 import {
   isHeicFormat,
+  isJxlFormat,
   isPsbFormat,
   isPsdFormat,
   isRawFormat,
@@ -337,6 +338,7 @@ const validExtension = (filePath: string): FileType | null => {
   if (isPsbFormat(filePath) && picrConfig.mediaCaps.psb) return FileType.Image;
   if (isHeicFormat(filePath) && picrConfig.mediaCaps.heic)
     return FileType.Image;
+  if (isJxlFormat(filePath) && picrConfig.mediaCaps.jxl) return FileType.Image;
   if (videoExtensions.includes(ext)) return FileType.Video;
   //TODO: null for ignored files (EG: dot files?)
   //TODO: documents (eg notes in word format?)

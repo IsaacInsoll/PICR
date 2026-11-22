@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { picrConfig } from '../config/picrConfig.js';
 
-type MagickFormat = 'PSD' | 'PSB' | 'HEIC' | 'HEIF';
+type MagickFormat = 'PSD' | 'PSB' | 'HEIC' | 'HEIF' | 'JXL';
 
 export const checkOptionalMediaTools = () => {
   const raw = commandSucceeds(picrConfig.exiftoolPath ?? 'exiftool', ['-ver']);
@@ -27,6 +27,7 @@ export const checkOptionalMediaTools = () => {
     heic:
       formatCanRead(magickFormats, 'HEIC') ||
       formatCanRead(magickFormats, 'HEIF'),
+    jxl: formatCanRead(magickFormats, 'JXL'),
   };
 };
 

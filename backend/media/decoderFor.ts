@@ -1,6 +1,7 @@
 import { picrConfig } from '../config/picrConfig.js';
 import {
   isHeicFormat,
+  isJxlFormat,
   isPsbFormat,
   isPsdFormat,
   isRawFormat,
@@ -26,6 +27,10 @@ export const decoderFor = (file: { name: string }): ImageDecoder => {
   if (isHeicFormat(file.name)) {
     if (picrConfig.mediaCaps.heic) return 'magick';
     throw new Error('HEIC image decoding is not available');
+  }
+  if (isJxlFormat(file.name)) {
+    if (picrConfig.mediaCaps.jxl) return 'magick';
+    throw new Error('JXL image decoding is not available');
   }
   return 'none';
 };

@@ -46,6 +46,7 @@ export const magickDecodeExtensions = [
   '.psb',
   '.heic',
   '.heif',
+  '.jxl',
 ] as const;
 
 const extensionFor = (name: string): string => {
@@ -80,3 +81,6 @@ export const isPsbFormat = (name: string): boolean =>
 
 export const isHeicFormat = (name: string): boolean =>
   ['.heic', '.heif'].includes(extensionFor(name));
+
+export const isJxlFormat = (name: string): boolean =>
+  extensionFor(name) === '.jxl';

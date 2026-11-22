@@ -335,6 +335,7 @@ export enum LinkPublicationState {
 export type MediaCapsInfo = {
   __typename?: 'MediaCapsInfo';
   heic: Scalars['Boolean']['output'];
+  jxl: Scalars['Boolean']['output'];
   psb: Scalars['Boolean']['output'];
   psd: Scalars['Boolean']['output'];
   raw: Scalars['Boolean']['output'];
