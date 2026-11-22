@@ -19,14 +19,11 @@ import { existsSync, statSync } from 'node:fs';
 import { ensureDecodedImage } from '../../media/ensureDecodedImage.js';
 import type { PicrFileStats } from '../fileStats.js';
 import { findBestFileMatch, mergeDuplicateFileRows } from '../fileIdentity.js';
+import { fileTypeFor } from '../fileTypeFor.js';
 import {
-  isHeicFormat,
-  isJxlFormat,
-  isPsbFormat,
-  isPsdFormat,
-  isRawFormat,
-  isSharpReadableFormat,
-} from '@shared/imageFormats.js';
+  imageDecodeAttemptKey,
+  needsImagePromotion,
+} from '../../media/mediaDecodeState.js';
 import { addToQueue } from '../fileQueue.js';
 
 const inFlightPathImports = new Map<string, Promise<void>>();
@@ -68,7 +65,7 @@ const addFileUnlocked = async (
   renameFromPath?: string,
   stIno?: bigint | null,
 ) => {
-  const type = validExtension(filePath);
+  const type = fileTypeFor(filePath);
   if (!type) {
     log('info', `🤷‍♂️ Ignoring ${filePath} as it's not a supported file format`);
     return;
@@ -119,7 +116,6 @@ const addFileUnlocked = async (
     file.name = props.name;
     file.relativePath = props.relativePath;
     file.folderId = props.folderId;
-    file.type = type;
     file.fileSize = stats.size;
     file.fileCreated = stats.birthtime;
     file.fileLastModified = stats.mtime;
@@ -154,8 +150,14 @@ const addFileUnlocked = async (
   if (stIno) file.stIno = stIno;
 
   const newHash = contentHashForStats(stats);
-  const typeChanged = (wasRenamed ? renamedFromType : file.type) !== type;
   const hashChanged = file.fileHash !== newHash;
+  const extensionChanged =
+    wasRenamed &&
+    extname(renamedFromName ?? '').toLowerCase() !==
+      extname(file.name).toLowerCase();
+  const typeChanged =
+    (wasRenamed ? renamedFromType : file.type) !== type &&
+    (hashChanged || extensionChanged || needsImagePromotion(file));
   let shouldGenerateThumbs = false;
   // A pure move: the file was renamed/relocated but its content (size + mtime,
   // and therefore its content hash) is unchanged. Relocate the cached thumbnails
@@ -192,6 +194,9 @@ const addFileUnlocked = async (
     file.fileLastModified = stats.mtime;
 
     if (file.type === FileType.Image) {
+      // Persist success and failure alike with the classification/hash update.
+      // If the process exits before that write, the unfinished attempt resumes.
+      file.imageDecodeAttempt = imageDecodeAttemptKey(file.name);
       try {
         const src = await ensureDecodedImage(file);
         // deleteAllThumbs(filePath);
@@ -328,32 +333,3 @@ const findFolderId = async (fullPath: string) => {
 
   throw new Error(`Unable to resolve folderId for ${relative}`);
 };
-
-const validExtension = (filePath: string): FileType | null => {
-  const ext = extname(filePath).toLowerCase();
-  if (ext === '') return null;
-  if (isSharpReadableFormat(filePath)) return FileType.Image;
-  if (isRawFormat(filePath) && picrConfig.mediaCaps.raw) return FileType.Image;
-  if (isPsdFormat(filePath) && picrConfig.mediaCaps.psd) return FileType.Image;
-  if (isPsbFormat(filePath) && picrConfig.mediaCaps.psb) return FileType.Image;
-  if (isHeicFormat(filePath) && picrConfig.mediaCaps.heic)
-    return FileType.Image;
-  if (isJxlFormat(filePath) && picrConfig.mediaCaps.jxl) return FileType.Image;
-  if (videoExtensions.includes(ext)) return FileType.Video;
-  //TODO: null for ignored files (EG: dot files?)
-  //TODO: documents (eg notes in word format?)
-
-  return FileType.File;
-};
-
-const videoExtensions = [
-  '.mp4',
-  '.mov',
-  '.avi',
-  '.wmv',
-  '.webm',
-  '.flv',
-  '.mkv',
-  '.qt',
-  '.m4v',
-];

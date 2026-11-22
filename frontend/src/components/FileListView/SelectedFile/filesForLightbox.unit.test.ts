@@ -25,6 +25,24 @@ const portrait: PicrFile = {
 };
 
 describe('filesForLightbox', () => {
+  test('previews JXL as JPEG even with originals enabled, while downloads retain the JXL', () => {
+    const jxl = { ...portrait, name: 'portrait.JXL' };
+    expect(filesForLightbox([jxl], true, true, variants)).toMatchObject([
+      {
+        src: '/image/42/v1-4000j80/image-hash/portrait.JXL',
+        srcSet: expect.any(Array),
+        download: {
+          url: '/image/42/raw/image-hash/portrait.JXL',
+          filename: 'portrait.JXL',
+        },
+      },
+    ]);
+    expect(filesForLightbox([jxl], false, true, variants)[0]).toMatchObject({
+      src: '/image/42/v1-4000j80/image-hash/portrait.JXL',
+      download: false,
+    });
+  });
+
   test('publishes rendered image dimensions instead of nominal long edges', () => {
     expect(filesForLightbox([portrait], false, false, variants)).toMatchObject([
       {

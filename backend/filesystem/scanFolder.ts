@@ -9,6 +9,7 @@ import { dbFile, dbFolder } from '../db/models/index.js';
 import { delay } from '../helpers/delay.js';
 import { fileStatsFromBigIntStats, type PicrFileStats } from './fileStats.js';
 import { addFile } from './events/addFile.js';
+import { needsImagePromotion } from '../media/mediaDecodeState.js';
 import { addFolder } from './events/addFolder.js';
 import { removeFile } from './events/removeFile.js';
 import { removeFolder } from './events/removeFolder.js';
@@ -325,7 +326,13 @@ const scanFolderUnlocked = async (
 
     await refreshFileInode(dbMatch, entry.stIno);
 
-    if (dbMatch.fileHash === contentHashForStats(entry.stats)) {
+    // A newly available decoder gets one durable attempt per file/generation.
+    // A failed image remains generic without being retried by the cleanup pass,
+    // subsequent scans, or another boot with unchanged capabilities.
+    if (
+      dbMatch.fileHash === contentHashForStats(entry.stats) &&
+      !needsImagePromotion(dbMatch)
+    ) {
       growingFiles.delete(entry.path);
       continue;
     }

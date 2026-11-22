@@ -34,6 +34,7 @@ export const dbFile = pgTable(
     ...baseColumns,
     name: varchar('name', { length: 255 }).notNull(),
     fileHash: varchar('fileHash', { length: 255 }),
+    imageDecodeAttempt: varchar('imageDecodeAttempt', { length: 64 }),
     blurHash: varchar('blurHash', { length: 255 }), // nullable "micro thumbnail" for images and video posters https://www.npmjs.com/package/blurhash
     relativePath: varchar('relativePath', { length: 255 }).notNull(),
     metadata: text('metadata'),

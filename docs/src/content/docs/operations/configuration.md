@@ -48,7 +48,7 @@ See [Scan your media library](/PICR/operations/scanning/) before combining modes
 | `FFMPEG_PATH`        | `ffmpeg` from `PATH`        | Override FFmpeg executable                        |
 | `FFPROBE_PATH`       | `ffprobe` from `PATH`       | Override FFprobe executable                       |
 | `EXIFTOOL_PATH`      | `exiftool` from `PATH`      | Override RAW preview/metadata helper              |
-| `MAGICK_PATH`        | `magick` from `PATH`        | Override PSD, PSB, HEIC, and HEIF decoder         |
+| `MAGICK_PATH`        | `magick` from `PATH`        | Override PSD, PSB, HEIC, HEIF, and JXL decoder    |
 | `THUMBNAIL_WORKERS`  | Cgroup/CPU-aware, maximum 8 | Parallel thumbnail worker count                   |
 | `UV_THREADPOOL_SIZE` | `8` in Docker image         | Native async worker pool used by image processing |
 

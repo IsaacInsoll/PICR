@@ -1,3 +1,5 @@
+import type { MediaDecodeState } from '../media/mediaDecodeState.js';
+
 export type FileWatcherMode = 'off' | 'native' | 'polling';
 export type OnViewScanMode = 'off' | 'direct' | 'direct_and_new' | 'one_level';
 
@@ -12,6 +14,7 @@ export interface IPicrConfiguration {
   // Tool versions captured at boot (best effort) for display in ServerInfo.
   ffmpegVersion?: string;
   imageMagickVersion?: string;
+  mediaDecodeState?: MediaDecodeState;
   mediaCaps: {
     raw: boolean;
     psd: boolean;

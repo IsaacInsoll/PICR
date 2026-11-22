@@ -87,6 +87,12 @@ These files may contain passwords and notification tokens. Store them in a prote
 
 PICR applies application database migrations during startup. Do not interrupt the container merely because the first upgraded boot takes longer than normal; follow the logs and investigate an actual error.
 
+:::note[First upgrade with JPEG XL support]
+The initial scan decodes existing `.jxl` files that become supported images to read metadata, dimensions, and blurhashes. It creates cached PNG intermediates and can take longer for a large JXL library. This does not generate the JPEG thumbnail sizes for the whole library. See [Media and thumbnails](/PICR/operations/media-and-thumbnails/#first-scan-after-enabling-jpeg-xl) for what to expect.
+
+Decoder availability tracking also permits one processing attempt for existing generic RAW, PSD/PSB, and HEIC/HEIF files when their decoder is available. Unchanged failed files are then skipped on subsequent scans and restarts unless decoder availability changes.
+:::
+
 ## PICR compatibility policy
 
 PICR supports a direct upgrade from any release in the previous major version to any release in the next major version unless release notes explicitly declare a required stop.

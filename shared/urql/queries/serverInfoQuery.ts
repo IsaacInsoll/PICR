@@ -15,6 +15,7 @@ export const serverInfoQuery = gql(/* GraphQL */ `
         psd
         psb
         heic
+        jxl
       }
       settings {
         useOriginalsForLightbox

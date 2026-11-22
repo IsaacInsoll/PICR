@@ -43,3 +43,11 @@ test('keeps the existing decoded cache path for ImageMagick formats', async () =
     '/cache/thumbs/gallery/portrait.nef-decoded-hash-a.jpg',
   );
 });
+
+test('isolates lossless JXL intermediates from older JPEG cache entries', async () => {
+  const { decodedImagePath } = await loadDecodedImagePath();
+
+  expect(decodedImagePath({ ...file, name: 'portrait.JXL' }, 'magick')).toBe(
+    '/cache/thumbs/gallery/portrait.JXL-decoded-jxl-v2-hash-a.png',
+  );
+});

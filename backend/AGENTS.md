@@ -814,12 +814,46 @@ frontend `srcset` selection.
 // Creates blurhash for placeholder
 ```
 
-- RAW, PSD/PSB, and HEIC/HEIF support is capability-gated at boot by
+- RAW, PSD/PSB, HEIC/HEIF, and JPEG XL support is capability-gated at boot by
   `checkOptionalMediaTools()`. Unsupported decoded formats must remain
   `FileType.File` so they stay downloadable without broken image previews.
+- Keep shared format groups and predicates consistent when adding a decoder.
+  `fileTypeFor()` classifies ingestion. Never use its expected type alone to
+  invalidate the scanner's matching-hash shortcut: failed images are stored as
+  generic files, and that would retry them on every scan. `mediaDecodeState`
+  persists a generation per optional decoder in ServerOptions, advancing only
+  when availability changes from false to true. `Files.imageDecodeAttempt`
+  records the last attempted capability/generation alongside the classification
+  and hash, including failures. `needsImagePromotion()` permits one attempt per
+  generation, resumes unfinished work after restart, and never downgrades an
+  existing image just because a decoder disappeared. Apply the same gate in
+  watcher ingestion and scanning. Normal source changes still trigger processing.
+  The ingestion unit suite partially mocks `@shared/imageFormats.js` so real
+  extension classifiers remain exercised; overriding the whole module made new
+  format imports break unrelated ingestion tests. Regenerate GraphQL outputs
+  when the capability schema changes, and include new fields in the web server
+  query and capability badges.
 - `ensureDecodedImage()` is the only backend path that shells out to optional
   image decoders. It returns the original path for sharp-readable formats and a
-  validated cached JPEG in `cache/thumbs/<relativePath>/` for decoded formats.
+  validated cached intermediate in `cache/thumbs/<relativePath>/` for decoded
+  formats. JPEG XL writes an uncompressed, full-precision temporary PNG with
+  ImageMagick, reads it with Sharp, explicitly converts its ICC profile to sRGB,
+  then caches an 8-bit PNG with fast compression (`decoded-jxl-v2`). Do not force `-depth 8`
+  before ICC conversion or rely on `toColorspace` alone for 16-bit P3 inputs.
+  Other decoders retain their existing JPEG cache keys. Temporary filenames must
+  preserve the target extension because ImageMagick chooses its output encoder
+  from that extension. File-backed input avoids Sharp buffering an entire
+  encoded PNG stream in Node; it still needs native processing memory and
+  transient disk space. Remove both temporary PNGs on failure and publish only
+  the validated output. Test the cached PNG's depth directly: final JPEG depth
+  cannot prove that the intermediate is 8-bit.
+  ImageMagick stores PNG XMP in hex-encoded text profiles rather than the field
+  Sharp exposes as `metadata.xmp`. libvips can shorten their keyword to `Raw`
+  when re-encoding. `imageXmp()` validates the profile name, declared byte count,
+  and hex data before recovering it. Ratings may be RDF attributes or child
+  elements, and packets can contain several descriptions; `imageRating()`
+  handles both representations. Verify ratings through PICR's reader, not only
+  ExifTool; the latter recognizes profiles that Sharp does not.
   External decoder calls must use argument arrays, timeouts, temp files, and
   sharp metadata validation before rename.
 - Existing decoded cache hits are trusted by existence, like generated
@@ -828,8 +862,12 @@ frontend `srcset` selection.
 - Decoder failures are memoized in `ensureDecodedImage.ts` by file ID, content
   hash, and decoder for the lifetime of the process. Fixing a source file's
   permissions can make a fresh ExifTool invocation succeed while PICR still
-  rejects the same decode key. Restart PICR to clear that failed-decode cache,
-  then rescan the affected folder for recovery. Do not diagnose this persistence
+  rejects the same decode key. Restart PICR to clear that in-memory cache.
+  Generic-file promotion attempts are also remembered in the database: restarting
+  and rescanning with unchanged capabilities does not retry an unchanged failed
+  file. After repairing a source or its permissions, updating that file's mtime
+  and rescanning permits another attempt without changing its bytes. A persisted
+  decoder availability loss/recovery also permits one new attempt. Do not diagnose this persistence
   as proof that the permission repair failed. For NAS source-read problems,
   compare effective reads as the container's normal user before/after a targeted
   NAS permission/ACL repair; mode bits alone do not establish effective ACL access.

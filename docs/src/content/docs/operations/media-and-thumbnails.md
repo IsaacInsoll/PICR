@@ -5,7 +5,7 @@ description: Understand PICR's image, RAW, video, generic-file, metadata, and th
 
 PICR indexes media from the mounted library, extracts available metadata, and creates cacheable previews without modifying the originals.
 
-The official Docker image includes FFmpeg, ExifTool, ImageMagick, and HEIC support. Open **Settings → Media** to see which additional image capabilities PICR detected on the running server.
+The official Docker image includes FFmpeg, ExifTool, ImageMagick, and HEIC and JPEG XL decoders. Open **Settings → Media** to see which additional image capabilities PICR detected on the running server.
 
 ## Image formats
 
@@ -23,10 +23,21 @@ PICR can also decode previews for:
 - Camera RAW formats including CR2, CR3, NEF, NRW, ARW, DNG, RAF, ORF, RW2, PEF, and other common RAW extensions
 - Photoshop PSD and PSB
 - HEIC and HEIF
+- JPEG XL (`.jxl`)
 
-RAW preview support depends on ExifTool. PSD, PSB, HEIC, and HEIF preview support depends on ImageMagick and the relevant decoder. These are bundled in the official image but may be absent from a custom installation.
+RAW preview support depends on ExifTool. PSD, PSB, HEIC, HEIF, and JPEG XL preview support depends on ImageMagick and the relevant decoder. These are bundled in the official image but may be absent from a custom installation.
 
 If a recognised advanced format cannot be decoded, PICR keeps it as a generic file rather than presenting a broken image preview.
+
+Failed image-processing attempts are remembered, so unchanged files are not repeatedly retried by scans or restarts. A changed source file permits another attempt. For optional decoders, a detected loss and later recovery of decoder support also permits one new attempt at generic files; existing image classifications are preserved during temporary decoder loss. After repairing a source permission problem, update the affected file's modification time and rescan to retry it without changing its bytes.
+
+JPEG XL previews convert the source colour profile to sRGB before caching an 8-bit PNG intermediate, avoiding an extra lossy JPEG encode. The full-resolution PNG is also cached and can be larger than the JXL original. They continue to use generated previews when **Use originals in the lightbox** is enabled, so recipients do not need browser support for JXL. Downloads retain the unchanged original `.jxl` file. Animated JXL files show their first frame; previews do not provide HDR display or animation playback.
+
+### First scan after enabling JPEG XL
+
+If your library already contains `.jxl` files, the first scan after upgrading decodes newly supported files to extract their dimensions, metadata, and blurhash placeholders. This creates the PNG intermediates even though the boot scan does not generate the JPEG thumbnail sizes. A large JXL library can therefore make that scan slower and grow the cache. Successfully indexed, unchanged files are not decoded again on every boot. Use **Generate Thumbnails** on galleries you plan to share to prepare their JPEG previews.
+
+This upgrade also starts tracking decoder availability. Existing generic RAW, PSD/PSB, and HEIC/HEIF files get one processing attempt if their decoder is available. Failed attempts remain generic and are skipped on later scans with unchanged decoder availability.
 
 ## Video formats
 

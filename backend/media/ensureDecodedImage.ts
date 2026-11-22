@@ -1,8 +1,9 @@
 import { spawn } from 'node:child_process';
 import { createWriteStream, existsSync } from 'node:fs';
 import { mkdir, rename, rm, stat } from 'node:fs/promises';
-import { dirname } from 'path';
+import { dirname, extname } from 'path';
 import { pipeline } from 'node:stream/promises';
+import { isJxlFormat } from '@shared/imageFormats.js';
 import type { FileFields } from '../db/picrDb.js';
 import { fullPathForFile } from '../filesystem/fileManager.js';
 import { log } from '../logger.js';
@@ -120,14 +121,37 @@ const decodeWithMagick = async (
   const candidate = tempPath(target, 0);
   await removeIfExists(candidate);
   try {
-    await runProcess(picrConfig.magickPath ?? 'magick', [
+    const args = [
       `${fullPathForFile(file)}[0]`,
       '-auto-orient',
       // Force sRGB so CMYK PSDs don't yield a CMYK JPEG (wrong colours downstream)
       '-colorspace',
       'sRGB',
-      candidate,
-    ]);
+    ];
+    if (isJxlFormat(file.name)) {
+      // Keep full precision through ICC conversion, then cache display-ready
+      // pixels. -depth 8 in Magick would quantize before that conversion.
+      // Use a file handoff: Sharp buffers stream inputs in Node memory, so an
+      // uncompressed PNG pipe would add a large full-image allocation per job.
+      const transport = tempPath(target, 1);
+      try {
+        await runProcess(picrConfig.magickPath ?? 'magick', [
+          ...args,
+          '-define',
+          'png:compression-level=0',
+          transport,
+        ]);
+        await openSharp(transport)
+          .keepMetadata()
+          .withIccProfile('srgb')
+          .png({ compressionLevel: 1, adaptiveFiltering: true })
+          .toFile(candidate);
+      } finally {
+        await removeIfExists(transport);
+      }
+    } else {
+      await runProcess(picrConfig.magickPath ?? 'magick', [...args, candidate]);
+    }
     await validateCandidate(candidate);
     await rename(candidate, target);
   } catch (error) {
@@ -157,7 +181,15 @@ const runProcessToFile = async (
   const stderr = collectStderr(child.stderr);
   const pipePromise = pipeline(child.stdout, createWriteStream(outputPath));
   const exitPromise = waitForExit(child, command, stderr);
-  await Promise.all([pipePromise, exitPromise]);
+  try {
+    await Promise.all([pipePromise, exitPromise]);
+  } catch (error) {
+    // A failed output stream must not leave the decoder running or writing while
+    // decodeImage removes its partial output. Preserve the original error.
+    child.kill('SIGKILL');
+    await Promise.allSettled([pipePromise, exitPromise]);
+    throw error;
+  }
 };
 
 const runProcess = async (command: string, args: string[]): Promise<void> => {
@@ -217,7 +249,7 @@ const collectStderr = (stream: NodeJS.ReadableStream): (() => string) => {
 };
 
 const tempPath = (target: string, attempt: number): string =>
-  `${target}.${process.pid}.${Date.now()}.${attempt}.tmp.jpg`;
+  `${target}.${process.pid}.${Date.now()}.${attempt}.tmp${extname(target)}`;
 
 const removeIfExists = async (path: string): Promise<void> => {
   await rm(path, { force: true });

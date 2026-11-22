@@ -7,6 +7,7 @@ interface MockFileRow {
   folderId: number;
   relativePath: string;
   fileHash: string | null;
+  imageDecodeAttempt?: string | null;
   type: 'File' | 'Image' | 'Video';
   fileSize: number;
   fileCreated: Date;
@@ -43,11 +44,13 @@ const loadAddFile = async ({
   initialFiles = [],
   updateMetadata = false,
   sharpReadable = false,
+  jxlAvailable = false,
   ensureDecodedImageImpl,
 }: {
   initialFiles?: MockFileRow[];
   updateMetadata?: boolean;
   sharpReadable?: boolean;
+  jxlAvailable?: boolean;
   ensureDecodedImageImpl?: (file: MockFileRow) => Promise<string>;
 } = {}) => {
   vi.resetModules();
@@ -102,12 +105,10 @@ const loadAddFile = async ({
       Video: 'Video',
     },
   }));
-  vi.doMock('@shared/imageFormats.js', () => ({
-    isHeicFormat: vi.fn(() => false),
-    isJxlFormat: vi.fn(() => false),
-    isPsbFormat: vi.fn(() => false),
-    isPsdFormat: vi.fn(() => false),
-    isRawFormat: vi.fn(() => false),
+  vi.doMock('@shared/imageFormats.js', async () => ({
+    ...(await vi.importActual<typeof import('../../shared/imageFormats')>(
+      '@shared/imageFormats.js',
+    )),
     isSharpReadableFormat: vi.fn(() => sharpReadable),
   }));
   vi.doMock('../../backend/db/models/index.js', () => columns);
@@ -115,7 +116,7 @@ const loadAddFile = async ({
     picrConfig: {
       mediaCaps: {
         heic: false,
-        jxl: false,
+        jxl: jxlAvailable,
         psb: false,
         psd: false,
         raw: false,
@@ -290,6 +291,87 @@ afterEach(() => {
   vi.resetModules();
 });
 
+test.each([
+  { available: true, fails: false, type: 'Image' },
+  { available: false, fails: false, type: 'File' },
+  { available: true, fails: true, type: 'File' },
+])(
+  'imports JXL safely with capability=$available and decode failure=$fails',
+  async ({ available, fails, type }) => {
+    const { addFile, addToQueue, ensureDecodedImage, files, finishInsert } =
+      await loadAddFile({
+        jxlAvailable: available,
+        ensureDecodedImageImpl: async () => {
+          if (fails) throw new Error('invalid JXL');
+          return '/cache/decoded.png';
+        },
+      });
+    finishInsert.resolve();
+    await addFile(`${mediaRoot}/exports/portrait.JXL`, true, {
+      birthtime: new Date('2026-08-10T00:00:00.000Z'),
+      mtime: new Date('2026-08-10T00:00:00.000Z'),
+      size: 1024,
+    });
+    expect(files[0]).toMatchObject({ type, exists: true, existsRescan: true });
+    expect(ensureDecodedImage).toHaveBeenCalledTimes(available ? 1 : 0);
+    expect(addToQueue).toHaveBeenCalledTimes(type === 'Image' ? 1 : 0);
+    if (type === 'Image') {
+      expect(files[0]).toMatchObject({
+        imageWidth: 3000,
+        imageHeight: 2000,
+        blurHash: 'mock-blurhash',
+      });
+    } else if (fails) {
+      expect(files[0]).toMatchObject({
+        imageWidth: null,
+        imageHeight: null,
+        blurHash: null,
+        metadata: null,
+      });
+    }
+  },
+);
+
+test('a boot rescan promotes an unchanged generic JXL without replacing its row or generating thumbnails', async () => {
+  const now = new Date('2026-08-10T00:00:00.000Z');
+  const stats = { birthtime: now, mtime: now, size: 1024 };
+  const { addFile, addToQueue, files } = await loadAddFile({
+    jxlAvailable: true,
+    initialFiles: [
+      {
+        id: 7,
+        name: 'portrait.jxl',
+        folderId: 23,
+        relativePath: 'exports',
+        fileHash: contentHashForStats(stats),
+        type: 'File',
+        fileSize: 1024,
+        fileCreated: now,
+        fileLastModified: now,
+        createdAt: now,
+        updatedAt: now,
+        exists: true,
+        existsRescan: true,
+        totalComments: 3,
+        rating: 5,
+        flag: 'approved',
+      },
+    ],
+  });
+  await addFile(`${mediaRoot}/exports/portrait.jxl`, false, stats);
+  expect(files).toHaveLength(1);
+  expect(files[0]).toMatchObject({
+    id: 7,
+    type: 'Image',
+    imageWidth: 3000,
+    imageHeight: 2000,
+    totalComments: 3,
+    rating: 5,
+    flag: 'approved',
+  });
+  expect(addToQueue).not.toHaveBeenCalled();
+});
+
 test('queues thumbnail generation only after persisting a new image row', async () => {
   const stats = {
     birthtime: new Date('2026-08-10T00:00:00.000Z'),
@@ -347,6 +429,65 @@ test('does not queue thumbnail generation when image decoding fails', async () =
     metadata: null,
     blurHash: null,
     type: 'File',
+  });
+});
+
+test.each(['jpg', 'jxl'])(
+  'unchanged failed %s files are not decoded again by watcher ingestion, including after restart',
+  async (extension) => {
+    const now = new Date('2026-08-10T00:00:00.000Z');
+    const stats = { birthtime: now, mtime: now, size: 1024 };
+    const path = `${mediaRoot}/exports/broken.${extension}`;
+    const first = await loadAddFile({
+      sharpReadable: extension === 'jpg',
+      jxlAvailable: true,
+      ensureDecodedImageImpl: async () => {
+        throw new Error('bad image');
+      },
+    });
+    first.finishInsert.resolve();
+    await first.addFile(path, false, stats);
+    await first.addFile(path, false, stats);
+    expect(first.ensureDecodedImage).toHaveBeenCalledOnce();
+    expect(first.files[0]).toMatchObject({
+      type: 'File',
+      imageDecodeAttempt: extension === 'jxl' ? 'jxl:1' : null,
+    });
+    const restarted = await loadAddFile({
+      initialFiles: structuredClone(first.files),
+      sharpReadable: extension === 'jpg',
+      jxlAvailable: true,
+    });
+    await restarted.addFile(path, false, stats);
+    expect(restarted.ensureDecodedImage).not.toHaveBeenCalled();
+    // A genuine source change permits another attempt and can recover the file.
+    await restarted.addFile(path, false, {
+      ...stats,
+      mtime: new Date(now.getTime() + 1000),
+    });
+    expect(restarted.ensureDecodedImage).toHaveBeenCalledOnce();
+    expect(restarted.files[0].type).toBe('Image');
+  },
+);
+
+test('watcher ingestion preserves an unchanged image across temporary capability loss', async () => {
+  const now = new Date('2026-08-10T00:00:00.000Z');
+  const stats = { birthtime: now, mtime: now, size: 1024 };
+  const first = await loadAddFile({ jxlAvailable: true });
+  first.finishInsert.resolve();
+  const path = `${mediaRoot}/exports/photo.jxl`;
+  await first.addFile(path, false, stats);
+  const restarted = await loadAddFile({
+    initialFiles: structuredClone(first.files),
+    jxlAvailable: false,
+  });
+  await restarted.addFile(path, false, stats);
+  expect(restarted.ensureDecodedImage).not.toHaveBeenCalled();
+  expect(restarted.files[0]).toMatchObject({
+    type: 'Image',
+    imageWidth: 3000,
+    imageHeight: 2000,
+    imageDecodeAttempt: 'jxl:1',
   });
 });
 

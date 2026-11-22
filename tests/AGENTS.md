@@ -176,6 +176,8 @@ tiles are not covered either — no fixture produces one.
 
 ### Gotchas When Adding Scenarios
 
+- A Mantine Badge text locator selects its inner label span. Assert attributes
+  such as `data-variant` on `.mantine-Badge-root`, not on the label.
 - A justified row ends exactly `margin` short of the container's right edge:
   `buildLayout` fills `containerWidth - row.length * 2 * margin`, then each
   tile adds a CSS `margin` that a bounding box excludes. Assertions that ignore
@@ -237,6 +239,18 @@ tiles are not covered either — no fixture produces one.
   locator may not match even when the textbox's accessible role name is exact.
 
 ## Test Media Fixtures
+
+- Synthetic JPEG XL fixtures live in `tests/fixtures/jxl/`, outside the shared
+  seed library. Their README records generation commands and expected orientation.
+  The JXL integration test copies them into a seeded folder temporarily, backdates
+  mtimes past the settle window, and removes/rescans them in `finally`. Adding
+  permanent seed media changes IDs, exact file counts, and browser snapshots.
+  Like the existing rescan/move test, its host-write integration case is skipped
+  under nested `act` mounts and runs strictly in native CI.
+  Its native test also inspects cached PNG metadata with `docker exec` so depth
+  assertions cover the production intermediate rather than the final JPEG.
+  Compiled backend imports inside that container start at `./server/backend/`
+  from `/home/node/app`, matching the Dockerfile's entrypoint.
 
 - Photo and video fixtures are committed at `tests/api/env/media/` and bind-mounted into the test container by `tests/api/compose.yml`.
 - `testEnvironment.ts` does not download anything; if `env/media/` is missing it throws. Run `git status` / `git restore` to recover.

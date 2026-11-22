@@ -1,4 +1,5 @@
-import { boolean, integer, pgTable, varchar } from 'drizzle-orm/pg-core';
+import { boolean, integer, jsonb, pgTable, varchar } from 'drizzle-orm/pg-core';
+import type { MediaDecodeState } from '../../media/mediaDecodeState.js';
 import { baseColumns } from '../column.helpers.js';
 
 /**
@@ -15,6 +16,7 @@ export const dbServerOptions = pgTable('ServerOptions', {
   ...baseColumns,
   lastBootedVersion: varchar('lastBootedVersion', { length: 255 }),
   minimumPicrVersion: varchar('minimumPicrVersion', { length: 255 }),
+  mediaDecodeState: jsonb('mediaDecodeState').$type<MediaDecodeState>(),
   requireAdminMfa: boolean('requireAdminMfa').notNull().default(false),
   tokenSecret: varchar('tokenSecret', { length: 255 }),
   // Legacy thumbnail columns retained for upgrade compatibility; AVIF behavior

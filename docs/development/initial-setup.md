@@ -40,10 +40,10 @@ FFPROBE_PATH=/absolute/path/to/ffprobe
 `cp .env.example .env`
 You may optionally add extra fields such as `GITHUB_TOKEN`, `FFMPEG_PATH`, or `FFPROBE_PATH` but these aren't required for development if the binaries are already on your `PATH`.
 
-### Optional RAW / PSD / HEIC Helpers
+### Optional RAW / PSD / HEIC / JXL Helpers
 
 PICR can generate previews for RAW files from embedded JPEG previews using
-ExifTool, and for PSD/PSB/HEIC via ImageMagick when the local build has read
+ExifTool, and for PSD/PSB/HEIC/JXL via ImageMagick when the local build has read
 support for those formats. These tools are optional: if missing, those formats
 stay as generic downloadable files.
 
@@ -77,7 +77,7 @@ For local development, install both when testing these formats:
 - Alpine Linux:
 
   ```bash
-  sudo apk add exiftool imagemagick
+  sudo apk add exiftool imagemagick imagemagick-heic imagemagick-jxl
   ```
 
 - Windows 11 with winget:
@@ -104,13 +104,13 @@ EXIFTOOL_PATH=/absolute/path/to/exiftool
 MAGICK_PATH=/absolute/path/to/magick
 ```
 
-HEIC/HEIF and PSB depend on ImageMagick delegate/read support. After installing,
+HEIC/HEIF, PSB, and JPEG XL depend on ImageMagick delegate/read support. After installing,
 restart your terminal and check:
 
 ```bash
 exiftool -ver
 magick -version
-magick -list format | grep -E '^\s*(PSD|PSB|HEIC|HEIF)\*?\s'
+magick -list format | grep -E '^\s*(PSD|PSB|HEIC|HEIF|JXL)\*?\s'
 ```
 
 On Windows PowerShell, use:
@@ -118,12 +118,12 @@ On Windows PowerShell, use:
 ```powershell
 exiftool -ver
 magick -version
-magick -list format | Select-String '^\s*(PSD|PSB|HEIC|HEIF)\*?\s'
+magick -list format | Select-String '^\s*(PSD|PSB|HEIC|HEIF|JXL)\*?\s'
 ```
 
-The relevant `PSD`, `PSB`, `HEIC`, or `HEIF` rows must include `r` in the Mode
+The relevant `PSD`, `PSB`, `HEIC`, `HEIF`, or `JXL` rows must include `r` in the Mode
 column. Presence without read mode is not enough. Some distro ImageMagick builds
-do not include HEIC/HEIF read support even when ImageMagick itself is installed.
+do not include HEIC/HEIF or JXL read support even when ImageMagick itself is installed.
 
 ### 5. Run build steps
 

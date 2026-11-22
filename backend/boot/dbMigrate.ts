@@ -30,6 +30,7 @@ import {
   mergeDuplicateFileRows,
 } from '../filesystem/fileIdentity.js';
 import { THUMBNAIL_JPEG_QUALITY } from '@shared/thumbnailVariants.js';
+import { nextMediaDecodeState } from '../media/mediaDecodeState.js';
 
 export interface DbMigrationContext {
   previousBootedVersion: string | null | undefined;
@@ -96,7 +97,15 @@ export const dbMigrate = async (
   // already exist). Runs before the file watcher so no scan rewrites hashes first.
   await runThumbnailHashMigrationIfNeeded(lastBootedVersion);
 
-  await setServerOptions({ lastBootedVersion: config.version });
+  const mediaDecodeState = nextMediaDecodeState(
+    opts.mediaDecodeState,
+    config.mediaCaps,
+  );
+  await setServerOptions({
+    lastBootedVersion: config.version,
+    mediaDecodeState,
+  });
+  config.mediaDecodeState = mediaDecodeState;
   return { previousBootedVersion: lastBootedVersion };
 };
 

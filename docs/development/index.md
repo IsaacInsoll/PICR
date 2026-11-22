@@ -1,18 +1,19 @@
 # Development
 
-| Doc                                        | Notes                                       |
-| ------------------------------------------ | ------------------------------------------- |
-| 🎉 [Contributing](../CONTRIBUTING.md)      | Contribution Guidelines                     |
-| 🎉 [Initial Setup](initial-setup.md)       | How to setup development environment        |
-| 📱 [App Development](app.md)               | React Native (Expo) App Development         |
-| 👷 [Build Process](build.md)               | How backend build process works             |
-| 🎨 [Frontend Styling](frontend-styling.md) | Mantine-first UI + typed CSS modules        |
-| 🌐 [Translations](translations.md)         | Add and validate interface languages        |
-| 🖼️ [Media Scanning](media-scanning.md)     | File detection, scans, thumbnails, moves    |
-| 📃 [Basic Tutorial](basic-tutorial.md)     | Basic tutorial on front/backend feature dev |
-| 🧪 [Testing](testing.md)                   | Run API + E2E integration tests             |
-| 🚀 [Releases](release.md)                  | How to do releases                          |
-| 🐛 [Troubleshooting](troubleshooting.md)   | Troubleshooting tips                        |
+| Doc                                        | Notes                                            |
+| ------------------------------------------ | ------------------------------------------------ |
+| 🎉 [Contributing](../CONTRIBUTING.md)      | Contribution Guidelines                          |
+| 🎉 [Initial Setup](initial-setup.md)       | How to setup development environment             |
+| 📱 [App Development](app.md)               | React Native (Expo) App Development              |
+| 👷 [Build Process](build.md)               | How backend build process works                  |
+| 🎨 [Frontend Styling](frontend-styling.md) | Mantine-first UI + typed CSS modules             |
+| 🌐 [Translations](translations.md)         | Add and validate interface languages             |
+| 🖼️ [JPEG XL](jpeg-xl.md)                   | Colour, metadata, cache, and decode measurements |
+| 🖼️ [Media Scanning](media-scanning.md)     | File detection, scans, thumbnails, moves         |
+| 📃 [Basic Tutorial](basic-tutorial.md)     | Basic tutorial on front/backend feature dev      |
+| 🧪 [Testing](testing.md)                   | Run API + E2E integration tests                  |
+| 🚀 [Releases](release.md)                  | How to do releases                               |
+| 🐛 [Troubleshooting](troubleshooting.md)   | Troubleshooting tips                             |
 
 ## Folders
 

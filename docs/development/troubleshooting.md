@@ -61,18 +61,18 @@ ffmpeg -version
 ffprobe -version
 ```
 
-### RAW / PSD / HEIC files stay as generic files
+### RAW / PSD / HEIC / JXL files stay as generic files
 
-RAW, PSD/PSB, and HEIC/HEIF previews depend on optional local binaries. PICR
+RAW, PSD/PSB, HEIC/HEIF, and JPEG XL previews depend on optional local binaries. PICR
 will still boot if they are missing, but unsupported formats remain
 `FileType.File` so originals can be downloaded without broken thumbnails.
 
 1. Confirm ExifTool is available for RAW preview extraction:
    - `exiftool -ver`
-2. Confirm ImageMagick is available for PSD/PSB/HEIC:
+2. Confirm ImageMagick is available for PSD/PSB/HEIC/JXL:
    - `magick -version`
    - `magick -list format`
-3. In `magick -list format`, the relevant `PSD`, `PSB`, `HEIC`, or `HEIF` rows
+3. In `magick -list format`, the relevant `PSD`, `PSB`, `HEIC`, `HEIF`, or `JXL` rows
    must include `r` in the Mode column. Presence without read mode is not
    enough.
 4. If either binary is installed in a non-standard location, set
@@ -95,7 +95,7 @@ sudo dnf install perl-Image-ExifTool ImageMagick
 sudo pacman -S perl-image-exiftool imagemagick
 
 # Alpine Linux
-sudo apk add exiftool imagemagick
+sudo apk add exiftool imagemagick imagemagick-heic imagemagick-jxl
 ```
 
 ```powershell
@@ -113,11 +113,11 @@ used when the backend itself is running on Windows.
 To see the exact ImageMagick rows PICR cares about:
 
 ```bash
-magick -list format | grep -E '^\s*(PSD|PSB|HEIC|HEIF)\*?\s'
+magick -list format | grep -E '^\s*(PSD|PSB|HEIC|HEIF|JXL)\*?\s'
 ```
 
 ```powershell
-magick -list format | Select-String '^\s*(PSD|PSB|HEIC|HEIF)\*?\s'
+magick -list format | Select-String '^\s*(PSD|PSB|HEIC|HEIF|JXL)\*?\s'
 ```
 
 ### PICR says database migrations failed when Docker has only just started

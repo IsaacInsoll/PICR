@@ -592,6 +592,7 @@ const AdditionalImageFormats = ({ caps }: { caps: MediaCapsInfo }) => {
     { label: 'PSD', enabled: caps.psd },
     { label: 'PSB', enabled: caps.psb },
     { label: 'HEIC / HEIF', enabled: caps.heic },
+    { label: 'JPEG XL', enabled: caps.jxl },
   ];
 
   return (

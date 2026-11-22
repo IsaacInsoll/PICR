@@ -1,6 +1,7 @@
 import { afterEach, expect, test, vi } from 'vitest';
 import type { FileFields } from '../../backend/db/picrDb.js';
 import type { IPicrConfiguration } from '../../backend/config/IPicrConfiguration.js';
+import { picrConfig } from '../../backend/config/picrConfig.js';
 
 const fileRow = (props: Pick<FileFields, 'exists' | 'id'>) =>
   ({
@@ -10,6 +11,7 @@ const fileRow = (props: Pick<FileFields, 'exists' | 'id'>) =>
     existsRescan: true,
     fileCreated: new Date('2026-08-10T00:00:00.000Z'),
     fileHash: 'hash',
+    imageDecodeAttempt: null,
     fileLastModified: new Date('2026-08-10T00:00:00.000Z'),
     fileSize: 100,
     flag: null,
@@ -154,6 +156,7 @@ test('runs live duplicate cleanup on upgrade without deleting archived twins', a
     setServerOptions,
   } = await loadDbMigrate();
   const config = {
+    ...picrConfig,
     updateMetadata: false,
     version: '1.3.6',
   } as IPicrConfiguration;
@@ -165,13 +168,16 @@ test('runs live duplicate cleanup on upgrade without deleting archived twins', a
     expect.anything(),
     expect.arrayContaining([archivedTwin]),
   );
-  expect(setServerOptions).toHaveBeenCalledWith({ lastBootedVersion: '1.3.6' });
+  expect(setServerOptions).toHaveBeenCalledWith(
+    expect.objectContaining({ lastBootedVersion: '1.3.6' }),
+  );
 });
 
 test('runs live duplicate cleanup for the latest released buggy version', async () => {
   const { dbMigrate, duplicateLive, keeper, mergeDuplicateFileRows } =
     await loadDbMigrate({ lastBootedVersion: '1.3.5' });
   const config = {
+    ...picrConfig,
     updateMetadata: false,
     version: '1.3.6',
   } as IPicrConfiguration;
@@ -183,6 +189,7 @@ test('runs live duplicate cleanup for the latest released buggy version', async 
 
 const upgradeToLadderRelease = (): IPicrConfiguration =>
   ({
+    ...picrConfig,
     updateMetadata: false,
     version: '1.6.0',
   }) as IPicrConfiguration;

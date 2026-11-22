@@ -20,6 +20,8 @@ interface MockFileRow {
   fileHash: string | null;
   folderId?: number;
   stIno?: bigint | null;
+  type?: 'Image' | 'Video' | 'File';
+  imageDecodeAttempt?: string | null;
 }
 
 interface MockFolderRow {
@@ -69,15 +71,20 @@ const loadScanFolder = async ({
   folders = [],
   folderRelativePath = '',
   beforeAddFileCommit,
+  imageProcessingFails = false,
 }: {
   mediaRoot: string;
   files?: MockFileRow[];
   folders?: MockFolderRow[];
   folderRelativePath?: string;
   beforeAddFileCommit?: () => Promise<void>;
+  imageProcessingFails?: boolean;
 }) => {
   vi.resetModules();
   const { dbFile, dbFolder } = await import('../../backend/db/models/index.js');
+  const { fileTypeFor } = await import('../../backend/filesystem/fileTypeFor');
+  const { imageDecodeAttemptKey } =
+    await import('../../backend/media/mediaDecodeState');
 
   const folderRows: MockFolderRow[] = [
     {
@@ -93,6 +100,8 @@ const loadScanFolder = async ({
   ];
   files.forEach((file, index) => {
     file.id ??= index + 1;
+    file.type ??= fileTypeFor(file.name) ?? 'File';
+    file.imageDecodeAttempt ??= null;
   });
   currentFolderId = 10;
   let nextFolderId = Math.max(...folderRows.map((folder) => folder.id)) + 1;
@@ -115,6 +124,12 @@ const loadScanFolder = async ({
         file.relativePath = relativeFolderPath;
         file.folderId = folder?.id ?? 10;
         file.fileHash = contentHashForStats(stats);
+        const expectedType = fileTypeFor(file.name) ?? 'File';
+        file.type =
+          imageProcessingFails && expectedType === 'Image'
+            ? 'File'
+            : expectedType;
+        file.imageDecodeAttempt = imageDecodeAttemptKey(file.name);
         if (stIno) file.stIno = stIno;
       };
 
@@ -151,6 +166,11 @@ const loadScanFolder = async ({
         relativePath: relativeFolderPath,
         folderId: folder?.id ?? 10,
         fileHash: contentHashForStats(stats),
+        type:
+          imageProcessingFails && fileTypeFor(basename(path)) === 'Image'
+            ? 'File'
+            : (fileTypeFor(basename(path)) ?? 'File'),
+        imageDecodeAttempt: imageDecodeAttemptKey(basename(path)),
         stIno: stIno ?? null,
       });
     },
@@ -267,6 +287,154 @@ afterEach(async () => {
       .splice(0)
       .map((mediaRoot) => rm(mediaRoot, { recursive: true, force: true })),
   );
+});
+
+test.each([false, true])(
+  'an unchanged generic JXL is reclassified only when its decoder is available (%s)',
+  async (available) => {
+    const mediaRoot = await createMediaRoot();
+    const path = join(mediaRoot, 'unchanged.JXL');
+    await writeFile(path, 'unchanged JXL source');
+    await makeOld(path);
+    const stats = await stat(path);
+    const { scanFolderTree, addFile, files } = await loadScanFolder({
+      mediaRoot,
+      files: [
+        {
+          id: 7,
+          name: 'unchanged.JXL',
+          relativePath: '',
+          folderId: 10,
+          fileHash: contentHashForStats(stats),
+          type: 'File',
+        },
+      ],
+    });
+    const { picrConfig } = await import('../../backend/config/picrConfig');
+    picrConfig.mediaCaps.jxl = available;
+    const result = await scanFolderTree(10, { maxPasses: 1 });
+    expect(result.completed).toBe(true);
+    expect(addFile).toHaveBeenCalledTimes(available ? 1 : 0);
+    expect(files[0]).toMatchObject({
+      id: 7,
+      type: available ? 'Image' : 'File',
+    });
+    if (available)
+      expect(addFile).toHaveBeenCalledWith(
+        path,
+        false,
+        expect.any(Object),
+        undefined,
+        expect.any(BigInt),
+      );
+    // The cleanup pass and subsequent scans keep the ordinary matching-hash fast path.
+    await scanFolderTree(10, { maxPasses: 1 });
+    expect(addFile).toHaveBeenCalledTimes(available ? 1 : 0);
+  },
+);
+
+test('a scan preserves an existing image when its decoder becomes unavailable', async () => {
+  const mediaRoot = await createMediaRoot();
+  const path = join(mediaRoot, 'old.heic');
+  await writeFile(path, 'unchanged HEIC source');
+  await makeOld(path);
+  const stats = await stat(path);
+  const { scanFolder, addFile, files } = await loadScanFolder({
+    mediaRoot,
+    files: [
+      {
+        id: 7,
+        name: 'old.heic',
+        relativePath: '',
+        fileHash: contentHashForStats(stats),
+        type: 'Image',
+      },
+    ],
+  });
+  const { picrConfig } = await import('../../backend/config/picrConfig');
+  picrConfig.mediaCaps.heic = false;
+  await scanFolder(10);
+  expect(addFile).not.toHaveBeenCalled();
+  expect(files[0]).toMatchObject({ id: 7, type: 'Image' });
+});
+
+test.each(['jpg', 'png', 'tiff', 'psd', 'psb', 'heic', 'jxl', 'cr2'])(
+  'a failed %s import is not repeated by cleanup, subsequent scans, or a restart',
+  async (extension) => {
+    const mediaRoot = await createMediaRoot();
+    const path = join(mediaRoot, `broken.${extension}`);
+    await writeFile(path, 'invalid image');
+    await makeOld(path);
+    const loaded = await loadScanFolder({
+      mediaRoot,
+      imageProcessingFails: true,
+    });
+    const { picrConfig } = await import('../../backend/config/picrConfig');
+    Object.assign(picrConfig.mediaCaps, {
+      raw: true,
+      psd: true,
+      psb: true,
+      heic: true,
+      jxl: true,
+    });
+    await loaded.scanFolderTree(10);
+    await loaded.scanFolderTree(10);
+    expect(loaded.addFile).toHaveBeenCalledOnce();
+    expect(loaded.files[0].type).toBe('File');
+    const persisted = structuredClone(loaded.files);
+    const restarted = await loadScanFolder({
+      mediaRoot,
+      files: persisted,
+      imageProcessingFails: true,
+    });
+    const { picrConfig: restartedConfig } =
+      await import('../../backend/config/picrConfig');
+    Object.assign(restartedConfig.mediaCaps, {
+      raw: true,
+      psd: true,
+      psb: true,
+      heic: true,
+      jxl: true,
+    });
+    await restarted.scanFolderTree(10);
+    expect(restarted.addFile).not.toHaveBeenCalled();
+  },
+);
+
+test('a failed promotion is attempted once again after a persisted capability recovery', async () => {
+  const mediaRoot = await createMediaRoot();
+  const path = join(mediaRoot, 'failed.jxl');
+  await writeFile(path, 'invalid JXL');
+  await makeOld(path);
+  const { scanFolderTree, addFile, files } = await loadScanFolder({
+    mediaRoot,
+    imageProcessingFails: true,
+  });
+  const { picrConfig } = await import('../../backend/config/picrConfig');
+  const { nextMediaDecodeState } =
+    await import('../../backend/media/mediaDecodeState');
+  picrConfig.mediaCaps.jxl = true;
+  picrConfig.mediaDecodeState = nextMediaDecodeState(
+    null,
+    picrConfig.mediaCaps,
+  );
+  await scanFolderTree(10);
+  expect(files[0].imageDecodeAttempt).toBe('jxl:1');
+  picrConfig.mediaCaps.jxl = false;
+  picrConfig.mediaDecodeState = nextMediaDecodeState(
+    picrConfig.mediaDecodeState,
+    picrConfig.mediaCaps,
+  );
+  await scanFolderTree(10);
+  picrConfig.mediaCaps.jxl = true;
+  picrConfig.mediaDecodeState = nextMediaDecodeState(
+    picrConfig.mediaDecodeState,
+    picrConfig.mediaCaps,
+  );
+  await scanFolderTree(10);
+  await scanFolderTree(10);
+  expect(addFile).toHaveBeenCalledTimes(2);
+  expect(files[0].imageDecodeAttempt).toBe('jxl:2');
 });
 
 test('adds new direct files and folders while sharing watcher ignore rules', async () => {
@@ -913,6 +1081,7 @@ test('clears a growing signature when the database already matches the disk file
 
   files.push({
     name: 'large.mov',
+    type: 'Video',
     relativePath: '',
     fileHash: contentHashForStats(await stat(path)),
   });

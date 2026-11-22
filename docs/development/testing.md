@@ -2,6 +2,12 @@
 
 ## Current test procedure
 
+Activate the Node version in the repository's `.nvmrc` before running checks,
+including subsystem commands. With nvm, run `nvm use` from the repository root
+before entering `frontend/`, `backend/`, or `docs/`. A shell started directly in
+a subsystem can otherwise select an older system Node and fail in Astro or
+Vite before it checks any project code.
+
 > Pro Tip: run a fresh local build before E2E smoke tests so Docker uses current artifacts.
 
 Testing now has two integration suites:
